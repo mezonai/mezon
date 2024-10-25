@@ -88,12 +88,14 @@ autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
 		})
 		.then((result) => {
 			if (result.response === 0) {
+				const windows = App.BrowserWindow.getAllWindows();
+				windows.forEach((window) => {
+					window.removeAllListeners('close');
+					window.close();
+				});
+				autoUpdater.quitAndInstall();
 				setTimeout(() => {
-					const windows = App.BrowserWindow.getAllWindows();
-					windows.forEach((window) => {
-						window.removeAllListeners('close');
-					});
-					autoUpdater.quitAndInstall();
+					App.application.quit();
 				}, 10000);
 			}
 		});
