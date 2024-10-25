@@ -1,4 +1,4 @@
-import { ChannelsEntity, selectAllChannels, selectAllHashtagDm, selectNumberMemberVoiceChannel, selectTheme } from '@mezon/store';
+import { ChannelsEntity, selectAllChannels, selectAllHashtagDm, selectChannelById, selectNumberMemberVoiceChannel, selectTheme } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import { SearchItemProps, getSrcEmoji } from '@mezon/utils';
 import { ChannelType, HashtagDm } from 'mezon-js';
@@ -133,10 +133,18 @@ const SuggestItem = ({
 				{checkVoiceStatus && <i className="text-[15px] font-thin dark:text-text-zinc-400 text-colorDanger ">(busy)</i>}
 			</div>
 			<span className={`text-[10px] font-semibold text-[#A1A1AA] one-line ${subTextStyle}`}>
-				{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}
+				{channel?.parrent_id === '0' ? (
+					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
+				) : (
+					<RenderChannelLabelForThread channel_id={channel?.parrent_id as string} />
+				)}
 			</span>
 		</div>
 	);
+};
+const RenderChannelLabelForThread = ({ channel_id }: { channel_id: string }) => {
+	const channelParent = useSelector(selectChannelById(channel_id));
+	return <>{channelParent?.channel_label || null}</>;
 };
 
 export default memo(SuggestItem);
