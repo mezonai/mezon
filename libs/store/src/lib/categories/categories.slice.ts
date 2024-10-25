@@ -26,6 +26,7 @@ export interface CategoriesState extends EntityState<CategoriesEntity, string> {
 	sortChannelByCategoryId: Record<string, boolean>;
 	showEmptyCategory: boolean;
 	ctrlKSelectedChannelId?: string;
+	ctrlKFocusChannel?: { id: string; parentId: string } | null;
 	categoryExpandState: Record<string, Record<string, boolean>>;
 }
 
@@ -182,6 +183,9 @@ export const categoriesSlice = createSlice({
 		setCtrlKSelectedChannelId: (state, action: PayloadAction<string>) => {
 			state.ctrlKSelectedChannelId = action.payload;
 		},
+		setCtrlKFocusChannel: (state, action: PayloadAction<{ id: string; parentId: string } | null>) => {
+			state.ctrlKFocusChannel = action.payload;
+		},
 		setCategoryExpandState: (state, action: PayloadAction<SetCategoryExpandStatePayload>) => {
 			const { clanId, categoryId, expandState } = action.payload;
 			state.categoryExpandState[clanId][categoryId] = expandState;
@@ -307,6 +311,8 @@ export const selectCategoriesIds = createSelector(getCategoriesState, (entities)
 export const selectIsShowEmptyCategory = createSelector(getCategoriesState, (state) => state.showEmptyCategory);
 
 export const selectCtrlKSelectedChannelId = createSelector(getCategoriesState, (state) => state.ctrlKSelectedChannelId);
+
+export const selectCtrlKFocusChannel = createSelector(getCategoriesState, (state) => state.ctrlKFocusChannel);
 
 export const selectCategoryExpandStateByCategoryId = (clanId: string, categoryId: string) =>
 	createSelector(getCategoriesState, (state) => {

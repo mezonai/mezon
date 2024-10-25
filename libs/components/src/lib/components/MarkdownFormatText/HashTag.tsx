@@ -2,6 +2,7 @@ import { useAppNavigation, useTagById } from '@mezon/core';
 import {
 	ChannelsEntity,
 	appActions,
+	categoriesActions,
 	channelsActions,
 	selectClanView,
 	selectCurrentChannel,
@@ -84,7 +85,8 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 				}
 			}
 			const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
-			navigate(channelUrl, { state: { focusChannel: { id: channel?.id, parentId: channel?.parrent_id ?? '' } } });
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+			navigate(channelUrl);
 		}
 	}, [channel, clanById, currentStreamInfo?.streamId, dispatch, navigate, playStream, toChannelPage]);
 

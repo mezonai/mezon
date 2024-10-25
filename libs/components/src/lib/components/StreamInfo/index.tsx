@@ -1,5 +1,6 @@
 import { useAppNavigation, useAuth, useMenu } from '@mezon/core';
 import {
+	categoriesActions,
 	selectCloseMenu,
 	selectCurrentStreamInfo,
 	selectStreamMembersByChannelId,
@@ -34,7 +35,9 @@ const StreamInfo = () => {
 			setStatusMenu(false);
 		}
 		const channelUrl = toChannelPage(currentStreamInfo?.streamId ?? '', currentStreamInfo?.clanId ?? '');
-		navigate(channelUrl, { state: { focusChannel: { id: currentStreamInfo?.streamId, parentId: currentStreamInfo?.parentId ?? '' } } });
+
+		dispatch(categoriesActions.setCtrlKFocusChannel({ id: currentStreamInfo?.streamId ?? '', parentId: currentStreamInfo?.parentId ?? '' }));
+		navigate(channelUrl);
 	};
 
 	const streamAddress = `${currentStreamInfo?.streamName + ' / ' + currentStreamInfo?.clanName}`;

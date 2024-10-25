@@ -1,5 +1,5 @@
 import { useAppNavigation, useCategorizedChannels, usePathMatch } from '@mezon/core';
-import { selectAllChannelsFavorite, selectChannelById, selectCurrentClan, selectTheme } from '@mezon/store';
+import { selectAllChannelsFavorite, selectChannelById, selectCurrentClan, selectIsShowEmptyCategory, selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelStatusEnum, ICategoryChannel } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -20,7 +20,6 @@ function ChannelList() {
 	const channelSettingPath = `/chat/clans/${currentClan?.id}/channel-setting`;
 
 	const { isMemberPath, isSettingPath } = usePathMatch({ isMemberPath: memberPath, isSettingPath: channelSettingPath });
-
 	return (
 		<div
 			onContextMenu={(event) => event.preventDefault()}
@@ -59,6 +58,7 @@ const RowVirtualizerDynamic = memo(({ hasBanner, appearanceTheme }: { hasBanner:
 		getScrollElement: () => parentRef.current,
 		estimateSize: () => 45
 	});
+	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 
 	const items = virtualizer.getVirtualItems();
 
@@ -114,6 +114,8 @@ const RowVirtualizerDynamic = memo(({ hasBanner, appearanceTheme }: { hasBanner:
 									/>
 								</div>
 							);
+						} else if (!isShowEmptyCategory && item.channels.length === 0) {
+							return null;
 						} else {
 							return (
 								<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>

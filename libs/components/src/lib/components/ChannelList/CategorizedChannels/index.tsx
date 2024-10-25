@@ -6,6 +6,7 @@ import {
 	selectCategoryExpandStateByCategoryId,
 	selectCategoryIdSortChannel,
 	selectChannelMetaEntities,
+	selectCtrlKFocusChannel,
 	selectCtrlKSelectedChannelId,
 	selectCurrentChannelId,
 	selectCurrentClan,
@@ -16,7 +17,6 @@ import { ChannelThreads, EPermission, ICategory, ICategoryChannel, IChannel, Mou
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { CategorySetting } from '../../CategorySetting';
 import { Coords } from '../../ChannelLink';
 import ModalConfirm from '../../ModalConfirm';
@@ -65,9 +65,10 @@ const CategorizedChannels: React.FC<CategorizedChannelsProps> = ({ category, cha
 	const [showModal, setShowModal] = useState(false);
 	const [isShowCategorySetting, setIsShowCategorySetting] = useState<boolean>(false);
 	const categoryIdSortChannel = useSelector(selectCategoryIdSortChannel);
+	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
+
 	const { handleDeleteCategory } = useCategory();
 	const dispatch = useAppDispatch();
-	const location = useLocation();
 	const isShowCreateChannel = isClanOwner || hasAdminPermission || hasChannelManagePermission || hasClanPermission;
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -128,14 +129,16 @@ const CategorizedChannels: React.FC<CategorizedChannelsProps> = ({ category, cha
 	};
 
 	useEffect(() => {
-		const focusChannel = location.state?.focusChannel ?? {};
+		if (!ctrlKFocusChannel) return;
+		const focusChannel = ctrlKFocusChannel;
 		const { id, parentId } = focusChannel as { id: string; parentId: string };
 		if (id && parentId && parentId !== '0' && channelRefs.current) {
 			channelRefs.current[parentId]?.scrollIntoThread(id);
 		} else if (id && channelRefs.current) {
 			channelRefs.current[id]?.scrollIntoChannel();
 		}
-	}, [location]);
+		dispatch(categoriesActions.setCtrlKFocusChannel(null));
+	}, [ctrlKFocusChannel]);
 
 	return (
 		<div>

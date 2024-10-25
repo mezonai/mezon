@@ -256,7 +256,9 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 			if (channel.id && (channel.type === ChannelType.CHANNEL_TYPE_TEXT || channel.type === ChannelType.CHANNEL_TYPE_STREAMING)) {
 				dispatch(categoriesActions.setCtrlKSelectedChannelId(channel?.id ?? ''));
 				const channelUrl = toChannelPage(channel?.id ?? '', channel?.clanId ?? '');
-				navigate(channelUrl, { state: { focusChannel: { id: channel?.id, parentId: channel?.parrent_id ?? '' } } });
+
+				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+				navigate(channelUrl);
 			} else {
 				const urlVoice = `https://meet.google.com/${channel.meeting_code}`;
 				window.open(urlVoice, '_blank', 'noreferrer');
