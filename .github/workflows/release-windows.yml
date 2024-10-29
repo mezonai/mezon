@@ -21,7 +21,7 @@ jobs:
 
       - name: Read version Mezon
         run: |
-          echo "$MEZON_VERSION"
+          echo "The version is $env:MEZON_VERSION"
 
       # - name: Install package
       #   run: |
