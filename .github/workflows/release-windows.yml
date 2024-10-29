@@ -16,11 +16,12 @@ jobs:
       - name: Get version Mezon
         run: |
           $version = (Get-Content -Path package.json | ConvertFrom-Json).version
+          echo "$version"
           echo "{mezon_version}={$version}" >> "$GITHUB_ENV"
 
       - name: Read version Mezon
         run: |
-          echo $mezon_version
+          echo "$mezon_version"
 
       # - name: Install package
       #   run: |
