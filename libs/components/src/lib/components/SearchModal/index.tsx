@@ -1,5 +1,6 @@
 import { useAppNavigation, useAuth, useDirect } from '@mezon/core';
 import {
+	ChannelsEntity,
 	DirectEntity,
 	appActions,
 	categoriesActions,
@@ -98,6 +99,7 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 
 	const listChannelSearch = useMemo(() => {
 		const list = listChannels.map((item) => {
+			// console.log('listChannels :', listChannels);
 			return {
 				id: item?.channel_id ?? '',
 				name: item?.channel_label ?? '',
@@ -259,11 +261,15 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 					channel.type === ChannelType.CHANNEL_TYPE_STREAMING ||
 					channel.type === ChannelType.CHANNEL_TYPE_THREAD)
 			) {
+				// const channelUrl = toChannelPage(channel?.id ?? '', channel?.clanId ?? '');
+				// console.log('channel :', channel);
+				if (channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
+					// console.log('channel.type', channel.type);
+					dispatch(channelsActions.upsertOne(channel as ChannelsEntity));
+				}
 				dispatch(categoriesActions.setCtrlKSelectedChannelId(channel?.id ?? ''));
-				const channelUrl = toChannelPage(channel?.id ?? '', channel?.clanId ?? '');
-
 				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
-				navigate(channelUrl);
+				navigate(toChannelPage(channel?.channelId ?? '', channel?.clanId ?? ''));
 			} else {
 				const urlVoice = `https://meet.google.com/${channel.meeting_code}`;
 				window.open(urlVoice, '_blank', 'noreferrer');
