@@ -11,21 +11,28 @@ jobs:
     environment: production
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Get version Mezon
-        run: |
-          $version = (Get-Content -Path package.json | ConvertFrom-Json).version
-          echo "$version"
-          echo "MEZON_VERSION=$version" >> "$GITHUB_ENV"
-
-      - name: Read version Mezon
-        run: |
-          echo "The version is $env:MEZON_VERSION"
-
-      # - name: Install package
+        uses: actions/checkout@v4
+        with:
+          clean: false
+      
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      # - name: Get version Mezon
       #   run: |
-      #     yarn 
+      #     $version = (Get-Content -Path package.json | ConvertFrom-Json).version
+      #     echo "$version"
+      #     echo "MEZON_VERSION=$version" >> "$GITHUB_ENV"
+
+      # - name: Read version Mezon
+      #   run: |
+      #     echo "The version is $MEZON_VERSION"
+
+      - name: Install package
+        run: |
+          yarn 
 
       # - name: Change prod environment
       #   run: |
@@ -57,5 +64,6 @@ jobs:
           
       # - name: Push to MinIO
       #   run: |
+      #     $version = (Get-Content -Path package.json | ConvertFrom-Json).version
       #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/latest.yml mezon/mezon/release/latest.yml'"
-      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64.exe mezon/mezon/release/'"
+      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64.exe mezon/mezon/release/mezon-$version-win-portable-x64.'"
