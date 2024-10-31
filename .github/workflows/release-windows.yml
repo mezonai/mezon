@@ -13,47 +13,53 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install package
         run: |
            yarn
 
-      - name: Change prod environment
-        run: |
-          cp apps/chat/.env.prod apps/chat/.env
+      # - name: Change prod environment
+      #   run: |
+      #     cp apps/chat/.env.prod apps/chat/.env
 
-      - name: Release Desktop
-        run: |
-          yarn release:desktop
-        env:
-          NX_CHAT_APP_API_HOST: ${{ secrets.NX_CHAT_APP_API_HOST_PROD }}
-          NX_CHAT_APP_API_PORT: ${{ secrets.NX_CHAT_APP_API_PORT_PROD }}
-          NX_CHAT_APP_API_KEY: ${{ secrets.NX_CHAT_APP_API_KEY_PROD }}
-          NX_CHAT_APP_API_SECURE: ${{ secrets.NX_CHAT_APP_API_SECURE_PROD }}
-          NX_CHAT_APP_GOOGLE_CLIENT_ID: ${{ secrets.NX_CHAT_APP_GOOGLE_CLIENT_ID_PROD }}
-          NX_CHAT_APP_REDIRECT_URI: ${{ secrets.NX_CHAT_APP_REDIRECT_URI_PROD }}
-          NX_CHAT_APP_FCM_API_KEY: ${{ secrets.NX_CHAT_APP_FCM_API_KEY_PROD }}
-          NX_CHAT_APP_FCM_AUTH_DOMAIN: ${{ secrets.NX_CHAT_APP_FCM_AUTH_DOMAIN_PROD }}
-          NX_CHAT_APP_FCM_PROJECT_ID: ${{ secrets.NX_CHAT_APP_FCM_PROJECT_ID_PROD }}
-          NX_CHAT_APP_FCM_STORAGE_BUCKET: ${{ secrets.NX_CHAT_APP_FCM_STORAGE_BUCKET_PROD }}
-          NX_CHAT_APP_FCM_MESSAGING_SENDER_ID: ${{ secrets.NX_CHAT_APP_FCM_MESSAGING_SENDER_ID_PROD }}
-          NX_CHAT_APP_FCM_APP_ID: ${{ secrets.NX_CHAT_APP_FCM_APP_ID_PROD }}
-          NX_CHAT_APP_FCM_MEASUREMENT_ID: ${{ secrets.NX_CHAT_APP_FCM_MEASUREMENT_ID_PROD }}
-          NX_CHAT_APP_FCM_VAPID_KEY: ${{ secrets.NX_CHAT_APP_FCM_VAPID_KEY_PROD }}
-          NX_CHAT_APP_API_TENOR_KEY: ${{ secrets.NX_CHAT_APP_API_TENOR_KEY_PROD }}
-          NX_CHAT_APP_API_CLIENT_KEY_CUSTOM: ${{ secrets.NX_CHAT_APP_API_CLIENT_KEY_CUSTOM_PROD }}
-          NX_CHAT_SENTRY_DNS: ${{ secrets.NX_CHAT_SENTRY_DNS_PROD }}
-          NX_CHAT_APP_ANNONYMOUS_USER_ID: ${{ secrets.NX_CHAT_APP_ANNONYMOUS_USER_ID_PROD }}
-          NX_CHAT_APP_NOTIFICATION_WS_URL: ${{ secrets.NX_CHAT_APP_NOTIFICATION_WS_URL_PROD }}
+      # - name: Release Desktop
+      #   run: |
+      #     yarn release:desktop
+      #   env:
+      #     NX_CHAT_APP_API_HOST: ${{ secrets.NX_CHAT_APP_API_HOST_PROD }}
+      #     NX_CHAT_APP_API_PORT: ${{ secrets.NX_CHAT_APP_API_PORT_PROD }}
+      #     NX_CHAT_APP_API_KEY: ${{ secrets.NX_CHAT_APP_API_KEY_PROD }}
+      #     NX_CHAT_APP_API_SECURE: ${{ secrets.NX_CHAT_APP_API_SECURE_PROD }}
+      #     NX_CHAT_APP_GOOGLE_CLIENT_ID: ${{ secrets.NX_CHAT_APP_GOOGLE_CLIENT_ID_PROD }}
+      #     NX_CHAT_APP_REDIRECT_URI: ${{ secrets.NX_CHAT_APP_REDIRECT_URI_PROD }}
+      #     NX_CHAT_APP_FCM_API_KEY: ${{ secrets.NX_CHAT_APP_FCM_API_KEY_PROD }}
+      #     NX_CHAT_APP_FCM_AUTH_DOMAIN: ${{ secrets.NX_CHAT_APP_FCM_AUTH_DOMAIN_PROD }}
+      #     NX_CHAT_APP_FCM_PROJECT_ID: ${{ secrets.NX_CHAT_APP_FCM_PROJECT_ID_PROD }}
+      #     NX_CHAT_APP_FCM_STORAGE_BUCKET: ${{ secrets.NX_CHAT_APP_FCM_STORAGE_BUCKET_PROD }}
+      #     NX_CHAT_APP_FCM_MESSAGING_SENDER_ID: ${{ secrets.NX_CHAT_APP_FCM_MESSAGING_SENDER_ID_PROD }}
+      #     NX_CHAT_APP_FCM_APP_ID: ${{ secrets.NX_CHAT_APP_FCM_APP_ID_PROD }}
+      #     NX_CHAT_APP_FCM_MEASUREMENT_ID: ${{ secrets.NX_CHAT_APP_FCM_MEASUREMENT_ID_PROD }}
+      #     NX_CHAT_APP_FCM_VAPID_KEY: ${{ secrets.NX_CHAT_APP_FCM_VAPID_KEY_PROD }}
+      #     NX_CHAT_APP_API_TENOR_KEY: ${{ secrets.NX_CHAT_APP_API_TENOR_KEY_PROD }}
+      #     NX_CHAT_APP_API_CLIENT_KEY_CUSTOM: ${{ secrets.NX_CHAT_APP_API_CLIENT_KEY_CUSTOM_PROD }}
+      #     NX_CHAT_SENTRY_DNS: ${{ secrets.NX_CHAT_SENTRY_DNS_PROD }}
+      #     NX_CHAT_APP_ANNONYMOUS_USER_ID: ${{ secrets.NX_CHAT_APP_ANNONYMOUS_USER_ID_PROD }}
+      #     NX_CHAT_APP_NOTIFICATION_WS_URL: ${{ secrets.NX_CHAT_APP_NOTIFICATION_WS_URL_PROD }}
 
-      - name: Zip portable
-        run: |
-           $version = (Get-Content -Path package.json | ConvertFrom-Json).version
-           echo "$version"
-           cd ./dist/executables/
-           zip mezon-$version-win-portable-x64.zip  mezon-*-win-x64.exe
+      # - name: Zip portable
+      #   run: |
+      #      $version = (Get-Content -Path package.json | ConvertFrom-Json).version
+      #      echo "$version"
+      #      cd ./dist/executables/
+      #      zip mezon-$version-win-portable-x64.zip  mezon-*-win-x64.exe
 
-      - name: Push to MinIO
-        run: |
-          powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/latest.yml mezon/mezon/release/latest.yml'"
-          powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64.exe mezon/mezon/release/'"
-          powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-portable-x64.zip mezon/mezon/release/'"
+      # - name: Push to MinIO
+      #   run: |
+      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/latest.yml mezon/mezon/release/latest.yml'"
+      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64.exe mezon/mezon/release/'"
+      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-portable-x64.zip mezon/mezon/release/'"
