@@ -1,4 +1,3 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { messagesActions, useAppDispatch } from '@mezon/store';
 import { EBacktickType, ETokenMessage, IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';

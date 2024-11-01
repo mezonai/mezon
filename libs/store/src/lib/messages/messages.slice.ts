@@ -706,7 +706,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Welcome:
 				case TypeMessage.CreateThread:
 				case TypeMessage.CreatePin:
-				case 0: {
+				case TypeMessage.Chat: {
 					handleAddOneMessage({ state, channelId, adapterPayload: action.payload });
 
 					// update last message
@@ -742,7 +742,7 @@ export const messagesSlice = createSlice({
 
 					break;
 				}
-				case 1: {
+				case TypeMessage.ChatUpdate: {
 					channelMessagesAdapter.updateOne(channelEntity, {
 						id: action.payload.id,
 						changes: {
@@ -770,7 +770,7 @@ export const messagesSlice = createSlice({
 					}
 					break;
 				}
-				case 2: {
+				case TypeMessage.ChatRemove: {
 					handleRemoveOneMessage({ state, channelId, messageId });
 					break;
 				}
