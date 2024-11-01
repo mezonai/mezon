@@ -27,8 +27,6 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel }: ListChannelSe
 	const parentRef = useRef(null);
 	const dispatch = useAppDispatch();
 
-	// const selectClanId = useSelector(selectCurrentClanId);
-
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 
