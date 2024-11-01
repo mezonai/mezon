@@ -152,13 +152,6 @@ const NavigationMain = () => {
 						channelType: ChannelType.CHANNEL_TYPE_VOICE
 					})
 				)
-				// store.dispatch(
-				// 	usersStreamActions.fetchStreamChannelMembers({
-				// 		clanId: currentClanId ?? '',
-				// 		channelId: '',
-				// 		channelType: ChannelType.CHANNEL_TYPE_STREAMING
-				// 	})
-				// )
 			];
 			await Promise.all(promise);
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });

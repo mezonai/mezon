@@ -10,7 +10,7 @@ import {
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { ReactNode, memo, useCallback, useRef, useState } from 'react';
+import React, { ReactNode, memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalUserProfile from '../ModalUserProfile';
@@ -136,35 +136,41 @@ function MessageWithUser({
 
 	const messageContentClass = classNames('flex flex-col whitespace-pre-wrap text-base w-full cursor-text');
 
-	const handleOpenShortUser = useCallback((e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string) => {
-		if (checkAnonymous) {
-			return;
-		}
-		if (modalState.current.profileItem) {
-			return;
-		}
-		shortUserId.current = userId;
-		const heightPanel =
-			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
-				? HEIGHT_PANEL_PROFILE
-				: HEIGHT_PANEL_PROFILE_DM;
-		if (window.innerHeight - e.clientY > heightPanel) {
-			positionShortUser.current = {
-				top: e.clientY,
-				left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
-			};
-		} else {
-			positionShortUser.current = {
-				top: window.innerHeight - heightPanel,
-				left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
-			};
-		}
-		openProfileItem();
-		modalState.current.profileItem = true;
-	}, []);
+	const handleOpenShortUser = useCallback(
+		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string) => {
+			if (checkAnonymous) {
+				return;
+			}
+			if (modalState.current.profileItem) {
+				return;
+			}
+			shortUserId.current = userId;
+			const heightPanel =
+				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
+					? HEIGHT_PANEL_PROFILE
+					: HEIGHT_PANEL_PROFILE_DM;
+			if (window.innerHeight - e.clientY > heightPanel) {
+				positionShortUser.current = {
+					top: e.clientY,
+					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+				};
+			} else {
+				positionShortUser.current = {
+					top: window.innerHeight - heightPanel,
+					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+				};
+			}
+			openProfileItem();
+			modalState.current.profileItem = true;
+		},
+		[checkAnonymous, mode]
+	);
 
-	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
-	const avatar = (() => {
+	const isDM = useMemo(() => {
+		return mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
+	}, [mode]);
+
+	const avatar = useMemo(() => {
 		if (isDM && shortUserId.current === message.sender_id) {
 			return message?.avatar;
 		}
@@ -176,7 +182,7 @@ function MessageWithUser({
 		if (shortUserId.current === message.sender_id) {
 			return message?.clan_avatar || message?.avatar;
 		}
-	})();
+	}, [isDM, shortUserId.current, message?.avatar, message?.clan_avatar, message?.references, message.sender_id]);
 
 	const messageHour = convertTimeHour(message?.create_time || ('' as string));
 
@@ -207,7 +213,7 @@ function MessageWithUser({
 				/>
 			</div>
 		);
-	}, [message]);
+	}, [message, avatar]);
 
 	return (
 		<>

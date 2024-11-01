@@ -98,9 +98,11 @@ const HomeDefault = React.memo((props: any) => {
 	const isChannelApp = useMemo(() => currentChannel?.type === ChannelType?.CHANNEL_TYPE_APP, [currentChannel?.type]);
 
 	const onOpenDrawer = useCallback(() => {
-		onShowKeyboardBottomSheet(false, 0, 'text');
-		navigation.dispatch(DrawerActions.openDrawer());
-		Keyboard.dismiss();
+		requestAnimationFrame(async () => {
+			navigation.dispatch(DrawerActions.openDrawer());
+			onShowKeyboardBottomSheet(false, 0, 'text');
+			Keyboard.dismiss();
+		});
 	}, [navigation, onShowKeyboardBottomSheet]);
 
 	useEffect(() => {

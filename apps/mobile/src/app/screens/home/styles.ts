@@ -7,14 +7,14 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row'
 	},
 	containerDrawerContent: {
-		flex: 1
-	},
-	containerHomeDefault: {
 		flex: 2
 	},
+	containerHomeDefault: {
+		flex: 5
+	},
 	drawerHeaderLeft: {
-		marginLeft: 14,
-		marginRight: 8
+		marginLeft: size.s_14,
+		marginRight: size.s_8
 	},
 	drawerHeaderTitle: {
 		flexDirection: 'row',
@@ -23,13 +23,13 @@ export const styles = StyleSheet.create({
 	drawerHeaderTitleTxt: {
 		color: 'black',
 		fontWeight: 'bold',
-		marginLeft: 10,
-		fontSize: 16
+		marginLeft: size.s_10,
+		fontSize: size.s_16
 	},
 	drawerHeaderRight: {
 		flexDirection: 'row',
-		paddingRight: 20,
-		gap: 20
+		paddingRight: size.s_20,
+		gap: size.s_20
 	},
 	userVoiceWrapper: { flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginLeft: size.s_30, paddingVertical: size.s_6 },
 	userVoiceName: { color: Colors.textGray, fontSize: size.medium, fontWeight: '400' }

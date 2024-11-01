@@ -400,6 +400,7 @@ export type IEmoji = {
 
 export type IChannelUser = ChannelDescription & {
 	id: string;
+	active?: number;
 };
 
 export type IUsers = ApiUser & {

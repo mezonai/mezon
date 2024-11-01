@@ -51,6 +51,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>We use your location to enhance your experience by showing nearby content and providing location-specific features when you're using the app. Your privacy is important to us, and we only access your location while you’re actively using the app.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Mezon app needs access to the camera to take and send pictures in messages</string>
 	<key>NSMicrophoneUsageDescription</key>

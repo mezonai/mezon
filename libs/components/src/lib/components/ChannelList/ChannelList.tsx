@@ -6,7 +6,8 @@ import {
 	selectCurrentClan,
 	selectIsShowEmptyCategory,
 	selectStatusStream,
-	selectTheme
+	selectTheme,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelStatusEnum, ICategoryChannel } from '@mezon/utils';
@@ -203,7 +204,7 @@ type FavoriteChannelProps = {
 };
 
 const FavoriteChannel = ({ channelId, channelRef }: FavoriteChannelProps) => {
-	const channel = useSelector(selectChannelById(channelId));
+	const channel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const theme = useSelector(selectTheme);
 	const { navigate, toChannelPage } = useAppNavigation();
 	const handleJumpChannel = (id: string, clanId: string) => {

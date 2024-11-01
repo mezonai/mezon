@@ -130,7 +130,7 @@ const ThreadBox = () => {
 							channelId={threadCurrentChannel.channel_id as string}
 							channelLabel={threadCurrentChannel.channel_label}
 							type={ChannelType.CHANNEL_TYPE_THREAD}
-							mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+							mode={ChannelStreamMode.STREAM_MODE_THREAD}
 						/>
 					</div>
 				)}

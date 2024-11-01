@@ -2,7 +2,6 @@ import { useAuth, useChatReaction, useUserById } from '@mezon/core';
 import { selectCurrentChannel, selectCurrentClanId } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
 import { EmojiDataOptionals, IMessageWithUser, SenderInfoOptionals, calculateTotalCount, getSrcEmoji, isPublicChannel } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
 import { Fragment, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -29,9 +28,7 @@ const UserReactionPanel = ({ emojiShowPanel, mode, message }: UserReactionPanelP
 	) => {
 		await reactionMessageDispatch(
 			id,
-			mode,
-			mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? (currentClanId ?? '') : '',
-			message.channel_id ?? '',
+
 			messageId,
 			emojiShowPanel.emojiId ?? '',
 			emojiShowPanel.emoji ?? '',

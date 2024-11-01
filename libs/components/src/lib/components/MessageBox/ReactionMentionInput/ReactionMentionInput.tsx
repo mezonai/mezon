@@ -501,7 +501,10 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			dispatch(referencesActions.setIdReferenceMessageEdit(idRefMessage));
 			dispatch(
 				messagesActions.setChannelDraftMessage({
-					channelId: props.mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? (currentChannelId as string) : (currentDmId as string),
+					channelId:
+						props.mode === ChannelStreamMode.STREAM_MODE_CHANNEL || props.mode === ChannelStreamMode.STREAM_MODE_THREAD
+							? (currentChannelId as string)
+							: (currentDmId as string),
 					channelDraftMessage: {
 						message_id: idRefMessage,
 						draftContent: lastMessageByUserId?.content,

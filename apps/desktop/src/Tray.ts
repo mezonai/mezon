@@ -3,7 +3,7 @@ import { autoUpdater } from 'electron-updater';
 import { join } from 'path';
 import App from './app/app';
 
-const assetsDir = join(__dirname, 'assets', 'desktop-tray-64x64.ico');
+const assetsDir = join(__dirname, 'assets', 'desktop-taskbar-256x256.ico');
 
 export class TrayIcon {
 	private tray?: Tray;

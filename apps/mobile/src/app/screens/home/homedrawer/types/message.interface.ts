@@ -53,6 +53,7 @@ export interface IMessageReactionProps {
 	openEmojiPicker?: () => void;
 	preventAction?: boolean;
 	userProfile?: IUserAccount;
+	messageReactions?: EmojiDataOptionals[];
 }
 
 export interface IDetailReactionBottomSheet {

@@ -1,5 +1,6 @@
 export * from './lib/MezonStoreProvider';
 export * from './lib/account/account.slice';
+export * from './lib/activities/activitiesAPI.slice';
 export * from './lib/app/app.slice';
 export * from './lib/application/applications.slice';
 export * from './lib/attachment/attachments.slice';
@@ -30,6 +31,7 @@ export * from './lib/friends/friend.slice';
 export * from './lib/giftStickerEmojiPanel/gifs.slice';
 export * from './lib/giftStickerEmojiPanel/gifsStickerEmoji.slice';
 export * from './lib/giveCoffee/giveCoffee.slice';
+export * from './lib/helpers';
 export * from './lib/invite/invite.slice';
 export * from './lib/messages/SeenMessagePool';
 export * from './lib/messages/messages.slice';

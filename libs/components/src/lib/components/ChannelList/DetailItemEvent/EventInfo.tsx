@@ -1,4 +1,4 @@
-import { EventManagementEntity, selectChannelById, selectCurrentClan, selectMemberClanByUserId } from '@mezon/store';
+import { EventManagementEntity, selectChannelById, selectCurrentClan, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,7 +10,9 @@ type EventInfoDetailProps = {
 
 const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const { event } = props;
-	const channelVoice = useSelector(selectChannelById(event?.channel_id || ''));
+
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_id ?? '')) || {};
+
 	const currentClan = useSelector(selectCurrentClan);
 	const userCreate = useSelector(selectMemberClanByUserId(event?.creator_id || ''));
 	const time = useMemo(() => timeFomat(event?.start_time || ''), [event?.start_time]);

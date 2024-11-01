@@ -59,7 +59,7 @@ const ChannelListThreadItem = memo(({ onPress, onLongPress, thread, isActive, is
 					<Text
 						style={[
 							styles.titleThread,
-							isUnReadChannel && styles.channelListItemTitleActive,
+							(isUnReadChannel || Number(numberNotification || 0) > 0) && styles.channelListItemTitleActive,
 							isActive && { backgroundColor: theme === 'light' ? themeValue.secondaryWeight : themeValue.secondaryLight }
 						]}
 						numberOfLines={1}

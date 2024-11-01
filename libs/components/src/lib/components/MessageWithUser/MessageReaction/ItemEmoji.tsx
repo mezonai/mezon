@@ -2,7 +2,6 @@ import { useAuth, useChatReaction } from '@mezon/core';
 import { selectCurrentChannel, selectCurrentClanId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EmojiDataOptionals, IMessageWithUser, SenderInfoOptionals, calculateTotalCount, getSrcEmoji, isPublicChannel } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
 import { forwardRef, useCallback, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -38,9 +37,7 @@ function ItemEmoji({ emoji, mode, message }: EmojiItemProps) {
 	) {
 		await reactionMessageDispatch(
 			id,
-			mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
-			mode !== ChannelStreamMode.STREAM_MODE_CHANNEL ? '' : currentClanId || '',
-			message.channel_id,
+
 			messageId ?? '',
 			emojiId ?? '',
 			emoji ?? '',

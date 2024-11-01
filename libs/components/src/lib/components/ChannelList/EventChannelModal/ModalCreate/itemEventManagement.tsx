@@ -1,5 +1,5 @@
 import { useEventManagement, useOnClickOutside, usePermissionChecker } from '@mezon/core';
-import { EventManagementEntity, selectChannelById, selectChannelFirst, selectMemberClanByUserId, selectTheme } from '@mezon/store';
+import { EventManagementEntity, selectChannelById, selectChannelFirst, selectMemberClanByUserId, selectTheme, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -49,7 +49,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	} = props;
 	const { setChooseEvent, deleteEventManagement } = useEventManagement();
 	const channelFirst = useSelector(selectChannelFirst);
-	const channelVoice = useSelector(selectChannelById(voiceChannel));
+	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
+
 	const userCreate = useSelector(selectMemberClanByUserId(event?.creator_id || ''));
 	const appearanceTheme = useSelector(selectTheme);
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);

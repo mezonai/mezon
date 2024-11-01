@@ -138,14 +138,13 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 					{/* TODO: Mutual server */}
 					{!isDMGroup && (
 						<View style={styles.friendActions}>
-							{!checkAddFriend && (
-								<TouchableOpacity style={styles.addFriendButton} onPress={handleAddFriend}>
-									<Text style={styles.buttonText}>{t('userAction.addFriend')}</Text>
-								</TouchableOpacity>
-							)}
-							{checkAddFriend === EStateFriend.FRIEND && (
+							{checkAddFriend === EStateFriend.FRIEND ? (
 								<TouchableOpacity style={styles.deleteFriendButton} onPress={handleRemoveFriend}>
 									<Text style={styles.buttonText}>{t('userAction.removeFriend')}</Text>
+								</TouchableOpacity>
+							) : (
+								<TouchableOpacity style={styles.addFriendButton} onPress={handleAddFriend}>
+									<Text style={styles.buttonText}>{t('userAction.addFriend')}</Text>
 								</TouchableOpacity>
 							)}
 							{checkAddFriend === EStateFriend.OTHER_PENDING && (

@@ -7,7 +7,8 @@ import {
 	selectChannelSecond,
 	selectCurrentChannelId,
 	selectCurrentClanId,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { checkIsThread } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
@@ -28,7 +29,8 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onCloseModal,
 	const channelFirst = useSelector(selectChannelFirst);
 	const channelSecond = useSelector(selectChannelSecond);
 	let channelNavId = channelFirst.id;
-	const selectedChannel = useSelector(selectChannelById(channelId));
+
+	const selectedChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
 	const isThread = checkIsThread(selectedChannel as ChannelsEntity);
 

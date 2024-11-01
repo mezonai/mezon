@@ -177,7 +177,6 @@ const CategorizedChannels: React.FC<CategorizedChannelsProps> = ({ category, cha
 		}
 		dispatch(categoriesActions.setCtrlKFocusChannel(null));
 	}, [ctrlKFocusChannel]);
-
 	return (
 		<div>
 			{category.category_name && (

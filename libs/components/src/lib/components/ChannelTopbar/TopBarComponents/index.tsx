@@ -11,7 +11,8 @@ import {
 	selectStatusMenu,
 	selectTheme,
 	selectTitle,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelStatusEnum, IChannel, MouseButton, ThreadNameProps } from '@mezon/utils';
@@ -33,7 +34,10 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 	const isChannelText = type === ChannelType.CHANNEL_TYPE_TEXT;
 	const isChannelStream = type === ChannelType.CHANNEL_TYPE_STREAMING;
 	const isAppChannel = type === ChannelType.CHANNEL_TYPE_APP;
-	const channelParent = useSelector(selectChannelById(channel?.parrent_id ? (channel.parrent_id as string) : ''));
+
+	const channelParent =
+		useAppSelector((state) => selectChannelById(state, (channel?.parrent_id ? (channel.parrent_id as string) : '') ?? '')) || {};
+
 	const isPrivate = channelParent ? channelParent?.channel_private : channel?.channel_private;
 	const isActive = currentChannel?.channel_id === channel?.channel_id && !channelParent;
 	const theme = useSelector(selectTheme);

@@ -3,6 +3,7 @@ import { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { Friend } from 'mezon-js';
 import { toast } from 'react-toastify';
+import { StatusUserArgs } from '../channelmembers/channel.members';
 import { usersClanActions } from '../clanMembers/clan.members';
 import { ensureSession, getMezonCtx, MezonValueContext } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
@@ -150,6 +151,32 @@ export const friendsSlice = createSlice({
 		},
 		setSentStatusMobile: (state, action: PayloadAction<IStatusSentMobile | null>) => {
 			state.statusSentMobile = action.payload;
+		},
+		setManyStatusUser: (state, action: PayloadAction<StatusUserArgs[]>) => {
+			const allFriends = friendsAdapter.getSelectors().selectAll(state);
+			friendsAdapter.updateMany(
+				state,
+				allFriends.map((member) => {
+					const memberUpdate = action.payload.find((memberUpdate) => memberUpdate.userId === member.user?.id);
+					if (member.user?.id === memberUpdate?.userId) {
+						return {
+							id: member.id,
+							changes: {
+								...member,
+								user: {
+									...member.user,
+									online: memberUpdate?.online,
+									is_mobile: memberUpdate?.isMobile
+								}
+							}
+						};
+					}
+					return {
+						id: member.id,
+						changes: { ...member }
+					};
+				})
+			);
 		}
 	},
 	extraReducers: (builder) => {

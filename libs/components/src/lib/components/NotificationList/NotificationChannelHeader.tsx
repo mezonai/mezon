@@ -20,7 +20,7 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 		return itemUnread?.channel_id ? itemUnread.channel_id : '';
 	}, [itemUnread?.channel_id]);
 
-	const getChannel = useSelector(selectChannelById(channelId));
+	const getChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
 	const appearanceTheme = useSelector(selectTheme);
 

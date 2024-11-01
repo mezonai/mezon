@@ -8,8 +8,6 @@ import {
 	selectNumberThreadCount,
 	useAppDispatch
 } from '@mezon/store';
-import { ChannelStatusEnum } from '@mezon/utils';
-import { ApiChannelSettingItem } from 'mezon-js/api.gen';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -34,39 +32,6 @@ const ChannelSetting = () => {
 	const handleSearchByNameChannel = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearchFilter(e.target.value);
 	};
-
-	const filterChannel = (channel: ApiChannelSettingItem) => {
-		if (privateFilter && channel.channel_private !== ChannelStatusEnum.isPrivate) {
-			return false;
-		}
-		if (threadFilter && channel.parent_id === '0') {
-			return false;
-		}
-		if (!channel.channel_label?.includes(searchFilter)) {
-			return false;
-		}
-		return true;
-	};
-
-	// const listChannelSetting = useMemo(() => {
-	// 	const listChannelRecord: Record<string, ApiChannelSettingItem[]> = {};
-	// 	listChannel.forEach((channel) => {
-	// 		if (!filterChannel(channel)) {
-	// 			return;
-	// 		}
-	// 		if (listChannelRecord[channel.parent_id as string]) {
-	// 			listChannelRecord[channel.parent_id as string].push(channel);
-	// 			return;
-	// 		}
-	// 		if (channel.parent_id === '0') {
-	// 			listChannelRecord[channel.id as string] = [];
-	// 		} else {
-	// 			listChannelRecord[channel.parent_id as string] = [channel];
-	// 		}
-	// 	});
-
-	// 	return listChannelRecord;
-	// }, [privateFilter, searchFilter, listChannel.length, threadFilter, currentPage, pageSize]);
 
 	useEffect(() => {
 		async function fetchListChannel() {

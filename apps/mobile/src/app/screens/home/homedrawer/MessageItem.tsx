@@ -1,54 +1,28 @@
 /* eslint-disable no-console */
-import {
-	ActionEmitEvent,
-	changeClan,
-	getUpdateOrAddClanChannelCache,
-	ReplyIcon,
-	ReplyMessageDeleted,
-	save,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_PREVIOUS_CHANNEL,
-	validLinkInviteRegex
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, ReplyIcon, ReplyMessageDeleted, validLinkInviteRegex } from '@mezon/mobile-components';
 import { Block, Colors, Text, useTheme } from '@mezon/mobile-ui';
-import {
-	channelsActions,
-	ChannelsEntity,
-	getStoreAsync,
-	messagesActions,
-	MessagesEntity,
-	selectAllAccount,
-	selectAllRolesClan,
-	selectAllUserClans,
-	selectHasInternetMobile,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import { ChannelsEntity, MessagesEntity, messagesActions, seenMessagePool, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
 import { ApiMessageAttachment, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, DeviceEventEmitter, Linking, Pressable, View } from 'react-native';
+import { Animated, DeviceEventEmitter, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { linkGoogleMeet } from '../../../utils/helpers';
 import { MessageAction, RenderTextMarkdownContent } from './components';
 import { EMessageActionType, EMessageBSToShow } from './enums';
 import { style } from './styles';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { useSeenMessagePool } from 'libs/core/src/lib/chat/hooks/useSeenMessagePool';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { selectCurrentChannel, selectCurrentClanId, setSelectedMessage } from '@mezon/store-mobile';
+import { setSelectedMessage } from '@mezon/store-mobile';
 import { ETypeLinkMedia, isValidEmojiData } from '@mezon/utils';
-import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode } from 'mezon-js';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import WelcomeMessage from './WelcomeMessage';
 import { AvatarMessage } from './components/AvatarMessage';
 import { InfoUserMessage } from './components/InfoUserMessage';
 import { MessageAttachment } from './components/MessageAttachment';
 import { MessageReferences } from './components/MessageReferences';
-import { NewMessageRedLine } from './components/NewMessageRedLine';
 import RenderMessageInvite from './components/RenderMessageInvite';
 import { IMessageActionNeedToResolve, IMessageActionPayload } from './types';
-import WelcomeMessage from './WelcomeMessage';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -82,26 +56,18 @@ const MessageItem = React.memo(
 			preventAction = false,
 			channelId = ''
 		} = props;
-		const currentClanId = useSelector(selectCurrentClanId);
-		const currentChannel = useSelector(selectCurrentChannel);
 		const dispatch = useAppDispatch();
 		const { t } = useTranslation('message');
 		const message: MessagesEntity = props?.message;
 		const previousMessage: MessagesEntity = props?.previousMessage;
-		const navigation = useNavigation<any>();
 		const [showHighlightReply, setShowHighlightReply] = useState(false);
 		const { t: contentMessage, lk = [] } = message?.content || {};
 
 		const isInviteLink = useMemo(() => {
 			return Array.isArray(lk) && validLinkInviteRegex.test(contentMessage);
 		}, [contentMessage, lk]);
-
-		const { markMessageAsSeen } = useSeenMessagePool();
 		const userProfile = useSelector(selectAllAccount);
-		const usersClan = useSelector(selectAllUserClans);
-		const rolesInClan = useSelector(selectAllRolesClan);
 		const timeoutRef = useRef<NodeJS.Timeout>(null);
-		const hasInternet = useSelector(selectHasInternetMobile);
 
 		const checkAnonymous = useMemo(() => message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.sender_id]);
 		const checkSystem = useMemo(() => {
@@ -198,10 +164,21 @@ const MessageItem = React.memo(
 		}, [dispatch, message?.id]);
 
 		useEffect(() => {
-			if (props?.messageId) {
-				markMessageAsSeen(message);
+			if (props?.messageId || message?.id) {
+				if (message.isSending || message.isError || message.isErrorRetry) {
+					return;
+				}
+				seenMessagePool.addSeenMessage({
+					clanId: message.clan_id || '',
+					channelId: message.channel_id || '',
+					channelLabel: message.channel_label,
+					messageId: message.id || '',
+					messageCreatedAt: message.create_time_seconds ? +message.create_time_seconds : 0,
+					messageSeenAt: +Date.now(),
+					mode: message.mode as number
+				});
 			}
-		}, [markMessageAsSeen, message, props.messageId]);
+		}, [message, props.messageId]);
 
 		const onLongPressImage = useCallback(() => {
 			if (preventAction) return;
@@ -226,73 +203,15 @@ const MessageItem = React.memo(
 					message
 				});
 			}
-		}, [message, onMessageAction, preventAction, setIsOnlyEmojiPicker]);
+		}, [checkAnonymous, checkSystem, message, onMessageAction, preventAction, setIsOnlyEmojiPicker]);
 
-		const onMention = useCallback(
-			async (mentionedUser: string) => {
-				try {
-					const tagName = mentionedUser?.slice(1);
-					const clanUser = usersClan?.find((userClan) => tagName === userClan?.user?.username);
-					const isRoleMention = rolesInClan?.some((role) => tagName === role?.id);
-					if (!mentionedUser || tagName === 'here' || isRoleMention) return;
-					onMessageAction({
-						type: EMessageBSToShow.UserInformation,
-						user: clanUser?.user
-					});
-				} catch (error) {
-					console.log('error', error);
-				}
-			},
-			[usersClan, rolesInClan, onMessageAction]
-		);
+		const onMention = useCallback(async (mentionedUser: string) => {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_MENTION_USER_MESSAGE_ITEM, mentionedUser);
+		}, []);
 
-		const jumpToChannel = async (channelId: string, clanId: string, channelCateId: string) => {
-			const store = await getStoreAsync();
-			store.dispatch(
-				channelsActions.joinChannel({
-					clanId,
-					channelId,
-					noFetchMembers: false
-				})
-			);
-		};
-
-		const onChannelMention = useCallback(
-			async (channel: ChannelsEntity) => {
-				try {
-					const type = channel?.type;
-					const channelId = channel?.channel_id;
-					const channelCateId = channel?.category_id;
-					const clanId = channel?.clan_id;
-
-					if (type === ChannelType.CHANNEL_TYPE_VOICE && channel?.meeting_code) {
-						const urlVoice = `${linkGoogleMeet}${channel?.meeting_code}`;
-						await Linking.openURL(urlVoice);
-					} else if ([ChannelType.CHANNEL_TYPE_TEXT, ChannelType.CHANNEL_TYPE_STREAMING].includes(type)) {
-						if (type === ChannelType.CHANNEL_TYPE_STREAMING) {
-							navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
-								screen: APP_SCREEN.MENU_CHANNEL.STREAMING_ROOM
-							});
-							save(STORAGE_PREVIOUS_CHANNEL, currentChannel);
-						} else {
-							navigation.navigate(APP_SCREEN.HOME_DEFAULT);
-						}
-						if (currentClanId !== clanId) {
-							changeClan(clanId);
-						}
-						DeviceEventEmitter.emit(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, {
-							isFetchMemberChannelDM: true
-						});
-						const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
-						save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-						await jumpToChannel(channelId, clanId, channelCateId);
-					}
-				} catch (error) {
-					console.log(error);
-				}
-			},
-			[currentChannel, currentClanId, navigation]
-		);
+		const onChannelMention = useCallback(async (channel: ChannelsEntity) => {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, channel);
+		}, []);
 
 		const senderDisplayName = useMemo(() => {
 			if (isDM) {
@@ -432,7 +351,7 @@ const MessageItem = React.memo(
 								createTime={message?.create_time}
 							/>
 							<MessageAttachment message={message} onOpenImage={onOpenImage} onLongPressImage={onLongPressImage} />
-							<Block opacity={message.isError || (message.isSending && !hasInternet) || message?.isErrorRetry ? 0.6 : 1}>
+							<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>
 								{isInviteLink ? (
 									<RenderMessageInvite content={contentMessage} />
 								) : (

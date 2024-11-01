@@ -13,6 +13,7 @@ import { AddStatusUserModal } from '../../components/AddStatusUserModal';
 import { CustomStatusUser } from '../../components/CustomStatusUser';
 import { UserStatus } from '../../components/UserStatus';
 import { useMixImageColor } from '../../hooks/useMixImageColor';
+import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -22,9 +23,10 @@ export enum ETypeCustomUserStatus {
 }
 
 const ProfileScreen = ({ navigation }: { navigation: any }) => {
+	const isTabletLandscape = useTabletLandscape();
 	const user = useAuth();
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
+	const styles = style(themeValue, isTabletLandscape);
 	const { friends: allUser } = useFriends();
 	const { color } = useMixImageColor(user?.userProfile?.user?.avatar_url);
 	const { t } = useTranslation('profile');
@@ -98,7 +100,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							overflow={'hidden'}
 							width={'100%'}
 							height={'100%'}
-							borderRadius={50}
+							borderRadius={isTabletLandscape ? size.s_70 : size.s_50}
 							alignItems={'center'}
 							justifyContent={'center'}
 						>
@@ -108,6 +110,20 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					<UserStatus status={userStatus} customStyles={styles.dotStatusUser} />
 				</TouchableOpacity>
 			</View>
+
+			{isTabletLandscape && (
+				<View style={styles.buttonListLandscape}>
+					<MezonButton viewContainerStyle={styles.button} onPress={() => setIsVisibleAddStatusUserModal(!isVisibleAddStatusUserModal)}>
+						<Icons.ChatIcon height={size.s_20} width={size.s_20} color={'white'} />
+						<Text style={styles.whiteText}>{t('addStatus')}</Text>
+					</MezonButton>
+
+					<MezonButton viewContainerStyle={styles.button} onPress={() => navigateToProfileSetting()}>
+						<Icons.PencilIcon height={size.s_18} width={size.s_18} color={'white'} />
+						<Text style={styles.whiteText}>{t('editStatus')}</Text>
+					</MezonButton>
+				</View>
+			)}
 
 			<ScrollView style={styles.contentWrapper}>
 				<View style={styles.contentContainer}>
@@ -133,17 +149,22 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							</Pressable>
 						</Block>
 					) : null}
-					<View style={styles.buttonList}>
-						<MezonButton viewContainerStyle={styles.button} onPress={() => setIsVisibleAddStatusUserModal(!isVisibleAddStatusUserModal)}>
-							<Icons.ChatIcon height={size.s_20} width={size.s_20} color={'white'} />
-							<Text style={styles.whiteText}>{t('addStatus')}</Text>
-						</MezonButton>
+					{!isTabletLandscape && (
+						<View style={styles.buttonList}>
+							<MezonButton
+								viewContainerStyle={styles.button}
+								onPress={() => setIsVisibleAddStatusUserModal(!isVisibleAddStatusUserModal)}
+							>
+								<Icons.ChatIcon height={size.s_20} width={size.s_20} color={'white'} />
+								<Text style={styles.whiteText}>{t('addStatus')}</Text>
+							</MezonButton>
 
-						<MezonButton viewContainerStyle={styles.button} onPress={() => navigateToProfileSetting()}>
-							<Icons.PencilIcon height={size.s_18} width={size.s_18} color={'white'} />
-							<Text style={styles.whiteText}>{t('editStatus')}</Text>
-						</MezonButton>
-					</View>
+							<MezonButton viewContainerStyle={styles.button} onPress={() => navigateToProfileSetting()}>
+								<Icons.PencilIcon height={size.s_18} width={size.s_18} color={'white'} />
+								<Text style={styles.whiteText}>{t('editStatus')}</Text>
+							</MezonButton>
+						</View>
+					)}
 				</View>
 
 				<View style={styles.contentContainer}>
