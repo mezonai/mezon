@@ -39,7 +39,7 @@ import {
 } from '@mezon/store';
 
 import { Image } from '@mezon/ui';
-import { IClan, ModeResponsive, Platform, TIME_OF_SHOWING_FIRST_POPUP, getPlatform } from '@mezon/utils';
+import { IClan, ModeResponsive, Platform, TIME_OF_SHOWING_FIRST_POPUP, getPlatform, isWindows } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -249,11 +249,13 @@ const SidebarMenu = memo(
 
 		return (
 			<div
-				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
+				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindows ? 'mt-[28px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
 				onClick={() => handleMenu}
 				id="menu"
 			>
-				<div className="top-0 left-0 right-0 flex flex-col h-screen items-center py-4 px-3 overflow-y-auto hide-scrollbar ">
+				<div
+					className={`top-0 left-0 right-0 flex flex-col items-center py-4 px-3 overflow-y-auto hide-scrollbar ${isWindows ? 'max-h-heightTitleBar h-heightTitleBar' : 'h-screen'} `}
+				>
 					<div className="flex flex-col gap-3 ">
 						<SidebarTooltip titleTooltip="Direct Message">
 							<NavLink

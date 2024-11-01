@@ -77,7 +77,10 @@ export default class App {
 			width: width,
 			height: height,
 			show: false,
+      titleBarOverlay: process.platform === 'darwin',
+      // titleBarStyle: 'hidden',
 			webPreferences: {
+				nodeIntegration: false,
 				contextIsolation: true,
 				backgroundThrottling: false,
 				preload: join(__dirname, 'main.preload.js')

@@ -14,6 +14,13 @@ const widthResultSearch = '420px';
 const heightModalSearch = '300px';
 const dmProfileWidth = '340px'
 const iconWidth = '160px';
+const titleBarHeight = '28px';
+const heightMessageViewChat = `calc(100vh - ${topBarHeight} - ${chatBoxHeight})`;
+const heightMessageViewChatMobile = `calc(100vh  - ${chatBoxHeight})`;
+const heightMessageViewChatDM = `calc(100vh - ${topBarHeight})`;
+const heightMessageViewChatThread = `calc(100vh - ${topBarHeight} - ${chatBoxHeightThread})`;
+const heightWithoutTopBar = `calc(100vh - ${topBarHeight})`;
+const heightWithoutTopBarMobile = `calc(100vh)`;
 
 const plugin = require('tailwindcss/plugin');
 
@@ -70,19 +77,27 @@ module.exports = {
         450: '450px',
         "4/5": "80%",
         "9/10": "90%",
+        widthTitleBar: '100%'
       },
       height: {
-        heightMessageViewChat: `calc(100vh - ${topBarHeight} - ${chatBoxHeight})`,
-        heightMessageViewChatMobile: `calc(100vh  - ${chatBoxHeight})`,
-        heightMessageViewChatDM: `calc(100vh - ${topBarHeight})`,
-        heightMessageViewChatThread: `calc(100vh - ${topBarHeight} - ${chatBoxHeightThread})`,
-        heightWithoutTopBar: `calc(100vh - ${topBarHeight})`,
-        heightWithoutTopBarMobile: `calc(100vh)`,
+        heightMessageViewChat: heightMessageViewChat,
+        heightMessageViewChatMobile: heightMessageViewChatMobile,
+        heightMessageViewChatDM: heightMessageViewChatDM,
+        heightMessageViewChatThread: heightMessageViewChatThread,
+        heightWithoutTopBar: heightWithoutTopBar,
+        heightWithoutTopBarMobile: heightWithoutTopBarMobile,
         heightTopBar: topBarHeight,
         heightChatBox: chatBoxHeight,
         heightModalSearch: heightModalSearch,
         heightHeader: "60px",
         "9/10": "90%",
+        heightTitleBar: `calc(100vh - ${titleBarHeight})`,
+        heightTitleBarMessageViewChat: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
+        heightTitleBarMessageViewChatMobile: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
+        heightTitleBarMessageViewChatDM: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
+        heightTitleBarMessageViewChatThread: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
+        heightTitleBarWithoutTopBar: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
+        heightTitleBarWithoutTopBarMobile: `calc(${heightMessageViewChat} - ${titleBarHeight})`
       },
 
       maxWidth: {
@@ -151,37 +166,37 @@ module.exports = {
           },
         },
         scale_up: {
-          '0%':{
+          '0%': {
             opacity: 0.5,
             transform: 'scale(0.2,0.2)'
           },
-          '50%':{
+          '50%': {
             opacity: 1
           },
-          '100%':{
+          '100%': {
             transform: "scale(1,1)"
           }
         },
-        fly_in:{
-          '0%':{
+        fly_in: {
+          '0%': {
             opacity: 0.5,
             transform: 'translateX(20px)'
           },
-          '50%':{
+          '50%': {
             opacity: 1
           },
-          '100%':{
-            transform:  'translateX(0px)'
+          '100%': {
+            transform: 'translateX(0px)'
           }
         },
-        slide_in:{
-          '0%':{
+        slide_in: {
+          '0%': {
             transform: 'translateX(120px)',
-            opacity : 0.7
+            opacity: 0.7
           },
-          '100%':{
-            transform:  'translateX(0px)',
-            opacity : 1
+          '100%': {
+            transform: 'translateX(0px)',
+            opacity: 1
           }
         },
         pulse: {
@@ -202,8 +217,8 @@ module.exports = {
       rotation: 'rotation 6s linear infinite',
       spin: 'spin 1s linear infinite',
       faded_input: 'faded_input 0.05s ease-in-out forwards',
-      scale_up : 'scale_up 0.15s ease-in-out forwards',
-      fly_in : 'fly_in 0.2s ease-in-out forwards',
+      scale_up: 'scale_up 0.15s ease-in-out forwards',
+      fly_in: 'fly_in 0.2s ease-in-out forwards',
       slide_in: 'slide_in 0.5s ease-in-out forwards',
       pulse: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
     },

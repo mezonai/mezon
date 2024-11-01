@@ -1,16 +1,17 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
 import {
-	differenceInDays,
-	differenceInHours,
-	differenceInMonths,
-	differenceInSeconds,
-	format,
-	formatDistanceToNowStrict,
-	fromUnixTime,
-	isSameDay,
-	startOfDay,
-	subDays
+  differenceInDays,
+  differenceInHours,
+  differenceInMonths,
+  differenceInSeconds,
+  format,
+  formatDistanceToNowStrict,
+  fromUnixTime,
+  isSameDay,
+  startOfDay,
+  subDays
 } from 'date-fns';
+import isElectron from 'is-electron';
 import { Client, Session } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
 import { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
@@ -18,26 +19,26 @@ import { RefObject } from 'react';
 import Resizer from 'react-image-file-resizer';
 import { EVERYONE_ROLE_ID, ID_MENTION_HERE, TIME_COMBINE } from '../constant';
 import {
-	ChannelMembersEntity,
-	EBacktickType,
-	EMimeTypes,
-	ETokenMessage,
-	EmojiDataOptionals,
-	IChannel,
-	IEmojiOnMessage,
-	IExtendedMessage,
-	IHashtagOnMessage,
-	ILinkOnMessage,
-	ILinkVoiceRoomOnMessage,
-	IMarkdownOnMessage,
-	IMentionOnMessage,
-	IMessageSendPayload,
-	IMessageWithUser,
-	IRolesClan,
-	MentionDataProps,
-	NotificationEntity,
-	SearchItemProps,
-	SenderInfoOptionals
+  ChannelMembersEntity,
+  EBacktickType,
+  EMimeTypes,
+  ETokenMessage,
+  EmojiDataOptionals,
+  IChannel,
+  IEmojiOnMessage,
+  IExtendedMessage,
+  IHashtagOnMessage,
+  ILinkOnMessage,
+  ILinkVoiceRoomOnMessage,
+  IMarkdownOnMessage,
+  IMentionOnMessage,
+  IMessageSendPayload,
+  IMessageWithUser,
+  IRolesClan,
+  MentionDataProps,
+  NotificationEntity,
+  SearchItemProps,
+  SenderInfoOptionals
 } from '../types';
 export * from './file';
 export * from './mergeRefs';
@@ -882,3 +883,6 @@ export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => 
 export const checkIsThread = (channel?: IChannel) => {
 	return channel?.parrent_id !== '0' && channel?.parrent_id !== '';
 };
+
+// export const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+export const isWindows = navigator.platform.toUpperCase().indexOf('WIN') >= 0 && isElectron();
