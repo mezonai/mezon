@@ -249,7 +249,7 @@ const SidebarMenu = memo(
 
 		return (
 			<div
-				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindows ? 'mt-[28px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
+				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindows ? 'mt-[21px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
 				onClick={() => handleMenu}
 				id="menu"
 			>

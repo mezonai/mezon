@@ -77,8 +77,8 @@ export default class App {
 			width: width,
 			height: height,
 			show: false,
-      titleBarOverlay: process.platform === 'darwin',
-      // titleBarStyle: 'hidden',
+			frame: false,
+			titleBarOverlay: process.platform === 'darwin',
 			webPreferences: {
 				nodeIntegration: false,
 				contextIsolation: true,
@@ -345,15 +345,15 @@ export default class App {
 					{ role: 'paste' },
 					...(isMac
 						? ([
-								{ role: 'pasteAndMatchStyle' },
-								{ role: 'delete' },
-								{ role: 'selectAll' },
-								{ type: 'separator' },
-								{
-									label: 'Speech',
-									submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-								}
-							] as MenuItemConstructorOptions[])
+							{ role: 'pasteAndMatchStyle' },
+							{ role: 'delete' },
+							{ role: 'selectAll' },
+							{ type: 'separator' },
+							{
+								label: 'Speech',
+								submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+							}
+						] as MenuItemConstructorOptions[])
 						: ([{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }] as MenuItemConstructorOptions[]))
 				]
 			},

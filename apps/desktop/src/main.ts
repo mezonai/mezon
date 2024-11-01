@@ -65,11 +65,11 @@ ipcMain.on('TITLE_BAR_ACTION', (event, action, data) => {
 				App.mainWindow.close();
 			}
 			break;
-    case 'DRAG_WINDOW':
-      const { deltaX, deltaY } = data;
-      const currentPosition = App.mainWindow.getPosition();
-      App.mainWindow.setPosition(currentPosition[0] + deltaX, currentPosition[1] + deltaY);
-      break;
+		case 'DRAG_WINDOW':
+			const { deltaX, deltaY } = data;
+			const currentPosition = App.mainWindow.getPosition();
+			App.mainWindow.setPosition(currentPosition[0] + deltaX, currentPosition[1] + deltaY);
+			break;
 	}
 });
 autoUpdater.autoDownload = false;

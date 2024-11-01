@@ -30,6 +30,10 @@ const TitleBar = () => {
 		setStartPos({ x: event.clientX, y: event.clientY });
 	};
 
+	const handleDoubleClick = () => {
+		handleMaximize();
+	};
+
 	const handleMouseUp = () => {
 		setIsDragging(false);
 	};
@@ -59,9 +63,11 @@ const TitleBar = () => {
 	}, [isDragging]);
 
 	return (
-		<header id="titlebar" className={`dark:bg-bgTertiary bg-bgLightTertiary`} onMouseDown={handleMouseDown}>
+		<header id="titlebar" className={`dark:bg-bgTertiary bg-bgLightTertiary`}
+			onMouseDown={handleMouseDown}
+			onDoubleClick={handleDoubleClick}>
 			<div id="drag-region">
-				<div className="dark:text-white text-colorTextLightMode ml-3 text-[16.15px] leading-[26.58px] font-semibold text-[#FFFFFF]">
+				<div className="dark:text-white text-colorTextLightMode ml-3 text-[15.15px] leading-[26.58px] font-semibold text-[#FFFFFF]">
 					Mezon
 				</div>
 				<div id="window-controls">
@@ -71,7 +77,7 @@ const TitleBar = () => {
 						onClick={handleMinimize}
 					>
 						<div className="w-fit flex flex-col items-center gap-2 text-bgPrimary dark:text-[#a8a6a6] group">
-							<Icons.WindowMinimize className="w-3" />
+							<Icons.WindowMinimize className="w-[10px]" />
 						</div>
 					</div>
 					<div
@@ -80,7 +86,7 @@ const TitleBar = () => {
 						onClick={handleMaximize}
 					>
 						<div className="w-fit flex flex-col items-center gap-2 text-bgPrimary dark:text-[#a8a6a6] group">
-							<Icons.WindowZoom className="w-3" />
+							<Icons.WindowZoom className="w-[10px]" />
 						</div>
 					</div>
 					<div
@@ -89,7 +95,7 @@ const TitleBar = () => {
 						onClick={handleClose}
 					>
 						<div className="w-fit flex flex-col items-center gap-2 text-bgPrimary dark:text-[#a8a6a6] group">
-							<Icons.CloseButton className="w-4" />
+							<Icons.CloseButton className="w-[14px]" />
 						</div>
 					</div>
 				</div>
