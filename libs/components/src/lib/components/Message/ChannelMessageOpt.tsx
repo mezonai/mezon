@@ -40,7 +40,6 @@ const ChannelMessageOpt = ({ message, handleContextMenu, isCombine }: ChannelMes
 	const replyMenu = useMenuReplyMenuBuilder(message);
 	const editMenu = useEditMenuBuilder(message);
 	const reactMenu = useReactMenuBuilder(message);
-	const recentEmoji = useRecentEmojiBuilder(message);
 	const threadMenu = useThreadMenuBuilder(message, checkHiddenIconThread);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message);
@@ -50,7 +49,7 @@ const ChannelMessageOpt = ({ message, handleContextMenu, isCombine }: ChannelMes
 		<div className={`chooseForText z-[1] absolute h-8 p-0.5 rounded block ${!isCombine ? 'top-0' : '-top-7'}  right-6 w-fit`}>
 			<div className="flex justify-between dark:bg-bgDarkPopover bg-bgLightMode border border-bgSecondary rounded">
 				<div className="w-fit h-full flex items-center justify-between" ref={refOpt}>
-					{recentEmoji}
+					<RecentEmoji message={message} />
 					{items
 						.filter((item) => {
 							return currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || item.id !== EMessageOpt.THREAD;
@@ -72,7 +71,11 @@ const ChannelMessageOpt = ({ message, handleContextMenu, isCombine }: ChannelMes
 
 export default memo(ChannelMessageOpt);
 
-function useRecentEmojiBuilder(message: IMessageWithUser) {
+interface RecentEmojiProps {
+	message: IMessageWithUser;
+}
+
+const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
 	const { emojiConverted } = useEmojiSuggestion();
 
 	const emojiRecentData = useMemo(() => {
@@ -91,7 +94,7 @@ function useRecentEmojiBuilder(message: IMessageWithUser) {
 			)}
 		</div>
 	);
-}
+};
 
 function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	const dispatch = useAppDispatch();
