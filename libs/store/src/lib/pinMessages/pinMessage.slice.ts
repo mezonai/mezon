@@ -1,4 +1,4 @@
-import { IPinMessage, LoadingStatus } from '@mezon/utils';
+import { IPinMessage, LoadingStatus, TypeMessage } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
 import { ChannelMessage } from 'mezon-js';
@@ -97,7 +97,7 @@ export const setChannelPinMessage = createAsyncThunk(
 			id: response.id ?? '',
 			channel_id: channel_id,
 			channel_label: '',
-			code: 0,
+			code: TypeMessage.CreatePin,
 			content: content ?? '',
 			create_time: response.timestamp_seconds ? new Date(response.timestamp_seconds * 1000).toISOString() : '',
 			mentions: mentions ?? [],

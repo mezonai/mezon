@@ -3,6 +3,7 @@ import { MessagesEntity, selectJumpPinMessageId, selectMemberClanByUserId, useAp
 import {
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
+	TypeMessage,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
 	convertDateString,
@@ -96,7 +97,7 @@ function MessageWithUser({
 		return includesUser || includesRole;
 	})();
 
-	const checkMessageHasReply = !!message.references?.length;
+	const checkMessageHasReply = !!message.references?.length && message.code == TypeMessage.Chat;
 
 	const checkMessageIncludeMention = hasIncludeMention;
 
@@ -209,6 +210,8 @@ function MessageWithUser({
 		);
 	}, [message]);
 
+	const isMessageSystem = message.code == TypeMessage.Welcome || message.code == TypeMessage.CreateThread || message.code == TypeMessage.CreatePin;
+
 	return (
 		<>
 			{showDivider && <MessageDateDivider message={message} />}
@@ -216,8 +219,8 @@ function MessageWithUser({
 				<HoverStateWrapper popup={popup}>
 					<div className={containerClass} onContextMenu={onContextMenu} id={`msg-${message.id}`}>
 						<div className="relative rounded-sm overflow-visible">
-							<div className={childDivClass}></div>
-							<div className={parentDivClass}>
+							<div className={!isMessageSystem ? childDivClass : ''}></div>
+							<div className={!isMessageSystem ? parentDivClass : ''}>
 								{checkMessageHasReply && (
 									<MessageReply
 										message={message}

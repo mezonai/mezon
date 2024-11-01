@@ -8,6 +8,7 @@ import {
 	IMessageWithUser,
 	LIMIT_MESSAGE,
 	LoadingStatus,
+	TypeMessage,
 	checkContinuousMessagesByCreateTimeMs,
 	checkSameDayByCreateTime,
 	getMobileUploadedAttachments,
@@ -71,6 +72,7 @@ export interface MessagesEntity extends IMessageWithUser {
 	isStartedMessageGroup?: boolean;
 	isStartedMessageOfTheDay?: boolean;
 	hide_editted?: boolean;
+	code: number;
 }
 
 export interface UserTypingState {
@@ -701,6 +703,9 @@ export const messagesSlice = createSlice({
 			}
 			const channelEntity = state.channelMessages[channelId];
 			switch (code) {
+				case TypeMessage.Welcome:
+				case TypeMessage.CreateThread:
+				case TypeMessage.CreatePin:
 				case 0: {
 					handleAddOneMessage({ state, channelId, adapterPayload: action.payload });
 

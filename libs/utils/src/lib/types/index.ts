@@ -193,6 +193,7 @@ export type IMessage = ChannelMessage & {
 	isFirst?: boolean;
 	hide_editted?: boolean;
 	isErrorRetry?: boolean;
+	code?: number;
 };
 
 export type SearchMessage = ApiSearchMessageDocument & {
@@ -884,4 +885,15 @@ export enum ActivitiesName {
 	CODE = 'Code',
 	SPOTIFY = 'Spotify',
 	LOL = 'Riot Client'
+}
+
+export enum TypeMessage {
+	Chat = 0,
+	ChatUpdate = 1,
+	ChatRemove = 2,
+	Typing = 3,
+	Indicator = 4,
+	Welcome = 5,
+	CreateThread = 6,
+	CreatePin = 7
 }
