@@ -992,11 +992,12 @@ input:-webkit-autofill:active {
   right: 0;
   height: 21px;
   width: 100%;
+  -webkit-app-region: drag;
 }
 
 #window-controls {
   display: grid;
-  grid-template-columns: repeat(3, 46px);
+  grid-template-columns: repeat(3, 27px);
   position: absolute;
   top: 0;
   right: 0;
@@ -1010,6 +1011,7 @@ input:-webkit-autofill:active {
   align-items: center;
   width: 100%;
   height: 100%;
+  -webkit-app-region: no-drag;
 }
 
 #min-button {

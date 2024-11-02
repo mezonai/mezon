@@ -5671,8 +5671,8 @@ export function ShadowBotIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function WindowMinimize(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="" {...props} {...props}>
-			<path d="M32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l448 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 416z" fill="currentColor" />
+		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="" {...props} {...props}>
+			<path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 		</svg>
 	);
 }

@@ -44,11 +44,21 @@ ipcMain.on(NAVIGATE_TO_URL, async (event, path, isSubPath) => {
 		App.mainWindow.focus();
 	}
 });
+
 ipcMain.on('TITLE_BAR_ACTION', (event, action, data) => {
 	switch (action) {
 		case 'MINIMIZE_WINDOW':
 			if (App.mainWindow) {
 				App.mainWindow.minimize();
+			}
+			break;
+		case 'UNMAXIMIZE_WINDOW':
+			if (App.mainWindow) {
+				if (App.mainWindow.isMaximized()) {
+					App.mainWindow.unmaximize();
+				} else {
+					App.mainWindow.maximize();
+				}
 			}
 			break;
 		case 'MAXIMIZE_WINDOW':
@@ -64,11 +74,6 @@ ipcMain.on('TITLE_BAR_ACTION', (event, action, data) => {
 			if (App.mainWindow) {
 				App.mainWindow.close();
 			}
-			break;
-		case 'DRAG_WINDOW':
-			const { deltaX, deltaY } = data;
-			const currentPosition = App.mainWindow.getPosition();
-			App.mainWindow.setPosition(currentPosition[0] + deltaX, currentPosition[1] + deltaY);
 			break;
 	}
 });
