@@ -1,4 +1,5 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
+import { getPlatform, Platform } from '@mezon/utils';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -22,8 +23,8 @@ import {
 	ChannelMembersEntity,
 	EBacktickType,
 	EMimeTypes,
-	ETokenMessage,
 	EmojiDataOptionals,
+	ETokenMessage,
 	IChannel,
 	IEmojiOnMessage,
 	IExtendedMessage,
@@ -40,7 +41,6 @@ import {
 	SearchItemProps,
 	SenderInfoOptionals
 } from '../types';
-import { getPlatform } from './index';
 export * from './file';
 export * from './mergeRefs';
 export * from './transform';
