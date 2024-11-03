@@ -25,7 +25,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import { EOverriddenPermission, SubPanelName, TIME_OFFSET, isWindows } from '@mezon/utils';
+import { EOverriddenPermission, SubPanelName, TIME_OFFSET, isWindowsDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { DragEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -205,7 +205,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							className={`flex flex-col flex-1 min-w-60 ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && 'hidden'} z-10`}
 						>
 							<div
-								className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindows ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindows ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}
+								className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindowsDesktop ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindowsDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}
 								ref={messagesContainerRef}
 							>
 								<ChannelMedia currentChannel={currentChannel} key={currentChannel?.channel_id} />

@@ -1,4 +1,5 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
+import { getPlatform, Platform } from '@mezon/utils';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -22,8 +23,8 @@ import {
 	ChannelMembersEntity,
 	EBacktickType,
 	EMimeTypes,
-	ETokenMessage,
 	EmojiDataOptionals,
+	ETokenMessage,
 	IChannel,
 	IEmojiOnMessage,
 	IExtendedMessage,
@@ -884,4 +885,4 @@ export const checkIsThread = (channel?: IChannel) => {
 	return channel?.parrent_id !== '0' && channel?.parrent_id !== '';
 };
 
-export const isWindows = navigator.platform.toUpperCase().indexOf('WIN') >= 0 && isElectron();
+export const isWindowsDesktop = getPlatform() == Platform.WINDOWS && isElectron();

@@ -1,6 +1,6 @@
 import { DmTopbar } from '@mezon/components';
 import { useAppNavigation, useAppParams } from '@mezon/core';
-import { isWindows } from '@mezon/utils';
+import { isWindowsDesktop } from '@mezon/utils';
 import { useEffect } from 'react';
 import ChannelMessages from '../../channel/ChannelMessages';
 
@@ -20,7 +20,7 @@ export default function DirectMessageIndex() {
 			<div className="flex flex-row ">
 				<div className="flex flex-col flex-1">
 					<div
-						className={`overflow-y-auto bg-bgSecondary  max-h-heightMessageViewChat ${isWindows ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'} max-h-heightTitleBar`}
+						className={`overflow-y-auto bg-bgSecondary  max-h-heightMessageViewChat ${isWindowsDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'} max-h-heightTitleBar`}
 					>
 						<ChannelMessages.Skeleton />
 					</div>

@@ -14,7 +14,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { IMessageSendPayload, ThreadValue, isWindows } from '@mezon/utils';
+import { IMessageSendPayload, ThreadValue, isWindowsDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
@@ -122,7 +122,7 @@ const ThreadBox = () => {
 			<div>
 				{threadCurrentChannel && (
 					<div
-						className={`overflow-y-auto bg-[#1E1E1E] max-w-widthMessageViewChat overflow-x-hidden max-h-heightMessageViewChatThread ${isWindows ? 'h-heightTitleBarMessageViewChatThread' : 'h-heightMessageViewChatThread'}"`}
+						className={`overflow-y-auto bg-[#1E1E1E] max-w-widthMessageViewChat overflow-x-hidden max-h-heightMessageViewChatThread ${isWindowsDesktop ? 'h-heightTitleBarMessageViewChatThread' : 'h-heightMessageViewChatThread'}"`}
 					>
 						<ChannelMessages
 							isThreadBox={true}

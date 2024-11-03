@@ -1,7 +1,7 @@
 import { ClanHeader, DirectMessageList, FooterProfile, StreamInfo } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import { clansActions, selectCloseMenu, selectStatusMenu, selectStatusStream } from '@mezon/store';
-import { isWindows } from '@mezon/utils';
+import { isWindowsDesktop } from '@mezon/utils';
 import { memo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Setting from '../setting';
@@ -25,7 +25,7 @@ const Direct = () => {
 	return (
 		<>
 			<div
-				className={`flex-col  flex w-[272px] dark:bg-bgSecondary bg-bgLightMode relative min-w-widthMenuMobile ${isWindows ? 'max-h-heightTitleBar h-heightTitleBar' : ''} sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
+				className={`flex-col  flex w-[272px] dark:bg-bgSecondary bg-bgLightMode relative min-w-widthMenuMobile ${isWindowsDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
 			>
 				<ClanHeader type={'direct'} />
 				<DirectMessageList />

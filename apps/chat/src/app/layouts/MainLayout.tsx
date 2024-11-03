@@ -3,7 +3,7 @@ import { gifsStickerEmojiActions, reactionActions, selectAnyUnreadChannel, selec
 
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
 import { MezonSuspense } from '@mezon/transport';
-import { SubPanelName, electronBridge, isWindows } from '@mezon/utils';
+import { SubPanelName, electronBridge, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
 import { useContext, useEffect } from 'react';
@@ -76,7 +76,7 @@ const MainLayout = () => {
 	return (
 		<div
 			id="main-layout"
-			className={`${isWindows ? 'mt-[21px]' : ''}`}
+			className={`${isWindowsDesktop ? 'mt-[21px]' : ''}`}
 			onClick={handleClickingOutside}
 			onContextMenu={(event: React.MouseEvent) => {
 				event.preventDefault();
