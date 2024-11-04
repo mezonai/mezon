@@ -45,7 +45,7 @@ import {
 	Platform,
 	TIME_OF_SHOWING_FIRST_POPUP,
 	getPlatform,
-	isLinusDesktop,
+	isLinuxDesktop,
 	isMacDesktop,
 	isWindowsDesktop
 } from '@mezon/utils';
@@ -258,7 +258,7 @@ const SidebarMenu = memo(
 
 		return (
 			<div
-				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindowsDesktop ? 'mt-[21px]' : ''} ${isMacDesktop || isLinusDesktop ? 'mt-[15px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
+				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindowsDesktop ? 'mt-[21px]' : ''} ${isMacDesktop || isLinuxDesktop ? 'pt-[18px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
 				onClick={() => handleMenu}
 				id="menu"
 			>
