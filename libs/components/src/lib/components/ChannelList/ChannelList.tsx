@@ -241,10 +241,11 @@ type FavoriteChannelProps = {
 const FavoriteChannel = ({ channelId, channelRef }: FavoriteChannelProps) => {
 	const channel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const theme = useSelector(selectTheme);
+	const dispatch = useAppDispatch();
 	const { navigate, toChannelPage } = useAppNavigation();
 	const handleJumpChannel = (id: string, clanId: string) => {
 		if (channelRef) {
-			channelRef.scrollIntoChannel();
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
 		}
 		navigate(toChannelPage(id, clanId));
 	};

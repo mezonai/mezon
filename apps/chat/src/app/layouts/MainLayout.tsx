@@ -76,7 +76,7 @@ const MainLayout = () => {
 	return (
 		<div
 			id="main-layout"
-			className={`${isWindowsDesktop ? 'mt-[21px]' : ''}`}
+			className={`${isWindowsDesktop ? 'top-[21px]' : ''} w-full fixed`}
 			onClick={handleClickingOutside}
 			onContextMenu={(event: React.MouseEvent) => {
 				event.preventDefault();
