@@ -159,7 +159,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 
 	const handleSave = () => {
 		if (draftContent === '') {
-			// textareaRef.current?.blur();
+			textareaRef.current?.blur();
 			return showModal();
 		} else if (draftContent !== '' && draftContent === originalContent) {
 			return handleCancelEdit();
