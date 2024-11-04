@@ -25,10 +25,10 @@ export function ChannelTyping({ channelId, mode, isPublic, isDM }: ChannelTyping
 				</>
 			);
 		}
-		// if (typingUsers.length > 1) {
-		return 'Several people are typing...';
-		// }
-		// return '';
+		if (typingUsers.length > 1) {
+			return 'Several people are typing...';
+		}
+		return '';
 	}, [typingUsers]);
 
 	return <div className="text-xs dark:text-bgIconDark text-textPrimaryLight absolute bottom-0 left-4 pl-4 cursor-default">{typingLabel}</div>;
