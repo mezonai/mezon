@@ -1,15 +1,16 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
+import { getPlatform, Platform } from '@mezon/utils';
 import {
-	differenceInDays,
-	differenceInHours,
-	differenceInMonths,
-	differenceInSeconds,
-	format,
-	formatDistanceToNowStrict,
-	fromUnixTime,
-	isSameDay,
-	startOfDay,
-	subDays
+  differenceInDays,
+  differenceInHours,
+  differenceInMonths,
+  differenceInSeconds,
+  format,
+  formatDistanceToNowStrict,
+  fromUnixTime,
+  isSameDay,
+  startOfDay,
+  subDays
 } from 'date-fns';
 import isElectron from 'is-electron';
 import { Client, Session } from 'mezon-js';
@@ -19,28 +20,27 @@ import { RefObject } from 'react';
 import Resizer from 'react-image-file-resizer';
 import { EVERYONE_ROLE_ID, ID_MENTION_HERE, TIME_COMBINE } from '../constant';
 import {
-	ChannelMembersEntity,
-	EBacktickType,
-	EMimeTypes,
-	ETokenMessage,
-	EmojiDataOptionals,
-	IChannel,
-	IEmojiOnMessage,
-	IExtendedMessage,
-	IHashtagOnMessage,
-	ILinkOnMessage,
-	ILinkVoiceRoomOnMessage,
-	IMarkdownOnMessage,
-	IMentionOnMessage,
-	IMessageSendPayload,
-	IMessageWithUser,
-	IRolesClan,
-	MentionDataProps,
-	NotificationEntity,
-	SearchItemProps,
-	SenderInfoOptionals
+  ChannelMembersEntity,
+  EBacktickType,
+  EMimeTypes,
+  EmojiDataOptionals,
+  ETokenMessage,
+  IChannel,
+  IEmojiOnMessage,
+  IExtendedMessage,
+  IHashtagOnMessage,
+  ILinkOnMessage,
+  ILinkVoiceRoomOnMessage,
+  IMarkdownOnMessage,
+  IMentionOnMessage,
+  IMessageSendPayload,
+  IMessageWithUser,
+  IRolesClan,
+  MentionDataProps,
+  NotificationEntity,
+  SearchItemProps,
+  SenderInfoOptionals
 } from '../types';
-import { getPlatform } from './index';
 export * from './file';
 export * from './mergeRefs';
 export * from './transform';
