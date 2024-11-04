@@ -80,28 +80,3 @@ export enum LogType {
 }
 
 clearLogsIfNewDay();
-
-// use in devtool: get log by key
-// async function getDataByKey(key) {
-// 	try {
-// 		const dbOpenRequest = await new Promise((resolve, reject) => {
-// 			const request = window.indexedDB.open('logDB', 4);
-// 			request.onsuccess = () => resolve(request.result);
-// 			request.onerror = () => reject(request.error);
-// 		});
-
-// 		const transaction = dbOpenRequest.transaction(['logs'], 'readonly');
-// 		const objectStore = transaction.objectStore('logs');
-// 		const myRecord = await new Promise((resolve, reject) => {
-// 			const objectStoreRequest = objectStore.get(key);
-// 			objectStoreRequest.onsuccess = () => resolve(objectStoreRequest.result);
-// 			objectStoreRequest.onerror = () => reject(objectStoreRequest.error);
-// 		});
-// 		// console.log(myRecord);
-// 	} catch (error) {
-// 		console.error('Error accessing the database:', error);
-// 	}
-// }
-
-// Example usage
-// getDataByKey(102);
