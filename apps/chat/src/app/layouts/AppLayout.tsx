@@ -107,7 +107,7 @@ const AppLayout = () => {
 
 	return (
 		<MezonUiProvider themeName={theme}>
-			<div id="app-layout" className={`${isWindowsDesktop ? 'overflow-y-hidden' : ''}`}>
+			<div id="app-layout">
 				{isWindowsDesktop && <TitleBar />}
 				<ToastController />
 				<Outlet />
