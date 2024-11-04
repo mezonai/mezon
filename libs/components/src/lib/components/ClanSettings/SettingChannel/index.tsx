@@ -21,9 +21,10 @@ type ListChannelSettingProp = {
 	listChannel: ApiChannelSettingItem[];
 	clanId: string;
 	countChannel?: number;
+	searchFilter?: string;
 };
 
-const ListChannelSetting = ({ listChannel, clanId, countChannel }: ListChannelSettingProp) => {
+const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }: ListChannelSettingProp) => {
 	const parentRef = useRef(null);
 	const dispatch = useAppDispatch();
 
@@ -80,6 +81,7 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel }: ListChannelSe
 						clanId={clanId}
 						currentPage={currentPage}
 						pageSize={pageSize}
+						searchFilter={searchFilter}
 					/>
 				))}
 				<div className="flex flex-row justify-between items-center px-4 h-[54px] border-t-[1px] dark:border-borderDivider border-buttonLightTertiary mt-0">
@@ -132,9 +134,10 @@ interface IRenderChannelAndThread {
 	clanId: string;
 	currentPage: number;
 	pageSize: number;
+	searchFilter?: string;
 }
 
-const RenderChannelAndThread = ({ channelParrent, clanId, currentPage, pageSize }: IRenderChannelAndThread) => {
+const RenderChannelAndThread = ({ channelParrent, clanId, currentPage, pageSize, searchFilter }: IRenderChannelAndThread) => {
 	const dispatch = useAppDispatch();
 	const threadsList = useSelector(selectThreadsListByParentId(channelParrent.id as string));
 
@@ -177,7 +180,7 @@ const RenderChannelAndThread = ({ channelParrent, clanId, currentPage, pageSize 
 					messageCount={channelParrent?.message_count || 0}
 					lastMessage={channelParrent?.last_sent_message}
 				/>
-				{!isVoiceChannel && (
+				{!isVoiceChannel && !searchFilter && (
 					<div
 						onClick={toggleThreadsList}
 						className={`absolute top-4 right-2 cursor-pointer transition duration-100 ease-in-out ${showThreadsList ? '' : '-rotate-90'}`}
@@ -186,7 +189,7 @@ const RenderChannelAndThread = ({ channelParrent, clanId, currentPage, pageSize 
 					</div>
 				)}
 			</div>
-			{showThreadsList && (
+			{showThreadsList && !searchFilter && (
 				<div className="flex flex-col pl-8">
 					{threadsList?.length > 0 ? (
 						threadsList?.map((thread) => (

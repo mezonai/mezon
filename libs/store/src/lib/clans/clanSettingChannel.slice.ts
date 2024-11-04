@@ -15,6 +15,7 @@ export interface SettingClanChannelState extends EntityState<ApiChannelSettingIt
 	channelCount: number;
 	threadCount: number;
 	threadsByChannel: Record<string, ApiChannelSettingItem[]>;
+	listSearchChannel: ApiChannelSettingItem[];
 }
 
 export const channelSettingAdapter = createEntityAdapter({
@@ -26,17 +27,19 @@ export const initialSettingClanChannelState: SettingClanChannelState = channelSe
 	error: null,
 	channelCount: 0,
 	threadCount: 0,
-	threadsByChannel: {}
+	threadsByChannel: {},
+	listSearchChannel: []
 });
 
 export enum ETypeFetchChannelSetting {
 	FETCH_CHANNEL = 'FETCH_CHANNEL',
 	MORE_CHANNEL = 'MORE_CHANNEL',
-	FETCH_THREAD = 'FETCH_THREAD'
+	FETCH_THREAD = 'FETCH_THREAD',
+	SEARCH_CHANNEL = 'SEARCH_CHANNEL'
 }
 
 export const fetchChannelSettingInClanCached = memoizeAndTrack(
-	async (mezon: MezonValueContext, clanId: string, parentId: string, page: number, limit: number) => {
+	async (mezon: MezonValueContext, clanId: string, parentId: string, page: number, limit: number, channel_label: string) => {
 		const response = await mezon.client.getChannelSettingInClan(
 			mezon.session,
 			clanId,
@@ -47,7 +50,8 @@ export const fetchChannelSettingInClanCached = memoizeAndTrack(
 			undefined, // status
 			undefined, // type
 			limit, // limit
-			page // page
+			page,
+			channel_label // keyword search
 		);
 		return response;
 	},
@@ -55,7 +59,7 @@ export const fetchChannelSettingInClanCached = memoizeAndTrack(
 		promise: true,
 		maxAge: CHANNEL_SETTING_CLAN_CACHE_TIME,
 		normalizer: (args) => {
-			return args[4] + args[3] + args[1] + args[2] + args[0]?.session?.username || '';
+			return args[5] + args[4] + args[3] + args[1] + args[2] + args[0]?.session?.username || '';
 		}
 	}
 );
@@ -67,18 +71,19 @@ interface IFetchChannelSetting {
 	page?: number;
 	limit?: number;
 	typeFetch: ETypeFetchChannelSetting;
+	keyword?: string;
 }
 
 export const fetchChannelSettingInClan = createAsyncThunk(
 	'channelSetting/fetchClanChannelSetting',
-	async ({ noCache = false, clanId, parentId, page = 1, limit = 10, typeFetch }: IFetchChannelSetting, thunkAPI) => {
+	async ({ noCache = false, clanId, parentId, page = 1, limit = 10, typeFetch, keyword }: IFetchChannelSetting, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
 				fetchChannelSettingInClanCached.clear();
 			}
 
-			const response = await fetchChannelSettingInClanCached(mezon, clanId, parentId, page, limit);
+			const response = await fetchChannelSettingInClanCached(mezon, clanId, parentId, page, limit, keyword || '');
 			if (response) {
 				return {
 					parentId: parentId,
@@ -111,6 +116,9 @@ export const settingClanChannelSlice = createSlice({
 					case ETypeFetchChannelSetting.FETCH_THREAD:
 						state.threadsByChannel[actions.payload.parentId] = actions.payload.response.channel_setting_list || [];
 						break;
+					case ETypeFetchChannelSetting.SEARCH_CHANNEL:
+						state.listSearchChannel = actions.payload.response.channel_setting_list || [];
+						break;
 					default:
 						channelSettingAdapter.setAll(state, actions.payload.response.channel_setting_list || []);
 				}
@@ -142,3 +150,5 @@ export const selectThreadsListByParentId = (parentId: string) => createSelector(
 export const settingChannelReducer = settingClanChannelSlice.reducer;
 export const selectNumberChannelCount = createSelector(getChannelSettingState, (state) => state.channelCount);
 export const selectNumberThreadCount = createSelector(getChannelSettingState, (state) => state.threadCount);
+
+export const selectListChannelBySearch = createSelector(getChannelSettingState, (state) => state.listSearchChannel);

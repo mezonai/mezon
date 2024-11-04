@@ -4,39 +4,44 @@ import {
 	channelSettingActions,
 	selectAllChannelSuggestion,
 	selectCurrentClanId,
+	selectListChannelBySearch,
 	selectNumberChannelCount,
-	selectNumberThreadCount,
 	useAppDispatch
 } from '@mezon/store';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useDebouncedCallback } from 'use-debounce';
 
 const ChannelSetting = () => {
-	const [privateFilter, setPrivateFilter] = useState(false);
-	const [threadFilter, setThreadFilter] = useState(false);
-
 	const [searchFilter, setSearchFilter] = useState('');
 	const listChannel = useSelector(selectAllChannelSuggestion);
+	const listChannelSearch = useSelector(selectListChannelBySearch);
 	const countChannel = useSelector(selectNumberChannelCount);
-	const countThread = useSelector(selectNumberThreadCount);
-
 	const dispatch = useAppDispatch();
 	const selectClanId = useSelector(selectCurrentClanId);
 
-	const handleFilterPrivateChannel = (e: ChangeEvent<HTMLInputElement>) => {
-		setPrivateFilter(e.target.checked);
-	};
-	const handleFilterThread = (e: ChangeEvent<HTMLInputElement>) => {
-		setThreadFilter(e.target.checked);
-	};
 	const handleSearchByNameChannel = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearchFilter(e.target.value);
-		// debouncedSearchChannel(e.target.value);
+		debouncedSearchChannel(e.target.value);
 	};
 
-	// const debouncedSearchChannel = useDebouncedCallback(async (value: string) => {
+	const debouncedSearchChannel = useDebouncedCallback(async (value: string) => {
+		await dispatch(
+			channelSettingActions.fetchChannelSettingInClan({
+				clanId: selectClanId as string,
+				parentId: '',
+				typeFetch: ETypeFetchChannelSetting.SEARCH_CHANNEL,
+				keyword: value
+			})
+		);
+	}, 300);
 
-	// }, 300);
+	const listChannelBySearch = useMemo(() => {
+		if (searchFilter) {
+			return listChannelSearch;
+		}
+		return listChannel;
+	}, [listChannelSearch, listChannel]);
 
 	useEffect(() => {
 		async function fetchListChannel() {
@@ -64,7 +69,12 @@ const ChannelSetting = () => {
 					/>
 				</div>
 			</div>
-			<ListChannelSetting listChannel={listChannel} clanId={selectClanId as string} countChannel={countChannel} />
+			<ListChannelSetting
+				listChannel={listChannelBySearch}
+				clanId={selectClanId as string}
+				countChannel={countChannel}
+				searchFilter={searchFilter}
+			/>
 		</div>
 	);
 };
