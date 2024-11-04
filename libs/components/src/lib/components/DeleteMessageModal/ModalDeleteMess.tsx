@@ -1,6 +1,8 @@
 import { useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
+import { selectOpenEditMessageState } from '@mezon/store';
 import { IMessageWithUser } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import MessageWithUser from '../MessageWithUser';
 
 type ModalDeleteMessProps = {
@@ -14,7 +16,8 @@ type ModalDeleteMessProps = {
 const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const { mess, closeModal, mode } = props;
 	const modalRef = useRef<HTMLDivElement>(null);
-	const [isInitialRender, setIsInitialRender] = useState(true);
+	const isEditing = useSelector(selectOpenEditMessageState);
+	const [isInitialRender, setIsInitialRender] = useState(isEditing);
 	const { deleteSendMessage } = useDeleteMessage({
 		channelId: mess.channel_id,
 		mode: mode
