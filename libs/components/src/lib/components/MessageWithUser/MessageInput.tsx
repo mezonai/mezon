@@ -61,8 +61,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 	const mentionListData = UserMentionList({ channelID: channelId, channelMode: mode });
 	const rolesClan = useSelector(selectAllRolesClan);
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
-	const [isOPenDeleteMessageModal, isCloseDeleteMessageModal] = useModal(() => {
-		return <ModalDeleteMess mess={message} closeModal={isCloseDeleteMessageModal} mode={mode} />;
+	const [showModal, closeModal] = useModal(() => {
+		return <ModalDeleteMess mess={message} closeModal={closeModal} mode={mode} />;
 	}, [message?.id]);
 
 	const queryEmojis = (query: string, callback: (data: any[]) => void) => {
@@ -73,8 +73,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			.map((emojiDisplay) => ({ id: emojiDisplay?.id, display: emojiDisplay?.shortname }));
 		callback(matches);
 	};
-
-	const [openModalDelMess, setOpenModalDelMess] = useState(false);
 	const channels = useSelector(selectAllChannels);
 
 	const listChannelsMention = useMemo(() => {
@@ -141,10 +139,10 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 			e.stopPropagation();
+			textareaRef.current?.blur();
 
 			if (draftContent === '') {
-				textareaRef.current?.blur();
-				isOPenDeleteMessageModal();
+				showModal();
 			} else if (draftContent === originalContent) {
 				handleCancelEdit();
 			} else {
@@ -161,8 +159,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 
 	const handleSave = () => {
 		if (draftContent === '') {
-			textareaRef.current?.blur();
-			return isOPenDeleteMessageModal();
+			// textareaRef.current?.blur();
+			return showModal();
 		} else if (draftContent !== '' && draftContent === originalContent) {
 			return handleCancelEdit();
 		} else {
