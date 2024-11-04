@@ -24,6 +24,7 @@ import { notificationReducer } from './notification/notify.slice';
 import { POLICIES_FEATURE_KEY, policiesDefaultReducer, policiesReducer } from './policies/policies.slice';
 import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
+import { activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
 import { canvasReducer } from './canvas/canvas.slice';
@@ -293,9 +294,33 @@ const persistPoliciesReducer = persistReducer(
 	policiesReducer
 );
 
+const persistOverriddenPoliciesReducer = persistReducer(
+	{
+		key: 'overriddenPoliciesReducer',
+		storage
+	},
+	overriddenPoliciesReducer
+);
+
+const persistuUersClanReducer = persistReducer(
+	{
+		key: 'usersClanReducer',
+		storage
+	},
+	usersClanReducer
+);
+
+const persistAccountReducer = persistReducer(
+	{
+		key: 'accountReducer',
+		storage
+	},
+	accountReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
-	account: accountReducer,
+	account: persistAccountReducer,
 	auth: persistedReducer,
 	attachments: attachmentReducer,
 	clans: persistedClansReducer,
@@ -313,7 +338,7 @@ const reducer = {
 	categories: persistedCatReducer,
 	rolesclan: persistedRolesClanReducer,
 	eventmanagement: persistedEventMngtReducer,
-	usersClan: usersClanReducer,
+	usersClan: persistuUersClanReducer,
 	[POLICIES_FEATURE_KEY]: persistPoliciesReducer,
 	userClanProfile: userClanProfileReducer,
 	friends: friendsReducer,
@@ -321,7 +346,7 @@ const reducer = {
 	directmeta: directMetaReducer,
 	roleId: roleIdReducer,
 	policiesDefaultSlice: policiesDefaultReducer,
-	[OVERRIDDEN_POLICIES_FEATURE_KEY]: overriddenPoliciesReducer,
+	[OVERRIDDEN_POLICIES_FEATURE_KEY]: persistOverriddenPoliciesReducer,
 	notificationsetting: notificationSettingReducer,
 	pinmessages: persistedPinMsgReducer,
 	defaultnotificationclan: persistedDefaultNotiClanReducer,
@@ -339,6 +364,7 @@ const reducer = {
 	videostream: persistedStreamReducer,
 	canvas: canvasReducer,
 	canvasapi: canvasAPIReducer,
+	activitiesapi: activitiesAPIReducer,
 	references: referencesReducer,
 	reaction: reactionReducer,
 	suggestionEmoji: persistedEmojiSuggestionReducer,

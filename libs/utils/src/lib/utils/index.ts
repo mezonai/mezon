@@ -1,4 +1,5 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
+import { getPlatform, Platform } from '@mezon/utils';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -11,6 +12,7 @@ import {
 	startOfDay,
 	subDays
 } from 'date-fns';
+import isElectron from 'is-electron';
 import { Client, Session } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
 import { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
@@ -21,8 +23,8 @@ import {
 	ChannelMembersEntity,
 	EBacktickType,
 	EMimeTypes,
-	ETokenMessage,
 	EmojiDataOptionals,
+	ETokenMessage,
 	IChannel,
 	IEmojiOnMessage,
 	IExtendedMessage,
@@ -94,6 +96,7 @@ export const focusToElement = (ref: RefObject<HTMLInputElement | HTMLDivElement 
 		ref.current.focus();
 	}
 };
+
 export const uniqueUsers = (
 	mentions: IMentionOnMessage[],
 	userChannels: ChannelMembersEntity[] | null,
@@ -130,10 +133,12 @@ export const uniqueUsers = (
 		)
 	);
 
-	const combinedUniqueUserIds = Array.from(new Set([...uniqueUserId1s, ...uniqueUserId2s, ...refereceSenderId]));
+	const combinedUniqueUserIds = Array.from(
+		new Set([...(uniqueUserId1s || []), ...(uniqueUserId2s || []), ...(refereceSenderId ? [refereceSenderId] : [])])
+	);
 
 	const memUserIds = userChannels?.map((member) => member?.user?.id) || [];
-	const userIdsNotInChannel = combinedUniqueUserIds.filter((user_id) => !memUserIds.includes(user_id));
+	const userIdsNotInChannel = combinedUniqueUserIds.filter((user_id) => Array.isArray(memUserIds) && !memUserIds.includes(user_id as string));
 
 	return userIdsNotInChannel;
 };
@@ -882,3 +887,5 @@ export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => 
 export const checkIsThread = (channel?: IChannel) => {
 	return channel?.parrent_id !== '0' && channel?.parrent_id !== '';
 };
+
+export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();

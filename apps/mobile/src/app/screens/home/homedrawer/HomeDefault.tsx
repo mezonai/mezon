@@ -16,7 +16,8 @@ import {
 	selectCurrentChannel,
 	selectFetchChannelStatus,
 	selectPreviousChannels,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store-mobile';
 import { ChannelStatusEnum, SubPanelName, TIME_OFFSET, checkIsThread, isPublicChannel } from '@mezon/utils';
 import { useDrawerStatus } from '@react-navigation/drawer';
@@ -33,6 +34,7 @@ import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import ChannelMessagesWrapper from './ChannelMessagesWrapper';
 import { ChatBox } from './ChatBox';
+import DrawerListener from './DrawerListener';
 import PanelKeyboard from './PanelKeyboard';
 import { IModeKeyboardPicker } from './components';
 import LicenseAgreement from './components/LicenseAgreement';
@@ -40,7 +42,7 @@ import { style } from './styles';
 
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectChannelById(channelId));
+	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 	const statusFetchChannel = useSelector(selectFetchChannelStatus);
 	const resetBadgeCount = !useSelector(selectAnyUnreadChannels);
 	const resetCountChannelBadge = useResetCountChannelBadge();
@@ -66,7 +68,7 @@ function useChannelSeen(channelId: string) {
 		}
 	}, [currentChannel?.id, statusFetchChannel]);
 	const previousChannelId = useSelector(selectPreviousChannels)[1];
-	const previousChannel = useSelector(selectChannelById(previousChannelId));
+	const previousChannel = useAppSelector((state) => selectChannelById(state, previousChannelId));
 	useEffect(() => {
 		resetCountChannelBadge(previousChannel);
 	}, [previousChannelId]);
@@ -76,7 +78,6 @@ const HomeDefault = React.memo((props: any) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const parent = useSelector(selectChannelById(currentChannel?.parrent_id || ''));
 	const timeoutRef = useRef<any>(null);
 	const [isFocusChannelView, setIsFocusChannelView] = useState(false);
 	const [isShowLicenseAgreement, setIsShowLicenseAgreement] = useState<boolean>(false);
@@ -98,9 +99,11 @@ const HomeDefault = React.memo((props: any) => {
 	const isChannelApp = useMemo(() => currentChannel?.type === ChannelType?.CHANNEL_TYPE_APP, [currentChannel?.type]);
 
 	const onOpenDrawer = useCallback(() => {
-		onShowKeyboardBottomSheet(false, 0, 'text');
-		navigation.dispatch(DrawerActions.openDrawer());
-		Keyboard.dismiss();
+		requestAnimationFrame(async () => {
+			navigation.dispatch(DrawerActions.openDrawer());
+			onShowKeyboardBottomSheet(false, 0, 'text');
+			Keyboard.dismiss();
+		});
 	}, [navigation, onShowKeyboardBottomSheet]);
 
 	useEffect(() => {
@@ -185,12 +188,12 @@ const HomeDefault = React.memo((props: any) => {
 					save(STORAGE_AGREED_POLICY, 'true');
 				}}
 			/>
+			<DrawerListener />
 			<HomeDefaultHeader
 				openBottomSheet={openBottomSheet}
 				navigation={props.navigation}
 				currentChannel={currentChannel}
 				onOpenDrawer={onOpenDrawer}
-				parentChannelLabel={parent?.channel_label || ''}
 			/>
 			{currentChannel && isFocusChannelView && !isChannelApp && (
 				<View style={styles.channelView}>
@@ -221,17 +224,18 @@ const HomeDefaultHeader = React.memo(
 		navigation,
 		currentChannel,
 		openBottomSheet,
-		onOpenDrawer,
-		parentChannelLabel
+		onOpenDrawer
 	}: {
 		navigation: any;
 		currentChannel: ChannelsEntity;
 		openBottomSheet: () => void;
 		onOpenDrawer: () => void;
-		parentChannelLabel: string;
 	}) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
+		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parrent_id || ''));
+
+		const parentChannelLabel = useMemo(() => parent?.channel_label || '', [parent?.channel_label]);
 		const navigateMenuThreadDetail = () => {
 			navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.BOTTOM_SHEET });
 		};

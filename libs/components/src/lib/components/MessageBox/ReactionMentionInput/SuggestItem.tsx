@@ -4,7 +4,8 @@ import {
 	selectAllHashtagDm,
 	selectChannelById,
 	selectNumberMemberVoiceChannel,
-	selectTheme
+	selectTheme,
+	useAppSelector
 } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import { SearchItemProps, getSrcEmoji } from '@mezon/utils';
@@ -154,7 +155,8 @@ const SuggestItem = ({
 	);
 };
 const RenderChannelLabelForThread = ({ channel_id }: { channel_id: string }) => {
-	const channelParent = useSelector(selectChannelById(channel_id));
+	const channelParent = useAppSelector((state) => selectChannelById(state, channel_id ?? '')) || {};
+
 	return <>{channelParent?.channel_label || null}</>;
 };
 

@@ -1,5 +1,5 @@
 import { useEventManagement } from '@mezon/core';
-import { selectChannelById, selectCurrentClanId, selectEventById, selectVoiceChannelAll } from '@mezon/store';
+import { selectChannelById, selectCurrentClanId, selectEventById, selectVoiceChannelAll, useAppSelector } from '@mezon/store';
 import { ContenSubmitEventProps, OptionEvent, Tabs_Option } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -23,7 +23,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const tabs = ['Location', 'Event Info', 'Review'];
 	const [currentModal, setCurrentModal] = useState(0);
 	const currentEvent = useSelector(selectEventById(eventId || ''));
-	const eventChannel = useSelector(selectChannelById(currentEvent ? currentEvent.channel_id || '' : ''));
+	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : '')) || {};
 
 	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',

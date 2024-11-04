@@ -71,23 +71,28 @@ export class MezonNotificationService {
 		};
 
 		ws.onmessage = (data: MessageEvent<string>) => {
-			if (data.data === 'ping') {
-				this.handlePong();
-				this.startPingMonitoring(token);
-			} else {
-				const msg = JSON.parse(data.data) as NotificationData;
-				const { title, message, image } = msg ?? {};
-				const { link } = msg?.extras ?? {};
-				if (msg?.channel_id && msg?.channel_id === this.currentChannelId && this.isFocusOnApp) {
-					return;
-				}
-				electronBridge.pushNotification(title, {
-					body: message,
-					icon: image ?? '',
-					data: {
-						link: link ?? ''
+			try {
+				if (data.data === 'ping') {
+					this.handlePong();
+					this.startPingMonitoring(token);
+				} else {
+					const msg = JSON.parse(data.data) as NotificationData;
+					const { title, message, image } = msg ?? {};
+					const { link } = msg?.extras ?? {};
+					if (msg?.channel_id && msg?.channel_id === this.currentChannelId && this.isFocusOnApp) {
+						return;
 					}
-				});
+					electronBridge.pushNotification(title, {
+						body: message,
+						icon: image ?? '',
+						data: {
+							link: link ?? ''
+						}
+					});
+				}
+			} catch (err) {
+				// eslint-disable-next-line no-console
+				console.log(err);
 			}
 		};
 

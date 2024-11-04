@@ -1,9 +1,8 @@
-import { SearchMessageEntity, searchMessagesActions, selectChannelById, useAppDispatch } from '@mezon/store';
+import { SearchMessageEntity, searchMessagesActions, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { IMessageWithUser, SIZE_PAGE_SEARCH } from '@mezon/utils';
 import { Pagination } from 'flowbite-react';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import MessageWithUser from '../../MessageWithUser';
 import EmptySearch from './EmptySearch';
 
@@ -26,7 +25,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 		dispatch(searchMessagesActions.setCurrentPage(page));
 	};
 
-	const searchChannel = useSelector(selectChannelById(channelId));
+	const searchChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
 	const groupedMessages: GroupedMessages = [];
 	let currentGroup: SearchMessageEntity[] = [];

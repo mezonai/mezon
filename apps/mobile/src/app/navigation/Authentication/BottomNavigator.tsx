@@ -18,9 +18,10 @@ import { APP_SCREEN } from '../ScreenTypes';
 const TabStack = createBottomTabNavigator();
 
 const BottomNavigator = () => {
-	const hiddenBottomTab = useSelector(selectHiddenBottomTabMobile);
-	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
+	const isHiddenTab = useSelector(selectHiddenBottomTabMobile);
+	const hiddenBottomTab = isTabletLandscape ? false : isHiddenTab;
+	const { themeValue } = useTheme();
 	const tabBarTranslateY = useRef(new Animated.Value(0)).current;
 	const routesNavigation = useNavigationState((state) => state?.routes?.[state?.index]);
 
@@ -37,7 +38,7 @@ const BottomNavigator = () => {
 			duration: 200,
 			useNativeDriver: true
 		}).start();
-	}, [hiddenBottomTab, tabBarTranslateY]);
+	}, [hiddenBottomTab, isTabletLandscape, tabBarTranslateY]);
 
 	return (
 		<SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: isHomeActive ? themeValue.primary : themeValue.secondary }}>
@@ -45,10 +46,11 @@ const BottomNavigator = () => {
 				screenOptions={{
 					tabBarHideOnKeyboard: true,
 					tabBarStyle: {
-						height: hiddenBottomTab ? 0 : 80,
+						height: isTabletLandscape ? size.s_60 : hiddenBottomTab ? 0 : size.s_80,
+						paddingHorizontal: isTabletLandscape ? '20%' : 0,
 						transform: [{ translateY: tabBarTranslateY }],
-						paddingBottom: hiddenBottomTab ? 0 : 20,
-						borderTopWidth: hiddenBottomTab ? 0 : 1,
+						paddingBottom: isTabletLandscape ? size.s_10 : hiddenBottomTab ? 0 : size.s_20,
+						borderTopWidth: isTabletLandscape ? 1 : hiddenBottomTab ? 0 : 1,
 						elevation: 0,
 						backgroundColor: themeValue.secondary,
 						borderTopColor: themeValue.border

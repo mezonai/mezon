@@ -37,7 +37,8 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 	const { toChannelPage } = useAppNavigation();
 	const dispatch = useDispatch();
 	const threadMembers = useSelector((state) => selectAllChannelMembers(state, thread.channel_id));
-	const channelThread = useSelector(selectChannelById(thread.id));
+	const channelThread = useAppSelector((state) => selectChannelById(state, thread.id ?? '')) || {};
+
 	const messageId = useAppSelector((state) => selectLastMessageIdByChannelId(state, thread.channel_id as string));
 	const message = useAppSelector((state) =>
 		selectMessageEntityById(state, thread.channel_id as string, messageId || thread?.last_sent_message?.id)

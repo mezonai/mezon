@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import { useInvite } from '@mezon/core';
-import { selectChannelById, selectChannelFirst, selectCurrentClan, selectCurrentClanId } from '@mezon/store';
+import { selectChannelById, selectChannelFirst, selectCurrentClan, selectCurrentClanId, useAppSelector } from '@mezon/store';
 import { Modal } from '@mezon/ui';
 import isElectron from 'is-electron';
 import { useCallback, useEffect, useState } from 'react';
@@ -28,7 +29,8 @@ const ModalInvite = (props: ModalParam) => {
 	const firstChannel = useSelector(selectChannelFirst);
 	const { onClose, channelID } = props;
 
-	const channel = useSelector(selectChannelById(channelID as string));
+	const channel = useAppSelector((state) => selectChannelById(state, channelID ?? '')) || {};
+
 	const clan = useSelector(selectCurrentClan);
 
 	const handleOpenInvite = useCallback(async () => {

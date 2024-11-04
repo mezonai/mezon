@@ -94,7 +94,7 @@ export const setNotificationSetting = createAsyncThunk(
 		if (time_mute) {
 			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: clan_id, noCache: true }));
 		}
-		thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '' }));
+		thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
 		thunkAPI.dispatch(getNotificationSetting({ channelId: channel_id || '', isCurrentChannel: is_current_channel, noCache: true }));
 		return response;
 	}
@@ -146,7 +146,7 @@ export const deleteNotiChannelSetting = createAsyncThunk(
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}
-		thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '' }));
+		thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
 		thunkAPI.dispatch(getNotificationSetting({ channelId: channel_id || '', isCurrentChannel: is_current_channel, noCache: true }));
 		return response;
 	}

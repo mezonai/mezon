@@ -251,9 +251,9 @@ const ModalNotificationSetting = (props: ModalParam) => {
 								</tr>
 							</thead>
 							<tbody>
-								{sortedChannelCategorySettings.map((channelCategorySetting, index) => (
+								{sortedChannelCategorySettings.map((channelCategorySetting) => (
 									<tr
-										key={index}
+										key={channelCategorySetting.id}
 										className="group relative grid grid-cols-7 mb-2.5 dark:bg-bgModifierHover bg-bgModifierHoverLight hover:dark:bg-black hover:bg-bgLightModeButton rounded p-[10px]"
 									>
 										<td className="col-span-3">{channelCategorySetting.channel_category_label}</td>

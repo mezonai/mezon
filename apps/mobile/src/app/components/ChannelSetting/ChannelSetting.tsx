@@ -1,6 +1,6 @@
 import { BellIcon, CheckIcon, Icons, isEqual, LinkIcon, TrashIcon } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
-import { channelsActions, selectAllChannels, selectChannelById, useAppDispatch } from '@mezon/store-mobile';
+import { channelsActions, selectAllChannels, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { DrawerActions } from '@react-navigation/native';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
@@ -28,7 +28,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	const { t } = useTranslation(['channelSetting', 'channelCreator']);
 	const { t: t1 } = useTranslation(['screenStack']);
 	const dispatch = useAppDispatch();
-	const channel = useSelector(selectChannelById(channelId || ''));
+	const channel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const isChannel = useMemo(() => channel?.parrent_id === '0', [channel?.parrent_id]);
 	const [isVisibleDeleteChannelModal, setIsVisibleDeleteChannelModal] = useState<boolean>(false);
 	const [isCheckValid, setIsCheckValid] = useState<boolean>(true);

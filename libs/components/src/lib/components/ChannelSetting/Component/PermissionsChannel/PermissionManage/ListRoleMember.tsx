@@ -5,6 +5,7 @@ import {
 	selectChannelById,
 	selectCurrentClanId,
 	useAppDispatch,
+	useAppSelector,
 	UsersClanEntity
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -106,7 +107,9 @@ type HeaderAddRoleMemberProps = {
 const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 	const { listManageNotInChannel, usersClan, channelId } = props;
 	const [showPopup, setShowPopup] = useState(false);
-	const channel = useSelector(selectChannelById(channelId));
+
+	const channel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
+
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();

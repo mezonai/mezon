@@ -61,7 +61,7 @@ export const initialAppState: AppState = {
 	categoryChannelOffsets: {}
 };
 
-export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
+export const refreshApp = createAsyncThunk('app/refreshApp', async ({ id }: { id: string }, thunkAPI) => {
 	const state = thunkAPI.getState() as RootState;
 
 	if (!state) {
@@ -89,10 +89,15 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 	channelId && thunkAPI.dispatch(messagesActions.fetchMessages({ clanId: clanId || '', channelId: channelId, isFetchingLatestMessages: true }));
 
 	thunkAPI.dispatch(clansActions.fetchClans());
-	thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
-
 	if (isClanView && currentClanId) {
 		thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
+	}
+
+	try {
+		await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true })).unwrap();
+	} catch (error) {
+		// eslint-disable-next-line no-console
+		console.log(error);
 	}
 });
 

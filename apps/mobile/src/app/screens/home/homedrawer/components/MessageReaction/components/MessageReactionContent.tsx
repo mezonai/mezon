@@ -1,7 +1,8 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { TrashIcon } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { EmojiDataOptionals, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
+import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -39,13 +40,18 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 		}
 	}, [emojiSelectedId]);
 
-	const emojiKeyList = useMemo(() => {
-		return allReactionDataOnOneMessage?.map?.((emojiData) => emojiData.id);
-	}, [allReactionDataOnOneMessage]);
+	const dataSenderEmojis = useMemo(() => {
+		return allReactionDataOnOneMessage?.reduce((acc, item) => {
+			if (item?.emojiId === selectedTabId) {
+				acc.push(...item.senders);
+			}
+			return acc;
+		}, []);
+	}, [allReactionDataOnOneMessage, selectedTabId]);
 
 	const currentEmojiSelected = useMemo(() => {
 		if (selectedTabId) {
-			return allReactionDataOnOneMessage.find((emoji) => emoji.id === selectedTabId);
+			return allReactionDataOnOneMessage.find((emoji) => emoji?.id === selectedTabId || emoji?.emojiId === selectedTabId);
 		}
 		return null;
 	}, [selectedTabId, allReactionDataOnOneMessage]);
@@ -79,9 +85,9 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 				{allReactionDataOnOneMessage.map((emojiItem) => {
 					return (
 						<Pressable
-							key={emojiItem.id}
-							onPress={() => selectEmoji(emojiItem.id)}
-							style={[styles.tabHeaderItem, selectedTabId === emojiItem.id && styles.activeTab]}
+							key={`${emojiItem.emojiId}_TabHeaderEmoji`}
+							onPress={() => selectEmoji(emojiItem.emojiId)}
+							style={[styles.tabHeaderItem, selectedTabId === emojiItem.emojiId && styles.activeTab]}
 						>
 							<FastImage
 								source={{
@@ -118,21 +124,17 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 						</View>
 					) : null}
 				</View>
-
-				{allReactionDataOnOneMessage
-					.filter((item) => item.id === selectedTabId)
-					.map((data) => data.senders)
-					.flat(1)
-					.map((sender, index) => {
-						if (sender.count === 0) {
-							return null;
-						}
+				<FlashList
+					data={dataSenderEmojis || []}
+					renderItem={({ item, index }) => {
 						return (
-							<View key={`${emojiKeyList[index]}`}>
-								<ReactionMember userId={sender.sender_id} channelId={channelId} onSelectUserId={onShowUserInformation} />
+							<View key={`${index}_${item.sender_id}_allReactionDataOnOneMessage`} style={{ marginBottom: size.s_10 }}>
+								<ReactionMember userId={item.sender_id} channelId={channelId} onSelectUserId={onShowUserInformation} />
 							</View>
 						);
-					})}
+					}}
+					estimatedItemSize={size.s_50}
+				/>
 			</View>
 		);
 	};

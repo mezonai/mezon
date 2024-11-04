@@ -87,7 +87,15 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 
 	const handleJumpToPresent = useCallback(() => {
-		dispatch(messagesActions.fetchMessages({ clanId: '0', channelId: directParamId, isFetchingLatestMessages: true, noCache: true }));
+		dispatch(
+			messagesActions.fetchMessages({
+				clanId: '0',
+				channelId: directParamId,
+				isFetchingLatestMessages: true,
+				noCache: true,
+				isClearMessage: true
+			})
+		);
 		dispatch(messagesActions.setIdMessageToJump(null));
 	}, [directParamId]);
 

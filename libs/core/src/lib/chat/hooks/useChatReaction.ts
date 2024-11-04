@@ -4,9 +4,10 @@ import {
 	channelUsersActions,
 	reactionActions,
 	selectAllChannelMembers,
-	selectChannelById,
 	selectClanView,
-	selectCurrentChannelId,
+	selectCurrentChannel,
+	selectDirectById,
+	selectDmGroupCurrentId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -27,8 +28,41 @@ export function useChatReaction({ isMobile = false }: ChatReactionProps = {}) {
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
 	const isClanView = useSelector(selectClanView);
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const channel = useSelector(selectChannelById(currentChannelId ?? ''));
+
+	const directId = useSelector(selectDmGroupCurrentId);
+	const direct = useAppSelector((state) => selectDirectById(state, directId));
+	const channel = useSelector(selectCurrentChannel);
+
+	const currentActive = useMemo(() => {
+		let clanIdActive = '';
+		let modeActive = 0;
+		let channelIdActive = '';
+
+		if (!isClanView && direct?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			clanIdActive = '0';
+			modeActive = ChannelStreamMode.STREAM_MODE_GROUP;
+			channelIdActive = directId || '';
+		} else if (!isClanView && direct?.type === ChannelType.CHANNEL_TYPE_DM) {
+			clanIdActive = '0';
+			modeActive = ChannelStreamMode.STREAM_MODE_DM;
+			channelIdActive = directId || '';
+		} else if (isClanView && channel?.type === ChannelType.CHANNEL_TYPE_TEXT) {
+			clanIdActive = channel?.clan_id || '';
+			modeActive = ChannelStreamMode.STREAM_MODE_CHANNEL;
+			channelIdActive = channel?.id || '';
+		} else if (isClanView && channel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
+			clanIdActive = channel?.clan_id || '';
+			modeActive = ChannelStreamMode.STREAM_MODE_THREAD;
+			channelIdActive = channel?.id || '';
+		}
+
+		return {
+			clanIdActive,
+			modeActive,
+			channelIdActive
+		};
+	}, [isClanView, direct?.type, directId, channel?.type, channel?.clan_id, channel?.id]);
+
 	const membersOfChild = useAppSelector((state) => (channel?.id ? selectAllChannelMembers(state, channel?.id as string) : null));
 	const membersOfParent = useAppSelector((state) => (channel?.parrent_id ? selectAllChannelMembers(state, channel?.parrent_id as string) : null));
 	const updateChannelUsers = async (currentChannel: ChannelsEntity | null, userIds: string[], clanId: string) => {
@@ -68,9 +102,6 @@ export function useChatReaction({ isMobile = false }: ChatReactionProps = {}) {
 	const reactionMessageDispatch = useCallback(
 		async (
 			id: string,
-			mode: number,
-			clanId: string,
-			channelId: string,
 			messageId: string,
 			emoji_id: string,
 			emoji: string,
@@ -79,9 +110,6 @@ export function useChatReaction({ isMobile = false }: ChatReactionProps = {}) {
 			action_delete: boolean,
 			is_public: boolean
 		) => {
-			if (channel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
-				mode = ChannelStreamMode.STREAM_MODE_THREAD;
-			}
 			if (isMobile) {
 				const emojiLastest: EmojiStorage = {
 					emojiId: emoji_id ?? '',
@@ -94,7 +122,7 @@ export function useChatReaction({ isMobile = false }: ChatReactionProps = {}) {
 			}
 			addMemberToThread(userId || '');
 			const payload = transformPayloadWriteSocket({
-				clanId,
+				clanId: currentActive.clanIdActive,
 				isPublicChannel: is_public,
 				isClanView: isClanView as boolean
 			});
@@ -102,9 +130,9 @@ export function useChatReaction({ isMobile = false }: ChatReactionProps = {}) {
 			return dispatch(
 				reactionActions.writeMessageReaction({
 					id,
-					clanId: payload.clan_id,
-					channelId,
-					mode,
+					clanId: currentActive.clanIdActive,
+					channelId: currentActive.channelIdActive,
+					mode: currentActive.modeActive,
 					messageId,
 					emoji_id,
 					emoji,

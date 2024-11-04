@@ -14,10 +14,11 @@ export interface IMezonBottomSheetProps extends BottomSheetModalProps {
 	headerRight?: ReactNode;
 	heightFitContent?: boolean;
 	snapPoints?: string[];
+	footer?: ReactNode;
 }
 
 const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBottomSheetProps, ref: Ref<BottomSheetModalMethods>) {
-	const { children, title, headerLeft, headerRight, heightFitContent, snapPoints = ['90%'], titleSize = 'sm' } = props;
+	const { children, title, headerLeft, headerRight, heightFitContent, snapPoints = ['90%'], titleSize = 'sm', footer } = props;
 	const themeValue = useTheme().themeValue;
 	const styles = useMemo(() => style(themeValue), [themeValue]);
 
@@ -48,8 +49,9 @@ const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBotto
 		>
 			{renderHeader()}
 			<BottomSheetScrollView>{children}</BottomSheetScrollView>
+			{footer && footer}
 		</OriginalBottomSheet>
 	);
 });
 
-export default MezonBottomSheet;
+export default React.memo(MezonBottomSheet);

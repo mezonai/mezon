@@ -29,7 +29,6 @@
           "arch": "universal",
           "target": "default"
         },
-        "x64ArchFiles": "*",
         "publish": [
           {
             "provider": "generic",
@@ -66,6 +65,7 @@
         "packElevateHelper": false,
         "runAfterFinish": true,
         "createDesktopShortcut": "always",
+        "createStartMenuShortcut": true,
         "deleteAppDataOnUninstall": false
       },
       "msi": {
@@ -167,7 +167,6 @@
             "arch": "universal",
             "target": "default"
           },
-          "x64ArchFiles": "*",
           "publish": [
             {
               "provider": "generic",
@@ -204,6 +203,7 @@
           "packElevateHelper": false,
           "runAfterFinish": true,
           "createDesktopShortcut": "always",
+          "createStartMenuShortcut": true,
           "deleteAppDataOnUninstall": false
         },
         "msi": {
@@ -250,7 +250,6 @@
             "arch": "universal",
             "target": "default"
           },
-          "x64ArchFiles": "*",
           "publish": [
             {
               "provider": "generic",
@@ -286,6 +285,7 @@
           "include": "scripts/installer.nsh",
           "runAfterFinish": true,
           "createDesktopShortcut": "always",
+          "createStartMenuShortcut": true,
           "deleteAppDataOnUninstall": false
         },
         "msi": {

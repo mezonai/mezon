@@ -57,6 +57,7 @@
 		"react-native-markdown-display": "^7.0.2",
 		"react-native-mmkv": "^2.12.2",
 		"react-native-modal": "^13.0.1",
+		"react-native-orientation-locker": "1.1.6",
 		"react-native-raw-bottom-sheet": "^3.0.0",
 		"react-native-reanimated": "3.6.0",
 		"react-native-receive-sharing-intent": "^2.0.0",

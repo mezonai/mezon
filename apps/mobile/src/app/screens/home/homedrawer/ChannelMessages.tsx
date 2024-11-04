@@ -111,11 +111,14 @@ const ChannelMessages = React.memo(
 			}
 		}, [dispatch, idMessageToJump, isMessageExist, messages]);
 
-		const scrollChannelMessageToIndex = (index: number) => {
-			if (flatListRef.current && index > 0 && messages?.length - 1 >= index) {
-				flatListRef?.current?.scrollToIndex?.({ animated: true, index: index });
-			}
-		};
+		const scrollChannelMessageToIndex = useCallback(
+			(index: number) => {
+				if (flatListRef.current && index > 0 && messages?.length - 1 >= index) {
+					flatListRef?.current?.scrollToIndex?.({ animated: true, index: index });
+				}
+			},
+			[messages?.length]
+		);
 
 		const isHaveJumpToPresent = useMemo(() => {
 			return (isViewingOldMessage || hasMoreBottom || messages?.length >= LIMIT_MESSAGE * 3) && !!messages?.length;
@@ -160,7 +163,7 @@ const ChannelMessages = React.memo(
 
 				return true;
 			},
-			[hasMoreBottom, isFetching, hasMoreTop, dispatch, clanId, channelId]
+			[isFetching, hasMoreBottom, hasMoreTop, dispatch, clanId, channelId, scrollChannelMessageToIndex]
 		);
 
 		const renderItem = useCallback(

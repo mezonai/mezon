@@ -13,7 +13,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEmojiCategory, EPermission, EmojiPlaces, IEmoji, ModeResponsive, SubPanelName, getSrcEmoji, isPublicChannel } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -88,9 +87,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 		if (subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT || subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM) {
 			await reactionMessageDispatch(
 				'',
-				props.mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
-				currentChannel?.clan_id || '',
-				channelID ?? '',
+
 				props.messageEmojiId ?? '',
 				emojiId.trim(),
 				emojiPicked.trim(),

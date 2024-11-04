@@ -1,14 +1,12 @@
 import i18n from '@mezon/translations';
 import { CreateMezonClientOptions, MezonContextProvider } from '@mezon/transport';
 import * as Sentry from '@sentry/react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import codePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import 'react-native-svg';
-import VersionInfo from 'react-native-version-info';
-import MezonUpdateVersionModal from '../componentUI/MezonUpdateVersionModal';
 import RootNavigation from './RootNavigator';
 
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();

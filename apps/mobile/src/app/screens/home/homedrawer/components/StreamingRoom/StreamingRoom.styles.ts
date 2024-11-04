@@ -1,22 +1,18 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 import { transparent } from 'tailwindcss/colors';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
-			flex: 1,
-			justifyContent: 'center',
-			alignItems: 'center',
-			position: 'relative'
+			position: 'relative',
+			height: '100%',
+			width: '100%'
 		},
 		userStreamingRoomContainer: {
-			position: 'absolute',
-			top: '10%'
+			backgroundColor: baseColor.black
 		},
 		menuHeader: {
-			position: 'absolute',
-			top: 10,
 			width: '100%',
 			backgroundColor: transparent,
 			padding: 10,
@@ -29,8 +25,10 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			bottom: 20,
 			width: '100%',
-			paddingHorizontal: size.s_20,
-			gap: size.s_10
+			padding: size.s_20,
+			gap: size.s_10,
+			alignItems: 'center',
+			justifyContent: 'center'
 		},
 		textMenuItem: {
 			fontSize: 16,

@@ -2,10 +2,10 @@ import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
-import { categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
+import { appActions, categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { MutableRefObject, useCallback, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -21,6 +21,12 @@ import { style } from './styles';
 interface IServerMenuProps {
 	inviteRef: MutableRefObject<any>;
 }
+enum StatusMarkAsReadClan {
+	Error = 'error',
+	Success = 'success',
+	Idle = 'idle',
+	Pending = 'pending'
+}
 
 export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 	const currentClan = useSelector(selectCurrentClan);
@@ -33,7 +39,7 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
 	const { dismiss } = useBottomSheetModal();
 	const dispatch = useAppDispatch();
-	const { handleMarkAsReadClan } = useMarkAsRead();
+	const { handleMarkAsReadClan, statusMarkAsReadClan } = useMarkAsRead();
 
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const [showEmptyCategories, setShowEmptyCategories] = useState<boolean>(isShowEmptyCategory ?? true);
@@ -165,6 +171,10 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 		}
 		setShowEmptyCategories(value);
 	}
+
+	useEffect(() => {
+		dispatch(appActions.setLoadingMainMobile(statusMarkAsReadClan === StatusMarkAsReadClan.Pending));
+	}, [statusMarkAsReadClan, dispatch]);
 
 	return (
 		<View style={styles.container}>

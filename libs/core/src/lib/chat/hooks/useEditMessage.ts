@@ -22,7 +22,7 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 		return message.attachments;
 	}, [message.attachments]);
 
-	const selectedChannel = useSelector(selectChannelById(channelId));
+	const selectedChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const selectedDirect = useAppSelector((state) => selectDirectById(state, channelId));
 
 	const currentDirectOrChannel = useMemo(() => {

@@ -13,7 +13,7 @@ import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { DmListItemLastMessage } from './DMListItemLastMessage';
 import { style } from './styles';
-import { TypingDmItem } from './TypingDmItem';
+import { TypingDmItem } from './TypingDMItem';
 
 export const DmListItem = React.memo((props: { id: string; navigation: any; onLongPress; onPress? }) => {
 	const { themeValue } = useTheme();

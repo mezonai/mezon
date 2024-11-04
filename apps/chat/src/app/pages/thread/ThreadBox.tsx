@@ -14,7 +14,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { IMessageSendPayload, ThreadValue } from '@mezon/utils';
+import { IMessageSendPayload, ThreadValue, isWindowsDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
@@ -121,7 +121,9 @@ const ThreadBox = () => {
 		<div className="flex flex-col flex-1 justify-end">
 			<div>
 				{threadCurrentChannel && (
-					<div className="overflow-y-auto bg-[#1E1E1E] max-w-widthMessageViewChat overflow-x-hidden max-h-heightMessageViewChatThread h-heightMessageViewChatThread">
+					<div
+						className={`overflow-y-auto bg-[#1E1E1E] max-w-widthMessageViewChat overflow-x-hidden max-h-heightMessageViewChatThread ${isWindowsDesktop ? 'h-heightTitleBarMessageViewChatThread' : 'h-heightMessageViewChatThread'}"`}
+					>
 						<ChannelMessages
 							isThreadBox={true}
 							userIdsFromThreadBox={mapToMemberIds}
@@ -130,7 +132,7 @@ const ThreadBox = () => {
 							channelId={threadCurrentChannel.channel_id as string}
 							channelLabel={threadCurrentChannel.channel_label}
 							type={ChannelType.CHANNEL_TYPE_THREAD}
-							mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+							mode={ChannelStreamMode.STREAM_MODE_THREAD}
 						/>
 					</div>
 				)}

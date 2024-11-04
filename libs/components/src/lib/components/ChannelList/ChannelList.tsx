@@ -1,18 +1,23 @@
 import { useAppNavigation, useCategorizedChannels, usePathMatch } from '@mezon/core';
 import {
 	ClansEntity,
+	categoriesActions,
 	selectAllChannelsFavorite,
 	selectChannelById,
+	selectChannelsEntities,
+	selectCtrlKFocusChannel,
 	selectCurrentClan,
 	selectIsShowEmptyCategory,
 	selectStatusStream,
-	selectTheme
+	selectTheme,
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelStatusEnum, ICategoryChannel } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChannelType } from 'mezon-js';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CreateNewChannelModal } from '../CreateChannelModal';
 import CategorizedChannels from './CategorizedChannels';
@@ -63,6 +68,9 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 	const currentClan = useSelector(selectCurrentClan);
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const streamPlay = useSelector(selectStatusStream);
+	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
+	const channels = useSelector(selectChannelsEntities);
+	const dispatch = useAppDispatch();
 
 	const data = useMemo(
 		() => [
@@ -103,6 +111,34 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 	const handleExpandFavoriteChannel = () => {
 		setIsExpandFavorite(!isExpandFavorite);
 	};
+
+	useLayoutEffect(() => {
+		if (!ctrlKFocusChannel?.id || !channelRefs?.current) return;
+		const focusChannel = ctrlKFocusChannel;
+		const { id, parentId } = focusChannel as { id: string; parentId: string };
+		const categoryId = channels[id]?.category_id;
+		const index = data.findIndex((item) => item.id === categoryId);
+
+		if (index === -1) return;
+
+		virtualizer.scrollToIndex(index, { align: 'center' });
+
+		if (id && parentId && parentId !== '0') {
+			if (channelRefs.current[parentId]?.channelRef) {
+				requestAnimationFrame(() => {
+					dispatch(categoriesActions.setCtrlKFocusChannel(null));
+					channelRefs.current[parentId]?.scrollIntoThread(id);
+				});
+			}
+		} else if (id) {
+			if (channelRefs.current[id]?.channelRef) {
+				requestAnimationFrame(() => {
+					dispatch(categoriesActions.setCtrlKFocusChannel(null));
+					channelRefs.current[id]?.scrollIntoChannel();
+				});
+			}
+		}
+	});
 
 	return (
 		<div
@@ -203,7 +239,7 @@ type FavoriteChannelProps = {
 };
 
 const FavoriteChannel = ({ channelId, channelRef }: FavoriteChannelProps) => {
-	const channel = useSelector(selectChannelById(channelId));
+	const channel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const theme = useSelector(selectTheme);
 	const { navigate, toChannelPage } = useAppNavigation();
 	const handleJumpChannel = (id: string, clanId: string) => {

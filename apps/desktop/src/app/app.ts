@@ -1,13 +1,13 @@
 import { app, BrowserWindow, Menu, MenuItemConstructorOptions, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import { windowManager } from 'node-window-manager';
+//import { windowManager } from 'node-window-manager';
 import { join } from 'path';
 import { format } from 'url';
 import { rendererAppName, rendererAppPort } from './constants';
 
 import tray from '../Tray';
 
-import { ACTIVE_WINDOW, TRIGGER_SHORTCUT } from './events/constants';
+import { TRIGGER_SHORTCUT } from './events/constants';
 import { initBadge } from './services/badge';
 
 const isQuitting = false;
@@ -52,7 +52,7 @@ export default class App {
 			App.setupMenu();
 			App.setupBadge();
 			tray.init(isQuitting);
-			App.setupWindowManager();
+			//App.setupWindowManager();
 		}
 	}
 
@@ -77,12 +77,15 @@ export default class App {
 			width: width,
 			height: height,
 			show: false,
+			frame: false,
+			titleBarOverlay: process.platform === 'darwin',
 			webPreferences: {
+				nodeIntegration: false,
 				contextIsolation: true,
 				backgroundThrottling: false,
 				preload: join(__dirname, 'main.preload.js')
 			},
-			icon: join(__dirname, 'assets', 'linux-icon.png')
+			icon: join(__dirname, 'assets', 'desktop-taskbar-256x256.ico')
 		});
 		App.mainWindow.setMinimumSize(950, 500);
 		App.mainWindow.setMenuBarVisibility(false);
@@ -223,6 +226,7 @@ export default class App {
 		return initBadge(App.application, App.mainWindow);
 	}
 
+	/*
 	private static setupWindowManager() {
 		const windowInfoArray = [];
 		let defaultApp = null;
@@ -291,7 +295,8 @@ export default class App {
 				}, usageThreshold);
 			}
 		});
-	}
+	}*/
+
 	private static setupMenu() {
 		const isMac = process.platform === 'darwin';
 
@@ -340,15 +345,15 @@ export default class App {
 					{ role: 'paste' },
 					...(isMac
 						? ([
-								{ role: 'pasteAndMatchStyle' },
-								{ role: 'delete' },
-								{ role: 'selectAll' },
-								{ type: 'separator' },
-								{
-									label: 'Speech',
-									submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-								}
-							] as MenuItemConstructorOptions[])
+							{ role: 'pasteAndMatchStyle' },
+							{ role: 'delete' },
+							{ role: 'selectAll' },
+							{ type: 'separator' },
+							{
+								label: 'Speech',
+								submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+							}
+						] as MenuItemConstructorOptions[])
 						: ([{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }] as MenuItemConstructorOptions[]))
 				]
 			},

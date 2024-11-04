@@ -1,9 +1,9 @@
 {
   "joinStreamingRoomBS": {
-    "voice": "Voice",
+    "stream": "stream",
     "noOne":"No one's here yet!",
     "readyTalk": "When you are ready to talk, just hop in.",
-    "joinVoice": "Join Voice"
+    "joinStream": "Join Stream"
   },
   "selectAudioOutput": {
     "title": "Select Audio Output",
@@ -11,8 +11,11 @@
     "phone": "Phone"
   },
   "streamingRoom": {
-    "voice":"Voice",
+    "stream":"stream",
     "addPeople": "Add people to voice Chat",
     "leftTheGroup": "Left the group known you are here!"
-  }
+  },
+  "noStreaming": "No streaming available",
+  "chat": "Chat",
+  "noDisplay": "No display stream"
 }

@@ -2,7 +2,7 @@ import { ActiveDm, IChannel, LoadingStatus } from '@mezon/utils';
 import { EntityState, GetThunkAPI, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
-import { channelMembersActions } from '../channelmembers/channel.members';
+import { StatusUserArgs, channelMembersActions } from '../channelmembers/channel.members';
 import { channelsActions, fetchChannelsCached } from '../channels/channels.slice';
 import { hashtagDmActions } from '../channels/hashtagDm.slice';
 import { ensureSession, getMezonCtx } from '../helpers';
@@ -240,6 +240,31 @@ export const directSlice = createSlice({
 					active: 1
 				}
 			});
+		},
+		updateStatusByUserId: (state, action: PayloadAction<StatusUserArgs[]>) => {
+			const { ids, entities } = state;
+			const statusUpdates = action.payload;
+
+			for (const { userId, online } of statusUpdates) {
+				for (let index = 0; index < ids?.length; index++) {
+					const item = entities?.[ids[index]];
+					if (!item) continue;
+
+					const userIndex = item.user_id?.indexOf(userId);
+					if (userIndex === -1 || userIndex === undefined) continue;
+
+					const currentStatusOnlines = item.is_online || [];
+					const updatedStatusOnlines = [...currentStatusOnlines];
+					updatedStatusOnlines[userIndex] = online;
+
+					directAdapter.updateOne(state, {
+						id: item.id,
+						changes: {
+							is_online: updatedStatusOnlines
+						}
+					});
+				}
+			}
 		}
 	},
 	extraReducers: (builder) => {

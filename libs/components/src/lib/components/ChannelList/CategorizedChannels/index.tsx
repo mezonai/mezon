@@ -6,7 +6,6 @@ import {
 	selectCategoryExpandStateByCategoryId,
 	selectCategoryIdSortChannel,
 	selectChannelMetaEntities,
-	selectCtrlKFocusChannel,
 	selectCtrlKSelectedChannelId,
 	selectCurrentChannelId,
 	selectCurrentClan,
@@ -15,7 +14,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { ChannelThreads, EPermission, ICategory, ICategoryChannel, IChannel, MouseButton } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { CategorySetting } from '../../CategorySetting';
@@ -102,7 +101,6 @@ const CategorizedChannels: React.FC<CategorizedChannelsProps> = ({ category, cha
 
 	const [isShowCategorySetting, setIsShowCategorySetting] = useState<boolean>(false);
 	const categoryIdSortChannel = useSelector(selectCategoryIdSortChannel);
-	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
 
 	const dispatch = useAppDispatch();
 	const isShowCreateChannel = isClanOwner || hasAdminPermission || hasChannelManagePermission || hasClanPermission;
@@ -165,18 +163,6 @@ const CategorizedChannels: React.FC<CategorizedChannelsProps> = ({ category, cha
 		dispatch(categoriesActions.setCategoryExpandState(payload));
 		openModalCreateNewChannel(category);
 	};
-
-	useEffect(() => {
-		if (!ctrlKFocusChannel) return;
-		const focusChannel = ctrlKFocusChannel;
-		const { id, parentId } = focusChannel as { id: string; parentId: string };
-		if (id && parentId && parentId !== '0' && channelRefs.current) {
-			channelRefs.current[parentId]?.scrollIntoThread(id);
-		} else if (id && channelRefs.current) {
-			channelRefs.current[id]?.scrollIntoChannel();
-		}
-		dispatch(categoriesActions.setCtrlKFocusChannel(null));
-	}, [ctrlKFocusChannel]);
 
 	return (
 		<div>

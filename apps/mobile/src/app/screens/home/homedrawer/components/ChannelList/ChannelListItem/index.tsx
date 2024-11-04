@@ -11,7 +11,7 @@ import { ChannelThreads, IChannel } from '@mezon/utils';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, Linking, Platform, SafeAreaView, View } from 'react-native';
+import { DeviceEventEmitter, Linking, SafeAreaView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonBottomSheet } from '../../../../../../componentUI';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
@@ -77,7 +77,7 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 
 	const handleRouteData = useCallback(async (thread?: IChannel) => {
 		if (props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
-			bottomSheetChannelStreamingRef.current.present();
+			bottomSheetChannelStreamingRef.current?.present();
 			return;
 		}
 		if (props?.data?.type === ChannelType.CHANNEL_TYPE_VOICE) {
@@ -93,14 +93,11 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 			const clanId = thread ? thread?.clan_id : props?.data?.clan_id;
 			const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 			const store = await getStoreAsync();
-			timeoutRef.current = setTimeout(
-				async () => {
-					requestAnimationFrame(async () => {
-						store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false }));
-					});
-				},
-				Platform.OS === 'ios' ? 100 : 10
-			);
+			timeoutRef.current = setTimeout(async () => {
+				requestAnimationFrame(async () => {
+					store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false }));
+				});
+			}, 100);
 			save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 		}
 	}, []);

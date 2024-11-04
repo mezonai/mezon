@@ -11,13 +11,15 @@ import {
 } from '@mezon/store-mobile';
 import { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { memo } from 'react';
+import { ChannelType } from 'mezon-js';
+import { memo, useContext, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { MessageAttachment } from '../../../screens/home/homedrawer/components/MessageAttachment';
 import { RenderTextMarkdownContent } from '../../../screens/home/homedrawer/components/RenderTextMarkdown';
+import { threadDetailContext } from '../../ThreadDetail/MenuThreadDetail';
 import { style } from './PinMessageItem.styles';
 
 interface IPinMessageItemProps {
@@ -31,8 +33,12 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 	const styles = style(themeValue);
 	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessageItem?.channel_id, pinMessageItem?.message_id)) || {};
 	const dispatch = useAppDispatch();
+	const currentChannel = useContext(threadDetailContext);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const navigation = useNavigation<any>();
+	const isDmOrGroup = useMemo(() => {
+		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
+	}, [currentChannel]);
 
 	const handleJumpMess = () => {
 		dispatch(pinMessageActions.setJumpPinMessageId(pinMessageItem.message_id));
@@ -46,8 +52,14 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 				})
 			);
 		}
-
-		navigation.navigate(APP_SCREEN.HOME);
+		if (isDmOrGroup) {
+			navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
+				screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
+				params: { directMessageId: pinMessageItem?.channel_id }
+			});
+		} else {
+			navigation.goBack();
+		}
 	};
 
 	return (

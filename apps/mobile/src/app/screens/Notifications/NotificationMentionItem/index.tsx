@@ -1,6 +1,6 @@
 import { AVATAR_DEFAULT_URL } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectMemberClanByUserId } from '@mezon/store-mobile';
+import { selectChannelById, selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -59,7 +59,7 @@ const NotificationMentionItem = React.memo(({ notify, onLongPressNotify, onPress
 	const styles = style(themeValue);
 	const user = useSelector(selectMemberClanByUserId(notify?.sender_id || ''));
 	const { avatarImg } = useMessageSender(user as any);
-	const channelInfo = useSelector(selectChannelById(notify?.content?.channel_id));
+	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channel_id || ''));
 	const data = parseObject(notify?.content);
 
 	const { messageTimeDifference } = useMessageParser(data);

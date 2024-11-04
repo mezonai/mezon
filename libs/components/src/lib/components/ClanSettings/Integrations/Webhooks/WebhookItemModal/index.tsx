@@ -7,7 +7,8 @@ import {
 	selectTheme,
 	settingClanStickerActions,
 	updateWebhookBySpecificId,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
@@ -95,7 +96,8 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel }: IExpendedWebhookM
 	const currentClanId = useSelector(selectCurrentClanId);
 	const avatarRef = useRef<HTMLInputElement>(null);
 
-	const webhookChannel = useSelector(selectChannelById(webhookItem.channel_id as string));
+	const webhookChannel = useAppSelector((state) => selectChannelById(state, webhookItem.channel_id ?? '')) || {};
+
 	const [dropdownValue, setDropdownValue] = useState(webhookChannel.channel_label);
 
 	const [dataForUpdate, setDataForUpdate] = useState<IDataForUpdate>({

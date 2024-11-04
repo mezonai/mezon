@@ -6,7 +6,6 @@ import { ChannelSetting } from '../../../components/ChannelSetting';
 import SearchMessageChannel from '../../../components/ThreadDetail/SearchMessageChannel';
 import { ChannelPermissionSetting } from '../../../screens/channelPermissionSetting';
 import { AdvancedPermissionOverrides } from '../../../screens/channelPermissionSetting/AdvancedPermissionOverrides';
-import StreamingRoom from '../../../screens/home/homedrawer/components/StreamingRoom';
 import { APP_SCREEN } from '../../ScreenTypes';
 
 type StackMenuChannelScreen = typeof APP_SCREEN.MENU_CHANNEL.STACK;
@@ -62,14 +61,6 @@ export function MenuChannelStacks({}: any) {
 			<Stack.Screen name={APP_SCREEN.MENU_CHANNEL.CHANNEL_PERMISSION} component={ChannelPermissionSetting} />
 			<Stack.Screen name={APP_SCREEN.MENU_CHANNEL.CHANGE_CATEGORY} component={ChangeCategory} />
 			<Stack.Screen name={APP_SCREEN.MENU_CHANNEL.ADVANCED_PERMISSION_OVERRIDES} component={AdvancedPermissionOverrides} />
-			<Stack.Screen
-				options={{
-					headerShown: false,
-					headerLeftLabelVisible: false
-				}}
-				name={APP_SCREEN.MENU_CHANNEL.STREAMING_ROOM}
-				component={StreamingRoom}
-			/>
 		</Stack.Navigator>
 	);
 }

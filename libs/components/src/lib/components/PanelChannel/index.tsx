@@ -16,7 +16,8 @@ import {
 	selectSelectedChannelNotificationSetting,
 	stickerSettingActions,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import {
 	ENotificationTypes,
@@ -89,7 +90,9 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const [defaultNotifiName, setDefaultNotifiName] = useState('');
 	const defaultNotificationCategory = useSelector(selectDefaultNotificationCategory);
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
-	const currentChannel = useSelector(selectChannelById(selectedChannel || ''));
+
+	const currentChannel = useAppSelector((state) => selectChannelById(state, selectedChannel ?? '')) || {};
+
 	const currentUserId = useSelector(selectCurrentUserId);
 	const currentCategory = useSelector(selectCategoryById(channel?.category_id || ''));
 	const hasModalInChild = useSelector(hasGrandchildModal);
@@ -458,7 +461,9 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 								))}
 							</Dropdown>
 						)}
-						{currentChannel.creator_id !== currentUserId && <ItemPanel onClick={handleOpenModalConfirm} children="Leave Thread" danger />}
+						{currentChannel?.creator_id !== currentUserId && (
+							<ItemPanel onClick={handleOpenModalConfirm} children="Leave Thread" danger />
+						)}
 					</GroupPanels>
 
 					{canManageThread && (

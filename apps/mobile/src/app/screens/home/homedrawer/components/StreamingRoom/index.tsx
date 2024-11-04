@@ -1,3 +1,4 @@
+import { useAuth } from '@mezon/core';
 import {
 	ActionEmitEvent,
 	changeClan,
@@ -10,95 +11,57 @@ import {
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	STORAGE_PREVIOUS_CHANNEL
 } from '@mezon/mobile-components';
-import { baseColor, Block, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, Block, Metrics, size, useTheme } from '@mezon/mobile-ui';
+import { selectCurrentStreamInfo, selectStreamMembersByChannelId, useAppDispatch, usersStreamActions, videoStreamActions } from '@mezon/store';
 import { selectCurrentClanId } from '@mezon/store-mobile';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, DeviceEventEmitter, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { DeviceEventEmitter, SafeAreaView, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
-import { InviteToChannel } from '..';
 import { MezonBottomSheet } from '../../../../../componentUI';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
-import SelectAudio from './SelectAudio';
+import { IModeKeyboardPicker } from '../BottomKeyboardPicker';
+import { InviteToChannel } from '../InviteToChannel';
+import { ChatBoxStreamComponent } from './ChatBoxStream';
+import FooterChatBoxStream from './ChatBoxStream/FooterChatBoxStream';
 import { style } from './StreamingRoom.styles';
-import StreamingScreen from './StreamingScreen';
+import { StreamingScreenComponent } from './StreamingScreen';
 import UserStreamingRoom from './UserStreamingRoom';
 
-export default function StreamingRoom() {
-	const [menuVisible, setMenuVisible] = useState(true);
-	const animatedValueMenuHeader = useRef(new Animated.Value(-200)).current;
-	const animatedValueMenuFooter = useRef(new Animated.Value(200)).current;
-	const hideMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+function StreamingRoom({
+	onPressMinimizeRoom,
+	isAnimationComplete
+}: {
+	onPressMinimizeRoom: (isAnimationComplete: boolean) => void;
+	isAnimationComplete: boolean;
+}) {
+	const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [isMute, setIsMute] = useState<boolean>(false);
-	const [isVideoCall, setIsVideoCall] = useState<boolean>(false);
 	const navigation = useNavigation<any>();
 	const bottomSheetInviteRef = useRef(null);
-	const bottomSheetSelectAudioRef = useRef(null);
+	const bottomSheetChatRef = useRef(null);
+	const panelKeyboardRef = useRef(null);
 	const { t } = useTranslation(['streamingRoom']);
 	const currentClanId = useSelector(selectCurrentClanId);
+	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
+	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
+	const { userProfile } = useAuth();
+	const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		showMenu();
-	}, []);
-
-	const showMenu = () => {
-		setMenuVisible(true);
-		Animated.timing(animatedValueMenuHeader, {
-			toValue: 0,
-			duration: 300,
-			useNativeDriver: true
-		}).start();
-
-		Animated.timing(animatedValueMenuFooter, {
-			toValue: 0,
-			duration: 300,
-			useNativeDriver: true
-		}).start();
-
-		if (hideMenuTimeout.current) {
-			clearTimeout(hideMenuTimeout.current);
+	const handleLeaveChannel = async () => {
+		if (currentStreamInfo) {
+			dispatch(videoStreamActions.stopStream());
 		}
-		hideMenuTimeout.current = setTimeout(() => {
-			hideMenu();
-		}, 3000);
+		const idStreamByMe = streamChannelMember?.find((member) => member?.user_id === userProfile?.user?.id)?.id;
+		dispatch(usersStreamActions.remove(idStreamByMe || ''));
 	};
 
-	const hideMenu = () => {
-		Animated.timing(animatedValueMenuHeader, {
-			toValue: -400,
-			duration: 300,
-			useNativeDriver: true
-		}).start(() => setMenuVisible(false));
-
-		Animated.timing(animatedValueMenuFooter, {
-			toValue: 400,
-			duration: 300,
-			useNativeDriver: true
-		}).start();
-	};
-
-	const handlePress = () => {
-		if (menuVisible) {
-			hideMenu();
-		} else {
-			showMenu();
-		}
-	};
-
-	const handleMuteOrUnMute = () => {
-		setIsMute(!isMute);
-	};
-
-	const handleVideoCall = () => {
-		setIsVideoCall(!isVideoCall);
-	};
-
-	const handleEndCall = () => {
+	const handleEndCall = useCallback(() => {
 		requestAnimationFrame(async () => {
+			handleLeaveChannel();
 			const previousChannel = load(STORAGE_PREVIOUS_CHANNEL) || [];
 			navigation.navigate(APP_SCREEN.HOME);
 			navigation.dispatch(DrawerActions.openDrawer());
@@ -114,101 +77,100 @@ export default function StreamingRoom() {
 			jumpToChannel(channel_id, clan_id);
 			remove(STORAGE_PREVIOUS_CHANNEL);
 		});
-	};
+	}, []);
 
-	const handleVoice = () => {
-		bottomSheetSelectAudioRef.current.present();
-	};
 	const handleAddPeopleToVoice = () => {
 		bottomSheetInviteRef.current.present();
 	};
+	const handelFullScreenVideo = useCallback(() => {
+		setIsFullScreen(!isFullScreen);
+	}, [isFullScreen]);
+	const onShowKeyboardBottomSheet = useCallback((isShow: boolean, height: number, type?: IModeKeyboardPicker) => {
+		if (panelKeyboardRef?.current) {
+			panelKeyboardRef.current?.onShowKeyboardBottomSheet(isShow, height, type);
+		}
+	}, []);
+
+	const handleShowChat = () => {
+		bottomSheetChatRef.current.present();
+	};
 
 	return (
-		<TouchableWithoutFeedback onPress={handlePress}>
+		<SafeAreaView>
 			<LinearGradient
 				start={{ x: 0, y: 0 }}
 				end={{ x: 1, y: 1 }}
 				colors={[baseColor.blurple, baseColor.purple, baseColor.blurple, baseColor.purple]}
-				style={styles.bgVoice}
+				style={{
+					width: isAnimationComplete ? (isFullScreen ? Metrics.screenHeight : Metrics.screenWidth) : 200,
+					height: isAnimationComplete ? (isFullScreen ? Metrics.screenWidth : Metrics.screenHeight) : 100
+				}}
 			>
-				<View style={styles.container}>
-					<Animated.View style={[styles.menuHeader, { transform: [{ translateY: animatedValueMenuHeader }] }]}>
-						<Block flexDirection="row" alignItems="center" gap={size.s_20}>
-							<TouchableOpacity style={styles.buttonCircle}>
-								<Icons.ChevronSmallDownIcon />
-							</TouchableOpacity>
+				<Block style={styles.container}>
+					{!isFullScreen && isAnimationComplete && (
+						<Block style={[styles.menuHeader]}>
+							<Block flexDirection="row" alignItems="center" gap={size.s_20}>
+								<TouchableOpacity
+									onPress={() => {
+										onPressMinimizeRoom(false);
+									}}
+									style={styles.buttonCircle}
+								>
+									<Icons.ChevronSmallDownIcon />
+								</TouchableOpacity>
+							</Block>
+							<Block flexDirection="row" alignItems="center" gap={size.s_20}>
+								<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.buttonCircle}>
+									<Icons.UserPlusIcon />
+								</TouchableOpacity>
+							</Block>
+						</Block>
+					)}
 
-							<TouchableOpacity style={styles.btnVoice}>
-								<Text style={styles.textMenuItem}>{t('streamingRoom.voice')}</Text>
-								<Icons.ChevronSmallRightIcon />
-							</TouchableOpacity>
-						</Block>
-						<Block flexDirection="row" alignItems="center" gap={size.s_20}>
-							<TouchableOpacity onPress={handleVoice} style={styles.buttonCircle}>
-								<Icons.VoiceNormalIcon />
-							</TouchableOpacity>
-							<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.buttonCircle}>
-								<Icons.UserPlusIcon />
-							</TouchableOpacity>
-						</Block>
-					</Animated.View>
-					{/* user screen */}
-					<Block style={styles.userStreamingRoomContainer}>
-						<StreamingScreen />
-						<UserStreamingRoom />
+					<Block
+						style={{
+							...styles.userStreamingRoomContainer,
+							width: isAnimationComplete ? (isFullScreen ? '100%' : '100%') : '100%',
+							height: isAnimationComplete ? (isFullScreen ? '100%' : '60%') : '100%'
+						}}
+					>
+						<StreamingScreenComponent
+							streamID={currentStreamInfo?.streamId}
+							isAnimationComplete={isAnimationComplete}
+							onFullScreenVideo={handelFullScreenVideo}
+						/>
 					</Block>
-					{/* user screen */}
-					<Animated.View style={[styles.menuFooter, { transform: [{ translateY: animatedValueMenuFooter }] }]}>
-						<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.addPeopleBtn}>
-							<Icons.UserPlusIcon />
-							<Block>
-								<Text style={styles.textMenuItem}>{t('streamingRoom.addPeople')}</Text>
-								<Text style={styles.subTitle}>{t('streamingRoom.leftTheGroup')}</Text>
-							</Block>
-							<Icons.ChevronSmallRightIcon />
-						</TouchableOpacity>
-						<Block borderRadius={size.s_40} backgroundColor={themeValue.secondary}>
-							<TouchableOpacity style={styles.lineBtn}>
-								<Block
-									width={size.s_50}
-									height={size.s_6}
-									borderRadius={size.s_4}
-									backgroundColor={themeValue.badgeHighlight}
-								></Block>
-							</TouchableOpacity>
-							<Block
-								gap={size.s_10}
-								flexDirection="row"
-								alignItems="center"
-								justifyContent="space-between"
-								paddingHorizontal={size.s_14}
-								paddingBottom={size.s_14}
-							>
-								<TouchableOpacity onPress={handleVideoCall} style={styles.menuIcon}>
-									{isVideoCall ? <Icons.VideoIcon /> : <Icons.VideoSlashIcon />}
-								</TouchableOpacity>
-								<TouchableOpacity onPress={handleMuteOrUnMute} style={styles.menuIcon}>
-									{isMute ? <Icons.SpeakerMuteIcon /> : <Icons.SpeakerUnMuteIcon />}
-								</TouchableOpacity>
+					{!isFullScreen && isAnimationComplete && <UserStreamingRoom streamChannelMember={streamChannelMember} />}
+					{!isFullScreen && isAnimationComplete && (
+						<Block style={[styles.menuFooter]}>
+							<Block borderRadius={size.s_40} backgroundColor={themeValue.secondary}>
+								<Block gap={size.s_40} flexDirection="row" alignItems="center" justifyContent="space-between" padding={size.s_14}>
+									<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
+										<Icons.ChatIcon />
+									</TouchableOpacity>
 
-								<TouchableOpacity style={styles.menuIcon}>
-									<Icons.ChatIcon />
-								</TouchableOpacity>
-								<TouchableOpacity style={styles.menuIcon}>
-									<Icons.AppActivitiesIcon />
-								</TouchableOpacity>
-								<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-									<Icons.PhoneCallIcon />
-								</TouchableOpacity>
+									<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
+										<Icons.PhoneCallIcon />
+									</TouchableOpacity>
+								</Block>
 							</Block>
 						</Block>
-					</Animated.View>
-				</View>
+					)}
+				</Block>
 				<InviteToChannel isUnknownChannel={false} ref={bottomSheetInviteRef} />
-				<MezonBottomSheet snapPoints={['40%']} ref={bottomSheetSelectAudioRef}>
-					<SelectAudio />
+
+				<MezonBottomSheet
+					footer={<FooterChatBoxStream onShowKeyboardBottomSheet={onShowKeyboardBottomSheet} />}
+					title={t('chat')}
+					titleSize={'md'}
+					snapPoints={['100%']}
+					ref={bottomSheetChatRef}
+				>
+					<ChatBoxStreamComponent ref={panelKeyboardRef} />
 				</MezonBottomSheet>
 			</LinearGradient>
-		</TouchableWithoutFeedback>
+		</SafeAreaView>
 	);
 }
+
+export default React.memo(StreamingRoom);

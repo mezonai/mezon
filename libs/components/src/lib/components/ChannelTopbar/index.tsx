@@ -22,7 +22,8 @@ import {
 	selectStatusMenu,
 	selectTheme,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IChannel, checkIsThread } from '@mezon/utils';
@@ -102,7 +103,10 @@ const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }:
 
 	const appearanceTheme = useSelector(selectTheme);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
-	const channelParent = useSelector(selectChannelById(channel?.parrent_id ? (channel.parrent_id as string) : ''));
+
+	const channelParent =
+		useAppSelector((state) => selectChannelById(state, (channel?.parrent_id ? (channel.parrent_id as string) : '') ?? '')) || {};
+
 	return (
 		<>
 			<div className="justify-start items-center gap-1 flex">
@@ -113,7 +117,7 @@ const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }:
 					<div className="justify-end items-center gap-2 flex">
 						<div className="hidden sbm:flex">
 							<div className="relative justify-start items-center gap-[15px] flex mr-4">
-								{!channelParent && !isMemberPath && <CanvasButton isLightMode={appearanceTheme === 'light'} />}
+								{!channelParent?.channel_label && !isMemberPath && <CanvasButton isLightMode={appearanceTheme === 'light'} />}
 								<ThreadButton isLightMode={appearanceTheme === 'light'} />
 								<MuteButton isLightMode={appearanceTheme === 'light'} />
 								<PinButton isLightMode={appearanceTheme === 'light'} />

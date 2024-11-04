@@ -1,7 +1,7 @@
 import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 	StyleSheet.create({
 		container: {
 			backgroundColor: colors.secondary,
@@ -16,17 +16,17 @@ export const style = (colors: Attributes) =>
 
 		backgroundListIcon: {
 			flexDirection: 'row',
-			gap: 10,
-			paddingTop: 15,
+			gap: size.s_10,
+			paddingTop: size.s_15,
 			justifyContent: 'flex-end',
-			paddingRight: 15
+			paddingRight: size.s_15
 		},
 
 		backgroundSetting: {
 			backgroundColor: colors.secondary,
 			height: size.s_30,
 			width: size.s_30,
-			borderRadius: 50,
+			borderRadius: size.s_50,
 			alignItems: 'center',
 			justifyContent: 'center',
 			gap: 5,
@@ -35,19 +35,19 @@ export const style = (colors: Attributes) =>
 
 		text: {
 			color: colors.text,
-			fontSize: size.medium
+			fontSize: isTabletLandscape ? size.label : size.medium
 		},
 
 		whiteText: {
 			color: Colors.white,
 			marginLeft: 10,
-			fontSize: size.medium
+			fontSize: isTabletLandscape ? size.label : size.medium
 		},
 
 		textTitle: {
 			color: colors.textStrong,
 			fontWeight: 'bold',
-			fontSize: size.s_12
+			fontSize: isTabletLandscape ? size.s_16 : size.s_12
 		},
 
 		button: {
@@ -64,12 +64,12 @@ export const style = (colors: Attributes) =>
 
 		viewImageProfile: {
 			position: 'absolute',
-			width: size.s_100,
-			height: size.s_100,
-			borderRadius: size.s_50,
+			width: isTabletLandscape ? size.s_100 * 1.4 : size.s_100,
+			height: isTabletLandscape ? size.s_100 * 1.4 : size.s_100,
+			borderRadius: isTabletLandscape ? size.s_70 : size.s_50,
 			backgroundColor: colors.secondary,
-			left: size.s_18,
-			bottom: -size.s_50,
+			left: isTabletLandscape ? size.s_30 : size.s_18,
+			bottom: isTabletLandscape ? -size.s_100 : -size.s_50,
 			borderWidth: 5,
 			borderColor: colors.secondary
 		},
@@ -82,13 +82,13 @@ export const style = (colors: Attributes) =>
 		},
 
 		dotStatusUser: {
-			right: size.s_6,
-			bottom: size.s_2
+			right: isTabletLandscape ? size.s_12 : size.s_6,
+			bottom: isTabletLandscape ? size.s_4 : size.s_2
 		},
 
 		contentContainer: {
 			backgroundColor: colors.primary,
-			borderRadius: 20,
+			borderRadius: size.s_20,
 			padding: size.s_18,
 			marginTop: size.s_20,
 			borderWidth: 1,
@@ -114,10 +114,20 @@ export const style = (colors: Attributes) =>
 			gap: size.s_10,
 			flex: 1
 		},
+		buttonListLandscape: {
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+			alignSelf: 'flex-end',
+			marginTop: size.s_20,
+			marginRight: size.s_30,
+			gap: size.s_30,
+			width: '40%',
+			flex: 1
+		},
 		contentWrapper: {
-			paddingHorizontal: size.s_18,
+			paddingHorizontal: isTabletLandscape ? size.s_30 : size.s_18,
 			width: '100%',
-			marginTop: size.s_60
+			marginTop: isTabletLandscape ? size.s_40 : size.s_60
 		},
 		imageContainer: {
 			position: 'absolute'
@@ -132,7 +142,7 @@ export const style = (colors: Attributes) =>
 		imgWrapper: {
 			width: '100%',
 			height: '100%',
-			borderRadius: size.s_50
+			borderRadius: isTabletLandscape ? size.s_70 : size.s_50
 		},
 		imgList: {
 			flexDirection: 'row',

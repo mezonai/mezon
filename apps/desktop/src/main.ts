@@ -45,6 +45,38 @@ ipcMain.on(NAVIGATE_TO_URL, async (event, path, isSubPath) => {
 	}
 });
 
+ipcMain.on('TITLE_BAR_ACTION', (event, action, data) => {
+	switch (action) {
+		case 'MINIMIZE_WINDOW':
+			if (App.mainWindow) {
+				App.mainWindow.minimize();
+			}
+			break;
+		case 'UNMAXIMIZE_WINDOW':
+			if (App.mainWindow) {
+				if (App.mainWindow.isMaximized()) {
+					App.mainWindow.unmaximize();
+				} else {
+					App.mainWindow.maximize();
+				}
+			}
+			break;
+		case 'MAXIMIZE_WINDOW':
+			if (App.mainWindow) {
+				if (App.mainWindow.isMaximized()) {
+					App.mainWindow.restore();
+				} else {
+					App.mainWindow.maximize();
+				}
+			}
+			break;
+		case 'CLOSE_APP':
+			if (App.mainWindow) {
+				App.mainWindow.close();
+			}
+			break;
+	}
+});
 autoUpdater.autoDownload = false;
 autoUpdater.logger = log;
 
@@ -53,20 +85,8 @@ autoUpdater.on('checking-for-update', () => {
 });
 
 autoUpdater.on('update-available', (info: UpdateInfo) => {
-	const window = App.BrowserWindow.getFocusedWindow();
-	dialog
-		.showMessageBox(window, {
-			icon: 'apps/desktop/src/assets/desktop-taskbar-256x256.ico',
-			type: 'info',
-			buttons: ['Download', 'Cancel'],
-			title: 'Updates available',
-			message: `The current version is ${app.getVersion()}. There is a new update for the app ${info.version}. Do you want to download?`
-		})
-		.then((result) => {
-			if (result.response === 0) {
-				autoUpdater.downloadUpdate();
-			}
-		});
+	log.info(`The current version is ${app.getVersion()}. There is a new update for the app ${info.version}. Do you want to download?`);
+	autoUpdater.downloadUpdate();
 });
 
 autoUpdater.on('update-not-available', (info: UpdateInfo) => {
@@ -78,27 +98,13 @@ autoUpdater.on('update-not-available', (info: UpdateInfo) => {
 });
 
 autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
-	const window = App.BrowserWindow.getFocusedWindow();
-	dialog
-		.showMessageBox(window, {
-			type: 'info',
-			buttons: ['Install now', 'Cancel'],
-			title: 'Mezon install',
-			message: `The current version is ${app.getVersion()}. Install ${info.version} now.`
-		})
-		.then((result) => {
-			if (result.response === 0) {
-				const windows = App.BrowserWindow.getAllWindows();
-				windows.forEach((window) => {
-					window.removeAllListeners('close');
-					window.close();
-				});
-				autoUpdater.quitAndInstall();
-				setTimeout(() => {
-					App.application.quit();
-				}, 10000);
-			}
-		});
+	log.info(`The current version is ${app.getVersion()}. Install ${info.version} now.`);
+	const windows = App.BrowserWindow.getAllWindows();
+	windows.forEach((window) => {
+		window.removeAllListeners('close');
+		window.close();
+	});
+	autoUpdater.quitAndInstall(true, true);
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
@@ -120,3 +126,4 @@ Main.initialize();
 // bootstrap app
 Main.bootstrapApp();
 Main.bootstrapAppEvents();
+

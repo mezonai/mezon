@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Canvas, FileUploadByDnD, MemberList, SearchMessageChannelRender, TooManyUpload } from '@mezon/components';
 import { useDragAndDrop, usePermissionChecker, useResetCountChannelBadge, useSearchMessages, useWindowFocusState } from '@mezon/core';
 import {
+	ChannelsEntity,
 	channelMetaActions,
 	channelsActions,
 	clansActions,
@@ -19,10 +21,11 @@ import {
 	selectStatusMenu,
 	selectTheme,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import { EOverriddenPermission, SubPanelName, TIME_OFFSET } from '@mezon/utils';
+import { EOverriddenPermission, SubPanelName, TIME_OFFSET, isWindowsDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { DragEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -32,7 +35,8 @@ import { ChannelTyping } from './ChannelTyping';
 
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectChannelById(channelId));
+	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
+
 	const statusFetchChannel = useSelector(selectFetchChannelStatus);
 	const resetBadgeCount = !useSelector(selectAnyUnreadChannels);
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
@@ -54,12 +58,19 @@ function useChannelSeen(channelId: string) {
 		if (!numberNotification && resetBadgeCount) {
 			dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: 0, isReset: true }));
 		}
-	}, [currentChannel.id, statusFetchChannel, isFocusDesktop, isTabVisible]);
+	}, [currentChannel?.id, statusFetchChannel, isFocusDesktop, isTabVisible]);
 	const previousChannelId = useSelector(selectPreviousChannels)[1];
-	const previousChannel = useSelector(selectChannelById(previousChannelId));
+	const previousChannel = useAppSelector((state) => selectChannelById(state, previousChannelId)) || {};
+
 	useEffect(() => {
 		resetCountChannelBadge(previousChannel);
 	}, [previousChannelId]);
+	useEffect(() => {
+		if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
+			const channelWithActive = { ...currentChannel, active: 1 };
+			dispatch(channelsActions.upsertOne(channelWithActive as ChannelsEntity));
+		}
+	}, [currentChannel.channel_id]);
 }
 
 function ChannelSeenListener({ channelId }: { channelId: string }) {
@@ -68,10 +79,12 @@ function ChannelSeenListener({ channelId }: { channelId: string }) {
 }
 
 const ChannelMainContentText = ({ channelId }: ChannelMainContentProps) => {
-	const currentChannel = useSelector(selectChannelById(channelId));
+	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
+
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
-	const mode = currentChannel.type === ChannelType.CHANNEL_TYPE_TEXT ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD;
+	const mode =
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_TEXT ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD;
 
 	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState(true);
 
@@ -112,7 +125,7 @@ const ChannelMainContentText = ({ channelId }: ChannelMainContentProps) => {
 				<ChannelMessageBox.Skeleton />
 			)}
 			{currentChannel && (
-				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel.channel_private : false} />
+				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
 			)}
 		</div>
 	);
@@ -124,7 +137,7 @@ type ChannelMainContentProps = {
 
 const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectChannelById(channelId));
+	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const { draggingState, setDraggingState, isOverUploading, setOverUploadingState } = useDragAndDrop();
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const isSearchMessage = useSelector(selectIsSearchMessage(channelId));
@@ -169,7 +182,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 		}
 	}, [appChannel?.url]);
 
-	return currentChannel.type === ChannelType.CHANNEL_TYPE_APP ? (
+	return currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
 		appChannel?.url ? (
 			<iframe title={appChannel?.url} src={appChannel?.url} className={'w-full h-full'}></iframe>
 		) : (
@@ -189,25 +202,25 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				<div className={`flex flex-row ${closeMenu ? 'h-heightWithoutTopBarMobile' : 'h-heightWithoutTopBar'}`}>
 					{!isShowCanvas && (
 						<div
-							className={`flex flex-col flex-1 min-w-60 ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING && 'hidden'} z-10`}
+							className={`flex flex-col flex-1 min-w-60 ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && 'hidden'} z-10`}
 						>
 							<div
-								className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? 'h-heightMessageViewChatMobile' : 'h-heightMessageViewChat'}`}
+								className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindowsDesktop ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindowsDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}
 								ref={messagesContainerRef}
 							>
 								<ChannelMedia currentChannel={currentChannel} key={currentChannel?.channel_id} />
 							</div>
-							<ChannelMainContentText channelId={currentChannel?.id as string} />
+							<ChannelMainContentText channelId={currentChannel?.channel_id as string} />
 						</div>
 					)}
-					{isShowCanvas && currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING && (
+					{isShowCanvas && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && (
 						<div
 							className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
 						>
 							<Canvas />
 						</div>
 					)}
-					{isShowMemberList && currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING && (
+					{isShowMemberList && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && (
 						<div
 							onContextMenu={(event) => event.preventDefault()}
 							className={` dark:bg-bgSecondary bg-bgLightSecondary text-[#84ADFF] relative overflow-y-scroll hide-scrollbar ${currentChannel?.type === ChannelType.CHANNEL_TYPE_VOICE ? 'hidden' : 'flex'} ${closeMenu && !statusMenu && isShowMemberList ? 'w-full' : 'w-widthMemberList'}`}
@@ -218,7 +231,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 						</div>
 					)}
 
-					{isSearchMessage && currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING && <SearchMessageChannel />}
+					{isSearchMessage && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && <SearchMessageChannel />}
 				</div>
 			</div>
 		</>

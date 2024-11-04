@@ -9,6 +9,7 @@ import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import LeftDrawerContent from './homedrawer/DrawerContent';
 import HomeDefault from './homedrawer/HomeDefault';
+import { StreamingPopup } from './homedrawer/components/StreamingPopup';
 import { styles } from './styles';
 
 const Drawer = createDrawerNavigator();
@@ -52,40 +53,44 @@ const HomeScreen = React.memo((props: any) => {
 	}
 
 	return (
-		<Drawer.Navigator
-			screenOptions={{
-				drawerPosition: 'left',
-				drawerType: 'slide',
-				swipeEdgeWidth: Metrics.screenWidth,
-				swipeMinDistance: 5,
-				drawerStyle: {
-					width: '100%'
-				}
-			}}
-			screenListeners={{
-				state: (e) => {
-					Keyboard.dismiss();
-					if (e.data.state.history?.length > 1) {
-						dispatch(appActions.setHiddenBottomTabMobile(false));
-					} else {
-						dispatch(appActions.setHiddenBottomTabMobile(true));
-					}
-				}
-			}}
-			drawerContent={() => <LeftDrawerContent />}
-		>
-			<Drawer.Screen
-				name={APP_SCREEN.HOME_DEFAULT}
-				component={HomeDefault}
-				options={{
-					drawerType: 'slide',
+		<View style={{ flex: 1, position: 'relative' }}>
+			<StreamingPopup />
+			<Drawer.Navigator
+				screenOptions={{
+					drawerPosition: 'left',
+					drawerType: 'back',
+					freezeOnBlur: true,
 					swipeEdgeWidth: Metrics.screenWidth,
-					keyboardDismissMode: 'none',
 					swipeMinDistance: 5,
-					headerShown: false
+					drawerStyle: {
+						width: '100%'
+					}
 				}}
-			/>
-		</Drawer.Navigator>
+				screenListeners={{
+					state: (e) => {
+						Keyboard.dismiss();
+						if (e.data.state.history?.length > 1) {
+							dispatch(appActions.setHiddenBottomTabMobile(false));
+						} else {
+							dispatch(appActions.setHiddenBottomTabMobile(true));
+						}
+					}
+				}}
+				drawerContent={() => <LeftDrawerContent />}
+			>
+				<Drawer.Screen
+					name={APP_SCREEN.HOME_DEFAULT}
+					component={HomeDefault}
+					options={{
+						drawerType: 'back',
+						swipeEdgeWidth: Metrics.screenWidth,
+						keyboardDismissMode: 'none',
+						swipeMinDistance: 5,
+						headerShown: false
+					}}
+				/>
+			</Drawer.Navigator>
+		</View>
 	);
 });
 
