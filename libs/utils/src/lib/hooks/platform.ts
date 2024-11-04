@@ -11,7 +11,7 @@ export enum Platform {
 }
 
 export const getPlatform = (): Platform => {
-	const userAgent = navigator.userAgent.toLowerCase();
+	const userAgent = navigator?.userAgent?.toLowerCase();
 
 	if (/android/.test(userAgent)) {
 		return Platform.ANDROID;

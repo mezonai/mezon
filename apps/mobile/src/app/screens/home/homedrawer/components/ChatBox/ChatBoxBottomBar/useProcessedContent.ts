@@ -36,7 +36,6 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 
 	const singleBacktick = '`';
 	const tripleBacktick = '```';
-	const httpPrefix = 'http';
 	const googleMeetPrefix = 'https://meet.google.com/';
 	const colon = ':';
 
@@ -64,10 +63,10 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 					});
 				}
 			}
-		} else if (inputString.startsWith(httpPrefix, i)) {
+		} else if (inputString.startsWith('http://', i) || inputString.startsWith('https://', i)) {
 			// Link processing
 			const startindex = i;
-			i += httpPrefix.length;
+			i += inputString.startsWith('https://', i) ? 'https://'.length : 'http://'.length;
 			while (i < inputString.length && ![' ', '\n', '\r', '\t'].includes(inputString[i])) {
 				i++;
 			}

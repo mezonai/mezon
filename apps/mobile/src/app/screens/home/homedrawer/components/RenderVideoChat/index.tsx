@@ -14,7 +14,7 @@ export const RenderVideoChat = React.memo(
 		useEffect(() => {
 			let timeout;
 			Audio.setAudioModeAsync({
-				interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+				interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
 				playsInSilentModeIOS: true,
 				allowsRecordingIOS: false,
 				staysActiveInBackground: false

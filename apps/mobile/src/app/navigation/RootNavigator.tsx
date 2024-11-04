@@ -109,6 +109,7 @@ const NavigationMain = () => {
 
 	const refreshMessageInitApp = useCallback(async () => {
 		const store = await getStoreAsync();
+		store.dispatch(appActions.setLoadingMainMobile(false));
 		if (currentChannelId) {
 			store.dispatch(
 				messagesActions.fetchMessages({
@@ -135,6 +136,7 @@ const NavigationMain = () => {
 			const store = await getStoreAsync();
 			handleReconnect('Initial reconnect attempt');
 			store.dispatch(appActions.setLoadingMainMobile(false));
+			await notifee.cancelAllNotifications();
 			const promise = [
 				store.dispatch(
 					messagesActions.fetchMessages({

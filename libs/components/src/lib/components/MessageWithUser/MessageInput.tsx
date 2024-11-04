@@ -23,6 +23,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Mention, MentionsInput, OnChangeHandlerFunc } from 'react-mentions';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalDeleteMess from '../../components/DeleteMessageModal/ModalDeleteMess';
 import CustomModalMentions from '../../components/MessageBox/ReactionMentionInput/CustomModalMentions';
@@ -60,6 +61,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 	const mentionListData = UserMentionList({ channelID: channelId, channelMode: mode });
 	const rolesClan = useSelector(selectAllRolesClan);
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
+	const [showModal, closeModal] = useModal(() => {
+		return <ModalDeleteMess mess={message} closeModal={closeModal} mode={mode} />;
+	}, [message?.id]);
 
 	const queryEmojis = (query: string, callback: (data: any[]) => void) => {
 		if (query.length === 0) return;
@@ -69,8 +73,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			.map((emojiDisplay) => ({ id: emojiDisplay?.id, display: emojiDisplay?.shortname }));
 		callback(matches);
 	};
-
-	const [openModalDelMess, setOpenModalDelMess] = useState(false);
 	const channels = useSelector(selectAllChannels);
 
 	const listChannelsMention = useMemo(() => {
@@ -137,9 +139,10 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 			e.stopPropagation();
+			textareaRef.current?.blur();
 
 			if (draftContent === '') {
-				setOpenModalDelMess(true);
+				showModal();
 			} else if (draftContent === originalContent) {
 				handleCancelEdit();
 			} else {
@@ -156,7 +159,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 
 	const handleSave = () => {
 		if (draftContent === '') {
-			return setOpenModalDelMess(true);
+			textareaRef.current?.blur();
+			return showModal();
 		} else if (draftContent !== '' && draftContent === originalContent) {
 			return handleCancelEdit();
 		} else {
@@ -331,15 +335,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 					</p>
 				</div>
 			</div>
-			{openModalDelMess && (
-				<ModalDeleteMess
-					channelId={channelId}
-					channelLable={channelLabel}
-					mess={message}
-					closeModal={() => setOpenModalDelMess(false)}
-					mode={mode}
-				/>
-			)}
 		</div>
 	);
 };

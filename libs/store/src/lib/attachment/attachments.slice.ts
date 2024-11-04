@@ -116,7 +116,7 @@ export const attachmentSlice = createSlice({
 			const currentChannelId = action?.payload?.channelId;
 			if (state.listAttachmentsByChannel[currentChannelId]) {
 				action?.payload?.listAttachments.map((attachment) => {
-					state.listAttachmentsByChannel[currentChannelId].unshift(attachment);
+					state.listAttachmentsByChannel?.[currentChannelId]?.unshift?.(attachment);
 				});
 			}
 		}
@@ -127,7 +127,7 @@ export const attachmentSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchChannelAttachments.fulfilled, (state: AttachmentState, action) => {
-				const currentChannelId = action.payload[0].channelId as string;
+				const currentChannelId = action?.payload?.[0]?.channelId as string;
 				if (action.payload.length > 0 && !Object.prototype.hasOwnProperty.call(state.listAttachmentsByChannel, currentChannelId)) {
 					attachmentAdapter.setAll(state, action.payload);
 					state.listAttachmentsByChannel[currentChannelId] = action.payload;

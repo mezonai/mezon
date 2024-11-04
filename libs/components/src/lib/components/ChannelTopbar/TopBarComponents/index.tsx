@@ -58,7 +58,7 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 	const dispatch = useAppDispatch();
 
 	const handleRedirect = () => {
-		if (channelParent) {
+		if (channelParent?.id) {
 			navigate(toChannelPage(channelParent.id, channelParent?.clan_id ?? ''));
 		}
 		if (isShowCanvas) {

@@ -1,6 +1,8 @@
 import { useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
+import { selectOpenEditMessageState } from '@mezon/store';
 import { IMessageWithUser } from '@mezon/utils';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import MessageWithUser from '../MessageWithUser';
 
 type ModalDeleteMessProps = {
@@ -14,6 +16,8 @@ type ModalDeleteMessProps = {
 const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const { mess, closeModal, mode } = props;
 	const modalRef = useRef<HTMLDivElement>(null);
+	const isEditing = useSelector(selectOpenEditMessageState);
+	const [isInitialRender, setIsInitialRender] = useState(isEditing);
 	const { deleteSendMessage } = useDeleteMessage({
 		channelId: mess.channel_id,
 		mode: mode
@@ -28,16 +32,17 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 
 	const handleEnter = (e: any) => {
 		if (e.key === 'Enter') {
+			if (isInitialRender) {
+				setIsInitialRender(false);
+				return;
+			}
+			e.stopPropagation();
 			handleDeleteMess();
 		}
 	};
 
 	useEffect(() => {
-		document.addEventListener('keydown', handleEnter);
-
-		return () => {
-			document.removeEventListener('keydown', handleEnter);
-		};
+		modalRef?.current?.focus();
 	}, []);
 
 	useEscapeKeyClose(modalRef, closeModal);
@@ -46,6 +51,8 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 		<div
 			className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center"
 			ref={modalRef}
+			onKeyUp={handleEnter}
+			tabIndex={0}
 		>
 			<div className="w-fit h-fit dark:bg-bgPrimary bg-bgLightModeThird rounded-lg flex-col justify-start  items-start gap-3 inline-flex overflow-hidden">
 				<div className="dark:text-white text-black">

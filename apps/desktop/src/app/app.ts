@@ -78,7 +78,9 @@ export default class App {
 			height: height,
 			show: false,
 			frame: false,
-			titleBarOverlay: process.platform === 'darwin',
+			titleBarOverlay: process.platform == 'linux' || process.platform == 'darwin' ? true : false,
+			titleBarStyle: process.platform == 'linux' || process.platform == 'darwin' ? 'hidden' : 'default',
+			trafficLightPosition: process.platform == 'linux' || process.platform == 'darwin' ? { x: 15, y: 10 } : undefined,
 			webPreferences: {
 				nodeIntegration: false,
 				contextIsolation: true,
@@ -345,15 +347,15 @@ export default class App {
 					{ role: 'paste' },
 					...(isMac
 						? ([
-							{ role: 'pasteAndMatchStyle' },
-							{ role: 'delete' },
-							{ role: 'selectAll' },
-							{ type: 'separator' },
-							{
-								label: 'Speech',
-								submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-							}
-						] as MenuItemConstructorOptions[])
+								{ role: 'pasteAndMatchStyle' },
+								{ role: 'delete' },
+								{ role: 'selectAll' },
+								{ type: 'separator' },
+								{
+									label: 'Speech',
+									submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+								}
+							] as MenuItemConstructorOptions[])
 						: ([{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }] as MenuItemConstructorOptions[]))
 				]
 			},

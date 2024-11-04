@@ -173,7 +173,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }, refRBSheet: Rea
 				footer={<FooterChatBoxStream onShowKeyboardBottomSheet={onShowKeyboardBottomSheet} />}
 				title={t('chat')}
 				titleSize={'md'}
-				snapPoints={['100%']}
+				snapPoints={['90%']}
 				ref={bottomSheetChatRef}
 			>
 				<ChatBoxStreamComponent ref={panelKeyboardRef} />
