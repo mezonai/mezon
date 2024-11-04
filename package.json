@@ -68,7 +68,7 @@
     "lodash.debounce": "^4.0.8",
     "match-sorter": "^6.3.3",
     "memoizee": "^0.4.15",
-    "mezon-js": "^2.9.56",
+    "mezon-js": "^2.9.58",
     "mezon-js-protobuf": "^1.6.12",
     "minio": "^7.1.3",
     "nx-electron": "^18.0.1",
