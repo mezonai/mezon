@@ -39,7 +39,16 @@ import {
 } from '@mezon/store';
 
 import { Image } from '@mezon/ui';
-import { IClan, ModeResponsive, Platform, TIME_OF_SHOWING_FIRST_POPUP, getPlatform, isWindowsDesktop } from '@mezon/utils';
+import {
+	IClan,
+	ModeResponsive,
+	Platform,
+	TIME_OF_SHOWING_FIRST_POPUP,
+	getPlatform,
+	isLinusDesktop,
+	isMacDesktop,
+	isWindowsDesktop
+} from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -249,7 +258,7 @@ const SidebarMenu = memo(
 
 		return (
 			<div
-				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindowsDesktop ? 'mt-[21px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
+				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindowsDesktop ? 'mt-[21px]' : ''} ${isMacDesktop || isLinusDesktop ? 'mt-[15px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
 				onClick={() => handleMenu}
 				id="menu"
 			>

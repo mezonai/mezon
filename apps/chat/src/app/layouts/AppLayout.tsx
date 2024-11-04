@@ -27,8 +27,7 @@ const TitleBar = () => {
 	};
 
 	return (
-		<header id="titlebar" className={`dark:bg-bgTertiary bg-bgLightTertiary`}
-			onDoubleClick={handleDoubleClick}>
+		<header id="titlebar" className={`dark:bg-bgTertiary bg-bgLightTertiary`} onDoubleClick={handleDoubleClick}>
 			<div id="drag-region">
 				<div className="dark:text-white text-colorTextLightMode ml-3 text-[15.15px] leading-[26.58px] font-semibold text-[#FFFFFF]">
 					Mezon
@@ -108,7 +107,7 @@ const AppLayout = () => {
 
 	return (
 		<MezonUiProvider themeName={theme}>
-			<div id="app-layout">
+			<div id="app-layout" className={`${isWindowsDesktop ? 'overflow-y-hidden' : ''}`}>
 				{isWindowsDesktop && <TitleBar />}
 				<ToastController />
 				<Outlet />

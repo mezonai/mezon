@@ -51,6 +51,9 @@
   </div>
   <div id="root"></div>
   <script>
+    if (window?.electron) {
+      document.body.style.overflowY = 'hidden';
+    }
     const path = window.location.pathname;
     window?.electron?.on('reload-app', () => {
       const authData = localStorage.getItem('persist:auth');

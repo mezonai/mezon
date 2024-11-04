@@ -122,7 +122,6 @@ body {
   background-color: rgb(30 30 30 / var(--tw-bg-opacity));
   font-family: 'gg sans', sans-serif;
   user-select: none;
-  overflow-y: hidden;
 }
 
 .enableSelectText {
@@ -984,6 +983,14 @@ input:-webkit-autofill:active {
 
 .disable-hover * {
   pointer-events: none;
+}
+
+.draggable-area {
+  -webkit-app-region: drag;
+}
+
+.draggable-area * {
+  -webkit-app-region: no-drag;
 }
 
 #titlebar {
