@@ -1,9 +1,8 @@
 import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { EventManagementEntity, selectChannelById } from '@mezon/store-mobile';
+import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { linkGoogleMeet } from '../../../utils/helpers';
 import { style } from './styles';
 
@@ -15,7 +14,7 @@ export function EventLocation({ event }: IEventLocation) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const option = event.address ? OptionEvent.OPTION_LOCATION : OptionEvent.OPTION_SPEAKER;
-	const channelVoice = useSelector(selectChannelById(event?.channel_id));
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_id || ''));
 	// const channelFirst = useSelector(selectChannelFirst);
 
 	const joinVoiceChannel = async () => {

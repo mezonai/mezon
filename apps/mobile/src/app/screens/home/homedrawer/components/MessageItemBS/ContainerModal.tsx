@@ -516,20 +516,22 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 
 	useEffect(() => {
 		if (type === EMessageBSToShow?.MessageAction) {
-			AsyncStorage.getItem('recentEmojis').then((emojis) => {
-				const parsedEmojis = emojis ? JSON.parse(emojis || '{}') : [];
-				const recentEmojis = parsedEmojis
-					?.slice(0, 5)
-					?.map((item) => ({
-						shortname: item?.emoji,
-						id: item?.emojiId
-					}))
-					.reverse();
-				const uniqueEmojis = [...recentEmojis, ...emojiFakeData]?.filter((emoji, index, self) => {
-					return index === self?.findIndex((e) => e?.id === emoji?.id);
+			AsyncStorage.getItem('recentEmojis')
+				.then((emojis) => JSON.parse(emojis || '[]'))
+				.then((parsedEmojis) => {
+					const recentEmojis = parsedEmojis
+						?.reverse()
+						?.slice(0, 5)
+						?.map((item: { emoji: any; emojiId: any }) => ({
+							shortname: item.emoji,
+							id: item.emojiId
+						}));
+
+					const uniqueEmojis = [...recentEmojis, ...emojiFakeData]?.filter(
+						(emoji, index, self) => index === self?.findIndex((e) => e?.id === emoji?.id)
+					);
+					setRecentEmoji(uniqueEmojis?.slice(0, 5));
 				});
-				setRecentEmoji(uniqueEmojis?.slice(0, 5));
-			});
 		}
 	}, [type]);
 

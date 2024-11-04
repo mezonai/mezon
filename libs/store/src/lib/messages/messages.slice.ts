@@ -8,6 +8,7 @@ import {
 	IMessageWithUser,
 	LIMIT_MESSAGE,
 	LoadingStatus,
+	TypeMessage,
 	checkContinuousMessagesByCreateTimeMs,
 	checkSameDayByCreateTime,
 	getMobileUploadedAttachments,
@@ -69,6 +70,7 @@ export interface MessagesEntity extends IMessageWithUser {
 	isStartedMessageGroup?: boolean;
 	isStartedMessageOfTheDay?: boolean;
 	hide_editted?: boolean;
+	code: number;
 }
 
 export interface UserTypingState {
@@ -702,7 +704,10 @@ export const messagesSlice = createSlice({
 			}
 			const channelEntity = state.channelMessages[channelId];
 			switch (code) {
-				case 0: {
+				case TypeMessage.Welcome:
+				case TypeMessage.CreateThread:
+				case TypeMessage.CreatePin:
+				case TypeMessage.Chat: {
 					handleAddOneMessage({ state, channelId, adapterPayload: action.payload });
 
 					// update last message
@@ -738,7 +743,7 @@ export const messagesSlice = createSlice({
 
 					break;
 				}
-				case 1: {
+				case TypeMessage.ChatUpdate: {
 					channelMessagesAdapter.updateOne(channelEntity, {
 						id: action.payload.id,
 						changes: {
@@ -766,7 +771,7 @@ export const messagesSlice = createSlice({
 					}
 					break;
 				}
-				case 2: {
+				case TypeMessage.ChatRemove: {
 					handleRemoveOneMessage({ state, channelId, messageId });
 					break;
 				}

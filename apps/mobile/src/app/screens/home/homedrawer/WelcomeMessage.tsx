@@ -26,7 +26,7 @@ interface IWelcomeMessage {
 }
 
 const useCurrentChannel = (channelId: string) => {
-	const channel = useAppSelector(selectChannelById(channelId));
+	const channel = useAppSelector((state) => selectChannelById(state, channelId));
 	const dmGroup = useAppSelector(selectDmGroupCurrent(channelId));
 	return channel || dmGroup;
 };

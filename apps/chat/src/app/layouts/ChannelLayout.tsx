@@ -1,12 +1,12 @@
 import { GifStickerEmojiPopup } from '@mezon/components';
 import { useApp, useGifsStickersEmoji } from '@mezon/core';
 import {
-	selectCloseMenu,
-	selectCurrentChannel,
-	selectIsShowCreateThread,
-	selectPositionEmojiButtonSmile,
-	selectReactionTopState,
-	selectStatusMenu
+  selectCloseMenu,
+  selectCurrentChannel,
+  selectIsShowCreateThread,
+  selectPositionEmojiButtonSmile,
+  selectReactionTopState,
+  selectStatusMenu
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EmojiPlaces, SubPanelName } from '@mezon/utils';

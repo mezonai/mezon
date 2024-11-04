@@ -1,9 +1,9 @@
 {
   "joinStreamingRoomBS": {
-    "voice": "Giọng nói",
+    "stream": "Trực tuyến",
     "noOne": "Chưa có ai ở đây!",
     "readyTalk": "Khi bạn sẵn sàng nói chuyện, chỉ cần tham gia vào.",
-    "joinVoice": "Tham gia giọng nói"
+    "joinStream": "Tham gia phát trực tuyến"
   },
   "selectAudioOutput": {
     "title": "Chọn đầu ra âm thanh",
@@ -11,8 +11,10 @@
     "phone": "Điện thoại"
   },
   "streamingRoom": {
-    "voice": "Giọng nói",
+    "stream": "Trực tuyến",
     "addPeople": "Thêm người vào cuộc trò chuyện giọng nói",
     "leftTheGroup": "Đã rời nhóm, bạn đã được biết là đang ở đây!"
-  }
+  },
+   "noStreaming": "Không có phát trực tuyến",
+   "noDisplay": "Không hiển thị trực tuyến"
 }

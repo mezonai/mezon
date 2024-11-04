@@ -29,6 +29,7 @@ export type ChannelListItemRef = {
 	scrollIntoChannel: (options?: ScrollIntoViewOptions) => void;
 	scrollIntoThread: (threadId: string, options?: ScrollIntoViewOptions) => void;
 	channelId: string;
+	channelRef: ChannelLinkRef | null;
 };
 
 const ChannelListItem = React.forwardRef<ChannelListItemRef | null, ChannelListItemProp>((props, ref) => {
@@ -44,7 +45,8 @@ const ChannelListItem = React.forwardRef<ChannelListItemRef | null, ChannelListI
 		scrollIntoThread: (threadId: string, options: ScrollIntoViewOptions = { block: 'center' }) => {
 			listThreadRef.current?.scrollIntoThread(threadId, options);
 		},
-		channelId: channel?.id
+		channelId: channel?.id,
+		channelRef: channelLinkRef.current
 	}));
 
 	return (

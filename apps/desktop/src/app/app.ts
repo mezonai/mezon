@@ -77,7 +77,10 @@ export default class App {
 			width: width,
 			height: height,
 			show: false,
+			frame: false,
+			titleBarOverlay: process.platform === 'darwin',
 			webPreferences: {
+				nodeIntegration: false,
 				contextIsolation: true,
 				backgroundThrottling: false,
 				preload: join(__dirname, 'main.preload.js')
@@ -342,15 +345,15 @@ export default class App {
 					{ role: 'paste' },
 					...(isMac
 						? ([
-								{ role: 'pasteAndMatchStyle' },
-								{ role: 'delete' },
-								{ role: 'selectAll' },
-								{ type: 'separator' },
-								{
-									label: 'Speech',
-									submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-								}
-							] as MenuItemConstructorOptions[])
+							{ role: 'pasteAndMatchStyle' },
+							{ role: 'delete' },
+							{ role: 'selectAll' },
+							{ type: 'separator' },
+							{
+								label: 'Speech',
+								submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+							}
+						] as MenuItemConstructorOptions[])
 						: ([{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }] as MenuItemConstructorOptions[]))
 				]
 			},

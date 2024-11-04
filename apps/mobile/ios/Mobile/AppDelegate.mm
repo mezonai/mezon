@@ -4,6 +4,7 @@
 #import <RNGoogleSignin/RNGoogleSignin.h>
 #import <React/RCTLinkingManager.h>
 #import "RNBootSplash.h"
+#import <CodePush/CodePush.h>
 
 @implementation AppDelegate
 
@@ -42,7 +43,7 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"src/main"];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [CodePush bundleURL];
 #endif
 }
 

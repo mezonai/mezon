@@ -47,8 +47,8 @@ const useProcessMention = (
 			});
 		}
 	});
-	const userIds = uniqueUsers(mentions, membersOfChild, roles, [refereceSenderId || '']);
-	const usersNotExistingInThread = userIds.filter((userId) => membersOfParent?.some((member) => member.id === userId));
+	const userIds = uniqueUsers(mentions, membersOfChild, roles, [refereceSenderId || '']) as string[];
+	const usersNotExistingInThread = userIds.filter((userId) => membersOfParent?.some((member) => member.id === userId)) as string[];
 
 	return {
 		usersNotExistingInThread,

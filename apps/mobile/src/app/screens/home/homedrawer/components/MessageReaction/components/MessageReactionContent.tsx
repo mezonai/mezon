@@ -133,6 +133,7 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 							</View>
 						);
 					}}
+					estimatedItemSize={size.s_50}
 				/>
 			</View>
 		);

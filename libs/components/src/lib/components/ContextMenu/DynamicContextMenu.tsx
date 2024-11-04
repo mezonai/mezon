@@ -118,7 +118,7 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 
 	return (
 		<Menu id={menuId} style={className} className="z-50">
-			{checkPos && <ReactionPart emojiList={firstFourElements} activeMode={mode} messageId={messageId} />}
+			{checkPos && <ReactionPart emojiList={firstFourElements} activeMode={mode} messageId={messageId} isOption={false} />}
 
 			{children}
 		</Menu>

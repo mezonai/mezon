@@ -56,7 +56,6 @@ export const MessageReactionWrapper = React.memo(
 		);
 
 		const onReactItemLongPress = (emojiId: string) => {
-			console.log('log  => emojiId', emojiId);
 			bottomSheetRef.current?.present();
 			setCurrentEmojiSelectedId(emojiId);
 		};

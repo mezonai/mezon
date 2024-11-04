@@ -1,19 +1,16 @@
+import { ActionEmitEvent, changeClan, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import {
-	ActionEmitEvent,
-	changeClan,
-	getUpdateOrAddClanChannelCache,
-	save,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_PREVIOUS_CHANNEL
-} from '@mezon/mobile-components';
-import {
+	appActions,
 	channelsActions,
 	ChannelsEntity,
 	getStoreAsync,
 	selectAllRolesClan,
 	selectAllUserClans,
 	selectCurrentChannel,
-	selectCurrentClanId
+	selectCurrentClanId,
+	selectStatusStream,
+	useAppDispatch,
+	videoStreamActions
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -35,6 +32,8 @@ const ChannelMessageListener = React.memo(({ onMessageAction }: ChannelMessageLi
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const navigation = useNavigation<any>();
+	const playStream = useSelector(selectStatusStream);
+	const dispatch = useAppDispatch();
 
 	const onMention = useCallback(
 		async (mentionedUser: string) => {
@@ -65,11 +64,17 @@ const ChannelMessageListener = React.memo(({ onMessageAction }: ChannelMessageLi
 					const urlVoice = `${linkGoogleMeet}${channel?.meeting_code}`;
 					await Linking.openURL(urlVoice);
 				} else if ([ChannelType.CHANNEL_TYPE_TEXT, ChannelType.CHANNEL_TYPE_STREAMING].includes(type)) {
-					if (type === ChannelType.CHANNEL_TYPE_STREAMING) {
-						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
-							screen: APP_SCREEN.MENU_CHANNEL.STREAMING_ROOM
-						});
-						save(STORAGE_PREVIOUS_CHANNEL, currentChannel);
+					if (type === ChannelType.CHANNEL_TYPE_STREAMING && !playStream) {
+						dispatch(appActions.setHiddenBottomTabMobile(true));
+						dispatch(
+							videoStreamActions.startStream({
+								clanId: channel?.clan_id || '',
+								clanName: channel?.clan_name || '',
+								streamId: channel?.channel_id || '',
+								streamName: channel?.channel_label || '',
+								parentId: channel?.parrent_id || ''
+							})
+						);
 					} else {
 						navigation.navigate(APP_SCREEN.HOME_DEFAULT);
 					}

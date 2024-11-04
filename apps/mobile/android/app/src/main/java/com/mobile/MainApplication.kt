@@ -2,6 +2,7 @@ package com.mobile.mezon
 import android.content.res.Configuration
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
+import com.microsoft.codepush.react.CodePush
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -19,6 +20,9 @@ class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost =
       ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
+        override fun getJSBundleFile(): String {
+          return CodePush.getJSBundleFile()
+        }
         override fun getPackages(): List<ReactPackage> {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());

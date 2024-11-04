@@ -1,5 +1,5 @@
 import { size } from '@mezon/mobile-ui';
-import { selectVoiceChannelMembersByChannelId } from '@mezon/store-mobile';
+import { selectStreamMembersByChannelId, selectVoiceChannelMembersByChannelId } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import React, { memo } from 'react';
 import { View } from 'react-native';
@@ -27,6 +27,7 @@ export default memo(function ChannelListUserVoice({
 	isActive
 }: IUserListVoiceChannelProps) {
 	const voiceChannelMember = useSelector(selectVoiceChannelMembersByChannelId(channelId));
+	const streamChannelMembers = useSelector(selectStreamMembersByChannelId(channelId));
 	if (!isCategoryExpanded && !voiceChannelMember?.length) return <View />;
 
 	return (
@@ -41,6 +42,17 @@ export default memo(function ChannelListUserVoice({
 								userVoice={userVoice}
 								isCategoryExpanded={isCategoryExpanded}
 								totalMembers={voiceChannelMember?.length}
+							/>
+						))
+					: null}
+				{streamChannelMembers?.length
+					? streamChannelMembers?.map((userStream, index) => (
+							<UserVoiceItem
+								key={`${index}_stream_item_${userStream?.participant}`}
+								index={index}
+								userVoice={userStream}
+								isCategoryExpanded={isCategoryExpanded}
+								totalMembers={streamChannelMembers?.length}
 							/>
 						))
 					: null}

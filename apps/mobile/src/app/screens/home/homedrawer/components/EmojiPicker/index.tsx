@@ -11,7 +11,7 @@ import {
 	selectDmGroupCurrent,
 	settingClanStickerActions
 } from '@mezon/store-mobile';
-import { IMessageSendPayload } from '@mezon/utils';
+import { IMessageSendPayload, checkIsThread } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { MutableRefObject, useCallback, useEffect, useState } from 'react';
@@ -56,17 +56,12 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '' }: IProps) {
 	const currentDirectMessage = useSelector(selectDmGroupCurrent(directMessageId)); //Note: prioritize DM first
 	const { valueInputToCheckHandleSearch, setValueInputSearch } = useGifsStickersEmoji();
 	const [mode, setMode] = useState<ExpressionType>('emoji');
-	const [channelMode, setChannelMode] = useState(0);
 	const [searchText, setSearchText] = useState<string>('');
 	const { t } = useTranslation('message');
 
 	const dmMode = currentDirectMessage
 		? Number(currentDirectMessage?.user_id?.length === 1 ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP)
 		: '';
-
-	useEffect(() => {
-		setChannelMode(ChannelStreamMode.STREAM_MODE_CHANNEL);
-	}, []);
 
 	useEffect(() => {
 		initLoader();
@@ -87,14 +82,12 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '' }: IProps) {
 	const stickerLoader = useCallback(async () => {
 		const promises = [];
 		const store = await getStoreAsync();
-		promises.push(
-			store.dispatch(settingClanStickerActions.fetchStickerByUserId({ clanId: currentDirectMessage?.channel_id ? '0' : clanId || '0' }))
-		);
+		promises.push(store.dispatch(settingClanStickerActions.fetchStickerByUserId({})));
 		await Promise.all(promises);
-	}, [clanId, currentDirectMessage?.channel_id]);
+	}, []);
 
 	const { sendMessage } = useChatSending({
-		mode: dmMode || channelMode,
+		mode: dmMode ? dmMode : checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL,
 		channelOrDirect: currentDirectMessage || currentChannel
 	});
 

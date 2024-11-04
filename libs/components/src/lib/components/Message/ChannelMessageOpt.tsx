@@ -1,4 +1,4 @@
-import { useAuth } from '@mezon/core';
+import { useAuth, useEmojiSuggestion } from '@mezon/core';
 import {
 	gifsStickerEmojiActions,
 	giveCoffeeActions,
@@ -15,8 +15,9 @@ import { IMessageWithUser, SubPanelName, findParentByClass, useMenuBuilder, useM
 import { Snowflake } from '@theinternetfolks/snowflake';
 import clx from 'classnames';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import ReactionPart from '../ContextMenu/ReactionPart';
 
 type ChannelMessageOptProps = {
 	message: IMessageWithUser;
@@ -47,7 +48,8 @@ const ChannelMessageOpt = ({ message, handleContextMenu, isCombine }: ChannelMes
 	return (
 		<div className={`chooseForText z-[1] absolute h-8 p-0.5 rounded block ${!isCombine ? 'top-0' : '-top-7'}  right-6 w-fit`}>
 			<div className="flex justify-between dark:bg-bgDarkPopover bg-bgLightMode border border-bgSecondary rounded">
-				<div className="w-fit h-full flex justify-between" ref={refOpt}>
+				<div className="w-fit h-full flex items-center justify-between" ref={refOpt}>
+					<RecentEmoji message={message} />
 					{items
 						.filter((item) => {
 							return currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || item.id !== EMessageOpt.THREAD;
@@ -68,6 +70,31 @@ const ChannelMessageOpt = ({ message, handleContextMenu, isCombine }: ChannelMes
 };
 
 export default memo(ChannelMessageOpt);
+
+interface RecentEmojiProps {
+	message: IMessageWithUser;
+}
+
+const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
+	const { emojiConverted } = useEmojiSuggestion();
+
+	const emojiRecentData = useMemo(() => {
+		return localStorage.getItem('recentEmojis');
+	}, [localStorage.getItem('recentEmojis')]);
+
+	const firstThreeElements = useMemo(() => {
+		return emojiConverted.slice(0, 3);
+	}, [emojiConverted, emojiRecentData]);
+
+	return (
+		<div className="flex items-center">
+			<ReactionPart emojiList={firstThreeElements} activeMode={undefined} messageId={message.id} isOption={true} />
+			{firstThreeElements.length > 0 && (
+				<span className="opacity-50 px-1 ml-2 border-l dark:border-borderDividerLight border-borderDivider h-6 inline-flex"></span>
+			)}
+		</div>
+	);
+};
 
 function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	const dispatch = useAppDispatch();

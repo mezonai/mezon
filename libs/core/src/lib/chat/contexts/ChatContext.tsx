@@ -1014,6 +1014,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			}
 			timerIdRef.current = setTimeout(async () => {
 				if (socketRef.current?.isOpen()) return;
+				const id = Date.now().toString();
 				const errorMessage = 'Cannot reconnect to the socket. Please restart the app.';
 				try {
 					const socket = await reconnectWithTimeout(clanIdActive ?? '');
@@ -1022,19 +1023,22 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 					if (!socket) {
 						dispatch(toastActions.addToast({ message: errorMessage, type: 'warning', autoClose: false }));
-						return;
+						throw Error('socket not init');
 					}
 
 					if (window && navigator) {
 						if (navigator.onLine) {
-							dispatch(appActions.refreshApp());
+							dispatch(appActions.refreshApp({ id }));
 						} else {
 							dispatch(toastActions.addToast({ message: errorMessage, type: 'warning', autoClose: false }));
+							throw Error('socket navigator online error');
 						}
 					}
 
 					setCallbackEventFn(socket as Socket);
 				} catch (error) {
+					// eslint-disable-next-line no-console
+					console.log(error);
 					dispatch(toastActions.addToast({ message: errorMessage, type: 'warning', autoClose: false }));
 					Sentry.captureException(error);
 				}

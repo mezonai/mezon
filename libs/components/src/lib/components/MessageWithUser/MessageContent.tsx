@@ -1,5 +1,6 @@
-import { addMention, ETypeLinkMedia, IExtendedMessage, IMessageWithUser, isValidEmojiData } from '@mezon/utils';
+import { addMention, ETypeLinkMedia, IExtendedMessage, IMessageWithUser, isValidEmojiData, TypeMessage } from '@mezon/utils';
 import { MessageLine } from './MessageLine';
+import { MessageLineSystem } from './MessageLineSystem';
 
 type IMessageContentProps = {
 	message: IMessageWithUser;
@@ -63,7 +64,6 @@ const MessageText = ({
 		attachmentOnMessage?.length === 1 &&
 		attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
 		attachmentOnMessage[0].url === contentToMessage?.trim();
-
 	const showEditted = !message.hide_editted;
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
@@ -71,16 +71,28 @@ const MessageText = ({
 			{lines?.length > 0 ? (
 				<div className="flex w-full">
 					<div className="w-full">
-						<MessageLine
-							isEditted={showEditted}
-							isHideLinkOneImage={checkOneLinkImage}
-							isTokenClickAble={true}
-							isSearchMessage={isSearchMessage}
-							isOnlyContainEmoji={isOnlyContainEmoji}
-							isJumMessageEnabled={false}
-							content={content}
-							mode={mode}
-						/>
+						{message.code === TypeMessage.CreatePin || message.code === TypeMessage.CreateThread ? (
+							<MessageLineSystem
+								message={message}
+								isHideLinkOneImage={checkOneLinkImage}
+								isTokenClickAble={true}
+								isSearchMessage={isSearchMessage}
+								isJumMessageEnabled={false}
+								content={content}
+								mode={mode}
+							/>
+						) : (
+							<MessageLine
+								isEditted={showEditted}
+								isHideLinkOneImage={checkOneLinkImage}
+								isTokenClickAble={true}
+								isSearchMessage={isSearchMessage}
+								isOnlyContainEmoji={isOnlyContainEmoji}
+								isJumMessageEnabled={false}
+								content={content}
+								mode={mode}
+							/>
+						)}
 					</div>
 				</div>
 			) : null}

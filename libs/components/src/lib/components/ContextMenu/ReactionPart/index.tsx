@@ -6,11 +6,12 @@ interface IReactionPart {
 	emojiList: IEmoji[];
 	activeMode: number | undefined;
 	messageId: string;
+	isOption: boolean;
 }
 
-const ReactionPart: React.FC<IReactionPart> = ({ emojiList, activeMode, messageId }) => {
+const ReactionPart: React.FC<IReactionPart> = ({ emojiList, activeMode, messageId, isOption }) => {
 	return (
-		<div className="flex justify-start gap-x-1 mb-1">
+		<div className={`flex justify-start gap-x-1 ${isOption ? '' : 'mb-1'}`}>
 			{emojiList
 				.filter((item) => !!item.id)
 				.map((item, index) => (
@@ -20,6 +21,7 @@ const ReactionPart: React.FC<IReactionPart> = ({ emojiList, activeMode, messageI
 						emojiId={item.id || ''}
 						activeMode={activeMode}
 						messageId={messageId}
+						isOption={isOption}
 					/>
 				))}
 		</div>

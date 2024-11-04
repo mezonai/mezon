@@ -40,6 +40,7 @@ target 'Mobile' do
   pod 'GoogleUtilities', :modular_headers => true;
   pod 'RNFS', :path => '../node_modules/react-native-fs'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  pod 'CodePush', :path => '../node_modules/react-native-code-push'
 
   use_react_native!(
     :path => config[:reactNativePath],

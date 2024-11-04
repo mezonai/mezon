@@ -1,4 +1,5 @@
 import accountSetting from './accountSetting.json';
+import activityApp from './activityApp.json';
 import appThemeSetting from './appThemeSetting.json';
 import appearanceSetting from './appearanceSetting.json';
 import categoryCreator from './categoryCreator.json';
@@ -84,5 +85,6 @@ export default {
 	menuCustomDM,
 	linkMessageInvite,
 	streamingRoom,
-	clanIntegrationsSetting
+	clanIntegrationsSetting,
+	activityApp
 };

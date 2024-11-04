@@ -6,6 +6,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import { ApiRole } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useAppSelector } from '@mezon/store-mobile';
 
 interface UserMentionListProps {
 	channelID: string;
@@ -14,8 +15,8 @@ interface UserMentionListProps {
 
 function UseMentionList({ channelID, channelMode }: UserMentionListProps): MentionDataProps[] {
 	const { membersOfParent } = useChannelMembers({ channelId: channelID, mode: channelMode ?? 0 });
-	const channel = useSelector(selectChannelById(channelID));
-	const channelparrent = useSelector(selectChannelById(channel?.parrent_id || ''));
+	const channel = useAppSelector((state) => selectChannelById(state, channelID || ''));
+	const channelparrent = useAppSelector((state) => selectChannelById(state, channel?.parrent_id || ''));
 	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parrent_id));
 	const rolesInClan = useSelector(selectAllRolesClan);
 	const rolesToUse = useMemo(() => {

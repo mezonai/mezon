@@ -14,7 +14,8 @@ import {
 	selectChannelById,
 	selectDmGroupCurrent,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store-mobile';
 import {
 	ChannelMembersEntity,
@@ -76,7 +77,7 @@ export const ChatMessageSending = memo(
 		const styles = style(themeValue);
 		const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(channelId ?? ''));
 		const rolesInClan = useSelector(selectAllRolesClan);
-		const currentChannel = useSelector(selectChannelById(channelId));
+		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 		const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
 		const { membersOfChild, membersOfParent } = useChannelMembers({
 			channelId: channelId,

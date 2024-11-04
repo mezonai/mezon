@@ -65,6 +65,7 @@
         "packElevateHelper": false,
         "runAfterFinish": true,
         "createDesktopShortcut": "always",
+        "createStartMenuShortcut": true,
         "deleteAppDataOnUninstall": false
       },
       "msi": {
@@ -202,6 +203,7 @@
           "packElevateHelper": false,
           "runAfterFinish": true,
           "createDesktopShortcut": "always",
+          "createStartMenuShortcut": true,
           "deleteAppDataOnUninstall": false
         },
         "msi": {
@@ -283,6 +285,7 @@
           "include": "scripts/installer.nsh",
           "runAfterFinish": true,
           "createDesktopShortcut": "always",
+          "createStartMenuShortcut": true,
           "deleteAppDataOnUninstall": false
         },
         "msi": {

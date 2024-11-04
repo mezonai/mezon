@@ -530,15 +530,18 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 			}
 		);
 
-		builder.when(checkPos && canSendMessage, (builder) => {
-			builder.addMenuItem(
-				'reply',
-				'Reply',
-				() => handleReplyMessage(),
+		builder.when(
+			checkPos && (canSendMessage || activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP),
+			(builder) => {
+				builder.addMenuItem(
+					'reply',
+					'Reply',
+					() => handleReplyMessage(),
 
-				<Icons.ReplyRightClick defaultSize="w-4 h-4" />
-			);
-		});
+					<Icons.ReplyRightClick defaultSize="w-4 h-4" />
+				);
+			}
+		);
 
 		builder.when(enableCreateThreadItem, (builder) => {
 			builder.addMenuItem('createThread', 'Create Thread', () => handleCreateThread(), <Icons.ThreadIconRightClick defaultSize="w-4 h-4" />);

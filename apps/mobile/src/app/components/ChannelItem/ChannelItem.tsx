@@ -1,6 +1,6 @@
 import { Icons, LockIcon } from '@mezon/mobile-components';
 import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
-import { ChannelUsersEntity, selectChannelById } from '@mezon/store-mobile';
+import { ChannelUsersEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ type ChannelItemProps = {
 export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
-	const parentChannel = useSelector(selectChannelById(channelData?.parrent_id || ''));
+	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parrent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 	const styles = style(themeValue);
 	const handleOnPress = () => {

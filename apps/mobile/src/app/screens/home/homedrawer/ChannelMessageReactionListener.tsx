@@ -2,7 +2,6 @@ import { useChatReaction } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { selectCurrentChannel } from '@mezon/store-mobile';
 import { isPublicChannel } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -16,11 +15,6 @@ const ChannelMessageReactionListener = React.memo(() => {
 		async (data: IReactionMessageProps) => {
 			await reactionMessageDispatch(
 				data?.id ?? '',
-				data.mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
-				(data?.clanId ?? (data.mode === ChannelStreamMode.STREAM_MODE_CHANNEL || data.mode === ChannelStreamMode.STREAM_MODE_THREAD))
-					? (currentChannel?.clan_id ?? '')
-					: '',
-				data?.channelId ?? '',
 				data?.messageId ?? '',
 				data?.emojiId ?? '',
 				data?.emoji?.trim() ?? '',
