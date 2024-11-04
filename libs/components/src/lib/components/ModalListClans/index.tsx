@@ -43,11 +43,9 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 			</NavLink>
 			{badgeCountClan > 0 ? (
 				<div className="w-[20px] h-[20px] flex items-center justify-center text-[13px] font-medium rounded-full bg-colorDanger absolute bottom-[-3px] right-[-3px] border-[2px] border-solid dark:border-bgPrimary border-white">
-					{badgeCountClan}
+					{badgeCountClan > 99 ? '99+' : badgeCountClan}
 				</div>
-			) : (
-				<></>
-			)}
+			) : null}
 		</div>
 	);
 };
