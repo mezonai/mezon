@@ -13,6 +13,9 @@ const TitleBar = () => {
 	const handleMinimize = () => {
 		window.electron.send('TITLE_BAR_ACTION', 'MINIMIZE_WINDOW');
 	};
+	useEffect(() => {
+		document.body.classList.add('overflow-hidden');
+	}, []);
 
 	const handleMaximize = () => {
 		window.electron.send('TITLE_BAR_ACTION', 'MAXIMIZE_WINDOW');
