@@ -94,7 +94,7 @@ module.exports = {
         heightTitleBar: `calc(100vh - ${titleBarHeight})`,
         heightTitleBarMessageViewChat: `calc(${heightMessageViewChat} - 31px)`,
         heightTitleBarMessageViewChatMobile: `calc(${heightMessageViewChat} - 31px)`,
-        heightTitleBarMessageViewChatDM: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
+        heightTitleBarMessageViewChatDM: `calc(${heightMessageViewChat} - 31px)`,
         heightTitleBarMessageViewChatThread: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
         heightTitleBarWithoutTopBar: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
         heightTitleBarWithoutTopBarMobile: `calc(${heightMessageViewChat} - ${titleBarHeight})`

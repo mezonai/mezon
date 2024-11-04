@@ -35,7 +35,7 @@ import {
 	selectStatusMenu,
 	useAppDispatch
 } from '@mezon/store';
-import { EmojiPlaces, SubPanelName, TIME_OFFSET } from '@mezon/utils';
+import { EmojiPlaces, SubPanelName, TIME_OFFSET, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { DragEvent, memo, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -173,7 +173,9 @@ const DirectMessage = () => {
 					<div
 						className={`flex-col flex-1 h-full max-h-messageViewChatDM ${isUseProfileDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
-						<div className="overflow-y-auto bg-[#1E1E1E] h-heightMessageViewChatDM flex-shrink " ref={messagesContainerRef}>
+						<div
+							className={`overflow-y-auto bg-[#1E1E1E]  ${isWindowsDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink " ref={messagesContainerRef}`}
+						>
 							{
 								<ChannelMessages
 									key={directId}
