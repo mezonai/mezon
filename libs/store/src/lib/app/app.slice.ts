@@ -1,4 +1,4 @@
-import { LoadingStatus } from '@mezon/utils';
+import { addLog, LoadingStatus, LogType } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 import { usersClanActions } from '../clanMembers/clan.members';
@@ -95,7 +95,19 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async ({ id }: { id
 
 	try {
 		await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true })).unwrap();
+		addLog({
+			message: id + ':fetch success',
+			eventType: LogType.ReconnectSocket,
+			timestamp: new Date(),
+			level: 'info'
+		});
 	} catch (error) {
+		addLog({
+			message: id + ':fetch error',
+			eventType: LogType.ReconnectSocket,
+			timestamp: new Date(),
+			level: 'error'
+		});
 		// eslint-disable-next-line no-console
 		console.log(error);
 	}
