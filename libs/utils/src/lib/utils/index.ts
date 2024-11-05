@@ -882,3 +882,15 @@ export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => 
 export const checkIsThread = (channel?: IChannel) => {
 	return channel?.parrent_id !== '0' && channel?.parrent_id !== '';
 };
+
+export function getExtraPart(stringA: string, stringB: string): string {
+	if (stringB.startsWith(stringA)) {
+		return stringB.slice(stringA.length);
+	}
+
+	if (stringB.endsWith(stringA)) {
+		return stringB.slice(0, stringB.length - stringA.length);
+	}
+
+	return '';
+}
