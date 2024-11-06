@@ -62,7 +62,6 @@ import {
 	focusToElement,
 	formatMentionsToString,
 	getDisplayMention,
-	getExtraPart,
 	searchMentionsHashtag,
 	threadError
 } from '@mezon/utils';
@@ -471,23 +470,22 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		const convertToPlainTextString = getDisplayMention(onlyMention);
 		setDisplayPlaintext(convertToPlainTextString);
 		setDisplayMarkup(convertToMarkUpString);
-		if (props.handleConvertToFile !== undefined && newPlainTextValue.length > MIN_THRESHOLD_CHARS && pastedContent.length > MIN_THRESHOLD_CHARS) {
-			const extraPartMarkup = getExtraPart(pastedContent, newValue);
-			const extraPartPlainText = getExtraPart(pastedContent, newPlainTextValue);
+		console.log('newPlainTextValue: ', newPlainTextValue);
+		console.log('pastedContent: ', pastedContent);
+		console.log('newPlainTextValue: ', newPlainTextValue.length);
+		console.log('pastedContent: ', pastedContent.length);
+		console.log(newPlainTextValue);
+		if (props.handleConvertToFile !== undefined && pastedContent.length > MIN_THRESHOLD_CHARS) {
 			props.handleConvertToFile(pastedContent);
 
-			if (extraPartPlainText.length > 0) {
-				setRequestInput(
-					{
-						...request,
-						valueTextInput: extraPartMarkup,
-						content: extraPartPlainText
-					},
-					props.isThread
-				);
-			} else {
-				setRequestInput({ ...request, valueTextInput: '', content: '' }, props.isThread);
-			}
+			setRequestInput(
+				{
+					...request,
+					valueTextInput: newValue,
+					content: newPlainTextValue
+				},
+				props.isThread
+			);
 		}
 
 		if (newPlainTextValue.endsWith('@')) {
@@ -651,7 +649,13 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			<MentionsInput
 				onPaste={(event) => {
 					event.preventDefault();
-					const pastedText = event.clipboardData.getData('text');
+					let pastedText = event.clipboardData.getData('text');
+					console.log('pastedText: ', pastedText);
+					console.log('pastedText length before trimming: ', pastedText.length);
+
+					// Remove the last newline character (if any)
+					pastedText = pastedText.replace(/\n/g, '');
+					console.log('pastedText length after trimming: ', pastedText.length);
 					setPastedContent(pastedText);
 				}}
 				onPasteCapture={props.handlePaste}

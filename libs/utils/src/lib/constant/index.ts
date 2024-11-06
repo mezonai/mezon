@@ -30,7 +30,7 @@ export const threadError: ThreadError = {
 	message: 'Starter Message is required'
 };
 
-export const MIN_THRESHOLD_CHARS = 4000;
+export const MIN_THRESHOLD_CHARS = 10;
 
 export type ITypeConvert = {
 	type: string;
