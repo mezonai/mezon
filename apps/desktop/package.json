@@ -5,7 +5,8 @@
         "electron-log": "^5.2.0",
         "electron-store": "8.2.0",
         "electron-updater": "^6.3.4",
-        "tslib": "^2.7.0"
+        "tslib": "^2.7.0",
+        "node-window-manager": "^2.2.4"
     },
     "devDependencies": {}
 }

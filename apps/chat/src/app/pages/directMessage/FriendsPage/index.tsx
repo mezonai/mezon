@@ -15,6 +15,7 @@ import { Button, Icons, Image, InputField } from '@mezon/ui';
 import { isMacDesktop } from '@mezon/utils';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import ActivityList from './ActivityList';
 import FriendList from './FriendsList';
 
 const tabData = [
@@ -241,7 +242,9 @@ const FriendsPage = () => {
 						</div>
 					)}
 				</div>
-				<div className="w-[416px] max-w-2/5 dark:bg-bgTertiary bg-bgLightMode lg:flex hidden"></div>
+				<div className="w-[416px] max-w-2/5 dark:bg-bgTertiary bg-bgLightMode lg:flex hidden">
+					<ActivityList listFriend={friends} />
+				</div>
 			</div>
 			{showRequestFailedPopup && <RequestFailedPopup togglePopup={toggleRequestFailedPopup} />}
 		</div>

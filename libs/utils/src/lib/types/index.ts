@@ -397,7 +397,8 @@ export enum MemberProfileType {
 	DM_LIST = 'dm_list_friends',
 	DM_MEMBER_GROUP = 'dm_member_group',
 	LIST_FRIENDS = 'list_friends',
-	MESSAGE = 'message'
+	MESSAGE = 'message',
+	LIST_ACTIVITY = 'list_activity'
 }
 
 export type IReaction = ApiMessageReaction & {
@@ -901,6 +902,7 @@ export enum ActivitiesType {
 
 export enum ActivitiesName {
 	CODE = 'Code',
+	VISUAL_STUDIO_CODE = 'Visual Studio Code',
 	SPOTIFY = 'Spotify',
 	LOL = 'LeagueClientUx'
 }

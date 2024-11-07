@@ -109,11 +109,13 @@ export function MemberProfile({
 
 	const activityNames: { [key: string]: string } = {
 		[ActivitiesName.CODE]: 'Visual Studio Code',
+		[ActivitiesName.VISUAL_STUDIO_CODE]: 'Visual Studio Code',
 		[ActivitiesName.SPOTIFY]: 'Listening to Spotify',
 		[ActivitiesName.LOL]: 'League of Legends'
 	};
 
 	const activityStatus = customStatus || activityNames[activityByUserId?.activity_name as string];
+	const activityTitle = activityByUserId?.activity_description;
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		// stop open popup default of web
@@ -185,6 +187,8 @@ export function MemberProfile({
 	const isMemberDMGroup = useMemo(() => positionType === MemberProfileType.DM_MEMBER_GROUP, [positionType]);
 
 	const isMemberChannel = useMemo(() => positionType === MemberProfileType.MEMBER_LIST, [positionType]);
+
+	const isListActivity = useMemo(() => positionType === MemberProfileType.LIST_ACTIVITY, [positionType]);
 
 	const isListDm = useMemo(() => positionType === MemberProfileType.DM_LIST, [positionType]);
 
@@ -378,12 +382,12 @@ export function MemberProfile({
 									</button>
 								)}
 							</div>
-							{(customStatus || activityByUserId) && (isMemberChannel || isMemberDMGroup) && (
+							{(customStatus || activityByUserId) && (isMemberChannel || isMemberDMGroup || isListActivity) && (
 								<p
-									className="dark:text-channelTextLabel text-black w-full text-[12px] line-clamp-1 break-all max-w-[176px] "
+									className={`dark:text-channelTextLabel text-black w-full text-[12px] line-clamp-1 break-all ${isListActivity ? 'w-full' : 'max-w-[176px]'} `}
 									title={customStatus}
 								>
-									{status?.status ? activityStatus : customStatus}
+									{status?.status ? (isListActivity ? activityTitle : activityStatus) : customStatus}
 								</p>
 							)}
 						</div>
