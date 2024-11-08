@@ -9,6 +9,8 @@ import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import { isNumeric } from '../../../utils/helpers';
 import { styles } from './styles';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -22,13 +24,18 @@ export const QRScanner = () => {
 	const device = useCameraDevice('back');
 	const navigation = useNavigation<any>();
 	const [valueCode, setValueCode] = useState<string>('');
+	const [tokenCode, setTokenCode] = useState<string>('');
 	const [isSuccess, setIsSuccess] = useState<boolean>(false);
 	const { confirmLoginRequest } = useAuth();
 
 	const codeScanner = useCodeScanner({
 		codeTypes: ['qr'],
 		onCodeScanned: (codes) => {
-			setValueCode(codes?.[0]?.value);
+			if (isNumeric(codes?.[0]?.value)) {
+				setValueCode(codes?.[0]?.value);
+			} else {
+				setTokenCode(codes?.[0]?.value);
+			}
 		}
 	});
 
@@ -40,6 +47,17 @@ export const QRScanner = () => {
 
 		requestCameraPermission();
 	}, []);
+
+	useEffect(() => {
+		if (tokenCode) {
+			navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
+				screen: APP_SCREEN.SETTINGS.SEND_COFFEE,
+				params: {
+					formValue: tokenCode
+				}
+			});
+		}
+	}, [navigation, tokenCode]);
 
 	const requestCameraPermission = async () => {
 		const permission = await Camera.requestCameraPermission();

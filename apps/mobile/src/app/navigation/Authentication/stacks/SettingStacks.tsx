@@ -9,6 +9,7 @@ import AppThemeSetting from '../../../screens/settings/AppearanceSetting/AppThem
 import { LanguageSetting } from '../../../screens/settings/LanguageSetting';
 import { ProfileSetting } from '../../../screens/settings/ProfileSetting';
 import { QRScanner } from '../../../screens/settings/QRScanner';
+import { SendCoffeeScreen } from '../../../screens/settings/SendCoffee';
 import { Sharing } from '../../../screens/settings/Sharing';
 import { APP_SCREEN } from '../../ScreenTypes';
 
@@ -110,6 +111,18 @@ export const SettingStacks = ({}: any) => {
 				component={QRScanner}
 				options={{
 					headerShown: false
+				}}
+			/>
+
+			<Stack.Screen
+				name={APP_SCREEN.SETTINGS.SEND_COFFEE}
+				component={SendCoffeeScreen}
+				options={{
+					headerTitle: 'Send token',
+					gestureEnabled: false,
+					headerStyle: {
+						backgroundColor: themeValue.secondary
+					}
 				}}
 			/>
 		</Stack.Navigator>
