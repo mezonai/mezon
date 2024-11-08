@@ -1,6 +1,6 @@
-import { ChannelsEntity, messagesActions, selectAllAccount, selectAnonymousMode, useAppDispatch } from '@mezon/store';
+import { messagesActions, selectAllAccount, selectAnonymousMode, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload, checkIsThread } from '@mezon/utils';
+import { IMessageSendPayload } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -17,9 +17,6 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 	}, [channelOrDirect?.clan_id]);
 
 	const isPublic = useMemo(() => {
-		if (checkIsThread(channelOrDirect as ChannelsEntity)) {
-			return false;
-		}
 		return !channelOrDirect?.channel_private;
 	}, [channelOrDirect]);
 

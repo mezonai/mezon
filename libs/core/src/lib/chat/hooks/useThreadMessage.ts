@@ -62,7 +62,7 @@ export function useThreadMessage({ channelId, mode }: UseThreadMessage) {
 				currentClanId,
 				thread.channel_id as string,
 				ChannelStreamMode.STREAM_MODE_THREAD,
-				false,
+				thread.channel_private === 0,
 				content,
 				mentions,
 				attachments,
