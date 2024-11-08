@@ -14,9 +14,9 @@ export const style = (colors: Attributes) =>
 		btnJoinVoice: {
 			borderRadius: size.s_40,
 			backgroundColor: baseColor.green,
-			height: size.s_60,
+			height: size.s_50,
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
-		textBtnJoinVoice: { fontSize: size.s_20, fontWeight: '600', color: colors.text }
+		textBtnJoinVoice: { fontSize: size.s_16, fontWeight: '600', color: baseColor.black }
 	});

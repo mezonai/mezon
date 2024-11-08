@@ -33,6 +33,9 @@ const ChatBoxStream = () => {
 					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 				/>
 				<ChatBox
+					hiddenIcon={{
+						threadIcon: true
+					}}
 					channelId={currentChannel?.channel_id}
 					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 					onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}

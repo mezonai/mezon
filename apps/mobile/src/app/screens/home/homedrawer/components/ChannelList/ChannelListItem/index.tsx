@@ -121,7 +121,7 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 					isActive={isActive}
 				/>
 			)}
-			<MezonBottomSheet ref={bottomSheetChannelStreamingRef} snapPoints={['50%']}>
+			<MezonBottomSheet ref={bottomSheetChannelStreamingRef} snapPoints={['45%']}>
 				<SafeAreaView>
 					<JoinStreamingRoomBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
 				</SafeAreaView>
