@@ -11,9 +11,9 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			alignItems: 'center',
 			backgroundColor: colors.secondary,
-			paddingBottom: size.s_60,
 			paddingHorizontal: size.s_10,
 			paddingTop: size.s_20,
+			paddingBottom: size.s_30,
 			borderRadius: size.s_10
 		},
 		form: {
@@ -54,6 +54,15 @@ export const style = (colors: Attributes) =>
 			height: size.s_50,
 			width: '90%',
 			bottom: size.s_20,
+			marginHorizontal: size.s_20,
+			borderRadius: size.s_50
+		},
+		buttonConfirm: {
+			justifyContent: 'center',
+			alignItems: 'center',
+			backgroundColor: '#5e65ee',
+			height: size.s_50,
+			width: '90%',
 			marginHorizontal: size.s_20,
 			borderRadius: size.s_50
 		},

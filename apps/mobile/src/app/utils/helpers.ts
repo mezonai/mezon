@@ -73,7 +73,3 @@ export const clanDirectMessageLinkRegex = /chat\/direct\/message\/(\d+)\/(\d+)$/
 
 export const validTextInputRegex = /^(?![_\-\s])[a-zA-Z0-9\p{L}\p{N}_\-\s]{1,64}$/u;
 export const linkGoogleMeet = 'https://meet.google.com/';
-
-export const isNumeric = (str: string) => {
-	return /^\d+$/.test(str);
-};
