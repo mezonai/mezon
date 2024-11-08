@@ -372,7 +372,7 @@ const MessageItem = React.memo(
 										isNumberOfLine={isNumberOfLine}
 										isMessageReply={false}
 										mode={mode}
-										directMessageId={channelId}
+										currentChannelId={channelId}
 										isOnlyContainEmoji={isOnlyContainEmoji}
 										onLongPress={handleLongPressMessage}
 									/>

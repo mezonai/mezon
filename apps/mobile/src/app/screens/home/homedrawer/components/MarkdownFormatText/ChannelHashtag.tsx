@@ -3,15 +3,15 @@ import { ChannelStreamMode, ChannelType, HashtagDm } from 'mezon-js';
 
 type IChannelHashtag = {
 	channelHashtagId: string;
-	directMessageId?: string;
+	currentChannelId?: string;
 	hashtagDmEntities: Record<string, HashtagDm>;
 	channelsEntities: Record<string, ChannelsEntity>;
 	mode?: number;
 };
-export const ChannelHashtag = ({ channelHashtagId, directMessageId, mode, hashtagDmEntities, channelsEntities }: IChannelHashtag) => {
+export const ChannelHashtag = ({ channelHashtagId, currentChannelId, mode, hashtagDmEntities, channelsEntities }: IChannelHashtag) => {
 	const getChannelById = (channelHashtagId: string): ChannelsEntity => {
 		let channel;
-		if (directMessageId && [ChannelStreamMode.STREAM_MODE_DM].includes(mode)) {
+		if (currentChannelId && [ChannelStreamMode.STREAM_MODE_DM].includes(mode)) {
 			channel = hashtagDmEntities[channelHashtagId];
 		} else {
 			channel = channelsEntities[channelHashtagId];

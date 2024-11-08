@@ -5,7 +5,6 @@ import {
 	selectAllChannelMembers,
 	selectAllUserClans,
 	selectChannelsEntities,
-	selectCurrentChannelId,
 	selectHashtagDmEntities,
 	useAppSelector
 } from '@mezon/store-mobile';
@@ -15,7 +14,6 @@ import React, { useMemo } from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Markdown from 'react-native-markdown-display';
-import { useSelector } from 'react-redux';
 import CustomIcon from '../../../../../../assets/CustomIcon';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { EmojiMarkup } from '../MarkdownFormatText/EmojiMarkup';
@@ -204,7 +202,7 @@ export type IMarkdownProps = {
 	isMessageReply?: boolean;
 	mode?: number;
 	isHiddenHashtag?: boolean;
-	directMessageId?: string;
+	currentChannelId?: string;
 	isOpenLink?: boolean;
 	isOnlyContainEmoji?: boolean;
 	isUnReadChannel?: boolean;
@@ -400,7 +398,7 @@ export const RenderTextMarkdownContent = React.memo(
 		isMessageReply,
 		mode,
 		isHiddenHashtag,
-		directMessageId,
+		currentChannelId,
 		isOpenLink = true,
 		isOnlyContainEmoji,
 		isUnReadChannel = false,
@@ -410,7 +408,6 @@ export const RenderTextMarkdownContent = React.memo(
 		let customStyle = {};
 		const { themeValue } = useTheme();
 		const usersClan = useAppSelector(selectAllUserClans);
-		const currentChannelId = useSelector(selectCurrentChannelId);
 		const usersInChannel = useAppSelector((state) => selectAllChannelMembers(state, currentChannelId as string));
 		const channelsEntities = useAppSelector(selectChannelsEntities);
 		const hashtagDmEntities = useAppSelector(selectHashtagDmEntities);
@@ -454,7 +451,7 @@ export const RenderTextMarkdownContent = React.memo(
 						formattedContent += ChannelHashtag({
 							channelHashtagId: element.channelid,
 							mode,
-							directMessageId,
+							currentChannelId,
 							channelsEntities,
 							hashtagDmEntities
 						});
