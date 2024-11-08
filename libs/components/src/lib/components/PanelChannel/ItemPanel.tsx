@@ -14,6 +14,7 @@ type ItemPanelProps = {
 	name?: string;
 	subText?: string;
 	disabled?: boolean;
+	info?: boolean;
 };
 
 const ItemPanel = ({
@@ -28,7 +29,8 @@ const ItemPanel = ({
 	checked,
 	name,
 	subText,
-	disabled
+	disabled,
+	info
 }: ItemPanelProps) => {
 	return (
 		<button
@@ -38,7 +40,8 @@ const ItemPanel = ({
 		>
 			<div className={'flex flex-row items-center justify-between w-full'}>
 				<li
-					className={`text-[14px] ${danger ? 'dark:text-colorDanger text-colorDanger' : 'dark:text-[#B5BAC1] text-textSecondary800'} font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none textWhiteHoverImportant m-0 truncate`}
+					className={`text-[14px] font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none textWhiteHoverImportant m-0 truncate
+						${danger ? 'dark:text-colorDanger text-colorDanger' : info ? 'text-blue-500 dark:text-blue-400' : 'dark:text-[#B5BAC1] text-textSecondary800'}`}
 				>
 					{children}
 				</li>
@@ -46,7 +49,7 @@ const ItemPanel = ({
 				{type === 'checkbox' && <Checkbox id="accept" checked={checked} defaultChecked={defaultChecked} readOnly />}
 				{type === 'radio' && <Radio className="" name={name} value="change here" checked={checked} readOnly />}
 			</div>
-			{subText && <div className="text-[12px] text-[#B5BAC1] ml-[10px]">{subText}</div>}
+			{subText && <div className="text-[12px] text-[#B5BAC1] ml-[8px] -mt-2 mb-1">{subText}</div>}
 		</button>
 	);
 };

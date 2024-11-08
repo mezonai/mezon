@@ -12,7 +12,8 @@ import {
 	subDays
 } from 'date-fns';
 import isElectron from 'is-electron';
-import { Client, Session } from 'mezon-js';
+import { notificationTypesList } from 'libs/components/src/lib/components/PanelChannel';
+import { Client, NotificationType, Session } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
 import { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
 import { RefObject } from 'react';
@@ -890,3 +891,8 @@ export const checkIsThread = (channel?: IChannel) => {
 export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();
 export const isMacDesktop = getPlatform() === Platform.MACOS && isElectron();
 export const isLinuxDesktop = getPlatform() === Platform.LINUX && isElectron();
+
+export const getNotificationLabel = (value: NotificationType) => {
+	const notificationType = notificationTypesList.find((type) => type.value === value);
+	return notificationType ? notificationType.label : null;
+};

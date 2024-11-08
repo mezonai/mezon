@@ -1,7 +1,9 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker } from '@mezon/core';
+import { selectCurrentClanId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import React, { RefObject, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import ItemModal from './ItemModal';
 
 type ModalPanelProps = {
@@ -30,6 +32,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 	rootRef
 }) => {
 	const [canManageClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
+	const currentClanId = useSelector(selectCurrentClanId);
 	useEscapeKeyClose(rootRef, () => setIsShowModalPanelClan(false));
 	useOnClickOutside(rootRef, () => setIsShowModalPanelClan(false));
 
@@ -47,7 +50,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 			<div className="flex flex-col pb-1 mb-1 border-b-[0.08px] border-b-[#6A6A6A] last:border-b-0 last:mb-0 last:pb-0">
 				{canManageClan && <ItemModal onClick={handleShowCreateCategory} children="Create Category" endIcon={<Icons.CreateCategoryIcon />} />}
 				<ItemModal
-					onClick={statusMarkAsReadClan === 'pending' ? undefined : handleMarkAsReadClan}
+					onClick={statusMarkAsReadClan === 'pending' ? undefined : () => handleMarkAsReadClan(currentClanId as string)}
 					disabled={statusMarkAsReadClan === 'pending'}
 				>
 					{statusMarkAsReadClan === 'pending' ? 'Processing...' : 'Mark As Read'}

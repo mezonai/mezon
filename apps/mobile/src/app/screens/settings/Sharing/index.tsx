@@ -170,7 +170,6 @@ export const Sharing = ({ data, onClose }) => {
 
 	const sendToGroup = async (dataSend: { text: any; links: any[] }) => {
 		const store = await getStoreAsync();
-		// const isPublic = channelSelected ? (checkIsThread(channelSelected as ChannelsEntity) ? false : !channelSelected.channel_private) : false;
 		const isPublic = channelSelected ? isPublicChannel(channelSelected) : false;
 		const isDiffClan = currentClan?.id !== channelSelected?.clan_id;
 		const isDiffChannel = currentChannelId !== channelSelected?.channel_id;

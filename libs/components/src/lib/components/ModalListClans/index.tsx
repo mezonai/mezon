@@ -1,9 +1,13 @@
 import { selectBadgeCountByClanId } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import { IClan } from '@mezon/utils';
+import { useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
+import { Coords } from '../ChannelLink';
 import NavLinkComponent from '../NavLink';
+import PanelClan from '../PanelClan';
 
 export type SidebarClanItemProps = {
 	option: IClan;
@@ -19,8 +23,26 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 			event.preventDefault();
 		}
 	};
+	const [coords, setCoords] = useState<Coords>({
+		mouseX: 0,
+		mouseY: 0,
+		distanceToBottom: 0
+	});
+
+	const [openRightClickModal, closeRightClickModal] = useModal(() => {
+		return <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} clan={option} />;
+	}, [coords, option]);
+	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		const mouseX = event.clientX;
+		const mouseY = event.clientY;
+		const windowHeight = window.innerHeight;
+		const distanceToBottom = windowHeight - event.clientY;
+		setCoords({ mouseX, mouseY, distanceToBottom });
+		openRightClickModal();
+	};
+
 	return (
-		<div className="relative">
+		<div onContextMenu={handleMouseClick} className="relative">
 			<NavLink to={linkClan} onClick={handleClick}>
 				<NavLinkComponent active={active}>
 					{option.logo ? (

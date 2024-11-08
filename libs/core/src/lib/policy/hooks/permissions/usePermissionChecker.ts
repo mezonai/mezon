@@ -12,10 +12,13 @@ import { useIsClanOwner } from '../useIsClanOwner';
 import { usePermissionsLevel } from './usePermissionsLevels';
 
 function usePermissionChecker(permissions: EPermission[]): boolean[];
-function usePermissionChecker(permissions: Array<EPermission | EOverriddenPermission>, channelId: string): boolean[];
+function usePermissionChecker(permissions: Array<EPermission | EOverriddenPermission>, channelId: string, clanId?: string): boolean[];
 
-function usePermissionChecker(permissions: string[], channelId?: string) {
+function usePermissionChecker(permissions: string[], channelId?: string, clanId?: string) {
 	const currentClanId = useSelector(selectCurrentClanId);
+
+	const effectiveClanId = clanId && clanId !== '0' ? clanId : currentClanId;
+
 	const dispatch = useAppDispatch();
 
 	// Retrieve the permission levels for different permission types
@@ -28,7 +31,7 @@ function usePermissionChecker(permissions: string[], channelId?: string) {
 	const overriddenPermissions = useSelector(selectMaxPermissionForChannel(channelId ?? ''));
 
 	// Check if the user is a Clan Owner, which grants all permissions
-	const isClanOwner = useIsClanOwner();
+	const isClanOwner = useIsClanOwner(effectiveClanId ?? '');
 
 	// Function to check if a user has a particular permission
 	const checkPermission = useCallback(
@@ -68,10 +71,10 @@ function usePermissionChecker(permissions: string[], channelId?: string) {
 	}, [permissions, checkPermission]);
 
 	useEffect(() => {
-		if (currentClanId && currentClanId !== '0' && channelId && !Object.keys(overriddenPermissions).length) {
-			dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: currentClanId, channelId }));
+		if (effectiveClanId && effectiveClanId !== '0' && channelId && !Object.keys(overriddenPermissions).length) {
+			dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: effectiveClanId, channelId }));
 		}
-	}, [channelId, currentClanId, dispatch, overriddenPermissions]);
+	}, [channelId, effectiveClanId, dispatch, overriddenPermissions]);
 
 	// Return the result array where each entry represents if the user has that permission
 	return results;

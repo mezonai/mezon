@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useInvite } from '@mezon/core';
-import { selectChannelById, selectChannelFirst, selectCurrentClan, selectCurrentClanId, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectChannelFirst, selectClanById, selectCurrentClanId, useAppSelector } from '@mezon/store';
 import { Modal } from '@mezon/ui';
 import isElectron from 'is-electron';
 import { useCallback, useEffect, useState } from 'react';
@@ -17,6 +17,8 @@ export type ModalParam = {
 	// url:string;
 	channelID?: string;
 	confirmButton?: () => void;
+	clanId?: string;
+	setShowClanListMenuContext?: () => void;
 };
 
 const ModalInvite = (props: ModalParam) => {
@@ -27,23 +29,25 @@ const ModalInvite = (props: ModalParam) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { createLinkInviteUser } = useInvite();
 	const firstChannel = useSelector(selectChannelFirst);
-	const { onClose, channelID } = props;
+	const { onClose, channelID, clanId, setShowClanListMenuContext } = props;
+
+	const effectiveClanId = clanId && clanId !== '0' ? clanId : currentClanId;
+
+	const clan = useSelector(selectClanById(effectiveClanId ?? ''));
 
 	const channel = useAppSelector((state) => selectChannelById(state, channelID ?? '')) || {};
-
-	const clan = useSelector(selectCurrentClan);
 
 	const handleOpenInvite = useCallback(async () => {
 		try {
 			const intiveIdChannel = (channelID ? channelID : firstChannel.channel_id) as string;
-			const res = await createLinkInviteUser(currentClanId ?? '', intiveIdChannel, 10);
+			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
 			if (res && res?.invite_link) {
 				setUrlInvite((isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin) + '/invite/' + res.invite_link);
 			}
 		} catch {
 			console.log('Error when create invite link');
 		}
-	}, [firstChannel, channelID]);
+	}, [firstChannel, channelID, effectiveClanId]);
 
 	useEffect(() => {
 		handleOpenInvite();
@@ -99,6 +103,7 @@ const ModalInvite = (props: ModalParam) => {
 						onClick={() => {
 							handleCopyToClipboard(urlInvite);
 							onClose();
+							setShowClanListMenuContext?.();
 						}}
 					>
 						Copy

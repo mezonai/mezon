@@ -111,7 +111,7 @@ function NotificationList({ rootRef }: NotificationProps) {
 								placement="top"
 							>
 								<button
-									onClick={handleMarkAsReadClan}
+									onClick={() => handleMarkAsReadClan}
 									className="flex items-center p-1 rounded-sm justify-center dark:bg-bgTertiary bg-bgLightModeButton"
 								>
 									<Icons.MarkAllAsRead className="w-5 h-5" />

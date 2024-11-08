@@ -1,5 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { ReactNode } from 'react';
+import ClanGuideSetting from './ClanGuideSetting';
 
 function GuideBody() {
 	return (
@@ -13,6 +14,7 @@ function GuideBody() {
 						icon={<Icons.AddServe />}
 						action={<div className="w-[72px] aspect-square bg-black rounded-lg"></div>}
 					/>
+					<ClanGuideSetting />
 				</div>
 				<div className="flex flex-col gap-2 h-20 p-4 w-[300px] text-base justify-between bg-[#282a2e] rounded-lg">
 					<div className="font-bold text-white">About</div>
@@ -30,22 +32,24 @@ type GuideItemLayoutProps = {
 	className?: string;
 	hightLightIcon?: boolean;
 	title?: string;
-	description?: string;
+	description?: ReactNode;
 	height?: string;
+	gap?: string;
 };
 
-const GuideItemLayout = ({
-	title = 'Title',
+export const GuideItemLayout = ({
+	title,
 	description = 'Description',
 	icon,
 	hightLightIcon = false,
 	action,
 	className,
 	background = 'bg-[#282a2e]',
-	height
+	height,
+	gap = 'gap-2'
 }: GuideItemLayoutProps) => {
 	return (
-		<div className={`p-4 gap-2 flex items-start rounded-lg hover:bg-slate-800  ${height ? height : 'h-full'} ${background} ${className}`}>
+		<div className={`p-4 ${gap} flex items-start rounded-lg hover:bg-slate-800  ${height ? height : 'h-full'} ${background} ${className}`}>
 			{icon && (
 				<div className="h-full flex items-center justify-center">
 					<div className={`${hightLightIcon ? 'rounded-full w-12 aspect-square bg-black' : ''}  flex items-center justify-center`}>
@@ -53,11 +57,11 @@ const GuideItemLayout = ({
 					</div>
 				</div>
 			)}
-			<div className="flex flex-1 text-base flex-col gap-2 h-full justify-start">
+			<div className={`flex flex-1 text-base flex-col h-full justify-start`}>
 				{title && <div className="font-bold text-white">#{title}</div>}
-				<div className="text-channelTextLabel">{description}</div>
+				<div className="text-channelTextLabel text-xs flex-1">{description}</div>
 			</div>
-			{action && <div className="flex items-center">{action}</div>}
+			{action && <div className="flex items-center h-full">{action}</div>}
 		</div>
 	);
 };

@@ -110,25 +110,28 @@ export function useMarkAsRead() {
 		[actionMarkAsRead, resetCountChannelBadge]
 	);
 
-	const handleMarkAsReadClan = useCallback(async () => {
-		const body: ApiMarkAsReadRequest = {
-			clan_id: currentClanId ?? ''
-		};
+	const handleMarkAsReadClan = useCallback(
+		async (clanId: string) => {
+			const body: ApiMarkAsReadRequest = {
+				clan_id: clanId ?? ''
+			};
 
-		setStatusMarkAsReadClan('pending');
-		try {
-			const result = await actionMarkAsRead(body);
-			const allChannelsAndThreads = getChannelsWithBadgeCountClan(channelsInClan);
-			setStatusMarkAsReadClan('success');
-			allChannelsAndThreads.forEach((channel: ChannelsEntity) => {
-				resetCountChannelBadge(channel);
-			});
-			dispatch(clansActions.updateClanBadgeCount({ clanId: currentClanId ?? '', count: 0, isReset: true }));
-		} catch (error) {
-			console.error('Failed to mark as read:', error);
-			setStatusMarkAsReadClan('error');
-		}
-	}, [actionMarkAsRead, resetCountChannelBadge]);
+			setStatusMarkAsReadClan('pending');
+			try {
+				const result = await actionMarkAsRead(body);
+				const allChannelsAndThreads = getChannelsWithBadgeCountClan(channelsInClan);
+				setStatusMarkAsReadClan('success');
+				allChannelsAndThreads.forEach((channel: ChannelsEntity) => {
+					resetCountChannelBadge(channel);
+				});
+				dispatch(clansActions.updateClanBadgeCount({ clanId: clanId ?? '', count: 0, isReset: true }));
+			} catch (error) {
+				console.error('Failed to mark as read:', error);
+				setStatusMarkAsReadClan('error');
+			}
+		},
+		[actionMarkAsRead, resetCountChannelBadge]
+	);
 
 	return useMemo(
 		() => ({

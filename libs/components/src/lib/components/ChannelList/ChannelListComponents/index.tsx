@@ -71,10 +71,10 @@ export const Events = memo(() => {
 				<div className="grow w-5 flex-row items-center gap-2 flex">
 					<div className="w-5 h-5 relative flex flex-row items-center">
 						<div className="w-5 h-5 left-[1.67px] top-[1.67px] absolute">
-							<Icons.Guide defaultSize="w-5 h-5 dark:fill-channelTextLabel" defaultFill="" />
+							<Icons.GuideIcon defaultSize="w-5 h-5 dark:fill-channelTextLabel" defaultFill="" />
 						</div>
 					</div>
-					<div className="w-[99px] dark:text-channelTextLabel text-colorTextLightMode text-base font-medium">Server Guide</div>
+					<div className="w-[99px] dark:text-channelTextLabel text-colorTextLightMode text-base font-medium">Clan Guide</div>
 				</div>
 			</Link>
 

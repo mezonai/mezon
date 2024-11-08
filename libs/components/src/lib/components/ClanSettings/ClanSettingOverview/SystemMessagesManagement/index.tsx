@@ -153,17 +153,22 @@ const SystemMessagesManagement = ({
 				placement={'bottom-start'}
 				label={''}
 				renderTrigger={() => (
-					<div className="w-full h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-xs dark:bg-bgInputDark bg-bgLightModeThird border dark:text-textPrimary text-textPrimaryLight">
+					<div className="w-full h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm dark:bg-bgInputDark bg-bgLightModeThird border dark:text-textPrimary text-textPrimaryLight">
 						<div className={'dark:text-textPrimary text-textPrimary400 flex flex-row items-center'}>
-							<p># {selectedChannel?.channel_label}</p>
-							<p className={'uppercase dark:text-textThreadPrimary ml-5'}>{selectedChannel?.category_name}</p>
+							{selectedChannel?.channel_private ? (
+								<Icons.HashtagLocked defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+							) : (
+								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+							)}
+							<p>{selectedChannel?.channel_label}</p>
+							<p className={'uppercase dark:text-textThreadPrimary ml-5 font-semibold'}>{selectedChannel?.category_name}</p>
 						</div>
 						<div>
 							<Icons.ArrowDownFill />
 						</div>
 					</div>
 				)}
-				className={'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2'}
+				className={'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20'}
 			>
 				{channelsList
 					.filter(
@@ -174,11 +179,16 @@ const SystemMessagesManagement = ({
 						channel.channel_id !== selectedChannel?.channel_id ? (
 							<Dropdown.Item
 								key={channel.id}
-								className="flex flex-row items-center dark:text-textPrimary text-textPrimaryLight rounded-sm dark:hover:bg-bgModifierHover hover:bg-bgIconDark text-sm w-full py-1 px-4 text-left cursor-pointer"
+								className="flex flex-row items-center dark:text-textPrimary text-textPrimaryLight rounded-sm dark:hover:bg-bgModifierHover hover:bg-bgIconDark text-sm w-full py-2 px-4 text-left cursor-pointer"
 								onClick={() => handleSelectChannel(channel)}
 							>
-								<p># {channel.channel_label ?? ''}</p>
-								<p className="uppercase dark:text-textSecondary text-textSecondary800 ml-5">{channel.category_name}</p>
+								{channel?.channel_private ? (
+									<Icons.HashtagLocked defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+								) : (
+									<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+								)}
+								<p>{channel.channel_label ?? ''}</p>
+								<p className="uppercase dark:text-textSecondary text-textSecondary800 ml-5 font-semibold">{channel.category_name}</p>
 							</Dropdown.Item>
 						) : null
 					)}

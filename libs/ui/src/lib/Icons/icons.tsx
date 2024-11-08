@@ -3100,7 +3100,7 @@ export function ThreadIconLocker(props: React.HTMLAttributes<SVGElement>) {
 	);
 }
 
-export function IconRemove({ className = '' }: { className: string }) {
+export function IconRemove({ className = '', fill = 'currentColor' }: { className?: string; fill?: string }) {
 	return (
 		<svg
 			aria-hidden="true"
@@ -3113,7 +3113,7 @@ export function IconRemove({ className = '' }: { className: string }) {
 			className={className}
 		>
 			<path
-				fill="currentColor"
+				fill={fill}
 				d="M17.3 18.7a1 1 0 0 0 1.4-1.4L13.42 12l5.3-5.3a1 1 0 0 0-1.42-1.4L12 10.58l-5.3-5.3a1 1 0 0 0-1.4 1.42L10.58 12l-5.3 5.3a1 1 0 1 0 1.42 1.4L12 13.42l5.3 5.3Z"
 			></path>
 		</svg>
@@ -5686,7 +5686,7 @@ export function WindowZoom(props: React.HTMLAttributes<SVGElement>) {
 		</svg>
 	);
 }
-export const Guide: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSize = 'w-5 h-5' }) => {
+export const GuideIcon: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSize = 'w-5 h-5' }) => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -5714,6 +5714,20 @@ export const Guide: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSiz
 					transform="matrix(-1 0 0 1.2 136 -20.8)"
 				></path>
 			</g>
+		</svg>
+	);
+};
+
+export const RuleIcon: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSize = 'w-5 h-5' }) => {
+	return (
+		<svg role="img" xmlns="http://www.w3.org/2000/svg" className={`${defaultSize}`} width="22" height="20" fill="none" viewBox="0 0 24 24">
+			{' '}
+			<path
+				fill={defaultFill}
+				fillRule="evenodd"
+				d="M15 2a3 3 0 0 1 3 3v12H5.5a1.5 1.5 0 0 0 0 3h14a.5.5 0 0 0 .5-.5V5h1a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H5a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h10Zm-.3 5.7a1 1 0 0 0-1.4-1.4L9 10.58l-2.3-2.3a1 1 0 0 0-1.4 1.42l3 3a1 1 0 0 0 1.4 0l5-5Z"
+				clipRule="evenodd"
+			></path>
 		</svg>
 	);
 };

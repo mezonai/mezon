@@ -164,13 +164,22 @@ export const joinChannel = createAsyncThunk(
 					messagesActions.fetchMessages({ clanId: clanId, channelId, isFetchingLatestMessages: true, isClearMessage, noCache: true })
 				);
 			}
+			const channel = selectChannelById(getChannelsRootState(thunkAPI), channelId);
 
 			if (!noFetchMembers) {
+				if (channel?.parrent_id !== '0' && channel?.parrent_id !== '') {
+					thunkAPI.dispatch(
+						channelMembersActions.fetchChannelMembers({
+							clanId,
+							channelId: channel.parrent_id || '',
+							channelType: ChannelType.CHANNEL_TYPE_TEXT
+						})
+					);
+				}
 				thunkAPI.dispatch(channelMembersActions.fetchChannelMembers({ clanId, channelId, channelType: ChannelType.CHANNEL_TYPE_TEXT }));
 			}
 			thunkAPI.dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: channelId }));
 			thunkAPI.dispatch(userChannelsActions.fetchUserChannels({ channelId: channelId }));
-			const channel = selectChannelById(getChannelsRootState(thunkAPI), channelId);
 			thunkAPI.dispatch(channelsActions.setModeResponsive(ModeResponsive.MODE_CLAN));
 
 			const isPublic = channel ? (checkIsThread(channel as ChannelsEntity) ? false : !channel.channel_private) : false;

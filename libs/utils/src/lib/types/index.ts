@@ -915,3 +915,104 @@ export enum TypeMessage {
 	CreateThread = 6,
 	CreatePin = 7
 }
+
+export enum ServerSettingsMenuValue {
+	Overview = 0,
+	Roles = 1,
+	Emoji = 2,
+	Stickers = 3,
+	Soundboard = 4,
+	Widget = 5,
+	ServerTemplate = 6,
+	CustomInviteLink = 7,
+	Integrations = 8,
+	AppDirectory = 9,
+	SafetySetup = 10,
+	AutoMod = 11,
+	AuditLog = 12,
+	Bans = 13,
+	CommunitySettings = 14,
+	ServerSubscriptions = 15,
+	ServerBoostStatus = 16,
+	Members = 17,
+	Invites = 18
+}
+
+export const serverSettingsMenuList = [
+	{
+		label: 'Overview',
+		value: ServerSettingsMenuValue.Overview
+	},
+	{
+		label: 'Roles',
+		value: ServerSettingsMenuValue.Roles
+	},
+	{
+		label: 'Emoji',
+		value: ServerSettingsMenuValue.Emoji
+	},
+	{
+		label: 'Stickers',
+		value: ServerSettingsMenuValue.Stickers
+	},
+	{
+		label: 'Soundboard',
+		value: ServerSettingsMenuValue.Soundboard
+	},
+	{
+		label: 'Widget',
+		value: ServerSettingsMenuValue.Widget
+	},
+	{
+		label: 'Server Template',
+		value: ServerSettingsMenuValue.ServerTemplate
+	},
+	{
+		label: 'Custom Invite Link',
+		value: ServerSettingsMenuValue.CustomInviteLink
+	},
+	{
+		label: 'Integrations',
+		value: ServerSettingsMenuValue.Integrations
+	},
+	{
+		label: 'App Directory',
+		value: ServerSettingsMenuValue.AppDirectory
+	},
+	{
+		label: 'Safety Setup',
+		value: ServerSettingsMenuValue.SafetySetup
+	},
+	{
+		label: 'AutoMod',
+		value: ServerSettingsMenuValue.AutoMod
+	},
+	{
+		label: 'Audit Log',
+		value: ServerSettingsMenuValue.AuditLog
+	},
+	{
+		label: 'Bans',
+		value: ServerSettingsMenuValue.Bans
+	},
+	{
+		label: 'Community Settings',
+		value: ServerSettingsMenuValue.CommunitySettings
+	},
+	{
+		label: 'Server Subscriptions',
+		value: ServerSettingsMenuValue.ServerSubscriptions
+	},
+	{
+		label: 'Server Boost Status',
+		value: ServerSettingsMenuValue.ServerBoostStatus
+	},
+	{
+		label: 'Members',
+		value: ServerSettingsMenuValue.Members
+	},
+	{
+		label: 'Invites',
+		value: ServerSettingsMenuValue.Invites
+	}
+];
