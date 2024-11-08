@@ -8,7 +8,7 @@ import {
 	jumpToChannel,
 	save
 } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, selectClanById, useAppDispatch, videoStreamActions } from '@mezon/store';
 import { selectCurrentClanId, selectCurrentStreamInfo, selectStatusStream } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
@@ -17,7 +17,6 @@ import { ChannelType } from 'mezon-js';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { InviteToChannel } from '../../InviteToChannel';
@@ -107,42 +106,37 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }, refRBSheet: Rea
 				</TouchableOpacity>
 			</Block>
 			<Block alignItems="center" gap={size.s_6}>
-				<LinearGradient
-					start={{ x: 0, y: 0 }}
-					end={{ x: 1, y: 1 }}
-					colors={[baseColor.blurple, baseColor.purple, baseColor.blurple, baseColor.purple]} // Các màu cho gradient
+				<Block
 					style={{
 						width: size.s_100,
 						height: size.s_100,
 						borderRadius: size.s_50,
 						justifyContent: 'center',
-						alignItems: 'center'
+						alignItems: 'center',
+						backgroundColor: themeValue.tertiary
 					}}
 				>
 					<Icons.VoiceNormalIcon width={size.s_36} height={size.s_36} />
-				</LinearGradient>
+				</Block>
 				<Text style={styles.text}>{t('joinStreamingRoomBS.stream')}</Text>
 				<Text style={styles.textDisable}>{t('joinStreamingRoomBS.noOne')}</Text>
 				<Text style={styles.textDisable}>{t('joinStreamingRoomBS.readyTalk')}</Text>
 			</Block>
-			<Block borderRadius={size.s_40} backgroundColor={themeValue.tertiary} marginTop={size.s_20}>
-				<TouchableOpacity style={styles.lineBtn}>
-					<Block width={size.s_50} height={size.s_6} borderRadius={size.s_4} backgroundColor={themeValue.badgeHighlight}></Block>
-				</TouchableOpacity>
+			<Block borderRadius={size.s_40} marginTop={size.s_20} marginBottom={size.s_10}>
 				<Block
 					gap={size.s_20}
 					flexDirection="row"
 					alignItems="center"
 					justifyContent="space-between"
-					paddingHorizontal={size.s_20}
-					paddingBottom={size.s_20}
+					paddingHorizontal={size.s_16}
+					paddingBottom={size.s_16}
 				>
 					<Block
 						justifyContent="center"
 						alignItems="center"
 						position="relative"
-						width={size.s_60}
-						height={size.s_60}
+						width={size.s_50}
+						height={size.s_50}
 						backgroundColor={'transparent'}
 						borderRadius={size.s_30}
 					></Block>
@@ -156,8 +150,8 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }, refRBSheet: Rea
 							justifyContent="center"
 							alignItems="center"
 							position="relative"
-							width={size.s_60}
-							height={size.s_60}
+							width={size.s_50}
+							height={size.s_50}
 							backgroundColor={themeValue.badgeHighlight}
 							borderRadius={size.s_30}
 						>

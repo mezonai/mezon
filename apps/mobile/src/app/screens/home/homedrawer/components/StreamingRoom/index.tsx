@@ -5,7 +5,6 @@ import { selectCurrentStreamInfo, selectStreamMembersByChannelId, useAppDispatch
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useRef, useState } from 'react';
 import { SafeAreaView, TouchableOpacity } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { InviteToChannel } from '../InviteToChannel';
@@ -59,13 +58,11 @@ function StreamingRoom({
 
 	return (
 		<SafeAreaView>
-			<LinearGradient
-				start={{ x: 0, y: 0 }}
-				end={{ x: 1, y: 1 }}
-				colors={[baseColor.blurple, baseColor.purple, baseColor.blurple, baseColor.purple]}
+			<Block
 				style={{
 					width: isAnimationComplete ? (isFullScreen ? Metrics.screenHeight : Metrics.screenWidth) : 200,
-					height: isAnimationComplete ? (isFullScreen ? Metrics.screenWidth : Metrics.screenHeight) : 100
+					height: isAnimationComplete ? (isFullScreen ? Metrics.screenWidth : Metrics.screenHeight) : 100,
+					backgroundColor: themeValue?.primary
 				}}
 			>
 				<Block style={styles.container}>
@@ -120,7 +117,7 @@ function StreamingRoom({
 					)}
 				</Block>
 				<InviteToChannel isUnknownChannel={false} ref={bottomSheetInviteRef} />
-			</LinearGradient>
+			</Block>
 		</SafeAreaView>
 	);
 }
