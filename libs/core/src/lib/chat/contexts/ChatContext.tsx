@@ -86,6 +86,7 @@ import {
 	StreamingJoinedEvent,
 	StreamingLeavedEvent,
 	StreamingStartedEvent,
+	TokenSentEvent,
 	UserChannelAddedEvent,
 	UserChannelRemovedEvent,
 	UserClanRemovedEvent,
@@ -645,6 +646,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[dispatch]
 	);
 
+	const ontokensent = useCallback(
+		(tokenEvent: TokenSentEvent) => {
+			dispatch(giveCoffeeActions.handleSocketToken({ currentUserId: userId as string, tokenEvent }));
+		},
+		[dispatch, userId]
+	);
+
 	const onerror = useCallback(
 		(event: unknown) => {
 			dispatch(toastActions.addToast({ message: 'Socket connection failed', type: 'error', id: 'SOCKET_CONNECTION_ERROR' }));
@@ -931,6 +939,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			socket.oncoffeegiven = oncoffeegiven;
 
 			socket.onroleevent = onroleevent;
+
+			socket.ontokensent = ontokensent;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -968,7 +978,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			onstreamingchannelended,
 			oneventcreated,
 			oncoffeegiven,
-			onroleevent
+			onroleevent,
+			ontokensent
 		]
 	);
 
