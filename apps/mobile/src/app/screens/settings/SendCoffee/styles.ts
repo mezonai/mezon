@@ -17,7 +17,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_10
 		},
 		form: {
-			justifyContent: 'space-between',
+			flex: 1,
 			backgroundColor: colors.secondary,
 			borderRadius: size.s_10,
 			paddingHorizontal: size.s_20,
@@ -32,7 +32,8 @@ export const style = (colors: Attributes) =>
 		},
 		title: {
 			color: colors.text,
-			marginBottom: size.s_4
+			marginTop: size.s_10,
+			marginBottom: size.s_6
 		},
 		heading: {
 			color: colors.textStrong,
@@ -41,6 +42,7 @@ export const style = (colors: Attributes) =>
 			fontWeight: 'bold'
 		},
 		textInput: {
+			paddingHorizontal: size.s_10,
 			fontSize: size.s_16,
 			height: size.s_50,
 			color: colors.text,

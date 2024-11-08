@@ -1,8 +1,8 @@
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, getStoreAsync, giveCoffeeActions, selectAllAccount, selectUpdateToken } from '@mezon/store-mobile';
 import { TokenSentEvent } from 'mezon-js/dist/socket';
 import { useMemo, useState } from 'react';
-import { Dimensions, Pressable, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -76,7 +76,7 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<View style={styles.form}>
+			<ScrollView style={styles.form}>
 				<Text style={styles.heading}>Receiver Information</Text>
 				<View>
 					<Text style={styles.title}>User name</Text>
@@ -106,7 +106,7 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 					<Text style={styles.title}>Description</Text>
 					<View style={styles.textField}>
 						<TextInput
-							style={[styles.textInput, { height: 'auto' }]}
+							style={[styles.textInput, { height: size.s_100 }]}
 							placeholderTextColor="#535353"
 							autoCapitalize="none"
 							numberOfLines={5}
@@ -115,7 +115,7 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 						/>
 					</View>
 				</View>
-			</View>
+			</ScrollView>
 			<Pressable style={styles.button} onPress={sendToken}>
 				<Text style={styles.buttonTitle}>Send Token</Text>
 			</Pressable>
