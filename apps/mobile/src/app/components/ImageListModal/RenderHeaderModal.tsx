@@ -13,9 +13,10 @@ interface IRenderFooterModalProps {
 	onClose?: () => void;
 	imageSelected?: AttachmentEntity;
 	onImageSaved?: () => void;
+	onLoading?: (isLoading: boolean) => void;
 }
 
-export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSaved }: IRenderFooterModalProps) => {
+export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSaved, onLoading }: IRenderFooterModalProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const uploader = useSelector(selectMemberClanByUserId(imageSelected?.uploader || ''));
@@ -24,6 +25,7 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 		if (!imageSelected?.url) {
 			return;
 		}
+		onLoading(true);
 		try {
 			const { url, filetype } = imageSelected;
 			const filetypeParts = filetype.split('/');
@@ -33,14 +35,15 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 			}
 			onImageSaved();
 		} catch (error) {
-			console.log('download image error', error);
+			console.error(error);
 		}
+		onLoading(false);
 	};
 
 	return (
 		<Block
 			position="absolute"
-			top={Platform.OS === 'ios' ? size.s_28 : size.s_14}
+			paddingTop={Platform.OS === 'ios' ? size.s_28 : size.s_14}
 			left={0}
 			zIndex={1}
 			justifyContent="space-between"
