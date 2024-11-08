@@ -2,21 +2,26 @@ import { useAuth, useMemberCustomStatus, useSettingFooter } from '@mezon/core';
 import {
 	ChannelsEntity,
 	channelMembersActions,
+	giveCoffeeActions,
 	selectAccountCustomStatus,
 	selectCurrentClanId,
 	selectShowModalCustomStatus,
 	selectShowModalFooterProfile,
+	selectShowModalSendToken,
 	selectTheme,
+	selectUpdateToken,
 	useAppDispatch,
 	userClanProfileActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MemberProfileType } from '@mezon/utils';
 import { Tooltip } from 'flowbite-react';
+import { TokenSentEvent } from 'mezon-js/dist/socket';
 import { memo, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
+import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
 import ModalFooterProfile from './ModalFooterProfile';
 
 export type FooterProfileProps = {
@@ -33,10 +38,24 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const currentClanId = useSelector(selectCurrentClanId);
 	const showModalFooterProfile = useSelector(selectShowModalFooterProfile);
 	const showModalCustomStatus = useSelector(selectShowModalCustomStatus);
+	const showModalSendToken = useSelector(selectShowModalSendToken);
 	const appearanceTheme = useSelector(selectTheme);
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const userCustomStatus = useMemberCustomStatus(userId || '', isDM);
 	const [customStatus, setCustomStatus] = useState<string>(userCustomStatus ?? '');
+	const [token, setToken] = useState<number>(0);
+	const [selectedUserId, setSelectedUserId] = useState<string>('');
+	const [error, setError] = useState<string | null>(null);
+	const [userSearchError, setUserSearchError] = useState<string | null>(null);
+
+	const myProfile = useAuth();
+	const isMe = useMemo(() => {
+		return userId === myProfile.userId;
+	}, [myProfile.userId, userId]);
+	const tokenInWallet = useMemo(() => {
+		return myProfile?.userProfile?.wallet ? JSON.parse(myProfile?.userProfile?.wallet)?.value : 0;
+	}, [myProfile?.userProfile?.wallet]);
+	const getTokenSocket = useSelector(selectUpdateToken(myProfile.userId ?? ''));
 
 	const handleClickFooterProfile = () => {
 		dispatch(userClanProfileActions.setShowModalFooterProfile(!showModalFooterProfile));
@@ -56,11 +75,44 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		handleCloseModalCustomStatus();
 	};
 
-	const myProfile = useAuth();
-	const isMe = useMemo(() => {
-		return userId === myProfile.userId;
-	}, [myProfile.userId, userId]);
+	const handleCloseModalSendToken = () => {
+		setToken(0);
+		setSelectedUserId('');
+		dispatch(giveCoffeeActions.setShowModalSendToken(false));
+	};
 
+	const handleSaveSendToken = () => {
+		if (!selectedUserId) {
+			setUserSearchError('Please select a user');
+			return;
+		}
+		if (token <= 0) {
+			setError('Token amount must be greater than zero');
+			return;
+		}
+
+		if (token > Number(tokenInWallet) + Number(getTokenSocket)) {
+			setError('Token amount exceeds wallet balance');
+			return;
+		}
+		const tokenEvent: TokenSentEvent = {
+			sender_id: myProfile.userId as string,
+			sender_name: myProfile?.userProfile?.user?.username as string,
+			receiver_id: selectedUserId,
+			amount: token
+		};
+
+		dispatch(
+			giveCoffeeActions.sendToken({
+				sender_id: myProfile.userId as string,
+				sender_name: myProfile?.userProfile?.user?.username as string,
+				receiver_id: selectedUserId,
+				amount: token
+			})
+		);
+		dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
+		handleCloseModalSendToken();
+	};
 	const rootRef = useRef<HTMLButtonElement>(null);
 
 	return (
@@ -116,6 +168,19 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 					name={name}
 					openModal={showModalCustomStatus}
 					onClose={handleCloseModalCustomStatus}
+				/>
+			)}
+			{showModalSendToken && (
+				<ModalSendToken
+					setToken={setToken}
+					token={token || 0}
+					handleSaveSendToken={handleSaveSendToken}
+					openModal={showModalSendToken}
+					onClose={handleCloseModalSendToken}
+					setSelectedUserId={setSelectedUserId}
+					error={error}
+					userSearchError={userSearchError}
+					userId={myProfile.userId as string}
 				/>
 			)}
 		</>

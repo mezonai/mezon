@@ -1,7 +1,9 @@
 import { LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import * as Sentry from '@sentry/browser';
 import { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
-import { ensureSession, getMezonCtx } from '../helpers';
+import { TokenSentEvent } from 'mezon-js/dist/socket';
+import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 
 export const GIVE_COFEE = 'giveCoffee';
 
@@ -12,6 +14,7 @@ export interface GiveCoffeeEntity {
 export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
+	showModalSendToken: boolean;
 	tokenSocket: Record<string, ApiGiveCoffeeEvent>;
 	tokenUpdate: Record<string, number>;
 }
@@ -47,8 +50,19 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 	loadingStatus: 'not loaded',
 	clans: [],
 	error: null,
+	showModalSendToken: false,
 	tokenSocket: {},
 	tokenUpdate: {}
+});
+
+export const sendToken = createAsyncThunk('token/sendToken', async ({ receiver_id, amount }: TokenSentEvent, thunkAPI) => {
+	try {
+		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+		await mezon.socketRef.current?.sendToken(receiver_id, amount);
+	} catch (e) {
+		Sentry.captureException(e);
+		console.error('Error updating last seen message', e);
+	}
 });
 
 export const giveCoffeeSlice = createSlice({
@@ -57,6 +71,32 @@ export const giveCoffeeSlice = createSlice({
 	reducers: {
 		add: giveCoffeeAdapter.addOne,
 		remove: giveCoffeeAdapter.removeOne,
+		setShowModalSendToken: (state, action: PayloadAction<boolean>) => {
+			state.showModalSendToken = action.payload;
+		},
+		updateTokenUser: (state, action: PayloadAction<{ tokenEvent: TokenSentEvent }>) => {
+			const { tokenEvent } = action.payload;
+			const userId = tokenEvent.sender_id;
+			if (!userId) return;
+			state.tokenUpdate[userId] = state.tokenUpdate[userId] ?? 0;
+			state.tokenSocket[userId] = tokenEvent ?? {};
+
+			if (userId === tokenEvent.sender_id) {
+				state.tokenUpdate[userId] -= tokenEvent.amount;
+			}
+		},
+		handleSocketToken: (state, action: PayloadAction<{ currentUserId: string; tokenEvent: TokenSentEvent }>) => {
+			const { currentUserId, tokenEvent } = action.payload;
+			if (!currentUserId) return;
+			if (currentUserId !== tokenEvent.receiver_id) return;
+
+			state.tokenUpdate[currentUserId] = state.tokenUpdate[currentUserId] ?? 0;
+			state.tokenSocket[currentUserId] = tokenEvent ?? {};
+
+			if (currentUserId === tokenEvent.receiver_id) {
+				state.tokenUpdate[currentUserId] += tokenEvent.amount;
+			}
+		},
 		setTokenFromSocket: (state, action: PayloadAction<{ userId: string | undefined; coffeeEvent: ApiGiveCoffeeEvent }>) => {
 			const { userId, coffeeEvent } = action.payload;
 
@@ -99,7 +139,8 @@ export const giveCoffeeReducer = giveCoffeeSlice.reducer;
  */
 export const giveCoffeeActions = {
 	...giveCoffeeSlice.actions,
-	updateGiveCoffee
+	updateGiveCoffee,
+	sendToken
 };
 
 /*
@@ -117,6 +158,8 @@ export const giveCoffeeActions = {
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
 export const getCoffeeState = (rootState: { [GIVE_COFEE]: GiveCoffeeState }): GiveCoffeeState => rootState[GIVE_COFEE];
+
+export const selectShowModalSendToken = createSelector(getCoffeeState, (state) => state.showModalSendToken);
 
 export const selectUpdateToken = (userId: string) =>
 	createSelector(getCoffeeState, (state) => {

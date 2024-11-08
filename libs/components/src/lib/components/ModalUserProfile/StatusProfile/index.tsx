@@ -1,5 +1,5 @@
 import { useAuth, useMemberCustomStatus } from '@mezon/core';
-import { ChannelMembersEntity, selectUpdateToken, useAppDispatch, userClanProfileActions } from '@mezon/store';
+import { ChannelMembersEntity, giveCoffeeActions, selectUpdateToken, useAppDispatch, userClanProfileActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { Dropdown } from 'flowbite-react';
 import { useMemo } from 'react';
@@ -26,22 +26,27 @@ const StatusProfile = ({ userById, isDM }: StatusProfileProps) => {
 		return parse;
 	}, [userProfile?.wallet]);
 
+	const handleSendToken = () => {
+		dispatch(giveCoffeeActions.setShowModalSendToken(true));
+	};
+
 	return (
 		<>
 			<div>
 				<Dropdown
 					label=""
-					trigger={undefined}
+					trigger="click"
+					dismissOnClick={true}
 					renderTrigger={() => (
 						<div>
-							<ItemStatus
-								disabled={true}
-								children={`Token: ${Number(tokenInWallet) + Number(getTokenSocket)}`}
-								startIcon={<Icons.Check />}
-							/>
+							<ItemStatus children={`Token: ${Number(tokenInWallet) + Number(getTokenSocket)}`} startIcon={<Icons.Check />} />
 						</div>
 					)}
-				/>
+					placement="right-start"
+					className="dark:!bg-bgSecondary600 !bg-white border ml-2 py-[6px] px-[8px] w-[200px]"
+				>
+					<ItemStatus onClick={handleSendToken} children="Send Token" startIcon={<Icons.OnlineStatus />} />
+				</Dropdown>
 				<Dropdown
 					trigger="click"
 					dismissOnClick={true}
