@@ -65,6 +65,8 @@ export class WindowBadge implements IBadge {
 			this.generator.generate(badgeNumber).then((base64) => {
 				// eslint-disable-next-line no-console
 				console.log('case 1');
+				// eslint-disable-next-line no-console
+				console.log('this.currentOverlayIcon.badgeDescription: 1', this.currentOverlayIcon.badgeDescription);
 				const image = nativeImage.createFromDataURL(base64);
 				this.currentOverlayIcon.image = image;
 				this.mainWindow.setOverlayIcon(this.currentOverlayIcon.image, this.currentOverlayIcon.badgeDescription);
@@ -72,6 +74,8 @@ export class WindowBadge implements IBadge {
 		} else {
 			// eslint-disable-next-line no-console
 			console.log('case 2');
+			// eslint-disable-next-line no-console
+			console.log('this.currentOverlayIcon.badgeDescription: 2', this.currentOverlayIcon.badgeDescription);
 			this.currentOverlayIcon.image = null;
 			this.mainWindow.setOverlayIcon(this.currentOverlayIcon.image, this.currentOverlayIcon.badgeDescription);
 		}
