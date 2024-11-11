@@ -1,5 +1,6 @@
-import { useTheme } from '@mezon/mobile-ui';
-import { createStackNavigator, TransitionSpecs } from '@react-navigation/stack';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { TransitionSpecs, createStackNavigator } from '@react-navigation/stack';
+import { Platform } from 'react-native';
 import MuteThreadDetailModal from '../../../components/MuteThreadDetailModal';
 import CreateThreadModal from '../../../components/ThreadDetail';
 import CreateThreadForm from '../../../components/ThreadDetail/CreateThreadForm';
@@ -29,6 +30,11 @@ export const MenuThreadDetailStacks = ({}: any) => {
 				headerStyle: {
 					backgroundColor: themeValue.secondary
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				cardStyle: { backgroundColor: 'transparent' }
 			}}
 		>

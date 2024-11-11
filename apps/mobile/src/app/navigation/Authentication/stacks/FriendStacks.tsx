@@ -4,7 +4,7 @@ import React from 'react';
 import { SettingIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text } from 'react-native';
+import { Platform, Pressable, Text } from 'react-native';
 import { FriendScreen } from '../../../screens/friend';
 import { AddFriendScreen } from '../../../screens/friend/AddFriend';
 import { RequestFriendScreen } from '../../../screens/friend/RequestFriend';
@@ -58,6 +58,11 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				cardStyle: {
 					backgroundColor: 'transparent'
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				headerTintColor: themeValue.text,
 				headerLeftLabelVisible: false,
 				animationEnabled: false

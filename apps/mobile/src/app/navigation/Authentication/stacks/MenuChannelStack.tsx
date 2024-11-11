@@ -1,6 +1,7 @@
-import { Fonts, useTheme } from '@mezon/mobile-ui';
+import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import { ChangeCategory } from '../../../components/ChangeCategory';
 import { ChannelSetting } from '../../../components/ChannelSetting';
 import SearchMessageChannel from '../../../components/ThreadDetail/SearchMessageChannel';
@@ -31,6 +32,11 @@ export function MenuChannelStacks({}: any) {
 					fontSize: Fonts.size.h6,
 					fontWeight: 'bold'
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				cardStyle: {
 					backgroundColor: 'transparent'
 				}

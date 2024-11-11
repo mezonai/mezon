@@ -10,7 +10,8 @@
         "connection": "Connections",
         "clip": "Clips",
         "friendRequests": "Friend Requests",
-        "QRScan": "Scan QR Code"
+        "QRScan": "Scan QR Code",
+        "MyQRCode": "My QR code"
     },
     "paymentSettings": {
         "title": "Payment Settings",

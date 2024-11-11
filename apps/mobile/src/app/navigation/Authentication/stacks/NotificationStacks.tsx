@@ -1,7 +1,8 @@
 import { CardStyleInterpolators, createStackNavigator, TransitionSpecs } from '@react-navigation/stack';
 import React from 'react';
 
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { Platform } from 'react-native';
 import Notifications from '../../../screens/Notifications';
 import { APP_SCREEN } from '../../ScreenTypes';
 
@@ -20,6 +21,11 @@ export const NotificationStacks = ({}: any) => {
 					open: TransitionSpecs.TransitionIOSSpec,
 					close: TransitionSpecs.TransitionIOSSpec
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				cardStyle: { backgroundColor: themeValue.secondary },
 				cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
 			}}

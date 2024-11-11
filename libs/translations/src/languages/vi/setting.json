@@ -10,7 +10,8 @@
         "connection": "Kết nối",
         "clip": "Clip",
         "friendRequests": "Yêu cầu kết bạn",
-        "QRScan": "Quét mã QR"
+        "QRScan": "Quét mã QR",
+        "MyQRCode": "My QR của tôi"
     },
     "paymentSettings": {
         "title": "Cài đặt thanh toán",

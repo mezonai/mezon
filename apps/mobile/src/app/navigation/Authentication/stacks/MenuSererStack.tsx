@@ -1,6 +1,7 @@
-import { Fonts, useTheme } from '@mezon/mobile-ui';
+import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import { CategoryCreator } from '../../../components/Category';
 import { CategorySetting } from '../../../components/CategorySetting';
 import { ChannelCreator } from '../../../components/ChannelCreator';
@@ -49,6 +50,11 @@ export const MenuClanStacks = ({}: any) => {
 					fontWeight: 'bold',
 					color: themeValue.textStrong
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				cardStyle: {
 					backgroundColor: 'transparent'
 				}

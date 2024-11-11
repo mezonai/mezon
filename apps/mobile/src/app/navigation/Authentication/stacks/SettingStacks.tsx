@@ -1,12 +1,14 @@
-import { Fonts, useTheme } from '@mezon/mobile-ui';
+import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import { Settings } from '../../../screens/settings';
 import { AccountSetting } from '../../../screens/settings/AccountSetting';
 import { BlockedUsers } from '../../../screens/settings/AccountSetting/BlockedUsers';
 import AppearanceSetting from '../../../screens/settings/AppearanceSetting';
 import AppThemeSetting from '../../../screens/settings/AppearanceSetting/AppTheme';
 import { LanguageSetting } from '../../../screens/settings/LanguageSetting';
+import { MyQRCode } from '../../../screens/settings/MyQRCode';
 import { ProfileSetting } from '../../../screens/settings/ProfileSetting';
 import { QRScanner } from '../../../screens/settings/QRScanner';
 import { SendCoffeeScreen } from '../../../screens/settings/SendCoffee';
@@ -32,6 +34,11 @@ export const SettingStacks = ({}: any) => {
 				headerStyle: {
 					backgroundColor: themeValue.primary
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				headerTitleStyle: {
 					fontWeight: 'bold',
 					fontSize: Fonts.size.medium
@@ -119,6 +126,17 @@ export const SettingStacks = ({}: any) => {
 				component={SendCoffeeScreen}
 				options={{
 					headerTitle: 'Send token',
+					gestureEnabled: false,
+					headerStyle: {
+						backgroundColor: themeValue.secondary
+					}
+				}}
+			/>
+			<Stack.Screen
+				name={APP_SCREEN.SETTINGS.MY_QR_CODE}
+				component={MyQRCode}
+				options={{
+					headerTitle: '',
 					gestureEnabled: false,
 					headerStyle: {
 						backgroundColor: themeValue.secondary

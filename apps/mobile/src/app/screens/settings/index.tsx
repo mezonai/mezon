@@ -120,6 +120,16 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 				{
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
+							screen: APP_SCREEN.SETTINGS.MY_QR_CODE
+						});
+					},
+					expandable: true,
+					title: t('accountSettings.MyQRCode'),
+					icon: <Icons.MyQRCodeIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+				},
+				{
+					onPress: () => {
+						navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
 							screen: APP_SCREEN.SETTINGS.QR_SCANNER
 						});
 					},
@@ -128,7 +138,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					icon: <Icons.QRCodeCameraIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
-		[themeValue.textStrong]
+		[navigation, t, themeValue.textStrong]
 	);
 
 	const PaymentMenu = useMemo(

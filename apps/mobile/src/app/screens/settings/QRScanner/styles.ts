@@ -6,13 +6,12 @@ export const styles = StyleSheet.create({
 		flex: 1
 	},
 	backHeader: {
-		position: 'absolute',
-		top: size.s_30,
 		width: size.s_50,
 		height: size.s_50,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		borderRadius: size.s_50,
 		alignItems: 'center',
 		justifyContent: 'center',
-		left: size.s_10,
 		padding: size.s_10,
 		zIndex: 10
 	},
@@ -132,8 +131,24 @@ export const styles = StyleSheet.create({
 		fontWeight: '600',
 		paddingVertical: size.s_2
 	},
+	textMyQRCode: {
+		color: 'white',
+		fontSize: size.s_14,
+		fontWeight: '600',
+		paddingVertical: size.s_2
+	},
 	iconLogin: {
 		width: size.s_50 * 2,
 		height: size.s_50 * 2
+	},
+	iconLibrary: {
+		backgroundColor: 'rgba(0,0,0,0.6)',
+		borderRadius: size.s_10,
+		padding: size.s_10,
+		alignItems: 'center',
+		justifyContent: 'center',
+		position: 'absolute',
+		bottom: size.s_60,
+		left: size.s_30,
 	}
 });
