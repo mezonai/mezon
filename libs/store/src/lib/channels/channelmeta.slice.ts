@@ -136,10 +136,12 @@ export const selectLastChannelTimestamp = (channelId: string) =>
 	});
 
 export const selectAnyUnreadChannel = createSelector([getChannelMetaState, selectEntiteschannelCategorySetting], (state, settings) => {
+	const unreadChannels: ChannelMetaEntity[] = [];
+
 	if (state.lastSentChannelId && settings?.[state.lastSentChannelId]?.action !== enableMute) {
 		const lastSentChannel = state?.entities?.[state.lastSentChannelId];
 		if (lastSentChannel?.lastSeenTimestamp && lastSentChannel?.lastSeenTimestamp < lastSentChannel?.lastSentTimestamp) {
-			return true;
+			unreadChannels.push(lastSentChannel);
 		}
 	}
 
@@ -147,10 +149,11 @@ export const selectAnyUnreadChannel = createSelector([getChannelMetaState, selec
 		const channel = state?.entities?.[state?.ids[index]];
 		if (settings?.[channel?.id]?.action === enableMute) continue;
 		if (channel?.lastSeenTimestamp && channel?.lastSeenTimestamp < channel?.lastSentTimestamp) {
-			return true;
+			unreadChannels.push(channel);
 		}
 	}
-	return false;
+
+	return unreadChannels;
 });
 
 export const selectAllChannelLastSeenTimestampByClanId = (clanId: string) =>

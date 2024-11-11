@@ -439,6 +439,7 @@ export const fetchChannels = createAsyncThunk(
 			...mapChannelToEntity(channel),
 			last_seen_message: channel.last_seen_message ? channel.last_seen_message : { timestamp_seconds: 0 }
 		}));
+		console.log('channels: ', channels);
 		const meta = channels.map((ch) => extractChannelMeta(ch));
 		thunkAPI.dispatch(channelMetaActions.updateBulkChannelMetadata(meta));
 		return channels;

@@ -1,18 +1,20 @@
 import { ChatContext, ChatContextProvider, useFriends } from '@mezon/core';
-import { gifsStickerEmojiActions, reactionActions, selectAnyUnreadChannel, selectBadgeCountAllClan } from '@mezon/store';
+import { gifsStickerEmojiActions, reactionActions, selectAnyUnreadChannel, selectBadgeCountAllClan, selectChannelsByIds } from '@mezon/store';
 
-import { selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
+import { channelsActions, ChannelsEntity, selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
 import { MezonSuspense } from '@mezon/transport';
-import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { electronBridge, isLinuxDesktop, isWindowsDesktop, SubPanelName } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
-import { useContext, useEffect } from 'react';
+import { ChannelType } from 'mezon-js';
+import { useContext, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	const allNotificationReplyMentionAllClan = useSelector(selectBadgeCountAllClan);
 
@@ -20,7 +22,27 @@ const GlobalEventListener = () => {
 
 	const { quantityPendingRequest } = useFriends();
 
-	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
+	const unreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
+	console.log('unreadChannel: ', unreadChannel);
+
+	const ids = unreadChannel.map((item) => {
+		return item.id;
+	});
+
+	const getChannel = useAppSelector((state) => selectChannelsByIds(state, ids));
+	console.log('getChannel: ', getChannel);
+
+	useEffect(() => {
+		getChannel.map((item) => {
+			if (item.type === ChannelType.CHANNEL_TYPE_THREAD) {
+				const channelWithActive = { ...item, active: 1 };
+				dispatch(channelsActions.add(channelWithActive as ChannelsEntity));
+			}
+		});
+	}, [getChannel.length]);
+
+	const hasUnreadChannel = useMemo(() => unreadChannel.length > 0, [unreadChannel]);
+	console.log('hasUnreadChannel: ', hasUnreadChannel);
 
 	useEffect(() => {
 		const handleNavigateToPath = (_: unknown, path: string) => {
