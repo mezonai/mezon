@@ -33,16 +33,18 @@ export const EmbedFields = memo(({ fields }: EmbedFieldsProps) => {
 	}, [fields]);
 	return (
 		<View>
-			{groupedFields.map((field, index) => (
-				<View>
-					{field.map((f, i) => (
-						<View key={`${index}-${i}`}>
-							<Text style={styles.name}>{f.name}:</Text>
-							<Text style={styles.value}>{f.value}</Text>
-						</View>
-					))}
-				</View>
-			))}
+			{!!groupedFields?.length &&
+				groupedFields.map((field, index) => (
+					<View key={`fieldGroup${index}`}>
+						{!!field.length &&
+							field.map((fieldItem, fieldIndex) => (
+								<View key={`field${index}-${fieldIndex}`}>
+									<Text style={styles.name}>{fieldItem.name}:</Text>
+									<Text style={styles.value}>{fieldItem.value}</Text>
+								</View>
+							))}
+					</View>
+				))}
 		</View>
 	);
 });

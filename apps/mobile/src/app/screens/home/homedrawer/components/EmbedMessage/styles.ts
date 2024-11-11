@@ -15,6 +15,16 @@ export const style = (colors: Attributes) =>
 			gap: size.s_6,
 			width: '80%'
 		},
+		sizeColor: {
+			width: size.s_4,
+			backgroundColor: colors.bgViolet,
+			borderBottomLeftRadius: size.s_4,
+			borderTopLeftRadius: size.s_4
+		},
+		valueContainer: {
+			flexDirection: 'row',
+			gap: 6
+		},
 		imageWrapper: {
 			height: size.s_100 * 1.4,
 			width: '90%',
