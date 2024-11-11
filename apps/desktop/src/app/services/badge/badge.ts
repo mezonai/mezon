@@ -59,6 +59,8 @@ export class WindowBadge implements IBadge {
 	}
 
 	public setBadgeCount(badgeNumber: number) {
+		// eslint-disable-next-line no-console
+		console.log('badgeNumber: ', badgeNumber);
 		if (badgeNumber !== null) {
 			this.generator.generate(badgeNumber).then((base64) => {
 				const image = nativeImage.createFromDataURL(base64);
