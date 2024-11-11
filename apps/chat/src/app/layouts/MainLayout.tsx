@@ -1,12 +1,12 @@
 import { ChatContext, ChatContextProvider, useFriends } from '@mezon/core';
-import { gifsStickerEmojiActions, reactionActions, selectAnyUnreadChannel, selectBadgeCountAllClan } from '@mezon/store';
+import { gifsStickerEmojiActions, selectAnyUnreadChannel, selectBadgeCountAllClan } from '@mezon/store';
 
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
 import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
-import { useContext, useEffect } from 'react';
+import { memo, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -67,26 +67,28 @@ const GlobalEventListener = () => {
 	return null;
 };
 
-const MainLayout = () => {
-	const dispatch = useDispatch();
-	const handleClickingOutside = () => {
-		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
-		dispatch(reactionActions.setUserReactionPanelState(false));
-	};
-	return (
-		<div
-			id="main-layout"
-			className={`${isWindowsDesktop || isLinuxDesktop ? 'top-[21px] fixed' : ''} w-full`}
-			onClick={handleClickingOutside}
-			onContextMenu={(event: React.MouseEvent) => {
-				event.preventDefault();
-			}}
-		>
-			<Outlet />
-			<GlobalEventListener />
-		</div>
-	);
-};
+const MainLayout = memo(
+	() => {
+		const dispatch = useDispatch();
+		const handleClickingOutside = () => {
+			dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
+		};
+		return (
+			<div
+				id="main-layout"
+				className={`${isWindowsDesktop || isLinuxDesktop ? 'top-[21px] fixed' : ''} w-full`}
+				onClick={handleClickingOutside}
+				onContextMenu={(event: React.MouseEvent) => {
+					event.preventDefault();
+				}}
+			>
+				<Outlet />
+				<GlobalEventListener />
+			</div>
+		);
+	},
+	() => true
+);
 
 const MainLayoutWrapper = () => {
 	return (

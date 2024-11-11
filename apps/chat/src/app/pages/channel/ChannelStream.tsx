@@ -6,7 +6,7 @@ import {
 	selectCurrentClan,
 	selectIsShowChatStream,
 	selectMemberClanByGoogleId,
-	selectMemberClanByUserId,
+	selectMemberClanByUserId2,
 	selectStatusStream,
 	selectTheme,
 	useAppDispatch,
@@ -15,7 +15,7 @@ import {
 	videoStreamActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IChannelMember, IStreamInfo, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
+import { IChannelMember, IStreamInfo, getAvatarForPrioritize } from '@mezon/utils';
 import { Tooltip } from 'flowbite-react';
 import Hls from 'hls.js';
 import { ChannelType } from 'mezon-js';
@@ -324,12 +324,9 @@ function UserListStreamChannel({ memberJoin = [], memberMax, isShowChat }: UserL
 }
 
 function UserItem({ user }: { user: IChannelMember }) {
-	const member = useSelector(selectMemberClanByGoogleId(user.user_id ?? ''));
-	const userStream = useAppSelector(selectMemberClanByUserId(user.user_id ?? ''));
-	const clanNick = member ? member?.clan_nick : userStream?.clan_nick;
-	const displayName = member ? member?.user?.display_name : userStream?.user?.display_name;
+	const member = useAppSelector((state) => selectMemberClanByGoogleId(state, user.user_id ?? ''));
+	const userStream = useAppSelector((state) => selectMemberClanByUserId2(state, user.user_id ?? ''));
 	const userName = member ? member?.user?.username : userStream?.user?.username;
-	const name = getNameForPrioritize(clanNick, displayName, userName);
 	const clanAvatar = member ? member?.clan_avatar : userStream?.clan_avatar;
 	const avatarUrl = member ? member?.user?.avatar_url : userStream?.user?.avatar_url;
 	const avatar = getAvatarForPrioritize(clanAvatar, avatarUrl);

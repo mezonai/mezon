@@ -1,6 +1,5 @@
 import { selectTheme } from '@mezon/store';
 import { getSrcEmoji, SHOW_POSITION } from '@mezon/utils';
-import { Tooltip } from 'flowbite-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useMessageContextMenu } from '../ContextMenu';
@@ -38,10 +37,10 @@ export const EmojiMarkup: React.FC<EmojiMarkupOpt> = ({ emojiId, emojiSyntax, on
 	return (
 		<span onContextMenu={handleContextMenu} style={{ display: 'inline-block', height: onlyEmoji ? '50px' : 'auto' }}>
 			{srcEmoji ? (
-				<Tooltip style={appearanceTheme === 'light' ? 'light' : 'dark'} content={<p style={{ width: 'max-content' }}>{emojiSyntax}</p>}>
-					{emojiElement}
-				</Tooltip>
+				// <Tooltip style={appearanceTheme === 'light' ? 'light' : 'dark'} content={<p style={{ width: 'max-content' }}>{emojiSyntax}</p>}>
+				<div style={{ height: 24 }}>{emojiElement}</div>
 			) : (
+				// </Tooltip>
 				<PlainText text={emojiSyntax} />
 			)}
 		</span>

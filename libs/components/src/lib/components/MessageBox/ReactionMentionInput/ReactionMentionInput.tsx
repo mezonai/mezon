@@ -41,7 +41,8 @@ import {
 	selectTheme,
 	selectThreadCurrentChannel,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
@@ -179,7 +180,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 	const userProfile = useSelector(selectAllAccount);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
-	const isSearchMessage = useSelector(selectIsSearchMessage(currentDmOrChannelId || ''));
+	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, currentDmOrChannelId));
 	const lastMessageByUserId = useSelector((state) => selectLassSendMessageEntityBySenderId(state, currentDmOrChannelId, userProfile?.user?.id));
 	const { setOpenThreadMessageState, checkAttachment } = useReference(currentDmOrChannelId || '');
 	const [valueHighlight, setValueHightlight] = useState<string>('');

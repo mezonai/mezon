@@ -290,28 +290,43 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[dispatch]
 	);
 
+	const statusPresenceQueue = useRef<StatusPresenceEvent[]>([]);
+	const statusPresenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
 	const onstatuspresence = useCallback(
 		(statusPresence: StatusPresenceEvent) => {
-			if (statusPresence.joins.length > 0) {
-				const onlineStatus = statusPresence.joins.map((join) => {
-					return { userId: join.user_id, online: true, isMobile: join.is_mobile };
-				});
-				dispatch(clanMembersMetaActions.setManyStatusUser(onlineStatus));
-				dispatch(directActions.updateStatusByUserId(onlineStatus));
-				dispatch(friendsActions.setManyStatusUser(onlineStatus));
-			}
-			if (statusPresence.leaves.length > 0) {
-				const offlineStatus = statusPresence.leaves.map((leave) => {
-					return { userId: leave.user_id, online: false, isMobile: false };
-				});
-				dispatch(clanMembersMetaActions.setManyStatusUser(offlineStatus));
-				dispatch(directActions.updateStatusByUserId(offlineStatus));
-				dispatch(friendsActions.setManyStatusUser(offlineStatus));
+			statusPresenceQueue.current.push(statusPresence);
+			if (!statusPresenceTimerRef.current) {
+				statusPresenceTimerRef.current = setTimeout(() => {
+					const userStatusMap = new Map<string, { online: boolean; isMobile: boolean }>();
+
+					statusPresenceQueue.current.forEach((event) => {
+						event?.joins?.forEach((join) => {
+							userStatusMap.set(join.user_id, { online: true, isMobile: join.is_mobile });
+						});
+						event?.leaves?.forEach((leave) => {
+							userStatusMap.set(leave.user_id, { online: false, isMobile: false });
+						});
+					});
+
+					const combinedStatus = Array.from(userStatusMap.entries()).map(([userId, status]) => ({
+						userId,
+						online: status.online,
+						isMobile: status.isMobile
+					}));
+
+					if (combinedStatus.length) {
+						dispatch(clanMembersMetaActions.setManyStatusUser(combinedStatus));
+						dispatch(directActions.updateStatusByUserId(combinedStatus));
+						dispatch(friendsActions.setManyStatusUser(combinedStatus));
+					}
+					statusPresenceQueue.current = [];
+					statusPresenceTimerRef.current = null;
+				}, 10000);
 			}
 		},
 		[dispatch]
 	);
-
 	const onnotification = useCallback(
 		async (notification: Notification) => {
 			const path = isElectron() ? window.location.hash : window.location.pathname;

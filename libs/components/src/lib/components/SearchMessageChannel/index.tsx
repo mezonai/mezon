@@ -12,7 +12,8 @@ import {
 	selectTheme,
 	selectValueInputSearchMessage,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { Platform, SIZE_PAGE_SEARCH, SearchFilter, getPlatform, searchMentionsHashtag } from '@mezon/utils';
@@ -65,7 +66,7 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 	);
 
 	const valueInputSearch = useSelector(selectValueInputSearchMessage(channelId));
-	const isSearchMessage = useSelector(selectIsSearchMessage(channelId));
+	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, channelId));
 
 	const userListData = UserMentionList({
 		channelID: channelId,

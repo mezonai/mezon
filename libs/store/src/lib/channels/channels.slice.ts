@@ -11,6 +11,7 @@ import {
 } from '@mezon/utils';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState, GetThunkAPI, PayloadAction } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
+import isEqual from 'lodash.isequal';
 import { ApiUpdateChannelDescRequest, ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
 import {
 	ApiAddFavoriteChannelRequest,
@@ -84,7 +85,6 @@ export interface ChannelsState extends EntityState<ChannelsEntity, string> {
 	previousChannels: string[];
 	appChannelsList: Record<string, ApiChannelAppResponse>;
 	fetchChannelSuccess: boolean;
-	threadsNotJoinedByUser: EntityState<ChannelsEntity, string>;
 	favoriteChannels: string[];
 }
 
@@ -427,14 +427,6 @@ export const fetchChannels = createAsyncThunk(
 			}
 		}
 
-		// Add threads that the user has not joined to the response
-
-		const unjoinedThreads = state.channels.threadsNotJoinedByUser;
-		if (unjoinedThreads?.ids?.length) {
-			const unjoinedThreadEntities = unjoinedThreads.ids.map((id) => unjoinedThreads.entities[id]);
-			response.channeldesc = [...response.channeldesc, ...unjoinedThreadEntities];
-		}
-
 		const channels = response.channeldesc.map((channel) => ({
 			...mapChannelToEntity(channel),
 			last_seen_message: channel.last_seen_message ? channel.last_seen_message : { timestamp_seconds: 0 }
@@ -510,7 +502,6 @@ export const initialChannelsState: ChannelsState = channelsAdapter.getInitialSta
 	previousChannels: [],
 	appChannelsList: {},
 	fetchChannelSuccess: false,
-	threadsNotJoinedByUser: channelsAdapter.getInitialState(),
 	favoriteChannels: []
 });
 
@@ -522,9 +513,21 @@ export const channelsSlice = createSlice({
 		removeAll: channelsAdapter.removeAll,
 		remove: channelsAdapter.removeOne,
 		update: channelsAdapter.updateOne,
-		upsertOne: channelsAdapter.upsertOne,
-		addThreadUserNotJoin: (state: ChannelsState, action: PayloadAction<ChannelsEntity>) => {
-			channelsAdapter.upsertOne(state.threadsNotJoinedByUser, action.payload);
+		upsertOne: (state: ChannelsState, action: PayloadAction<ChannelsEntity>) => {
+			const existingEntity = state.entities[action.payload?.id];
+			if (
+				!existingEntity ||
+				!isEqual(
+					{
+						...existingEntity,
+						last_seen_message: { ...existingEntity.last_seen_message },
+						last_sent_message: { ...existingEntity.last_sent_message }
+					},
+					action.payload
+				)
+			) {
+				channelsAdapter.upsertOne(state, action.payload);
+			}
 		},
 		removeByChannelID: (state, action: PayloadAction<string>) => {
 			channelsAdapter.removeOne(state, action.payload);
@@ -909,10 +912,6 @@ export const selectAnyUnreadChannels = createSelector([getChannelsState, selectE
 		}
 	}
 	return false;
-});
-
-export const selectThreadNotJoin = createSelector([getChannelsState, (state, id: string) => id], (state, id: string) => {
-	return state.threadsNotJoinedByUser.entities[id];
 });
 
 export const selectThreadCurrentChannel = createSelector(

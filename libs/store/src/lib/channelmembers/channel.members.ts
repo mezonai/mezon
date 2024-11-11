@@ -361,11 +361,6 @@ export const getChannelMembersState = (rootState: { [CHANNEL_MEMBERS_FEATURE_KEY
 
 const getUsersClanState = (rootState: { [USERS_CLANS_FEATURE_KEY]: UsersClanState }): UsersClanState => rootState[USERS_CLANS_FEATURE_KEY];
 
-export const selectMemberByGoogleId = (googleId: string) =>
-	createSelector(getUsersClanState, (members) => {
-		return Object.values(members.entities).find((user) => user.user?.google_id === googleId);
-	});
-
 export const selectMemberStatus = createSelector(getChannelMembersState, (state) => state.onlineStatusUser);
 
 export const selectCustomUserStatus = createSelector(getChannelMembersState, (state) => state.customStatusUser);

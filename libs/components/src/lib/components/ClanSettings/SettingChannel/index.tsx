@@ -3,8 +3,10 @@ import {
 	channelSettingActions,
 	selectMemberClanByGoogleId,
 	selectMemberClanByUserId,
+	selectMemberClanByUserId2,
 	selectThreadsListByParentId,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { getAvatarForPrioritize } from '@mezon/utils';
@@ -364,21 +366,15 @@ export const AvatarUserShort = ({
 	size?: keyof AvatarSizes;
 	showName?: boolean;
 }) => {
-	const member = useSelector(selectMemberClanByUserId(id));
-	const voiceClan = useSelector(selectMemberClanByGoogleId(id ?? ''));
+	const member = useAppSelector((state) => selectMemberClanByUserId2(state, id));
+	const voiceClan = useAppSelector((state) => selectMemberClanByGoogleId(state, id ?? ''));
 	const clanAvatar = voiceClan?.clan_avatar || member?.clan_avatar;
 	const userAvatar = voiceClan?.user?.avatar_url || member?.user?.avatar_url;
 	const avatarUrl = getAvatarForPrioritize(clanAvatar, userAvatar);
 
 	return (
 		<div className="flex items-center gap-3">
-			{hiddenTooltip ? (
-				<Avatar img={avatarUrl} rounded size={size} />
-			) : (
-				<Tooltip content={member?.clan_nick || member?.user?.display_name || member?.user?.username} hidden={hiddenTooltip} trigger="hover">
-					<Avatar img={avatarUrl} rounded size={size} />
-				</Tooltip>
-			)}
+			<Avatar img={avatarUrl} rounded size={size} />
 			{showName ? (
 				<div className="text-textLightTheme dark:text-channelTextareaLight">
 					{member?.clan_nick || member?.user?.display_name || member?.user?.username}

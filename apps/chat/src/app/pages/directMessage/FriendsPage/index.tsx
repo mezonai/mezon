@@ -6,7 +6,6 @@ import {
 	friendsActions,
 	requestAddFriendParam,
 	selectCloseMenu,
-	selectMemberStatus,
 	selectStatusMenu,
 	selectTheme,
 	useAppDispatch
@@ -32,7 +31,6 @@ const FriendsPage = () => {
 	const [openModalAddFriend, setOpenModalAddFriend] = useState(false);
 	const [textSearch, setTextSearch] = useState('');
 	const currentTabStatus = useSelector((state: RootState) => state.friends.currentTabStatus);
-	const onlineStatus = useSelector(selectMemberStatus);
 
 	const handleChangeTab = (valueTab: string) => {
 		dispatch(friendsActions.changeCurrentStatusTab(valueTab));

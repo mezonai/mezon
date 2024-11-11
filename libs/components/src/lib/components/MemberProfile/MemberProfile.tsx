@@ -180,34 +180,31 @@ export function MemberProfile({
 		}
 	};
 
-	const isFooter = useMemo(() => positionType === MemberProfileType.FOOTER_PROFILE, [positionType]);
+	const isFooter = positionType === MemberProfileType.FOOTER_PROFILE;
 
-	const isListFriend = useMemo(() => positionType === MemberProfileType.LIST_FRIENDS, [positionType]);
+	const isListFriend = positionType === MemberProfileType.LIST_FRIENDS;
 
-	const isMemberDMGroup = useMemo(() => positionType === MemberProfileType.DM_MEMBER_GROUP, [positionType]);
+	const isMemberDMGroup = positionType === MemberProfileType.DM_MEMBER_GROUP;
 
-	const isMemberChannel = useMemo(() => positionType === MemberProfileType.MEMBER_LIST, [positionType]);
+	const isMemberChannel = positionType === MemberProfileType.MEMBER_LIST;
 
-	const isListActivity = useMemo(() => positionType === MemberProfileType.LIST_ACTIVITY, [positionType]);
+	const isListActivity = positionType === MemberProfileType.LIST_ACTIVITY;
 
-	const isListDm = useMemo(() => positionType === MemberProfileType.DM_LIST, [positionType]);
+	const isListDm = positionType === MemberProfileType.DM_LIST;
 
 	const isAnonymous = useMemo(
 		() => (isFooter ? userProfile?.user?.id : user?.user?.id) === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID,
 		[isFooter, user?.user?.id, userProfile?.user?.id]
 	);
 
-	const userName = useMemo(() => (isFooter ? userProfile?.user?.username || '' : name || ''), [isFooter, name, userProfile?.user?.username]);
+	const userName = isFooter ? userProfile?.user?.username || '' : name || '';
 
 	const subNameRef = useRef<HTMLInputElement>(null);
-	const minWidthNameMain = useMemo(() => subNameRef.current?.offsetWidth, [subNameRef]);
+	const minWidthNameMain = subNameRef.current?.offsetWidth;
 
-	const isOwnerClanOrGroup = useMemo(() => {
-		return (
-			(dataMemberCreate?.createId || currentClan?.creator_id) &&
-			(dataMemberCreate ? dataMemberCreate?.createId : currentClan?.creator_id) === user?.user?.id
-		);
-	}, [currentClan?.creator_id, dataMemberCreate, user?.user?.id]);
+	const isOwnerClanOrGroup =
+		(dataMemberCreate?.createId || currentClan?.creator_id) &&
+		(dataMemberCreate ? dataMemberCreate?.createId : currentClan?.creator_id) === user?.user?.id;
 
 	const modalState = useRef({
 		profileItem: false,

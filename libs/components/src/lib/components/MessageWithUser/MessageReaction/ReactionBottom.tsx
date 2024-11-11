@@ -42,8 +42,6 @@ const ReactionBottom = ({ smileButtonRef, messageIdRefReaction }: ReactionBottom
 				})
 			);
 		}
-		dispatch(reactionActions.setUserReactionPanelState(false));
-
 		setSubPanelActive(SubPanelName.NONE);
 	}, [smileButtonRef, dispatch]);
 

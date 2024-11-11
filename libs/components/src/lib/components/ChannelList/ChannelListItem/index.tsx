@@ -105,7 +105,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 		);
 	};
 
-	const renderChannelContent = () => {
+	const renderChannelContent = useMemo(() => {
 		if (channel.type !== ChannelType.CHANNEL_TYPE_VOICE && channel.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
 			return (
 				<>
@@ -140,7 +140,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 				</Avatar.Group>
 			</>
 		) : null;
-	};
+	}, [channel, isCategoryExpanded, channelMemberList, listThreadRef, channelLinkRef, isActive, permissions]);
 
-	return <>{renderChannelContent()}</>;
+	return <>{renderChannelContent} </>;
 };

@@ -123,7 +123,10 @@ export const selectMessageSearchByChannelId = (channelId: string) =>
 export const selectTotalResultSearchMessage = createSelector(getSearchMessageState, (state) => state.totalResult);
 export const selectCurrentPage = createSelector(getSearchMessageState, (state) => state.currentPage);
 
-export const selectIsSearchMessage = (channelId: string) => createSelector(getSearchMessageState, (state) => state.isSearchMessage[channelId]);
+export const selectIsSearchMessage = createSelector(
+	[getSearchMessageState, (_, channelId) => channelId],
+	(state, channelId) => state.isSearchMessage[channelId]
+);
 
 export const selectValueInputSearchMessage = (channelId: string) =>
 	createSelector(getSearchMessageState, (state) => state.valueInputSearch[channelId]);
