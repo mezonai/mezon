@@ -15,7 +15,11 @@ jobs:
 
       - name: Install package
         run: |
-          node -v
+          export nv=$(node -v)
+          echo "Node version: $nv"
+          echo "Installing dependencies"
+          yarn config set nodedir ~/.cache/node-gyp/"${nv:1}"
+          echo "Node directory: ${nv:1}"
           yarn
 
       - name: Change prod environment
