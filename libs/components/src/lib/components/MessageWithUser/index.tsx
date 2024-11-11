@@ -23,6 +23,7 @@ import MessageHead from './MessageHead';
 import MessageInput from './MessageInput';
 import MessageReaction from './MessageReaction/MessageReaction';
 import MessageReply from './MessageReply/MessageReply';
+import {MessageActionsPanel} from "../MessageActionsPanel";
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -280,6 +281,7 @@ function MessageWithUser({
 												)}
 												<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
 												{message.content?.embed && <EmbedMessage {...message.content.embed} />}
+												{message.content?.buttons && <MessageActionsPanel buttons={message.content.buttons} messageId={message.id} senderId={message.sender_id}/>}
 											</div>
 										</div>
 									</div>

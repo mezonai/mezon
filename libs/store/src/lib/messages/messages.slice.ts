@@ -34,6 +34,7 @@ import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../
 import { memoizeAndTrack } from '../memoize';
 import { reactionActions } from '../reactionMessage/reactionMessage.slice';
 import { seenMessagePool } from './SeenMessagePool';
+import {MessageButtonClicked} from "mezon-js/socket";
 
 const FETCH_MESSAGES_CACHED_TIME = 1000 * 60 * 3;
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
@@ -616,6 +617,35 @@ export const sendTypingUser = createAsyncThunk(
 	}
 );
 
+type clickButtonMessagePayload = {
+	channelId: string;
+	senderId: string;
+	messageId: string;
+	buttonId: string
+}
+
+export const clickButtonMessage = createAsyncThunk(
+	'messages/clickButtonMessage',
+	async({ message_id,
+		      channel_id,
+		      button_id,
+		      sender_id,
+		      user_id}: MessageButtonClicked, thunkAPI) => {
+		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+		try {
+			const response = mezon.socketRef.current?.handleMessageButtonClick({ message_id,
+				channel_id,
+				button_id,
+				sender_id,
+				user_id})
+			console.log('check: ', response)
+		} catch (e) {
+			console.error(error)
+		}
+		
+	}
+)
+
 export type SetChannelLastMessageArgs = {
 	channelId: string;
 	messageId: string;
@@ -996,7 +1026,8 @@ export const messagesActions = {
 	updateTypingUsers,
 	sendTypingUser,
 	loadMoreMessage,
-	jumpToMessage
+	jumpToMessage,
+	clickButtonMessage
 };
 
 export const getMessagesState = (rootState: { [MESSAGES_FEATURE_KEY]: MessagesState }): MessagesState => rootState[MESSAGES_FEATURE_KEY];

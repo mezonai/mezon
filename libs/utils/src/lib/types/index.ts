@@ -223,6 +223,22 @@ export interface IEmbedProps {
 	footer?: { text: string; icon_url?: string };
 }
 
+export enum EButtonMessageStyle {
+	PRIMARY = 1,
+	SECONDARY = 2,
+	SUCCESS = 3,
+	DANGER = 4,
+	LINK = 5
+}
+
+export interface IButtonMessage {
+	id: string,
+	label: string,
+	disable?: boolean,
+	style?: EButtonMessageStyle,
+	url?: string,
+}
+
 export interface IMessageSendPayload {
 	t?: string;
 	hg?: IHashtagOnMessage[];
@@ -231,6 +247,7 @@ export interface IMessageSendPayload {
 	mk?: IMarkdownOnMessage[];
 	vk?: ILinkVoiceRoomOnMessage[];
 	embed?: IEmbedProps;
+	buttons?: IButtonMessage[]
 }
 
 export type IUser = {

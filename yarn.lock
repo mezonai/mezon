@@ -7829,14 +7829,6 @@ ejs@^3.1.10, ejs@^3.1.7, ejs@^3.1.8:
   dependencies:
     jake "^10.8.5"
 
-electron-active-window@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/electron-active-window/-/electron-active-window-0.0.6.tgz#65b73a7bf5f0c84d8f7a72d1144ec5f215f6c829"
-  integrity sha512-aIKcEof/jYrxO/NSdXdcIejSoPuAGSgZR76o++po2OkFXOexOYnAhG37xaEClFQWYFl0wE8By653VnKipwtCzg==
-  dependencies:
-    fs "^0.0.1-security"
-    node-addon-api "^1.7.1"
-
 electron-builder@^24.13.3, electron-builder@^24.9.1:
   version "24.13.3"
   resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-24.13.3.tgz#c506dfebd36d9a50a83ee8aa32d803d83dbe4616"
@@ -12070,17 +12062,17 @@ mezon-active-windows@0.1.14:
   dependencies:
     node-addon-api "^1.7.2"
 
-mezon-js-protobuf@^1.6.15:
-  version "1.6.15"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.6.15.tgz#4439e01b650b7d3f1d17dc68d5ec31dbddabdfc5"
-  integrity sha512-HirrmQM5gpY7CDbyBh4F4jqzdqYSVhFpmX1auc7dnfoQK7WzohCpSyLFkbWqginW2cECWpHZiex932AdZp3vCA==
+mezon-js-protobuf@^1.6.16:
+  version "1.6.16"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.6.16.tgz#d15d9f34e1d7a6cb5c11be038fbe66a5441c2f52"
+  integrity sha512-88xIc3clz4qwzn+IQdDuyHfAPVuqoQm0ssACoDSmbu/4xZq/tz7pYVl63/k3Kb51nsKc35TD9JYXWrIuKuBkHA==
   dependencies:
     "@scarf/scarf" "^1.1.1"
 
-mezon-js@^2.9.62:
-  version "2.9.62"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.9.62.tgz#a388f3125d394fb32db59d08e93bd0ab3b9ccbc8"
-  integrity sha512-MzazZKVzFdCKDbRsfeMBokvUpbPfUSPhDYIbzPmBLnZKRWCNvz+vaYiBW5PXVYqmc/L9h/mZXOrXDKMw+oQO5g==
+mezon-js@^2.9.63:
+  version "2.9.63"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.9.63.tgz#ebc18c944b7d009689b3c3215967d9cd25d80cf0"
+  integrity sha512-FaIZ4zwE4S1nwa1LmQENYsS6j1WSCoOYEzvDGYRfAnUW3kBjBs0wKdm6Yg+GOBM3IgRz/TycfYmpSMfU9zuF+w==
   dependencies:
     "@scarf/scarf" "^1.1.1"
     base64-arraybuffer "^1.0.2"
