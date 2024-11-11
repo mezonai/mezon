@@ -8,6 +8,7 @@ import {
 	notificationSettingActions,
 	removeMemberChannel,
 	selectCurrentUserId,
+	selectDirectById,
 	selectSelectedChannelNotificationSetting,
 	useAppDispatch,
 	useAppSelector
@@ -15,6 +16,7 @@ import {
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { format } from 'date-fns';
 import { Dropdown } from 'flowbite-react';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ModalConfirm from '../ModalConfirm';
@@ -30,6 +32,7 @@ const PanelGroupDM = ({ isDmGroupOwner, dmGroupId, lastOne }: PanelGroupDMPProps
 	const dispatch = useAppDispatch();
 	const { directId } = useAppParams();
 	const currentUserId = useAppSelector(selectCurrentUserId);
+	const channel = useAppSelector((state) => selectDirectById(state, dmGroupId || ''));
 	const { navigate } = useAppNavigation();
 	const [popupLeave, setPopupLeave] = useState<boolean>(false);
 	const getNotificationChannelSelected = useSelector(selectSelectedChannelNotificationSetting);
@@ -120,7 +123,8 @@ const PanelGroupDM = ({ isDmGroupOwner, dmGroupId, lastOne }: PanelGroupDMPProps
 				notification_type: 0,
 				clan_id: '',
 				time_mute: unmuteTimeISO,
-				is_current_channel: dmGroupId === directId
+				is_current_channel: dmGroupId === directId,
+				is_direct: channel?.type === ChannelType.CHANNEL_TYPE_DM || channel?.type === ChannelType.CHANNEL_TYPE_GROUP
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
 		} else {

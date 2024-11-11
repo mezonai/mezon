@@ -76,11 +76,12 @@ export type SetNotificationPayload = {
 	time_mute?: string;
 	clan_id: string;
 	is_current_channel?: boolean;
+	is_direct?: boolean;
 };
 
 export const setNotificationSetting = createAsyncThunk(
 	'notificationsetting/setNotificationSetting',
-	async ({ channel_id, notification_type, time_mute, clan_id, is_current_channel = true }: SetNotificationPayload, thunkAPI) => {
+	async ({ channel_id, notification_type, time_mute, clan_id, is_current_channel = true, is_direct = false }: SetNotificationPayload, thunkAPI) => {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const body = {
 			channel_category_id: channel_id,
@@ -92,9 +93,15 @@ export const setNotificationSetting = createAsyncThunk(
 			return thunkAPI.rejectWithValue([]);
 		}
 		if (time_mute) {
-			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: clan_id, noCache: true }));
+			if (is_direct) {
+				thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+			} else {
+				thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: clan_id, noCache: true }));
+			}
 		}
-		thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
+		if (!is_direct) {
+			thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
+		}
 		thunkAPI.dispatch(getNotificationSetting({ channelId: channel_id || '', isCurrentChannel: is_current_channel, noCache: true }));
 		return response;
 	}

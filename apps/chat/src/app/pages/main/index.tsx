@@ -188,6 +188,18 @@ const SidebarMenu = memo(
 	({ openCreateClanModal }: { openCreateClanModal: ShowModal }) => {
 		const dispatch = useAppDispatch();
 		const clans = useSelector(selectAllClans);
+		clans.sort((a, b) => {
+			const nameA = a.clan_name ?? '';
+			const nameB = b.clan_name ?? '';
+
+			if (nameA < nameB) {
+				return -1;
+			}
+			if (nameA > nameB) {
+				return 1;
+			}
+			return 0;
+		});
 		const listUnreadDM = useSelector(selectDirectsUnreadlist);
 		const isClanView = useSelector(selectClanView);
 		const appearanceTheme = useSelector(selectTheme);

@@ -36,13 +36,13 @@ const SettingChannel = (props: ModalSettingProps) => {
 	};
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const dispatch = useAppDispatch();
-	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
+	const [canManageChannel] = usePermissionChecker([EPermission.manageChannel]);
 
 	useEffect(() => {
-		if (canManageClan) {
+		if (canManageChannel) {
 			dispatch(fetchWebhooks({ channelId: channel.channel_id as string, clanId: clanId }));
 		}
-	}, [channel.channel_id, canManageClan, dispatch, clanId]);
+	}, [channel.channel_id, canManageChannel, dispatch, clanId]);
 
 	useEffect(() => {
 		dispatch(fetchUserChannels({ channelId: channel.channel_id as string }));

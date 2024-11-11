@@ -235,7 +235,8 @@ const PanelMember = ({
 				notification_type: 0,
 				clan_id: '',
 				time_mute: unmuteTimeISO,
-				is_current_channel: directMessageValue?.dmID === directId
+				is_current_channel: directMessageValue?.dmID === directId,
+				is_direct: directMessageValue?.type === ChannelType.CHANNEL_TYPE_DM || directMessageValue?.type === ChannelType.CHANNEL_TYPE_GROUP
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
 		} else {
