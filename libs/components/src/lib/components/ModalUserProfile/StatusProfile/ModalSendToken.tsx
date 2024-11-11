@@ -1,4 +1,4 @@
-import { selectAllDirectMessages, selectAllUserClans, useAppDispatch } from '@mezon/store';
+import { selectAllDirectMessages, selectAllUserClans } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { Button, Label, Modal } from 'flowbite-react';
 import { ReactNode, useEffect, useRef, useState } from 'react';
@@ -28,7 +28,6 @@ const ModalSendToken = ({
 	userSearchError,
 	userId
 }: ModalSendTokenProps) => {
-	const dispatch = useAppDispatch();
 	const usersClan = useSelector(selectAllUserClans);
 	const directMessages = useSelector(selectAllDirectMessages);
 
@@ -108,7 +107,7 @@ const ModalSendToken = ({
 		const value = e.target.value;
 		setToken(Number(value));
 	};
-	const filteredUsers = mergedUsers.filter((user: any) => user.username.toLowerCase().includes(searchTerm.toLowerCase()) && user.id !== userId);
+	const filteredUsers = mergedUsers.filter((user: any) => user?.username?.toLowerCase().includes(searchTerm.toLowerCase()) && user?.id !== userId);
 	return (
 		<Modal className="bg-bgModalDark" theme={{ content: { base: 'w-[440px]' } }} show={openModal} dismissible={true} onClose={onClose}>
 			<div className="dark:bg-bgPrimary bg-bgLightMode pt-4 rounded">
@@ -120,40 +119,42 @@ const ModalSendToken = ({
 						<div className="mb-2 block">
 							<Label value={`Send token to ?`} className="dark:text-[#B5BAC1] text-textLightTheme text-xs uppercase font-semibold" />
 						</div>
-						<input
-							type="text"
-							placeholder="Search users..."
-							className="dark:text-[#B5BAC1] text-textLightTheme outline-none w-full h-10 p-[10px] dark:bg-bgInputDark bg-bgLightModeThird text-base rounded placeholder:text-sm"
-							value={searchTerm}
-							onClick={() => setIsDropdownOpen(true)}
-							onChange={handleChangeSearchTerm}
-						/>
-						{isDropdownOpen && (
-							<div
-								ref={dropdownRef}
-								className="absolute z-10 mt-[4px] dark:bg-[#232428] bg-bgLightModeThird border-none py-0 w-[200px] [&>ul]:py-0"
-							>
-								{filteredUsers.length > 0 ? (
-									filteredUsers.map((user: any) => (
-										<ItemSelect key={user.id} onClick={() => handleSelectUser(user.id, user.username)}>
-											<div className="flex items-center">
-												<AvatarImage
-													alt={user.username || ''}
-													userName={user.username}
-													src={user.avatar_url}
-													className="size-4 mr-2"
-													classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
-												/>
-												<span>{user.username}</span>
-											</div>
-										</ItemSelect>
-									))
-								) : (
-									<li className="text-center">No users found</li>
-								)}
-							</div>
-						)}
-						{userSearchError && <p className="text-red-500 text-xs mt-1">{userSearchError}</p>}
+						<div className="relative">
+							<input
+								type="text"
+								placeholder="Search users..."
+								className="dark:text-[#B5BAC1] text-textLightTheme outline-none w-full h-10 p-[10px] dark:bg-bgInputDark bg-bgLightModeThird text-base rounded placeholder:text-sm"
+								value={searchTerm}
+								onClick={() => setIsDropdownOpen(true)}
+								onChange={handleChangeSearchTerm}
+							/>
+							{isDropdownOpen && (
+								<div
+									ref={dropdownRef}
+									className="absolute z-10 mt-[4px] dark:bg-[#232428] bg-bgLightModeThird border-none py-0 w-full [&>ul]:py-0 max-h-[calc(4*2.75rem)] max-h-[180px] overflow-y-auto overflow-x-hidden"
+								>
+									{filteredUsers.length > 0 ? (
+										filteredUsers.map((user: any) => (
+											<ItemSelect key={user.id} onClick={() => handleSelectUser(user.id, user.username)}>
+												<div className="flex items-center">
+													<AvatarImage
+														alt={user.username || ''}
+														userName={user.username}
+														src={user.avatar_url}
+														className="size-4 mr-2"
+														classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
+													/>
+													<span className="one-line">{user.username}</span>
+												</div>
+											</ItemSelect>
+										))
+									) : (
+										<li className="text-center">No users found</li>
+									)}
+								</div>
+							)}
+							{userSearchError && <p className="text-red-500 text-xs mt-1">{userSearchError}</p>}
+						</div>
 					</div>
 					<div className="px-4">
 						<div className="mb-2 block">

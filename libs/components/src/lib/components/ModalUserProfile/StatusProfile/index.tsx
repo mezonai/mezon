@@ -39,13 +39,13 @@ const StatusProfile = ({ userById, isDM }: StatusProfileProps) => {
 					dismissOnClick={true}
 					renderTrigger={() => (
 						<div>
-							<ItemStatus children={`Token: ${Number(tokenInWallet) + Number(getTokenSocket)}`} startIcon={<Icons.Check />} />
+							<ItemStatus children={`Token: ${Number(tokenInWallet) + Number(getTokenSocket)}`} dropdown startIcon={<Icons.Check />} />
 						</div>
 					)}
 					placement="right-start"
 					className="dark:!bg-bgSecondary600 !bg-white border ml-2 py-[6px] px-[8px] w-[200px]"
 				>
-					<ItemStatus onClick={handleSendToken} children="Send Token" startIcon={<Icons.OnlineStatus />} />
+					<ItemStatus onClick={handleSendToken} children="Send Token" startIcon={<Icons.SendMoney />} />
 				</Dropdown>
 				<Dropdown
 					trigger="click"

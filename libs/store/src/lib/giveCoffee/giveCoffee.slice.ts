@@ -1,6 +1,6 @@
+import { toastActions } from '@mezon/store';
 import { LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import * as Sentry from '@sentry/browser';
 import { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import { TokenSentEvent } from 'mezon-js/dist/socket';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
@@ -55,13 +55,23 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 	tokenUpdate: {}
 });
 
-export const sendToken = createAsyncThunk('token/sendToken', async ({ receiver_id, amount }: TokenSentEvent, thunkAPI) => {
+export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: TokenSentEvent, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.socketRef.current?.sendToken(receiver_id, amount);
-	} catch (e) {
-		Sentry.captureException(e);
-		console.error('Error updating last seen message', e);
+		const response = await mezon.socketRef.current?.sendToken(tokenEvent.receiver_id, tokenEvent.amount);
+
+		if (response) {
+			thunkAPI.dispatch(toastActions.addToast({ message: 'Token sent successfully', type: 'success', id: 'ACTION_SEND_TOKEN' }));
+			thunkAPI.dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
+			thunkAPI.dispatch(giveCoffeeActions.setShowModalSendToken(false));
+			return response;
+		} else {
+			thunkAPI.dispatch(toastActions.addToast({ message: 'An error occurred, please try again', type: 'error', id: 'ACTION_SEND_TOKEN' }));
+			thunkAPI.dispatch(giveCoffeeActions.setShowModalSendToken(false));
+		}
+	} catch (error: any) {
+		const errmsg = await error.json();
+		return thunkAPI.rejectWithValue(errmsg.message);
 	}
 });
 
