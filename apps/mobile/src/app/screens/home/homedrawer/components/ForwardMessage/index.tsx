@@ -246,8 +246,8 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 				);
 			case ChannelType.CHANNEL_TYPE_TEXT:
 				return (
-					<Block width={size.s_34} height={size.s_34} justifyContent="center">
-						<Text center h2 color={themeValue.white}>
+					<Block width={size.s_16} height={size.s_34} justifyContent="center">
+						<Text center h3 color={themeValue.white}>
 							#
 						</Text>
 					</Block>
