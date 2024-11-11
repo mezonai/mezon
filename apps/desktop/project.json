@@ -26,7 +26,7 @@
         "appId": "E9Y2J54ZH3.app.mezon.ai",
         "category": "public.app-category.productivity",
         "target": {
-          "arch": "universal",
+          "arch": "x64",
           "target": "default"
         },
         "publish": [
@@ -164,7 +164,7 @@
           "appId": "E9Y2J54ZH3.app.mezon.ai",
           "category": "public.app-category.productivity",
           "target": {
-            "arch": "universal",
+            "arch": "x64",
             "target": "default"
           },
           "publish": [
@@ -247,7 +247,7 @@
           "appId": "E9Y2J54ZH3.app.mezon.ai",
           "category": "public.app-category.productivity",
           "target": {
-            "arch": "universal",
+            "arch": "x64",
             "target": "default"
           },
           "publish": [

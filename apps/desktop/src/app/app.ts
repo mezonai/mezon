@@ -1,19 +1,20 @@
 import { app, BrowserWindow, Menu, MenuItemConstructorOptions, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
-//import { windowManager } from 'node-window-manager';
+import { activeWindows } from 'mezon-active-windows';
 import { join } from 'path';
 import { format } from 'url';
 import { rendererAppName, rendererAppPort } from './constants';
 
 import tray from '../Tray';
 
-import { TRIGGER_SHORTCUT } from './events/constants';
+import { ACTIVE_WINDOW, TRIGGER_SHORTCUT } from './events/constants';
 import { initBadge } from './services/badge';
 
 const isQuitting = false;
 
 export enum EActivities {
 	CODE = 'Code',
+	VISUAL_STUDIO_CODE = 'Visual Studio Code',
 	SPOTIFY = 'Spotify',
 	LOL = 'LeagueClientUx'
 }
@@ -52,7 +53,7 @@ export default class App {
 			App.setupMenu();
 			App.setupBadge();
 			tray.init(isQuitting);
-			//App.setupWindowManager();
+			App.setupWindowManager();
 		}
 	}
 
@@ -228,14 +229,9 @@ export default class App {
 		return initBadge(App.application, App.mainWindow);
 	}
 
-	/*
 	private static setupWindowManager() {
 		if (process.platform === 'darwin') {
-			const permissionGranted = windowManager.requestAccessibility();
-			if (!permissionGranted) {
-				console.warn('Accessibility permission is required for this application to work correctly on macOS.');
-				return;
-			}
+			console.error('not implemented');
 		}
 
 		const windowInfoArray = [];
@@ -247,19 +243,18 @@ export default class App {
 
 		const updateWindowInfoArray = () => {
 			windowInfoArray.length = 0;
-			windowManager.getWindows().forEach((window) => {
-				if (window.isVisible()) {
-					const pathDelimiter = process.platform === 'win32' ? '\\' : '/';
-					const fullPath = window.path.split(pathDelimiter).pop();
-					const appName = fullPath.replace(/\.(exe|app)$/, '');
-					const windowTitle = window.getTitle();
+			const window = activeWindows?.getActiveWindow();
+			if (window && window.isVisible()) {
+				const pathDelimiter = process.platform === 'win32' ? '\\' : '/';
+				const fullPath = window.path.split(pathDelimiter).pop();
+				const appName = fullPath.replace(/\.(exe|app)$/, '');
+				const windowTitle = window.getTitle();
 
-					if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL].includes(appName as EActivities)) {
-						const startTime = new Date().toISOString();
-						windowInfoArray.push({ appName, windowTitle, startTime });
-					}
+				if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL, EActivities.VISUAL_STUDIO_CODE].includes(appName as EActivities)) {
+					const startTime = new Date().toISOString();
+					windowInfoArray.push({ appName, windowTitle, startTime });
 				}
-			});
+			}
 		};
 
 		updateWindowInfoArray();
@@ -268,7 +263,7 @@ export default class App {
 			defaultApp = windowInfoArray[0];
 		}
 
-		windowManager.on('window-activated', (window) => {
+		activeWindows?.on('window-activated', (window) => {
 			const pathDelimiter = process.platform === 'win32' ? '\\' : '/';
 			const fullPath = window.path.split(pathDelimiter).pop();
 			const appName = fullPath.replace(/\.(exe|app)$/, '');
@@ -281,14 +276,14 @@ export default class App {
 					hasSentDefaultApp = true;
 					isFirstRun = false;
 				}
-			} else if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL].includes(appName) && isFirstRun) {
+			} else if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL, EActivities.VISUAL_STUDIO_CODE].includes(appName) && isFirstRun) {
 				defaultApp = { appName, windowTitle, startTime };
 				App.mainWindow.webContents.send(ACTIVE_WINDOW, defaultApp);
 				hasSentDefaultApp = true;
 				isFirstRun = false;
 			}
 
-			if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL].includes(appName) && !isFirstRun) {
+			if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL, EActivities.VISUAL_STUDIO_CODE].includes(appName) && !isFirstRun) {
 				if (activityTimeout) {
 					clearInterval(activityTimeout);
 				}
@@ -315,7 +310,6 @@ export default class App {
 			}
 		});
 	}
-  */
 
 	private static setupMenu() {
 		const isMac = process.platform === 'darwin';

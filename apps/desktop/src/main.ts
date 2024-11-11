@@ -100,14 +100,34 @@ autoUpdater.on('update-not-available', (info: UpdateInfo) => {
 autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
 	log.info(`The current version is ${app.getVersion()}. Install ${info.version} now.`);
 	const windows = App.BrowserWindow.getAllWindows();
-	windows.forEach((window) => {
-		window.removeAllListeners('close');
-		window.close();
-	});
-	autoUpdater.quitAndInstall(true, true);
-	setTimeout(() => {
-		App.application.quit();
-	}, 10000);
+	if (process.platform === 'darwin') {
+		const window = App.BrowserWindow.getFocusedWindow();
+		dialog
+			.showMessageBox(window, {
+				type: 'info',
+				buttons: ['Install now', 'Cancel'],
+				title: 'Mezon install',
+				message: `The current version is ${app.getVersion()}. Install ${info.version} now.`
+			})
+			.then((result) => {
+				if (result.response === 0) {
+					windows.forEach((window) => {
+						window.removeAllListeners('close');
+						window.close();
+					});
+
+					setImmediate(() => {
+						autoUpdater.quitAndInstall();
+					});
+				}
+			});
+	} else {
+		windows.forEach((window) => {
+			window.removeAllListeners('close');
+			window.close();
+		});
+		autoUpdater.quitAndInstall(true, true);
+	}
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
