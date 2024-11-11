@@ -1,9 +1,9 @@
-import { toastActions } from '@mezon/store';
 import { LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import { TokenSentEvent } from 'mezon-js/dist/socket';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { toastActions } from '../toasts/toasts.slice';
 
 export const GIVE_COFEE = 'giveCoffee';
 
@@ -61,13 +61,11 @@ export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: 
 		const response = await mezon.socketRef.current?.sendToken(tokenEvent.receiver_id, tokenEvent.amount);
 
 		if (response) {
-			thunkAPI.dispatch(toastActions.addToast({ message: 'Token sent successfully', type: 'success', id: 'ACTION_SEND_TOKEN' }));
+			thunkAPI.dispatch(toastActions.addToast({ message: 'Token sent successfully', type: 'success', id: 'ACTION_SEND_TOKEN_SUCCESS' }));
 			thunkAPI.dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
-			thunkAPI.dispatch(giveCoffeeActions.setShowModalSendToken(false));
 			return response;
 		} else {
-			thunkAPI.dispatch(toastActions.addToast({ message: 'An error occurred, please try again', type: 'error', id: 'ACTION_SEND_TOKEN' }));
-			thunkAPI.dispatch(giveCoffeeActions.setShowModalSendToken(false));
+			thunkAPI.dispatch(toastActions.addToast({ message: 'An error occurred, please try again', type: 'error', id: 'ACTION_SEND_TOKEN_FAILD' }));
 		}
 	} catch (error: any) {
 		const errmsg = await error.json();

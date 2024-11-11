@@ -107,7 +107,7 @@ const ModalSendToken = ({
 		const value = e.target.value;
 		setToken(Number(value));
 	};
-	const filteredUsers = mergedUsers.filter((user: any) => user?.username?.toLowerCase().includes(searchTerm.toLowerCase()) && user?.id !== userId);
+	const filteredUsers = mergedUsers.filter((user: any) => user.username?.toLowerCase().includes(searchTerm.toLowerCase()) && user.id !== userId);
 	return (
 		<Modal className="bg-bgModalDark" theme={{ content: { base: 'w-[440px]' } }} show={openModal} dismissible={true} onClose={onClose}>
 			<div className="dark:bg-bgPrimary bg-bgLightMode pt-4 rounded">
@@ -149,7 +149,7 @@ const ModalSendToken = ({
 											</ItemSelect>
 										))
 									) : (
-										<li className="text-center">No users found</li>
+										<li className="dark:text-[#B5BAC1] text-textLightTheme text-xs uppercase font-semibold flex items-center justify-between h-11 px-3">No users found</li>
 									)}
 								</div>
 							)}
