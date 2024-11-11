@@ -640,7 +640,7 @@ export const clickButtonMessage = createAsyncThunk(
 				user_id})
 			console.log('check: ', response)
 		} catch (e) {
-			console.error(error)
+			console.error(e)
 		}
 		
 	}
