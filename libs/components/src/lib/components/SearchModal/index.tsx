@@ -9,9 +9,13 @@ import {
 	selectAllChannelsByUser,
 	selectAllDirectMessages,
 	selectAllUsesInAllClansEntities,
+	selectChannelIdsHasCountUnread,
 	selectEntitesUserClans,
+	selectListDMUnread,
 	selectPreviousChannels,
-	useAppDispatch
+	selectUnreadChannels,
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import {
@@ -19,6 +23,8 @@ import {
 	TypeSearch,
 	addAttributesSearchList,
 	filterListByName,
+	mergeUnreadCount,
+	mergeUnreadStatus,
 	normalizeString,
 	removeDuplicatesById,
 	sortFilteredList
@@ -165,7 +171,6 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 		const sortedList = removeDuplicateList.slice().sort((a: any, b: any) => b.lastSentTimeStamp - a.lastSentTimeStamp);
 		return sortedList;
 	}, [listMemberSearch, listChannelSearch, listDirectSearch, allUsesInAllClansEntities, accountId]);
-
 	const totalListsFiltered = useMemo(() => {
 		return filterListByName(totalLists, normalizeSearchText, isSearchByUsername);
 	}, [totalLists, normalizeSearchText, isSearchByUsername]);
@@ -228,6 +233,20 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 		}
 		return totalListSortedWithoutPreviousList.slice(0, 50);
 	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListSortedWithoutPreviousList, totalListsSorted]);
+
+	const unreadChannels = useAppSelector((state) => selectUnreadChannels(state));
+	console.log('unreadChannels: ', unreadChannels);
+	const dataUnread = mergeUnreadStatus(listItemWithoutRecent, unreadChannels);
+	console.log('dataUnread: ', dataUnread);
+
+	const channelIdsHasUnreadCount = useAppSelector((state) => selectChannelIdsHasCountUnread(state));
+	const directIdsHasUnreadCount = useAppSelector((state) => selectListDMUnread(state));
+	const combineChannelsAndDirects = useMemo(() => {
+		return [...channelIdsHasUnreadCount, ...directIdsHasUnreadCount];
+	}, [channelIdsHasUnreadCount, directIdsHasUnreadCount]);
+
+	const dataHasUnreadMesssageCount = mergeUnreadCount(listItemWithoutRecent, combineChannelsAndDirects);
+	console.log('dataHasUnreadMesssageCount: ', dataHasUnreadMesssageCount);
 
 	const handleSelectMem = useCallback(
 		async (user: any) => {

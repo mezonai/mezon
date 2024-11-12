@@ -1,6 +1,7 @@
 import { LoadingStatus } from '@mezon/utils';
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { selectEntiteschannelCategorySetting } from '../notificationSetting/notificationSettingCategory.slice';
+import { ChannelsEntity } from './channels.slice';
 
 export const CHANNELMETA_FEATURE_KEY = 'channelmeta';
 
@@ -135,22 +136,27 @@ export const selectLastChannelTimestamp = (channelId: string) =>
 		return channel?.lastSeenTimestamp || 0;
 	});
 
-export const selectAnyUnreadChannel = createSelector([getChannelMetaState, selectEntiteschannelCategorySetting], (state, settings) => {
+export const selectUnreadChannels = createSelector([getChannelMetaState, selectEntiteschannelCategorySetting], (state, settings) => {
+	const unreadChannels: ChannelsEntity[] = [];
+
 	if (state.lastSentChannelId && settings?.[state.lastSentChannelId]?.action !== enableMute) {
 		const lastSentChannel = state?.entities?.[state.lastSentChannelId];
 		if (lastSentChannel?.lastSeenTimestamp && lastSentChannel?.lastSeenTimestamp < lastSentChannel?.lastSentTimestamp) {
-			return true;
+			unreadChannels.push(lastSentChannel);
 		}
 	}
 
 	for (let index = 0; index < state?.ids?.length; index++) {
-		const channel = state?.entities?.[state?.ids[index]];
-		if (settings?.[channel?.id]?.action === enableMute) continue;
+		const channelId = state.ids[index];
+		const channel = state.entities[channelId];
+
+		if (settings?.[channelId]?.action === enableMute) continue; // Skip muted channels
 		if (channel?.lastSeenTimestamp && channel?.lastSeenTimestamp < channel?.lastSentTimestamp) {
-			return true;
+			unreadChannels.push(channel);
 		}
 	}
-	return false;
+
+	return unreadChannels;
 });
 
 export const selectAllChannelLastSeenTimestampByClanId = (clanId: string) =>

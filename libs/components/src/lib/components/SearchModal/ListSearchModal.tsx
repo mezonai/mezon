@@ -43,6 +43,7 @@ const ListSearchModal = (props: ListSearchModalProps) => {
 							isOpenSearchModal
 							emojiId=""
 							channel={item}
+							count={item.count_mess_unread}
 						/>
 					) : (
 						<SuggestItem
@@ -55,6 +56,7 @@ const ListSearchModal = (props: ListSearchModalProps) => {
 							subTextStyle="text-[13px]"
 							isHightLight={!searchingUser}
 							emojiId=""
+							count={item.count_mess_unread}
 						/>
 					)}
 				</div>

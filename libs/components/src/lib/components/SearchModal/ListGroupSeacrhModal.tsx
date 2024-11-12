@@ -26,8 +26,20 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 		}
 		return [...listRecent, ...listItemWithoutRecent];
 	}, [normalizeSearchText, listRecent, listItemWithoutRecent]);
-
 	const isNoResult = useMemo(() => !allItems?.length, [allItems?.length]);
+	// console.log('allItems: ', allItems);
+
+	// // get data for unread part
+	// const unreadChannelIds = useAppSelector((state) => selectUnreadChannelIds(state));
+	// const getUnreadChannels = allItems.filter((item) => unreadChannelIds.includes(item.id ?? ''));
+	// // get data for mentions part
+	// const channelIdsHasUnreadCount = useAppSelector((state) => selectChannelIdsHasCountUnread(state));
+	// const directIdsHasUnreadCount = useAppSelector((state) => selectListDMUnread(state));
+	// const combineChannelsAndDirects = useMemo(() => {
+	// 	return [...channelIdsHasUnreadCount, ...directIdsHasUnreadCount];
+	// }, [channelIdsHasUnreadCount, directIdsHasUnreadCount]);
+
+	// const getCountUnreadChannels = mergeUnreadCount(allItems, combineChannelsAndDirects);
 
 	const indexMap = useMemo(() => {
 		return allItems.reduce<Record<string, number>>((acc, item, index) => {
@@ -133,16 +145,41 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 						/>
 					</>
 				)}
-				{!normalizeSearchText && (
-					<div className="text-xs dark:text-white text-textLightTheme font-semibold uppercase py-2">Unread channels</div>
+
+				{/* {!normalizeSearchText && getCountUnreadChannels.length > 0 && (
+					<>
+						<div className="text-xs dark:text-white text-textLightTheme font-semibold uppercase py-2">Mentions</div>
+						<ListSearchModal
+							listSearch={getCountUnreadChannels as SearchItemProps[]}
+							onItemClick={handleItemClick}
+							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
+							focusItemId={focusItemId}
+							onMouseEnter={handleItemMouseEnter}
+						/>
+					</>
 				)}
-				<ListSearchModal
-					listSearch={listItemWithoutRecent}
-					onItemClick={handleItemClick}
-					searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
-					focusItemId={focusItemId}
-					onMouseEnter={handleItemMouseEnter}
-				/>
+				{!normalizeSearchText && getUnreadChannels.length > 0 && (
+					<>
+						<div className="text-xs dark:text-white text-textLightTheme font-semibold uppercase py-2">Unread channels</div>
+						<ListSearchModal
+							listSearch={getUnreadChannels}
+							onItemClick={handleItemClick}
+							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
+							focusItemId={focusItemId}
+							onMouseEnter={handleItemMouseEnter}
+						/>
+					</>
+				)} */}
+				{normalizeSearchText && (
+					<ListSearchModal
+						listSearch={listItemWithoutRecent}
+						onItemClick={handleItemClick}
+						searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
+						focusItemId={focusItemId}
+						onMouseEnter={handleItemMouseEnter}
+					/>
+				)}
+
 				{isNoResult && (
 					<span className=" flex flex-row justify-center dark:text-white text-colorTextLightMode">
 						Can't seem to find what you're looking for?

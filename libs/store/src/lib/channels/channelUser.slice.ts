@@ -50,6 +50,7 @@ export const fetchListChannelsByUser = createAsyncThunk(
 			fetchListChannelsByUserCached.clear(mezon);
 		}
 		const response = await fetchListChannelsByUserCached(mezon);
+		console.log('response: ', response);
 		if (!response?.channeldesc) {
 			return [];
 		}

@@ -1,5 +1,6 @@
+import { ChannelsEntity } from '@mezon/store';
 import { MentionItem } from 'react-mentions';
-import { IMentionOnMessage, IRolesClan, MentionDataProps } from '../types';
+import { IMentionOnMessage, IRolesClan, MentionDataProps, SearchItemProps } from '../types';
 
 function createFileMetadata<T>(file: File): T {
 	return {
@@ -136,3 +137,22 @@ export const convertMentionOnfile = (roles: IRolesClan[], contentString: string,
 
 	return mentions;
 };
+
+export function mergeUnreadCount(allItem: SearchItemProps[], unreadList: ChannelsEntity[]) {
+	return allItem
+		.filter((item) => unreadList.some((unread) => unread.channel_id === item.id))
+		.map((item) => {
+			const matchingUnread = unreadList.find((unread) => unread.channel_id === item.id);
+			return matchingUnread ? { ...item, count_mess_unread: matchingUnread.count_mess_unread } : null;
+		});
+}
+
+export function mergeUnreadStatus(allItem: SearchItemProps[], unreadList: ChannelsEntity[]) {
+	return allItem
+		.filter((item) => unreadList.some((unread) => unread.channel_id === item.id))
+		.map((item) => {
+			const matchingUnread = unreadList.find((unread) => unread.channel_id === item.id);
+			return matchingUnread ? { ...item, isUnread: true } : null;
+		})
+		.filter((item) => item !== null);
+}

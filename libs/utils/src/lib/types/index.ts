@@ -739,6 +739,9 @@ export type SearchItemProps = {
 	parrent_id?: string;
 	clanId?: string;
 	meeting_code?: string;
+	count_mess_unread?: number;
+	isUnread?: boolean;
+	isRecent?: boolean;
 };
 
 export enum EEmojiCategory {

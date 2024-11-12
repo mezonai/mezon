@@ -1,12 +1,12 @@
 import { ChatContext, ChatContextProvider, useFriends } from '@mezon/core';
-import { gifsStickerEmojiActions, selectAnyUnreadChannel, selectBadgeCountAllClan } from '@mezon/store';
+import { gifsStickerEmojiActions, selectBadgeCountAllClan } from '@mezon/store';
 
-import { selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
+import { selectTotalUnreadDM, selectUnreadChannels, useAppSelector } from '@mezon/store-mobile';
 import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
-import { memo, useContext, useEffect } from 'react';
+import { memo, useContext, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -20,8 +20,10 @@ const GlobalEventListener = () => {
 
 	const { quantityPendingRequest } = useFriends();
 
-	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
-
+	const unreadChannels = useAppSelector((state) => selectUnreadChannels(state));
+	const hasUnreadChannel = useMemo(() => {
+		return unreadChannels.length;
+	}, [unreadChannels.length]);
 	useEffect(() => {
 		const handleNavigateToPath = (_: unknown, path: string) => {
 			navigate(path);

@@ -935,3 +935,7 @@ export const selectChannelThreads = createSelector([selectAllChannels], (channel
 	});
 	return channelThread as ChannelThreads[];
 });
+
+export const selectChannelIdsHasCountUnread = createSelector([selectAllChannels], (channels) =>
+	channels.filter((channel) => channel.count_mess_unread && channel.count_mess_unread > 0)
+);
