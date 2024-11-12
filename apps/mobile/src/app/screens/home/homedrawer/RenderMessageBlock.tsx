@@ -1,17 +1,15 @@
-import { MessagesEntity } from '@mezon/store-mobile';
 import React from 'react';
 import RenderMessageMapView from '../../../components/RenderMessageMapView';
 import RenderMessageInvite from './components/RenderMessageInvite';
 function RenderMessageBlock({
 	isInviteLink,
 	isGoogleMapsLink,
-	message
+	                            contentMessage
 }: {
-	message: MessagesEntity;
 	isGoogleMapsLink: boolean;
 	isInviteLink: boolean;
+	contentMessage: string;
 }) {
-	const { t: contentMessage } = message?.content || {};
 	if (isInviteLink) return <RenderMessageInvite content={contentMessage} />;
 	if (isGoogleMapsLink) return <RenderMessageMapView content={contentMessage} />;
 	return null;

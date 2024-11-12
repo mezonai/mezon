@@ -1,9 +1,13 @@
 /* eslint-disable no-console */
-import { ActionEmitEvent, ReplyIcon, ReplyMessageDeleted, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
+import {
+	ActionEmitEvent,
+	ReplyMessageDeleted,
+	validLinkGoogleMapRegex,
+	validLinkInviteRegex
+} from '@mezon/mobile-components';
 import { Block, Colors, Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, MessagesEntity, messagesActions, seenMessagePool, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
-import { ApiMessageAttachment, ApiMessageRef } from 'mezon-js/api.gen';
-import React, {Suspense, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import { Animated, DeviceEventEmitter, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EmbedMessage, MessageAction, RenderTextMarkdownContent } from './components';
@@ -21,8 +25,8 @@ import WelcomeMessage from './WelcomeMessage';
 import { AvatarMessage } from './components/AvatarMessage';
 import { InfoUserMessage } from './components/InfoUserMessage';
 import { MessageAttachment } from './components/MessageAttachment';
-import { MessageReferences } from './components/MessageReferences';
-import { IMessageActionNeedToResolve, IMessageActionPayload } from './types';
+import {RenderMessageItemRef} from './components/RenderMessageItemRef';
+import {IMessageActionNeedToResolve} from './types';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -33,11 +37,8 @@ export type MessageItemProps = {
 	isMessNotifyMention?: boolean;
 	mode: number;
 	channelId?: string;
-	onOpenImage?: (image: ApiMessageAttachment) => void;
 	isNumberOfLine?: boolean;
 	currentClanId?: string;
-	onMessageAction?: (payload: IMessageActionPayload) => void;
-	setIsOnlyEmojiPicker?: (value: boolean) => void;
 	showUserInformation?: boolean;
 	preventAction?: boolean;
 };
@@ -46,16 +47,7 @@ const MessageItem = React.memo(
 	(props: MessageItemProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const {
-			mode,
-			onOpenImage,
-			isNumberOfLine,
-			onMessageAction,
-			setIsOnlyEmojiPicker,
-			showUserInformation = false,
-			preventAction = false,
-			channelId = ''
-		} = props;
+		const {mode, isNumberOfLine, showUserInformation = false, preventAction = false, channelId = ''} = props;
 		const dispatch = useAppDispatch();
 		const { t } = useTranslation('message');
 		const message: MessagesEntity = props?.message;
@@ -90,10 +82,6 @@ const MessageItem = React.memo(
 			return includesHere || includesUser || checkReplied;
 		}, [userProfile?.user?.id, message?.mentions, message?.content?.t, message?.references]);
 
-		const messageReferences = useMemo(() => {
-			return message?.references?.[0] as ApiMessageRef;
-		}, [message?.references]);
-
 		const isSameUser = useMemo(() => {
 			return message?.user?.id === previousMessage?.user?.id;
 		}, [message?.user?.id, previousMessage?.user?.id]);
@@ -108,10 +96,6 @@ const MessageItem = React.memo(
 		const isCombine = isSameUser && isTimeGreaterThan5Minutes;
 		const swipeableRef = React.useRef(null);
 		const backgroundColor = React.useRef(new Animated.Value(0)).current;
-
-		const isMessageReplyDeleted = useMemo(() => {
-			return message?.references?.length && !message.references?.[0]?.message_ref_id;
-		}, [message?.references]);
 
 		const isDM = useMemo(() => {
 			return [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
@@ -186,8 +170,7 @@ const MessageItem = React.memo(
 
 		const onLongPressImage = useCallback(() => {
 			if (preventAction) return;
-			setIsOnlyEmojiPicker(false);
-			onMessageAction({
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
 				type: EMessageBSToShow.MessageAction,
 				senderDisplayName,
 				message
@@ -198,16 +181,15 @@ const MessageItem = React.memo(
 
 		const onPressInfoUser = useCallback(() => {
 			if (preventAction) return;
-			setIsOnlyEmojiPicker(false);
 
 			if (!checkAnonymous && !checkSystem) {
-				onMessageAction({
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
 					type: EMessageBSToShow.UserInformation,
 					user: message?.user,
 					message
 				});
 			}
-		}, [checkAnonymous, checkSystem, message, onMessageAction, preventAction, setIsOnlyEmojiPicker]);
+		}, [checkAnonymous, checkSystem, message, preventAction]);
 
 		const onMention = useCallback(async (mentionedUser: string) => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_MENTION_USER_MESSAGE_ITEM, mentionedUser);
@@ -260,14 +242,13 @@ const MessageItem = React.memo(
 
 		const handleLongPressMessage = useCallback(() => {
 			if (preventAction) return;
-			setIsOnlyEmojiPicker(false);
-			onMessageAction({
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
 				type: EMessageBSToShow.MessageAction,
 				senderDisplayName,
 				message
 			});
 			dispatch(setSelectedMessage(message));
-		}, [message, preventAction, senderDisplayName]);
+		}, [dispatch, message, preventAction, senderDisplayName]);
 
 		// Message welcome
 		if (message?.sender_id === '0' && !message?.content?.t && message?.username === 'system') {
@@ -312,26 +293,7 @@ const MessageItem = React.memo(
 						showHighlightReply && styles.highlightMessageMention
 					]}
 				>
-					{!!messageReferences && !!messageReferences?.message_ref_id && (
-						<MessageReferences
-							messageReferences={messageReferences}
-							preventAction={preventAction}
-							isMessageReply={true}
-							channelId={message.channel_id}
-							clanId={message.clan_id}
-						/>
-					)}
-					{isMessageReplyDeleted ? (
-						<View style={styles.aboveMessageDeleteReply}>
-							<View style={styles.iconReply}>
-								<ReplyIcon width={34} height={30} style={styles.deletedMessageReplyIcon} />
-							</View>
-							<View style={styles.iconMessageDeleteReply}>
-								<ReplyMessageDeleted width={18} height={9} />
-							</View>
-							<Text style={styles.messageDeleteReplyText}>{t('messageDeleteReply')}</Text>
-						</View>
-					) : null}
+					<RenderMessageItemRef message={message} preventAction={preventAction}/>
 					<View style={[styles.wrapperMessageBox, !isCombine && styles.wrapperMessageBoxCombine]}>
 						<AvatarMessage
 							onPress={onPressInfoUser}
@@ -354,30 +316,32 @@ const MessageItem = React.memo(
 								isShow={!isCombine || !!message?.references?.length || showUserInformation}
 								createTime={message?.create_time}
 							/>
-							<MessageAttachment message={message} onOpenImage={onOpenImage} onLongPressImage={onLongPressImage} />
+							<MessageAttachment message={message} onLongPressImage={onLongPressImage}/>
 							<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>
 								{isInviteLink || isGoogleMapsLink ? (
-									<RenderMessageBlock message={message} isGoogleMapsLink={isGoogleMapsLink} isInviteLink={isInviteLink} />
+									<RenderMessageBlock
+										isGoogleMapsLink={isGoogleMapsLink}
+										isInviteLink={isInviteLink}
+										contentMessage={contentMessage}
+									/>
 								) : (
-									<Suspense fallback={<Text>Loading...</Text>}>
-										<RenderTextMarkdownContent
-											content={{
-												...(typeof message.content === 'object' ? message.content : {}),
-												mentions: message.mentions,
-												...(checkOneLinkImage ? {t: ''} : {})
-											}}
-											isEdited={isEdited}
-											translate={t}
-											onMention={onMention}
-											onChannelMention={onChannelMention}
-											isNumberOfLine={isNumberOfLine}
-											isMessageReply={false}
-											mode={mode}
-											currentChannelId={channelId}
-											isOnlyContainEmoji={isOnlyContainEmoji}
-											onLongPress={handleLongPressMessage}
-										/>
-									</Suspense>
+									<RenderTextMarkdownContent
+										content={{
+											...(typeof message.content === 'object' ? message.content : {}),
+											mentions: message.mentions,
+											...(checkOneLinkImage ? {t: ''} : {})
+										}}
+										isEdited={isEdited}
+										translate={t}
+										onMention={onMention}
+										onChannelMention={onChannelMention}
+										isNumberOfLine={isNumberOfLine}
+										isMessageReply={false}
+										mode={mode}
+										currentChannelId={channelId}
+										isOnlyContainEmoji={isOnlyContainEmoji}
+										onLongPress={handleLongPressMessage}
+									/>
 								)}
 								{!!message?.content?.embed && <EmbedMessage {...message.content.embed} />}
 							</Block>
@@ -389,11 +353,11 @@ const MessageItem = React.memo(
 									userProfile={userProfile}
 									preventAction={preventAction}
 									openEmojiPicker={() => {
-										setIsOnlyEmojiPicker(true);
-										onMessageAction({
+										DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
 											type: EMessageBSToShow.MessageAction,
 											senderDisplayName,
-											message
+											message,
+											isOnlyEmoji: true
 										});
 									}}
 								/>

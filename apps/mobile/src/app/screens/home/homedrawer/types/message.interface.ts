@@ -25,6 +25,7 @@ export interface IMessageActionPayload {
 	message?: IMessageWithUser;
 	user?: ApiUser;
 	senderDisplayName?: string;
+	isOnlyEmoji?: boolean;
 }
 
 export interface IConfirmActionPayload {

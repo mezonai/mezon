@@ -1,8 +1,9 @@
+import {ActionEmitEvent} from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { IMessageWithUser, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import {DeviceEventEmitter, View} from 'react-native';
 import { isImage, isVideo } from '../../../../../utils/helpers';
 import { RenderDocumentsChat } from '../RenderDocumentsChat';
 import { RenderImageChat } from '../RenderImageChat';
@@ -12,7 +13,6 @@ import { style } from './styles';
 interface IProps {
 	message: IMessageWithUser;
 	onLongPressImage?: () => void;
-	onOpenImage?: (image: ApiMessageAttachment) => void;
 }
 const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 	const videos: ApiMessageAttachment[] = [];
@@ -32,7 +32,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 	return { videos, images, documents };
 };
 
-export const MessageAttachment = React.memo(({ message, onOpenImage, onLongPressImage }: IProps) => {
+export const MessageAttachment = React.memo(({message, onLongPressImage}: IProps) => {
 	const attachments = useMemo(() => {
 		return message?.attachments || [];
 	}, [message?.attachments]);
@@ -53,13 +53,13 @@ export const MessageAttachment = React.memo(({ message, onOpenImage, onLongPress
 
 	const onPressImage = useCallback(
 		(image: any) => {
-			onOpenImage?.({
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_IMAGE_DETAIL_MESSAGE_ITEM, {
 				...image,
 				uploader: message.sender_id,
 				create_time: message.create_time
 			});
 		},
-		[message.create_time, message?.sender_id, onOpenImage]
+		[message.create_time, message?.sender_id]
 	);
 
 	const renderDocuments = () => {

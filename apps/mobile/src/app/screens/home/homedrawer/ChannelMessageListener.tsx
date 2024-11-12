@@ -6,7 +6,6 @@ import {
 	getStoreAsync,
 	selectAllRolesClan,
 	selectAllUserClans,
-	selectCurrentChannel,
 	selectCurrentClanId,
 	selectStatusStream,
 	useAppDispatch,
@@ -20,17 +19,11 @@ import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../utils/helpers';
 import { EMessageBSToShow } from './enums';
-import { IMessageActionPayload } from './types';
 
-type ChannelMessageListenerProps = {
-	onMessageAction?: (payload: IMessageActionPayload) => void;
-};
-
-const ChannelMessageListener = React.memo(({ onMessageAction }: ChannelMessageListenerProps) => {
+const ChannelMessageListener = React.memo(() => {
 	const usersClan = useSelector(selectAllUserClans);
 	const rolesInClan = useSelector(selectAllRolesClan);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const currentChannel = useSelector(selectCurrentChannel);
 	const navigation = useNavigation<any>();
 	const playStream = useSelector(selectStatusStream);
 	const dispatch = useAppDispatch();
@@ -42,7 +35,7 @@ const ChannelMessageListener = React.memo(({ onMessageAction }: ChannelMessageLi
 				const clanUser = usersClan?.find((userClan) => tagName === userClan?.user?.username);
 				const isRoleMention = rolesInClan?.some((role) => tagName === role?.id);
 				if (!mentionedUser || tagName === 'here' || isRoleMention) return;
-				onMessageAction({
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
 					type: EMessageBSToShow.UserInformation,
 					user: clanUser?.user
 				});
@@ -50,7 +43,7 @@ const ChannelMessageListener = React.memo(({ onMessageAction }: ChannelMessageLi
 				/* empty */
 			}
 		},
-		[usersClan, rolesInClan, onMessageAction]
+		[usersClan, rolesInClan]
 	);
 
 	const onChannelMention = useCallback(
@@ -92,7 +85,7 @@ const ChannelMessageListener = React.memo(({ onMessageAction }: ChannelMessageLi
 				/* empty */
 			}
 		},
-		[currentChannel, currentClanId, navigation]
+		[currentClanId, dispatch, navigation, playStream]
 	);
 
 	useEffect(() => {

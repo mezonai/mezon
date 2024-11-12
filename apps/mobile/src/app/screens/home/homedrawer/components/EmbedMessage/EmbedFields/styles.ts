@@ -11,7 +11,7 @@ export const style = (colors: Attributes) =>
 		},
 		value: {
 			color: colors.text,
-			lineHeight: size.medium,
+			fontSize: size.s_13,
 			marginTop: size.s_6
 		}
 	});

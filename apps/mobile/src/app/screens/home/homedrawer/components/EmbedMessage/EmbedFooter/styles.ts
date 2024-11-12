@@ -9,6 +9,7 @@ export const style = (colors: Attributes) =>
 			gap: size.s_6
 		},
 		text: {
+			fontSize: size.s_13,
 			color: colors.text
 		},
 		imageWrapper: {

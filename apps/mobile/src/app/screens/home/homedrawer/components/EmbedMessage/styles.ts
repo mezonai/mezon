@@ -42,6 +42,7 @@ export const style = (colors: Attributes) =>
 			fontWeight: 'bold'
 		},
 		description: {
-			color: colors.text
+			color: colors.text,
+			fontSize: size.s_13
 		}
 	});
