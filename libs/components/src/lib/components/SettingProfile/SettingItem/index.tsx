@@ -111,6 +111,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				<button className="p-2 dark:text-[#AEAEAE] text-black text-[16px] font-medium w-[170px] rounded-[5px] text-left mt-1 ml-[-8px] ">
 					Advanced
 				</button>
+				<hr className="border-t border-solid border-borderDefault mt-4" />
 				<br />
 				<button
 					className={`p-2 dark:text-[#AEAEAE] text-black text-[16px] font-medium ${selectedButton === 'Log Out' ? 'bg-[#232E3B]' : ''} mt-1 w-[170px] text-left rounded-[5px] ml-[-8px] `}

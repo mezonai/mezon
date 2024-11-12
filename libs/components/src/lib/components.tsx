@@ -53,6 +53,7 @@ export { default as ModalNotificationSetting } from './components/notificationSe
 export * from './components/AvatarImage/AvatarImage';
 export { default as AppDirectoryList } from './components/ClanSettings/AppDirectory/AppDirectoryList';
 export { default as ModalSaveChanges } from './components/ClanSettings/ClanSettingOverview/ModalSaveChanges';
+export { default as SettingOnBoarding } from './components/ClanSettings/SettingOnBoarding';
 export { default as CustomDropdown } from './components/CustomDropdown';
 export { default as FileUploadByDnD } from './components/DragAndDrop/UploadFileByDnd';
 export { default as FirstJoinPopup } from './components/FirstJoinPopup';

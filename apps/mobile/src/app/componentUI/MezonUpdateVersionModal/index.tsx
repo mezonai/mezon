@@ -7,8 +7,6 @@ import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import BG from './bgUpdateApp.png';
 
 interface IMezonModalProps extends Pick<ModalBaseProps, 'animationType'> {
@@ -77,8 +75,7 @@ const styles = StyleSheet.create({
 	modalOverlay: {
 		flex: 1,
 		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: 'rgba(0, 0, 0, 0.5)'
+		alignItems: 'center'
 	},
 	modalContainer: {
 		width: Metrics.screenWidth / 1.2,
@@ -90,7 +87,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		backgroundColor: '#242427',
 		borderWidth: 1,
-		borderColor: '#4a4a4a'
+		borderColor: '#424242'
 	},
 	title: {
 		color: '#ededed',

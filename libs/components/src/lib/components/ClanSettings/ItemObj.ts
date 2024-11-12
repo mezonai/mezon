@@ -17,7 +17,8 @@ export const ItemSetting = {
 	INTEGRATIONS: 'integrations',
 	NOTIFICATION_SOUND: 'notification-sound',
 	APP_DIRECTORY: 'app-directory',
-	CATEGORY_ORDER: 'category-order'
+	CATEGORY_ORDER: 'category-order',
+	ON_BOARDING: 'on-boarding'
 };
 
 export const listItemSetting: ItemObjProps[] = [
@@ -34,6 +35,8 @@ export const listItemSettingApp: ItemObjProps[] = [
 	{ id: ItemSetting.APP_DIRECTORY, name: 'App Directory' }
 ];
 
+export const communitySettingsList: ItemObjProps[] = [{ id: ItemSetting.ON_BOARDING, name: 'On Boarding' }];
+
 export const sideBarListItem: ListSideBarProps[] = [
 	{
 		title: '',
@@ -42,6 +45,10 @@ export const sideBarListItem: ListSideBarProps[] = [
 	{
 		title: 'Apps',
 		listItem: listItemSettingApp
+	},
+	{
+		title: 'Community',
+		listItem: communitySettingsList
 	}
 ];
 

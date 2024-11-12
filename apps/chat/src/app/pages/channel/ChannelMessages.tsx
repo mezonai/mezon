@@ -271,19 +271,12 @@ function ChannelMessages({
 	}, [userId, messages.length, isViewOlderMessage, rowVirtualizer, scrollToLastMessage, getChatScrollBottomOffset]);
 
 	useLayoutEffect(() => {
+		if (!rowVirtualizer.getVirtualItems().length) return;
+		if (!rowVirtualizer.getTotalSize()) return;
 		if (chatRef.current && messages?.length && lastMessage?.channel_id && !userActiveScroll.current) {
 			chatRef.current.scrollTop = chatRef.current.scrollHeight;
 		}
 	});
-
-	useEffect(() => {
-		if (!userActiveScroll.current || !chatRef.current) return;
-		chatRef.current.style.overflowY = 'hidden';
-		setTimeout(() => {
-			if (!chatRef.current) return;
-			chatRef.current.style.overflowY = 'auto';
-		}, 50);
-	}, [messages]);
 
 	return (
 		<MessageContextMenuProvider allUserIdsInChannel={allUserIdsInChannel as string[]} allRolesInClan={allRolesInClan}>
@@ -317,24 +310,22 @@ function ChannelMessages({
 							position: 'relative'
 						}}
 					>
-						{rowVirtualizer.getVirtualItems().map((virtualRow) => {
-							const messageId = messages[virtualRow.index];
-							const islastIndex = messages.length - 1 === virtualRow.index;
-							const checkMessageTargetToMoved = idMessageToJump === messageId && messageId !== lastMessageId;
-							const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
-
-							return (
-								<div
-									key={virtualRow.index}
-									style={{
-										position: 'absolute',
-										top: 0,
-										left: 0,
-										width: '100%',
-										height: `${virtualRow.size}px`,
-										transform: `translateY(${virtualRow.start}px)`
-									}}
-								>
+						<div
+							style={{
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								width: '100%',
+								transform: `translateY(${rowVirtualizer.getVirtualItems()[0]?.start ?? 0}px)`
+							}}
+						>
+							{rowVirtualizer.getVirtualItems().map((virtualRow) => {
+								const messageId = messages[virtualRow.index];
+								const islastIndex = messages.length - 1 === virtualRow.index;
+								const checkMessageTargetToMoved = idMessageToJump === messageId && messageId !== lastMessageId;
+								const messageReplyHighlight =
+									(dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
+								return (
 									<div key={virtualRow.key} data-index={virtualRow.index} ref={rowVirtualizer.measureElement}>
 										<MemorizedChannelMessage
 											index={virtualRow.index}
@@ -352,11 +343,11 @@ function ChannelMessages({
 											checkMessageTargetToMoved={checkMessageTargetToMoved}
 											messageReplyHighlight={messageReplyHighlight}
 										/>
+										{islastIndex && <div className="h-[20px] w-[1px] pointer-events-none"></div>}
 									</div>
-									{islastIndex && <div className="h-[20px] w-[1px] pointer-events-none"></div>}
-								</div>
-							);
-						})}
+								);
+							})}
+						</div>
 					</div>
 				</div>
 			</div>

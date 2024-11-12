@@ -59,13 +59,19 @@ export class WindowBadge implements IBadge {
 	}
 
 	public setBadgeCount(badgeNumber: number) {
+		// eslint-disable-next-line no-console
+		console.log('badgeNumber: ', badgeNumber, typeof badgeNumber);
 		if (badgeNumber || badgeNumber === null) {
 			this.generator.generate(badgeNumber).then((base64) => {
+				// eslint-disable-next-line no-console
+				console.log('this.currentOverlayIcon.badgeDescription: 1', this.currentOverlayIcon.badgeDescription);
 				const image = nativeImage.createFromDataURL(base64);
 				this.currentOverlayIcon.image = image;
 				this.mainWindow.setOverlayIcon(this.currentOverlayIcon.image, this.currentOverlayIcon.badgeDescription);
 			});
 		} else {
+			// eslint-disable-next-line no-console
+			console.log('this.currentOverlayIcon.badgeDescription: 2', this.currentOverlayIcon.badgeDescription);
 			this.currentOverlayIcon.image = null;
 			this.mainWindow.setOverlayIcon(this.currentOverlayIcon.image, this.currentOverlayIcon.badgeDescription);
 		}

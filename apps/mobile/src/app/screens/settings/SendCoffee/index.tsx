@@ -20,7 +20,7 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 	const userProfile = useSelector(selectAllAccount);
 
 	const tokenInWallet = useMemo(() => {
-		return userProfile?.wallet ? JSON.parse(userProfile?.wallet)?.value : 0;
+		return userProfile?.wallet ? JSON.parse(userProfile?.wallet || '{}')?.value : 0;
 	}, [userProfile?.wallet]);
 	const getTokenSocket = useSelector(selectUpdateToken(userProfile?.user?.id ?? ''));
 
@@ -84,8 +84,9 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 						<TextInput
 							style={styles.textInput}
 							placeholderTextColor="#535353"
-							// TODO: replace name bot
-							value={'KOMO'}
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-expect-error
+							value={jsonObject?.receiver_name || 'KOMO'}
 							editable={false}
 						/>
 					</View>

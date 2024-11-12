@@ -102,15 +102,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			amount: token
 		};
 
-		dispatch(
-			giveCoffeeActions.sendToken({
-				sender_id: myProfile.userId as string,
-				sender_name: myProfile?.userProfile?.user?.username as string,
-				receiver_id: selectedUserId,
-				amount: token
-			})
-		);
-		dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
+		dispatch(giveCoffeeActions.sendToken(tokenEvent));
 		handleCloseModalSendToken();
 	};
 	const rootRef = useRef<HTMLButtonElement>(null);

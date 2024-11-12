@@ -129,10 +129,10 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 		if (id && parentId && parentId !== '0') {
 			if (channelRefs.current[parentId]?.channelRef) {
 				requestAnimationFrame(() => {
-					dispatch(categoriesActions.setCtrlKFocusChannel(null));
 					channelRefs.current[parentId]?.scrollIntoThread(id);
 				});
 			}
+			dispatch(categoriesActions.setCtrlKFocusChannel(null));
 		} else if (id) {
 			if (channelRefs.current[id]?.channelRef) {
 				requestAnimationFrame(() => {

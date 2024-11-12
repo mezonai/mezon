@@ -13,6 +13,7 @@ import NotificationSoundSetting from './NotificationSoundSetting';
 import CategoryOrderSetting from './OrderCategorySetting';
 import SettingEmoji from './SettingEmoji';
 import ServerSettingMainRoles from './SettingMainRoles';
+import SettingOnBoarding from './SettingOnBoarding';
 import SettingSidebar from './SettingSidebar';
 import SettingSticker from './SettingSticker';
 
@@ -55,6 +56,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 				return <SettingSticker parentRef={modalRef} />;
 			case ItemSetting.CATEGORY_ORDER:
 				return <CategoryOrderSetting />;
+			case ItemSetting.ON_BOARDING:
+				return <SettingOnBoarding />;
 		}
 	};
 	const dispatch = useAppDispatch();

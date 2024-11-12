@@ -33,7 +33,8 @@ import {
 	selectPositionEmojiButtonSmile,
 	selectReactionTopState,
 	selectStatusMenu,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { EmojiPlaces, SubPanelName, TIME_OFFSET, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
@@ -78,6 +79,11 @@ function useChannelSeen(channelId: string) {
 	}, [dispatch, channelId, lastMessage]);
 }
 
+function DirectSeenListener({ channelId }: { channelId: string }) {
+	useChannelSeen(channelId);
+	return null;
+}
+
 const DirectMessage = () => {
 	// TODO: move selector to store
 	const { clanId, directId, type } = useAppParams();
@@ -86,10 +92,9 @@ const DirectMessage = () => {
 	const { draggingState, setDraggingState } = useDragAndDrop();
 	const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
-	const isSearchMessage = useSelector(selectIsSearchMessage(directId || ''));
+	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, directId));
 	const dispatch = useAppDispatch();
 
-	useChannelSeen(directId || '');
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		if (defaultChannelId) {
@@ -148,11 +153,9 @@ const DirectMessage = () => {
 		}
 	}, [isShowCreateThread]);
 
-	const setMarginleft = useMemo(() => {
-		if (messagesContainerRef?.current?.getBoundingClientRect()) {
-			return window.innerWidth - messagesContainerRef?.current?.getBoundingClientRect().right + 155;
-		}
-	}, [messagesContainerRef.current?.getBoundingClientRect()]);
+	const setMarginleft = messagesContainerRef?.current?.getBoundingClientRect()
+		? window.innerWidth - messagesContainerRef?.current?.getBoundingClientRect().right + 155
+		: 0;
 
 	const isDmChannel = useMemo(() => currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM, [currentDmGroup?.type]);
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -286,6 +289,7 @@ const DirectMessage = () => {
 					{isSearchMessage && <SearchMessageChannel />}
 				</div>
 			</div>
+			<DirectSeenListener channelId={directId as string} />
 		</>
 	);
 };

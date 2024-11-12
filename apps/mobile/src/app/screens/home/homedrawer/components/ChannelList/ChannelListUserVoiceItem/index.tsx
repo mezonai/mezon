@@ -1,9 +1,8 @@
 import { Block, size, useTheme } from '@mezon/mobile-ui';
-import { selectMemberClanByGoogleId } from '@mezon/store-mobile';
+import { selectMemberClanByGoogleId, useAppSelector } from '@mezon/store-mobile';
 import { IChannelMember, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import { style } from './styles';
 
@@ -16,7 +15,7 @@ interface IUserVoiceProps {
 const UserVoiceItem = React.memo(({ userVoice, isCategoryExpanded, index, totalMembers }: IUserVoiceProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const member = useSelector(selectMemberClanByGoogleId(userVoice.user_id ?? ''));
+	const member = useAppSelector((state) => selectMemberClanByGoogleId(state, userVoice.user_id ?? ''));
 	const name = useMemo(() => {
 		return getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username);
 	}, [member?.clan_nick, member?.user?.display_name, member?.user?.username]);

@@ -42,7 +42,6 @@ export interface ReactionState extends EntityState<ReactionEntity, string> {
 	reactionTopState: boolean;
 	reactionBottomState: boolean;
 	reactionRightState: boolean;
-	userReactionPanelState: boolean;
 	reactionBottomStateResponsive: boolean;
 	messageMatchWithRef: boolean;
 	positionOfSmileButton: {
@@ -153,7 +152,6 @@ export const initialReactionState: ReactionState = reactionAdapter.getInitialSta
 	reactionTopState: false,
 	reactionBottomState: false,
 	reactionRightState: false,
-	userReactionPanelState: false,
 	reactionBottomStateResponsive: false,
 	messageMatchWithRef: false,
 	positionOfSmileButton: {
@@ -242,10 +240,6 @@ export const reactionSlice = createSlice({
 				const combinedId = `${action.payload.channel_id}_${action.payload.message_id}`;
 				state.computedMessageReactions[combinedId] = combineMessageReactions(state, combinedId);
 			}
-		},
-
-		setUserReactionPanelState(state, action) {
-			state.userReactionPanelState = action.payload;
 		},
 		setMessageMatchWithRef(state, action) {
 			state.messageMatchWithRef = action.payload;
@@ -365,8 +359,6 @@ export const selectReactionBottomState = createSelector(getReactionState, (state
 export const selectReactionBottomStateResponsive = createSelector(getReactionState, (state: ReactionState) => state.reactionBottomStateResponsive);
 
 export const selectReactionRightState = createSelector(getReactionState, (state: ReactionState) => state.reactionRightState);
-
-export const selectUserReactionPanelState = createSelector(getReactionState, (state: ReactionState) => state.userReactionPanelState);
 
 export const selectMessageMatchWithRef = createSelector(getReactionState, (state: ReactionState) => state.messageMatchWithRef);
 

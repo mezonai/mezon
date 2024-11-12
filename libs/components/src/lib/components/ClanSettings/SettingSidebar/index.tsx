@@ -71,6 +71,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 								active={selectedButton === setting.id}
 								onClick={() => handleClickButtonSidebar(setting)}
 								handleMenu={handleMenu}
+								setting={setting}
 							/>
 						))}
 					</div>

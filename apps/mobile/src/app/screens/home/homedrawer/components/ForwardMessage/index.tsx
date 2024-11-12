@@ -34,6 +34,7 @@ interface IForwardIObject {
 	clanId?: string;
 	name?: string;
 	avatar?: string;
+	clanName?: string;
 }
 
 interface ForwardMessageModalProps {
@@ -77,7 +78,8 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 			type: dm?.type,
 			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.channel_avatar?.[0] : 'assets/images/avatar-group.png',
 			name: dm?.channel_label,
-			clanId: ''
+			clanId: '',
+			clanName: ''
 		};
 	};
 
@@ -87,7 +89,8 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 			type: channel?.type,
 			avatar: '#',
 			name: channel?.channel_label,
-			clanId: channel?.clan_id
+			clanId: channel?.clan_id,
+			clanName: channel?.clan_name
 		};
 	};
 
@@ -243,8 +246,8 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 				);
 			case ChannelType.CHANNEL_TYPE_TEXT:
 				return (
-					<Block width={size.s_34} height={size.s_34}>
-						<Text center h2 color={themeValue.white}>
+					<Block width={size.s_16} height={size.s_34} justifyContent="center">
+						<Text center h3 color={themeValue.white}>
 							#
 						</Text>
 					</Block>
@@ -260,9 +263,13 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 				<Block flexDirection="row" padding={size.s_10} gap={size.s_6} justifyContent="center">
 					<Block>{renderAvatar(item)}</Block>
 					<Block flex={1} justifyContent="center">
-						<Text color={themeValue.textStrong} numberOfLines={1}>
-							{item.name}
-						</Text>
+						{item.type === ChannelType.CHANNEL_TYPE_TEXT ? (
+							<Text color={themeValue.textStrong} numberOfLines={1}>{`${item.name} (${item.clanName})`}</Text>
+						) : (
+							<Text color={themeValue.textStrong} numberOfLines={1}>
+								{item.name}
+							</Text>
+						)}
 					</Block>
 					<Block justifyContent="center">
 						<BouncyCheckbox

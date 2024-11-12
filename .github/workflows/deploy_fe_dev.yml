@@ -15,8 +15,11 @@ jobs:
         run: |
           echo "Environments"
           echo "NODE_ENV: ${{ env.NODE_ENV }}"
-          echo "Node version: $(node -v)"
+          export nv=$(node -v)
+          echo "Node version: $nv"
           echo "Installing dependencies"
+          yarn config set nodedir ~/.cache/node-gyp/"${nv:1}"
+          echo "Node directory: ${nv:1}"
           source ~/.bashrc
           yarn
       - name: Build

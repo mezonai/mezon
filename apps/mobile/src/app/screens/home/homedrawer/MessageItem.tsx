@@ -6,7 +6,7 @@ import { ApiMessageAttachment, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, DeviceEventEmitter, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MessageAction, RenderTextMarkdownContent } from './components';
+import { EmbedMessage, MessageAction, RenderTextMarkdownContent } from './components';
 import { EMessageActionType, EMessageBSToShow } from './enums';
 import { style } from './styles';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -377,6 +377,7 @@ const MessageItem = React.memo(
 										onLongPress={handleLongPressMessage}
 									/>
 								)}
+								{!!message?.content?.embed && <EmbedMessage {...message.content.embed} />}
 							</Block>
 							{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
 							{!preventAction ? (

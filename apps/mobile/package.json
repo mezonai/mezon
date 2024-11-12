@@ -82,6 +82,7 @@
 		"redux": "^5.0.1",
 		"redux-thunk": "^3.1.0",
 		"rn-fetch-blob": "^0.12.0",
+		"rn-qr-generator": "^1.4.2",
 		"yup": "^1.4.0"
 	}
 }

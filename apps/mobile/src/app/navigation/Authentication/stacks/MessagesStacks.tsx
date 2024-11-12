@@ -1,8 +1,9 @@
 import { CardStyleInterpolators, createStackNavigator, TransitionSpecs } from '@react-navigation/stack';
 import React from 'react';
 
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import { ChatBoxStreamComponent } from '../../../screens/home/homedrawer/components/StreamingRoom/ChatBoxStream';
 import { DirectMessageDetailScreen } from '../../../screens/messages/DirectMessageDetail';
 import { NewGroupScreen } from '../../../screens/messages/NewGroup';
@@ -32,6 +33,11 @@ export const MessagesStacks = ({}: any) => {
 				headerStyle: {
 					backgroundColor: themeValue.secondary
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				headerLeftLabelVisible: false
 			}}
 		>

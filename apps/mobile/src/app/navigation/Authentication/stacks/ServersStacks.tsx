@@ -1,7 +1,8 @@
 import { CardStyleInterpolators, createStackNavigator, TransitionSpecs } from '@react-navigation/stack';
 import React from 'react';
 
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { Platform } from 'react-native';
 import UpdateGateScreen from '../../../screens/updateGate/UpdateGateScreen';
 import { APP_SCREEN } from '../../ScreenTypes';
 
@@ -21,6 +22,11 @@ export const ServersStacks = ({}: any) => {
 					open: TransitionSpecs.TransitionIOSSpec,
 					close: TransitionSpecs.TransitionIOSSpec
 				},
+				headerLeftContainerStyle: Platform.select({
+					ios: {
+						left: size.s_6
+					}
+				}),
 				cardStyle: { backgroundColor: 'transparent' },
 				cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
 			}}

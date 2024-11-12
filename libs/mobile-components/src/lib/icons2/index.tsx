@@ -208,7 +208,7 @@ export const ShieldUserIcon = ({ width = 24, height = 24, color = 'white', ...pr
 	</Svg>
 );
 
-export const QRCodeCameraIcon = ({ width = 24, height = 24, color = 'white', ...props }: SvgProps) => (
+export const MyQRCodeIcon = ({ width = 24, height = 24, color = 'white', ...props }: SvgProps) => (
 	<Svg viewBox="0 0 72 72" fill={color} width={width} height={height} {...props}>
 		<Path d="M12 17.01c0-3.3 2.7-6 6-6h9a3 3 0 100-6h-9a12 12 0 00-12 12v9a3 3 0 006 0v-9zm0 36c0 3.3 2.7 6 6 6h9a3 3 0 010 6h-9a12 12 0 01-12-12v-9a3 3 0 016 0v9zm48-36a6 6 0 00-6-6h-9a3 3 0 110-6h9a12 12 0 0112 12v9a3 3 0 01-6 0v-9z" />
 		<Path
@@ -216,6 +216,13 @@ export const QRCodeCameraIcon = ({ width = 24, height = 24, color = 'white', ...
 			clipRule="evenodd"
 			d="M15 20.01c0-3.3 2.7-6 6-6h6a6 6 0 016 6v6a6 6 0 01-6 6h-6a6 6 0 01-6-6v-6zm6 0h6v6h-6v-6zm-6 24c0-3.3 2.7-6 6-6h6a6 6 0 016 6v6a6 6 0 01-6 6h-6a6 6 0 01-6-6v-6zm6 0h6v6h-6v-6zm18-24c0-3.3 2.7-6 6-6h6a6 6 0 016 6v6a6 6 0 01-6 6h-6a6 6 0 01-6-6v-6zm6 0h6v6h-6v-6zm6.24 18a4.5 4.5 0 00-4.26 3.09c-.27.75-.9 1.41-1.68 1.41H45a6 6 0 00-6 6v10.5c0 3.3 2.7 6 6 6h18a6 6 0 006-6v-10.5a6 6 0 00-6-6h-.3c-.78 0-1.41-.66-1.68-1.41a4.5 4.5 0 00-4.26-3.09h-5.52zm8.76 15a6 6 0 11-12 0 6 6 0 0112 0z"
 		/>
+	</Svg>
+);
+
+export const QRCodeCameraIcon = ({ width = 24, height = 24, color = 'white', ...props }: SvgProps) => (
+	<Svg viewBox="0 0 24 24" fill={color} width={width} height={height} {...props}>
+		<Path fill="none" d="M0 0h24v24H0z" />
+		<Path d="M15 3h6v5h-2V5h-4V3zM9 3v2H5v3H3V3h6zm6 18v-2h4v-3h2v5h-6zm-6 0H3v-5h2v3h4v2zM3 11h18v2H3v-2z" />
 	</Svg>
 );
 export const PaintPaletteIcon = ({ width = 24, height = 24, color = 'white', ...props }: SvgProps) => (

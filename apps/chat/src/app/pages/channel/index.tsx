@@ -130,7 +130,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const { draggingState, setDraggingState, isOverUploading, setOverUploadingState } = useDragAndDrop();
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
-	const isSearchMessage = useSelector(selectIsSearchMessage(channelId));
+	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, channelId));
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowMemberList = useSelector(selectIsShowMemberList);

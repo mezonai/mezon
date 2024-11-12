@@ -18,28 +18,28 @@ function parseObject(obj: any) {
 	let references;
 	let content;
 	try {
-		attachments = obj?.attachments && JSON.parse(obj?.attachments);
+		attachments = obj?.attachments && JSON.parse(obj?.attachments || '{}');
 	} catch (err) {
 		attachments = {};
 	}
 	try {
-		mentions = obj?.mentions && JSON.parse(obj?.mentions);
+		mentions = obj?.mentions && JSON.parse(obj?.mentions || '{}');
 	} catch (err) {
 		mentions = {};
 	}
 	try {
-		references = obj?.references && JSON.parse(obj?.references);
+		references = obj?.references && JSON.parse(obj?.references || '{}');
 	} catch (err) {
 		references = {};
 	}
 	try {
-		reactions = obj?.reactions && JSON.parse(obj?.reactions);
+		reactions = obj?.reactions && JSON.parse(obj?.reactions || '{}');
 	} catch (err) {
 		reactions = {};
 	}
 
 	try {
-		content = obj?.content && JSON.parse(obj?.content);
+		content = obj?.content && JSON.parse(obj?.content || '{}');
 	} catch (err) {
 		content = {};
 	}

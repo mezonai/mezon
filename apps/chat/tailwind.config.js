@@ -205,7 +205,11 @@ module.exports = {
           '50%': {
             opacity: 0.5
           }
-        }
+        },
+        move_down: {
+          '0%': { transform: 'translateY(-20px)', opacity: '0.8' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
+        },
       },
       boxShadow: {
         'emoji_item': '0 1px 0 0 #ededef',
@@ -222,7 +226,8 @@ module.exports = {
       scale_up: 'scale_up 0.15s ease-in-out forwards',
       fly_in: 'fly_in 0.2s ease-in-out forwards',
       slide_in: 'slide_in 0.5s ease-in-out forwards',
-      pulse: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+      pulse: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      move_down: 'move_down 0.5s forwards',
     },
     screens: {
       ssm: "430px",
