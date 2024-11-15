@@ -99,7 +99,6 @@ export const ChatBoxBottomBar = memo(
 		const cursorPositionRef = useRef(0);
 		const currentTextInput = useRef('');
 		const { sessionRef, clientRef } = useMezon();
-		// const listMentions = UseMentionList({ channelID: channelId || '', channelMode: mode });
 		const listMentions = UseMentionList({
 			channelID:
 				currentChannel?.parrent_id !== '0' && ![ChannelStreamMode.STREAM_MODE_GROUP].includes(mode) ? currentChannel?.parrent_id : channelId,
