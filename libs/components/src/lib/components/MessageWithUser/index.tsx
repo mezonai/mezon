@@ -282,7 +282,7 @@ function MessageWithUser({
 												<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
 												{message.content?.embed && <EmbedMessage {...message.content.embed} />}
 												{message.content?.components &&
-													message.content.components.map((actionRow, index) => (
+													message.content.components?.map((actionRow, index) => (
 														<div className={'flex flex-col'}>
 															<MessageActionsPanel
 																actionRow={actionRow}

@@ -47,7 +47,7 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 		}
 	};
 
-	const commonClass = `px-5 py-1 rounded ${buttonColor} text-white font-medium `;
+	const commonClass = `px-5 py-1 rounded ${buttonColor} text-white font-medium hover:bg-opacity-70`;
 
 	return button.url ? (
 		<a href={button.url} target="_blank" rel="noopener noreferrer" className={commonClass + ' flex items-center hover:underline'}>
