@@ -47,16 +47,18 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 		}
 	};
 
-	const commonClass = `px-5 py-1 rounded ${buttonColor} text-white font-medium hover:bg-opacity-70`;
+	const commonClass = `px-5 py-1 rounded ${buttonColor} text-white font-medium hover:bg-opacity-70 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed`;
 
-	return button.url ? (
-		<a href={button.url} target="_blank" rel="noopener noreferrer" className={commonClass + ' flex items-center hover:underline'}>
-			{button.label}
-			<Icons.ForwardRightClick defaultSize="w-4 h-4 ml-2" defaultFill={'#ffffff'} />
-		</a>
-	) : (
-		<button className={commonClass} onClick={handleClickButton}>
-			{button.label}
+	return (
+		<button className={commonClass} onClick={handleClickButton} disabled={button?.disable}>
+			{button.url ? (
+				<a href={button.url} target="_blank" rel="noopener noreferrer" className={'flex items-center hover:underline'}>
+					{button.label}
+					<Icons.ForwardRightClick defaultSize="w-4 h-4 ml-2" defaultFill={'#ffffff'} />
+				</a>
+			) : (
+				button.label
+			)}
 		</button>
 	);
 };
