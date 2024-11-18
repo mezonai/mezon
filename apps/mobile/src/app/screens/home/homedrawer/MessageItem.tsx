@@ -310,6 +310,8 @@ const MessageItem = React.memo(
 								senderDisplayName={senderDisplayName}
 								isShow={!isCombine || !!message?.references?.length || showUserInformation}
 								createTime={message?.create_time}
+								messageSenderId={message?.sender_id}
+								mode={mode}
 							/>
 							<MessageAttachment message={message} onLongPressImage={onLongPressImage} />
 							<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>

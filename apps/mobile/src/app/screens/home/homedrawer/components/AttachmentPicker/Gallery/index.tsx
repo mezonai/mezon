@@ -10,6 +10,7 @@ import RNFS from 'react-native-fs';
 import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
+import { Camera } from 'react-native-vision-camera';
 import { IFile } from '../../../../../../componentUI';
 import { style } from './styles';
 export const { height } = Dimensions.get('window');
@@ -51,14 +52,34 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		}
 	};
 
-	const getCheckPermissionPromise = () => {
-		if (Number(Platform.Version) >= 33) {
-			return Promise.all([
-				PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES),
-				PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO)
-			]).then(([hasReadMediaImagesPermission, hasReadMediaVideoPermission]) => hasReadMediaImagesPermission && hasReadMediaVideoPermission);
-		} else {
-			return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+	const alertOpenSettings = (title?: string, desc?: string) => {
+		Alert.alert(title || 'Photo Permission', desc || 'App needs access to your photo library', [
+			{
+				text: 'Cancel',
+				style: 'cancel'
+			},
+			{
+				text: 'OK',
+				onPress: () => {
+					openAppSettings();
+				}
+			}
+		]);
+	};
+
+	const getCheckPermissionPromise = async () => {
+		try {
+			if (Platform.OS === 'android') {
+				if (Platform.Version >= 33) {
+					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+				} else {
+					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+				}
+			}
+			return false;
+		} catch (error) {
+			console.warn('Permission check error:', error);
+			return false;
 		}
 	};
 
@@ -69,36 +90,64 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			if (hasPermission) {
 				return true;
 			}
-			const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
-			timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
-			if (granted === 'never_ask_again') {
-				Alert.alert('Photo Permission', 'App needs access to your photo library', [
-					{
-						text: 'Cancel',
-						style: 'cancel'
-					},
-					{
-						text: 'OK',
-						onPress: () => {
-							openAppSettings();
-						}
-					}
-				]);
-			}
 
-			return granted === PermissionsAndroid.RESULTS.GRANTED;
+			try {
+				// For Android 13+ (API 33+)
+				if (Platform.Version >= 33) {
+					const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, {
+						title: 'Photo Library Access',
+						message: 'This app needs access to your photo library.',
+						buttonNeutral: 'Ask Me Later',
+						buttonNegative: 'Cancel',
+						buttonPositive: 'OK'
+					});
+
+					timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
+
+					if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+						alertOpenSettings();
+					}
+
+					return granted === PermissionsAndroid.RESULTS.GRANTED;
+				}
+				// For Android 12 and below
+				else {
+					const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE, {
+						title: 'Photo Library Access',
+						message: 'This app needs access to your photo library.',
+						buttonNeutral: 'Ask Me Later',
+						buttonNegative: 'Cancel',
+						buttonPositive: 'OK'
+					});
+
+					timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
+
+					if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+						alertOpenSettings();
+					}
+
+					return granted === PermissionsAndroid.RESULTS.GRANTED;
+				}
+			} catch (err) {
+				console.warn('Permission request error:', err);
+				return false;
+			}
 		} else if (Platform.OS === 'ios') {
 			dispatch(appActions.setIsFromFCMMobile(true));
+
 			const result = await iosReadGalleryPermission('readWrite');
 			timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
+
 			if (result === 'not-determined' || result === 'denied') {
 				const requestResult = await iosRequestReadWriteGalleryPermission();
 				return requestResult === 'granted' || requestResult === 'limited';
 			} else if (result === 'limited') {
 				await iosRefreshGallerySelection();
 			}
+
 			return result === 'granted' || result === 'limited';
 		}
+
 		return false;
 	};
 
@@ -206,7 +255,19 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		}
 	};
 
+	const checkPermissionCamera = async () => {
+		const permission = await Camera.requestCameraPermission();
+		if (permission !== PermissionsAndroid.RESULTS.GRANTED) {
+			alertOpenSettings('Camera Permission', 'This app needs access to your camera');
+		}
+		return permission === PermissionsAndroid.RESULTS.GRANTED;
+	};
+
 	const onOpenCamera = async () => {
+		const isHavePermission = await checkPermissionCamera();
+
+		if (!isHavePermission) return;
+
 		const options = {
 			durationLimit: 10000,
 			mediaType: 'photo'

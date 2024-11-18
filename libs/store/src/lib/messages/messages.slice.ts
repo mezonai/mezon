@@ -627,7 +627,7 @@ export const clickButtonMessage = createAsyncThunk(
 	async ({ message_id, channel_id, button_id, sender_id, user_id }: MessageButtonClicked, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			const response = mezon.socketRef.current?.handleMessageButtonClick({ message_id, channel_id, button_id, sender_id, user_id });
+			const response = mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id);
 		} catch (e) {
 			console.error(e);
 		}

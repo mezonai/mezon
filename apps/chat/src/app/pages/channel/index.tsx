@@ -1,6 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Canvas, FileUploadByDnD, MemberList, SearchMessageChannelRender, TooManyUpload } from '@mezon/components';
-import { useAppNavigation, useDragAndDrop, usePermissionChecker, useSearchMessages, useWindowFocusState } from '@mezon/core';
+import {
+	useAppNavigation,
+	useAuth,
+	useDragAndDrop,
+	usePermissionChecker,
+	useSearchMessages,
+	useSeenMessagePool,
+	useWindowFocusState
+} from '@mezon/core';
 import {
 	ChannelsEntity,
 	channelMetaActions,
@@ -19,6 +27,8 @@ import {
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowMemberList,
+	selectIsUnreadChannelById,
+	selectLastMessageByChannelId,
 	selectListMission,
 	selectMissionDone,
 	selectOnboardingMode,
@@ -40,17 +50,27 @@ import { ChannelTyping } from './ChannelTyping';
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
-
+	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 	const statusFetchChannel = useSelector(selectFetchChannelStatus);
 	const resetBadgeCount = !useSelector(selectAnyUnreadChannels);
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 
 	useEffect(() => {
-		const timestamp = Date.now() / 1000;
-		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 	}, [channelId, currentChannel, dispatch, isFocusDesktop, isTabVisible]);
-
+	const { userId } = useAuth();
+	const { markAsReadSeen } = useSeenMessagePool();
+	const isUnreadChannel = useSelector((state) => selectIsUnreadChannelById(state, channelId));
+	useEffect(() => {
+		if (!lastMessage) {
+			return;
+		}
+		const mode =
+			currentChannel?.type === ChannelType.CHANNEL_TYPE_TEXT ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD;
+		if (isUnreadChannel || lastMessage?.sender_id === userId) {
+			markAsReadSeen(lastMessage, mode);
+		}
+	}, [lastMessage, channelId]);
 	useEffect(() => {
 		if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 			const channelWithActive = { ...currentChannel, active: 1 };
@@ -63,6 +83,8 @@ function useChannelSeen(channelId: string) {
 			dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: numberNotification * -1 }));
 			dispatch(listChannelsByUserActions.resetBadgeCount({ channelId: channelId }));
 		}
+		const timestamp = Date.now() / 1000;
+		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
 		if (!numberNotification && resetBadgeCount) {
 			dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: 0, isReset: true }));
 		}

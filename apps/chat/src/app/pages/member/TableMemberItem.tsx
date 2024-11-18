@@ -157,16 +157,11 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 										<Tooltip
 											content={
 												<div className={'flex flex-col items-start'}>
-													{userRolesClan.sortedRoles
-														.slice(1)
-														.map((userRole) => (
-															<div className={'my-0.5'} key={userRole.id}>
-																<RoleNameCard
-																	roleName={userRole.title || ''}
-																	roleColor={userRole.color || ''}
-																/>
-															</div>
-														))}
+													{userRolesClan.sortedRoles.slice(1).map((userRole) => (
+														<div className={'my-0.5'} key={userRole.id}>
+															<RoleNameCard roleName={userRole.title || ''} roleColor={userRole.color || ''} />
+														</div>
+													))}
 												</div>
 											}
 											trigger={'hover'}

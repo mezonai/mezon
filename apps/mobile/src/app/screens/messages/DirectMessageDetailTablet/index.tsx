@@ -1,4 +1,4 @@
-import { useChatMessages, useMemberStatus } from '@mezon/core';
+import { useAuth, useChatMessages, useMemberStatus, useSeenMessagePool } from '@mezon/core';
 import { ActionEmitEvent, Icons, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
@@ -7,18 +7,19 @@ import {
 	channelMembersActions,
 	clansActions,
 	directActions,
-	directMetaActions,
 	getStoreAsync,
 	gifsStickerEmojiActions,
 	messagesActions,
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectDmGroupCurrent,
-	useAppDispatch
+	selectIsUnreadDMById,
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store-mobile';
-import { SubPanelName, TIME_OFFSET } from '@mezon/utils';
+import { SubPanelName } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,11 +35,22 @@ function useChannelSeen(channelId: string) {
 	const mounted = useRef('');
 
 	const updateChannelSeenState = (channelId: string, lastMessage: MessagesEntity) => {
-		const timestamp = Date.now() / 1000;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
-		dispatch(directMetaActions.updateLastSeenTime(lastMessage));
 		dispatch(directActions.setActiveDirect({ directId: channelId }));
 	};
+
+	const { userId } = useAuth();
+	const isUnreadDM = useAppSelector((state) => selectIsUnreadDMById(state, channelId as string));
+	const { markAsReadSeen } = useSeenMessagePool();
+	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	useEffect(() => {
+		if (lastMessage) {
+			return;
+		}
+		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+		if (isUnreadDM || lastMessage?.sender_id === userId) {
+			markAsReadSeen(lastMessage, mode);
+		}
+	}, [lastMessage, channelId]);
 
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));

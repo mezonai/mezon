@@ -81,14 +81,15 @@ interface IDataForUpdate {
 const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IExpendedWebhookModal) => {
 	const dispatch = useAppDispatch();
 	const [isShowPopup, setIsShowPopup] = useState(false);
-	const toggleShowPopup = () => {
+	const openShowPopup = () => {
 		dispatch(settingClanStickerActions.openModalInChild());
-		setIsShowPopup(!isShowPopup);
+		setIsShowPopup(true);
 	};
 
 	const handleCloseDeletePopup = useCallback(() => {
 		setIsShowPopup(false);
 		modalRef?.current?.focus();
+		dispatch(settingClanStickerActions.closeModalInChild());
 	}, []);
 
 	const handleCopyUrl = (url: string) => {
@@ -239,7 +240,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 								>
 									Copy Webhook URL
 								</div>
-								<div onClick={() => toggleShowPopup()} className="font-medium text-red-500 hover:underline cursor-pointer">
+								<div onClick={openShowPopup} className="font-medium text-red-500 hover:underline cursor-pointer">
 									Delete Webhook
 								</div>
 							</div>
@@ -255,7 +256,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 						>
 							Copy Webhook URL
 						</div>
-						<div onClick={() => toggleShowPopup()} className="font-medium text-red-500 hover:underline cursor-pointer">
+						<div onClick={openShowPopup} className="font-medium text-red-500 hover:underline cursor-pointer">
 							Delete Webhook
 						</div>
 					</div>
@@ -266,7 +267,6 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 				<DeleteWebhookPopup
 					currentChannel={currentChannel}
 					webhookItem={webhookItem}
-					toggleShowPopup={toggleShowPopup}
 					closeShowPopup={handleCloseDeletePopup}
 					isClanSetting={isClanSetting}
 				/>

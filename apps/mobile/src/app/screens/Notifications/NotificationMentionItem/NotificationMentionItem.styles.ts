@@ -55,5 +55,8 @@ export const style = (colors: Attributes) =>
 			borderLeftWidth: 3,
 			paddingLeft: 8,
 			fontSize: size.medium
+		},
+		username: {
+			fontSize: size.medium
 		}
 	});

@@ -1,5 +1,5 @@
 import { useAppParams, useMenu } from '@mezon/core';
-import { channelsActions, directMetaActions, selectCloseMenu, selectStatusStream, selectTheme, useAppDispatch } from '@mezon/store';
+import { channelsActions, selectCloseMenu, selectStatusStream, selectTheme, useAppDispatch } from '@mezon/store';
 import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -43,8 +43,6 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 	const joinToChatAndNavigate = useCallback(
 		async (DMid: string, type: number) => {
 			dispatch(channelsActions.setPreviousChannels({ channelId: DMid }));
-			const timestamp = Date.now() / 1000;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: DMid, timestamp: timestamp }));
 			navigate(`/chat/direct/message/${DMid}/${type}`);
 
 			if (closeMenu) {

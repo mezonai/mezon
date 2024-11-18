@@ -1,7 +1,7 @@
 import { useMemberStatus } from '@mezon/core';
 import { OwnerIcon } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
-import { ChannelMembersEntity } from '@mezon/utils';
+import { useColorsRoleById, useTheme } from '@mezon/mobile-ui';
+import { ChannelMembersEntity, DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useContext, useMemo } from 'react';
 import { Text, View } from 'react-native';
@@ -47,6 +47,7 @@ export function MemberProfile({
 			return nickName || userInfo?.display_name || userInfo?.username;
 		}
 	}, [userInfo]);
+	const colorUserName = useColorsRoleById(userInfo?.id || '', DEFAULT_ROLE_COLOR)?.highestPermissionRoleColor;
 	return (
 		<View style={{ ...styles.container, opacity: isOffline ? 0.5 : 1 }}>
 			{/* Avatar */}
@@ -55,7 +56,7 @@ export function MemberProfile({
 			{/* Name */}
 			<View style={{ ...styles.nameContainer, borderBottomWidth: 1 }}>
 				{!isHideUserName && (
-					<Text style={styles.textName}>
+					<Text style={{ color: colorUserName }}>
 						{userInfo?.username?.length > numCharCollapse ? `${name.substring(0, numCharCollapse)}...` : name}
 					</Text>
 				)}

@@ -2,6 +2,7 @@
 import { captureSentryError } from '@mezon/logger';
 import {
 	AttachmentEntity,
+	DMCallActions,
 	appActions,
 	attachmentActions,
 	channelMembers,
@@ -94,7 +95,8 @@ import {
 	UserClanRemovedEvent,
 	VoiceEndedEvent,
 	VoiceJoinedEvent,
-	VoiceLeavedEvent
+	VoiceLeavedEvent,
+	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction } from 'mezon-js/api.gen';
 import { ApiPermissionUpdate, ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
@@ -103,7 +105,6 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useAppParams } from '../../app/hooks/useAppParams';
 import { useAuth } from '../../auth/hooks/useAuth';
-import { useSeenMessagePool } from '../hooks/useSeenMessagePool';
 import { useWindowFocusState } from '../hooks/useWindowFocusState';
 
 type ChatContextProviderProps = {
@@ -122,7 +123,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const { userId } = useAuth();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const { directId, channelId, clanId } = useAppParams();
-	const { initWorker, unInitWorker } = useSeenMessagePool();
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
@@ -909,6 +909,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		};
 		handleRoleEvent();
 	}, []);
+
+	const onwebrtcsignalingfwd = useCallback((event: WebrtcSignalingFwd) => {
+		dispatch(
+			DMCallActions.add({
+				calleeId: event.receiverId,
+				signalingData: event,
+				id: '',
+				callerId: ''
+			})
+		);
+	}, []);
+
 	const setCallbackEventFn = React.useCallback(
 		(socket: Socket) => {
 			socket.onvoicejoined = onvoicejoined;
@@ -988,6 +1000,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			socket.onroleevent = onroleevent;
 
 			socket.ontokensent = ontokensent;
+
+			//socket.onmessagebuttonclicked = onmessagebuttonclicked;
+
+			socket.onwebrtcsignalingfwd = onwebrtcsignalingfwd;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -1027,7 +1043,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			oneventcreated,
 			oncoffeegiven,
 			onroleevent,
-			ontokensent
+			ontokensent,
+			//onmessagebuttonclicked,
+			onwebrtcsignalingfwd
 		]
 	);
 
@@ -1163,13 +1181,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		onroleevent,
 		ontokensent
 	]);
-
-	useEffect(() => {
-		initWorker();
-		return () => {
-			unInitWorker();
-		};
-	}, [initWorker, unInitWorker]);
 
 	const value = React.useMemo<ChatContextValue>(
 		() => ({

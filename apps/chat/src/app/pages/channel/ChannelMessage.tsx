@@ -1,17 +1,9 @@
 import { ChannelMessageOpt, ChatWelcome, MessageContextMenuProps, MessageWithUser, OnBoardWelcome, useMessageContextMenu } from '@mezon/components';
-import { useSeenMessagePool } from '@mezon/core';
-import {
-	MessagesEntity,
-	selectChannelDraftMessage,
-	selectCurrentUserId,
-	selectIdMessageRefEdit,
-	selectOpenEditMessageState,
-	useAppSelector
-} from '@mezon/store';
+import { MessagesEntity, selectChannelDraftMessage, selectIdMessageRefEdit, selectOpenEditMessageState, useAppSelector } from '@mezon/store';
 import { TypeMessage } from '@mezon/utils';
 import { isSameDay } from 'date-fns';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 export type MessageProps = {
@@ -56,14 +48,10 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	message,
 	previousMessage
 }: Readonly<MessageProps>) => {
-	const { markMessageAsSeen } = useSeenMessagePool();
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
 	const { showMessageContextMenu } = useMessageContextMenu();
 	const channelDraftMessage = useAppSelector((state) => selectChannelDraftMessage(state, channelId));
-	const currentUserId = useSelector(selectCurrentUserId);
-
-	const isMyMessage = currentUserId && currentUserId === message?.sender_id;
 
 	const isEditing = channelDraftMessage?.message_id === messageId ? openEditMessageState : openEditMessageState && idMessageRefEdit === messageId;
 
@@ -100,10 +88,6 @@ export const ChannelMessage: ChannelMessageComponent = ({
 			/>
 		);
 	}, [message, handleContextMenu, isCombine, mode]);
-
-	useEffect(() => {
-		markMessageAsSeen(message);
-	}, [messageId]);
 
 	return (
 		<>

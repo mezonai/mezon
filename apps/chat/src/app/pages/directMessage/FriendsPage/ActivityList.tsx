@@ -1,5 +1,5 @@
-import { FriendsEntity, selectAllActivities, selectTheme } from '@mezon/store';
-import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { FriendsEntity, selectAllActivities, selectAllUserDM, selectTheme } from '@mezon/store';
+import { IUserItemActivity, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ type ListActivityProps = {
 };
 
 type ActivityUserItemProps = {
-	user: any;
+	user?: IUserItemActivity;
 };
 
 const MemoizedMemberItem = memo((props: ActivityUserItemProps) => {
@@ -22,19 +22,38 @@ const MemoizedMemberItem = memo((props: ActivityUserItemProps) => {
 
 	return (
 		<div className={`flex h-full flex-col overflow-y-auto w-full ${appearanceTheme === 'light' && `customScrollLightMode`}`}>
-			<ActivityListItem friend={user?.user} />
+			<ActivityListItem user={user} />
 		</div>
 	);
 });
 
 const ActivityList = ({ listFriend }: ListActivityProps) => {
-	const friendIds = listFriend?.filter((user) => user?.user?.online).map((item) => item?.id);
+	const listUserDM = useSelector(selectAllUserDM);
+	const mergeListFriendAndListUserDM = useMemo(() => {
+		return [
+			...listFriend.map((friend) => ({
+				user: {
+					avatar_url: friend?.user?.avatar_url,
+					display_name: friend?.user?.display_name,
+					id: friend.user?.id,
+					username: friend?.user?.username,
+					online: friend?.user?.online,
+					metadata: friend?.user?.metadata
+				},
+				id: friend?.id
+			})),
+			...listUserDM
+		];
+	}, [listFriend, listUserDM]);
+
+	const listUser = Array.from(new Map(mergeListFriendAndListUserDM.map((item) => [item?.id, item])).values());
+	const userIds = listUser?.filter((user) => user?.user?.online).map((item) => item?.id);
 
 	const activities = useSelector(selectAllActivities);
 
-	const activitiesByFriendId = activities?.filter((item) => friendIds?.includes(item?.id));
+	const activitiesByUserId = activities?.filter((item) => userIds?.includes(item?.id));
 	const listActivities = useMemo(() => {
-		if (activitiesByFriendId?.length === 0) {
+		if (activitiesByUserId?.length === 0) {
 			return {
 				users: [{ visualCodeSeparate: true }, { spotifySeparate: true }, { lOLSeparate: true }],
 				codeCount: 0,
@@ -43,17 +62,17 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 			};
 		}
 
-		const userMap = new Map(listFriend.map((user) => [user.id, user]));
+		const userMap = new Map(listUser.map((user) => [user?.id, user]));
 
-		const visualCodes = activitiesByFriendId
+		const visualCodes = activitiesByUserId
 			.filter((activity) => activity?.activity_type === 1 && activity?.user_id && userMap.has(activity?.user_id))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
 
-		const spotifys = activitiesByFriendId
+		const spotifys = activitiesByUserId
 			.filter((activity) => activity?.activity_type === 2 && activity?.user_id && userMap.has(activity?.user_id))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
 
-		const lol = activitiesByFriendId
+		const lol = activitiesByUserId
 			.filter((activity) => activity?.activity_type === 3 && activity?.user_id && userMap.has(activity?.user_id))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
 
@@ -63,7 +82,7 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 			spotifyCount: spotifys.length,
 			lolCount: lol.length
 		};
-	}, [activitiesByFriendId, listFriend]);
+	}, [activitiesByUserId, listUser]);
 
 	const [height, setHeight] = useState(window.innerHeight - heightTopBar - titleBarHeight);
 
@@ -126,7 +145,7 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 										Activity - League of Legends - {listActivities.lolCount}
 									</p>
 								) : (
-									<MemoizedMemberItem user={user} />
+									<MemoizedMemberItem user={user?.user} />
 								)}
 							</div>
 						</div>

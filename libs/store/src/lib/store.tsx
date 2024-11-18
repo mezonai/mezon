@@ -39,6 +39,7 @@ import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { clanMembersMetaReducer } from './clanMembers/clan.members.meta';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { directMetaReducer } from './direct/directmeta.slice';
+import { DMCallReducer } from './dmcall/dmcall.slice';
 import { dragAndDropReducer } from './dragAndDrop/dragAndDrop.slice';
 import { errorListenerMiddleware } from './errors/errors.listener';
 import { ERRORS_FEATURE_KEY, errorsReducer } from './errors/errors.slice';
@@ -353,7 +354,8 @@ const reducer = {
 	giveCoffee: giveCoffeeReducer,
 	settingClanChannel: settingChannelReducer,
 	clanMembersMeta: clanMembersMetaReducer,
-	[ONBOARDING_FEATURE_KEY]: onboardingReducer
+	[ONBOARDING_FEATURE_KEY]: onboardingReducer,
+	dmcall: DMCallReducer
 };
 
 let storeInstance = configureStore({

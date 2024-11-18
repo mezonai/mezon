@@ -1,6 +1,6 @@
 import { useShowName } from '@mezon/core';
 import { RolesClanEntity, selectMemberClanByUserId2, selectRolesClanEntities, useAppSelector } from '@mezon/store';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, DEFAULT_ROLE_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -39,7 +39,7 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 		return {
 			usersRole: activeRole,
 			length: userRoleLength,
-			highestPermissionRoleColor: highestPermissionRole?.color || activeRole[0]?.color || DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR
+			highestPermissionRoleColor: highestPermissionRole?.color || activeRole[0]?.color || DEFAULT_ROLE_COLOR
 		};
 	}, [message?.sender_id, rolesClanEntity]);
 

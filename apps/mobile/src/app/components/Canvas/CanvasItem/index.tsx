@@ -1,4 +1,5 @@
-import { useTheme } from '@mezon/mobile-ui';
+import { Icons } from '@mezon/mobile-components';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectCanvasEntityById } from '@mezon/store-mobile';
 import { memo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
@@ -22,6 +23,7 @@ const CanvasItem = memo(({ canvasId, channelId, onPressItem }: CanvasItemProps) 
 			<Text style={styles.title} numberOfLines={1}>
 				{title}
 			</Text>
+			<Icons.ChevronSmallRightIcon height={size.s_16} width={size.s_16} color={themeValue.text} />
 		</TouchableOpacity>
 	);
 });

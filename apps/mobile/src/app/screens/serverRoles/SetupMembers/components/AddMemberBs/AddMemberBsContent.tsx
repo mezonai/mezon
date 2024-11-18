@@ -50,7 +50,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 	);
 
 	const handleAddMemberToRole = useCallback(async () => {
-		const response = await updateRole(role?.clan_id, role?.id, role?.title, selectedMemberIdList, [], [], []);
+		const response = await updateRole(role?.clan_id, role?.id, role?.title, role?.color || '', selectedMemberIdList, [], [], []);
 		onClose && onClose();
 		if (response) {
 			Toast.show({
@@ -69,7 +69,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 				}
 			});
 		}
-	}, [role?.clan_id, role?.id, role?.title, selectedMemberIdList, updateRole, onClose, t]);
+	}, [updateRole, role?.clan_id, role?.id, role?.title, role?.color, selectedMemberIdList, onClose, t]);
 
 	return (
 		<Block flex={1} paddingHorizontal={size.s_15}>

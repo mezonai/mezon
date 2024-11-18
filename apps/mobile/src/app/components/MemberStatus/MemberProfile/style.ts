@@ -42,9 +42,5 @@ export const style = (colors: Attributes) =>
 			gap: size.s_12,
 			paddingHorizontal: size.s_12,
 			width: '100%'
-		},
-
-		textName: {
-			color: colors.text
 		}
 	});

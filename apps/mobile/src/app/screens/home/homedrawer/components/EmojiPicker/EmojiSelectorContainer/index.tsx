@@ -208,10 +208,12 @@ export default function EmojiSelectorContainer({
 							key={index}
 							onPress={() => {
 								setSelectedCategory(item.name);
-								refScrollView.current?.scrollTo({
-									y: categoryRefs.current[item.name].position - 130,
-									animated: true
-								});
+								if (categoryRefs?.current?.[item?.name]?.position) {
+									refScrollView.current?.scrollTo({
+										y: categoryRefs.current[item.name].position - 130,
+										animated: true
+									});
+								}
 							}}
 							style={{
 								...styles.cateItem,
@@ -232,7 +234,9 @@ export default function EmojiSelectorContainer({
 						<View
 							ref={categoryRefs.current[item.name]} // Pass the ref here
 							onLayout={(event) => {
-								categoryRefs.current[item.name].position = event.nativeEvent.layout.y;
+								if (categoryRefs?.current?.[item?.name]?.position !== undefined) {
+									categoryRefs.current[item.name].position = event.nativeEvent.layout.y;
+								}
 							}}
 						>
 							<DisplayByCategories

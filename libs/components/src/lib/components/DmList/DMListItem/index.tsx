@@ -3,7 +3,6 @@ import { Icons } from '@mezon/ui';
 import { ChannelMembersEntity, MemberProfileType } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { MemberProfile } from '../../MemberProfile';
 export type DirectMessProp = {
 	id: string;
@@ -22,7 +21,7 @@ export type directMessageValueProps = {
 function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFriends, isActive }: DirectMessProp) {
 	const dispatch = useAppDispatch();
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
-	const isUnReadChannel = useSelector(selectIsUnreadDMById(directMessage.id));
+	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 
 	const handleCloseClick = async (e: React.MouseEvent, directId: string) => {
 		e.stopPropagation();

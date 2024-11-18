@@ -12,36 +12,53 @@ import notifee, { EventType } from '@notifee/react-native';
 import { AndroidVisibility } from '@notifee/react-native/src/types/NotificationAndroid';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { DrawerActions } from '@react-navigation/native';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
-const IS_ANDROID = Platform.OS === 'android';
 
 export const checkNotificationPermission = async () => {
-	const authorizationStatus = await messaging().hasPermission();
-
-	if (authorizationStatus === messaging.AuthorizationStatus.NOT_DETERMINED) {
-		// Permission has not been requested yet
-		await requestNotificationPermission();
-	} else if (authorizationStatus === messaging.AuthorizationStatus.DENIED) {
-		// Permission has been denied
-		Alert.alert('Notification Permission', 'Notifications are disabled. Please enable them in settings.', [
-			{
-				text: 'Cancel',
-				style: 'cancel'
-			},
-			{
-				text: 'OK',
-				onPress: () => {
-					openAppSettings();
+	if (Platform.OS === 'android' && Platform.Version >= 33) {
+		const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+		if (permission !== PermissionsAndroid.RESULTS.GRANTED) {
+			Alert.alert('Notification Permission', 'Notifications are disabled. Please enable them in settings.', [
+				{
+					text: 'Cancel',
+					style: 'cancel'
+				},
+				{
+					text: 'OK',
+					onPress: () => {
+						openAppSettings();
+					}
 				}
-			}
-		]);
-	} else if (
-		authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-		authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL
-	) {
-		// Permission is granted
+			]);
+		}
+	} else {
+		const authorizationStatus = await messaging().hasPermission();
+
+		if (authorizationStatus === messaging.AuthorizationStatus.NOT_DETERMINED) {
+			// Permission has not been requested yet
+			await requestNotificationPermission();
+		} else if (authorizationStatus === messaging.AuthorizationStatus.DENIED) {
+			// Permission has been denied
+			Alert.alert('Notification Permission', 'Notifications are disabled. Please enable them in settings.', [
+				{
+					text: 'Cancel',
+					style: 'cancel'
+				},
+				{
+					text: 'OK',
+					onPress: () => {
+						openAppSettings();
+					}
+				}
+			]);
+		} else if (
+			authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+			authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL
+		) {
+			// Permission is granted
+		}
 	}
 };
 

@@ -1,4 +1,4 @@
-import { ChannelDescription, ChannelMessage, ChannelType, HashtagDm, Notification, NotificationType } from 'mezon-js';
+import { ChannelDescription, ChannelMessage, ChannelType, HashtagDm, Notification, NotificationType, WebrtcSignalingFwd } from 'mezon-js';
 import {
 	ApiAccount,
 	ApiCategoryDesc,
@@ -321,6 +321,12 @@ export type IStreamInfo = {
 	streamId: string;
 	streamName: string;
 	parentId: string;
+};
+
+export type IDMCall = {
+	callerId: string;
+	calleeId: string;
+	signalingData: WebrtcSignalingFwd;
 };
 
 export interface CategoryNameProps {
@@ -1121,4 +1127,18 @@ export enum UserAuditLog {
 export type IUserAuditLog = {
 	userId: string;
 	userName: string;
+};
+
+export type IUserProfileActivity = {
+	avatar_url?: string;
+	display_name?: string;
+	id?: string;
+	username?: string;
+	online?: boolean;
+	metadata?: { status?: string };
+};
+
+export type IUserItemActivity = {
+	id?: string;
+	user?: IUserProfileActivity;
 };

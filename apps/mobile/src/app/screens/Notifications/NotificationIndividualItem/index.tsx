@@ -4,10 +4,10 @@ import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl, getTimeDifferenceDate } from '@mezon/utils';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { useMessageSender } from '../../../hooks/useMessageSender';
 import { ENotifyBsToShow, NotifyProps } from '../types';
 import { style } from './NotificationIndividualItem.styles';
-import FastImage from "react-native-fast-image";
 
 function NotificationIndividualItem({ notify, onLongPressNotify, onPressNotify }: NotifyProps) {
 	const user = useAppSelector((state) => selectMemberClanByUserId2(state, notify.sender_id || ''));

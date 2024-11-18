@@ -14,7 +14,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum, ICategoryChannel, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { ChannelStatusEnum, ICategoryChannel, createImgproxyUrl, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -51,7 +51,11 @@ const ChannelBannerAndEvents = memo(({ currentClan }: { currentClan: ClansEntity
 		<>
 			{currentClan?.banner && (
 				<div className="h-[136px]">
-					<img src={currentClan?.banner} alt="imageCover" className="h-full w-full object-cover" />
+					<img
+						src={createImgproxyUrl(currentClan?.banner ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+						alt="imageCover"
+						className="h-full w-full object-cover"
+					/>
 				</div>
 			)}
 			<div id="channel-list-top" className="self-stretch h-fit flex-col justify-start items-start gap-1 p-2 flex">

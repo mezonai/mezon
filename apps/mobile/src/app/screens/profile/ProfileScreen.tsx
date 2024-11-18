@@ -1,8 +1,15 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useAuth, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
+import { useAuth, useFriends, useMemberStatus } from '@mezon/core';
 import { CheckIcon, Icons } from '@mezon/mobile-components';
 import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
-import { FriendsEntity, channelMembersActions, selectCurrentClanId, selectUpdateToken, useAppDispatch } from '@mezon/store-mobile';
+import {
+	FriendsEntity,
+	channelMembersActions,
+	selectAccountCustomStatus,
+	selectCurrentClanId,
+	selectUpdateToken,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import moment from 'moment';
 import React, { useMemo, useRef, useState } from 'react';
@@ -34,7 +41,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const { t } = useTranslation('profile');
 	const [isVisibleAddStatusUserModal, setIsVisibleAddStatusUserModal] = useState<boolean>(false);
 	const userStatusBottomSheetRef = useRef<BottomSheetModal>(null);
-	const userCustomStatus = useMemberCustomStatus(user?.userProfile?.user?.id || '');
+	const userCustomStatus = useSelector(selectAccountCustomStatus);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const getTokenSocket = useSelector(selectUpdateToken(user?.userId ?? ''));

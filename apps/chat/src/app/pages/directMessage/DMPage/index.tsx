@@ -11,10 +11,12 @@ import {
 	useApp,
 	useAppNavigation,
 	useAppParams,
+	useAuth,
 	useChatMessages,
 	useDragAndDrop,
 	useGifsStickersEmoji,
 	useSearchMessages,
+	useSeenMessagePool,
 	useWindowFocusState
 } from '@mezon/core';
 import {
@@ -29,6 +31,7 @@ import {
 	selectIsSearchMessage,
 	selectIsShowCreateThread,
 	selectIsShowMemberListDM,
+	selectIsUnreadDMById,
 	selectIsUseProfileDM,
 	selectPositionEmojiButtonSmile,
 	selectReactionTopState,
@@ -52,18 +55,30 @@ function useChannelSeen(channelId: string) {
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 
 	const updateChannelSeenState = (channelId: string, lastMessage: MessagesEntity) => {
-		const timestamp = Date.now() / 1000;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
-		dispatch(directMetaActions.updateLastSeenTime(lastMessage));
 		dispatch(directActions.setActiveDirect({ directId: channelId }));
 	};
 
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 	}, [channelId]);
+	const { userId } = useAuth();
+	const isUnreadDM = useAppSelector((state) => selectIsUnreadDMById(state, channelId as string));
+	const { markAsReadSeen } = useSeenMessagePool();
+	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	useEffect(() => {
+		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+		if (isUnreadDM || lastMessage?.sender_id === userId) {
+			if (lastMessage) {
+				markAsReadSeen(lastMessage, mode);
+			}
+		}
+	}, [lastMessage, channelId]);
 
 	useEffect(() => {
 		if ((lastMessage && isFocusDesktop === true && isElectron()) || (lastMessage && isTabVisible)) {
+			const timestamp = Date.now() / 1000;
+			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
+			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
 			updateChannelSeenState(channelId, lastMessage);
 		}
 	}, [isFocusDesktop, isTabVisible]);

@@ -231,10 +231,7 @@ const RoleClanItem = ({
 						style={appearanceTheme === 'light' ? 'light' : 'dark'}
 						className="dark:!text-white !text-black"
 					>
-						<Icons.IconRemove 
-							className="size-2"
-							fill = {isHovered ? 'black': role.color || DEFAULT_ROLE_COLOR}
-						/>
+						<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : role.color || DEFAULT_ROLE_COLOR} />
 					</Tooltip>
 				</button>
 			) : (

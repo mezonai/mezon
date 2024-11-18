@@ -5,16 +5,19 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
 			flex: 1,
-			height: size.s_60,
+			height: size.s_50,
 			marginHorizontal: size.s_10,
+			paddingRight: size.s_10,
 			marginVertical: size.s_4,
 			borderRadius: size.s_4,
 			backgroundColor: colors.primary,
 			padding: size.s_6,
-			justifyContent: 'center'
+			justifyContent: 'space-between',
+			flexDirection: 'row',
+			alignItems: 'center'
 		},
 		title: {
-			color: colors.white,
+			color: colors.text,
 			marginHorizontal: size.s_10,
 			width: '90%'
 		}

@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { ActiveDm, IChannel, LoadingStatus } from '@mezon/utils';
+import { ActiveDm, IChannel, IUserItemActivity, LoadingStatus } from '@mezon/utils';
 import { EntityState, GetThunkAPI, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
@@ -367,3 +367,28 @@ export const selectDirectsOpenlistOrder = createSelector(selectDirectsOpenlist, 
 });
 
 export const selectDirectById = createSelector([selectDirectMessageEntities, (state, id) => id], (clansEntities, id) => clansEntities?.[id]);
+
+export const selectAllUserDM = createSelector(selectAllDirectMessages, (directMessages) => {
+	return directMessages.reduce<IUserItemActivity[]>((acc, dm) => {
+		if (dm?.active === 1) {
+			dm?.user_id?.forEach((userId: string, index: number) => {
+				if (!acc.some((existingUser) => existingUser.id === userId)) {
+					const user = {
+						avatar_url: dm?.channel_avatar ? dm?.channel_avatar[index] : '',
+						display_name: dm?.usernames ? dm?.usernames.split(',')[index] : '',
+						id: userId,
+						username: dm?.usernames ? dm?.usernames.split(',')[index] : '',
+						online: dm?.is_online ? dm?.is_online[index] : false,
+						metadata: dm?.metadata ? JSON.parse(dm?.metadata[index]) : {}
+					};
+
+					acc.push({
+						user,
+						id: userId
+					});
+				}
+			});
+		}
+		return acc;
+	}, []);
+});

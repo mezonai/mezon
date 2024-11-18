@@ -1,6 +1,6 @@
 import { selectBadgeCountByClanId } from '@mezon/store';
 import { Image } from '@mezon/ui';
-import { IClan } from '@mezon/utils';
+import { createImgproxyUrl, IClan } from '@mezon/utils';
 import { useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -47,7 +47,7 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 				<NavLinkComponent active={active}>
 					{option.logo ? (
 						<Image
-							src={option.logo || ''}
+							src={createImgproxyUrl(option.logo ?? '', { width: 100, height: 100, resizeType: 'fit' }) || ''}
 							alt={option.clan_name || ''}
 							placeholder="blur"
 							width={48}

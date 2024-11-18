@@ -88,7 +88,16 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 		setShowModalConfirmSave(false);
 		const selectedPermissions = clanRole?.permission_list?.permissions.filter((it) => it?.active).map((it) => it?.id);
 		const selectedMembers = clanRole?.role_user_list?.role_users?.map((it) => it?.id);
-		const response = await updateRole(clanRole.clan_id, clanRole.id, currentRoleName, selectedMembers, selectedPermissions, [], []);
+		const response = await updateRole(
+			clanRole.clan_id,
+			clanRole.id,
+			currentRoleName,
+			clanRole?.color || '',
+			selectedMembers,
+			selectedPermissions,
+			[],
+			[]
+		);
 		if (response) {
 			Toast.show({
 				type: 'success',

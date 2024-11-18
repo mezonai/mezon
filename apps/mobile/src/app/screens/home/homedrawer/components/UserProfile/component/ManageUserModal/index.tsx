@@ -1,4 +1,4 @@
-import { useRoles } from '@mezon/core';
+import { usePermissionChecker, useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
 import { Block, Colors, Text, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	usersClanActions
 } from '@mezon/store-mobile';
-import { EVERYONE_ROLE_ID } from '@mezon/utils';
+import { EPermission, EVERYONE_ROLE_ID } from '@mezon/utils';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, ScrollView, TouchableOpacity, View } from 'react-native';
@@ -45,6 +45,7 @@ export const ManageUserModal = memo(
 		const maxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
 		const dispatch = useAppDispatch();
 		const currentChannelId = useSelector(selectCurrentChannelId);
+		const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 
 		const activeRoleOfUser = useMemo(() => {
 			return rolesClan?.filter((role) => user?.role_id?.includes(role?.id)) || [];
@@ -74,9 +75,18 @@ export const ManageUserModal = memo(
 			}
 		};
 
-		const addRole = async (roleId: string) => {
+		const addRole = async (roleId: string, roleColor: string) => {
 			const activeRole = rolesClan?.find((role) => role.id === roleId);
-			const response = await updateRole(currentClan?.clan_id || '', roleId, activeRole?.title ?? '', [user?.user?.id] || [], [], [], []);
+			const response = await updateRole(
+				currentClan?.clan_id || '',
+				roleId,
+				activeRole?.title ?? '',
+				roleColor ?? '',
+				[user?.user?.id],
+				[],
+				[],
+				[]
+			);
 			handleAfterUpdate(Boolean(response));
 			setIsLoading(false);
 			if (response) {
@@ -90,9 +100,18 @@ export const ManageUserModal = memo(
 			}
 		};
 
-		const deleteRole = async (roleId: string) => {
+		const deleteRole = async (roleId: string, roleColor: string) => {
 			const activeRole = rolesClan?.find((role) => role.id === roleId);
-			const response = await updateRole(currentClan?.clan_id || '', roleId, activeRole?.title ?? '', [], [], [user?.user?.id] || [], []);
+			const response = await updateRole(
+				currentClan?.clan_id || '',
+				roleId,
+				activeRole?.title ?? '',
+				roleColor ?? '',
+				[],
+				[],
+				[user?.user?.id],
+				[]
+			);
 			handleAfterUpdate(Boolean(response));
 			setIsLoading(false);
 			if (response) {
@@ -106,17 +125,17 @@ export const ManageUserModal = memo(
 			}
 		};
 
-		const onSelectedRoleChange = async (value: boolean, roleId) => {
+		const onSelectedRoleChange = async (value: boolean, roleId: string, roleColor: string) => {
 			setIsLoading(true);
 			const uniqueSelectedRole = new Set(selectedRole);
 			if (value) {
 				uniqueSelectedRole.add(roleId);
 				setSelectedRole([...uniqueSelectedRole]);
-				addRole(roleId);
+				addRole(roleId, roleColor);
 			} else {
 				uniqueSelectedRole.delete(roleId);
 				setSelectedRole([...uniqueSelectedRole]);
-				deleteRole(roleId);
+				deleteRole(roleId, roleColor);
 			}
 		};
 
@@ -130,8 +149,8 @@ export const ManageUserModal = memo(
 		const roleList = useMemo(() => {
 			return !editMode
 				? activeRoleOfUser?.map((role) => ({ ...role, disabled: false }))
-				: editableRoleList?.map((role) => ({ ...role, disabled: maxPermissionLevel >= role?.max_level_permission }));
-		}, [editMode, activeRoleOfUser, editableRoleList, maxPermissionLevel]);
+				: editableRoleList?.map((role) => ({ ...role, disabled: isClanOwner ? false : maxPermissionLevel <= role?.max_level_permission }));
+		}, [editMode, activeRoleOfUser, editableRoleList, isClanOwner, maxPermissionLevel]);
 
 		const menuActions = useMemo(
 			() =>
@@ -206,7 +225,7 @@ export const ManageUserModal = memo(
 										return (
 											<TouchableOpacity
 												key={role?.id}
-												onPress={() => onSelectedRoleChange(!selectedRole?.includes(role?.id), role?.id)}
+												onPress={() => onSelectedRoleChange(!selectedRole?.includes(role?.id), role?.id, role?.color)}
 												disabled={isDisable}
 											>
 												<Block
@@ -222,7 +241,7 @@ export const ManageUserModal = memo(
 															disabled={isDisable}
 															size={20}
 															isChecked={selectedRole?.includes(role?.id)}
-															onPress={(value) => onSelectedRoleChange(value, role?.id)}
+															onPress={(value) => onSelectedRoleChange(value, role?.id, role?.color)}
 															fillColor={isDisable ? Colors.bgGrayDark : Colors.bgButton}
 															iconStyle={{ borderRadius: 5 }}
 															innerIconStyle={{

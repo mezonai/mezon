@@ -1,11 +1,21 @@
-import { useChatMessages } from '@mezon/core';
+import { useAuth, useChatMessages, useSeenMessagePool } from '@mezon/core';
 import { IUserStatus, Icons } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
-import { MessagesEntity, directActions, directMetaActions, gifsStickerEmojiActions, useAppDispatch } from '@mezon/store-mobile';
-import { SubPanelName, TIME_OFFSET, createImgproxyUrl } from '@mezon/utils';
+import {
+	MessagesEntity,
+	directActions,
+	gifsStickerEmojiActions,
+	selectDmGroupCurrent,
+	selectIsUnreadDMById,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
+import { SubPanelName, createImgproxyUrl } from '@mezon/utils';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useEffect, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { useSelector } from 'react-redux';
 import { UserStatus } from '../../../components/UserStatus';
 
 interface HeaderProps {
@@ -26,11 +36,21 @@ function useChannelSeen(channelId: string) {
 	const mounted = useRef('');
 
 	const updateChannelSeenState = (channelId: string, lastMessage: MessagesEntity) => {
-		const timestamp = Date.now() / 1000;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
-		dispatch(directMetaActions.updateLastSeenTime(lastMessage));
 		dispatch(directActions.setActiveDirect({ directId: channelId }));
 	};
+
+	const { userId } = useAuth();
+	const isUnreadDM = useAppSelector((state) => selectIsUnreadDMById(state, channelId as string));
+	const { markAsReadSeen } = useSeenMessagePool();
+	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	useEffect(() => {
+		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+		if (isUnreadDM || lastMessage?.sender_id === userId) {
+			if (lastMessage) {
+				markAsReadSeen(lastMessage, mode);
+			}
+		}
+	}, [lastMessage, channelId]);
 
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));

@@ -6,14 +6,13 @@ import { useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 interface IDeleteWebhookPopupProps {
-	toggleShowPopup: () => void;
 	closeShowPopup: () => void;
 	webhookItem: ApiWebhook;
 	currentChannel?: IChannel;
 	isClanSetting?: boolean;
 }
 
-const DeleteWebhookPopup = ({ toggleShowPopup, webhookItem, currentChannel, closeShowPopup, isClanSetting }: IDeleteWebhookPopupProps) => {
+const DeleteWebhookPopup = ({ webhookItem, currentChannel, closeShowPopup, isClanSetting }: IDeleteWebhookPopupProps) => {
 	const dispatch = useAppDispatch();
 	const currentClan = useSelector(selectCurrentClan);
 	const handleDeleteWebhook = (webhook: ApiWebhook) => {
@@ -25,6 +24,7 @@ const DeleteWebhookPopup = ({ toggleShowPopup, webhookItem, currentChannel, clos
 				isClanSetting: isClanSetting
 			})
 		);
+		closeShowPopup();
 	};
 
 	const isChildModal = useSelector(hasGrandchildModal);
@@ -55,7 +55,7 @@ const DeleteWebhookPopup = ({ toggleShowPopup, webhookItem, currentChannel, clos
 					</div>
 				</div>
 				<div className="dark:bg-[#2b2d31] bg-[#f2f3f5] dark:text-textDarkTheme text-textLightTheme flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium">
-					<div onClick={toggleShowPopup} className="hover:underline cursor-pointer">
+					<div onClick={closeShowPopup} className="hover:underline cursor-pointer">
 						Cancel
 					</div>
 					<div

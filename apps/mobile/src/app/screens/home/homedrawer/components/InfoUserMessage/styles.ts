@@ -5,8 +5,7 @@ export const style = (colors: Attributes) =>
 		userNameMessageBox: {
 			fontSize: size.medium,
 			marginRight: size.s_10,
-			fontWeight: '700',
-			color: Colors.caribbeanGreen
+			fontWeight: '700'
 		},
 		dateMessageBox: {
 			fontSize: size.small,
