@@ -83,8 +83,8 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 	const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
 	const appearanceTheme = useSelector(selectTheme);
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
-	const listOfCalls = useSelector(selectListOfCalls) ?? [];
-	const channelCallId = useSelector(selectChannelCallId) ?? [];
+	const listOfCalls = useSelector(selectListOfCalls);
+	const channelCallId = useSelector(selectChannelCallId);
 	const avatarImages = currentDmGroup?.channel_avatar || [];
 	const isMuteMicrophone = useSelector(selectIsMuteMicrophone);
 	const isShowShareScreen = useSelector(selectIsShowShareScreen);
@@ -92,6 +92,7 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 	const callerId = useSelector(selectCallerId);
 	const localStream = useSelector(selectLocalStream);
 	const peerConnection = useSelector(selectPeerConnection);
+	console.log(listOfCalls, 'listOfCalls');
 
 	const { userId } = useAuth();
 	const setIsUseProfileDM = useCallback(
@@ -176,16 +177,35 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 				endCall();
 				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, 4, '', dmGroupId ?? '', userId ?? '');
 				peerConnection.close();
-				dispatch(DMCallActions.setPeerConnection(createPeerConnection()));
+				const peerConnections = createPeerConnection();
+				await dispatch(DMCallActions.setPeerConnection(peerConnections));
 			}
 			dispatch(DMCallActions.setChannelCallId(''));
 		}
 	};
+
+	useEffect(() => {
+		if (
+			signalingData?.[signalingData?.length - 1]?.signalingData.data_type === 4 &&
+			signalingData?.[signalingData?.length - 1]?.signalingData.json_data === ''
+		) {
+			console.log('close');
+			peerConnection.close();
+			const peerConnections = createPeerConnection();
+			dispatch(DMCallActions.setPeerConnection(peerConnections));
+		}
+	}, [mezon.socketRef, signalingData]);
+
 	const setListOfCalls = useCallback(
 		async (dmGroupId: string) => {
-			startCall();
-			await dispatch(DMCallActions.setCallerId(userId));
-			await dispatch(DMCallActions.setCalleeId(dmUserId));
+			if (peerConnection.connectionState === 'closed') {
+				console.log('abc');
+				const newPeerConnection = createPeerConnection();
+				await dispatch(DMCallActions.setPeerConnection(newPeerConnection));
+			}
+			await startCall();
+			dispatch(DMCallActions.setCallerId(userId));
+			dispatch(DMCallActions.setCalleeId(dmUserId));
 
 			const updatedCalls = JSON.parse(JSON.stringify(listOfCalls));
 
@@ -201,13 +221,15 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 				})
 			);
 		},
-		[dispatch, listOfCalls, userId, dmUserId]
+		[dispatch, listOfCalls, userId, dmUserId, peerConnection]
 	);
 
 	useEffect(() => {
+		console.log('123');
 		peerConnection.onicecandidate = async (event: any) => {
 			if (event && event.candidate) {
 				if (mezon.socketRef.current?.isOpen() === true) {
+					console.log(event.candidate, 'call socket 1');
 					await mezon.socketRef.current?.forwardWebrtcSignaling(
 						dmUserId,
 						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
@@ -232,6 +254,7 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
 				{
 					const processData = async () => {
+						console.log('call socket 2');
 						const dataDec = await decompress(data?.json_data);
 						const objData = JSON.parse(dataDec || '{}');
 
@@ -255,6 +278,7 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 			case WebrtcSignalingType.WEBRTC_SDP_ANSWER:
 				{
 					const processData = async () => {
+						console.log('call socket 3');
 						const dataDec = await decompress(data.json_data);
 						const objData = JSON.parse(dataDec || '{}');
 						await peerConnection.setRemoteDescription(new RTCSessionDescription(objData));
@@ -265,6 +289,7 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 			case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE:
 				{
 					const processData = async () => {
+						console.log('call socket 4');
 						const objData = JSON.parse(data?.json_data || '{}');
 						await peerConnection.addIceCandidate(new RTCIceCandidate(objData));
 					};
@@ -274,14 +299,16 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 			default:
 				break;
 		}
-	}, [mezon.socketRef, peerConnection, signalingData, channelCallId]);
-
-	const startCall = async () => {
-		let newPeerConnection = peerConnection;
-
+	}, [mezon.socketRef, peerConnection, signalingData, listOfCalls]);
+	useEffect(() => {
 		if (peerConnection.connectionState === 'closed') {
-			newPeerConnection = createPeerConnection();
+			const newPeerConnection = createPeerConnection();
+			dispatch(DMCallActions.setPeerConnection(newPeerConnection));
 		}
+	}, [peerConnection, dispatch]);
+	useEffect(() => {}, [channelCallId]);
+	const startCall = async () => {
+		console.log(peerConnection, 'newPeerConnection');
 
 		await dispatch(DMCallActions.setCallerId(userId));
 		await dispatch(DMCallActions.setChannelCallId(dmGroupId));
@@ -293,14 +320,14 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 				if (localVideoRef.current) {
 					localVideoRef.current.srcObject = stream;
 				}
-				stream.getTracks().forEach((track) => newPeerConnection.addTrack(track, stream));
+				stream.getTracks().forEach((track) => peerConnection.addTrack(track, stream));
 
-				const offer = await newPeerConnection.createOffer({
+				const offer = await peerConnection.createOffer({
 					iceRestart: true,
 					offerToReceiveAudio: true,
 					offerToReceiveVideo: true
 				});
-				await newPeerConnection.setLocalDescription(offer);
+				await peerConnection.setLocalDescription(offer);
 				if (offer && mezon.socketRef.current) {
 					const offerEn = await compress(JSON.stringify(offer));
 					await mezon.socketRef.current?.forwardWebrtcSignaling(
@@ -717,79 +744,79 @@ function CallButton({ isLightMode, dmUserId }: { isLightMode: boolean; dmUserId:
 		return new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19305' }] });
 	}, []);
 
-	useEffect(() => {
-		peerConnection.onicecandidate = async (event: any) => {
-			if (event && event.candidate) {
-				if (mezon.socketRef.current?.isOpen() === true) {
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
-						dmUserId,
-						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-						JSON.stringify(event.candidate),
-						'',
-						userId ?? ''
-					);
-				}
-			}
-		};
+	// useEffect(() => {
+	// 	peerConnection.onicecandidate = async (event: any) => {
+	// 		if (event && event.candidate) {
+	// 			if (mezon.socketRef.current?.isOpen() === true) {
+	// 				await mezon.socketRef.current?.forwardWebrtcSignaling(
+	// 					dmUserId,
+	// 					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+	// 					JSON.stringify(event.candidate),
+	// 					'',
+	// 					userId ?? ''
+	// 				);
+	// 			}
+	// 		}
+	// 	};
 
-		peerConnection.ontrack = (event: any) => {
-			// Display remote stream in remote video element
-			if (remoteVideoRef.current) {
-				remoteVideoRef.current.srcObject = event.streams[0];
-			}
-		};
+	// 	peerConnection.ontrack = (event: any) => {
+	// 		// Display remote stream in remote video element
+	// 		if (remoteVideoRef.current) {
+	// 			remoteVideoRef.current.srcObject = event.streams[0];
+	// 		}
+	// 	};
 
-		if (!signalingData?.[signalingData?.length - 1]) return;
-		const data = signalingData?.[signalingData?.length - 1]?.signalingData;
+	// 	if (!signalingData?.[signalingData?.length - 1]) return;
+	// 	const data = signalingData?.[signalingData?.length - 1]?.signalingData;
 
-		switch (signalingData?.[signalingData?.length - 1]?.signalingData.data_type) {
-			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
-				{
-					const processData = async () => {
-						const dataDec = await decompress(data?.json_data);
-						const objData = JSON.parse(dataDec || '{}');
+	// 	switch (signalingData?.[signalingData?.length - 1]?.signalingData.data_type) {
+	// 		case WebrtcSignalingType.WEBRTC_SDP_OFFER:
+	// 			{
+	// 				const processData = async () => {
+	// 					const dataDec = await decompress(data?.json_data);
+	// 					const objData = JSON.parse(dataDec || '{}');
 
-						// Get peerConnection from receiver event.receiverId
-						await peerConnection.setRemoteDescription(new RTCSessionDescription(objData));
-						const answer = await peerConnection.createAnswer();
-						await peerConnection.setLocalDescription(answer);
+	// 					// Get peerConnection from receiver event.receiverId
+	// 					await peerConnection.setRemoteDescription(new RTCSessionDescription(objData));
+	// 					const answer = await peerConnection.createAnswer();
+	// 					await peerConnection.setLocalDescription(answer);
 
-						const answerEnc = await compress(JSON.stringify(answer));
-						await mezon.socketRef.current?.forwardWebrtcSignaling(
-							dmUserId,
-							WebrtcSignalingType.WEBRTC_SDP_ANSWER,
-							answerEnc,
-							'',
-							userId ?? ''
-						);
-					};
-					processData().catch(console.error);
-				}
+	// 					const answerEnc = await compress(JSON.stringify(answer));
+	// 					await mezon.socketRef.current?.forwardWebrtcSignaling(
+	// 						dmUserId,
+	// 						WebrtcSignalingType.WEBRTC_SDP_ANSWER,
+	// 						answerEnc,
+	// 						'',
+	// 						userId ?? ''
+	// 					);
+	// 				};
+	// 				processData().catch(console.error);
+	// 			}
 
-				break;
-			case WebrtcSignalingType.WEBRTC_SDP_ANSWER:
-				{
-					const processData = async () => {
-						const dataDec = await decompress(data.json_data);
-						const objData = JSON.parse(dataDec || '{}');
-						await peerConnection.setRemoteDescription(new RTCSessionDescription(objData));
-					};
-					processData().catch(console.error);
-				}
-				break;
-			case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE:
-				{
-					const processData = async () => {
-						const objData = JSON.parse(data?.json_data || '{}');
-						await peerConnection.addIceCandidate(new RTCIceCandidate(objData));
-					};
-					processData().catch(console.error);
-				}
-				break;
-			default:
-				break;
-		}
-	}, [mezon.socketRef, peerConnection, signalingData]);
+	// 			break;
+	// 		case WebrtcSignalingType.WEBRTC_SDP_ANSWER:
+	// 			{
+	// 				const processData = async () => {
+	// 					const dataDec = await decompress(data.json_data);
+	// 					const objData = JSON.parse(dataDec || '{}');
+	// 					await peerConnection.setRemoteDescription(new RTCSessionDescription(objData));
+	// 				};
+	// 				processData().catch(console.error);
+	// 			}
+	// 			break;
+	// 		case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE:
+	// 			{
+	// 				const processData = async () => {
+	// 					const objData = JSON.parse(data?.json_data || '{}');
+	// 					await peerConnection.addIceCandidate(new RTCIceCandidate(objData));
+	// 				};
+	// 				processData().catch(console.error);
+	// 			}
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// }, [mezon.socketRef, peerConnection, signalingData]);
 
 	const handleShow = async () => {
 		setIsShow(true);

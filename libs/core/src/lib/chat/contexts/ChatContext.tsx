@@ -938,6 +938,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				callerId: event?.caller_id
 			})
 		);
+		console.log(event, 'event');
+
 		dispatch(DMCallActions.setListOfCallsSocket({ userId, event }));
 		dispatch(DMCallActions.setCalleeId(event?.receiver_id));
 	}, []);
