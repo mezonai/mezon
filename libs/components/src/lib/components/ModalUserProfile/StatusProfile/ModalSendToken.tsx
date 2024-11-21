@@ -234,7 +234,6 @@ const ModalSendToken = ({
 							placeholder="send token"
 							onChange={handleChangeNote}
 						/>
-						{error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 					</div>
 					<div className="flex justify-end p-4 rounded-b dark:bg-[#2B2D31] bg-[#dedede]">
 						<Button
