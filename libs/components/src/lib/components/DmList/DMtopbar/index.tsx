@@ -556,7 +556,6 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 							<video
 								ref={localVideoRef}
 								autoPlay
-								muted
 								playsInline
 								style={{
 									width: '400px',
@@ -785,7 +784,6 @@ function CallButton({ isLightMode, dmUserId }: { isLightMode: boolean; dmUserId:
 							<video
 								ref={localVideoRef}
 								autoPlay
-								muted
 								playsInline
 								style={{
 									width: '400px',
