@@ -141,8 +141,8 @@ function DmTopbar({ dmGroupId }: ChannelTopbarProps) {
 	const [isCalling, setIsCalling] = useState(false);
 	const [isRinging, setIsRinging] = useState(false);
 
-	const dialTone = useRef(new Audio('assets/audio/dial-tone.mp3'));
-	const ringTone = useRef(new Audio('assets/audio/ringring.mp3'));
+	const dialTone = useRef(new Audio('assets/audio/dialtone.mp3'));
+	const ringTone = useRef(new Audio('assets/audio/ringing.mp3'));
 
 	const playAudio = (audioRef: React.RefObject<HTMLAudioElement>) => {
 		if (audioRef.current) {
