@@ -14,11 +14,8 @@ export interface DMCallEntity extends IDMCall {
 export interface DMCallState extends EntityState<DMCallEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	callerId: string;
-	calleeId: string;
 	signalingData: WebrtcSignalingFwd;
 	listOfCalls: Record<string, string[]>;
-	channelCallId: string;
 	isMuteMicrophone: boolean;
 	isShowShareScreen: boolean;
 	isShowMeetDM: boolean;
@@ -32,8 +29,6 @@ export const DMCallAdapter = createEntityAdapter<DMCallEntity>();
 export const initialDMCallState: DMCallState = DMCallAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
-	callerId: '',
-	calleeId: '',
 	signalingData: {
 		receiver_id: '',
 		data_type: 0,
@@ -41,7 +36,6 @@ export const initialDMCallState: DMCallState = DMCallAdapter.getInitialState({
 		channel_id: '',
 		caller_id: ''
 	},
-	channelCallId: '',
 	listOfCalls: {},
 	isMuteMicrophone: false,
 	isShowShareScreen: false,
@@ -55,60 +49,35 @@ export const DMCallSlice = createSlice({
 	name: DMCALL_FEATURE_KEY,
 	initialState: initialDMCallState,
 	reducers: {
-		add: DMCallAdapter.upsertOne,
+		add: DMCallAdapter.addOne,
+		update: DMCallAdapter.updateOne,
 		addMany: DMCallAdapter.addMany,
 		remove: DMCallAdapter.removeOne,
-		setListOfCallsSocket: (state, action: PayloadAction<{ userId: string | undefined; event: WebrtcSignalingFwd }>) => {
-			const { userId, event } = action.payload;
-			if (!userId) return;
+		removeAll: DMCallAdapter.removeAll,
 
-			if (userId === event.receiver_id && event.channel_id !== '') {
-				if (event.data_type === 4 && event.json_data === '') {
-					state.listOfCalls[userId] = state?.listOfCalls?.[userId]?.filter?.((id) => id !== event.channel_id);
-					state.peerConnection.close();
-					state.peerConnection = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19305' }] });
-					return;
-				}
-				if (!state.listOfCalls[userId]) {
-					state.listOfCalls[userId] = [];
-				}
-				if (!state.listOfCalls[userId].includes(event.channel_id)) {
-					state.listOfCalls[userId].push(event.channel_id);
-				}
+		addOrUpdate: (state, action: PayloadAction<DMCallEntity>) => {
+			const existingEntity = state.entities[action.payload.id];
+			if (existingEntity) {
+				DMCallAdapter.updateOne(state, { id: action.payload.id, changes: action.payload });
+			} else if (!existingEntity && Object.keys(state.entities).length === 0) {
+				DMCallAdapter.addOne(state, action);
+			} else {
+				/* empty */
 			}
 		},
-		setListOfCalls: (state, action: PayloadAction<{ userId: string; event: Record<string, string[]> }>) => {
-			const { userId, event } = action.payload;
-			if (!userId) return;
 
-			if (!state.listOfCalls[userId]) {
-				state.listOfCalls[userId] = [];
+		cancelCall: (state, action) => {
+			const existingEntity = state.entities[action.payload.id];
+			if (existingEntity) {
+				DMCallActions.setIsInCall(false);
 			}
-
-			if (event[userId]?.length === 0) {
-				delete state.listOfCalls[userId];
-			}
-
-			event[userId].forEach((channelId) => {
-				if (!state.listOfCalls[userId].includes(channelId)) {
-					state.listOfCalls[userId].push(channelId);
-				}
-			});
 		},
+
 		setIsMuteMicrophone: (state, action) => {
 			state.isMuteMicrophone = action.payload;
 		},
 		setIsShowShareScreen: (state, action) => {
 			state.isShowShareScreen = action.payload;
-		},
-		setCallerId: (state, action) => {
-			state.callerId = action.payload;
-		},
-		setCalleeId: (state, action) => {
-			state.calleeId = action.payload;
-		},
-		setChannelCallId: (state, action) => {
-			state.channelCallId = action.payload;
 		},
 		setIsShowMeetDM: (state, action) => {
 			state.isShowMeetDM = action.payload;
@@ -116,7 +85,6 @@ export const DMCallSlice = createSlice({
 		setLocalStream: (state, action) => {
 			state.localStream = action.payload;
 		},
-		removeAll: DMCallAdapter.removeAll,
 		setIsInCall: (state, action) => {
 			state.isInCall = action.payload;
 		},
@@ -178,20 +146,12 @@ export const selectDMVoiceEntities = createSelector(getDMCallState, selectEntiti
 
 export const selectSignalingDataByUserId = createSelector([selectDMVoiceEntities, (state, userId) => userId], (entities, userId) => {
 	const dmcalls = Object.values(entities);
-	return dmcalls.filter((dmcall) => dmcall && dmcall.signalingData?.receiver_id === userId);
+	return dmcalls.filter((dmcall) => (dmcall && dmcall.signalingData?.receiver_id === userId) || dmcall.calleeId === userId);
 });
-
-export const selectListOfCalls = createSelector(getDMCallState, (state: DMCallState) => state.listOfCalls);
 
 export const selectIsMuteMicrophone = createSelector(getDMCallState, (state: DMCallState) => state.isMuteMicrophone);
 
 export const selectIsShowShareScreen = createSelector(getDMCallState, (state: DMCallState) => state.isShowShareScreen);
-
-export const selectCallerId = createSelector(getDMCallState, (state: DMCallState) => state.callerId);
-
-export const selectCalleeId = createSelector(getDMCallState, (state: DMCallState) => state.calleeId);
-
-export const selectChannelCallId = createSelector(getDMCallState, (state: DMCallState) => state.channelCallId);
 
 export const selectIsShowMeetDM = createSelector(getDMCallState, (state: DMCallState) => state.isShowMeetDM);
 

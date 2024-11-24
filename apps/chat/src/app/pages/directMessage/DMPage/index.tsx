@@ -24,6 +24,7 @@ import {
 	directActions,
 	directMetaActions,
 	gifsStickerEmojiActions,
+	selectAudioDialTone,
 	selectCloseMenu,
 	selectCurrentChannelId,
 	selectDefaultChannelIdByClanId,
@@ -33,9 +34,9 @@ import {
 	selectIsShowMemberListDM,
 	selectIsUnreadDMById,
 	selectIsUseProfileDM,
-	selectListOfCalls,
 	selectPositionEmojiButtonSmile,
 	selectReactionTopState,
+	selectSignalingDataByUserId,
 	selectStatusMenu,
 	useAppDispatch,
 	useAppSelector
@@ -108,6 +109,7 @@ const DirectMessage = () => {
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
 	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, directId));
 	const dispatch = useAppDispatch();
+	const { userId } = useAuth();
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
@@ -125,8 +127,11 @@ const DirectMessage = () => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannelId as string));
 	const { isShowMemberList, setIsShowMemberList } = useApp();
 	const positionOfSmileButton = useSelector(selectPositionEmojiButtonSmile);
-	const listOfCalls = useSelector(selectListOfCalls);
-	const { userId } = useAuth();
+	const isPlayDialTone = useSelector(selectAudioDialTone);
+	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
+	const isHaveCallInChannel = useMemo(() => {
+		return currentDmGroup?.user_id?.some((i) => i === signalingData?.[0]?.callerId);
+	}, [currentDmGroup?.user_id, signalingData]);
 
 	const HEIGHT_EMOJI_PANEL = 457;
 	const WIDTH_EMOJI_PANEL = 500;
@@ -152,7 +157,7 @@ const DirectMessage = () => {
 	} else {
 		topPositionEmojiPanel = `${positionOfSmileButton.top - 100}px`;
 	}
-	const handleDragEnter = (e: DragEvent<HTMLElement>) => {
+	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
 		if (e.dataTransfer?.types.includes('Files')) {
@@ -186,9 +191,8 @@ const DirectMessage = () => {
 				h-[100%] overflow-visible relative`}
 				onDragEnter={handleDragEnter}
 			>
-				{' '}
-				<DmTopbar dmGroupId={directId} />
-				<div className={`flex flex-row flex-1 w-full ${listOfCalls[userId || '']?.includes(directId ?? '') ? 'h-heightCallDm' : ''}`}>
+				<DmTopbar dmGroupId={directId} isHaveCallInChannel={isHaveCallInChannel || isPlayDialTone} />
+				<div className={`flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : ''}`}>
 					<div
 						className={`flex-col flex-1 h-full ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
