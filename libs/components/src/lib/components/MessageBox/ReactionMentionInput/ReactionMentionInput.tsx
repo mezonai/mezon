@@ -66,6 +66,7 @@ import {
 	formatMentionsToString,
 	getDisplayMention,
 	searchMentionsHashtag,
+	setCaretPosition,
 	threadError
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -553,15 +554,21 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		dispatch(threadsActions.setNameValueThread({ channelId: currentChannelId as string, nameValue: nameThread }));
 	};
 
-	const input = document.querySelector('#editorReactMention') as HTMLElement;
+	const input = document.querySelector('#editorReactMention') as HTMLInputElement | HTMLTextAreaElement;
 	function handleEventAfterEmojiPicked() {
+		// Kiểm tra emojiPicked rỗng và input không tồn tại
 		const isEmptyEmojiPicked = emojiPicked && Object.keys(emojiPicked).length === 1 && emojiPicked[''] === '';
+		if (isEmptyEmojiPicked || !input) return;
 
-		if (isEmptyEmojiPicked || !input) {
-			return;
-		} else if (emojiPicked) {
+		if (emojiPicked) {
 			for (const [emojiKey, emojiValue] of Object.entries(emojiPicked)) {
-				textFieldEdit.insert(input, `::[${emojiKey}](${emojiValue})${' '}`);
+				const emojiText = `::[${emojiKey}](${emojiValue}) `;
+				textFieldEdit.insert(input, emojiText);
+
+				const caretPosition = input.selectionStart || 0;
+				const newCaretPosition = caretPosition + emojiText.length;
+
+				setCaretPosition(input, newCaretPosition);
 			}
 		}
 	}
@@ -612,10 +619,13 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		if ((closeMenu && statusMenu) || openEditMessageState || isShowPopupQuickMess) {
 			return editorRef?.current?.blur();
 		}
-		if (dataReferences.message_ref_id || (emojiPicked?.shortName !== '' && !reactionRightState) || (!openEditMessageState && !idMessageRefEdit)) {
+		if (dataReferences.message_ref_id || (!openEditMessageState && !idMessageRefEdit)) {
 			return focusToElement(editorRef);
 		}
-	}, [dataReferences.message_ref_id, emojiPicked, openEditMessageState, idMessageRefEdit, isShowPopupQuickMess]);
+		// if (emojiPicked?.shortName !== '' && !reactionRightState) {
+		// 	setCaretPosition(input, 10);
+		// }
+	}, [dataReferences.message_ref_id, openEditMessageState, idMessageRefEdit, isShowPopupQuickMess]);
 
 	useEffect(() => {
 		handleEventAfterEmojiPicked();
