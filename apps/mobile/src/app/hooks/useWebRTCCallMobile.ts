@@ -3,7 +3,7 @@ import { DMCallActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { useNavigation } from '@react-navigation/native';
 import { WebrtcSignalingType } from 'mezon-js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 import InCallManager from 'react-native-incall-manager';
@@ -12,17 +12,14 @@ import Toast from 'react-native-toast-message';
 import { MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription, mediaDevices } from 'react-native-webrtc';
 import { usePermission } from './useRequestPermission';
 
-// Configuration constants
-const STUN_SERVERS = [
-	{ urls: 'stun:stun.l.google.com:19302' },
-	{ urls: 'stun:stun1.l.google.com:19302' },
-	{ urls: 'stun:stun2.l.google.com:19302' },
-	{ urls: 'stun:stun1.3.google.com:19302' }
-];
-// const STUN_SERVERS = [{ urls: 'stun:stun.l.google.com:19305' }];
-
 const RTCConfig = {
-	iceServers: STUN_SERVERS,
+	iceServers: [
+		{
+			urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
+			username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
+			credential: process.env.NX_WEBRTC_ICESERVERS_CREDENTIAL
+		}
+	],
 	iceCandidatePoolSize: 10
 };
 
@@ -106,16 +103,6 @@ export function useWebRTCCallMobile(dmUserId: string, channelId: string, userId:
 
 		return pc;
 	}, [mezon.socketRef, dmUserId, userId]);
-
-	useEffect(() => {
-		if (callState.localStream) {
-			callState.localStream?.getVideoTracks().forEach((track) => {
-				if (!localMediaControl?.camera) {
-					track.enabled = false;
-				}
-			});
-		}
-	}, [callState.localStream, localMediaControl?.camera]);
 
 	const startCall = async (isVideoCall: boolean, isAnswerCall = false) => {
 		try {
@@ -344,50 +331,65 @@ export function useWebRTCCallMobile(dmUserId: string, channelId: string, userId:
 	};
 
 	const toggleVideo = async () => {
-		if (callState.localStream) {
-			const haveCameraPermission = await requestCameraPermission();
-			if (!haveCameraPermission) {
-				Toast.show({
-					type: 'error',
-					text1: 'Camera is not available'
+		if (!callState.localStream) return;
+
+		const haveCameraPermission = await requestCameraPermission();
+		if (!haveCameraPermission) {
+			Toast.show({
+				type: 'error',
+				text1: 'Camera is not available'
+			});
+			return;
+		}
+
+		const videoTracks = callState.localStream.getVideoTracks();
+		const isCameraOn = videoTracks?.length > 0;
+
+		try {
+			if (!isCameraOn) {
+				const videoStream = await mediaDevices.getUserMedia({ video: true });
+				const videoTrack = videoStream.getVideoTracks()[0];
+
+				videoTrack.enabled = !localMediaControl?.camera;
+
+				videoStream.getTracks().forEach((track) => {
+					callState.peerConnection?.addTrack(track, videoStream);
 				});
-				return;
-			}
-			const videoTracks = callState.localStream.getVideoTracks();
-			if (videoTracks.length === 0) {
-				try {
-					const videoStream = await mediaDevices.getUserMedia({ video: true });
-					const videoTrack = videoStream.getVideoTracks()[0];
-					videoTrack.enabled = true;
-					callState.localStream.addTrack(videoTrack);
-					const senders = callState.peerConnection?.getSenders() || [];
-					const videoSender = senders.find((sender) => sender.track?.kind === 'video');
-					if (videoSender) {
-						await videoSender.replaceTrack(videoTrack);
-					} else {
-						callState.peerConnection?.addTrack(videoTrack, callState.localStream);
-					}
-				} catch (error) {
-					console.error('Error adding video track:', error);
-				}
+				callState.localStream.addTrack(videoTrack);
+
+				await updatePeerConnectionOffer();
 			} else {
-				const senders = callState.peerConnection?.getSenders() || [];
-				const videoSender = senders.find((sender) => sender.track?.kind === 'video');
 				videoTracks.forEach((track) => {
 					track.enabled = !track.enabled;
 				});
+
+				const videoSender = callState.peerConnection?.getSenders().find((sender) => sender.track?.kind === 'video');
+
 				if (videoSender && videoTracks[0]) {
 					await videoSender.replaceTrack(videoTracks[0]);
 				} else if (videoTracks[0]) {
 					callState.peerConnection?.addTrack(videoTracks[0], callState.localStream);
-				} else {
-					/* empty */
 				}
 			}
+
 			setLocalMediaControl((prev) => ({
 				...prev,
 				camera: !prev.camera
 			}));
+		} catch (error) {
+			console.error('Error toggling video:', error);
+		}
+	};
+
+	const updatePeerConnectionOffer = async () => {
+		try {
+			const offer = await callState.peerConnection?.createOffer(sessionConstraints);
+			await callState.peerConnection?.setLocalDescription(offer);
+
+			const compressedOffer = await compress(JSON.stringify(offer));
+			await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_OFFER, compressedOffer, channelId, userId);
+		} catch (error) {
+			console.error('Error creating and forwarding offer:', error);
 		}
 	};
 

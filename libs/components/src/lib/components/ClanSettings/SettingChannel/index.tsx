@@ -374,7 +374,7 @@ export const AvatarUserShort = ({
 
 	return (
 		<div className="flex items-center gap-3">
-			<Avatar img={avatarUrl} rounded size={size} />
+			<img src={avatarUrl} className="rounded-full h-6 aspect-square object-cover" />
 			{showName ? (
 				<div className="text-textLightTheme dark:text-channelTextareaLight">
 					{member?.clan_nick || member?.user?.display_name || member?.user?.username}

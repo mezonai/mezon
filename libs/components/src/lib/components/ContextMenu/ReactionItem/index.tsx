@@ -35,7 +35,7 @@ const ReactionItem: React.FC<IReactionItem> = ({ emojiShortCode, emojiId, active
 					: 'w-10 h-10 rounded-full flex justify-center items-center dark:hover:bg-[#232428] dark:bg-[#1E1F22] bg-[#E3E5E8] hover:bg-[#EBEDEF] cursor-pointer'
 			}
 		>
-			<img src={getUrl} className="w-5 h-5" alt="emoji" />
+			<img src={getUrl} draggable="false" className="w-5 h-5" alt="emoji" />
 		</div>
 	);
 };

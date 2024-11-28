@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, MenuItemConstructorOptions, screen, shell } from 'electron';
+import { BrowserWindow, Menu, MenuItemConstructorOptions, Notification, app, ipcMain, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
 import { join } from 'path';
@@ -263,9 +263,17 @@ export default class App {
 
 		const newWindow = new BrowserWindow(windowOptions);
 
-		const baseUrl = `http://localhost:${rendererAppPort}`;
+		const baseUrl = join(__dirname, '..', rendererAppName, 'index.html');
 		const fullUrl = this.generateFullUrl(baseUrl, params);
-		newWindow.loadURL(fullUrl);
+
+		newWindow.loadURL(
+			format({
+				pathname: fullUrl,
+				protocol: 'file:',
+				slashes: true,
+				query: params
+			})
+		);
 
 		newWindow.webContents.on('did-finish-load', () => {
 			ipcMain.once('finish-render', (event) => {
@@ -333,11 +341,13 @@ export default class App {
 						click: () =>
 							autoUpdater.checkForUpdates().then((data) => {
 								if (data) return;
+								if (data) return;
 								const appVersion = app.getVersion();
-								new Notification('No update', {
+								new Notification({
 									icon: 'apps/desktop/src/assets/desktop-taskbar-256x256.ico',
+									title: 'No update',
 									body: `The current version (${appVersion}) is the latest.`
-								});
+								}).show();
 							})
 					},
 					{ type: 'separator' },

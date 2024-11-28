@@ -132,12 +132,12 @@ const PanelClan: React.FC<IPanelCLanProps> = ({ coords, clan, setShowClanListMen
 					</Dropdown>
 				</UserRestrictionZone> */}
 				<ItemPanel children={'Privacy Settings'} />
-				<ItemPanel children={'Edit Server Profile'} />
+				<ItemPanel children={'Edit Clan Profile'} />
 			</GroupPanels>
 
 			<UserRestrictionZone policy={!canManageCLan}>
 				<GroupPanels>
-					<ItemPanel children={'Leave Server'} danger />
+					<ItemPanel children={'Leave Clan'} danger />
 				</GroupPanels>
 			</UserRestrictionZone>
 		</div>

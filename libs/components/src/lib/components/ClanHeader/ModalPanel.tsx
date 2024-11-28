@@ -96,7 +96,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						onClick={toggleLeaveClanPopup}
 						className="flex items-center w-full justify-between rounded-sm hover:bg-red-600 text-red-600 hover:text-white group pr-2"
 					>
-						<li className="text-[14px]  font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none ">Leave clan</li>
+						<li className="text-[14px]  font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none ">Leave Clan</li>
 						<div className="flex items-center justify-center h-[18px] w-[18px]">
 							<Icons.LeaveClanIcon className="text-red-600 group-hover:text-white" />
 						</div>

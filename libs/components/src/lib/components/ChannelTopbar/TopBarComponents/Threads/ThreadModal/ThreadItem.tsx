@@ -178,7 +178,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 					{threadMembers && (
 						<Avatar.Group className="flex gap-3 justify-end items-center">
 							{previewAvatarList?.map((avatar, index) => (
-								<Avatar key={index} img={avatar.clan_avatar || avatar.user?.avatar_url} rounded size="xs" />
+								<img src={avatar.clan_avatar || avatar.user?.avatar_url} className="object-cover h-6 aspect-square rounded-full" />
 							))}
 							{threadMembers && threadMembers.length > 5 && (
 								<Avatar.Counter

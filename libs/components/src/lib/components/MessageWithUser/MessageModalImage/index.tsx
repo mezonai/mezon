@@ -18,6 +18,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { ModeResponsive, SHOW_POSITION, createImgproxyUrl, handleSaveImage } from '@mezon/utils';
 import { format } from 'date-fns';
+import isElectron from 'is-electron';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MessageContextMenuProps, useMessageContextMenu } from '../../ContextMenu';
@@ -193,9 +194,16 @@ const MessageModalImage = () => {
 	};
 
 	return (
-		<div className="justify-center items-center flex flex-col fixed z-40 inset-0 outline-none focus:outline-nonebg-black text-colorTextLightMode select-none top-[21px]">
+		<div
+			className={`justify-center items-center flex flex-col fixed z-40 inset-0 outline-none focus:outline-nonebg-black text-colorTextLightMode select-none ${isElectron() ? 'top-[21px]' : ''}`}
+		>
 			<div className="flex justify-center items-center bg-[#2e2e2e] w-full h-[30px] relative">
 				<div className="text-textDarkTheme">{currentDM?.channel_label || currentChannel?.channel_label}</div>
+				{!isElectron() && (
+					<div onClick={closeModal} className="w-4 absolute right-2 top-2 cursor-pointer">
+						<Icons.MenuClose className="text-white w-full" />
+					</div>
+				)}
 			</div>
 			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-[480px]:flex-col">
 				<div className="flex-1 flex justify-center items-center px-5 py-3 overflow-hidden h-full w-full relative" onClick={closeModal}>

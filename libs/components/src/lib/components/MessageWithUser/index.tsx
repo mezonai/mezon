@@ -1,11 +1,9 @@
 import { useAuth, useChatSending, useCurrentInbox } from '@mezon/core';
 import { MessagesEntity, selectJumpPinMessageId, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
-import { processLinks } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import {
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
-	IStartEndIndex,
 	TypeMessage,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
@@ -14,7 +12,7 @@ import {
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import EmbedMessage from '../EmbedMessage/EmbedMessage';
@@ -229,33 +227,33 @@ function MessageWithUser({
 		message.code === TypeMessage.Welcome || message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
 	const [forceRender, setForceRender] = useState(false);
 
-	const triggerReRender = () => {
-		setForceRender((prev) => !prev);
-	};
-	useEffect(() => {
-		if (message.isSending || !message.message_id || !message.content.lk || message.content.lk.length === 0) return;
-		const existingAttachmentUrls = message.attachments?.map((item) => item.url).filter(Boolean) || [];
+	// const triggerReRender = () => {
+	// 	setForceRender((prev) => !prev);
+	// };
+	// useEffect(() => {
+	// 	if (message.isSending || !message.message_id || !message.content.lk || message.content.lk.length === 0) return;
+	// 	const existingAttachmentUrls = message.attachments?.map((item) => item.url).filter(Boolean) || [];
 
-		const updateAttachments = () => {
-			processLinks({
-				t: message.content.t as string,
-				lk: message.content.lk as IStartEndIndex[]
-			})
-				.then((attachmentUrls) => {
-					const newAttachmentUrls = attachmentUrls.filter((attachment) => !existingAttachmentUrls.includes(attachment.url));
+	// 	const updateAttachments = () => {
+	// 		processLinks({
+	// 			t: message.content.t as string,
+	// 			lk: message.content.lk as IStartEndIndex[]
+	// 		})
+	// 			.then((attachmentUrls) => {
+	// 				const newAttachmentUrls = attachmentUrls.filter((attachment) => !existingAttachmentUrls.includes(attachment.url));
 
-					if (newAttachmentUrls.length > 0) {
-						editSendMessage(message.content, message.message_id ?? '', message.mentions || [], newAttachmentUrls, true);
-						triggerReRender();
-					}
-				})
-				.catch((error) => {
-					console.error('Failed to update message:', error);
-				});
-		};
+	// 				if (newAttachmentUrls.length > 0) {
+	// 					editSendMessage(message.content, message.message_id ?? '', message.mentions || [], newAttachmentUrls, true);
+	// 					triggerReRender();
+	// 				}
+	// 			})
+	// 			.catch((error) => {
+	// 				console.error('Failed to update message:', error);
+	// 			});
+	// 	};
 
-		updateAttachments();
-	}, [message.id, forceRender]);
+	// 	updateAttachments();
+	// }, [message.id, forceRender]);
 
 	return (
 		<>

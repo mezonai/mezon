@@ -152,16 +152,30 @@ export const enableOnboarding = createAsyncThunk(
 	}
 );
 
+const fetchOnboardingStepCached = memoizee(
+	async (mezon: MezonValueContext, clan_id?: string) => {
+		const response = await mezon.client.listOnboardingStep(mezon.session, clan_id);
+		return response.list_onboarding_step || [];
+	},
+	{
+		promise: true,
+		maxAge: LIST_THREADS_CACHED_TIME,
+		normalizer: (args) => {
+			return args[0].session.username || '' + args[1] || '';
+		}
+	}
+);
+
 export const fetchProcessingOnboarding = createAsyncThunk('onboarding/fetchProcessing', async ({ clan_id }: { clan_id?: string }, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const mezone = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.listOnboardingStep(mezon.session, clan_id);
+		const response = await fetchOnboardingStepCached(mezone, clan_id);
 		if (!response) {
 			return [];
 		}
 
-		return response?.list_onboarding_step || [];
+		return response;
 	} catch (error) {
 		captureSentryError(error, 'clans/updateClans');
 		return thunkAPI.rejectWithValue(error);

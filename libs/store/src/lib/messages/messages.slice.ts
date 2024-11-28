@@ -224,7 +224,12 @@ export const fetchMessages = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
+
+			const state = thunkAPI.getState() as RootState;
+			let currentUser = selectAllAccount(state);
+			if (!currentUser) {
+				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
+			}
 			if (noCache) {
 				fetchMessagesCached.clear(mezon, clanId, channelId, messageId, direction);
 			}

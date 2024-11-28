@@ -116,11 +116,15 @@ function ChannelSeenListener({ channelId }: { channelId: string }) {
 	return null;
 }
 
-const ChannelMainContentText = ({ channelId }: ChannelMainContentProps) => {
+type ChannelMainContentTextProps = {
+	channelId: string;
+	canSendMessage: boolean;
+};
+
+const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainContentTextProps) => {
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
 	const isShowMemberList = useSelector(selectIsShowMemberList);
-	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
 	const mode =
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_TEXT ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD;
 
@@ -204,6 +208,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const [isShowAgeRestricted, setIsShowAgeRestricted] = useState(false);
 	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, channelId));
 	const miniAppRef = useRef<HTMLIFrameElement>(null);
+	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
 
 	const closeAgeRestricted = () => {
 		setIsShowAgeRestricted(false);
@@ -291,7 +296,8 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			<div
 				className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-hidden z-10"
 				id="mainChat"
-				onDragEnter={handleDragEnter}
+				// eslint-disable-next-line @typescript-eslint/no-empty-function
+				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
 			>
 				<div
 					className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'}`}`}
@@ -306,7 +312,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							>
 								<ChannelMedia currentChannel={currentChannel} key={currentChannel?.channel_id} />
 							</div>
-							<ChannelMainContentText channelId={currentChannel?.channel_id as string} />
+							<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
 						</div>
 					)}
 					{isShowCanvas && !isShowAgeRestricted && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && (
