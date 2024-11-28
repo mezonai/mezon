@@ -9,9 +9,13 @@ interface EmbedOptionRatioProps {
 }
 
 export function EmbedOptionRatio({ options }: EmbedOptionRatioProps) {
-	const [checked, setChecked] = useState<number>();
+	const [checked, setChecked] = useState<number[]>([]);
 	const handleCheckedOption = (index: number) => {
-		setChecked(index);
+		if (checked.includes(index)) {
+			setChecked(checked.filter((check) => check !== index));
+			return;
+		}
+		setChecked([...checked, index]);
 	};
 	return (
 		<>
@@ -22,7 +26,11 @@ export function EmbedOptionRatio({ options }: EmbedOptionRatioProps) {
 							<EmbedTitle title={option.label} />
 							<EmbedDescription description={option.description || ''} />
 						</div>
-						<MessageRatioButton name="ratio_button" onCheckRatio={() => handleCheckedOption(index)} checked={index === checked} />
+						<MessageRatioButton
+							name={option.name ? option.name : 'ratio_button'}
+							onCheckRatio={() => handleCheckedOption(index)}
+							checked={checked.includes(index)}
+						/>
 					</div>
 				))}
 		</>

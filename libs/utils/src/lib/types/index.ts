@@ -266,6 +266,8 @@ export interface IMessageSelectOption {
 export interface IMessageRatioOption {
 	label: string;
 	description?: string;
+	name?: string;
+	value?: string;
 }
 
 export enum EMessageSelectType {

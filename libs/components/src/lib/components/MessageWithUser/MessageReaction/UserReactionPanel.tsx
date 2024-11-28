@@ -136,12 +136,12 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 	const handleRemoveEmojiSender = async (e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
 		await removeEmojiSender(
-			emojiShowPanel.id ?? '',
-			emojiShowPanel.message_id ?? '',
-			emojiShowPanel.emoji_id ?? '',
-			emojiShowPanel.emoji ?? '',
-			sender.sender_id ?? '',
-			sender.count ?? 0
+			emojiShowPanel?.id ?? '',
+			emojiShowPanel?.messageId ?? '',
+			emojiShowPanel?.emojiId ?? '',
+			emojiShowPanel?.emoji ?? '',
+			sender?.sender_id ?? '',
+			sender?.count ?? 0
 		);
 
 		hideSenderOnPanel(emojiShowPanel, sender.sender_id ?? '');
