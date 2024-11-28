@@ -1,5 +1,5 @@
 import { useAuth, useChatReaction, useUserById } from '@mezon/core';
-import { selectCurrentChannel } from '@mezon/store';
+import { selectCurrentChannel, selectReactionsByEmojiIdFromMessage, useAppSelector } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
 import {
 	EmojiDataOptionals,
@@ -10,7 +10,7 @@ import {
 	getSrcEmoji,
 	isPublicChannel
 } from '@mezon/utils';
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
@@ -24,6 +24,9 @@ const UserReactionPanel = ({ emojiShowPanel, mode, message }: UserReactionPanelP
 	const { reactionMessageDispatch } = useChatReaction();
 	const userId = useAuth();
 	const currentChannel = useSelector(selectCurrentChannel);
+	const getEmojiById = useAppSelector((state) =>
+		selectReactionsByEmojiIdFromMessage(state, message.channel_id, message.id, emojiShowPanel.emojiId ?? '')
+	);
 
 	const removeEmojiSender = async (
 		id: string,
@@ -37,8 +40,8 @@ const UserReactionPanel = ({ emojiShowPanel, mode, message }: UserReactionPanelP
 			id,
 
 			messageId,
-			emojiShowPanel.emojiId ?? '',
-			emojiShowPanel.emoji ?? '',
+			getEmojiById?.emojiId ?? '',
+			getEmojiById?.emoji ?? '',
 			countRemoved,
 			message_sender_id,
 			true,
@@ -46,37 +49,36 @@ const UserReactionPanel = ({ emojiShowPanel, mode, message }: UserReactionPanelP
 		);
 	};
 
-	const [senderList, setSenderList] = useState<SenderInfoOptionals[]>(emojiShowPanel?.senders);
 	const hideSenderOnPanel = useCallback((emojiData: EmojiDataOptionals, senderId: string) => {
 		const newEmojiData = { ...emojiData };
 		if (newEmojiData.senders) {
 			newEmojiData.senders = newEmojiData.senders.filter((sender) => sender.sender_id !== senderId);
 		}
-		setSenderList(newEmojiData.senders);
 		return newEmojiData;
 	}, []);
 
-	const count = calculateTotalCount(senderList);
+	const count = calculateTotalCount(getEmojiById?.senders ?? []);
 
 	return (
+		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
 			{count > 0 && (
 				<div className="flex flex-col justify-center ">
 					<div
 						onClick={(e) => e.stopPropagation()}
 						className={`z-50   w-[18rem]
-						dark:bg-[#28272b] bg-white border-[#28272b] rounded-sm min-h-5 max-h-[25rem] shadow-md
+						dark:bg-[#28272b] bg-white border-[#28272b] rounded-sm min-h-5 max-h-[25rem] 
 				 		${window.innerWidth < 640 ? 'flex flex-col justify-center' : 'p-1 bottom-0'}`}
 					>
-						<PanelHeader emojiId={emojiShowPanel.emojiId} emojiName={emojiShowPanel.emoji ?? ''} count={count} />
+						<PanelHeader emojiId={getEmojiById?.emojiId} emojiName={getEmojiById?.emoji ?? ''} count={count} />
 						<div className="max-h-40 overflow-y-auto hide-scrollbar">
-							{senderList.map((sender: SenderInfoOptionals, index: number) => {
+							{getEmojiById?.senders.map((sender: SenderInfoOptionals, index: number) => {
 								if (sender.count && sender.count > 0) {
 									return (
 										<Fragment key={`${index}_${sender.sender_id}`}>
 											<SenderItem
 												sender={sender}
-												emojiShowPanel={emojiShowPanel}
+												emojiShowPanel={getEmojiById}
 												userId={userId}
 												removeEmojiSender={removeEmojiSender}
 												hideSenderOnPanel={hideSenderOnPanel}

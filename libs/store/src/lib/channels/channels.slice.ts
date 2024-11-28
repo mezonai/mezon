@@ -274,6 +274,9 @@ export const deleteChannel = createAsyncThunk('channels/deleteChannel', async (b
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: ApiUpdateChannelDescRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		if (body.e2ee) {
+			thunkAPI.dispatch(directActions.changeE2EE({ channel_id: body.channel_id, e2ee: body.e2ee }));
+		}
 		const response = await mezon.client.updateChannelDesc(mezon.session, body.channel_id, body);
 		const clanID = selectClanId()(getChannelsRootState(thunkAPI)) || '';
 		if (response) {

@@ -1,4 +1,4 @@
-import { addMention, ETypeLinkMedia, IExtendedMessage, IMessageWithUser, isValidEmojiData, TypeMessage } from '@mezon/utils';
+import { addMention, convertTimeString, ETypeLinkMedia, IExtendedMessage, IMessageWithUser, isValidEmojiData, TypeMessage } from '@mezon/utils';
 import { MessageLine } from './MessageLine';
 import { MessageLineSystem } from './MessageLineSystem';
 
@@ -65,12 +65,13 @@ const MessageText = ({
 		attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
 		attachmentOnMessage[0].url === contentToMessage?.trim();
 	const showEditted = !message.hide_editted;
+	const messageTime = convertTimeString(message?.create_time as string);
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
 			{lines?.length > 0 ? (
 				<div className="flex w-full">
-					<div className="w-full">
+					<div className="w-full flex gap-4">
 						{message.code === TypeMessage.CreatePin ? (
 							<MessageLineSystem
 								message={message}
@@ -92,6 +93,11 @@ const MessageText = ({
 								content={content}
 								mode={mode}
 							/>
+						)}
+						{(message.code === TypeMessage.Welcome ||
+							message.code === TypeMessage.CreateThread ||
+							message.code === TypeMessage.CreatePin) && (
+							<div className="dark:text-zinc-400 text-colorTextLightMode text-[10px] cursor-default">{messageTime}</div>
 						)}
 					</div>
 				</div>

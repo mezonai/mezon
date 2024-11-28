@@ -1,5 +1,6 @@
-import { ChatContext, ChatContextProvider, useFriends } from '@mezon/core';
+import { ChatContext, ChatContextProvider, useAttachments, useFriends } from '@mezon/core';
 import {
+	attachmentActions,
 	e2eeActions,
 	gifsStickerEmojiActions,
 	selectAllAccount,
@@ -11,9 +12,10 @@ import { MessageCrypt } from '@mezon/utils';
 
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
 import { MezonSuspense } from '@mezon/transport';
-import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { ImageWindowProps, SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiPubKey } from 'mezon-js/api.gen';
 import { memo, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +25,7 @@ const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
+	const { setOpenModalAttachment, setAttachment } = useAttachments();
 
 	const allNotificationReplyMentionAllClan = useSelector(selectBadgeCountAllClan);
 
@@ -84,6 +87,48 @@ const GlobalEventListener = () => {
 		});
 	}, [user?.user?.id]);
 
+	useEffect(() => {
+		if (isElectron()) {
+			window.electron.send('finish-render');
+
+			const handleSetAttachmentData = (props: ImageWindowProps) => {
+				const { attachmentData, messageId, mode, attachmentUrl, currentClanId, currentChannelId, currentDmId, checkListAttachment } = props;
+				const dmType = mode === ChannelStreamMode.STREAM_MODE_DM ? ChannelType.CHANNEL_TYPE_DM : ChannelType.CHANNEL_TYPE_GROUP;
+				if (currentDmId) {
+					navigate(`/chat/direct/message/${currentDmId}/${dmType}`);
+				} else {
+					navigate(`/chat/clans/${currentClanId}/channels/${currentChannelId}`);
+				}
+
+				dispatch(attachmentActions.setMode(mode));
+				setOpenModalAttachment(true);
+				setAttachment(attachmentUrl);
+				dispatch(
+					attachmentActions.setCurrentAttachment({
+						id: attachmentData.message_id as string,
+						uploader: attachmentData.sender_id,
+						create_time: attachmentData.create_time
+					})
+				);
+
+				if (((currentClanId && currentChannelId) || currentDmId) && !checkListAttachment) {
+					const clanId = currentDmId ? '0' : (currentClanId as string);
+					const channelId = (currentDmId as string) || (currentChannelId as string);
+					dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId }));
+				}
+
+				dispatch(attachmentActions.setMessageId(messageId));
+			};
+
+			window.electron.on('set-attachment-data', (event, data) => {
+				handleSetAttachmentData(data);
+			});
+
+			return () => {
+				window.electron?.removeListener('set-attachment-data', handleSetAttachmentData);
+			};
+		}
+	}, []);
 	return null;
 };
 

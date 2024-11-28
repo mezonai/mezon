@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, MenuItemConstructorOptions, Notification, app, screen, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, MenuItemConstructorOptions, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
 import { join } from 'path';
@@ -7,6 +7,7 @@ import { rendererAppName, rendererAppPort } from './constants';
 
 import tray from '../Tray';
 
+import { ImageWindowProps } from '../main';
 import setupAutoUpdates from './autoUpdates';
 import { ACTIVE_WINDOW, TRIGGER_SHORTCUT } from './events/constants';
 import { initBadge } from './services/badge';
@@ -241,6 +242,38 @@ export default class App {
 		App.application.on('activate', App.onActivate);
 	}
 
+	static openNewWindow(props: ImageWindowProps, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) {
+		const defaultOptions: Electron.BrowserWindowConstructorOptions = {
+			width: 1000,
+			height: 800,
+			show: true,
+			titleBarOverlay: process.platform == 'darwin',
+			titleBarStyle: process.platform == 'darwin' ? 'hidden' : 'default',
+			trafficLightPosition: process.platform == 'darwin' ? { x: 10, y: 10 } : undefined,
+			webPreferences: {
+				nodeIntegration: false,
+				contextIsolation: true,
+				preload: join(__dirname, 'main.preload.js')
+			},
+			icon: join(__dirname, 'assets', 'desktop-taskbar-256x256.ico'),
+			autoHideMenuBar: true
+		};
+
+		const windowOptions = { ...defaultOptions, ...options };
+
+		const newWindow = new BrowserWindow(windowOptions);
+
+		const baseUrl = `http://localhost:${rendererAppPort}`;
+		const fullUrl = this.generateFullUrl(baseUrl, params);
+		newWindow.loadURL(fullUrl);
+
+		newWindow.webContents.on('did-finish-load', () => {
+			ipcMain.once('finish-render', (event) => {
+				newWindow.webContents.send('set-attachment-data', props);
+			});
+		});
+	}
+
 	/**
 	 * setup badge for the app
 	 */
@@ -301,11 +334,10 @@ export default class App {
 							autoUpdater.checkForUpdates().then((data) => {
 								if (data) return;
 								const appVersion = app.getVersion();
-								new Notification({
+								new Notification('No update', {
 									icon: 'apps/desktop/src/assets/desktop-taskbar-256x256.ico',
-									title: 'No update',
 									body: `The current version (${appVersion}) is the latest.`
-								}).show();
+								});
 							})
 					},
 					{ type: 'separator' },

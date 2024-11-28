@@ -1,5 +1,5 @@
 import { ToastController } from '@mezon/components';
-import { fcmActions, selectIsLogin, useAppDispatch } from '@mezon/store';
+import { fcmActions, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, MezonUiProvider } from '@mezon/ui';
 import { isLinuxDesktop, isWindowsDesktop, notificationService } from '@mezon/utils';
 import { useEffect } from 'react';
@@ -72,6 +72,7 @@ const AppLayout = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const isLogin = useSelector(selectIsLogin);
+	const currentUserId = useSelector(selectAllAccount)?.user?.id;
 
 	const { redirectTo } = useLoaderData() as IAppLoaderData;
 	useEffect(() => {
@@ -79,6 +80,10 @@ const AppLayout = () => {
 			navigate(redirectTo);
 		}
 	}, [redirectTo, navigate]);
+
+	useEffect(() => {
+		currentUserId && notificationService.setCurrentUserId(currentUserId);
+	}, [currentUserId]);
 
 	// TODO: move this to a firebase context
 	useEffect(() => {

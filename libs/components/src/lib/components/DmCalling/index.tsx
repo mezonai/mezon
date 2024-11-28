@@ -9,6 +9,8 @@ import {
 	selectIsMuteMicrophone,
 	selectIsShowMeetDM,
 	selectIsShowShareScreen,
+	selectRemoteAudio,
+	selectRemoteVideo,
 	selectSignalingDataByUserId,
 	selectStatusMenu,
 	useAppDispatch,
@@ -21,7 +23,7 @@ import { AvatarImage } from '@mezon/components';
 import { useWebRTCCall } from '@mezon/core';
 import { createImgproxyUrl, isMacDesktop, sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { forwardRef, useEffect, useImperativeHandle, useMemo } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
 import LabelDm from './labelDm';
@@ -45,6 +47,9 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const dmUserId = currentDmGroup?.user_id && currentDmGroup.user_id.length > 0 ? currentDmGroup?.user_id[0] : '';
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
+	const isRemoteAudio = useSelector(selectRemoteAudio);
+	const isRemoteVideo = useSelector(selectRemoteVideo);
+	const [activeVideo, setActiveVideo] = useState<'local' | 'remote' | null>(null);
 
 	const isInChannelCalled = useMemo(() => {
 		return currentDmGroup?.user_id?.some((i) => i === signalingData?.[0]?.callerId);
@@ -108,13 +113,21 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		dispatch(audioCallActions.setIsDialTone(false));
 	};
 
+	useEffect(() => {
+		if (!isRemoteVideo) {
+			if (remoteVideoRef.current) {
+				remoteVideoRef.current.srcObject = null;
+			}
+		}
+	}, [isRemoteVideo, remoteVideoRef]);
+
 	if (!isInCall && !isInChannelCalled) return <div />;
 
 	return (
 		<div
 			className={`${
 				(!isInChannelCalled && !isPlayDialTone) || dmGroupId !== directId ? '-z-50 opacity-0 hidden' : ''
-			} flex flex-col right-0 fixed w-widthThumnailAttachment  ${!isShowMeetDM ? 'h-[240px] min-h-[240px]' : 'max-h-[510px]'} z-10 w-full p-3 min-w-0 items-center dark:bg-bgTertiary bg-bgLightPrimary shadow border-b-[1px] dark:border-bgTertiary border-bgLightTertiary flex-shrink ${isMacDesktop ? 'draggable-area' : ''}`}
+			} flex flex-col group right-0 fixed w-widthThumnailAttachment  ${!isShowMeetDM && !isRemoteVideo ? 'h-[240px] min-h-[240px]' : 'h-[510px] max-h-[510px]'} z-10 w-full p-3 min-w-0 items-center dark:bg-bgTertiary bg-bgLightPrimary shadow border-b-[1px] dark:border-bgTertiary border-bgLightTertiary flex-shrink ${isMacDesktop ? 'draggable-area' : ''}`}
 		>
 			<div className="sbm:justify-start justify-between items-center gap-1 flex w-full">
 				<div className="flex flex-row gap-1 items-center flex-1">
@@ -139,38 +152,97 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 				</div>
 			</div>
 
-			<div className={`flex justify-between space-x-4 ${!isShowMeetDM ? 'h-[0px] -z-10 opacity-0' : 'z-10 mb-5 mt-5'}`}>
+			<div
+				className={`flex ${activeVideo === 'local' || activeVideo === 'remote' ? 'relative w-full h-[calc(100%_-_32px)] justify-center' : 'flex justify-center items-center h-full'} space-x-4 ${!isShowMeetDM && !isRemoteVideo ? 'hidden -z-10 opacity-0' : `${activeVideo === 'local' || activeVideo === 'remote' ? '' : 'z-10 mb-5 mt-5'}`}`}
+			>
 				{/* Local Video */}
-				<video
-					ref={localVideoRef}
-					autoPlay
-					muted
-					playsInline
-					style={{
-						width: '400px',
-						height: '300px',
-						backgroundColor: 'black',
-						borderRadius: '8px',
-						display: !isShowMeetDM ? 'none' : 'block'
-					}}
-				/>
+				<div
+					className={`${activeVideo === 'remote' ? 'absolute right-0 bottom-0' : `${activeVideo === 'local' ? 'relative w-fit' : 'relative w-full'}`} `}
+				>
+					<video
+						ref={localVideoRef}
+						autoPlay
+						muted
+						playsInline
+						onClick={() => setActiveVideo(activeVideo === 'local' || activeVideo === 'remote' ? null : 'local')}
+						style={{
+							width: activeVideo === 'local' ? '100%' : activeVideo === 'remote' ? '200px' : '400px',
+							height: activeVideo === 'local' ? '100%' : activeVideo === 'remote' ? '150px' : '300px',
+							backgroundColor: 'black',
+							borderRadius: '8px',
+							display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
+						}}
+					/>
+					<div className="flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+						{!isShowMeetDM && (
+							<div className=" flex flex-col items-center">
+								<Icons.IconMeetDM
+									className={`${!isShowMeetDM ? 'text-bgPrimary dark:text-white' : 'text-white dark:text-bgTertiary'}`}
+									isShowMeetDM={!isShowMeetDM}
+									isShowLine={true}
+								/>
+							</div>
+						)}
+
+						{isMuteMicrophone && (
+							<div className="flex flex-col items-center">
+								<Icons.Microphone
+									className={`${isMuteMicrophone ? 'text-bgPrimary dark:text-white' : 'text-white dark:text-bgTertiary'}`}
+									isMuteMicrophone={isMuteMicrophone}
+									isShowLine={true}
+								/>
+							</div>
+						)}
+					</div>
+				</div>
 				{/* Remote Video */}
-				<video
-					ref={remoteVideoRef}
-					autoPlay
-					playsInline
-					style={{
-						width: '400px',
-						height: '300px',
-						backgroundColor: 'black',
-						borderRadius: '8px',
-						display: !isShowMeetDM ? 'none' : 'block'
-					}}
-				/>
+				<div
+					className={`${activeVideo === 'local' ? 'absolute right-0 bottom-0' : `${activeVideo === 'remote' ? 'relative w-fit' : 'relative w-full'}`}`}
+				>
+					<div className="relative w-full h-full">
+						<video
+							ref={remoteVideoRef}
+							autoPlay
+							playsInline
+							onClick={() => setActiveVideo(activeVideo === 'local' || activeVideo === 'remote' ? null : 'remote')}
+							style={{
+								width: activeVideo === 'remote' ? '100%' : activeVideo === 'local' ? '200px' : '400px',
+								height: activeVideo === 'remote' ? '100%' : activeVideo === 'local' ? '150px' : '300px',
+								backgroundColor: 'black',
+								borderRadius: '8px',
+								display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
+							}}
+						/>
+
+						<div className="flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+							{!isRemoteVideo && (
+								<div className="flex flex-col items-center">
+									<Icons.IconMeetDM
+										className={`${!isRemoteVideo ? 'text-bgPrimary dark:text-white' : 'text-white dark:text-bgTertiary'}`}
+										isShowMeetDM={!isRemoteVideo}
+										isShowLine={true}
+									/>
+								</div>
+							)}
+
+							{!isRemoteAudio && (
+								<div className="flex flex-col items-center">
+									<Icons.Microphone
+										className={`${!isRemoteAudio ? 'text-bgPrimary dark:text-white' : 'text-white dark:text-bgTertiary'}`}
+										isMuteMicrophone={!isRemoteAudio}
+										isShowLine={true}
+									/>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
 			</div>
 
-			<div className="w-full h-full flex flex-col justify-around">
-				{!isShowMeetDM && (
+			<div
+				className={`${isShowMeetDM || isRemoteVideo ? 'absolute w-fit h-fit bottom-5 z-50 left-1/2 transform -translate-x-1/2 translate-y-5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300' : 'w-full h-full'} flex flex-col justify-around`}
+			>
+				{!isShowMeetDM && !isRemoteVideo && (
 					<div className="justify-center items-center gap-4 flex w-full">
 						{avatarImages.map((avatar, index) => (
 							<AvatarImage

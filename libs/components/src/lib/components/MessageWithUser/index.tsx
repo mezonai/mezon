@@ -1,6 +1,7 @@
 import { useAuth, useChatSending, useCurrentInbox } from '@mezon/core';
 import { MessagesEntity, selectJumpPinMessageId, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { processLinks } from '@mezon/transport';
+import { Icons } from '@mezon/ui';
 import {
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
@@ -275,24 +276,42 @@ function MessageWithUser({
 								<div
 									className={`justify-start gap-4 inline-flex w-full relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
 								>
-									{message.references?.length === 0 && isCombine && !isShowFull ? (
-										<div className="w-10 flex items-center justify-center min-w-10">
-											<div className="hidden group-hover:text-zinc-400 group-hover:text-[10px] group-hover:block cursor-default">
-												{messageHour}
-											</div>
+									{isMessageSystem ? (
+										<div className="size-10 mt-[2px] flex justify-center rounded-full object-cover min-w-5 min-h-5">
+											{message.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8" />}
+											{message.code === TypeMessage.CreateThread && <Icons.ThreadIcon defaultSize="size-6" />}
+											{message.code === TypeMessage.CreatePin && <Icons.PinRight defaultSize="size-6" />}
 										</div>
 									) : (
-										<MessageAvatar
-											message={message}
-											isEditing={isEditing}
-											mode={mode}
-											onClick={(e) => handleOpenShortUser(e, message.sender_id)}
-										/>
+										<div>
+											{message.references?.length === 0 && isCombine && !isShowFull ? (
+												<div className="w-10 flex items-center justify-center min-w-10">
+													<div className="hidden group-hover:text-zinc-400 group-hover:text-[10px] group-hover:block cursor-default">
+														{messageHour}
+													</div>
+												</div>
+											) : (
+												<MessageAvatar
+													message={message}
+													isEditing={isEditing}
+													mode={mode}
+													onClick={(e) => handleOpenShortUser(e, message.sender_id)}
+												/>
+											)}
+										</div>
 									)}
 
 									<div className="w-full relative h-full">
-										{!(isCombine && message.references?.length === 0 && !isShowFull) && (
-											<MessageHead message={message} mode={mode} onClick={(e) => handleOpenShortUser(e, message.sender_id)} />
+										{!isMessageSystem && (
+											<div>
+												{!(isCombine && message.references?.length === 0 && !isShowFull) && (
+													<MessageHead
+														message={message}
+														mode={mode}
+														onClick={(e) => handleOpenShortUser(e, message.sender_id)}
+													/>
+												)}
+											</div>
 										)}
 
 										<div className="justify-start items-center  inline-flex w-full h-full pt-[2px] textChat select-text">

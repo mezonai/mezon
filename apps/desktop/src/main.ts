@@ -1,11 +1,24 @@
 import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
 import log from 'electron-log/main';
 import fs from 'fs';
+import { ChannelStreamMode } from 'mezon-js';
+import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import App from './app/app';
-import { DOWNLOAD_FILE, NAVIGATE_TO_URL, SENDER_ID } from './app/events/constants';
+import { DOWNLOAD_FILE, NAVIGATE_TO_URL, OPEN_NEW_WINDOW, SENDER_ID } from './app/events/constants';
 import ElectronEvents from './app/events/electron.events';
 import SquirrelEvents from './app/events/squirrel.events';
 import { environment } from './environments/environment';
+
+export type ImageWindowProps = {
+	attachmentData: ApiMessageAttachment & { create_time?: string };
+	messageId: string;
+	mode: ChannelStreamMode;
+	attachmentUrl: string;
+	currentClanId: string;
+	currentChannelId: string;
+	currentDmId: string;
+	checkListAttachment: boolean;
+};
 
 export default class Main {
 	static initialize() {
@@ -78,6 +91,10 @@ ipcMain.on(NAVIGATE_TO_URL, async (event, path, isSubPath) => {
 		}
 		App.mainWindow.focus();
 	}
+});
+
+ipcMain.on(OPEN_NEW_WINDOW, (event, props: ImageWindowProps, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) => {
+	App.openNewWindow(props, options, params);
 });
 
 ipcMain.on('TITLE_BAR_ACTION', (event, action, data) => {

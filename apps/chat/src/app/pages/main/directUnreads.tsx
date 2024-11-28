@@ -1,5 +1,5 @@
 import { AvatarImage, NavLinkComponent } from '@mezon/components';
-import { DMMetaEntity, directActions, selectDirectById, useAppDispatch, useAppSelector } from '@mezon/store';
+import { DMMetaEntity, directActions, directMetaActions, selectDirectById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -22,6 +22,8 @@ function DirectUnread({ directMessage }: DirectMessUnreadProp) {
 		);
 
 		navigate(`/chat/direct/message/${direct.channel_id}/${direct.type}`);
+		const timestamp = Date.now() / 1000;
+		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: direct.id || '', timestamp }));
 	};
 	return (
 		<NavLink to="#" onClick={handleClick}>

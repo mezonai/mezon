@@ -24,7 +24,7 @@ const SettingRightWithdraw = () => {
 			return null;
 		}
 	}, [userProfile?.wallet, refreshHistory]);
-	const userId = useMemo(() => userProfile?.user?.id, [userProfile]);
+	const userId = userProfile?.user?.id;
 
 	const toggleVisibility = () => {
 		setShowCoin(!showCoin);

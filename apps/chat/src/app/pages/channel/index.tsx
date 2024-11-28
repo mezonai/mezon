@@ -15,9 +15,11 @@ import {
 	channelMetaActions,
 	channelsActions,
 	clansActions,
+	directMetaActions,
 	gifsStickerEmojiActions,
 	listChannelsByUserActions,
 	onboardingActions,
+	selectAllChannelMembers,
 	selectAnyUnreadChannels,
 	selectAppChannelById,
 	selectChannelById,
@@ -35,6 +37,7 @@ import {
 	selectMissionSum,
 	selectOnboardingByClan,
 	selectOnboardingMode,
+	selectPreviousChannels,
 	selectProcessingByClan,
 	selectStatusMenu,
 	selectTheme,
@@ -67,7 +70,7 @@ function useChannelSeen(channelId: string) {
 	const statusFetchChannel = useSelector(selectFetchChannelStatus);
 	const resetBadgeCount = !useSelector(selectAnyUnreadChannels);
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
-
+	const previousChannels = useSelector(selectPreviousChannels);
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 	}, [channelId, currentChannel, dispatch, isFocusDesktop, isTabVisible]);
@@ -83,6 +86,13 @@ function useChannelSeen(channelId: string) {
 		markAsReadSeen(lastMessage, mode);
 	}, [lastMessage, channelId, isUnreadChannel]);
 	useEffect(() => {
+		if (previousChannels.at(1)) {
+			const timestamp = Date.now() / 1000;
+			dispatch(channelsActions.updateChannelBadgeCount({ channelId: previousChannels.at(1) || '', count: 0, isReset: true }));
+			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: previousChannels.at(1) || '', timestamp }));
+		}
+	}, [previousChannels]);
+	useEffect(() => {
 		if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 			const channelWithActive = { ...currentChannel, active: 1 };
 			dispatch(channelsActions.upsertOne(channelWithActive as ChannelsEntity));
@@ -90,7 +100,6 @@ function useChannelSeen(channelId: string) {
 		if (!statusFetchChannel) return;
 		const numberNotification = currentChannel?.count_mess_unread ? currentChannel?.count_mess_unread : 0;
 		if (numberNotification && numberNotification > 0) {
-			dispatch(channelsActions.updateChannelBadgeCount({ channelId: channelId, count: 0, isReset: true }));
 			dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: numberNotification * -1 }));
 			dispatch(listChannelsByUserActions.resetBadgeCount({ channelId: channelId }));
 		}
@@ -193,6 +202,8 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const [isShowAgeRestricted, setIsShowAgeRestricted] = useState(false);
+	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, channelId));
+	const miniAppRef = useRef<HTMLIFrameElement>(null);
 
 	const closeAgeRestricted = () => {
 		setIsShowAgeRestricted(false);
@@ -206,6 +217,10 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	);
 	const appChannel = useSelector(selectAppChannelById(channelId));
 	const appearanceTheme = useSelector(selectTheme);
+
+	const miniAppDataHash = useMemo(() => {
+		return `userChannels=${JSON.stringify(userChannels)}`;
+	}, [userChannels]);
 
 	const handleDragEnter = (e: DragEvent<HTMLElement>) => {
 		e.preventDefault();
@@ -224,9 +239,27 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	useEffect(() => {
 		if (appChannel?.url) {
+			const compareHost = (url1: string, url2: string) => {
+				try {
+					const parsedURL1 = new URL(url1);
+					const parsedURL2 = new URL(url2);
+					return parsedURL1.hostname === parsedURL2.hostname;
+				} catch (error) {
+					return false;
+				}
+			};
 			const handleMessage = (event: MessageEvent) => {
-				if (event.origin === appChannel?.url) {
-					// implement logic here
+				if (appChannel?.url && compareHost(event.origin, appChannel?.url ?? '')) {
+					const eventData = JSON.parse(event.data ?? '{}');
+					// eslint-disable-next-line no-console
+					console.log('[MEZON] < ', eventData);
+					if (eventData?.eventType === 'PING') {
+						// send event to mini app
+						miniAppRef.current?.contentWindow?.postMessage(
+							JSON.stringify({ eventType: 'PONG', eventData: { message: 'PONG' } }),
+							appChannel.url ?? ''
+						);
+					}
 				}
 			};
 			window.addEventListener('message', handleMessage);
@@ -245,7 +278,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	return currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
 		appChannel?.url ? (
-			<iframe title={appChannel?.url} src={appChannel?.url} className={'w-full h-full'}></iframe>
+			<iframe ref={miniAppRef} title={appChannel?.url} src={appChannel?.url + `#${miniAppDataHash}`} className={'w-full h-full'}></iframe>
 		) : (
 			<div className={'w-full h-full flex items-center justify-center'}>
 				<Loading />

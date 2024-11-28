@@ -290,6 +290,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: message.channel_id, timestamp }));
 					}
 				} else {
+					if (mess.isMe) {
+						dispatch(channelsActions.updateChannelBadgeCount({ channelId: message.channel_id, count: 0, isReset: true }));
+					}
 					dispatch(channelMetaActions.setChannelLastSentTimestamp({ channelId: message.channel_id, timestamp }));
 				}
 				dispatch(listChannelsByUserActions.updateLastSentTime({ channelId: message.channel_id }));
@@ -784,6 +787,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			if (channelUpdated.is_error) {
 				return dispatch(channelsActions.deleteChannel({ channelId: channelUpdated.channel_id, clanId: channelUpdated.clan_id as string }));
 			}
+
+			if (channelUpdated.clan_id === '0') {
+				return dispatch(directActions.updateOne(channelUpdated));
+			}
+
 			if (channelUpdated) {
 				//TODO: improve update once item
 				if (channelUpdated.channel_label === '') {
@@ -805,10 +813,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				) {
 					dispatch(channelsActions.fetchChannels({ clanId: channelUpdated.clan_id, noCache: true }));
 					dispatch(listChannelsByUserActions.fetchListChannelsByUser({ noCache: true }));
-				}
-
-				if (channelUpdated.clan_id === '0') {
-					dispatch(directActions.fetchDirectMessage({ noCache: true }));
 				}
 			}
 		},

@@ -1,21 +1,48 @@
+import {
+	messagesActions,
+	selectCurrentChannelId,
+	selectCurrentUserId,
+	selectDmGroupCurrentId,
+	selectModeResponsive,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
+import { IMessageSelect, IMessageSelectOption, ModeResponsive } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { SelectOptions } from './SelectOptions';
 
 type MessageSelectProps = {
 	select: IMessageSelect;
+	messageId: string;
+	senderId: string;
+	buttonId: string;
 };
 
-export const MessageSelect: React.FC<MessageSelectProps> = ({ select }) => {
+export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId, senderId, buttonId }) => {
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentDmId = useSelector(selectDmGroupCurrentId);
+	const modeResponsive = useSelector(selectModeResponsive);
+	const currentUserId = useSelector(selectCurrentUserId);
+
 	const [selectedOptions, setSelectedOptions] = useState<Array<IMessageSelectOption>>([]);
 	const [availableOptions, setAvailableOptions] = useState(select?.options || []);
-
+	const dispatch = useAppDispatch();
 	const handleOptionSelect = (option: { value: string; label: string }) => {
 		if (selectedOptions.length < (select?.max_options || 1)) {
 			setSelectedOptions((prev) => [...prev, option]);
 			setAvailableOptions((prev) => prev.filter((o) => o.value !== option.value));
+			dispatch(
+				messagesActions.clickButtonMessage({
+					message_id: messageId,
+					channel_id: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
+					button_id: buttonId,
+					sender_id: senderId,
+					user_id: currentUserId,
+					extra_data: option.value
+				})
+			);
 		}
 	};
 

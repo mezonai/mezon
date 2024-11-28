@@ -99,9 +99,10 @@ function AppWrapper() {
 			debug={false}
 			sdkOptions={{
 				dappMetadata: {
-					name: 'Example React Dapp',
+					name: 'Mezon',
 					url: window.location.href
-				}
+				},
+				headless: true
 			}}
 		>
 			<GoogleOAuthProvider clientId={process.env.NX_CHAT_APP_GOOGLE_CLIENT_ID as string}>

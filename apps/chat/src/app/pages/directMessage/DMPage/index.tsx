@@ -21,6 +21,7 @@ import {
 } from '@mezon/core';
 import {
 	MessagesEntity,
+	channelsActions,
 	directActions,
 	directMetaActions,
 	gifsStickerEmojiActions,
@@ -32,16 +33,16 @@ import {
 	selectIsSearchMessage,
 	selectIsShowCreateThread,
 	selectIsShowMemberListDM,
-	selectIsUnreadDMById,
 	selectIsUseProfileDM,
 	selectPositionEmojiButtonSmile,
+	selectPreviousChannels,
 	selectReactionTopState,
 	selectSignalingDataByUserId,
 	selectStatusMenu,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { EmojiPlaces, SubPanelName, TIME_OFFSET, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { EmojiPlaces, SubPanelName, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { DragEvent, memo, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -63,8 +64,7 @@ function useChannelSeen(channelId: string) {
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 	}, [channelId]);
-	const { userId } = useAuth();
-	const isUnreadDM = useAppSelector((state) => selectIsUnreadDMById(state, channelId as string));
+	const previousChannels = useSelector(selectPreviousChannels);
 	const { markAsReadSeen } = useSeenMessagePool();
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
 	useEffect(() => {
@@ -73,11 +73,15 @@ function useChannelSeen(channelId: string) {
 			markAsReadSeen(lastMessage, mode);
 		}
 	}, [lastMessage, channelId]);
-
+	useEffect(() => {
+		if (previousChannels.at(1)) {
+			const timestamp = Date.now() / 1000;
+			dispatch(channelsActions.updateChannelBadgeCount({ channelId: previousChannels.at(1) || '', count: 0, isReset: true }));
+			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: previousChannels.at(1) || '', timestamp }));
+		}
+	}, [previousChannels]);
 	useEffect(() => {
 		if ((lastMessage && isFocusDesktop === true && isElectron()) || (lastMessage && isTabVisible)) {
-			const timestamp = Date.now() / 1000;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
 			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
 			updateChannelSeenState(channelId, lastMessage);
 		}

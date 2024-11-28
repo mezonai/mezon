@@ -1,4 +1,5 @@
 import isElectron from 'is-electron';
+import { MessageCrypt } from '../../e2ee';
 import { electronBridge } from './electron';
 export interface IMessageExtras {
 	link: string; // link for navigating
@@ -40,6 +41,7 @@ export class MezonNotificationService {
 	private pingTimeout: NodeJS.Timeout | null = null;
 	private isFocusOnApp = false;
 	private previousAppId = 0;
+	private currentUserId: string | null = null;
 
 	private constructor() {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -66,6 +68,9 @@ export class MezonNotificationService {
 		}
 		return MezonNotificationService.instance;
 	}
+	public setCurrentUserId = async (userId: string) => {
+		this.currentUserId = userId;
+	};
 
 	public connect = async (token: string) => {
 		const hasPermission = await this.checkNotificationPermission();
@@ -89,7 +94,7 @@ export class MezonNotificationService {
 			this.startPingMonitoring(token);
 		};
 
-		ws.onmessage = (data: MessageEvent<string>) => {
+		ws.onmessage = async (data: MessageEvent<string>) => {
 			try {
 				if (data.data === 'ping') {
 					this.handlePong();
@@ -101,7 +106,9 @@ export class MezonNotificationService {
 					if (msg?.channel_id && msg?.channel_id === this.currentChannelId && this.isFocusOnApp) {
 						return;
 					}
-					this.pushNotification(title, message, image, link);
+
+					const msgContent = await MessageCrypt.mapE2EEcontent(message, this.currentUserId as string);
+					this.pushNotification(title, msgContent, image, link);
 
 					//check app update
 					if (isElectron() && msg?.appid && msg.appid !== this.previousAppId) {

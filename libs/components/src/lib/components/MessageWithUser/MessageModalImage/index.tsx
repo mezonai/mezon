@@ -7,13 +7,16 @@ import {
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectDmGroupCurrent,
-	selectMemberClanByUserId,
+	selectMembeGroupByUserId,
+	selectMemberClanByUserId2,
 	selectMessageIdAttachment,
 	selectModeAttachment,
-	selectOpenModalAttachment
+	selectModeResponsive,
+	selectOpenModalAttachment,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { SHOW_POSITION, createImgproxyUrl, handleSaveImage } from '@mezon/utils';
+import { ModeResponsive, SHOW_POSITION, createImgproxyUrl, handleSaveImage } from '@mezon/utils';
 import { format } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -190,12 +193,9 @@ const MessageModalImage = () => {
 	};
 
 	return (
-		<div className="justify-center items-center flex flex-col fixed z-50 inset-0 outline-none focus:outline-nonebg-black text-colorTextLightMode select-none">
+		<div className="justify-center items-center flex flex-col fixed z-40 inset-0 outline-none focus:outline-nonebg-black text-colorTextLightMode select-none top-[21px]">
 			<div className="flex justify-center items-center bg-[#2e2e2e] w-full h-[30px] relative">
 				<div className="text-textDarkTheme">{currentDM?.channel_label || currentChannel?.channel_label}</div>
-				<div onClick={closeModal} className="w-4 absolute right-2 top-2 cursor-pointer">
-					<Icons.MenuClose className="text-white w-full" />
-				</div>
 			</div>
 			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-[480px]:flex-col">
 				<div className="flex-1 flex justify-center items-center px-5 py-3 overflow-hidden h-full w-full relative" onClick={closeModal}>
@@ -286,8 +286,12 @@ const MessageModalImage = () => {
 };
 
 const SenderUser = () => {
+	const { directId } = useAppParams();
 	const attachment = useSelector(selectCurrentAttachmentShowImage);
-	const user = useSelector(selectMemberClanByUserId(attachment?.uploader as string));
+	const clanUser = useAppSelector((state) => selectMemberClanByUserId2(state, attachment?.uploader as string));
+	const dmUser = useAppSelector((state) => selectMembeGroupByUserId(state, directId as string, attachment?.uploader as string));
+	const modeResponsive = useAppSelector(selectModeResponsive);
+	const user = modeResponsive === ModeResponsive.MODE_CLAN ? clanUser : dmUser;
 
 	return (
 		<div className="flex gap-2 overflow-hidden ">

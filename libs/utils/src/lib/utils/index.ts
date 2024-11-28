@@ -156,7 +156,7 @@ export const isGreaterOneMonth = (timestamp: number) => {
 };
 
 export const calculateTotalCount = (senders: SenderInfoOptionals[]) => {
-	return senders.reduce((sum: number, item: SenderInfoOptionals) => sum + (item.count ?? 0), 0);
+	return senders?.reduce((sum: number, item: SenderInfoOptionals) => sum + (item.count ?? 0), 0);
 };
 
 export const notImplementForGifOrStickerSendFromPanel = (data: ApiMessageAttachment) => {

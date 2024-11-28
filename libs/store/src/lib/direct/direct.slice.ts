@@ -1,8 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
 import { ActiveDm, IChannel, IUserItemActivity, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, ChannelUpdatedEvent } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
+import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { StatusUserArgs, channelMembersActions } from '../channelmembers/channel.members';
 import { channelsActions, fetchChannelsCached } from '../channels/channels.slice';
@@ -239,6 +240,30 @@ export const directSlice = createSlice({
 	reducers: {
 		add: directAdapter.addOne,
 		remove: directAdapter.removeOne,
+		updateOne: (state, action: PayloadAction<Partial<ChannelUpdatedEvent>>) => {
+			if (!action.payload?.channel_id) return;
+			const existingDirect = state.entities[action.payload?.channel_id];
+			if (existingDirect && existingDirect.e2ee !== action.payload.e2ee) {
+				toast.info(existingDirect.usernames + (action.payload.e2ee === 1 ? ' enabled E2EE' : ' disabled E2EE'), {
+					closeButton: true
+				});
+			}
+			directAdapter.updateOne(state, {
+				id: action.payload.channel_id,
+				changes: {
+					...action.payload
+				}
+			});
+		},
+		changeE2EE: (state, action: PayloadAction<Partial<ChannelUpdatedEvent>>) => {
+			if (!action.payload?.channel_id) return;
+			directAdapter.updateOne(state, {
+				id: action.payload.channel_id,
+				changes: {
+					...action.payload
+				}
+			});
+		},
 		setDmGroupCurrentId: (state, action: PayloadAction<string>) => {
 			state.currentDirectMessageId = action.payload;
 		},
@@ -253,7 +278,6 @@ export const directSlice = createSlice({
 		removeByDirectID: (state, action: PayloadAction<string>) => {
 			directAdapter.removeOne(state, action.payload);
 		},
-
 		setActiveDirect: (state, action: PayloadAction<{ directId: string }>) => {
 			directAdapter.updateOne(state, {
 				id: action.payload.directId,
@@ -262,6 +286,7 @@ export const directSlice = createSlice({
 				}
 			});
 		},
+
 		updateStatusByUserId: (state, action: PayloadAction<StatusUserArgs[]>) => {
 			const { ids, entities } = state;
 			const statusUpdates = action.payload;

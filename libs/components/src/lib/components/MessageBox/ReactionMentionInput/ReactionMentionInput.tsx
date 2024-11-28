@@ -556,7 +556,6 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 	const input = document.querySelector('#editorReactMention') as HTMLInputElement | HTMLTextAreaElement;
 	function handleEventAfterEmojiPicked() {
-		// Kiểm tra emojiPicked rỗng và input không tồn tại
 		const isEmptyEmojiPicked = emojiPicked && Object.keys(emojiPicked).length === 1 && emojiPicked[''] === '';
 		if (isEmptyEmojiPicked || !input) return;
 
@@ -567,7 +566,6 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 				const caretPosition = input.selectionStart || 0;
 				const newCaretPosition = caretPosition + emojiText.length;
-
 				setCaretPosition(input, newCaretPosition);
 			}
 		}

@@ -76,7 +76,6 @@ export function useSeenMessagePool() {
 					);
 				}
 				if (mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM) {
-					dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: message?.channel_id, timestamp: timestamp + TIME_OFFSET }));
 					dispatch(directMetaActions.updateLastSeenTime(message));
 				}
 			}

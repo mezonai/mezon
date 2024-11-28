@@ -4,13 +4,6 @@ import { WebrtcSignalingType } from 'mezon-js';
 import { useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-// Configuration constants
-// const STUN_SERVERS = [
-// 	{ urls: 'stun:stun.l.google.com:19302' },
-// 	{ urls: 'stun:stun1.l.google.com:19302' },
-// 	{ urls: 'stun:stun2.l.google.com:19302' },
-// 	{ urls: 'stun:stun1.3.google.com:19302' }
-// ];
 const STUN_SERVERS = [
 	{
 		urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
@@ -94,14 +87,34 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		};
 
 		pc.ontrack = (event) => {
+			const remoteStream = event.streams[0];
 			setCallState((prev) => ({
 				...prev,
-				remoteStream: event.streams[0]
+				remoteStream
 			}));
 
 			if (remoteVideoRef.current) {
-				remoteVideoRef.current.srcObject = event.streams[0];
+				remoteVideoRef.current.srcObject = remoteStream;
 			}
+
+			remoteStream.getVideoTracks().forEach((track) => {
+				track.onmute = () => {
+					dispatch(audioCallActions.setIsRemoteVideo(false));
+				};
+
+				track.onunmute = () => {
+					dispatch(audioCallActions.setIsRemoteVideo(true));
+				};
+			});
+
+			remoteStream.getAudioTracks().forEach((track) => {
+				track.onmute = () => {
+					dispatch(audioCallActions.setIsRemoteAudio(false));
+				};
+				track.onunmute = () => {
+					dispatch(audioCallActions.setIsRemoteAudio(true));
+				};
+			});
 		};
 
 		pc.oniceconnectionstatechange = () => {
@@ -286,6 +299,8 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			dispatch(DMCallActions.setIsInCall(false));
 			dispatch(audioCallActions.setIsEndTone(true));
 			dispatch(audioCallActions.setIsRingTone(false));
+			dispatch(audioCallActions.setIsRemoteAudio(false));
+			dispatch(audioCallActions.setIsRemoteVideo(false));
 			dispatch(DMCallActions.setIsShowMeetDM(false));
 			dispatch(DMCallActions.removeAll());
 			setCallState({
@@ -299,51 +314,103 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 	};
 
 	// Toggle audio/video
-	const toggleAudio = () => {
-		if (callState.localStream) {
-			callState.localStream.getAudioTracks().forEach((track) => {
-				track.enabled = !track.enabled;
+	const toggleAudio = async () => {
+		if (!callState.localStream) return;
+		const audioTracks = callState.localStream.getAudioTracks();
+
+		if (audioTracks.length === 0) {
+			try {
+				const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				const audioTrack = audioStream.getAudioTracks()[0];
+
+				callState.localStream.addTrack(audioTrack);
+
+				const senders = callState.peerConnection?.getSenders() || [];
+				const audioSender = senders.find((sender) => sender.track?.kind === 'audio');
+
+				if (audioSender) {
+					await audioSender.replaceTrack(audioTrack);
+				} else {
+					callState.peerConnection?.addTrack(audioTrack, callState.localStream);
+				}
+			} catch (error) {
+				console.error('Error adding audio track:', error);
+			}
+		} else {
+			audioTracks.forEach((track) => {
+				if (track.enabled) {
+					track.stop();
+					if (callState.localStream) {
+						callState.localStream.removeTrack(track);
+					}
+
+					const senders = callState.peerConnection?.getSenders() || [];
+					const audioSender = senders.find((sender) => sender.track === track);
+					if (audioSender) {
+						callState.peerConnection?.removeTrack(audioSender);
+					}
+				} else {
+					track.enabled = true;
+				}
 			});
 		}
 	};
 
 	const toggleVideo = async () => {
-		if (callState.localStream) {
-			let permissionCameraGranted;
-			const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
-			if (cameraPermission.state === 'granted') {
-				permissionCameraGranted = true;
-			}
-			if (!isShowMeetDM && !permissionCameraGranted) {
-				dispatch(toastActions.addToast({ message: 'Camera is not available', type: 'warning', autoClose: 1000 }));
-				return;
-			}
-			const videoTracks = callState.localStream.getVideoTracks();
-			if (videoTracks.length === 0) {
-				try {
-					const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-					const videoTrack = videoStream.getVideoTracks()[0];
-					callState.localStream.addTrack(videoTrack);
-					const senders = callState.peerConnection?.getSenders() || [];
-					const videoSender = senders.find((sender) => sender.track?.kind === 'video');
-					if (videoSender) {
-						await videoSender.replaceTrack(videoTrack);
-					} else {
-						callState.peerConnection?.addTrack(videoTrack, callState.localStream);
-					}
-					if (localVideoRef.current) {
-						localVideoRef.current.srcObject = callState.localStream;
-					}
-				} catch (error) {
-					console.error('Error adding video track:', error);
-				}
-			} else {
-				videoTracks.forEach((track) => {
-					track.enabled = !track.enabled;
-				});
-			}
-			dispatch(DMCallActions.setIsShowMeetDM(!isShowMeetDM));
+		if (!callState.localStream) return;
+		let permissionCameraGranted = false;
+
+		const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
+		if (cameraPermission.state === 'granted') {
+			permissionCameraGranted = true;
 		}
+
+		if (!isShowMeetDM && !permissionCameraGranted) {
+			dispatch(toastActions.addToast({ message: 'Camera is not available', type: 'warning', autoClose: 1000 }));
+			return;
+		}
+
+		const videoTracks = callState.localStream.getVideoTracks();
+		if (videoTracks.length === 0) {
+			try {
+				const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+				const videoTrack = videoStream.getVideoTracks()[0];
+
+				callState.localStream.addTrack(videoTrack);
+				const senders = callState.peerConnection?.getSenders() || [];
+				const videoSender = senders.find((sender) => sender.track?.kind === 'video');
+				if (videoSender) {
+					await videoSender.replaceTrack(videoTrack);
+				} else {
+					callState.peerConnection?.addTrack(videoTrack, callState.localStream);
+				}
+
+				if (localVideoRef.current) {
+					localVideoRef.current.srcObject = callState.localStream;
+				}
+			} catch (error) {
+				console.error('Error adding video track:', error);
+			}
+		} else {
+			videoTracks.forEach((track) => {
+				if (track.enabled) {
+					track.stop();
+					if (callState.localStream) {
+						callState.localStream.removeTrack(track);
+					}
+
+					const senders = callState.peerConnection?.getSenders() || [];
+					const videoSender = senders.find((sender) => sender.track === track);
+					if (videoSender) {
+						callState.peerConnection?.removeTrack(videoSender);
+					}
+				} else {
+					track.enabled = true;
+				}
+			});
+		}
+
+		dispatch(DMCallActions.setIsShowMeetDM(!isShowMeetDM));
 	};
 
 	return {

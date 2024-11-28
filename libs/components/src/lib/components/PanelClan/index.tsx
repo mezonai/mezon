@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker, UserRestrictionZone } from '@mezon/core';
 import { clansActions, defaultNotificationActions, selectDefaultNotificationClan, useAppDispatch } from '@mezon/store';
-import { EPermission, IClan, serverSettingsMenuList } from '@mezon/utils';
+import { EPermission, IClan } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -112,13 +112,14 @@ const PanelClan: React.FC<IPanelCLanProps> = ({ coords, clan, setShowClanListMen
 				<ItemPanel children={'Hide Muted Channels'} type={'checkbox'} />
 			</GroupPanels>
 			<GroupPanels>
-				<UserRestrictionZone policy={canManageCLan}>
+				{/* will be add later  */}
+				{/* <UserRestrictionZone policy={canManageCLan}>
 					<Dropdown
 						trigger="hover"
 						dismissOnClick={false}
 						renderTrigger={() => (
 							<div>
-								<ItemPanel children={'Serve Settings'} dropdown="change here" />
+								<ItemPanel children={'Clan Settings'} dropdown="change here" />
 							</div>
 						)}
 						label=""
@@ -129,7 +130,7 @@ const PanelClan: React.FC<IPanelCLanProps> = ({ coords, clan, setShowClanListMen
 							<ItemPanel children={menuItem.label} notificationId={menuItem.value} name="ServerSettingsMenu" key={menuItem.value} />
 						))}
 					</Dropdown>
-				</UserRestrictionZone>
+				</UserRestrictionZone> */}
 				<ItemPanel children={'Privacy Settings'} />
 				<ItemPanel children={'Edit Server Profile'} />
 			</GroupPanels>

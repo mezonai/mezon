@@ -1,10 +1,13 @@
 import { useSDK } from '@metamask/sdk-react';
-import { accountActions, selectAllAccount, selectSession, useAppDispatch } from '@mezon/store';
+import { accountActions, selectAllAccount, useAppDispatch } from '@mezon/store';
+import { MezonContext } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { BrowserProvider, Contract, ethers } from 'ethers';
-import { useState } from 'react';
+import isElectron from 'is-electron';
+import { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import QRModal from '../QRModal';
 import WalletConfirm from '../WalletConfirm';
 import WithdrawConfirm from '../WithdrawConfirm';
 
@@ -29,10 +32,12 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 	const userProfile = useSelector(selectAllAccount);
 
 	const dispatch = useAppDispatch();
-	const { sdk, provider } = useSDK();
+	const { connected, sdk, provider } = useSDK();
+	const [qrUri, setQrUri] = useState<string>('');
 	const [isLoading, setIsLoading] = useState(false);
 	const [onOpenWalletConfirm, setOnOpenWalletConfirm] = useState<boolean>(false);
 	const [openModelConfirm, setOpenModelConfirm] = useState<boolean>(false);
+	const { refreshSession, sessionRef } = useContext(MezonContext);
 
 	const [currentStep, setCurrentStep] = useState(2);
 	const [formData, setFormData] = useState({
@@ -40,7 +45,6 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 		address: '',
 		amount: 0
 	});
-	const session = useSelector(selectSession);
 
 	const coins = [{ value: 'MezonTreasury', label: 'MezonTreasury' }];
 
@@ -82,10 +86,21 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 		if (step === 3) return !!formData.amount;
 		return false;
 	};
+
+	useEffect(() => {
+		if (sdk) {
+			sdk.on('display_uri', setQrUri);
+		}
+
+		return () => {
+			if (sdk) {
+				sdk.off('display_uri', setQrUri);
+			}
+		};
+	}, [connected, sdk]);
 	if (!sdk || !provider) {
 		return;
 	}
-
 	const getContract = async () => {
 		const ethersProvider = new BrowserProvider(provider);
 		const signer = await ethersProvider.getSigner();
@@ -93,6 +108,11 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 	};
 
 	const getSignature = async () => {
+		refreshSession({
+			token: sessionRef.current?.token ?? '',
+			refresh_token: sessionRef.current?.refresh_token ?? '',
+			created: sessionRef.current?.created ?? true
+		});
 		try {
 			setIsLoading(true);
 
@@ -107,7 +127,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 					address: formData.address,
 
 					mezonUserId: userId,
-					mezonAccessToken: session?.token
+					mezonAccessToken: sessionRef.current?.token
 				})
 			});
 
@@ -133,15 +153,31 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 
 	const connectWalletHandler = async () => {
 		try {
-			const accounts = await sdk?.connect();
-			const userAddress = accounts?.[0];
+			if (isElectron()) {
+				const accounts = await sdk?.connect();
+				const userAddress = accounts?.[0];
 
-			if (userAddress) {
-				setFormData((prev) => ({
-					...prev,
-					address: userAddress
-				}));
-				setCurrentStep(3);
+				if (userAddress) {
+					setFormData((prev) => ({
+						...prev,
+						address: userAddress
+					}));
+					setCurrentStep(3);
+				}
+				if (!sdk) {
+					return <div>No SDK</div>;
+				}
+			} else {
+				const accounts = await sdk?.connect();
+				const userAddress = accounts?.[0];
+
+				if (userAddress) {
+					setFormData((prev) => ({
+						...prev,
+						address: userAddress
+					}));
+					setCurrentStep(3);
+				}
 			}
 		} catch (err) {
 			toast.error(`Failed to connect:${err}`);
@@ -159,7 +195,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			body: JSON.stringify({
 				requestId: id,
 				transactionHash: hash,
-				mezonAccessToken: session?.token
+				mezonAccessToken: sessionRef.current?.token
 			})
 		});
 	};
@@ -172,7 +208,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			},
 			body: JSON.stringify({
 				requestId: id,
-				mezonAccessToken: session?.token
+				mezonAccessToken: sessionRef.current?.token
 			})
 		});
 	};
@@ -187,6 +223,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 				method: 'wallet_switchEthereumChain',
 				params: [{ chainId: ethers.toBeHex(chainId) }]
 			});
+			toast.success('Change network successful');
 		} catch (error: any) {
 			if (error.code === 4902) {
 				console.error('Chain not found in MetaMask. Adding the chain...');
@@ -209,7 +246,6 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			if (Number(networkVersion) !== Number(chainId)) {
 				try {
 					await switchNetwork(chainId);
-					toast.success('Change network successful');
 				} catch (error) {
 					toast.error('Please change network');
 					return;
@@ -407,6 +443,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 					coin={formData.amount}
 				/>
 			)}
+			{qrUri && isElectron() && <QRModal uri={qrUri} onClose={() => setQrUri('')} address={formData.address} />}
 		</div>
 	);
 };

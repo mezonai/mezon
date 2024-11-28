@@ -17,7 +17,9 @@ export const MessageActionsPanel: React.FC<MessageActionsPanelProps> = ({ action
 					{component.type === EMessageComponentType.BUTTON && (
 						<MessageButton button={component.component} messageId={messageId} senderId={senderId} buttonId={component.id} />
 					)}
-					{component.type === EMessageComponentType.SELECT && <MessageSelect select={component.component} />}
+					{component.type === EMessageComponentType.SELECT && (
+						<MessageSelect select={component.component} messageId={messageId} senderId={senderId} buttonId={component.id} />
+					)}
 				</Fragment>
 			))}
 		</div>

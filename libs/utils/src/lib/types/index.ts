@@ -1,6 +1,7 @@
 import {
 	ChannelDescription,
 	ChannelMessage,
+	ChannelStreamMode,
 	ChannelType,
 	HashtagDm,
 	JoinPTTChannel,
@@ -232,6 +233,7 @@ export interface IEmbedProps {
 	image?: { url: string };
 	timestamp?: string;
 	footer?: { text: string; icon_url?: string };
+	options?: IMessageRatioOption[];
 }
 
 export enum EButtonMessageStyle {
@@ -260,6 +262,10 @@ export interface IMessageSelectOption {
 	value: string;
 	description?: string;
 	default?: boolean;
+}
+export interface IMessageRatioOption {
+	label: string;
+	description?: string;
 }
 
 export enum EMessageSelectType {
@@ -1207,6 +1213,17 @@ export enum EUserStatus {
 export type IDmCallInfo = {
 	groupId?: string;
 	isVideo?: boolean;
+};
+
+export type ImageWindowProps = {
+	attachmentData: ApiMessageAttachment & { create_time?: string };
+	messageId: string;
+	mode: ChannelStreamMode;
+	attachmentUrl: string;
+	currentClanId: string;
+	currentChannelId: string;
+	currentDmId: string;
+	checkListAttachment: boolean;
 };
 
 export enum ESummaryInfo {
