@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
 	useChannelMembers,
 	useClickUpToEdit,
@@ -66,7 +67,6 @@ import {
 	formatMentionsToString,
 	getDisplayMention,
 	searchMentionsHashtag,
-	setCaretPosition,
 	threadError
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -555,21 +555,121 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	};
 
 	const input = document.querySelector('#editorReactMention') as HTMLInputElement | HTMLTextAreaElement;
+	const caretPositionRef = useRef<number>(0); // Dùng useRef để lưu vị trí caret
+
+	useEffect(() => {
+		const input = editorRef.current;
+
+		const handleCaretPosition = () => {
+			console.log(1);
+			if (input) {
+				caretPositionRef.current = input.selectionStart || 0;
+				console.log('Caret position: ', caretPositionRef.current);
+			}
+		};
+
+		const handleKeyDown = (event: Event) => {
+			// Safely cast the event to KeyboardEvent
+			const keyboardEvent = event as unknown as KeyboardEvent;
+
+			if (input) {
+				const currentPosition = input.selectionStart || 0;
+
+				if (
+					keyboardEvent.key === 'ArrowLeft' ||
+					keyboardEvent.key === 'ArrowRight' ||
+					keyboardEvent.key === 'ArrowUp' ||
+					keyboardEvent.key === 'ArrowDown'
+				) {
+					caretPositionRef.current = currentPosition;
+					console.log('Arrow key pressed. Current caret position: ', caretPositionRef.current);
+				}
+			}
+		};
+
+		const handleClick = () => {
+			if (input) {
+				caretPositionRef.current = input.selectionStart || 0;
+				console.log('Click event. Current caret position: ', caretPositionRef.current);
+			}
+		};
+
+		const handleSelect = () => {
+			if (input) {
+				const selectionStart = input.selectionStart || 0;
+				const selectionEnd = input.selectionEnd || 0;
+				console.log('Text selected. Selection start: ', selectionStart, 'Selection end: ', selectionEnd);
+			}
+		};
+
+		// Add event listeners
+		if (input) {
+			input.addEventListener('input', handleCaretPosition);
+			input.addEventListener('focus', handleCaretPosition);
+			input.addEventListener('blur', handleCaretPosition);
+			input.addEventListener('keydown', handleKeyDown); // Now accepts the KeyboardEvent type after casting
+			input.addEventListener('click', handleClick);
+			input.addEventListener('select', handleSelect);
+		}
+
+		// Cleanup event listeners on component unmount
+		return () => {
+			if (input) {
+				input.removeEventListener('input', handleCaretPosition);
+				input.removeEventListener('focus', handleCaretPosition);
+				input.removeEventListener('blur', handleCaretPosition);
+				input.removeEventListener('keydown', handleKeyDown);
+				input.removeEventListener('click', handleClick);
+				input.removeEventListener('select', handleSelect);
+			}
+		};
+	}, []);
+
 	function handleEventAfterEmojiPicked() {
 		const isEmptyEmojiPicked = emojiPicked && Object.keys(emojiPicked).length === 1 && emojiPicked[''] === '';
 		if (isEmptyEmojiPicked || !input) return;
 
 		if (emojiPicked) {
+			// let newCaretPosition = caretPositionRef.current || 0;
+
 			for (const [emojiKey, emojiValue] of Object.entries(emojiPicked)) {
 				const emojiText = `::[${emojiKey}](${emojiValue}) `;
-				textFieldEdit.insert(input, emojiText);
+				console.log('caretPositionRef.current: ', caretPositionRef.current);
 
-				const caretPosition = input.selectionStart || 0;
-				const newCaretPosition = caretPosition + emojiText.length;
-				setCaretPosition(input, newCaretPosition);
+				// Insert the emoji at the current caret position
+				textFieldEdit.insert(input, emojiText);
+				caretPositionRef.current = input.selectionStart || 0;
+				// // Update caret position
+				// newCaretPosition = emojiKey.length;
+				// console.log('emojiText: ', emojiKey);
+				// console.log('emojiText.length: ', emojiKey.length);
+				// console.log('newCaretPosition: ', newCaretPosition);
+				// caretPositionRef.current = newCaretPosition; // Update the ref with the new position
+
+				// // Set the new caret position after a short delay to ensure input updates
+				// setTimeout(() => {
+				// 	input.setSelectionRange(newCaretPosition, newCaretPosition);
+				// 	input.focus();
+				// }, 0);
 			}
 		}
 	}
+
+	// export function setCaretPosition(elem: HTMLInputElement | HTMLTextAreaElement, caretPos: number): void {
+	// 	if (!elem) {
+	// 		console.error('Element is null or undefined.');
+	// 		return;
+	// 	}
+
+	// 	caretPos = Math.max(0, Math.min(caretPos, elem.value.length));
+
+	// 	if (typeof elem.setSelectionRange === 'function') {
+	// 		elem.focus();
+	// 		elem.setSelectionRange(caretPos, caretPos);
+	// 	} else {
+	// 		console.error('setSelectionRange is not supported on this element.');
+	// 	}
+	// }
 
 	const clickUpToEditMessage = () => {
 		const idRefMessage = lastMessageByUserId?.id;
@@ -620,9 +720,6 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		if (dataReferences.message_ref_id || (!openEditMessageState && !idMessageRefEdit)) {
 			return focusToElement(editorRef);
 		}
-		// if (emojiPicked?.shortName !== '' && !reactionRightState) {
-		// 	setCaretPosition(input, 10);
-		// }
 	}, [dataReferences.message_ref_id, openEditMessageState, idMessageRefEdit, isShowPopupQuickMess]);
 
 	useEffect(() => {

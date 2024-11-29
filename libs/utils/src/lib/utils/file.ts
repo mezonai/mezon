@@ -136,18 +136,3 @@ export const convertMentionOnfile = (roles: IRolesClan[], contentString: string,
 
 	return mentions;
 };
-export function setCaretPosition(elem: HTMLInputElement | HTMLTextAreaElement, caretPos: number): void {
-	if (!elem) {
-		console.error('Element is null or undefined.');
-		return;
-	}
-
-	caretPos = Math.max(0, Math.min(caretPos, elem.value.length));
-
-	if (typeof elem.setSelectionRange === 'function') {
-		elem.focus();
-		elem.setSelectionRange(caretPos, caretPos);
-	} else {
-		console.error('setSelectionRange is not supported on this element.');
-	}
-}
