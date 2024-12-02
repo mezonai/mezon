@@ -12,9 +12,10 @@ export type MessageImage = {
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	mode?: ChannelStreamMode;
 	messageId?: string;
+	multiple?: boolean;
 };
 
-const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId }: MessageImage) => {
+const MessageImage = memo(({ multiple, attachmentData, onContextMenu, mode, messageId }: MessageImage) => {
 	const imageUrlKey = `${attachmentData.url}?timestamp=${new Date().getTime()}`;
 
 	const dispatch = useAppDispatch();
@@ -114,11 +115,15 @@ const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId }: M
 	}
 	return (
 		<div
-			className="my-1"
-			style={{
-				height,
-				width: width || 'auto'
-			}}
+			className={`my-1 flex-1 flex ${width / height > 2 && multiple ? 'grid-cols-2' : 'grid-cols-1'} `}
+			style={
+				multiple
+					? {}
+					: {
+							height,
+							width: width || 'auto'
+						}
+			}
 		>
 			<div style={{ height: 1, width: 1, opacity: 0 }}>.</div>
 			{showLoader && !imageLoaded && (
@@ -130,8 +135,8 @@ const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId }: M
 					<img
 						key={imageUrlKey}
 						onContextMenu={handleContextMenu}
-						className={` flex object-cover object-left-top rounded cursor-default ${fadeIn.current ? 'fade-in' : ''}`}
-						style={{ width: width || 'auto', height }}
+						className={` flex-1 object-cover object-left-top rounded cursor-default w-full ${fadeIn.current ? 'fade-in' : ''}`}
+						// style={{ width: width || 'auto', height }}
 						src={createImgproxyUrl(attachmentData.url ?? '', { width: 600, height: 300, resizeType: 'fit' })}
 						alt={'message'}
 						onClick={() => handleClick(attachmentData.url || '')}

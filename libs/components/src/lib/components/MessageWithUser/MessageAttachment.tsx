@@ -66,12 +66,18 @@ const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMes
 			)}
 
 			{images.length > 0 && (
-				<div className="flex flex-row justify-start flex-wrap w-full gap-x-2">
+				<div className={`grid grid-cols-2 justify-start flex-wrap w-full gap-x-2 ${images.length > 1 ? 'max-w-[550px]' : ''}`}>
 					{images.map((image, index) => {
 						const checkImage = notImplementForGifOrStickerSendFromPanel(image);
 						return (
 							<div key={`${index}_${image.url}`} className={`${checkImage ? '' : 'h-auto'}  `}>
-								<MessageImage messageId={message.id} mode={mode} attachmentData={image} onContextMenu={onContextMenu} />
+								<MessageImage
+									messageId={message.id}
+									mode={mode}
+									attachmentData={image}
+									onContextMenu={onContextMenu}
+									multiple={images.length > 1}
+								/>
 							</div>
 						);
 					})}
