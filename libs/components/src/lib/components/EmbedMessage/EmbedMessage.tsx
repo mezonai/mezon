@@ -1,4 +1,5 @@
-import { IEmbedProps } from '@mezon/utils';
+import { EmbedTypeForm, IEmbedProps } from '@mezon/utils';
+import EmbedDaily from './EmbedDaily';
 import { EmbedAuthor } from './components/EmbedAuthor';
 import { EmbedDescription } from './components/EmbedDescription';
 import { EmbedFields } from './components/EmbedFields';
@@ -8,7 +9,10 @@ import { EmbedThumbnail } from './components/EmbedThumbnail';
 import { EmbedTitle } from './components/EmbedTitle';
 
 export default function EmbedMessage({ embed, message_id, senderId }: { embed: IEmbedProps; message_id: string; senderId: string }) {
-	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
+	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail, type } = embed;
+	if (type === EmbedTypeForm.DAILY) {
+		return <EmbedDaily embed={embed} message_id={message_id} senderId={senderId} />;
+	}
 	return (
 		<div className="max-w-[520px] w-fit dark:bg-bgSecondary bg-bgLightSecondary rounded-lg overflow-hidden text-left relative mt-2 text-textLightTheme dark:text-textDarkTheme">
 			<div className="flex flex-col px-5 pt-2 pb-4">

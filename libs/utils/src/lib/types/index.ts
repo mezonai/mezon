@@ -218,7 +218,9 @@ export type IMessageWithUser = IMessage & {
 	isStartedMessageOfTheDay?: boolean;
 	user: IUser | null;
 };
-
+export enum EmbedTypeForm {
+	DAILY = 1
+}
 export interface IEmbedProps {
 	color?: string;
 	title?: string;
@@ -234,6 +236,9 @@ export interface IEmbedProps {
 	image?: { url: string };
 	timestamp?: string;
 	footer?: { text: string; icon_url?: string };
+	type?: EmbedTypeForm;
+	args?: string[];
+	mess?: ChannelMessage;
 }
 
 export interface IFieldEmbed {
@@ -287,6 +292,7 @@ export interface IMessageInput {
 	required?: boolean;
 	textarea?: boolean;
 	style?: EButtonMessageStyle;
+	isNumber?: boolean;
 }
 
 export enum IMessageTypeCallLog {
@@ -320,6 +326,9 @@ export interface IMessageSelect {
 	// Maximum number of items that can be chosen (defaults to 1)
 	max_options?: number;
 	disabled?: boolean;
+	textarea?: boolean;
+	required?: boolean;
+	isNumber?: boolean;
 }
 
 export interface IMessageComponent<T> {
