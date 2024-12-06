@@ -11,6 +11,7 @@ import {
 import {
 	ChannelMembersEntity,
 	notificationActions,
+	selectCurrentClan,
 	selectCurrentUserId,
 	selectFriendStatus,
 	selectModeResponsive,
@@ -26,6 +27,7 @@ import AvatarProfile from '../ModalUserProfile/AvatarProfile';
 import GroupIconBanner from '../ModalUserProfile/StatusProfile/groupIconBanner';
 import ItemPanel from '../PanelChannel/ItemPanel';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
+import { EActiveType } from '../SettingProfile/SettingRightProfile';
 import AboutMe from './AboutMe';
 import Activity from './Activity';
 import MutualFriends from './MutualFriends';
@@ -62,11 +64,12 @@ const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }
 	const isSelf = currentUserId === userId;
 	const [isOPenEditOption, setIsOPenEditOption] = useState(false);
 	const panelRef = useRef<HTMLDivElement | null>(null);
-	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile } = useSettingFooter();
+	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
+		useSettingFooter();
 	const displayAvatar = userById?.clan_avatar || userById?.user?.avatar_url;
 	const displayUsername = userById?.clan_nick || userById?.user?.display_name || userById?.user?.username;
 	const userStatus = useMemberStatus(userId || '');
-
+	const currentClan = useSelector(selectCurrentClan);
 	const directMessageWithUser = async (userId: string) => {
 		const response = await createDirectMessageWithUser(userId);
 		if (response.channel_id) {
@@ -116,6 +119,7 @@ const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }
 
 	const handleOpenUserProfileSetting = () => {
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
+		setIsShowSettingProfileInitTab(EActiveType.USER_SETTING);
 		setIsShowSettingFooterStatus(true);
 		if (onClose) {
 			onClose();
@@ -125,6 +129,8 @@ const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }
 	const handleOpenClanProfileSetting = () => {
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
+		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
+		setClanIdSettingProfile(currentClan?.clan_id || '');
 		setIsShowSettingFooterStatus(true);
 		if (onClose) {
 			onClose();

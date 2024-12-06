@@ -1,6 +1,7 @@
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllAccount, selectUpdateToken } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
+import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView, Text } from 'react-native';
 import { Grid } from 'react-native-animated-spinkit';

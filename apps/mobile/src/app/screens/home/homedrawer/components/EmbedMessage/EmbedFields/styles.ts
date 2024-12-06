@@ -3,6 +3,9 @@ import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
+		field: {
+			gap: size.s_6
+		},
 		name: {
 			color: colors.white,
 			fontWeight: 'bold',

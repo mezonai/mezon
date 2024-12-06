@@ -61,7 +61,8 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 				id: item.id ?? '',
 				display: item.title,
 				avatarUrl: '',
-				clanNick: item.title
+				clanNick: item.title,
+				color: item.color
 			})) ?? [];
 
 		if (channelMode === ChannelStreamMode.STREAM_MODE_CHANNEL) {

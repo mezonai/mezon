@@ -1,11 +1,19 @@
 import { useAccount } from '@mezon/core';
-import { channelMembersActions, selectCurrentChannelId, selectCurrentClanId, selectTheme, useAppDispatch } from '@mezon/store';
+import {
+	channelMembersActions,
+	clansActions,
+	selectCurrentChannelId,
+	selectCurrentClanId,
+	selectLogoCustom,
+	selectTheme,
+	useAppDispatch
+} from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
-import { InputField } from '@mezon/ui';
-import { fetchAndCreateFiles, fileTypeImage } from '@mezon/utils';
+import { Icons, InputField } from '@mezon/ui';
+import { createImgproxyUrl, fetchAndCreateFiles, fileTypeImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/dist/api.gen';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
 import SettingUserClanProfileCard, { Profilesform } from '../SettingUserClanProfileCard';
@@ -36,6 +44,7 @@ const SettingRightUser = ({
 	const [flagsRemoveAvartar, setFlagsRemoveAvartar] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 	const [openModalType, setOpenModalType] = useState(false);
+	const logoCustom = useSelector(selectLogoCustom);
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId) || '';
 	const currentClanId = useSelector(selectCurrentClanId) || '';
@@ -129,6 +138,43 @@ const SettingRightUser = ({
 	};
 	const appearanceTheme = useSelector(selectTheme);
 
+	const handleChangeLogo = (e: ChangeEvent<HTMLInputElement>) => {
+		if (!e.target.files || e.target.files.length === 0) {
+			return;
+		}
+		const allowedTypes = fileTypeImage;
+		if (!allowedTypes.includes(e.target.files[0].type)) {
+			setOpenModalType(true);
+			return;
+		}
+
+		if (e.target.files[0].size > 1000000) {
+			setOpenModal(true);
+			return;
+		}
+		const session = sessionRef.current;
+		const client = clientRef.current;
+
+		if (!client || !session) {
+			throw new Error('Client or file is not initialized');
+		}
+
+		handleUploadFile(client, session, currentClanId || '0', currentChannelId || '0', e.target.files[0].name || '', e.target.files[0]).then(
+			(attachment) => {
+				dispatch(
+					clansActions.updateUser({
+						user_name: name,
+						avatar_url: urlImage,
+						display_name: valueDisplayName,
+						about_me: editAboutUser,
+						dob: dob,
+						logo: attachment.url
+					})
+				);
+			}
+		);
+	};
+
 	return (
 		<>
 			<div className="flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col">
@@ -183,6 +229,34 @@ const SettingRightUser = ({
 									{editAboutUser.length}/{128}
 								</span>
 							</div>
+						</div>
+					</div>
+
+					<div className="mt-8 flex items-center bg-bgTertiary p-4 rounded justify-between">
+						<p className="font-semibold tracking-wide text-sm">Direct Message Icon</p>
+						<div className="flex gap-x-5">
+							<label
+								htmlFor="logo"
+								className="text-white relative font-medium flex items-center w-11 aspect-square justify-center bg-bgSecondary600 rounded cursor-pointer text-[14px]"
+							>
+								{logoCustom ? (
+									<img
+										src={createImgproxyUrl(logoCustom, { width: 44, height: 44, resizeType: 'fit' })}
+										className="w-11 aspect-square object-cover rounded"
+									/>
+								) : (
+									<Icons.AddIcon />
+								)}
+
+								<input
+									accept="image/*"
+									type="file"
+									name="logo"
+									id="logo"
+									onChange={handleChangeLogo}
+									className="w-full absolute top-0 left-0 h-full text-sm text-slate-500 hidden"
+								/>
+							</label>
 						</div>
 					</div>
 				</div>

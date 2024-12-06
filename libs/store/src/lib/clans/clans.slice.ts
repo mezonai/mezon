@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { IClan, LIMIT_CLAN_ITEM, LoadingStatus, TypeCheck } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiUpdateClanDescRequest, ChannelType } from 'mezon-js';
-import { ApiClanDesc } from 'mezon-js/api.gen';
+import { ApiClanDesc, ApiUpdateAccountRequest } from 'mezon-js/api.gen';
 import { accountActions } from '../account/account.slice';
 import { categoriesActions } from '../categories/categories.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -246,14 +246,15 @@ type UpdateLinkUser = {
 	about_me: string;
 	dob: string;
 	noCache?: boolean;
+	logo?: string;
 };
 
 export const updateUser = createAsyncThunk(
 	'clans/updateUser',
-	async ({ user_name, avatar_url, display_name, about_me, noCache = false, dob }: UpdateLinkUser, thunkAPI) => {
+	async ({ user_name, avatar_url, display_name, about_me, logo, noCache = false, dob }: UpdateLinkUser, thunkAPI) => {
 		try {
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
-			const body = {
+			const body: ApiUpdateAccountRequest = {
 				avatar_url: avatar_url || '',
 				display_name: display_name || '',
 				lang_tag: 'en',
@@ -261,7 +262,8 @@ export const updateUser = createAsyncThunk(
 				timezone: '',
 				username: user_name,
 				about_me: about_me,
-				dob: dob
+				dob: dob,
+				logo: logo
 			};
 			const response = await mezon.client.updateAccount(mezon.session, body);
 			if (!response) {

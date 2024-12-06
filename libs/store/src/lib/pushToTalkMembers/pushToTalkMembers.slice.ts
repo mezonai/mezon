@@ -72,7 +72,8 @@ export const pushToTalkMembersSlice = createSlice({
 });
 
 export const pttMembersActions = {
-	...pushToTalkMembersSlice.actions}
+	...pushToTalkMembersSlice.actions
+};
 
 const { selectEntities } = pttUsersAdapter.getSelectors();
 export const pushToTalkMembersReducer = pushToTalkMembersSlice.reducer;

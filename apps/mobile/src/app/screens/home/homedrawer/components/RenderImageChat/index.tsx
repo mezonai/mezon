@@ -65,6 +65,7 @@ const RenderImage = React.memo(({ image, index, disable, onPress, onLongPress, i
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { resolution } = useImageResolution({ uri: image.url });
+	const [isLoadFailProxy, setIsLoadFailProxy] = React.useState<boolean>(false);
 
 	const imageSize = getAspectRatioSize({
 		aspectRatio: (resolution?.width || 1) / (resolution?.height || 1),
@@ -93,10 +94,13 @@ const RenderImage = React.memo(({ image, index, disable, onPress, onLongPress, i
 				]}
 				children={isUploading ? <UploadingIndicator /> : null}
 				source={{
-					uri: createImgproxyUrl(image?.url ?? '', { width: 500, height: 500, resizeType: 'fit' }),
+					uri: isLoadFailProxy ? image?.url : createImgproxyUrl(image?.url ?? '', { width: 500, height: 500, resizeType: 'fit' }),
 					priority: FastImage.priority.high
 				}}
 				resizeMode={!imageSize?.height && !isUploading ? 'cover' : isMultiple ? 'cover' : 'contain'}
+				onError={() => {
+					setIsLoadFailProxy(true);
+				}}
 			/>
 			{!!remainingImagesCount && <RemainingImagesOverlay remainingImagesCount={remainingImagesCount} photoSize={photoSize} styles={styles} />}
 		</TouchableOpacity>
@@ -131,6 +135,7 @@ const RemainingImagesOverlay = ({ remainingImagesCount, photoSize, styles }: any
 const RenderImageHaveSize = React.memo(
 	({ image, imageSize, index, disable, onPress, onLongPress, isMultiple = false, remainingImagesCount }: any) => {
 		const { themeValue } = useTheme();
+		const [isLoadFailProxy, setIsLoadFailProxy] = React.useState<boolean>(false);
 		const styles = style(themeValue);
 
 		const isUploading = !image?.url?.includes('http') && !image?.url?.includes('data:image/png;base64');
@@ -161,10 +166,13 @@ const RenderImageHaveSize = React.memo(
 					]}
 					children={isUploading ? <UploadingIndicator /> : null}
 					source={{
-						uri: createImgproxyUrl(image?.url ?? '', { width: 500, height: 500, resizeType: 'fit' }),
+						uri: isLoadFailProxy ? image?.url : createImgproxyUrl(image?.url ?? '', { width: 500, height: 500, resizeType: 'fit' }),
 						priority: FastImage.priority.high
 					}}
 					resizeMode={isMultiple ? 'cover' : 'contain'}
+					onError={() => {
+						setIsLoadFailProxy(true);
+					}}
 				/>
 				{!!remainingImagesCount && (
 					<RemainingImagesOverlay remainingImagesCount={remainingImagesCount} photoSize={photoSize} styles={styles} />

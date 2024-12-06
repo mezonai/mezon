@@ -1,5 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
+import React from 'react';
 import { StyleProp, TextStyle, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Images from '../../../assets/Images';
@@ -23,6 +24,7 @@ export default function MezonClanAvatar({
 	lightMode
 }: IMezonClanAvatarProps) {
 	const { themeValue } = useTheme();
+	const [isLoadFailProxy, setIsLoadFailProxy] = React.useState<boolean>(false);
 
 	const styles = style(themeValue);
 
@@ -30,9 +32,12 @@ export default function MezonClanAvatar({
 		return (
 			<FastImage
 				source={{
-					uri: createImgproxyUrl(image ?? '', { width: 100, height: 100, resizeType: 'fit' })
+					uri: isLoadFailProxy ? image : createImgproxyUrl(image ?? '', { width: 100, height: 100, resizeType: 'fit' })
 				}}
 				style={styles.image}
+				onError={() => {
+					setIsLoadFailProxy(true);
+				}}
 			/>
 		);
 	}

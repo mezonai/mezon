@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { ETypeLinkMedia, IChannelAttachment, LoadingStatus } from '@mezon/utils';
+import { ETypeLinkMedia, IAttachmentEntity, IChannelAttachment, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiChannelAttachment } from 'mezon-js/dist/api.gen';
@@ -55,7 +55,8 @@ const fetchChannelAttachmentsCached = memoizeAndTrack(
 );
 
 export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachment, channelId?: string, clanId?: string) => {
-	return { ...attachmentRes, id: attachmentRes.id || '', channelId, clanId };
+	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: attachmentRes.id || '', channelId, clanId };
+	return attachmentEntity;
 };
 
 export const fetchChannelAttachments = createAsyncThunk(

@@ -2,6 +2,7 @@ import { AVATAR_DEFAULT_URL } from '@mezon/mobile-components';
 import { useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectClanById, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl, getNameForPrioritize } from '@mezon/utils';
+import { safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';

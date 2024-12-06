@@ -17,6 +17,7 @@ import {
 	selectCurrentClanId,
 	selectIsFromFCMMobile,
 	selectIsLogin,
+	userStatusActions,
 	voiceActions
 } from '@mezon/store-mobile';
 import React, { useCallback, useContext, useEffect } from 'react';
@@ -184,6 +185,7 @@ const RootListener = () => {
 			promises.push(store.dispatch(directActions.fetchDirectMessage({})));
 			promises.push(store.dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true })));
 			promises.push(store.dispatch(listChannelsByUserActions.fetchListChannelsByUser({})));
+			promises.push(store.dispatch(userStatusActions.getUserStatus()));
 			await Promise.all(promises);
 			return null;
 		} catch (error) {

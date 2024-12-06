@@ -3,7 +3,7 @@ import { Icons, NameComponent } from '@mezon/ui';
 import { IChannelMember, createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { AvatarImage } from '../../components';
 
-function UserListItem({ user, channelID }: { user: IChannelMember; channelID: string }) {
+function UserListItem({ user, channelID, isPttList }: { user: IChannelMember; channelID: string; isPttList?: boolean }) {
 	const member = useAppSelector((state) => selectMemberClanByGoogleId(state, user.user_id ?? ''));
 	const userStream = useAppSelector((state) => selectMemberClanByUserId2(state, user.user_id ?? ''));
 	const clanNick = member ? member?.clan_nick : userStream?.clan_nick;
@@ -15,7 +15,9 @@ function UserListItem({ user, channelID }: { user: IChannelMember; channelID: st
 	const avatar = getAvatarForPrioritize(clanAvatar, avatarUrl);
 
 	return (
-		<div className="dark:hover:bg-[#36373D] hover:bg-bgLightModeButton w-[90%] flex p-1 ml-5 items-center gap-3 cursor-pointer rounded-sm">
+		<div
+			className={`dark:hover:bg-[#36373D] hover:bg-bgLightModeButton w-[90%] flex p-1 ${isPttList ? 'w-full' : 'ml-5'} items-center gap-3 cursor-pointer rounded-sm`}
+		>
 			<div className="w-5 h-5 rounded-full scale-75">
 				<div className="w-8 h-8 mt-[-0.3rem]">
 					{member || userStream ? (

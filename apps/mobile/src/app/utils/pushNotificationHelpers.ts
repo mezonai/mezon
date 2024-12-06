@@ -13,6 +13,7 @@ import notifee, { EventType } from '@notifee/react-native';
 import { AndroidVisibility } from '@notifee/react-native/src/types/NotificationAndroid';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { DrawerActions } from '@react-navigation/native';
+import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
@@ -23,7 +24,8 @@ import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
 
 export const checkNotificationPermission = async () => {
-	await notifee.requestPermission();
+	if (Platform.OS === 'ios') await notifee.requestPermission();
+
 	if (Platform.OS === 'android' && Platform.Version >= 33) {
 		const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 		if (permission !== PermissionsAndroid.RESULTS.GRANTED) {
@@ -410,7 +412,24 @@ const showRNNotificationCall = async (bodyData: any) => {
 			RNCallKeep.endCall(callUUID);
 			setTimeout(() => {
 				DeviceEventEmitter.emit(ActionEmitEvent.GO_TO_CALL_SCREEN, { payload: safeJSONParse(payload || '{}') });
-			}, 5000);
+			}, 3000);
+		});
+	} catch (error) {
+		/* empty */
+	}
+};
+
+const listRNCallKeep = async (bodyData: any) => {
+	try {
+		RNCallKeep.addEventListener('answerCall', ({ callUUID }) => {
+			RNCallKeep.backToForeground();
+			RNCallKeep.endCall(callUUID);
+			setTimeout(() => {
+				DeviceEventEmitter.emit(ActionEmitEvent.GO_TO_CALL_SCREEN, { payload: bodyData });
+			}, 3000);
+			RNCallKeep.addEventListener('endCall', ({ callUUID }) => {
+				RNCallKeep.endCall(callUUID);
+			});
 		});
 	} catch (error) {
 		/* empty */
@@ -424,9 +443,12 @@ export const setupIncomingCall = async (body: string) => {
 
 		if (Platform.OS === 'android') {
 			await showRNNotificationCall(bodyData);
+		} else {
+			await listRNCallKeep(bodyData);
 		}
 		RNCallKeep.displayIncomingCall(uuid.v4(), uuid.v4(), `${bodyData?.callerName} is calling you`, 'number', false, null);
 	} catch (error) {
+		console.error('log  => setupIncomingCall', error);
 		/* empty */
 	}
 };

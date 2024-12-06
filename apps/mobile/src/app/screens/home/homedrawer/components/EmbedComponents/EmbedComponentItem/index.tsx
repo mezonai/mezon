@@ -1,5 +1,5 @@
 import { baseColor, useTheme } from '@mezon/mobile-ui';
-import { messagesActions, selectCurrentUserId, useAppDispatch } from '@mezon/store-mobile';
+import { messagesActions, selectCurrentUserId, selectDataFormEmbedByMessageId, useAppDispatch } from '@mezon/store-mobile';
 import { EButtonMessageStyle, IButtonMessage } from '@mezon/utils';
 import { memo, useMemo } from 'react';
 import { Linking, Text, TouchableOpacity } from 'react-native';
@@ -19,6 +19,7 @@ export const EmbedComponentItem = memo(({ messageId, button, senderId, buttonId,
 	const styles = style(themeValue);
 	const currentUserId = useSelector(selectCurrentUserId);
 	const dispatch = useAppDispatch();
+	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, messageId));
 
 	const handleClickOptions = async () => {
 		if (button?.url) {
@@ -28,13 +29,16 @@ export const EmbedComponentItem = memo(({ messageId, button, senderId, buttonId,
 				throw new Error(err);
 			}
 		} else {
+			const data = JSON.stringify(embedData);
+
 			dispatch(
 				messagesActions.clickButtonMessage({
 					message_id: messageId,
 					channel_id: channelId as string,
 					button_id: buttonId,
 					sender_id: senderId,
-					user_id: currentUserId
+					user_id: currentUserId,
+					extra_data: data || ''
 				})
 			);
 		}

@@ -59,10 +59,11 @@ function UseMentionList({ channelID, channelMode }: UserMentionListProps): Menti
 		const roleMentions =
 			filteredRoles?.map((item: ApiRole) => ({
 				id: item.id ?? '',
-				display: item.title,
+				display: item?.title,
 				avatarUrl: '',
-				clanNick: item.title,
-				isRoleUser: true
+				clanNick: item?.title,
+				isRoleUser: true,
+				color: item?.color
 			})) ?? [];
 
 		if (channelMode === ChannelStreamMode.STREAM_MODE_CHANNEL || channelMode === ChannelStreamMode.STREAM_MODE_THREAD) {

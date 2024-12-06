@@ -1,8 +1,10 @@
+import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import { AppRegistry } from 'react-native';
 import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
 import { createLocalNotification, setupIncomingCall } from './app/utils/pushNotificationHelpers';
+notifee.onBackgroundEvent(async () => {});
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 	const title = remoteMessage?.notification?.title;

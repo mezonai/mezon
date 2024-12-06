@@ -361,7 +361,7 @@ const MessageItem = React.memo(
 								)}
 								{!!message?.content?.embed?.length &&
 									message?.content?.embed?.map((embed, index) => (
-										<EmbedMessage {...embed} key={`message_embed_${message?.id}_${index}`} />
+										<EmbedMessage message_id={message?.id} embed={embed} key={`message_embed_${message?.id}_${index}`} />
 									))}
 								{!!message?.content?.components?.length &&
 									message?.content.components?.map((component, index) => (

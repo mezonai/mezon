@@ -191,12 +191,10 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	};
 
 	useEffect(() => {
-		if (!isRemoteVideo) {
-			if (remoteVideoRef.current) {
-				remoteVideoRef.current.srcObject = null;
-			}
+		if (!isInCall || (!isShowMeetDM && !isRemoteVideo)) {
+			setActiveVideo(null);
 		}
-	}, [isRemoteVideo, remoteVideoRef]);
+	}, [isInCall, isRemoteVideo, isShowMeetDM]);
 
 	if (!isInCall && !isInChannelCalled) return <div />;
 
@@ -234,7 +232,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 			>
 				{/* Local Video */}
 				<div
-					className={`${activeVideo === 'remote' ? 'absolute right-0 bottom-0' : `${activeVideo === 'local' ? 'relative w-fit' : 'relative w-full'}`} `}
+					className={`${activeVideo === 'remote' ? 'absolute z-10 right-0 bottom-0' : `${activeVideo === 'local' ? 'relative w-fit' : 'relative w-full'}`} `}
 				>
 					<video
 						ref={localVideoRef}
@@ -250,7 +248,10 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
 						}}
 					/>
-					<div className="flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+
+					<div
+						className={`flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${!isShowMeetDM ? 'w-full h-full bg-black rounded-lg' : ''} `}
+					>
 						{!isShowMeetDM && (
 							<div className=" flex flex-col items-center">
 								<Icons.IconMeetDM
@@ -274,7 +275,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 				</div>
 				{/* Remote Video */}
 				<div
-					className={`${activeVideo === 'local' ? 'absolute right-0 bottom-0' : `${activeVideo === 'remote' ? 'relative w-fit' : 'relative w-full'}`}`}
+					className={`${activeVideo === 'local' ? 'absolute z-10 right-0 bottom-0' : `${activeVideo === 'remote' ? 'relative w-fit' : 'relative w-full'}`}`}
 				>
 					<div className="relative w-full h-full">
 						<video
@@ -291,7 +292,9 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							}}
 						/>
 
-						<div className="flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+						<div
+							className={`flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${!isRemoteVideo ? 'w-full h-full bg-black rounded-lg' : ''} `}
+						>
 							{!isRemoteVideo && (
 								<div className="flex flex-col items-center">
 									<Icons.IconMeetDM

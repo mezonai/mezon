@@ -15,6 +15,8 @@ export const APP_FEATURE_KEY = 'app';
 interface showSettingFooterProps {
 	status: boolean;
 	initTab: string;
+	profileInitTab: string;
+	clanId: string;
 	isUserProfile?: boolean;
 }
 
@@ -58,7 +60,7 @@ export const initialAppState: AppState = {
 	hasInternetMobile: false,
 	loadingMainMobile: false,
 	isFromFcmMobile: false,
-	isShowSettingFooter: { status: false, initTab: 'Account', isUserProfile: true },
+	isShowSettingFooter: { status: false, initTab: 'Account', isUserProfile: true, profileInitTab: 'USER_SETTING', clanId: '' },
 	isShowPopupQuickMess: false,
 	categoryChannelOffsets: {}
 };
@@ -170,6 +172,21 @@ export const appSlice = createSlice({
 				initTab: action.payload
 			};
 		},
+
+		setIsShowSettingProfileInitTab: (state, action) => {
+			state.isShowSettingFooter = {
+				...state.isShowSettingFooter,
+				profileInitTab: action.payload
+			};
+		},
+
+		setClanIdSettingProfile: (state, action) => {
+			state.isShowSettingFooter = {
+				...state.isShowSettingFooter,
+				clanId: action.payload
+			};
+		},
+
 		setIsUserProfile: (state, action) => {
 			state.isShowSettingFooter = {
 				...state.isShowSettingFooter,

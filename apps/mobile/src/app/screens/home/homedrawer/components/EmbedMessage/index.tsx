@@ -11,7 +11,12 @@ import { EmbedFooter } from './EmbedFooter';
 import { EmbedTitle } from './EmbedTitle';
 import { style } from './styles';
 
-export const EmbedMessage = memo((embed: IEmbedProps) => {
+type EmbedMessageProps = {
+	message_id: string;
+	embed: IEmbedProps;
+};
+
+export const EmbedMessage = memo(({ message_id, embed }: EmbedMessageProps) => {
 	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -25,7 +30,7 @@ export const EmbedMessage = memo((embed: IEmbedProps) => {
 						{!!author && <EmbedAuthor {...author} />}
 						{!!title && <EmbedTitle title={title} url={url} />}
 						{!!description && <EmbedDescription description={description} />}
-						{!!fields && <EmbedFields fields={fields} />}
+						{!!fields && <EmbedFields message_id={message_id} fields={fields} />}
 					</View>
 					{!!thumbnail && (
 						<FastImage

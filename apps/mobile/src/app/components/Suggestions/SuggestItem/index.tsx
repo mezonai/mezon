@@ -1,6 +1,6 @@
 import { useCheckVoiceStatus } from '@mezon/core';
 import { Icons, ThreadIcon, ThreadIconLocker } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum, checkIsThread, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -19,9 +19,10 @@ type SuggestItemProps = {
 	emojiId?: string;
 	channelId?: string;
 	channel?: ChannelsEntity;
+	color?: string;
 };
 
-const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaultAvatar, isRoleUser, emojiId, channel }: SuggestItemProps) => {
+const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaultAvatar, isRoleUser, emojiId, channel, color }: SuggestItemProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const emojiSrc = emojiId ? getSrcEmoji(emojiId) : '';
@@ -47,6 +48,25 @@ const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaul
 	}, [channel]);
 
 	const isVoiceActive = useCheckVoiceStatus(channelId);
+
+	const renderRoleUser = () => (
+		<Block>
+			{isRoleUser && (
+				<Block flexDirection="row" alignItems="center" gap={size.s_10}>
+					<Icons.RoleIcon width={size.s_20} height={size.s_20} />
+					<Text style={[styles.roleText, { color: color }]}>{`${name}`}</Text>
+				</Block>
+			)}
+			{name?.startsWith('here') && <Text style={[styles.roleText, styles.textHere]}>{`@${name}`}</Text>}
+		</Block>
+	);
+
+	const renderChannelBusy = () => (
+		<View style={styles.channelWrapper}>
+			<Text style={styles.title}>{name}</Text>
+			{isVoiceActive && <Text style={styles.channelBusyText}>({t('busy')})</Text>}
+		</View>
+	);
 
 	return (
 		<View style={styles.wrapperItem}>
@@ -90,14 +110,8 @@ const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaul
 				{!isChannelPrivate && isChannelApp && (
 					<Icons.AppChannelIcon style={styles.streamIcon} height={size.s_16} width={size.s_16} color={themeValue.channelNormal} />
 				)}
-				{isRoleUser || name.startsWith('here') ? (
-					<Text style={[styles.roleText, name.startsWith('here') && styles.textHere]}>{`@${name}`}</Text>
-				) : (
-					<View style={styles.channelWrapper}>
-						<Text style={styles.title}>{name}</Text>
-						{isVoiceActive && <Text style={styles.channelBusyText}>({t('busy')})</Text>}
-					</View>
-				)}
+
+				{isRoleUser || name?.startsWith('here') ? renderRoleUser() : renderChannelBusy()}
 			</View>
 			<Text style={styles.subText}>{subText}</Text>
 		</View>

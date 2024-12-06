@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useFriends, useMemberStatus } from '@mezon/core';
-import { CheckIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon, DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
 import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
@@ -8,9 +8,11 @@ import {
 	selectAccountCustomStatus,
 	selectCurrentClanId,
 	selectUpdateToken,
+	selectUserStatus,
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
+import { safeJSONParse } from 'mezon-js';
 import moment from 'moment';
 import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,8 +21,7 @@ import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import { MezonAvatar, MezonButton } from '../../componentUI';
 import { AddStatusUserModal } from '../../components/AddStatusUserModal';
-import { CustomStatusUser } from '../../components/CustomStatusUser';
-import { UserStatus } from '../../components/UserStatus';
+import { CustomStatusUser, EUserStatus } from '../../components/CustomStatusUser';
 import { useMixImageColor } from '../../hooks/useMixImageColor';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -45,7 +46,35 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const getTokenSocket = useSelector(selectUpdateToken(user?.userId ?? ''));
-	const userStatus = useMemberStatus(user?.userId || '');
+	const memberStatus = useMemberStatus(user?.userId || '');
+	const userStatus = useSelector(selectUserStatus);
+
+	const userStatusIcon = useMemo(() => {
+		const mobileIconSize = isTabletLandscape ? size.s_20 : size.s_18;
+		switch (userStatus?.status) {
+			case EUserStatus.ONLINE:
+				if (memberStatus?.isMobile) {
+					return <Icons.IconMobileDevice width={mobileIconSize} height={mobileIconSize} />;
+				}
+				return memberStatus?.status ? (
+					<OnlineStatus width={size.s_20} height={size.s_20} />
+				) : (
+					<OfflineStatus width={size.s_16} height={size.s_16} />
+				);
+
+			case EUserStatus.IDLE:
+				return <IdleStatusIcon width={size.s_20} height={size.s_20} />;
+
+			case EUserStatus.DO_NOT_DISTURB:
+				return <DisturbStatusIcon />;
+
+			case EUserStatus.INVISIBLE:
+				return <OfflineStatus width={size.s_16} height={size.s_16} />;
+
+			default:
+				return <OnlineStatus width={size.s_20} height={size.s_20} />;
+		}
+	}, [isTabletLandscape, memberStatus, userStatus]);
 
 	const tokenInWallet = useMemo(() => {
 		return user?.userProfile?.wallet ? safeJSONParse(user?.userProfile?.wallet || '{}')?.value : 0;
@@ -130,7 +159,17 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							<Text style={styles.textAvatar}>{user?.userProfile?.user?.username?.charAt?.(0)?.toUpperCase()}</Text>
 						</Block>
 					)}
-					<UserStatus status={userStatus} customStyles={styles.dotStatusUser} iconSize={isTabletLandscape ? size.s_20 : size.s_12} />
+
+					<Block
+						position="absolute"
+						bottom={-size.s_2}
+						right={-size.s_4}
+						backgroundColor={themeValue.tertiary}
+						borderRadius={size.s_20}
+						style={styles.dotStatusUser}
+					>
+						{userStatusIcon}
+					</Block>
 				</TouchableOpacity>
 			</View>
 

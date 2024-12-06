@@ -15,6 +15,7 @@ export interface AccountState {
 	account?: IAccount | null;
 	userProfile?: IUserAccount | null;
 	anonymousMode: boolean;
+	logo?: string;
 }
 
 export const initialAccountState: AccountState = {
@@ -63,6 +64,9 @@ export const accountSlice = createSlice({
 				state.userProfile.user.metadata = JSON.stringify(updatedUserMetadata);
 			}
 		},
+		setLogoCustom(state, action: PayloadAction<string | undefined>) {
+			state.logo = action.payload;
+		},
 		setWalletValue(state, action: PayloadAction<number>) {
 			if (state.userProfile?.wallet) {
 				try {
@@ -82,6 +86,7 @@ export const accountSlice = createSlice({
 			})
 			.addCase(getUserProfile.fulfilled, (state: AccountState, action: PayloadAction<IUserAccount>) => {
 				state.userProfile = action.payload;
+				state.logo = action.payload.logo;
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(getUserProfile.rejected, (state: AccountState, action) => {
@@ -111,3 +116,5 @@ export const selectAccountMetadata = createSelector(getAccountState, (state: Acc
 );
 
 export const selectAccountCustomStatus = createSelector(selectAccountMetadata, (metadata) => metadata?.status || '');
+
+export const selectLogoCustom = createSelector(getAccountState, (state) => state.logo);

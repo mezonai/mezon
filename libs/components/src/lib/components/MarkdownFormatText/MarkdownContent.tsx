@@ -39,10 +39,11 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const dispatch = useAppDispatch();
 	const origin = process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/';
 	const originClan = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/clans/';
+	const originDirect = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/direct/message/';
 	const onClickLink = useCallback(
 		(url: string) => {
 			if (!isJumMessageEnabled || isTokenClickAble) {
-				if (url.startsWith(origin) || url.startsWith(originClan)) {
+				if (url.startsWith(origin) || url.startsWith(originClan) || url.startsWith(originDirect)) {
 					const urlInvite = new URL(url);
 					dispatch(inviteActions.setIsClickInvite(true));
 					navigate(urlInvite.pathname);

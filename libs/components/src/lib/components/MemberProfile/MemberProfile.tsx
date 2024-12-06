@@ -15,6 +15,7 @@ import {
 	ActivitiesName,
 	createImgproxyUrl,
 	DEFAULT_ROLE_COLOR,
+	EUserStatus,
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
 	MemberProfileType,
@@ -22,7 +23,7 @@ import {
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_PANEL_PROFILE
 } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -326,6 +327,16 @@ export function MemberProfile({
 		closeModal(ModalType.UserProfile);
 	};
 
+	const userStatus = useMemo(() => {
+		if (isFooter && userProfile?.user?.metadata) {
+			const metadata = safeJSONParse(userProfile?.user?.metadata);
+			return metadata;
+		}
+		if (user?.user?.metadata) {
+			return user?.user?.metadata;
+		}
+	}, [user?.user?.id, userProfile?.user?.id]);
+
 	return (
 		<div className="relative group">
 			<div
@@ -347,7 +358,7 @@ export function MemberProfile({
 						<span
 							className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode rounded-full right-[-4px]`}
 						>
-							<Icons.OnlineStatus />
+							<UserStatusIcon status={userStatus?.user_status} />
 						</span>
 					)}
 					{!isFooter && !isHideIconStatus && (
@@ -358,6 +369,7 @@ export function MemberProfile({
 							status={status}
 							directMessageValue={directMessageValue}
 							userId={user?.user?.id}
+							customStatus={userStatus?.user_status}
 						/>
 					)}
 				</div>
@@ -393,13 +405,13 @@ export function MemberProfile({
 							<div className="flex flex-row items-center w-full overflow-x-hidden" style={{ minWidth: `${minWidthNameMain}px` }}>
 								<p
 									className={`text-base font-medium nameMemberProfile
-				          			${isListFriend ? ' inline-flex justify-start' : ''}
+												${isListFriend ? ' inline-flex justify-start' : ''}
 									${isMemberChannel || positionType === MemberProfileType.DM_MEMBER_GROUP ? ` ${isOwnerClanOrGroup ? 'max-w-[150px]' : 'max-w-[176px]'}  whitespace-nowrap overflow-x-hidden text-ellipsis` : ''}
 									${positionType === MemberProfileType.DM_LIST ? `${isOwnerClanOrGroup ? 'max-w-[150px]' : 'max-w-[176px]'} whitespace-nowrap overflow-x-hidden text-ellipsis group-hover/itemListDm:text-black dark:group-hover/itemListDm:text-white` : ''}
 									${classParent === '' ? 'bg-transparent' : 'relative dark:bg-transparent bg-channelTextareaLight'}
 									${isUnReadDirect && !isMute ? 'dark:text-white text-black dark:font-medium font-semibold' : 'font-medium dark:text-channelTextLabel text-colorTextLightMode'}
 									${isFooter ? 'top-0 leading-[18px] max-w-[102px] overflow-x-hidden text-ellipsis text-sm font-semibold text-black dark:text-white' : ''}
-							    `}
+									`}
 									title={name}
 								>
 									<span
@@ -444,3 +456,18 @@ export function MemberProfile({
 		</div>
 	);
 }
+
+export const UserStatusIcon = ({ status }: { status?: EUserStatus }) => {
+	switch (status) {
+		case EUserStatus.ONLINE:
+			return <Icons.OnlineStatus />;
+		case EUserStatus.IDLE:
+			return <Icons.DarkModeIcon className="text-[#F0B232] -rotate-90 w-[10px] h-[10px]" />;
+		case EUserStatus.DO_NOT_DISTURB:
+			return <Icons.MinusCircleIcon className=" w-[10px] h-[10px]" />;
+		case EUserStatus.INVISIBLE:
+			return <Icons.OfflineStatus />;
+		default:
+			return <Icons.OnlineStatus />;
+	}
+};

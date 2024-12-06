@@ -211,22 +211,11 @@ const MainIndex = ({ isEnableOnBoarding, toggleEnableStatus, handleGoToPage, onC
 				<GuideItemLayout
 					hightLightIcon
 					icon={<Icons.GuideIcon defaultSize="w-6 text-channelTextLabel" defaultFill="currentColor" />}
-					title="Server Guide"
+					title="Clan Guide"
 					description="Your Welcome Message, Banner, To-Do tasks and Resources are all set up"
 					className="hover:bg-bgSecondaryHover rounded-none"
 					action={
 						<div className="flex items-center gap-4">
-							{isEnableOnBoarding && (
-								<input
-									className="peer relative h-4 w-8 cursor-pointer appearance-none rounded-lg
-													bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
-													after:bg-slate-500 after:transition-all checked:bg-blue-200 checked:after:left-4 checked:after:bg-blue-500
-													hover:bg-slate-400 after:hover:bg-slate-600 checked:hover:bg-blue-300 checked:after:hover:bg-blue-600
-													focus:outline-none checked:focus:bg-blue-400 checked:after:focus:bg-blue-700 focus-visible:outline-none disabled:cursor-not-allowed
-													disabled:bg-slate-200 disabled:after:bg-slate-300"
-									type="checkbox"
-								/>
-							)}
 							<div
 								className="w-[60px] h-[32px] flex justify-center items-center rounded-sm border border-bgModifierHover hover:bg-bgModifierHover cursor-pointer"
 								onClick={() => handleGoToPage(EOnboardingStep.MISSION)}

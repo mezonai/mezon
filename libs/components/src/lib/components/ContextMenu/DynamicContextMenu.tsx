@@ -1,10 +1,12 @@
-import { useEmojiSuggestion } from '@mezon/core';
-import { selectTheme } from '@mezon/store';
-import { ContextMenuItem, SHOW_POSITION } from '@mezon/utils';
-import { CSSProperties, useMemo, useState } from 'react';
+import { useAppParams, useAuth, useChatReaction, useEmojiSuggestion } from '@mezon/core';
+import { selectClanView, selectCurrentChannel, selectTheme } from '@mezon/store';
+import { ContextMenuItem, IEmoji, SHOW_POSITION, isPublicChannel } from '@mezon/utils';
+import { Dropdown } from 'flowbite-react';
+import { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { Item, Menu, Separator, Submenu } from 'react-contexify';
 import { useSelector } from 'react-redux';
 import { useMessageContextMenu } from './MessageContextMenuContext';
+import ReactionItem from './ReactionItem';
 import ReactionPart from './ReactionPart';
 
 type Props = {
@@ -18,9 +20,24 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 	const appearanceTheme = useSelector(selectTheme);
 	const { emojiConverted } = useEmojiSuggestion();
 
+	const { directId } = useAppParams();
+
+	const { reactionMessageDispatch } = useChatReaction();
+	const userId = useAuth();
+
+	const isClanView = useSelector(selectClanView);
+	const currentChannel = useSelector(selectCurrentChannel);
+
+	const handleClickEmoji = useCallback(
+		async (emojiId: string, emojiShortCode: string) => {
+			await reactionMessageDispatch('', messageId, emojiId, emojiShortCode, 1, userId.userId ?? '', false, isPublicChannel(currentChannel));
+		},
+		[messageId, currentChannel, directId, isClanView, reactionMessageDispatch, userId]
+	);
+
 	const firstFourElements = useMemo(() => {
 		return emojiConverted.slice(0, 4);
-	}, [emojiConverted]);
+	}, [emojiConverted]) as IEmoji[];
 
 	const [warningStatus, setWarningStatus] = useState<string>('');
 
@@ -61,40 +78,119 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 				item.label === 'Remove All Reactions';
 			if (item.label === 'Copy Link' && checkPos) elements.push(<Separator key={`separator-${index}`} />);
 			if (item.label === 'Copy Image') elements.push(<Separator key={`separator-${index}`} />);
+			const lableAddReaction = item.label === 'Add Reaction';
 
-			elements.push(
-				<Item
-					key={item.label}
-					onClick={item.handleItemClick}
-					disabled={item.disabled}
-					onMouseEnter={() => {
-						if (lableItemWarning) {
-							setWarningStatus('#E13542');
-						} else {
-							setWarningStatus('#4B5CD6');
-						}
-					}}
-					onMouseLeave={() => {
-						setWarningStatus('#4B5CD6');
-					}}
-				>
-					<div
-						style={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-							width: '100%',
-							fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
-							fontSize: '14px',
-							fontWeight: 500
-						}}
-						className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF]' : ' dark:text-[#ADB3B9] text-[#4E5058] hover:text-[#FFFFFF] dark:hover:text-[#FFFFFF]'}  p-1`}
+			if (lableAddReaction) {
+				elements.push(
+					<Dropdown
+						key={item.label}
+						trigger="hover"
+						dismissOnClick={false}
+						renderTrigger={() => (
+							<div>
+								<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+											alignItems: 'center',
+											width: '100%',
+											fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
+											fontSize: '14px',
+											fontWeight: 500
+										}}
+										className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF]' : ' dark:text-[#ADB3B9] text-[#4E5058] hover:text-[#FFFFFF] dark:hover:text-[#FFFFFF]'}  p-1`}
+									>
+										<span>Add Reaction</span>
+									</div>
+								</Item>
+							</div>
+						)}
+						label=""
+						placement="right-start"
+						className="dark:bg-black bg-white border-none"
 					>
-						<span>{item.label}</span>
-						<span> {item.icon}</span>
-					</div>
-				</Item>
-			);
+						{firstFourElements.map((item, index) => (
+							<div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+								<Item key={index} onClick={() => handleClickEmoji(item.id || '', item.shortname || '')}>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+											alignItems: 'center',
+											width: '100%',
+											fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
+											fontSize: '14px',
+											fontWeight: 500
+										}}
+										className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF]' : ' dark:text-[#ADB3B9] text-[#4E5058] hover:text-[#FFFFFF] dark:hover:text-[#FFFFFF]'}  p-1`}
+									>
+										<span>{item.shortname}</span>
+									</div>
+								</Item>
+								<ReactionItem
+									emojiShortCode={item.shortname || ''}
+									emojiId={item.id || ''}
+									activeMode={mode}
+									messageId={messageId}
+									isOption={false}
+								/>
+							</div>
+						))}
+						<hr />
+						<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'space-between',
+									alignItems: 'center',
+									width: '100%',
+									fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
+									fontSize: '14px',
+									fontWeight: 500
+								}}
+								className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF]' : ' dark:text-[#ADB3B9] text-[#4E5058] hover:text-[#FFFFFF] dark:hover:text-[#FFFFFF]'}  p-1`}
+							>
+								<span>View Move</span>
+							</div>
+						</Item>
+					</Dropdown>
+				);
+			} else {
+				elements.push(
+					<Item
+						key={item.label}
+						onClick={item.handleItemClick}
+						disabled={item.disabled}
+						onMouseEnter={() => {
+							if (lableItemWarning) {
+								setWarningStatus('#E13542');
+							} else {
+								setWarningStatus('#4B5CD6');
+							}
+						}}
+						onMouseLeave={() => {
+							setWarningStatus('#4B5CD6');
+						}}
+					>
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+								width: '100%',
+								fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
+								fontSize: '14px',
+								fontWeight: 500
+							}}
+							className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF]' : ' dark:text-[#ADB3B9] text-[#4E5058] hover:text-[#FFFFFF] dark:hover:text-[#FFFFFF]'}  p-1`}
+						>
+							<span>{item.label}</span>
+							<span> {item.icon}</span>
+						</div>
+					</Item>
+				);
+			}
 
 			if (item.hasSubmenu)
 				elements.push(
@@ -108,7 +204,7 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 				);
 		}
 		return elements;
-	}, [items]);
+	}, [items, checkPos, firstFourElements]);
 
 	return (
 		<Menu onVisibilityChange={onVisibilityChange} id={menuId} style={className} className="z-50">

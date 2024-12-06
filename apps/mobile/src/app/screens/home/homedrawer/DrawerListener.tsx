@@ -5,7 +5,6 @@ import {
 	channelMetaActions,
 	channelsActions,
 	clansActions,
-	gifsStickerEmojiActions,
 	listChannelsByUserActions,
 	selectAnyUnreadChannels,
 	selectChannelById,
@@ -14,7 +13,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { SubPanelName, TIME_OFFSET } from '@mezon/utils';
+import { TIME_OFFSET } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useEffect } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
@@ -31,7 +30,6 @@ function useChannelSeen(channelId: string) {
 		if (channelId) {
 			DeviceEventEmitter.emit(ActionEmitEvent.CHANNEL_ID_ACTIVE, channelId);
 		}
-		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 	}, [channelId, currentChannel, dispatch]);
 
 	const { markAsReadSeen } = useSeenMessagePool();

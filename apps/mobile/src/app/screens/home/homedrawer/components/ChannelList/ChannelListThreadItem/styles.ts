@@ -71,5 +71,6 @@ export const style = (colors: Attributes) =>
 			color: baseColor.white,
 			fontSize: size.s_10,
 			fontWeight: 'bold'
-		}
+		},
+		buzzBadge: { marginBottom: size.s_10 }
 	});

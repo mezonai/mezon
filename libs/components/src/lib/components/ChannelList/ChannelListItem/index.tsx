@@ -1,16 +1,20 @@
 import { Avatar } from 'flowbite-react';
-import React, { memo, Ref, useImperativeHandle, useMemo, useRef } from 'react';
+import React, { memo, Ref, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
 	clansActions,
+	IPttUsersEntity,
 	selectCategoryExpandStateByCategoryId,
 	selectIsUnreadChannelById,
 	selectPttMembersByChannelId,
 	selectStreamMembersByChannelId,
-	selectVoiceChannelMembersByChannelId
+	selectVoiceChannelMembersByChannelId,
+	UsersStreamEntity,
+	VoiceEntity
 } from '@mezon/store';
 
+import { Icons } from '@mezon/ui';
 import { ChannelThreads } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ChannelLink, ChannelLinkRef } from '../../ChannelLink';
@@ -113,15 +117,39 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 		);
 	};
 
+	const [isExpandedPttMems, setIsExpendedPttMems] = useState(true);
+
+	const togglePttMembers = () => {
+		setIsExpendedPttMems(!isExpandedPttMems);
+	};
+
 	const renderChannelContent = useMemo(() => {
 		if (channel.type !== ChannelType.CHANNEL_TYPE_VOICE && channel.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
 			return (
 				<>
 					{renderChannelLink()}
 					{channel.threads && <ThreadListChannel ref={listThreadRef} threads={channel.threads} isCollapsed={!isCategoryExpanded} />}
-					{channelHasPushToTalkFeature && (
-						<div>
-							<UserListVoiceChannel channelID={channel.channel_id ?? ''} channelType={channel?.type} memberList={channelMemberList} />
+					{channelMemberList?.length > 0 && channelHasPushToTalkFeature && (
+						<div className="flex gap-1 px-4">
+							<div className="flex gap-1 h-fit">
+								<Icons.InPttCall className="w-5 dark:text-channelTextLabel text-colorTextLightMode" />
+								<Icons.RightFilledTriangle
+									onClick={togglePttMembers}
+									className={`w-3 dark:text-channelTextLabel dark:hover:text-white text-colorTextLightMode hover:text-black duration-200 ${isExpandedPttMems ? 'rotate-90' : ''}`}
+								/>
+							</div>
+							<div className="flex-1">
+								{isExpandedPttMems ? (
+									<UserListVoiceChannel
+										isPttList
+										channelID={channel.channel_id ?? ''}
+										channelType={channel?.type}
+										memberList={channelMemberList}
+									/>
+								) : (
+									<CollapsedMemberList isPttList channelMemberList={channelMemberList} />
+								)}
+							</div>
 						</div>
 					)}
 				</>
@@ -140,17 +168,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 		return channelMemberList.length > 0 ? (
 			<>
 				{renderChannelLink()}
-				<Avatar.Group className="flex gap-3 justify-start items-center px-6">
-					{[...channelMemberList].slice(0, 5).map((member, index) => (
-						<AvatarUserShort id={member.user_id || ''} key={(member.user_id || '') + index} />
-					))}
-					{channelMemberList && channelMemberList.length > 5 && (
-						<Avatar.Counter
-							total={channelMemberList?.length - 5 > 50 ? 50 : channelMemberList?.length - 5}
-							className="h-6 w-6 dark:text-bgLightPrimary text-bgPrimary ring-transparent dark:bg-bgTertiary bg-bgLightTertiary dark:hover:bg-bgTertiary hover:bg-bgLightTertiary"
-						/>
-					)}
-				</Avatar.Group>
+				<CollapsedMemberList channelMemberList={channelMemberList} />
 			</>
 		) : null;
 	}, [
@@ -165,4 +183,25 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 	]);
 
 	return <>{renderChannelContent} </>;
+};
+
+interface ICollapsedMemberListProps {
+	channelMemberList: VoiceEntity[] | UsersStreamEntity[] | IPttUsersEntity[];
+	isPttList?: boolean;
+}
+
+const CollapsedMemberList = ({ channelMemberList, isPttList }: ICollapsedMemberListProps) => {
+	return (
+		<Avatar.Group className={`flex gap-3 justify-start items-center ${isPttList ? 'pr-6' : 'px-6'}`}>
+			{[...channelMemberList].slice(0, 5).map((member, index) => (
+				<AvatarUserShort id={member.user_id || ''} key={(member.user_id || '') + index} />
+			))}
+			{channelMemberList && channelMemberList.length > 5 && (
+				<Avatar.Counter
+					total={channelMemberList?.length - 5 > 50 ? 50 : channelMemberList?.length - 5}
+					className="h-6 w-6 dark:text-bgLightPrimary text-bgPrimary ring-transparent dark:bg-bgTertiary bg-bgLightTertiary dark:hover:bg-bgTertiary hover:bg-bgLightTertiary"
+				/>
+			)}
+		</Avatar.Group>
+	);
 };

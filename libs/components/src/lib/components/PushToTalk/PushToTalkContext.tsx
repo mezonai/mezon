@@ -31,6 +31,12 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 		}
 	}, [remoteStream]);
 
+	useEffect(() => {
+		if (remoteStream && remoteAudioRef.current) {
+			remoteAudioRef.current.muted = isTalking;
+		}
+	}, [isTalking]);
+
 	const toggleTalking = (talking: boolean) => {
 		setIsTalking(talking);
 		toggleMicrophone(talking);

@@ -133,7 +133,7 @@ const handleWindowAction = (window: BrowserWindow, action: string) => {
 	}
 };
 
-ipcMain.on(OPEN_NEW_WINDOW, (event, props: ImageWindowProps, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) => {
+ipcMain.on(OPEN_NEW_WINDOW, (event, props: any, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) => {
 	const newWindow = App.openNewWindow(props, options, params);
 
 	ipcMain.on(IMAGE_WINDOW_TITLE_BAR_ACTION, (event, action, data) => {

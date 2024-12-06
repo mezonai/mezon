@@ -1,10 +1,12 @@
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { selectIsUnreadChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelThreads } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import LongCornerIcon from '../../../../../../../assets/svg/long-corner.svg';
 import ShortCornerIcon from '../../../../../../../assets/svg/short-corner.svg';
+import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import { style } from './styles';
 
 interface IChannelListThreadItemProps {
@@ -67,6 +69,7 @@ const ChannelListThreadItem = memo(({ onPress, onLongPress, thread, isActive, is
 						{thread?.channel_label}
 					</Text>
 				</TouchableOpacity>
+				<BuzzBadge channelId={thread?.channel_id as string} mode={ChannelStreamMode.STREAM_MODE_THREAD} customStyles={styles.buzzBadge} />
 			</View>
 
 			{Number(numberNotification || 0) > 0 && isUnReadChannel && (

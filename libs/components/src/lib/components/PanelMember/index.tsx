@@ -38,6 +38,7 @@ import { Coords } from '../ChannelLink';
 import { directMessageValueProps } from '../DmList/DMListItem';
 import { DataMemberCreate } from '../DmList/MemberListGroupChat';
 import ItemPanel from '../PanelChannel/ItemPanel';
+import { EActiveType } from '../SettingProfile/SettingRightProfile';
 import GroupPanelMember from './GroupPanelMember';
 import ItemPanelMember from './ItemPanelMember';
 import PanelGroupDM from './PanelGroupDm';
@@ -131,7 +132,8 @@ const PanelMember = ({
 		return member?.user?.display_name ?? member?.user?.username;
 	}, [member]);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageValue?.dmID ?? ''));
-	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile } = useSettingFooter();
+	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
+		useSettingFooter();
 
 	const handleOpenProfile = () => {
 		if (onOpenProfile) {
@@ -166,6 +168,8 @@ const PanelMember = ({
 	const handleOpenClanProfileSetting = () => {
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
+		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
+		setClanIdSettingProfile(currentClan?.clan_id || '');
 		setIsShowSettingFooterStatus(true);
 		if (onClose) {
 			onClose();

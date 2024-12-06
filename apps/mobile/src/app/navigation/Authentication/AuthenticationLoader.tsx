@@ -123,7 +123,10 @@ export const AuthenticationLoader = () => {
 				// Case: FCM start call
 				const title = remoteMessage?.notification?.title;
 				const body = remoteMessage?.notification?.body;
-				if (title === 'Incoming call' || (body && (body?.includes('started a video call') || body?.includes('started a audio call')))) {
+				if (
+					title === 'Incoming call' ||
+					(body && ['started a video call', 'started a audio call', 'Untitled message'].some((text) => body?.includes?.(text)))
+				) {
 					return;
 				}
 				Toast.show({
@@ -144,7 +147,7 @@ export const AuthenticationLoader = () => {
 				});
 			}
 			//Payload from FCM need messageType and sound
-			if (remoteMessage.notification.body === 'Buzz!!') {
+			if (remoteMessage?.notification?.body === 'Buzz!!') {
 				playBuzzSound();
 			}
 		});

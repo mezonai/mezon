@@ -8,7 +8,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EButtonMessageStyle, IButtonMessage, ModeResponsive } from '@mezon/utils';
+import { EButtonMessageStyle, EIconEmbedButtonMessage, IButtonMessage, ModeResponsive } from '@mezon/utils';
 import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -17,9 +17,10 @@ type MessageButtonProps = {
 	button: IButtonMessage;
 	senderId: string;
 	buttonId: string;
+	inside?: boolean;
 };
 
-export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button, senderId, buttonId }) => {
+export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button, senderId, buttonId, inside }) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const modeResponsive = useSelector(selectModeResponsive);
@@ -61,7 +62,7 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 		}
 	}, [embedData]);
 
-	const commonClass = `px-5 py-1 rounded ${buttonColor} text-white font-medium hover:bg-opacity-70 active:bg-opacity-80`;
+	const commonClass = inside ? `rounded p-2` : `px-5 py-1 rounded ${buttonColor} text-white font-medium hover:bg-opacity-70 active:bg-opacity-80`;
 
 	return (
 		<button className={commonClass} onClick={handleClickButton}>
@@ -71,8 +72,16 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 					<Icons.ForwardRightClick defaultSize="w-4 h-4 ml-2" defaultFill={'#ffffff'} />
 				</a>
 			) : (
-				button.label
+				<>
+					{button.icon && IconEmbedMessage[button.icon]}
+					{button.label && button.label}
+				</>
 			)}
 		</button>
 	);
+};
+
+const IconEmbedMessage: { [key: string]: JSX.Element } = {
+	[EIconEmbedButtonMessage.PLAY]: <Icons.RightFilledTriangle className="w-4 h-4" />,
+	[EIconEmbedButtonMessage.PAUSE]: <Icons.PauseIcon className="w-4 h-4 text-white" />
 };

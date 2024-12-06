@@ -31,6 +31,7 @@ type SuggestItemProps = {
 	channel?: SearchItemProps;
 	count?: number;
 	isUnread?: boolean;
+	color?: string;
 };
 
 const SuggestItem = ({
@@ -47,7 +48,8 @@ const SuggestItem = ({
 	isHightLight = true,
 	channel,
 	count,
-	isUnread
+	isUnread,
+	color
 }: SuggestItemProps) => {
 	const allChannels = useSelector(selectAllChannelsByUser);
 	const getChannel = allChannels.find((channel) => {
@@ -128,14 +130,20 @@ const SuggestItem = ({
 		<div className={`flex flex-row items-center h-[24px] ${wrapSuggestItemStyle ?? 'justify-between'}`}>
 			<div className="flex flex-row items-center gap-2 py-[3px]">
 				{showAvatar && (
-					<AvatarImage
-						alt={subText || ''}
-						userName={subText}
-						srcImgProxy={createImgproxyUrl(avatarUrl ?? '')}
-						src={avatarUrl}
-						className="size-4"
-						classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
-					/>
+					<div>
+						{color ? (
+							<Icons.RoleIcon defaultSize="w-5 h-[30px] min-w-5" />
+						) : (
+							<AvatarImage
+								alt={subText || ''}
+								userName={subText}
+								srcImgProxy={createImgproxyUrl(avatarUrl ?? '')}
+								src={avatarUrl}
+								className="size-4"
+								classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
+							/>
+						)}
+					</div>
 				)}
 				{emojiId && (
 					<img src={getSrcEmoji(emojiId)} alt={getSrcEmoji(emojiId)} style={{ width: '32px', height: '32px', objectFit: 'cover' }} />
@@ -143,7 +151,7 @@ const SuggestItem = ({
 				{channelIcon}
 
 				{display && (
-					<span className={`text-[15px] font-thin dark:text-white text-textLightTheme one-line flex items-center`}>
+					<span className={`text-[15px] font-thin dark:text-white text-textLightTheme one-line flex items-center`} style={{ color: color }}>
 						<span className={`${isUnread ? ' font-medium' : ''}`}>
 							{isHightLight ? HighlightMatchBold(display ?? '', valueHightLight ?? '') : display}
 						</span>

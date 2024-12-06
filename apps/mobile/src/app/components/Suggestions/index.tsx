@@ -74,6 +74,7 @@ const Suggestions: FC<MentionSuggestionsProps> = memo(
 								name={item?.display ?? ''}
 								avatarUrl={item.avatarUrl}
 								subText={item?.username}
+								color={item?.color}
 							/>
 						</Pressable>
 					);

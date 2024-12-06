@@ -1,8 +1,9 @@
 import { useAuth } from '@mezon/core';
-import { selectJoinPTTByChannelId, useAppSelector } from '@mezon/store';
+import { selectCurrentChannelId, selectCurrentClanId, selectJoinPTTByChannelId, useAppSelector } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { compress, decompress } from '../DmList/DMtopbar';
 
 // Define the context value type
@@ -14,9 +15,6 @@ interface WebRTCContextType {
 	initializePeerConnection: () => void;
 	startLocalStream: () => Promise<void>;
 	stopSession: () => Promise<void>;
-	createOffer: () => Promise<void>;
-	createAnswer: (offer: RTCSessionDescriptionInit) => Promise<void>;
-	addIceCandidate: (candidate: RTCIceCandidateInit) => Promise<void>;
 	toggleMicrophone: (value: boolean) => void;
 	setChannelId: (value: string) => void;
 	setClanId: (value: string) => void;
@@ -37,8 +35,10 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 	const pushToTalkData = useAppSelector((state) => selectJoinPTTByChannelId(state, userId));
 	const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-	const channelId = useRef<string | null>(null);
-	const clanId = useRef<string | null>(null);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const channelId = useRef<string | null>(currentChannelId || null);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const clanId = useRef<string | null>(currentClanId || null);
 	const peerConnection = useRef<RTCPeerConnection | null>(null);
 
 	const servers: RTCConfiguration = useMemo(
@@ -64,7 +64,6 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 
 	const initializePeerConnection = useCallback(() => {
 		peerConnection.current = new RTCPeerConnection(servers);
-
 		peerConnection.current.ontrack = (event) => {
 			if (event?.streams?.[0]) {
 				setRemoteStream(event.streams[0]);
@@ -91,25 +90,27 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 			}
 
 			const connection = initializePeerConnection();
-			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-			setLocalStream(stream);
-			stream.getTracks().forEach((track) => {
-				connection.addTrack(track, stream);
-				track.enabled = false;
-			});
-			await mezon.socketRef.current?.joinPTTChannel(clanId.current || '', channelId.current || '', WebrtcSignalingType.WEBRTC_SDP_OFFER, '');
+			connection.addTransceiver('audio', { direction: 'recvonly' });
+			const offer = await connection.createOffer();
+			await connection.setLocalDescription(offer);
+			const offerEnc = await compress(JSON.stringify(offer));
+			await mezon.socketRef.current?.joinPTTChannel(
+				clanId.current || '',
+				channelId.current || '',
+				WebrtcSignalingType.WEBRTC_SDP_OFFER,
+				offerEnc
+			);
 		} catch (error) {
 			console.error('Error accessing audio devices: ', error);
 		}
 	};
 
 	const stopSession = useCallback(async () => {
-		// Stop all tracks in the local stream
-		localStream?.getTracks().forEach((track) => track.stop());
-
 		// Close the peer connection
 		peerConnection.current?.close();
 		peerConnection.current = null;
+		localStream?.getTracks().forEach((track) => track.stop());
+
 		// Reset state
 		setLocalStream(null);
 		setRemoteStream(null);
@@ -117,39 +118,24 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 	}, [localStream]);
 
 	const toggleMicrophone = useCallback(
-		(value: boolean) => {
-			if (localStream && channelId) {
+		async (value: boolean) => {
+			if (!peerConnection.current && channelId) {
+				if (value === true) {
+					const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+					stream.getTracks().forEach((track) => peerConnection.current?.addTrack(track, stream));
+				}
+			}
+			if (localStream) {
+				// if (value == true) {
 				// await mezon.socketRef.current?.talkPTTChannel(channelId.current || '', 5, JSON.stringify({}), value === true ? 0 : -1);
-				localStream.getAudioTracks().forEach((track) => {
+				// }
+				localStream?.getAudioTracks().forEach((track) => {
 					track.enabled = value;
 				});
 			}
 		},
 		[localStream]
 	);
-
-	const createOffer = useCallback(async () => {
-		if (!peerConnection.current) return;
-		const offer = await peerConnection.current.createOffer();
-		await peerConnection.current.setLocalDescription(offer);
-		// Send offer to signaling server
-	}, []);
-
-	const createAnswer = useCallback(async (offer: RTCSessionDescriptionInit) => {
-		if (!peerConnection.current) return;
-		await peerConnection.current.setRemoteDescription(offer);
-		const answer = await peerConnection.current.createAnswer();
-		await peerConnection.current.setLocalDescription(answer);
-		// Send answer to signaling server
-	}, []);
-
-	const addIceCandidate = useCallback(async (candidate: RTCIceCandidateInit) => {
-		try {
-			await peerConnection.current?.addIceCandidate(candidate);
-		} catch (error) {
-			console.error('Error adding ICE candidate: ', error);
-		}
-	}, []);
 
 	useEffect(() => {
 		if (!peerConnection.current) {
@@ -160,24 +146,12 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 		if (!lastData) return;
 		const data = lastData?.joinPttData;
 		switch (data.data_type) {
-			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
+			case WebrtcSignalingType.WEBRTC_SDP_ANSWER:
 				{
 					const processData = async () => {
 						const dataDec = await decompress(data?.json_data);
-						const objData = safeJSONParse(dataDec || '{}');
-
-						// Get peerConnection from receiver event.receiverId
-						await peerConnection.current?.setRemoteDescription(new RTCSessionDescription(objData));
-						const answer = await peerConnection.current?.createAnswer();
-						await peerConnection.current?.setLocalDescription(answer);
-
-						const answerEnc = await compress(JSON.stringify(answer));
-						await mezon.socketRef.current?.joinPTTChannel(
-							clanId.current || '',
-							channelId.current || '',
-							WebrtcSignalingType.WEBRTC_SDP_ANSWER,
-							answerEnc
-						);
+						const answer = safeJSONParse(dataDec || '{}');
+						await peerConnection.current?.setRemoteDescription(new RTCSessionDescription(answer));
 					};
 					processData().catch(console.error);
 				}
@@ -185,9 +159,9 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 			case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE:
 				{
 					const processData = async () => {
-						const objData = safeJSONParse(data?.json_data || '{}');
-						if (peerConnection.current?.remoteDescription) {
-							await peerConnection.current?.addIceCandidate(new RTCIceCandidate(objData));
+						const candidate = safeJSONParse(data?.json_data || '{}');
+						if (peerConnection.current) {
+							await peerConnection.current?.addIceCandidate(new RTCIceCandidate(candidate));
 						}
 					};
 					processData().catch(console.error);
@@ -207,9 +181,6 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 		initializePeerConnection,
 		startLocalStream,
 		stopSession,
-		createOffer,
-		createAnswer,
-		addIceCandidate,
 		setChannelId,
 		setClanId
 	};

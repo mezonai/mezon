@@ -1,6 +1,7 @@
 import { Metrics, size, useTheme } from '@mezon/mobile-ui';
 import { AppDispatch, PinMessageEntity, pinMessageActions, selectPinMessageByChannelId } from '@mezon/store-mobile';
 import { IExtendedMessage } from '@mezon/utils';
+import { safeJSONParse } from 'mezon-js';
 import { memo } from 'react';
 import { Platform, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';

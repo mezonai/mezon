@@ -97,10 +97,15 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 	const allMessagesEntities = useAppSelector((state) =>
 		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannel?.channel_id : currentDm?.id) || '')
 	);
+	const dispatch = useAppDispatch();
+
+	const handleItemClick = useCallback(() => {
+		dispatch(referencesActions.setIdReferenceMessageReaction(message.id));
+		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.EMOJI_REACTION_RIGHT));
+	}, [dispatch]);
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const convertedAllMessagesEntities = useMemo(() => (allMessagesEntities ? Object.values(allMessagesEntities) : []), [allMessagesEntities]);
 	const messagePosition = convertedAllMessagesEntities.findIndex((message: MessagesEntity) => message.id === messageId);
-	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
 	const { posShowMenu, imageSrc } = useMessageContextMenu();
 	const isOwnerGroupDM = useIsOwnerGroupDM();
@@ -471,7 +476,7 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 			builder.addMenuItem(
 				'addReaction', // id
 				'Add Reaction', // label
-				() => console.log('add reaction'),
+				handleItemClick,
 				<Icons.RightArrowRightClick />
 			);
 		});
@@ -727,7 +732,8 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 		handleCreateThread,
 		handleForwardMessage,
 		handleForwardAllMessage,
-		urlImage
+		urlImage,
+		handleItemClick
 	]);
 	/* eslint-disable no-console */
 

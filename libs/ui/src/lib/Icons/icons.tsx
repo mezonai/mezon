@@ -6287,3 +6287,70 @@ export const CancelCall: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defau
 		</svg>
 	);
 };
+
+export function InPttCall(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			xmlnsXlink="http://www.w3.org/1999/xlink"
+			fill="currentColor"
+			className=""
+			{...props}
+		>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				{' '}
+				<title>ic_fluent_person_voice_24_filled</title> <desc>Created with Sketch.</desc>{' '}
+				<g id="🔍-Product-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+					{' '}
+					<g id="ic_fluent_person_voice_24_filled" fill="currentColor" fillRule="nonzero">
+						{' '}
+						<path
+							d="M14.7541747,14.999921 C15.9961948,14.999921 17.0030511,16.0067773 17.0030511,17.2487975 L17.0030511,18.1672553 C17.0030511,18.7406209 16.8238304,19.2996465 16.4904678,19.7661395 C14.9445793,21.9293884 12.4202806,23.0010712 9,23.0010712 C5.57903185,23.0010712 3.05606966,21.9289147 1.51390935,19.7645697 C1.18194679,19.2986691 1.00354153,18.7408416 1.00354153,18.1687745 L1.00354153,17.2487975 C1.00354153,16.0067773 2.0103978,14.999921 3.25241795,14.999921 L14.7541747,14.999921 Z M19.0539673,1.40356572 C19.4136007,1.19804993 19.8717446,1.32298689 20.0772604,1.68262022 C21.1678751,3.59109352 21.75,5.75404419 21.75,8 C21.75,10.253531 21.1639339,12.4234401 20.0663341,14.3364615 C19.8601976,14.6957394 19.4018387,14.8198852 19.0425608,14.6137487 C18.6832828,14.4076123 18.5591371,13.9492534 18.7652735,13.5899754 C19.733372,11.9026637 20.25,9.98984903 20.25,8 C20.25,6.0168344 19.7368452,4.11014998 18.7749128,2.42685873 C18.5693971,2.0672254 18.694334,1.60908151 19.0539673,1.40356572 Z M9,3.0046246 C11.7614237,3.0046246 14,5.24320085 14,8.0046246 C14,10.7660483 11.7614237,13.0046246 9,13.0046246 C6.23857625,13.0046246 4,10.7660483 4,8.0046246 C4,5.24320085 6.23857625,3.0046246 9,3.0046246 Z M15.5885024,3.39942904 C15.9485763,3.19468615 16.4064508,3.32060681 16.6111937,3.68068072 C17.3537737,4.98662919 17.75,6.46536363 17.75,8 C17.75,9.53814598 17.351956,11.020107 16.6061524,12.3281732 C16.4009899,12.6880082 15.9429689,12.813395 15.5831339,12.6082324 C15.2232989,12.4030699 15.0979122,11.9450489 15.3030747,11.5852139 C15.9206607,10.5020287 16.25,9.27586289 16.25,8 C16.25,6.72704469 15.922164,5.50354601 15.3072507,4.42212034 C15.1025078,4.06204643 15.2284285,3.60417194 15.5885024,3.39942904 Z"
+							id="🎨-Color"
+						>
+							{' '}
+						</path>{' '}
+					</g>{' '}
+				</g>{' '}
+			</g>
+		</svg>
+	);
+}
+export function RightFilledTriangle(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="" {...props}>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				<path d="M5.536 21.886a1.004 1.004 0 0 0 1.033-.064l13-9a1 1 0 0 0 0-1.644l-13-9A1 1 0 0 0 5 3v18a1 1 0 0 0 .536.886z"></path>
+			</g>
+		</svg>
+	);
+}
+
+export function PauseIcon(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg viewBox="-1 0 8 8" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="" {...props}>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				<g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+					<g id="Dribbble-Light-Preview" transform="translate(-227.000000, -3765.000000)" fill="currentColor">
+						<g id="icons" transform="translate(56.000000, 160.000000)">
+							<path
+								d="M172,3605 C171.448,3605 171,3605.448 171,3606 L171,3612 C171,3612.552 171.448,3613 172,3613 C172.552,3613 173,3612.552 173,3612 L173,3606 C173,3605.448 172.552,3605 172,3605 M177,3606 L177,3612 C177,3612.552 176.552,3613 176,3613 C175.448,3613 175,3612.552 175,3612 L175,3606 C175,3605.448 175.448,3605 176,3605 C176.552,3605 177,3605.448 177,3606"
+								id="pause-[#1006]"
+							>
+								{' '}
+							</path>{' '}
+						</g>{' '}
+					</g>{' '}
+				</g>{' '}
+			</g>
+		</svg>
+	);
+}

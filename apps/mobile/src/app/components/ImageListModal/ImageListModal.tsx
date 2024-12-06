@@ -1,16 +1,15 @@
 import { Block, Colors, size, Text } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectAttachmentPhoto } from '@mezon/store';
-import { createImgproxyUrl } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, StyleSheet } from 'react-native';
+import { Modal } from 'react-native';
 import Gallery, { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
-import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import LoadingModal from '../LoadingModal/LoadingModal';
+import { ItemImageModal } from './ItemImageModal';
 import { RenderFooterModal } from './RenderFooterModal';
 import { RenderHeaderModal } from './RenderHeaderModal';
 
@@ -123,18 +122,8 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 		[formattedImageList, setTimeoutHideFooter, visibleToolbarConfig?.showFooter]
 	);
 
-	const renderItem = ({ item, setImageDimensions }: RenderItemInfo<ApiMessageAttachment>) => {
-		return (
-			<FastImage
-				source={{ uri: createImgproxyUrl(item?.url ?? '', { width: 700, height: 700, resizeType: 'fit' }) }}
-				style={StyleSheet.absoluteFillObject}
-				resizeMode="contain"
-				onLoad={(e) => {
-					const { width, height } = e.nativeEvent;
-					setImageDimensions({ width, height });
-				}}
-			/>
-		);
+	const renderItem = ({ item, index, setImageDimensions }: RenderItemInfo<ApiMessageAttachment>) => {
+		return <ItemImageModal index={index} item={item} setImageDimensions={setImageDimensions} />;
 	};
 
 	const onImageSaved = useCallback(() => {

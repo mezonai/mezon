@@ -13,6 +13,7 @@ import {
 } from '@mezon/store-mobile';
 import { convertTimeMessage, IChannelMember } from '@mezon/utils';
 import { DrawerActions, NavigationProp, useNavigation } from '@react-navigation/native';
+import { safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useMessageSender } from '../../../hooks/useMessageSender';

@@ -63,7 +63,7 @@ const ChannelMessages = React.memo(({ channelId, clanId, mode, isDM, isPublic }:
 	const hasMoreBottom = useSelector(selectHasMoreBottomByChannelId(channelId));
 	const isViewingOldMessage = useSelector(selectIsViewingOlderMessagesByChannelId(channelId ?? ''));
 	const idMessageToJump = useSelector(selectIdMessageToJump);
-	const isMessageExist = useSelector(selectIsMessageIdExist(channelId, idMessageToJump));
+	const isMessageExist = useSelector(selectIsMessageIdExist(channelId, idMessageToJump?.id));
 
 	const flatListRef = useRef(null);
 	const timeOutRef = useRef(null);
@@ -108,17 +108,17 @@ const ChannelMessages = React.memo(({ channelId, clanId, mode, isDM, isPublic }:
 	}, [channelId]);
 
 	useEffect(() => {
-		if (idMessageToJump && isMessageExist) {
-			const indexToJump = messages?.findIndex?.((message: { id: string }) => message.id === idMessageToJump);
+		if (idMessageToJump?.id && isMessageExist) {
+			const indexToJump = messages?.findIndex?.((message: { id: string }) => message.id === idMessageToJump?.id);
 			if (indexToJump !== -1 && flatListRef.current && indexToJump > 0 && messages?.length - 1 >= indexToJump) {
 				flatListRef?.current?.scrollToIndex?.({
 					animated: true,
 					index: indexToJump - 2 >= 0 ? indexToJump - 2 : indexToJump
 				});
-				DeviceEventEmitter.emit(ActionEmitEvent.MESSAGE_ID_TO_JUMP, idMessageToJump);
+				DeviceEventEmitter.emit(ActionEmitEvent.MESSAGE_ID_TO_JUMP, idMessageToJump?.id);
 			}
 		}
-	}, [dispatch, idMessageToJump, isMessageExist, messages]);
+	}, [dispatch, idMessageToJump?.id, isMessageExist, messages]);
 
 	const scrollChannelMessageToIndex = useCallback(
 		(index: number) => {

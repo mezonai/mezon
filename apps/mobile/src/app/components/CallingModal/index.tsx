@@ -12,6 +12,7 @@ import {
 import { useMezon } from '@mezon/transport';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
+import { WebrtcSignalingType } from 'mezon-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
 import Sound from 'react-native-sound';
@@ -69,7 +70,7 @@ const CallingModal = () => {
 
 	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
-		if (signalingData && !!latestSignalingEntry && !isVisible && !isInCall && latestSignalingEntry?.signalingData?.data_type !== 4) {
+		if (signalingData && !!latestSignalingEntry && !isVisible && !isInCall && ![4, 5]?.includes(latestSignalingEntry?.signalingData?.data_type)) {
 			setIsVisible(true);
 			Sound.setCategory('Playback');
 
@@ -88,7 +89,7 @@ const CallingModal = () => {
 				ringtoneRef.current = sound;
 				playVibration();
 			});
-		} else if (latestSignalingEntry?.signalingData?.data_type === 4 || latestSignalingEntry?.signalingData?.data_type === 0 || isInCall) {
+		} else if ([0, 4, 5]?.includes?.(latestSignalingEntry?.signalingData?.data_type) || isInCall) {
 			setIsVisible(false);
 			stopAndReleaseSound();
 			Vibration.cancel();
@@ -136,7 +137,7 @@ const CallingModal = () => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
 		await mezon.socketRef.current?.forwardWebrtcSignaling(
 			latestSignalingEntry?.callerId,
-			4,
+			WebrtcSignalingType.WEBRTC_SDP_QUIT,
 			'',
 			latestSignalingEntry?.signalingData?.channel_id,
 			''

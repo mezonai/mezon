@@ -424,10 +424,22 @@ export const selectAllUserDM = createSelector(selectAllDirectMessages, (directMe
 						username: dm?.usernames ? dm?.usernames.split(',')[index] : '',
 						online: dm?.is_online ? dm?.is_online[index] : false,
 						metadata: (() => {
-							try {
-								return dm?.metadata ? safeJSONParse(dm?.metadata[index]) : {};
-							} catch (e) {
+							if (!dm?.metadata) {
 								return {};
+							}
+							try {
+								return JSON.parse(dm?.metadata[index]);
+							} catch (e) {
+								const unescapedJSON = dm?.metadata[index].replace(/\\./g, (match) => {
+									switch (match) {
+										case '\\"':
+											return '"';
+										// Add more escape sequences as needed
+										default:
+											return match[1]; // Remove the backslash
+									}
+								});
+								return safeJSONParse(unescapedJSON);
 							}
 						})()
 					};

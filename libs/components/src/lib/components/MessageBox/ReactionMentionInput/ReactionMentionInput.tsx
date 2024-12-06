@@ -106,6 +106,12 @@ type ChannelsMentionProps = {
 	subText: string;
 };
 
+type HistoryItem = {
+	valueTextInput: string;
+	content: string;
+	mentionRaw: any[];
+};
+
 export const MentionReactInput = memo((props: MentionReactInputProps): ReactElement => {
 	const channels = useSelector(selectAllChannels);
 	const rolesClan = useSelector(selectAllRolesClan);
@@ -131,8 +137,8 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
 	const isShowDMUserProfile = useSelector(selectIsUseProfileDM);
 
-	const [undoHistory, setUndoHistory] = useState<string[]>([]);
-	const [redoHistory, setRedoHistory] = useState<string[]>([]);
+	const [undoHistory, setUndoHistory] = useState<HistoryItem[]>([]);
+	const [redoHistory, setRedoHistory] = useState<HistoryItem[]>([]);
 	const currentDmOrChannelId = useCurrentInbox()?.channel_id;
 	const dataReferences = useSelector(selectDataReferences(currentDmOrChannelId ?? ''));
 
@@ -188,23 +194,39 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		if ((ctrlKey || metaKey) && (key === 'z' || key === 'Z')) {
 			event.preventDefault();
 			if (undoHistory.length > 0) {
-				const previousValue = undoHistory[undoHistory.length - 1];
-				setRedoHistory((prevRedoHistory) => [request.valueTextInput, ...prevRedoHistory]);
+				const { valueTextInput, content, mentionRaw } = undoHistory[undoHistory.length - 1];
+
+				setRedoHistory((prevRedoHistory) => [
+					{ valueTextInput: request.valueTextInput, content: request.content, mentionRaw: request.mentionRaw },
+					...prevRedoHistory
+				]);
+
 				setUndoHistory((prevUndoHistory) => prevUndoHistory.slice(0, prevUndoHistory.length - 1));
+
 				setRequestInput({
 					...request,
-					valueTextInput: previousValue
+					valueTextInput: valueTextInput,
+					content: content,
+					mentionRaw: mentionRaw
 				});
 			}
 		} else if ((ctrlKey || metaKey) && (key === 'y' || key === 'Y')) {
 			event.preventDefault();
 			if (redoHistory.length > 0) {
-				const nextValue = redoHistory[0];
-				setUndoHistory((prevUndoHistory) => [...prevUndoHistory, request.valueTextInput]);
+				const { valueTextInput, content, mentionRaw } = redoHistory[0];
+
+				setUndoHistory((prevUndoHistory) => [
+					...prevUndoHistory,
+					{ valueTextInput: request.valueTextInput, content: request.content, mentionRaw: request.mentionRaw }
+				]);
+
 				setRedoHistory((prevRedoHistory) => prevRedoHistory.slice(1));
+
 				setRequestInput({
 					...request,
-					valueTextInput: nextValue
+					valueTextInput: valueTextInput,
+					content: content,
+					mentionRaw: mentionRaw
 				});
 			}
 		}
@@ -447,7 +469,14 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		const previousValue = prevValueRef.current;
 		const previousPlainText = prevPlainTextRef.current;
 		dispatch(threadsActions.setMessageThreadError(''));
-		setUndoHistory((prevUndoHistory) => [...prevUndoHistory, request?.valueTextInput || '']);
+		setUndoHistory((prevUndoHistory) => [
+			...prevUndoHistory,
+			{
+				valueTextInput: request?.valueTextInput || '',
+				content: request?.content || '',
+				mentionRaw: request?.mentionRaw || []
+			}
+		]);
 		setRedoHistory([]);
 		setRequestInput(
 			{
@@ -735,6 +764,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 								showAvatar={suggestion.display !== '@here'}
 								display={suggestion.display}
 								emojiId=""
+								color={suggestion.color}
 							/>
 						);
 					}}

@@ -1,14 +1,13 @@
-import { BrowserWindow, Menu, MenuItemConstructorOptions, Notification, app, ipcMain, screen, shell } from 'electron';
+import { BrowserWindow, Menu, MenuItemConstructorOptions, Notification, app, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
 import { join } from 'path';
 import { format } from 'url';
-import { rendererAppName, rendererAppPort } from './constants';
+import { electronAppName, rendererAppName, rendererAppPort } from './constants';
 
 import tray from '../Tray';
-import { ImageWindowProps } from '../main';
 import setupAutoUpdates from './autoUpdates';
-import { ACTIVE_WINDOW, FINISH_RENDER, SET_ATTACHMENT_DATA, TRIGGER_SHORTCUT } from './events/constants';
+import { ACTIVE_WINDOW, SET_ATTACHMENT_DATA, TRIGGER_SHORTCUT } from './events/constants';
 import { initBadge } from './services/badge';
 import { forceQuit } from './utils';
 
@@ -242,7 +241,7 @@ export default class App {
 		App.application.on('activate', App.onActivate);
 	}
 
-	static openNewWindow(props: ImageWindowProps, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) {
+	static openNewWindow(props: any, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) {
 		const defaultOptions: Electron.BrowserWindowConstructorOptions = {
 			width: 1000,
 			height: 800,
@@ -263,8 +262,11 @@ export default class App {
 
 		const newWindow = new BrowserWindow(windowOptions);
 
+		const filePath = App.application.isPackaged
+			? 'assets/image-window/image-window.html'
+			: 'apps/desktop/src/assets/image-window/image-window.html';
 		if (App.application.isPackaged) {
-			const baseUrl = join(__dirname, '..', rendererAppName, 'index.html');
+			const baseUrl = join(__dirname, '..', electronAppName, filePath);
 			const fullUrl = this.generateFullUrl(baseUrl, params);
 
 			newWindow.loadURL(
@@ -276,15 +278,21 @@ export default class App {
 				})
 			);
 		} else {
-			const baseUrl = `http://localhost:${rendererAppPort}`;
+			const baseUrl = join(__dirname, '..', '..', '..', filePath);
 			const fullUrl = this.generateFullUrl(baseUrl, params);
-			newWindow.loadURL(fullUrl);
+
+			newWindow.loadURL(
+				format({
+					pathname: fullUrl,
+					protocol: 'file:',
+					slashes: true,
+					query: params
+				})
+			);
 		}
 
 		newWindow.webContents.on('did-finish-load', () => {
-			ipcMain.once(FINISH_RENDER, (event) => {
-				newWindow.webContents.send(SET_ATTACHMENT_DATA, props);
-			});
+			newWindow.webContents.send(SET_ATTACHMENT_DATA, props);
 		});
 
 		return newWindow;

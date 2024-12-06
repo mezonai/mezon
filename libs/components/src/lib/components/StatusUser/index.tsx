@@ -1,9 +1,11 @@
 import { selectCurrentChannelId, selectDmGroupCurrentId, selectTypingUserIdsByChannelId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { EUserStatus } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo } from 'react';
 import { useSelector } from 'react-redux';
 import { directMessageValueProps } from '../DmList/DMListItem';
+import { UserStatusIcon } from '../MemberProfile';
 
 type StatusUserProps = {
 	status?: { status?: boolean; isMobile?: boolean };
@@ -14,10 +16,21 @@ type StatusUserProps = {
 	userId?: string;
 	isTyping?: boolean;
 	sizeStatusIcon?: string;
+	customStatus?: EUserStatus;
 };
 
 const StatusUser = memo((props: StatusUserProps) => {
-	const { status, isMemberChannel, isMemberDMGroup, isListDm, directMessageValue, userId = '', isTyping = true, sizeStatusIcon } = props;
+	const {
+		customStatus,
+		status,
+		isMemberChannel,
+		isMemberDMGroup,
+		isListDm,
+		directMessageValue,
+		userId = '',
+		isTyping = true,
+		sizeStatusIcon
+	} = props;
 	const currentDMChannelID = useSelector(selectDmGroupCurrentId);
 	const currentChannelID = useSelector(selectCurrentChannelId);
 	const typingListMemberDMIds = useAppSelector((state) => selectTypingUserIdsByChannelId(state, currentDMChannelID || ''));
@@ -61,7 +74,7 @@ const StatusUser = memo((props: StatusUserProps) => {
 			) : status?.isMobile ? (
 				<Icons.IconMobileDevice defaultSize={'w-3 h-3'} />
 			) : status?.status ? (
-				<Icons.OnlineStatus defaultSize={sizeStatusIcon} />
+				<>{customStatus ? <UserStatusIcon status={customStatus} /> : <Icons.OnlineStatus defaultSize={sizeStatusIcon} />}</>
 			) : (
 				<Icons.OfflineStatus defaultSize={sizeStatusIcon} />
 			)}

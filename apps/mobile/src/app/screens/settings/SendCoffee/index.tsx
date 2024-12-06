@@ -1,5 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, getStoreAsync, giveCoffeeActions, selectAllAccount, selectUpdateToken } from '@mezon/store-mobile';
+import { safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import { useMemo, useState } from 'react';
 import { Dimensions, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';

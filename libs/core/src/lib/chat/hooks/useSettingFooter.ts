@@ -17,6 +17,20 @@ export function useSettingFooter() {
 		[dispatch]
 	);
 
+	const setIsShowSettingProfileInitTab = useCallback(
+		(value: string) => {
+			dispatch(appActions.setIsShowSettingProfileInitTab(value));
+		},
+		[dispatch]
+	);
+
+	const setClanIdSettingProfile = useCallback(
+		(value: string) => {
+			dispatch(appActions.setClanIdSettingProfile(value));
+		},
+		[dispatch]
+	);
+
 	const setIsUserProfile = useCallback(
 		(isUserProfile: boolean) => {
 			dispatch(appActions.setIsUserProfile(isUserProfile));
@@ -28,8 +42,10 @@ export function useSettingFooter() {
 		() => ({
 			setIsShowSettingFooterStatus,
 			setIsShowSettingFooterInitTab,
-			setIsUserProfile
+			setIsUserProfile,
+			setIsShowSettingProfileInitTab,
+			setClanIdSettingProfile
 		}),
-		[setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile]
+		[setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile]
 	);
 }

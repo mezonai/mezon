@@ -11,25 +11,31 @@ import { AvatarImage } from '../../../components';
 type ModalSendTokenProps = {
 	openModal: boolean;
 	onClose?: () => void;
+	token: number;
 	setToken: (token: number) => void;
-	handleSaveSendToken?: () => void;
 	setSelectedUserId: (id: string) => void;
+	handleSaveSendToken?: () => void;
 	setNote: (note: string) => void;
 	error: string | null;
 	userSearchError: string | null;
 	userId: string;
+	selectedUserId: string;
+	note: string;
 };
 
 const ModalSendToken = ({
 	openModal,
 	onClose,
+	token,
 	setToken,
-	handleSaveSendToken,
 	setSelectedUserId,
+	handleSaveSendToken,
 	setNote,
 	error,
 	userSearchError,
-	userId
+	userId,
+	selectedUserId,
+	note
 }: ModalSendTokenProps) => {
 	const usersClan = useSelector(selectAllUserClans);
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
@@ -38,6 +44,7 @@ const ModalSendToken = ({
 	const [searchTerm, setSearchTerm] = useState('');
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [tokenNumber, setTokenNumber] = useState('');
+	const [noteSendToken, setNoteSendToken] = useState('');
 
 	useEffect(() => {
 		if (!openModal) {
@@ -125,6 +132,13 @@ const ModalSendToken = ({
 		estimateSize: () => 48,
 		overscan: 5
 	});
+
+	useEffect(() => {
+		const user = filteredUsers.find((user) => user.id === selectedUserId);
+		if (user) handleSelectUser(user.id, user.username);
+		setTokenNumber(formatNumber(Number(token), 'vi-VN'));
+		setNoteSendToken(note);
+	}, [token, selectedUserId, note]);
 
 	return (
 		<Modal className="bg-bgModalDark" theme={{ content: { base: 'w-[440px]' } }} show={openModal} dismissible={true} onClose={onClose}>
@@ -227,7 +241,7 @@ const ModalSendToken = ({
 						</div>
 						<input
 							type="text"
-							defaultValue={'send token'}
+							defaultValue={noteSendToken}
 							className="dark:text-[#B5BAC1] text-textLightTheme outline-none w-full h-10 p-[10px] dark:bg-bgInputDark bg-bgLightModeThird text-base rounded placeholder:text-sm appearance-none"
 							placeholder="send token"
 							onChange={handleChangeNote}

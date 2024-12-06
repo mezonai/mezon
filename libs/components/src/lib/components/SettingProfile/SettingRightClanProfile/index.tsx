@@ -1,14 +1,16 @@
-import { selectAllClans, selectCurrentClanId } from '@mezon/store';
+import { selectAllClans } from '@mezon/store';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import SettingUserClanProfileEdit from './SettingUserClanProfileEdit';
 
-const SettingRightClan = () => {
-	const clans = useSelector(selectAllClans);
-	const currentClanId = useSelector(selectCurrentClanId);
+interface SettingUserClanProfileEditProps {
+	clanId: string;
+}
 
+const SettingRightClan: React.FC<SettingUserClanProfileEditProps> = ({ clanId }) => {
+	const clans = useSelector(selectAllClans);
 	const [flagOption, setFlagOption] = useState<boolean>(false);
-	const [selectedClanId, setSelectedClanId] = useState<string | undefined>(currentClanId as string);
+	const [selectedClanId, setSelectedClanId] = useState<string | undefined>(clanId as string);
 
 	const handleClanChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedClanId(event.target.value);

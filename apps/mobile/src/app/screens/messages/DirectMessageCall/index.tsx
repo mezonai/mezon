@@ -10,11 +10,13 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { IMessageTypeCallLog } from '@mezon/utils';
+import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import InCallManager from 'react-native-incall-manager';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import { RTCView } from 'react-native-webrtc';
 import { useSelector } from 'react-redux';
 import Images from '../../../../assets/Images';
@@ -40,6 +42,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
 	const isInCall = useSelector(selectIsInCall);
 	const isRemoteVideo = useSelector(selectRemoteVideo);
+	const navigation = useNavigation<any>();
 
 	const {
 		callState,
@@ -61,23 +64,38 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 	});
 
 	useEffect(() => {
-		if (callState.peerConnection && signalingData?.[signalingData?.length - 1]?.signalingData?.data_type === 4) {
-			if (!timeStartConnected?.current) {
-				dispatch(
-					DMCallActions.updateCallLog({
-						channelId: directMessageId,
-						content: { t: '', callLog: { isVideo: isVideoCall, callLogType: IMessageTypeCallLog.REJECTCALL } }
-					})
-				);
-			}
+		const lastSignalingData = signalingData?.[signalingData.length - 1]?.signalingData;
+		if (callState?.peerConnection && lastSignalingData) {
+			const dataType = lastSignalingData?.data_type;
 
-			handleEndCall();
+			if ([4, 5].includes(dataType)) {
+				if (!timeStartConnected?.current) {
+					const callLogType = dataType === 5 ? IMessageTypeCallLog.TIMEOUTCALL : IMessageTypeCallLog.REJECTCALL;
+
+					if (dataType === 5) {
+						Toast.show({
+							type: 'error',
+							text1: 'User is currently on another call. Please call back later!'
+						});
+					}
+					dispatch(
+						DMCallActions.updateCallLog({
+							channelId: directMessageId || '',
+							content: {
+								t: '',
+								callLog: { isVideo: isVideoCall, callLogType }
+							}
+						})
+					);
+				}
+				handleEndCall({ isCancelGoBack: dataType === 5 });
+			}
 		}
-		if (signalingData?.[signalingData?.length - 1] && isInCall) {
-			const data = signalingData?.[signalingData?.length - 1]?.signalingData;
-			handleSignalingMessage(data);
+
+		if (lastSignalingData && isInCall) {
+			handleSignalingMessage(lastSignalingData);
 		}
-	}, [callState.peerConnection, timeStartConnected?.current, isInCall, signalingData]);
+	}, [callState.peerConnection, isInCall, signalingData, timeStartConnected.current]);
 
 	useEffect(() => {
 		dispatch(DMCallActions.setIsInCall(true));
@@ -97,7 +115,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 
 	const onCancelCall = async () => {
 		try {
-			await handleEndCall();
+			await handleEndCall({ isCancelGoBack: false });
 			if (!timeStartConnected?.current) {
 				await dispatch(
 					DMCallActions.updateCallLog({
@@ -112,6 +130,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 					})
 				);
 			}
+			navigation.goBack();
 		} catch (err) {
 			/* empty */
 		}

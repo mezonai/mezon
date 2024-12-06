@@ -141,54 +141,14 @@ const Questions = ({ handleGoToPage }: IQuestionsProps) => {
 const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem; index: number; tempId?: number }) => {
 	const [titleQuestion, setTitleQuestion] = useState(question?.title || '');
 	const [answers, setAnswer] = useState<OnboardingAnswer[]>(question?.answers || []);
-	const [titleAnswer, setTitleAnswer] = useState('');
-	const [answerDescription, setAnswerDescription] = useState('');
 
 	const dispatch = useAppDispatch();
 
-	const handleSaveAnswer = () => {
-		setAnswer([...answers, { title: titleAnswer, description: answerDescription }]);
-		setTitleAnswer('');
-		setAnswerDescription('');
-		closeAnswerPopup();
-	};
-
-	const handleChangeTitleAnswer = (e: ChangeEvent<HTMLInputElement>) => {
-		setTitleAnswer(e.target.value);
-	};
-
-	const handleChangeTitleDescription = (e: ChangeEvent<HTMLInputElement>) => {
-		setAnswerDescription(e.target.value);
-	};
-
 	const [openAnswerPopup, closeAnswerPopup] = useModal(
 		() => (
-			<ModalControlRule bottomLeftBtn="Remove" onClose={closeAnswerPopup} onSave={handleSaveAnswer}>
-				<>
-					<div className="absolute top-5 flex flex-col gap-2">
-						<div className="uppercase text-xs font-medium">Question {index + 1}</div>
-						<div className="text-xl text-white font-semibold">{titleQuestion || 'What is your question'} ?</div>
-					</div>
-					<div className="pb-5 pt-10 flex flex-col gap-2">
-						<ControlInput
-							title="Add answer title"
-							message="Title is required"
-							onChange={handleChangeTitleAnswer}
-							value={titleAnswer}
-							placeholder="Enter an answer..."
-							required
-						/>
-						<ControlInput
-							title="Add answer description"
-							onChange={handleChangeTitleDescription}
-							value={answerDescription}
-							placeholder="Enter a description... (optional)"
-						/>
-					</div>
-				</>
-			</ModalControlRule>
+			<ModalAddAnswer closeAnswerPopup={closeAnswerPopup} answers={answers} setAnswer={setAnswer} titleQuestion={titleQuestion} index={index} />
 		),
-		[titleQuestion, titleAnswer, answerDescription]
+		[titleQuestion]
 	);
 
 	const [isExpanded, setIsExpanded] = useState(question ? false : true);
@@ -256,7 +216,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 						onChange={handleQuestionOnchange}
 					/>
 				) : (
-					<div className="text-white text-xl font-semibold">{titleQuestion}</div>
+					<div className="text-white text-xl font-semibold truncate">{titleQuestion}</div>
 				)}
 			</div>
 			{isExpanded && (
@@ -281,7 +241,6 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 							/>
 						</div>
 					</div>
-
 					<div className="flex justify-between">
 						<div className="flex gap-6">
 							<div className="flex items-center gap-2">
@@ -307,3 +266,55 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 };
 
 export default Questions;
+type ModalAddAnswerProp = {
+	closeAnswerPopup: () => void;
+	setAnswer: React.Dispatch<React.SetStateAction<OnboardingAnswer[]>>;
+	answers: OnboardingAnswer[];
+	titleQuestion: string;
+	index: number;
+};
+const ModalAddAnswer = ({ closeAnswerPopup, index, answers, setAnswer, titleQuestion }: ModalAddAnswerProp) => {
+	const [titleAnswer, setTitleAnswer] = useState('');
+	const [answerDescription, setAnswerDescription] = useState('');
+
+	const handleChangeTitleAnswer = (e: ChangeEvent<HTMLInputElement>) => {
+		setTitleAnswer(e.target.value);
+	};
+
+	const handleChangeTitleDescription = (e: ChangeEvent<HTMLInputElement>) => {
+		setAnswerDescription(e.target.value);
+	};
+
+	const handleSaveAnswer = () => {
+		setAnswer([...answers, { title: titleAnswer, description: answerDescription }]);
+		setTitleAnswer('');
+		setAnswerDescription('');
+		closeAnswerPopup();
+	};
+	return (
+		<ModalControlRule bottomLeftBtn="Remove" onClose={closeAnswerPopup} onSave={handleSaveAnswer}>
+			<>
+				<div className="absolute top-5 flex flex-col gap-2">
+					<div className="uppercase text-xs font-medium">Question {index + 1}</div>
+					<div className="text-xl text-white font-semibold">{titleQuestion || 'What is your question'} ?</div>
+				</div>
+				<div className="pb-5 pt-10 flex flex-col gap-2">
+					<ControlInput
+						title="Add answer title"
+						message="Title is required"
+						onChange={handleChangeTitleAnswer}
+						value={titleAnswer}
+						placeholder="Enter an answer..."
+						required
+					/>
+					<ControlInput
+						title="Add answer description"
+						onChange={handleChangeTitleDescription}
+						value={answerDescription}
+						placeholder="Enter a description... (optional)"
+					/>
+				</div>
+			</>
+		</ModalControlRule>
+	);
+};

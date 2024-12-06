@@ -75,7 +75,7 @@ function MezonPage() {
 
 	return (
 		<div
-			className="relative bg-[#0B0E2D]"
+			className="relative bg-[#0B0E2D] select-text"
 			style={{
 				fontFamily: 'Inter'
 			}}
