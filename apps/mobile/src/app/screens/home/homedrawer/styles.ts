@@ -743,5 +743,8 @@ export const style = (colors: Attributes) =>
 		rowContainer: {
 			flex: 1,
 			flexDirection: 'row'
+		},
+		systemIcon: {
+			justifyContent: 'center'
 		}
 	});
