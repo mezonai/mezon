@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ActionEmitEvent, ReplyMessageDeleted, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons, ReplyMessageDeleted, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
 import { Block, Colors, Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, messagesActions, MessagesEntity, seenMessagePool, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -298,15 +298,23 @@ const MessageItem = React.memo(
 						showHighlightReply && styles.highlightMessageMention
 					]}
 				>
-					<RenderMessageItemRef message={message} preventAction={preventAction} />
+					{!checkSystem && <RenderMessageItemRef message={message} preventAction={preventAction} />}
 					<View style={[styles.wrapperMessageBox, !isCombine && styles.wrapperMessageBoxCombine]}>
-						<AvatarMessage
-							onPress={onPressInfoUser}
-							id={message?.user?.id}
-							avatar={messageAvatar}
-							username={usernameMessage}
-							isShow={!isCombine || !!message?.references?.length || showUserInformation}
-						/>
+						{checkSystem ? (
+							<View style={styles.systemIcon}>
+								{message.code === TypeMessage.Welcome && <Icons.WelcomeIcon />}
+								{message.code === TypeMessage.CreateThread && <Icons.ThreadIcon />}
+								{message.code === TypeMessage.CreatePin && <Icons.PinIcon />}
+							</View>
+						) : (
+							<AvatarMessage
+								onPress={onPressInfoUser}
+								id={message?.user?.id}
+								avatar={messageAvatar}
+								username={usernameMessage}
+								isShow={!isCombine || !!message?.references?.length || showUserInformation}
+							/>
+						)}
 
 						<Pressable
 							disabled={isMessageCallLog}
@@ -316,14 +324,16 @@ const MessageItem = React.memo(
 							onPressOut={handlePressOut}
 							onLongPress={handleLongPressMessage}
 						>
-							<InfoUserMessage
-								onPress={onPressInfoUser}
-								senderDisplayName={senderDisplayName}
-								isShow={!isCombine || !!message?.references?.length || showUserInformation}
-								createTime={message?.create_time}
-								messageSenderId={message?.sender_id}
-								mode={mode}
-							/>
+							{!checkSystem && (
+								<InfoUserMessage
+									onPress={onPressInfoUser}
+									senderDisplayName={senderDisplayName}
+									isShow={!isCombine || !!message?.references?.length || showUserInformation}
+									createTime={message?.create_time}
+									messageSenderId={message?.sender_id}
+									mode={mode}
+								/>
+							)}
 							<MessageAttachment message={message} onLongPressImage={onLongPressImage} />
 							<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>
 								{isInviteLink || isGoogleMapsLink ? (
