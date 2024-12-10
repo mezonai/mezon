@@ -1966,3 +1966,42 @@ export const WelcomeIcon = ({ width = 24, height = 24, color = '#AEAEAE', ...pro
 		</Svg>
 	);
 };
+
+export const History = ({ width = 24, height = 24, color = '#AEAEAE', ...props }) => {
+	return (
+		<Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+			<Path d="M12 8V12L15 15" stroke="#23b850" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+			<Path
+				d="M3.05 11C3.27159 8.3288 4.51826 5.84755 6.53384 4.08373C8.54943 2.31991 11.1753 1.39728 13.8506 1.5215C16.5259 1.64571 19.0463 2.81031 20.8675 4.77142C22.6886 6.73253 23.6754 9.33897 23.6754 12.03C23.6754 14.721 22.6886 17.3275 20.8675 19.2886C19.0463 21.2497 16.5259 22.4143 13.8506 22.5385C11.1753 22.6627 8.54943 21.7401 6.53384 19.9763C4.51826 18.2124 3.27159 15.7312 3.05 13.06"
+				stroke="#23b850"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+		</Svg>
+	);
+};
+
+export const SendMoney = ({ width = 24, height = 24, rotate = 1, color = '#AEAEAE', ...props }) => {
+	return (
+		<Svg width={width} height={height} scaleX={rotate} scaleY={rotate} viewBox="0 0 24 24" fill="none">
+			<Path
+				d="M9.5 13.75C9.5 14.72 10.25 15.5 11.17 15.5H13.05C13.85 15.5 14.5 14.82 14.5 13.97C14.5 13.06 14.1 12.73 13.51 12.52L10.5 11.47C9.91 11.26 9.51001 10.94 9.51001 10.02C9.51001 9.17999 10.16 8.48999 10.96 8.48999H12.84C13.76 8.48999 14.51 9.26999 14.51 10.24"
+				stroke="#23b850"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+			<Path d="M12 7.5V16.5" stroke="#23b850" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+			<Path
+				d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2"
+				stroke="#23b850"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+			<Path d="M22 6V2H18" stroke="#23b850" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+			<Path d="M17 7L22 2" stroke="#23b850" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		</Svg>
+	);
+};
