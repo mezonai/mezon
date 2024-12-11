@@ -3,6 +3,7 @@ import {
 	messagesActions,
 	selectCurrentChannelId,
 	selectCurrentUserId,
+	selectDataFormEmbedByMessageId,
 	selectDmGroupCurrentId,
 	selectModeResponsive,
 	useAppDispatch
@@ -28,8 +29,22 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 	const modeResponsive = useSelector(selectModeResponsive);
 	const currentUserId = useSelector(selectCurrentUserId);
 	const [selectedOptions, setSelectedOptions] = useState<Array<IMessageSelectOption>>([]);
-
 	const [availableOptions, setAvailableOptions] = useState(select?.options || []);
+	// For change options when change project *daily
+	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, messageId));
+	const matchingKeyProjectDaily = embedData && Object.keys(embedData)?.find((key) => key?.startsWith('daily') && key?.endsWith('project'));
+	const matchingValueProjectDaily = (matchingKeyProjectDaily && embedData?.[matchingKeyProjectDaily]) || null;
+	const metadataTaskOption = select.metaDataOptions;
+	const getMetaDataByProjectCode = metadataTaskOption && metadataTaskOption.find((p: any) => p.projectCode === matchingValueProjectDaily?.[0]);
+	const optionsTask = getMetaDataByProjectCode?.tasks?.map((task: any) => ({
+		label: task.taskName,
+		value: task.taskName
+	}));
+	useEffect(() => {
+		if (optionsTask && optionsTask.length > 0) setAvailableOptions(optionsTask);
+	}, [matchingValueProjectDaily?.[0]]);
+	//
+
 	const dispatch = useAppDispatch();
 	const handleOptionSelect = (option: { value: string; label: string }) => {
 		if (selectedOptions.length < (select?.max_options || 1)) {
@@ -82,7 +97,6 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 
 	const handleRemoveOption = (e: React.MouseEvent<HTMLButtonElement>, option: { value: string; label: string }) => {
 		e.stopPropagation();
-
 		setSelectedOptions((prev) => prev.filter((o) => o.value !== option.value));
 		setAvailableOptions((prev) => {
 			const updatedOptions = [...prev, option];
@@ -127,7 +141,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 
 		return 'Select 1 option';
 	};
-
+	const uniqueSelectedOptions = availableOptions.filter((option, index, self) => index === self.findIndex((o) => o.value === option.value));
 	return (
 		<Dropdown
 			dismissOnClick={false}
@@ -165,7 +179,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 			)}
 			className="h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20"
 		>
-			<SelectOptions options={availableOptions} onSelectOption={handleOptionSelect} onSubmitSelection={handleSubmitSelection} />
+			<SelectOptions options={uniqueSelectedOptions} onSelectOption={handleOptionSelect} onSubmitSelection={handleSubmitSelection} />
 		</Dropdown>
 	);
 };

@@ -333,6 +333,7 @@ export interface IMessageSelect {
 	max_options?: number;
 	disabled?: boolean;
 	valueSelected?: IMessageSelectOption;
+	metaDataOptions?: any;
 }
 
 export interface IMessageComponent<T> {
