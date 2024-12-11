@@ -743,5 +743,26 @@ export const style = (colors: Attributes) =>
 		rowContainer: {
 			flex: 1,
 			flexDirection: 'row'
+		},
+		messageText: {
+			color: colors.text,
+			fontSize: size.s_14
+		},
+		messageTime: { fontSize: size.s_10, color: colors.textDisabled },
+		textMention: {
+			fontSize: size.small,
+			color: colors.textLink,
+			backgroundColor: colors.midnightBlue,
+			fontWeight: 'bold'
+		},
+		textPinMessage: {
+			fontSize: size.small,
+			color: colors.white,
+			fontWeight: '700'
+		},
+		messageSystemBox: {
+			marginLeft: size.s_20,
+			justifyContent: 'space-between',
+			width: '90%'
 		}
 	});

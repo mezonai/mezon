@@ -13,8 +13,7 @@ export const style = (colors: Attributes) =>
 		name: {
 			color: colors.white,
 			fontWeight: 'bold',
-			fontSize: size.medium,
-			marginTop: size.s_10
+			fontSize: size.medium
 		},
 		value: {
 			color: colors.text,

@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { getAvatarForPrioritize } from '@mezon/utils';
+import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
 import Tippy from '@tippy.js/react';
 import { formatDistance } from 'date-fns';
 import { Avatar, AvatarSizes, Dropdown, Pagination } from 'flowbite-react';
@@ -286,6 +286,16 @@ const ItemInfor = ({
 		);
 	}, [channelId]);
 
+	const imgCreator = useMemo(() => {
+		if (creatorChannel?.clan_avatar) {
+			return createImgproxyUrl(creatorChannel?.clan_avatar, { width: 32, height: 32, resizeType: 'fit' });
+		}
+		if (creatorChannel?.user?.avatar_url) {
+			return createImgproxyUrl(creatorChannel?.user?.avatar_url, { width: 32, height: 32, resizeType: 'fit' });
+		}
+		return 'assets/avatar-user.svg';
+	}, [creatorChannel?.clan_avatar, creatorChannel?.user?.avatar_url]);
+
 	return (
 		<div
 			className={`w-full py-1 relative before:content-[" "] before:w-full before:h-[0.08px] dark:before:bg-borderDivider before:bg-bgLightSecondary before:absolute before:top-0 before:left-0 group text-textPrimaryLight dark:text-textPrimary`}
@@ -347,10 +357,7 @@ const ItemInfor = ({
 							placement="left"
 							arrow={false}
 						>
-							<img
-								src={creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url || 'assets/avatar-user.svg'}
-								className="w-8 h-8 object-cover rounded-full "
-							/>
+							<img src={imgCreator} className="w-8 h-8 object-cover rounded-full " />
 						</Tippy>
 					)}
 				</div>
@@ -378,7 +385,10 @@ export const AvatarUserShort = ({
 
 	return (
 		<div className="flex items-center gap-3">
-			<img src={avatarUrl} className="rounded-full h-6 aspect-square object-cover" />
+			<img
+				src={createImgproxyUrl(avatarUrl, { width: 24, height: 24, resizeType: 'fit' })}
+				className="rounded-full h-6 aspect-square object-cover"
+			/>
 			{showName ? (
 				<div className="text-textLightTheme dark:text-channelTextareaLight">
 					{member?.clan_nick || member?.user?.display_name || member?.user?.username}

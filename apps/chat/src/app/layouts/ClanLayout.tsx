@@ -14,6 +14,7 @@ import {
 	selectIsInCall,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
+	selectIsShowCreateTopic,
 	selectStatusMenu,
 	selectStatusStream,
 	useAppDispatch,
@@ -29,6 +30,7 @@ import { Outlet } from 'react-router-dom';
 import ChatStream from '../pages/chatStream';
 import Setting from '../pages/setting';
 import ThreadsMain from '../pages/thread';
+import TopicDiscussionMain from '../pages/topicDiscussion';
 
 const ClanEffects: React.FC<{
 	chatStreamRef: React.RefObject<HTMLDivElement>;
@@ -36,7 +38,8 @@ const ClanEffects: React.FC<{
 	currentClan: ClansEntity | null;
 	isShowChatStream: boolean;
 	isShowCreateThread: boolean;
-}> = ({ currentClan, currentChannel, chatStreamRef, isShowChatStream, isShowCreateThread }) => {
+	isShowCreateTopic: boolean;
+}> = ({ currentClan, currentChannel, chatStreamRef, isShowChatStream, isShowCreateThread, isShowCreateTopic }) => {
 	// move code thanh.levan
 
 	const { canvasId } = useAppParams();
@@ -83,10 +86,10 @@ const ClanEffects: React.FC<{
 	}, [currentStreamInfo, currentClan, currentChannel]);
 
 	useEffect(() => {
-		if (isShowCreateThread) {
+		if (isShowCreateThread || isShowCreateTopic) {
 			setIsShowMemberList(false);
 		}
-	}, [isShowCreateThread]);
+	}, [isShowCreateThread, isShowCreateTopic]);
 
 	const checkTypeChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_VOICE;
 	useEffect(() => {
@@ -112,6 +115,7 @@ const ClanLayout = () => {
 	const memberPath = `/chat/clans/${currentClan?.clan_id}/member-safety`;
 	const currentChannel = useSelector(selectCurrentChannel);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
+	const isShowCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, currentChannel?.id as string));
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
 	const isInCall = useSelector(selectIsInCall);
 
@@ -151,9 +155,15 @@ const ClanLayout = () => {
 					</div>
 				)}
 			</div>
-			{isShowCreateThread && (
+			{isShowCreateThread && !isShowCreateTopic && (
 				<div className="w-[480px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
 					<ThreadsMain />
+				</div>
+			)}
+
+			{isShowCreateTopic && !isShowCreateThread && (
+				<div className="w-[480px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
+					<TopicDiscussionMain />
 				</div>
 			)}
 			<Setting isDM={false} />
@@ -164,6 +174,7 @@ const ClanLayout = () => {
 				chatStreamRef={chatStreamRef}
 				isShowChatStream={isShowChatStream}
 				isShowCreateThread={isShowCreateThread}
+				isShowCreateTopic={isShowCreateTopic}
 			/>
 		</>
 	);

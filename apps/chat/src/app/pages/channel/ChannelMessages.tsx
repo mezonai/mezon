@@ -47,6 +47,7 @@ type ChannelMessagesProps = {
 	userName?: string;
 	userIdsFromThreadBox?: string[];
 	isThreadBox?: boolean;
+	isTopicBox?: boolean;
 };
 
 function ChannelMessages({
@@ -57,7 +58,8 @@ function ChannelMessages({
 	userName,
 	mode,
 	userIdsFromThreadBox,
-	isThreadBox = false
+	isThreadBox = false,
+	isTopicBox
 }: ChannelMessagesProps) {
 	const appearanceTheme = useSelector(selectTheme);
 	const messages = useAppSelector((state) => selectMessageIdsByChannelId(state, channelId));

@@ -1,17 +1,20 @@
-import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside } from '@mezon/core';
+import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import {
+	fetchListNotification,
 	notificationActions,
+	selectAllNotification,
 	selectAllNotificationClan,
 	selectAllNotificationExcludeMentionAndReply,
 	selectAllNotificationMentionAndReply,
-	selectTheme,
+	selectCurrentClan,
+	selectLastNotificationId,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { INotification, sortNotificationsByDate } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { RefObject, useCallback, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import AllNotification from './AllNotification';
 import EmptyNotification from './EmptyNotification';
 import NotificationChannel from './NotificationChannel';
 import NotificationItem from './NotificationItem';
@@ -24,22 +27,25 @@ export type NotificationProps = {
 };
 
 const InboxType = {
+	ALL: 'all',
 	INDIVIDUAL: 'individual',
 	MESSAGES: 'messages',
 	MENTIONS: 'mentions'
 };
 
 const tabDataNotify = [
+	{ title: 'All', value: InboxType.ALL },
 	{ title: 'For you', value: InboxType.INDIVIDUAL },
 	{ title: 'Messages', value: InboxType.MESSAGES },
 	{ title: 'Mentions', value: InboxType.MENTIONS }
 ];
 
 function NotificationList({ rootRef }: NotificationProps) {
+	const currentClan = useSelector(selectCurrentClan);
 	const dispatch = useAppDispatch();
 	const allNotificationClan = useSelector(selectAllNotificationClan);
 
-	const [currentTabNotify, setCurrentTabNotify] = useState(InboxType.MENTIONS);
+	const [currentTabNotify, setCurrentTabNotify] = useState(InboxType.ALL);
 	const handleChangeTab = (valueTab: string) => {
 		setCurrentTabNotify(valueTab);
 	};
@@ -59,14 +65,6 @@ function NotificationList({ rootRef }: NotificationProps) {
 		return sortNotificationsByDate(getAllNotificationMentionAndReply);
 	}, [getAllNotificationMentionAndReply]);
 
-	const appearanceTheme = useSelector(selectTheme);
-
-	const { handleMarkAsReadClan } = useMarkAsRead();
-
-	const isShowMarkAllAsRead = useMemo(() => {
-		return allNotificationClan.length > 0 && currentTabNotify === InboxType.MESSAGES;
-	}, [allNotificationClan, currentTabNotify]);
-
 	const modalRef = useRef<HTMLDivElement>(null);
 	const handleHideInbox = useCallback(() => {
 		dispatch(notificationActions.setIsShowInbox(false));
@@ -74,6 +72,27 @@ function NotificationList({ rootRef }: NotificationProps) {
 
 	useEscapeKeyClose(modalRef, handleHideInbox);
 	useOnClickOutside(modalRef, handleHideInbox, rootRef);
+
+	const listRef = useRef<HTMLDivElement | null>(null);
+	const notifications = useSelector(selectAllNotification);
+	const getAllNotifications = useMemo(() => {
+		return sortNotificationsByDate(notifications);
+	}, [notifications]);
+	const lastNotificationId = useSelector(selectLastNotificationId);
+	const handleScroll = () => {
+		if (!listRef.current || !lastNotificationId) return;
+
+		const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+
+		if (scrollHeight - scrollTop !== clientHeight) return;
+
+		dispatch(
+			fetchListNotification({
+				clanId: currentClan?.id || '',
+				notificationId: lastNotificationId
+			})
+		);
+	};
 
 	return (
 		<div
@@ -88,26 +107,6 @@ function NotificationList({ rootRef }: NotificationProps) {
 							<InboxButton />
 							<div>Inbox </div>
 						</div>
-
-						{isShowMarkAllAsRead && (
-							<Tippy
-								className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
-								arrow={false}
-								content={
-									<p style={{ whiteSpace: 'nowrap' }} className="max-w-60 truncate">
-										{'Mark all as read'}
-									</p>
-								}
-								placement="top"
-							>
-								<button
-									onClick={() => handleMarkAsReadClan}
-									className="flex items-center p-1 rounded-sm justify-center dark:bg-bgTertiary bg-bgLightModeButton"
-								>
-									<Icons.MarkAllAsRead className="w-5 h-5" />
-								</button>
-							</Tippy>
-						)}
 					</div>
 					<div className="flex flex-row border-b-[1px] border-b-gray-300">
 						<div className="flex flex-row gap-4 py-3 w-[70%]">
@@ -129,8 +128,22 @@ function NotificationList({ rootRef }: NotificationProps) {
 				</div>
 
 				<div
-					className={`dark:bg-bgSecondary bg-bgLightSecondary flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
+					ref={listRef}
+					className="dark:bg-bgSecondary bg-bgLightSecondary flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto"
+					onScroll={handleScroll}
 				>
+					{currentTabNotify === InboxType.ALL && (
+						<div>
+							{getAllNotifications.length > 0 ? (
+								getAllNotifications.map((notification, index) => (
+									<AllNotification notification={notification} key={`all-${notification?.id}-${index}`} />
+								))
+							) : (
+								<EmptyNotification isEmptyMessages />
+							)}
+						</div>
+					)}
+
 					{currentTabNotify === InboxType.INDIVIDUAL && (
 						<div>
 							{getExcludeMentionAndReply.length > 0 ? (

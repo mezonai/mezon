@@ -28,6 +28,7 @@ import {
 	setSelectedMessage,
 	threadsActions,
 	toggleIsShowPopupForwardTrue,
+	topicsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -42,6 +43,7 @@ import {
 	ModeResponsive,
 	SHOW_POSITION,
 	SubPanelName,
+	TypeMessage,
 	handleCopyImage,
 	handleCopyLink,
 	handleOpenLink,
@@ -348,9 +350,23 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 		[currentChannel?.id, dispatch]
 	);
 
+	const setIsShowCreateTopic = useCallback(
+		(isShowCreateTopic: boolean, channelId?: string) => {
+			dispatch(topicsActions.setIsShowCreateTopic({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateTopic }));
+		},
+		[currentChannel?.id, dispatch]
+	);
+
 	const setValueThread = useCallback(
 		(value: IMessageWithUser | null) => {
 			dispatch(threadsActions.setValueThread(value));
+		},
+		[dispatch]
+	);
+
+	const setValueTopic = useCallback(
+		(value: IMessageWithUser | null) => {
+			dispatch(topicsActions.setValueTopic(value));
 		},
 		[dispatch]
 	);
@@ -361,6 +377,13 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 		dispatch(threadsActions.setOpenThreadMessageState(true));
 		setValueThread(message);
 	}, [dispatch, message, setIsShowCreateThread, setOpenThreadMessageState, setValueThread]);
+
+	const handleCreateTopic = useCallback(() => {
+		setIsShowCreateTopic(true);
+		dispatch(topicsActions.setOpenTopicMessageState(true));
+		setValueTopic(message);
+		dispatch(topicsActions.setCurrentTopicId(''));
+	}, [dispatch, message, setIsShowCreateTopic, setValueTopic]);
 
 	const checkPos = useMemo(() => {
 		if (posShowMenu === SHOW_POSITION.NONE || posShowMenu === SHOW_POSITION.IN_STICKER || posShowMenu === SHOW_POSITION.IN_EMOJI) {
@@ -607,6 +630,10 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 				<Icons.CopyMessageLinkRightClick defaultSize="w-4 h-4" />
 			);
 		});
+		message.code !== TypeMessage.Topic &&
+			builder.when(checkPos, (builder) => {
+				builder.addMenuItem('topicDiscussion', 'Topic Discussion', handleCreateTopic, <Icons.TopicIcon defaultSize="w-4 h-4" />);
+			});
 
 		builder.when(checkPos, (builder) => {
 			builder.addMenuItem('forwardMessage', 'Forward Message', () => handleForwardMessage(), <Icons.ForwardRightClick defaultSize="w-4 h-4" />);
@@ -733,7 +760,8 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode }: Messag
 		handleForwardMessage,
 		handleForwardAllMessage,
 		urlImage,
-		handleItemClick
+		handleItemClick,
+		handleCreateTopic
 	]);
 	/* eslint-disable no-console */
 

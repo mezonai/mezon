@@ -24,6 +24,7 @@ interface IMezonInputProps {
 	postfixIcon?: ReactNode;
 	disabled?: boolean;
 	isValid?: boolean;
+	defaultValue?: string;
 }
 
 export default function MezonInput({
@@ -43,7 +44,8 @@ export default function MezonInput({
 	postfixIcon,
 	prefixIcon,
 	disabled = false,
-	isValid = true
+	isValid = true,
+	defaultValue = ''
 }: IMezonInputProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -101,6 +103,7 @@ export default function MezonInput({
 						onFocus={handleFocus}
 						onBlur={handleBlur}
 						editable={!disabled}
+						defaultValue={defaultValue}
 					/>
 					{postfixIcon}
 

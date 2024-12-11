@@ -18,7 +18,7 @@ export const EmbedAuthor = memo(({ name, icon_url, url }: EmbedAuthorProps) => {
 		<View style={styles.container}>
 			<FastImage
 				source={{
-					uri: createImgproxyUrl(url ?? '', { width: 100, height: 100, resizeType: 'fit' })
+					uri: createImgproxyUrl(url ?? '', { width: 50, height: 50, resizeType: 'fit' })
 				}}
 				style={styles.imageWrapper}
 			/>

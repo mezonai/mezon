@@ -389,7 +389,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, 
 	};
 	return (
 		<div
-			className={`${isSearchMessage ? 'w-full' : ''} ${isHover ? 'dark:bg-[#393c41] bg-[#f3f4f6]' : ''}`}
+			className={`${isSearchMessage ? 'w-full' : ''} hover:dark:bg-[#393c41] hover:bg-[#f3f4f6]`}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>

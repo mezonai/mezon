@@ -3,6 +3,7 @@ export { ChannelList } from './components/ChannelList';
 export { default as ChannelTopbar } from './components/ChannelTopbar';
 export { default as ThreadHeader } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/ThreadHeader';
 export { default as ThreadNameTextField } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/ThreadNameTextField';
+export { default as TopicHeader } from './components/ChannelTopbar/TopBarComponents/TopicDiscussion/CreateTopicDiscussion/TopicHeader';
 export { default as ChatWelcome } from './components/ChatWelcome';
 export * from './components/ChatWelcome/OnBoardWelcome';
 export { default as ClanHeader } from './components/ClanHeader';

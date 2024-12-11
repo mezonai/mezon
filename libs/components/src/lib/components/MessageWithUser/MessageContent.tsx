@@ -1,5 +1,15 @@
-import { addMention, convertTimeString, ETypeLinkMedia, IExtendedMessage, IMessageWithUser, isValidEmojiData, TypeMessage } from '@mezon/utils';
+import {
+	fetchMessages,
+	selectCurrentChannelId,
+	selectCurrentClanId,
+	selectMessageByMessageId,
+	topicsActions,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
+import { ETypeLinkMedia, IExtendedMessage, IMessageWithUser, TypeMessage, addMention, convertTimeString, isValidEmojiData } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
+import { useSelector } from 'react-redux';
 import { MessageLine } from './MessageLine';
 import { MessageLineSystem } from './MessageLineSystem';
 
@@ -15,11 +25,13 @@ type IMessageContentProps = {
 };
 
 const MessageContent = ({ message, mode, isSearchMessage }: IMessageContentProps) => {
+	const dispatch = useAppDispatch();
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
-
+	const currentClanId = useSelector(selectCurrentClanId);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
-
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentMessage = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, message.id || ''));
 	const lineValue = (() => {
 		if (lines === undefined && typeof message.content === 'string') {
 			return safeJSONParse(message.content).t;
@@ -28,15 +40,28 @@ const MessageContent = ({ message, mode, isSearchMessage }: IMessageContentProps
 		}
 	})();
 
+	const handleOpenTopic = () => {
+		dispatch(topicsActions.setIsShowCreateTopic({ channelId: message.channel_id as string, isShowCreateTopic: true }));
+		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
+		fetchMessages({ channelId: message?.content?.tp as string, clanId: currentClanId as string, noCache: true });
+	};
+
 	return (
-		<MessageText
-			isOnlyContainEmoji={isOnlyContainEmoji}
-			isSearchMessage={isSearchMessage}
-			content={contentUpdatedMention}
-			message={message}
-			lines={lineValue as string}
-			mode={mode}
-		/>
+		<div>
+			<MessageText
+				isOnlyContainEmoji={isOnlyContainEmoji}
+				isSearchMessage={isSearchMessage}
+				content={contentUpdatedMention}
+				message={message}
+				lines={lineValue as string}
+				mode={mode}
+			/>
+			{currentMessage?.code === TypeMessage.Topic && (
+				<div className="border border-black rounded-md p-2 w-[100px] flex justify-center items-center" onClick={handleOpenTopic}>
+					view topic
+				</div>
+			)}
+		</div>
 	);
 };
 

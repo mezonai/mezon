@@ -21,6 +21,7 @@ import { InfoUserMessage } from './components/InfoUserMessage';
 import { MessageAttachment } from './components/MessageAttachment';
 import { MessageCallLog } from './components/MessageCallLog';
 import { RenderMessageItemRef } from './components/RenderMessageItemRef';
+import { MessageLineSystem } from './MessageLineSystem';
 import RenderMessageBlock from './RenderMessageBlock';
 import { IMessageActionNeedToResolve } from './types';
 import WelcomeMessage from './WelcomeMessage';
@@ -70,6 +71,11 @@ const MessageItem = React.memo(
 		const checkSystem = useMemo(() => {
 			return message?.sender_id === '0' && message?.username?.toLowerCase() === 'system';
 		}, [message?.sender_id, message?.username]);
+
+		const isMessageSystem = useMemo(
+			() => message?.code === TypeMessage.Welcome || message?.code === TypeMessage.CreateThread || message?.code === TypeMessage.CreatePin,
+			[message?.code]
+		);
 
 		const hasIncludeMention = useMemo(() => {
 			const userIdMention = userProfile?.user?.id;
@@ -280,6 +286,10 @@ const MessageItem = React.memo(
 			inputRange: [0, 1],
 			outputRange: ['transparent', themeValue.secondaryWeight]
 		});
+
+		if (isMessageSystem) {
+			return <MessageLineSystem message={message} />;
+		}
 
 		return (
 			<Animated.View style={[{ backgroundColor: bgColor }]}>

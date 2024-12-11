@@ -26,7 +26,7 @@ export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapte
 
 export const fetchUserChannelsCached = memoizeAndTrack(
 	async (mezon: MezonValueContext, channelId: string, limit: number) => {
-		const response = await mezon.client.listUsersAddChannelByChannelId(mezon.session, channelId, limit);
+		const response = await mezon.client.listChannelUsersUC(mezon.session, channelId, limit);
 		return { ...response, time: Date.now() };
 	},
 	{

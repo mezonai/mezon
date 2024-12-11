@@ -64,6 +64,7 @@ export * from './lib/chat/hooks/useShowName';
 export * from './lib/chat/hooks/useSilentSendMess';
 export * from './lib/chat/hooks/useThreadMessage';
 export * from './lib/chat/hooks/useThreads';
+export * from './lib/chat/hooks/useTopics';
 export * from './lib/chat/hooks/useWebRTCCall';
 export * from './lib/chat/hooks/useWindowFocusState';
 export * from './lib/policy';

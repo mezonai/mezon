@@ -1,4 +1,4 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -12,7 +12,7 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		buttonLabel: {
-			color: colors.white,
+			color: baseColor.white,
 			fontSize: size.medium
 		}
 	});

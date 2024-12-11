@@ -71,6 +71,7 @@ import { systemMessageReducer } from './systemMessages/systemMessage.slide';
 import { threadsReducer } from './threads/threads.slice';
 import { toastListenerMiddleware } from './toasts/toasts.listener';
 import { TOASTS_FEATURE_KEY, toastsReducer } from './toasts/toasts.slice';
+import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { USER_STATUS_API_FEATURE_KEY, userStatusAPIReducer } from './userstatus/userstatusAPI.slice';
 import { voiceReducer } from './voice/voice.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
@@ -158,6 +159,15 @@ const persistedThreadReducer = persistReducer(
 		blacklist: ['isShowCreateThread']
 	},
 	threadsReducer
+);
+
+const persistedTopicReducer = persistReducer(
+	{
+		key: 'topicdiscussions',
+		storage,
+		blacklist: ['isShowCreateTopic']
+	},
+	topicsReducer
 );
 
 const persistedChannelMembersReducer = persistReducer(
@@ -324,6 +334,7 @@ const reducer = {
 	channelMembers: persistedChannelMembersReducer,
 	listusersbyuserid: persistedListUsersByUserReducer,
 	threads: persistedThreadReducer,
+	topicdiscussions: persistedTopicReducer,
 	[SEARCH_MESSAGES_FEATURE_KEY]: searchMessageReducer,
 	messages: messagesReducer,
 	categories: persistedCatReducer,
