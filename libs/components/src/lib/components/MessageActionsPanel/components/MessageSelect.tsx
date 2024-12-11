@@ -34,15 +34,19 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, messageId));
 	const matchingKeyProjectDaily = embedData && Object.keys(embedData)?.find((key) => key?.startsWith('daily') && key?.endsWith('project'));
 	const matchingValueProjectDaily = (matchingKeyProjectDaily && embedData?.[matchingKeyProjectDaily]) || null;
+	const projectCodeSelected = matchingValueProjectDaily?.[0];
 	const metadataTaskOption = select.metaDataOptions;
 	const getMetaDataByProjectCode = metadataTaskOption && metadataTaskOption.find((p: any) => p.projectCode === matchingValueProjectDaily?.[0]);
 	const optionsTask = getMetaDataByProjectCode?.tasks?.map((task: any) => ({
 		label: task.taskName,
-		value: task.taskName
+		value: task.taskName,
+		projectCode: getMetaDataByProjectCode.projectCode
 	}));
 	useEffect(() => {
 		if (optionsTask && optionsTask.length > 0) setAvailableOptions(optionsTask);
 	}, [matchingValueProjectDaily?.[0]]);
+	const uniqueSelectedOptions = availableOptions.filter((option, index, self) => index === self.findIndex((o) => o.value === option.value));
+	const filterSelection = uniqueSelectedOptions?.filter((option) => option.projectCode === projectCodeSelected);
 	//
 
 	const dispatch = useAppDispatch();
@@ -141,7 +145,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 
 		return 'Select 1 option';
 	};
-	const uniqueSelectedOptions = availableOptions.filter((option, index, self) => index === self.findIndex((o) => o.value === option.value));
+
 	return (
 		<Dropdown
 			dismissOnClick={false}
@@ -179,7 +183,11 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 			)}
 			className="h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20"
 		>
-			<SelectOptions options={uniqueSelectedOptions} onSelectOption={handleOptionSelect} onSubmitSelection={handleSubmitSelection} />
+			<SelectOptions
+				options={projectCodeSelected ? filterSelection : availableOptions}
+				onSelectOption={handleOptionSelect}
+				onSubmitSelection={handleSubmitSelection}
+			/>
 		</Dropdown>
 	);
 };

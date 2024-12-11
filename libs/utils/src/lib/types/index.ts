@@ -287,6 +287,7 @@ export interface IMessageSelectOption {
 	value: string;
 	description?: string;
 	default?: boolean;
+	projectCode?: string;
 }
 export interface IMessageRatioOption {
 	label: string;
