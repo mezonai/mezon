@@ -26,6 +26,7 @@ import {
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentChannelId,
+	selectCurrentTopicId,
 	selectDataReferences,
 	selectDmGroupCurrentId,
 	selectIdMessageRefEdit,
@@ -134,7 +135,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const usersClan = useSelector(selectAllUserClans);
 	const { emojis } = useEmojiSuggestion();
 	const { emojiPicked, addEmojiState } = useEmojiSuggestion();
-
+	const currentTopicId = useSelector(selectCurrentTopicId);
 	const reactionRightState = useSelector(selectReactionRightState);
 	const isFocused = useSelector(selectIsFocused);
 	const isShowMemberList = useSelector(selectIsShowMemberList);
@@ -707,7 +708,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			{props.isTopic && props.isThread && (
 				<div className={`flex flex-col overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}>
 					<div className="flex flex-col justify-end flex-grow">
-						{valueTopic && openTopicMessageState && <ChannelMessageThread message={valueTopic} />}
+						{!currentTopicId && valueTopic && openTopicMessageState && <ChannelMessageThread message={valueTopic} />}
 					</div>
 				</div>
 			)}
