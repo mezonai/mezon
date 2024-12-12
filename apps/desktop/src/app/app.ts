@@ -271,7 +271,7 @@ export default class App {
 		}
 
 		this.currentWindow = new BrowserWindow(windowOptions);
-		this.currentWindow.setBackgroundColor('#000000');
+		this.currentWindow.setBackgroundColor('#2e2e2e');
 		this.currentWindow.once('ready-to-show', () => {
 			setTimeout(() => {
 				this.currentWindow?.show();
