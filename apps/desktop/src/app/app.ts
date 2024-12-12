@@ -249,14 +249,15 @@ export default class App {
 		const defaultOptions: Electron.BrowserWindowConstructorOptions = {
 			width: 1000,
 			height: 800,
-			show: true,
+			show: false,
 			titleBarOverlay: process.platform == 'darwin',
 			titleBarStyle: 'hidden',
 			trafficLightPosition: process.platform == 'darwin' ? { x: 10, y: 10 } : undefined,
 			webPreferences: {
 				nodeIntegration: false,
 				contextIsolation: true,
-				preload: join(__dirname, 'main.preload.js')
+				preload: join(__dirname, 'main.preload.js'),
+				backgroundThrottling: false
 			},
 			icon: join(__dirname, 'assets', 'desktop-taskbar-256x256.ico'),
 			autoHideMenuBar: true
@@ -266,12 +267,16 @@ export default class App {
 
 		if (this.currentWindow && !this.currentWindow.isDestroyed()) {
 			this.currentWindow.webContents.send(SET_ATTACHMENT_DATA, props);
-			this.currentWindow.show();
 			return;
 		}
 
 		this.currentWindow = new BrowserWindow(windowOptions);
-
+		this.currentWindow.setBackgroundColor('#000000');
+		this.currentWindow.once('ready-to-show', () => {
+			setTimeout(() => {
+				this.currentWindow?.show();
+			}, 100);
+		});
 		const filePath = App.application.isPackaged
 			? 'assets/image-window/image-window.html'
 			: 'apps/desktop/src/assets/image-window/image-window.html';
