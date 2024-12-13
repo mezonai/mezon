@@ -21,6 +21,8 @@ const RTCConfig = {
 interface CallState {
 	localStream: MediaStream | null;
 	remoteStream: MediaStream | null;
+	localScreen: MediaStream | null;
+	remoteScreen: MediaStream | null;
 	peerConnection: RTCPeerConnection | null;
 	storedIceCandidates?: RTCIceCandidate[] | null;
 }
@@ -58,7 +60,9 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		localStream: null,
 		remoteStream: null,
 		peerConnection: null,
-		storedIceCandidates: null
+		storedIceCandidates: null,
+		localScreen: null,
+		remoteScreen: null
 	});
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
@@ -67,6 +71,8 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 	const timeStartConnected = useRef<Date | null>(null);
 	const localVideoRef = useRef<HTMLVideoElement>(null);
 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
+	const localScreenRef = useRef<HTMLVideoElement>(null);
+	const remoteScreenRef = useRef<HTMLVideoElement>(null);
 	const callTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
@@ -100,13 +106,38 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 
 		pc.ontrack = (event) => {
 			const remoteStream = event.streams[0];
-			setCallState((prev) => ({
-				...prev,
-				remoteStream
-			}));
 
-			if (remoteVideoRef.current) {
-				remoteVideoRef.current.srcObject = remoteStream;
+			const settings = event.track.getSettings();
+			if (event.track.kind === 'video') {
+				if (
+					settings.displaySurface &&
+					(settings.displaySurface === 'application' ||
+						settings.displaySurface === 'browser' ||
+						settings.displaySurface === 'monitor' ||
+						settings.displaySurface === 'window')
+				) {
+					setCallState((prev) => ({
+						...prev,
+						remoteScreen: remoteStream
+					}));
+
+					if (remoteScreenRef.current) {
+						remoteScreenRef.current.srcObject = remoteStream;
+					}
+				} else {
+					setCallState((prev) => ({
+						...prev,
+						remoteStream
+					}));
+
+					if (remoteVideoRef.current) {
+						remoteVideoRef.current.srcObject = remoteStream;
+					}
+				}
+			}
+
+			if (event.track.kind === 'audio') {
+				// TODO
 			}
 
 			remoteStream.getVideoTracks().forEach((track) => {
@@ -261,7 +292,9 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			setCallState({
 				localStream: stream,
 				remoteStream: null,
-				peerConnection: pc
+				peerConnection: pc,
+				localScreen: null,
+				remoteScreen: null
 			});
 		} catch (error) {
 			console.error('Error starting call:', error);
@@ -404,6 +437,9 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			if (remoteVideoRef.current) {
 				remoteVideoRef.current.srcObject = null;
 			}
+			if (callState.localScreen) {
+				await stopScreenShare();
+			}
 
 			await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, 4, '', channelId, userId);
 			dispatch(DMCallActions.setIsInCall(false));
@@ -417,10 +453,13 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			dispatch(audioCallActions.startDmCall({}));
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(DMCallActions.removeAll());
+			dispatch(DMCallActions.setIsShowShareScreen(false));
 			setCallState({
 				localStream: null,
 				remoteStream: null,
-				peerConnection: null
+				peerConnection: null,
+				localScreen: null,
+				remoteScreen: null
 			});
 		} catch (error) {
 			console.error('Error ending call:', error);
@@ -489,42 +528,100 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			try {
 				const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
 				const videoTrack = videoStream.getVideoTracks()[0];
-
+				videoTrack.enabled = true;
+				videoStream.getTracks()?.forEach((track) => {
+					callState.peerConnection?.addTrack(track, videoStream);
+				});
 				callState.localStream.addTrack(videoTrack);
-				const senders = callState.peerConnection?.getSenders() || [];
-				const videoSender = senders.find((sender) => sender.track?.kind === 'video');
-				if (videoSender) {
-					await videoSender.replaceTrack(videoTrack);
-				} else {
-					callState.peerConnection?.addTrack(videoTrack, callState.localStream);
-				}
-
-				if (localVideoRef.current) {
-					localVideoRef.current.srcObject = callState.localStream;
-				}
+				await updatePeerConnectionOffer();
 			} catch (error) {
 				console.error('Error adding video track:', error);
 			}
 		} else {
 			videoTracks.forEach((track) => {
-				if (track.enabled) {
-					track.stop();
-					if (callState.localStream) {
-						callState.localStream.removeTrack(track);
-					}
-
-					const senders = callState.peerConnection?.getSenders() || [];
-					const videoSender = senders.find((sender) => sender.track === track);
-					if (videoSender) {
-						callState.peerConnection?.removeTrack(videoSender);
-					}
-				} else {
-					track.enabled = true;
-				}
+				track.enabled = !track?.enabled;
 			});
 		}
 
 		dispatch(DMCallActions.setIsShowMeetDM(!isShowMeetDM));
+	};
+
+	const updatePeerConnectionOffer = async () => {
+		try {
+			const offer = await callState.peerConnection?.createOffer();
+			await callState.peerConnection?.setLocalDescription(offer);
+			const compressedOffer = await compress(JSON.stringify(offer));
+			await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_OFFER, compressedOffer, channelId, userId);
+		} catch (error) {
+			console.error('Error creating and forwarding offer:', error);
+		}
+	};
+
+	const shareScreen = async () => {
+		try {
+			const screenStream = await navigator.mediaDevices.getDisplayMedia({
+				// video: {
+				// 	cursor: 'always' | 'motion' | 'never',
+				// 	displaySurface: 'application' | 'browser' | 'monitor' | 'window'
+				// }
+				video: true
+			});
+
+			setCallState((prevState) => ({
+				...prevState,
+				localScreen: screenStream
+			}));
+
+			if (localScreenRef.current) {
+				localScreenRef.current.srcObject = screenStream;
+			}
+
+			if (callState.peerConnection) {
+				screenStream.getTracks().forEach((track) => {
+					callState.peerConnection?.addTrack(track, screenStream);
+				});
+			}
+			await updatePeerConnectionOffer();
+
+			dispatch(DMCallActions.setIsShowShareScreen(true));
+		} catch (error) {
+			console.error('Error sharing screen:', error);
+			dispatch(
+				toastActions.addToast({
+					message: 'Error starting screen share.',
+					type: 'error',
+					autoClose: 3000
+				})
+			);
+		}
+	};
+
+	const stopScreenShare = async () => {
+		try {
+			if (callState.localScreen) {
+				callState.localScreen.getTracks().forEach((track) => track.stop());
+
+				if (localScreenRef.current) {
+					localScreenRef.current.srcObject = null;
+				}
+
+				setCallState((prevState) => ({
+					...prevState,
+					localScreen: null
+				}));
+
+				dispatch(DMCallActions.setIsShowShareScreen(false));
+			}
+		} catch (error) {
+			console.error('Error stopping screen share:', error);
+			dispatch(
+				toastActions.addToast({
+					message: 'Error stopping screen share.',
+					type: 'error',
+					autoClose: 3000
+				})
+			);
+		}
 	};
 
 	return {
@@ -537,6 +634,10 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		handleSignalingMessage,
 		handleOtherCall,
 		localVideoRef,
-		remoteVideoRef
+		remoteVideoRef,
+		localScreenRef,
+		remoteScreenRef,
+		shareScreen,
+		stopScreenShare
 	};
 }

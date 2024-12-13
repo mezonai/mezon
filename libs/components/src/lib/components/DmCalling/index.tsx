@@ -70,7 +70,11 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		handleSignalingMessage,
 		handleOtherCall,
 		localVideoRef,
-		remoteVideoRef
+		remoteVideoRef,
+		localScreenRef,
+		remoteScreenRef,
+		shareScreen,
+		stopScreenShare
 	} = useWebRTCCall(
 		dmUserId,
 		dmGroupId as string,
@@ -137,7 +141,12 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		triggerCall
 	}));
 
-	const handleShowShareScreenToggle = () => {
+	const handleShowShareScreenToggle = async () => {
+		if (isShowShareScreen) {
+			await stopScreenShare();
+		} else {
+			await shareScreen();
+		}
 		dispatch(DMCallActions.setIsShowShareScreen(!isShowShareScreen));
 	};
 
@@ -273,6 +282,20 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 						)}
 					</div>
 				</div>
+				<div>
+					<video
+						ref={localScreenRef}
+						autoPlay
+						muted
+						playsInline
+						style={{
+							width: '100%',
+							height: '100%',
+							backgroundColor: 'black',
+							borderRadius: '8px'
+						}}
+					/>
+				</div>
 				{/* Remote Video */}
 				<div
 					className={`${activeVideo === 'local' ? 'absolute z-10 right-0 bottom-0' : `${activeVideo === 'remote' ? 'relative w-fit' : 'relative w-full'}`}`}
@@ -316,6 +339,20 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							)}
 						</div>
 					</div>
+				</div>
+				<div>
+					<video
+						ref={remoteScreenRef}
+						autoPlay
+						muted
+						playsInline
+						style={{
+							width: '100%',
+							height: '100%',
+							backgroundColor: 'black',
+							borderRadius: '8px'
+						}}
+					/>
 				</div>
 			</div>
 
