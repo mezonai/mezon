@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import { LoadingStatus } from '@mezon/utils';
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
@@ -41,6 +41,7 @@ export interface AppState {
 	isShowSettingFooter: showSettingFooterProps;
 	isShowPopupQuickMess: boolean;
 	categoryChannelOffsets: { [key: number]: number };
+	isFocusOnChannelMessageBox: boolean;
 }
 
 export const initialAppState: AppState = {
@@ -62,7 +63,8 @@ export const initialAppState: AppState = {
 	isFromFcmMobile: false,
 	isShowSettingFooter: { status: false, initTab: 'Account', isUserProfile: true, profileInitTab: 'USER_SETTING', clanId: '' },
 	isShowPopupQuickMess: false,
-	categoryChannelOffsets: {}
+	categoryChannelOffsets: {},
+	isFocusOnChannelMessageBox: true
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async ({ id }: { id: string }, thunkAPI) => {
@@ -201,6 +203,9 @@ export const appSlice = createSlice({
 				...state.categoryChannelOffsets,
 				...action.payload
 			};
+		},
+		setIsFocusOnChannelMessageBox: (state, action: PayloadAction<boolean>) => {
+			state.isFocusOnChannelMessageBox = action.payload;
 		}
 	}
 });
@@ -253,3 +258,5 @@ export const selectIsShowSettingFooter = createSelector(getAppState, (state: App
 export const selectIsShowPopupQuickMess = createSelector(getAppState, (state: AppState) => state.isShowPopupQuickMess);
 
 export const selectCategoryChannelOffsets = createSelector(getAppState, (state: AppState) => state.categoryChannelOffsets);
+
+export const selectIsFocusOnChannelMessageBox = createSelector(getAppState, (state: AppState) => state.isFocusOnChannelMessageBox);
