@@ -1,5 +1,12 @@
 import { useEventManagement } from '@mezon/core';
-import { selectChannelById, selectCurrentClanId, selectEventById, selectVoiceChannelAll, useAppSelector } from '@mezon/store';
+import {
+	selectAllChannelTypeText,
+	selectChannelById,
+	selectCurrentClanId,
+	selectEventById,
+	selectVoiceChannelAll,
+	useAppSelector
+} from '@mezon/store';
 import { ContenSubmitEventProps, OptionEvent, Tabs_Option } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -20,6 +27,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const { onClose, onCloseEventModal, eventId, clearEventId } = props;
 	const currentClanId = useSelector(selectCurrentClanId);
 	const voicesChannel = useSelector(selectVoiceChannelAll);
+	const textChannels = useSelector(selectAllChannelTypeText);
 	const tabs = ['Location', 'Event Info', 'Review'];
 	const [currentModal, setCurrentModal] = useState(0);
 	const currentEvent = useSelector(selectEventById(eventId || ''));
@@ -34,7 +42,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 		selectedDateEnd: currentEvent ? new Date(formatToLocalDateString(currentEvent.end_time || '')) : new Date(),
 		voiceChannel: currentEvent ? currentEvent.channel_id || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
-		description: currentEvent ? currentEvent.description || '' : ''
+		description: currentEvent ? currentEvent.description || '' : '',
+		textChannel: '1234'
 	});
 
 	const [buttonWork, setButtonWork] = useState(true);
@@ -60,6 +69,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 	const choiceSpeaker = useMemo(() => option === OptionEvent.OPTION_SPEAKER, [option]);
 	const choiceLocation = useMemo(() => option === OptionEvent.OPTION_LOCATION, [option]);
+	const choiceChannel = useMemo(() => option === OptionEvent.OPTION_CHANNEL, [option]);
 
 	const handleNext = (currentModal: number) => {
 		if (buttonWork && currentModal < tabs.length - 1 && !errorTime && !errorOption) {
@@ -179,6 +189,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 						contentSubmit={contentSubmit}
 						choiceSpeaker={choiceSpeaker}
 						choiceLocation={choiceLocation}
+						choiceChannel={choiceChannel}
+						textChannels={textChannels}
 						voicesChannel={voicesChannel}
 						handleOption={handleOption}
 						setContentSubmit={setContentSubmit}

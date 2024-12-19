@@ -9,14 +9,16 @@ import { customStyles, lightCustomStyles } from '../../../notificationSetting';
 export type LocationModalProps = {
 	contentSubmit: ContenSubmitEventProps;
 	voicesChannel: ChannelsEntity[];
+	textChannels: ChannelsEntity[];
 	choiceLocation: boolean;
 	choiceSpeaker: boolean;
+	choiceChannel: boolean;
 	handleOption: (optionEvent: string) => void;
 	setContentSubmit: React.Dispatch<React.SetStateAction<ContenSubmitEventProps>>;
 };
 
 const LocationModal = (props: LocationModalProps) => {
-	const { handleOption, voicesChannel, contentSubmit, setContentSubmit, choiceLocation, choiceSpeaker } = props;
+	const { handleOption, voicesChannel, contentSubmit, setContentSubmit, choiceLocation, choiceSpeaker, choiceChannel, textChannels } = props;
 	const [errorVoice, setErrorVoice] = useState(false);
 
 	const handleChangeVoice = (selectedOption: any) => {
@@ -41,6 +43,16 @@ const LocationModal = (props: LocationModalProps) => {
 		)
 	}));
 
+	const optionsTextChannel = textChannels.map((channel) => ({
+		value: channel.id,
+		label: (
+			<div className="flex items-center gap-x-2 dark:text-white text-black">
+				{channel.channel_private ? <Icons.Hashtag /> : <Icons.HashtagLocked />}
+				{channel.channel_label}
+			</div>
+		)
+	}));
+
 	useEffect(() => {
 		if (voicesChannel.length <= 0) {
 			setErrorVoice(true);
@@ -48,6 +60,7 @@ const LocationModal = (props: LocationModalProps) => {
 			setErrorVoice(false);
 		}
 	}, [voicesChannel]);
+
 	return (
 		<div>
 			<div className="flex flex-col mb-4">
@@ -97,6 +110,7 @@ const LocationModal = (props: LocationModalProps) => {
 					/>
 				</label>
 			</div>
+
 			{choiceSpeaker && (
 				<Select
 					options={options}
@@ -119,6 +133,17 @@ const LocationModal = (props: LocationModalProps) => {
 					/>
 				</div>
 			)}
+			<div className="flex flex-col mb-4 mt-3">
+				<h3 className="text-xl text-center font-semibold dark:text-white text-black ">Who are audiences?</h3>
+				<p className="text-slate-400 text-center">Choose members in the specified channel.</p>
+			</div>
+
+			<Select
+				options={optionsTextChannel}
+				value={optionsTextChannel.find((option) => option.value === contentSubmit.textChannel)}
+				onChange={handleChangeVoice}
+				styles={appearanceTheme === 'dark' ? customStyles : lightCustomStyles}
+			/>
 		</div>
 	);
 };

@@ -1236,3 +1236,7 @@ export const selectBuzzStateByChannelId = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string, (state, channelId: string) => channelId],
 	(state, clanId, channelId) => state.byClans[clanId]?.buzzState[channelId]
 );
+
+export const selectAllChannelTypeText = createSelector(selectAllChannels, (channels) =>
+	channels.filter((channel) => channel.type === ChannelType.CHANNEL_TYPE_TEXT)
+);

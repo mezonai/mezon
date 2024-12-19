@@ -761,7 +761,8 @@ export enum Tabs_Option {
 
 export enum OptionEvent {
 	OPTION_SPEAKER = 'Speaker',
-	OPTION_LOCATION = 'Location'
+	OPTION_LOCATION = 'Location',
+	OPTION_CHANNEL = 'Channel'
 }
 
 export enum MentionTypeEnum {
@@ -780,6 +781,7 @@ export type ContenSubmitEventProps = {
 	voiceChannel: string;
 	logo: string;
 	description: string;
+	textChannel?: string;
 };
 
 export enum SHOW_POSITION {
