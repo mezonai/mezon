@@ -42,7 +42,7 @@ const ListPinMessage = ({
 						if (typeof contentString === 'string') {
 							try {
 								const contentObject = safeJSONParse(contentString);
-								contentString = contentObject.t;
+								contentString = contentObject?.t;
 							} catch (e) {
 								console.error('Failed to parse content JSON:', e);
 							}

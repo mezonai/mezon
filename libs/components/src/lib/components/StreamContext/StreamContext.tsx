@@ -190,7 +190,6 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 
 	const handleChannelClick = useCallback((clanId: string, channelId: string, userId: string, streamId: string) => {
 		const wsUrl = process.env.NX_CHAT_APP_STREAM_WS_URL;
-		console.log(wsUrl, 'wsUrl');
 		const websocket = new WebSocket(`${wsUrl}/ws`);
 		try {
 			const peerConnection = initPeerConnection();
