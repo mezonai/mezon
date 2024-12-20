@@ -32,6 +32,9 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'r
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
 import LabelDm from './labelDm';
+import { ThreeDot } from "../../../../../ui/src/lib/Icons";
+import { useModal } from "react-modal-hook";
+import { CallSetting } from "../CallSetting";
 
 type DmCallingProps = {
 	readonly dmGroupId?: Readonly<string>;
@@ -59,6 +62,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const [activeVideo, setActiveVideo] = useState<'local' | 'remote' | null>(null);
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const otherCall = useSelector(selectOtherCall);
+	const [openCallSetting, closeCallSetting] = useModal(() => <CallSetting onClose={closeCallSetting}/>)
 
 	const {
 		callState,
@@ -400,6 +404,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 									isShowLine={true}
 								/>
 							</div>
+							<div
+								className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
+								onClick={openCallSetting}
+							>
+								<Icons.ThreeDot />
+							</div>
+							
 							<div
 								className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 								onClick={handleCloseCall}
