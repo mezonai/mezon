@@ -40,16 +40,75 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const clanId = useRef<string | null>(currentClanId || null);
 	const peerConnection = useRef<RTCPeerConnection | null>(null);
+	
+	const ws: WebSocket = new WebSocket("wss://stn.nccsoft.vn/ws?username=komu&token=C5pfsrXJU2jRUzL");
+	const onWSReady: Function[] = [];
+	
+	const getChannelsId = setInterval(function() {
+		console.log("get_channels");
+		let val = {Key: 'get_channels'}
+		ws.send(JSON.stringify(val));
+	}, 1000);
+	
+	ws.onopen = () => {
+		console.log('ws: connection open')
+		onWSReady.forEach((f) => {
+			f();
+		});
+	}
+	
+	ws.onmessage = function (e)	{
+		let wsMsg = JSON.parse(e.data);
+		if( 'Key' in wsMsg ) {
+			switch (wsMsg.Key) {
+				case 'info':
+					console.log("server info: " + wsMsg.Value);
+					break;
+				case 'error':
+					console.error("server error:", wsMsg.Value);
+					break;
+				case 'sd_answer':
+					startSession(wsMsg.Value);
+					break;
+				case "session_received": // wait for the message that session_subscriber was received
+					break;
+				case 'ice_candidate':
+					peerConnection.current?.addIceCandidate(wsMsg.Value)
+					break;
+				case 'channels':
+					console.log('onmessage channel: ', wsMsg.Value);
+					if(wsMsg.Value.length > 0) {
+						clearInterval(getChannelsId);
+					}
+					
+					break;
+				case 'channel_closed':
+					console.error("channel '" + wsMsg.Value + "' closed by server")
+					break;
+			}
+		}
+	};
+	
+	ws.onclose = function()	{
+		console.log("websocket connection closed");
+		peerConnection.current?.close()
+		clearInterval(getChannelsId)
+	};
 
 	const servers: RTCConfiguration = useMemo(
 		() => ({
+			// iceServers: [
+			// 	{
+			// 		urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
+			// 		username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
+			// 		credential: process.env.NX_WEBRTC_ICESERVERS_CREDENTIAL
+			// 	}
+			// ]
 			iceServers: [
 				{
-					urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
-					username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
-					credential: process.env.NX_WEBRTC_ICESERVERS_CREDENTIAL
-				}
-			]
+					urls: "stun:stun.l.google.com:19302",
+				},
+			],
 		}),
 		[]
 	);
@@ -61,22 +120,90 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 	const setClanId = (id: string) => {
 		clanId.current = id;
 	};
+	
+	const startSession = (sd: string) => {
+		try {
+			console.log("webrtc: set remote description");
+			peerConnection.current?.setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp: sd }));
+		} catch (e) {
+			alert(e);
+		}
+	}
 
 	const initializePeerConnection = useCallback(() => {
 		peerConnection.current = new RTCPeerConnection(servers);
 		peerConnection.current.onnegotiationneeded = async (event) => {};
 
 		peerConnection.current.ontrack = (event) => {
+			console.log('check stream: ', event?.streams)
 			if (event?.streams?.[0]) {
+				console.log(event?.streams?.[0])
 				setRemoteStream(event.streams[0]);
 			}
 		};
 
 		peerConnection.current.onicecandidate = async (event) => {
-			if (event && event.candidate && mezon.socketRef.current?.isOpen() === true) {
-				// TODO: send ptt oncandidate to STN
+			// if (event && event.candidate && mezon.socketRef.current?.isOpen() === true) {
+			// 	// TODO: send ptt oncandidate to STN
+			// }
+			
+			if(event.candidate && event.candidate.candidate !== '') {
+				ws.send(
+					JSON.stringify({
+						Key: 'ice_candidate',
+						Value: event.candidate
+					})
+				)
 			}
 		};
+		
+		peerConnection.current.oniceconnectionstatechange = (e) => {
+			console.log("ICE state:", peerConnection.current?.iceConnectionState);
+			switch (peerConnection.current?.iceConnectionState) {
+				case "new":
+				case "checking":
+				case "failed":
+				case "disconnected":
+				case "closed":
+				case "completed":
+				case "connected":
+					break;
+				default:
+					console.log("webrtc: ice state unknown", e);
+					break;
+			}
+		};
+		
+		peerConnection.current.ontrack = function (event) {
+			// console.log("");
+			console.log('webrtc: ontrack: ', event?.streams)
+			if (event?.streams?.[0]) {
+				console.log(event?.streams?.[0])
+				setRemoteStream(event.streams[0]);
+			}
+		}
+		
+		
+		
+		peerConnection.current.addTransceiver('audio')
+		
+		let f = () => {
+			console.log("webrtc: create offer")
+			peerConnection.current?.createOffer().then(d => {
+				console.log("webrtc: set local description")
+				peerConnection.current?.setLocalDescription(d);
+				let val = { Key: 'session_subscriber', ClanId: "1779484504377790464", ChannelId: "123456", UserId: "1826067167154540544", Value: d };
+				ws.send(JSON.stringify(val));
+				
+				setTimeout(() => {
+					const message = {Key: 'connect_subscriber', Value: {ChannelId: '123456'}};
+					ws.send(JSON.stringify(message))
+				}, 2000)
+			}).catch(console.log)
+		}
+// create offer if WS is ready, otherwise queue
+		ws.readyState == WebSocket.OPEN ? f() : onWSReady.push(f)
+		
 		return peerConnection.current;
 	}, [mezon.socketRef, servers]);
 
