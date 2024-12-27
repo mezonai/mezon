@@ -78,12 +78,20 @@ const GlobalEventListener = () => {
 	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
 
 	useEffect(() => {
-		if (!user?.user?.id) return;
-		MessageCrypt.initializeKeys(user?.user?.id as string).then((pubkey) => {
-			if (!pubkey) return;
-			dispatch(e2eeActions.pushPubKey(pubkey as ApiPubKey));
-		});
-	}, [user?.user?.id]);
+		if (user?.encrypt_private_key) {
+			MessageCrypt.checkExistingKeys(user?.user?.id as string).then((found) => {
+				if (!found) {
+					dispatch(e2eeActions.setIsShowBtnPin(true));
+				}
+			});
+		} else {
+			if (!user?.user?.id) return;
+			MessageCrypt.initializeKeys(user?.user?.id as string).then((pubkey) => {
+				if (!pubkey) return;
+				dispatch(e2eeActions.pushPubKey(pubkey as ApiPubKey));
+			});
+		}
+	}, [dispatch, user?.encrypt_private_key, user?.user?.id]);
 
 	return null;
 };

@@ -128,7 +128,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 
 	const updateUserProfile = async () => {
 		const { username, imgUrl, displayName, aboutMe } = currentUserProfileValue;
-		const response = await updateUser(username, imgUrl, displayName || username, aboutMe, true);
+		const response = await updateUser(username, imgUrl, displayName || username, aboutMe, userProfile?.user?.dob, userProfile?.logo, true);
 
 		if (response) {
 			if (currentChannelId && currentClanId) {

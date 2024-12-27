@@ -41,6 +41,7 @@ export * from './lib/giveCoffee/giveCoffee.slice';
 export * from './lib/giveCoffee/historyTransaction.slice';
 export * from './lib/helpers';
 export * from './lib/invite/invite.slice';
+export * from './lib/memoize';
 export * from './lib/messages/SeenMessagePool';
 export * from './lib/messages/embedMessage.slice';
 export * from './lib/messages/messages.slice';

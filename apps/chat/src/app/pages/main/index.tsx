@@ -6,6 +6,7 @@ import {
 	MessageModalImage,
 	ModalCall,
 	ModalCreateClan,
+	MultiStepModalE2ee,
 	NavLinkComponent,
 	SearchModal,
 	SidebarClanItem,
@@ -18,6 +19,7 @@ import {
 	audioCallActions,
 	channelsActions,
 	clansActions,
+	e2eeActions,
 	fetchDirectMessage,
 	getIsShowPopupForward,
 	listChannelsByUserActions,
@@ -47,6 +49,7 @@ import {
 	selectLogoCustom,
 	selectOnboardingMode,
 	selectOpenModalAttachment,
+	selectOpenModalE2ee,
 	selectSignalingDataByUserId,
 	selectStatusMenu,
 	selectStreamMembersByChannelId,
@@ -260,6 +263,7 @@ function MyApp() {
 	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentChannel?.channel_id || ''));
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 	const chatStreamWidth = useSelector(selectChatStreamWidth);
+	const openModalE2ee = useSelector(selectOpenModalE2ee);
 
 	useEffect(() => {
 		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_VOICE) {
@@ -280,6 +284,10 @@ function MyApp() {
 	const previewMode = useSelector(selectOnboardingMode);
 
 	const { streamVideoRef, handleChannelClick, disconnect, isStream } = useWebRTCStream();
+
+	const handleClose = () => {
+		dispatch(e2eeActions.setOpenModalE2ee(false));
+	};
 
 	return (
 		<div
@@ -315,7 +323,7 @@ function MyApp() {
 				)}
 
 			<DmCalling ref={dmCallingRef} dmGroupId={groupCallId} directId={directId || ''} />
-
+			{openModalE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 			{openModalAttachment && (
 				<MessageContextMenuProvider allRolesInClan={allRolesInClan} allUserIdsInChannel={allUserIdsInChannel}>
 					<MessageModalImage />

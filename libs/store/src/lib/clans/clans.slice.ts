@@ -245,11 +245,12 @@ type UpdateLinkUser = {
 	dob: string;
 	noCache?: boolean;
 	logo?: string;
+	encrypt_private_key?: string;
 };
 
 export const updateUser = createAsyncThunk(
 	'clans/updateUser',
-	async ({ user_name, avatar_url, display_name, about_me, logo, noCache = false, dob }: UpdateLinkUser, thunkAPI) => {
+	async ({ user_name, avatar_url, display_name, about_me, logo, noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
 		try {
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
 			const body: ApiUpdateAccountRequest = {
@@ -261,7 +262,8 @@ export const updateUser = createAsyncThunk(
 				username: user_name,
 				about_me: about_me,
 				dob: dob,
-				logo: logo
+				logo: logo,
+				encrypt_private_key
 			};
 			const response = await mezon.client.updateAccount(mezon.session, body);
 			if (!response) {

@@ -557,6 +557,22 @@ export async function getPublicKeys(keys: ApiPubKey[]): Promise<PublicKeyMateria
 }
 
 export class MessageCrypt {
+	static async checkExistingKeys(userID: string): Promise<boolean> {
+		const keyStore = await KeyStore.open();
+		try {
+			await keyStore.loadKey('ecdh_' + userID);
+			await keyStore.loadKey('ecdsa_' + userID);
+			return true;
+		} catch (error) {
+			if (error instanceof KeyStoreError) {
+				return false;
+			}
+			throw error;
+		} finally {
+			await keyStore.close();
+		}
+	}
+
 	static async initializeKeys(userID: string) {
 		const keyStore = await KeyStore.open();
 		let pubKeyMaterial;

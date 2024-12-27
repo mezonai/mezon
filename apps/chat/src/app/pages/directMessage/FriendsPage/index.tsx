@@ -1,11 +1,13 @@
-import { useEscapeKey, useFriends, useMenu } from '@mezon/core';
+import { useAuth, useEscapeKey, useFriends, useMenu } from '@mezon/core';
 import {
 	FriendsEntity,
 	RootState,
 	channelsActions,
+	e2eeActions,
 	friendsActions,
 	requestAddFriendParam,
 	selectCloseMenu,
+	selectIsShowBtnPin,
 	selectStatusMenu,
 	selectTheme,
 	useAppDispatch
@@ -31,6 +33,8 @@ const FriendsPage = () => {
 	const [openModalAddFriend, setOpenModalAddFriend] = useState(false);
 	const [textSearch, setTextSearch] = useState('');
 	const currentTabStatus = useSelector((state: RootState) => state.friends.currentTabStatus);
+	const isShowBtnPin = useSelector(selectIsShowBtnPin);
+	const { userProfile } = useAuth();
 
 	const handleChangeTab = (valueTab: string) => {
 		dispatch(friendsActions.changeCurrentStatusTab(valueTab));
@@ -39,6 +43,10 @@ const FriendsPage = () => {
 
 	const handleOpenRequestFriend = () => {
 		setOpenModalAddFriend(true);
+	};
+
+	const handleOpenModalE2ee = () => {
+		dispatch(e2eeActions.setOpenModalE2ee(true));
 	};
 
 	const [requestAddFriend, setRequestAddFriend] = useState<requestAddFriendParam>({
@@ -169,6 +177,15 @@ const FriendsPage = () => {
 					>
 						Add Friend
 					</button>
+					{(isShowBtnPin || !userProfile?.encrypt_private_key) && (
+						<button
+							className={`px-3 py-[6px] rounded-[4px] transition-all duration-300 font-medium text-white bg-[#248046]`}
+							onClick={handleOpenModalE2ee}
+							style={{ whiteSpace: 'nowrap' }}
+						>
+							{!userProfile?.encrypt_private_key ? 'Create PIN' : 'Confirm PIN'}
+						</button>
+					)}
 				</div>
 			</div>
 			<div className="flex-1 flex w-full h-full">
