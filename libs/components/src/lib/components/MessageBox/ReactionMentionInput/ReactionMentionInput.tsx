@@ -163,6 +163,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		membersOfParent as ChannelMembersEntity[],
 		dataReferences?.message_sender_id || ''
 	);
+	console.log('mentionList :', mentionList);
 
 	const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(props.currentChannelId ?? ''));
 

@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { ERepeatType, IEventManagement, LoadingStatus } from '@mezon/utils';
+import { EEventStatus, ERepeatType, IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiEventManagement } from 'mezon-js/api.gen';
 import { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
@@ -191,6 +191,7 @@ export interface EventManagementState extends EntityState<EventManagementEntity,
 	error?: string | null;
 	chooseEvent: EventManagementEntity | null;
 	ongoingEvent: EventManagementOnGogoing | null;
+	triggerSendMess: boolean | null;
 }
 
 export const initialEventManagementState: EventManagementState = eventManagementAdapter.getInitialState({
@@ -198,7 +199,8 @@ export const initialEventManagementState: EventManagementState = eventManagement
 	error: null,
 	chooseEvent: null,
 	ongoingEvent: null,
-	creatingStatus: 'not loaded'
+	creatingStatus: 'not loaded',
+	triggerSendMess: null
 });
 
 export const eventManagementSlice = createSlice({
@@ -235,6 +237,7 @@ export const eventManagementSlice = createSlice({
 					event_status
 				}
 			});
+			state.triggerSendMess = true;
 		},
 		addOneEvent: (state, action) => {
 			const { event_id, channel_id, event_status, channel_voice_id, ...restPayload } = action.payload;
@@ -264,7 +267,9 @@ export const eventManagementSlice = createSlice({
 				...restWithoutEventStatus
 			});
 		},
-
+		resetTriggerSendMessage: (state) => {
+			state.triggerSendMess = null;
+		},
 		clearOngoingEvent: (state, action) => {
 			state.ongoingEvent = null;
 		}
@@ -341,8 +346,22 @@ export const selectEventByChannelId = createSelector([selectAllEventManagement, 
 	events
 		.filter((event) => event.channel_id === channelId)
 		.sort((a, b) => {
+			const isEventAActive = a.event_status === EEventStatus.ONGOING;
+			const isEventBActive = b.event_status === EEventStatus.ONGOING;
+
+			if (isEventAActive && !isEventBActive) return -1;
+			if (!isEventAActive && isEventBActive) return 1;
+
+			if (isEventAActive && isEventBActive) {
+				const startTimeA = a.start_time ? new Date(a.start_time).getTime() : 0;
+				const startTimeB = b.start_time ? new Date(b.start_time).getTime() : 0;
+				return startTimeA - startTimeB;
+			}
+
 			const startTimeA = a.start_time ? new Date(a.start_time).getTime() : 0;
 			const startTimeB = b.start_time ? new Date(b.start_time).getTime() : 0;
 			return startTimeA - startTimeB;
 		})
 );
+
+export const selectTriggerSendMessState = createSelector(getEventManagementState, (state) => state.triggerSendMess);

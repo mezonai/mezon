@@ -12,9 +12,11 @@ type EventScheduleProps = {
 
 const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
+
 	const eventIsUpcoming = event?.event_status === EEventStatus.UPCOMING;
 	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
 	const nearestEventAvaiable = eventIsUpcoming || eventIsOngoing;
+
 	if (!nearestEventAvaiable) return null;
 	const eventStatusNotice = eventIsUpcoming
 		? 'The event will begin shortly. Get ready!'

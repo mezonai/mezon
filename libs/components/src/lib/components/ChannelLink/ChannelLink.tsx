@@ -1,16 +1,19 @@
-import { useChannels, useMenu } from '@mezon/core';
+import { useChannels, useChatSending, useMenu } from '@mezon/core';
 import {
 	ETypeMission,
 	JoinPTTActions,
 	appActions,
 	channelsActions,
+	eventManagementActions,
 	notificationSettingActions,
 	onboardingActions,
 	selectBuzzStateByChannelId,
+	selectChannelById,
 	selectCloseMenu,
 	selectCurrentMission,
 	selectEventByChannelId,
 	selectTheme,
+	selectTriggerSendMessState,
 	threadsActions,
 	useAppDispatch,
 	useAppSelector,
@@ -18,10 +21,22 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum, ChannelThreads, IChannel, openVoiceChannel } from '@mezon/utils';
+import {
+	ChannelStatusEnum,
+	ChannelThreads,
+	EEventStatus,
+	IChannel,
+	IHashtagOnMessage,
+	IMentionOnMessage,
+	IMessageSendPayload,
+	TypeMessage,
+	getHashtagVoice,
+	getMentionPosition,
+	openVoiceChannel
+} from '@mezon/utils';
 import { Spinner } from 'flowbite-react';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { memo, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -82,6 +97,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 
 		const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, channel?.channel_id ?? ''));
 		const events = useAppSelector((state) => selectEventByChannelId(state, channel?.channel_id ?? ''));
+		console.log('events :', events);
 
 		const handleOpenCreate = () => {
 			openSettingModal();
@@ -215,6 +231,46 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 		const isAgeRestrictedChannel = useMemo(() => {
 			return channel?.age_restricted === 1;
 		}, [channel?.age_restricted]);
+
+		const channelEvent = useAppSelector((state) => selectChannelById(state, events[0]?.channel_id ?? '')) || {};
+		const channelVoice = useAppSelector((state) => selectChannelById(state, events[0]?.channel_voice_id ?? '')) || {};
+
+		const isChannel = channelEvent.parrent_id === '' || channelEvent.parrent_id === '0';
+		const triggerSendMessageState = useSelector(selectTriggerSendMessState);
+
+		const eventIsUpcoming = events[0].event_status === EEventStatus.UPCOMING;
+		const eventIsOngoing = events[0].event_status === EEventStatus.ONGOING;
+
+		const { sendMessage } = useChatSending({
+			channelOrDirect: channelEvent || undefined,
+			mode: isChannel ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD
+		});
+
+		const contentTextUpcoming = `Hi @here, the event ${events[0].title} will start soon on ${channelVoice.channel_label}!`;
+		const contentTextOngoing = `Hi @here, the event ${events[0].title} has started on ${channelVoice.channel_label}! Join us to enjoy.`;
+		const hashtagVoiceUpcoming = getHashtagVoice(contentTextUpcoming, channelVoice);
+		const hashtagVoiceOngoing = getHashtagVoice(contentTextOngoing, channelVoice);
+		const mentionHereUpcoming = getMentionPosition(contentTextUpcoming);
+		const mentionHereOngoing = getMentionPosition(contentTextOngoing);
+
+		const payloadNoticeMess: IMessageSendPayload = {
+			t: eventIsUpcoming ? contentTextUpcoming : eventIsOngoing ? contentTextOngoing : undefined,
+			hg: eventIsUpcoming
+				? ([hashtagVoiceUpcoming] as IHashtagOnMessage[])
+				: eventIsOngoing
+					? ([hashtagVoiceOngoing] as IHashtagOnMessage[])
+					: undefined
+		};
+
+		const mentionPayload = eventIsUpcoming ? mentionHereUpcoming : eventIsOngoing ? mentionHereOngoing : {};
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useEffect(() => {
+			console.log('triggerSendMessageState :', triggerSendMessageState);
+			if (triggerSendMessageState) {
+				sendMessage(payloadNoticeMess, [mentionPayload as IMentionOnMessage], [], [], false, true, false, TypeMessage.Welcome);
+				dispatch(eventManagementActions.resetTriggerSendMessage());
+			}
+		}, [triggerSendMessageState]);
 
 		return (
 			<div

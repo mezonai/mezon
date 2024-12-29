@@ -221,6 +221,7 @@ function MessageWithUser({
 
 	const isMessageSystem =
 		message?.code === TypeMessage.Welcome || message?.code === TypeMessage.CreateThread || message?.code === TypeMessage.CreatePin;
+	console.log('message :', message);
 
 	return (
 		<>

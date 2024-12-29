@@ -1,3 +1,4 @@
+import { ChannelsEntity } from '@mezon/store';
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
 import {
 	differenceInDays,
@@ -1120,4 +1121,33 @@ export function splitPayload(
 	});
 
 	return { commonFields, conditionalFields };
+}
+
+export function getHashtagVoice(text: string, channelVoice: ChannelsEntity) {
+	const startIndex = text.indexOf(channelVoice.channel_label ?? '');
+	if (startIndex === -1) {
+		return null;
+	}
+	const endIndex = startIndex + (channelVoice.channel_label?.length ?? 0);
+
+	return {
+		channelid: channelVoice.channel_id,
+		s: startIndex,
+		e: endIndex
+	};
+}
+
+export function getMentionPosition(text: string) {
+	const mention = '@here';
+	const start = text.indexOf(mention);
+	if (start === -1) {
+		return null;
+	}
+	const end = start + mention.length;
+
+	return {
+		user_id: ID_MENTION_HERE,
+		s: start,
+		e: end
+	};
 }
