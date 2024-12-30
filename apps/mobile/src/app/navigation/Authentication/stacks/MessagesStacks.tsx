@@ -6,7 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { ChatBoxStreamComponent } from '../../../screens/home/homedrawer/components/StreamingRoom/ChatBoxStream';
 import TopicDiscussion from '../../../screens/home/homedrawer/components/TopicDiscussion/TopicDiscussion';
+import { ConfirmPinScreen } from '../../../screens/messages/ConfirmSecurePin';
+import { CreatePinScreen } from '../../../screens/messages/CreateSecurePin';
 import { DirectMessageDetailScreen } from '../../../screens/messages/DirectMessageDetail';
+import { E2EEConfirmScreen } from '../../../screens/messages/E2EEConfirmScreen';
 import { NewGroupScreen } from '../../../screens/messages/NewGroup';
 import { NewMessageScreen } from '../../../screens/messages/NewMessage';
 import { APP_SCREEN } from '../../ScreenTypes';
@@ -83,6 +86,27 @@ export const MessagesStacks = ({}: any) => {
 					},
 					headerShown: false,
 					headerShadowVisible: false
+				}}
+			/>
+			<Stack.Screen
+				name={APP_SCREEN.MESSAGES.CREATE_PIN}
+				component={CreatePinScreen}
+				options={{
+					headerTitle: ''
+				}}
+			/>
+			<Stack.Screen
+				name={APP_SCREEN.MESSAGES.CONFIRM_PIN}
+				component={ConfirmPinScreen}
+				options={{
+					headerTitle: ''
+				}}
+			/>
+			<Stack.Screen
+				name={APP_SCREEN.MESSAGES.E2EECONFIRM_PIN}
+				component={E2EEConfirmScreen}
+				options={{
+					headerTitle: ''
 				}}
 			/>
 		</Stack.Navigator>
