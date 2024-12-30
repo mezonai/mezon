@@ -116,17 +116,9 @@ function useTopicMenuBuilder(message: IMessageWithUser, checkMessageIsOnTopic: b
 
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean, channelId?: string) => {
+			dispatch(topicsActions.setIsShowCreateTopic({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateTopic }));
 			dispatch(
-				topicsActions.setIsShowCreateTopic({
-					channelId: channelId || (currentChannel?.id as string),
-					isShowCreateTopic
-				})
-			);
-			dispatch(
-				threadsActions.setIsShowCreateThread({
-					channelId: channelId || (currentChannel?.id as string),
-					isShowCreateThread: false
-				})
+				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateThread: false })
 			);
 		},
 		[currentChannel?.id, dispatch]
@@ -148,7 +140,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, checkMessageIsOnTopic: b
 	}, [dispatch, message, realTimeMessage, setIsShowCreateTopic, setValueTopic]);
 
 	const menuPlugin = useMemo(() => {
-		return {
+		const plugin = {
 			setup: (builder: MenuBuilder) => {
 				builder.when(
 					clanId && clanId !== '0' && realTimeMessage?.code !== TypeMessage.Topic && !checkMessageIsOnTopic,
@@ -163,7 +155,8 @@ function useTopicMenuBuilder(message: IMessageWithUser, checkMessageIsOnTopic: b
 				);
 			}
 		};
-	}, [checkMessageIsOnTopic, clanId, handleCreateTopic, realTimeMessage?.code]);
+		return plugin;
+	}, [clanId, handleCreateTopic, realTimeMessage?.code, checkMessageIsOnTopic]);
 
 	return menuPlugin;
 }
