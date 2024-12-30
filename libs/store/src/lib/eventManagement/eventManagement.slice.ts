@@ -361,6 +361,6 @@ export const selectEventsByChannelId = createSelector([selectAllEventManagement,
 });
 
 export const selectTriggerSendMessStateByEventId = createSelector(
-	[getEventManagementState, (state, channelId: string) => channelId],
-	(state, channelId) => state.triggerSendMessState?.[channelId]
+	[getEventManagementState, (state, eventId: string) => eventId],
+	(state, eventId) => state.triggerSendMessState?.[eventId]
 );

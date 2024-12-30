@@ -609,7 +609,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				anonymous,
 				mentionEveryone,
 				'',
-				code
+				TypeMessage.Welcome
 			);
 
 			return res;

@@ -33,7 +33,6 @@ export const useEventMessageSender = ({ event, channelId }: UseEventMessageSende
 	const channelEvent = useAppSelector((state) => selectChannelById(state, event?.channel_id ?? '')) || {};
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
 	const triggerSendMessageState = useAppSelector((state) => selectTriggerSendMessStateByEventId(state, event?.id ?? ''));
-	console.log('triggerSendMessageState: ', triggerSendMessageState);
 
 	const isChannel = channelEvent?.parrent_id === '' || channelEvent?.parrent_id === '0';
 
@@ -75,5 +74,5 @@ export const useEventMessageSender = ({ event, channelId }: UseEventMessageSende
 		if (triggerSendMessageState && eventMatchChannel && matchUserId && availableEvent) {
 			sendMessageAsync();
 		}
-	}, [triggerSendMessageState]);
+	}, [eventIsUpcoming, eventIsOngoing, triggerSendMessageState]);
 };
