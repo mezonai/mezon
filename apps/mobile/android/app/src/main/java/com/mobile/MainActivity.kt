@@ -1,7 +1,6 @@
 package com.mobile.mezon
 import expo.modules.ReactActivityDelegateWrapper
 import android.os.Bundle;
-import com.zoontek.rnbootsplash.RNBootSplash;
 
 import android.content.Intent;
 import com.facebook.react.ReactActivity
@@ -18,7 +17,6 @@ class MainActivity : ReactActivity() {
   override fun getMainComponentName(): String = "Mobile"
 
  override fun onCreate(savedInstanceState: Bundle?) {
-     RNBootSplash.init(this, R.style.BootTheme);
      super.onCreate(null);
  }
 

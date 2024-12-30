@@ -1,16 +1,14 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectChannelsByClanId, selectCurrentClanId, useAppSelector } from '@mezon/store';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { style } from './styles';
-type ButtonNewUnreadProps = {
-	handleScrollToChannel: (id: string, isActiveScroll: boolean) => void;
-};
 
-const ButtonNewUnread = React.memo(({ handleScrollToChannel }: ButtonNewUnreadProps) => {
+const ButtonNewUnread = React.memo(() => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
 	const styles = style(themeValue, isTabletLandscape);
@@ -28,7 +26,7 @@ const ButtonNewUnread = React.memo(({ handleScrollToChannel }: ButtonNewUnreadPr
 		return (
 			<TouchableOpacity
 				onPress={() => {
-					handleScrollToChannel(firstChannelBadgeCount?.channel_id, true);
+					DeviceEventEmitter.emit(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, firstChannelBadgeCount?.channel_id);
 				}}
 				style={styles.buttonBadgeCount}
 			>

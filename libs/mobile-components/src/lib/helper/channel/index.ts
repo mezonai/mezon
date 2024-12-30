@@ -30,8 +30,8 @@ export function getInfoChannelByClanId(data: ClanChannelPair[], clanId: string) 
 	return pairIndex !== -1 ? data[pairIndex] : null;
 }
 
-export const setCurrentClanLoader = async (clans: any) => {
-	const lastClanId = clans?.[clans?.length - 1]?.clan_id;
+export const setCurrentClanLoader = async (clans: any, clan_id?: string) => {
+	const lastClanId = clan_id ? clan_id : clans?.[clans?.length - 1]?.clan_id;
 	const store = await getStoreAsync();
 	if (lastClanId) {
 		save(STORAGE_CLAN_ID, lastClanId);

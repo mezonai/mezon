@@ -22,6 +22,14 @@ interface Options {
 	shouldPreventDefault?: boolean;
 }
 
+export interface ILongPressType {
+	onMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void;
+	onTouchStart?: (e: React.TouchEvent<HTMLDivElement>) => void;
+	onMouseUp?: (e: React.MouseEvent<HTMLDivElement>) => void;
+	onMouseLeave?: (e: React.MouseEvent<HTMLDivElement>) => void;
+	onTouchEnd?: (e: React.TouchEvent<HTMLDivElement>) => void;
+}
+
 export function useLongPress<T>({ onStart, onFinish }: PressHandlers<T>, { delay = 300, shouldPreventDefault = true }: Options = {}) {
 	const timeout = useRef<NodeJS.Timeout>();
 	const target = useRef<EventTarget>();

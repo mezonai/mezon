@@ -1,6 +1,6 @@
 import { FileIcon } from '@mezon/mobile-components';
 import { Block, Colors, Text, useTheme, verticalScale } from '@mezon/mobile-ui';
-import { notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
+import { EMimeTypes, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import React from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { openUrl } from 'react-native-markdown-display';
@@ -25,8 +25,7 @@ export const RenderDocumentsChat = React.memo(({ document, onLongPress, onPressI
 	if (checkIsVideo) {
 		return <RenderVideoChat videoURL={document.url} />;
 	}
-
-	const checkIsAudio = isAudio(document?.url?.toLowerCase());
+	const checkIsAudio = document.filetype?.includes(EMimeTypes.audio) || isAudio(document?.url?.toLowerCase());
 	if (checkIsAudio) {
 		return <RenderAudioChat audioURL={document?.url} />;
 	}

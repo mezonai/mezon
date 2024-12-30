@@ -1,5 +1,5 @@
 import { Block, Colors, size, Text } from '@mezon/mobile-ui';
-import { AttachmentEntity, selectAllListAttachmentByChannel, selectCurrentChannelId } from '@mezon/store-mobile';
+import { AttachmentEntity, selectAllListAttachmentByChannel } from '@mezon/store-mobile';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -17,6 +17,7 @@ interface IImageListModalProps {
 	visible?: boolean;
 	onClose?: () => void;
 	imageSelected?: AttachmentEntity;
+	channelId: string;
 }
 
 interface IVisibleToolbarConfig {
@@ -35,20 +36,32 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 	const [currentScale, setCurrentScale] = useState(1);
 	const [showSavedImage, setShowSavedImage] = useState(false);
 	const [isLoadingSaveImage, setIsLoadingSaveImage] = useState(false);
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const allImageList = useSelector((state) => selectAllListAttachmentByChannel(state, currentChannelId));
+	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, props.channelId));
 	const ref = useRef<GalleryRef>(null);
 	const footerTimeoutRef = useRef<NodeJS.Timeout>(null);
 	const imageSavedTimeoutRef = useRef<NodeJS.Timeout>(null);
 
 	const initialIndex = useMemo(() => {
-		return allImageList.findIndex((file) => file?.url === imageSelected?.url);
-	}, [allImageList, imageSelected]);
+		if (attachments?.length) {
+			return attachments.findIndex((file) => file?.url === imageSelected?.url);
+		} else {
+			return 0;
+		}
+	}, [attachments, imageSelected]);
 
 	const formattedImageList = useMemo(() => {
-		const index = allImageList.findIndex((file) => file?.url === imageSelected?.url);
-		return index === -1 ? [{ ...imageSelected, id: `${Snowflake.generate()}` }, ...allImageList] : allImageList;
-	}, [allImageList, imageSelected]);
+		let index: number;
+		if (attachments?.length) {
+			index = attachments.findIndex((file) => file?.url === imageSelected?.url);
+		} else {
+			index = -1;
+		}
+		return index === -1
+			? [{ ...imageSelected, id: `${Snowflake.generate()}` }, ...(attachments ? attachments : [])]
+			: attachments
+				? attachments
+				: [];
+	}, [attachments, imageSelected]);
 
 	const updateToolbarConfig = useCallback(
 		(newValue: Partial<IVisibleToolbarConfig>) => {

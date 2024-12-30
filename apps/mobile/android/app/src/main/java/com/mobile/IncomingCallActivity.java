@@ -20,7 +20,6 @@ import com.facebook.react.ReactFragment;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-import com.fullscreennotificationincomingcall.R;
 import com.squareup.picasso.Picasso;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.ReactApplication;

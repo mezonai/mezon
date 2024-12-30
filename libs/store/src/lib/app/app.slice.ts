@@ -57,7 +57,7 @@ export const initialAppState: AppState = {
 	closeMenu: false,
 	statusMenu: true,
 	hiddenBottomTabMobile: true,
-	hasInternetMobile: false,
+	hasInternetMobile: true,
 	loadingMainMobile: false,
 	isFromFcmMobile: false,
 	isShowSettingFooter: { status: false, initTab: 'Account', isUserProfile: true, profileInitTab: 'USER_SETTING', clanId: '' },

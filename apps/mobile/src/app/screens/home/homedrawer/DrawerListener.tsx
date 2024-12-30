@@ -90,8 +90,6 @@ function DrawerListener({ channelId }: { channelId: string }) {
 							callerId: payload?.callerId
 						})
 					);
-					RNNotificationCall.declineCall('6cb67209-4ef9-48c0-a8dc-2cec6cd6261d');
-					await SharedPreferences.removeItem('notificationDataCalling');
 					timer = setTimeout(() => {
 						dispatch(appActions.setLoadingMainMobile(false));
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -103,7 +101,9 @@ function DrawerListener({ channelId }: { channelId: string }) {
 								isAnswerCall: true
 							}
 						});
-					}, 1000);
+					}, 500);
+					RNNotificationCall.declineCall('6cb67209-4ef9-48c0-a8dc-2cec6cd6261d');
+					await SharedPreferences.removeItem('notificationDataCalling');
 				}
 			} catch (error) {
 				console.error('Failed to retrieve data', error);

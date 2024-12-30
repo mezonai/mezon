@@ -23,7 +23,6 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['message']);
 	const [recording, setRecording] = useState(null);
-	const [isRecording, setIsRecording] = useState(false);
 	const [isDisplay, setIsDisplay] = useAnimatedState(false);
 
 	const recordingRef = useRef(null);
@@ -73,8 +72,8 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 					bitRate: 128000
 				},
 				ios: {
-					extension: '.mp3',
-					outputFormat: IOSOutputFormat.MPEGLAYER3,
+					extension: '.m4a',
+					outputFormat: IOSOutputFormat.MPEG4AAC,
 					audioQuality: IOSAudioQuality.MAX,
 					sampleRate: 44100,
 					numberOfChannels: 2,
@@ -92,7 +91,6 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 			recordingWaveRef.current?.play();
 
 			setRecording(newRecording);
-			setIsRecording(true);
 		} catch (error) {
 			console.error('Failed to start recording:', error);
 			setIsDisplay(false);
@@ -141,7 +139,6 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 			if (!recording) return;
 			// Stop recording
 			await recording.stopAndUnloadAsync();
-			setIsRecording(false);
 
 			// Get recording URI
 			const uri = recording.getURI();

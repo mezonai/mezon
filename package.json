@@ -191,6 +191,9 @@
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.10.0"
   },
+  "resolutions": {
+    "@electron/notarize": "2.3.2"
+  },
   "optionalDependencies": {
     "@nx/nx-darwin-arm64": "18.2.2",
     "@nx/nx-darwin-x64": "18.2.2",

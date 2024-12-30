@@ -65,7 +65,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 					{tabActive === 0 ? (
 						<MemberListStatus />
 					) : tabActive === 1 ? (
-						<MediaChannel />
+						<MediaChannel channelId={channelId} />
 					) : tabActive === 4 && currentChannel.parrent_id === '0' ? (
 						<Canvas
 							channelId={

@@ -16,11 +16,10 @@ interface IChannelListSectionProps {
 	onLongPressChannel: (channel: ChannelThreads) => void;
 	onLongPressThread: (thread: ChannelThreads) => void;
 	channelsPositionRef: ChannelsPositionRef;
-	onPressCollapse: (isCollapse: boolean) => void;
 }
 
 const ChannelListSection = memo(
-	({ data, onLongPressCategory, onLongPressChannel, onLongPressThread, channelsPositionRef, onPressCollapse }: IChannelListSectionProps) => {
+	({ data, onLongPressCategory, onLongPressChannel, onLongPressThread, channelsPositionRef }: IChannelListSectionProps) => {
 		const styles = style(useTheme().themeValue);
 		const categoryIdSortChannel = useSelector(selectCategoryIdSortChannel);
 		const dispatch = useAppDispatch();
@@ -44,9 +43,8 @@ const ChannelListSection = memo(
 					expandState: !categoryExpandState
 				};
 				dispatch(categoriesActions.setCategoryExpandState(payload));
-				onPressCollapse(categoryExpandState);
 			},
-			[dispatch, onPressCollapse, categoryExpandState]
+			[dispatch, categoryExpandState]
 		);
 
 		const onLongPressHeader = useCallback(() => {

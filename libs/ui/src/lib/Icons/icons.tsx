@@ -6056,7 +6056,7 @@ export function CirclePlusFill(props: React.HTMLAttributes<SVGElement>) {
 export function StopCall(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg width="28px" height="28px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" {...props}>
-			<g id="SVGRepo_bgCarrier" stroke-width="0" />
+			<g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
 			<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
 
@@ -6074,7 +6074,7 @@ export function StopCall(props: React.HTMLAttributes<SVGElement>) {
 export function StartCall(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg width="24px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" {...props}>
-			<g id="SVGRepo_bgCarrier" stroke-width="0" />
+			<g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
 			<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
 
@@ -6131,10 +6131,10 @@ export function Microphone({ isMuteMicrophone = false, isShowLine = false, ...pr
 export function ShareScreen({ isShowShareScreen = false, isShowLine = false, ...props }) {
 	return (
 		<svg width="32px" height="32px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none" {...props}>
-			<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
 			<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 			<g id="SVGRepo_iconCarrier">
-				<g id="🔍-System-Icons" stroke="none" stroke-width="1" fill="none" fillRule="evenodd">
+				<g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
 					{' '}
 					<g id="ic_fluent_share_screen_28_regular" fill="currentColor" fillRule="nonzero">
 						{' '}
@@ -6492,6 +6492,72 @@ export function LockedPrivate(props: React.SVGProps<SVGSVGElement>) {
 		>
 			<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
 			<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+		</svg>
+	);
+}
+
+export function PlayButton(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg
+			viewBox="-0.5 0 8 8"
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			xmlnsXlink="http://www.w3.org/1999/xlink"
+			fill="currentColor"
+			className=""
+			{...props}
+		>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				{' '}
+				<g id="Page-1" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
+					{' '}
+					<g id="Dribbble-Light-Preview" transform="translate(-427.000000, -3765.000000)" fill="currentColor">
+						{' '}
+						<g id="icons" transform="translate(56.000000, 160.000000)">
+							{' '}
+							<polygon id="play-[#1001]" points="371 3605 371 3613 378 3609">
+								{' '}
+							</polygon>{' '}
+						</g>{' '}
+					</g>{' '}
+				</g>{' '}
+			</g>
+		</svg>
+	);
+}
+
+export function PauseButton(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg
+			viewBox="-1 0 8 8"
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			xmlnsXlink="http://www.w3.org/1999/xlink"
+			fill="currentColor"
+			className=""
+			{...props}
+		>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				<g id="Page-1" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
+					{' '}
+					<g id="Dribbble-Light-Preview" transform="translate(-67.000000, -3765.000000)" fill="currentColor">
+						{' '}
+						<g id="icons" transform="translate(56.000000, 160.000000)">
+							{' '}
+							<path
+								d="M11,3613 L13,3613 L13,3605 L11,3605 L11,3613 Z M15,3613 L17,3613 L17,3605 L15,3605 L15,3613 Z"
+								id="pause-[#1010]"
+							>
+								{' '}
+							</path>{' '}
+						</g>{' '}
+					</g>{' '}
+				</g>{' '}
+			</g>
 		</svg>
 	);
 }

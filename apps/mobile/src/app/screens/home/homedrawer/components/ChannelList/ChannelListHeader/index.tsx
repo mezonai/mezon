@@ -1,10 +1,10 @@
-import { ETypeSearch, Icons, VerifyIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, ETypeSearch, Icons, VerifyIcon } from '@mezon/mobile-components';
 import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannel, selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -12,10 +12,9 @@ import { style } from './styles';
 interface IProps {
 	onPress: () => void;
 	onOpenEvent: () => void;
-	onOpenInvite: () => void;
 }
 
-const ChannelListHeader = ({ onPress, onOpenEvent, onOpenInvite }: IProps) => {
+const ChannelListHeader = ({ onPress, onOpenEvent }: IProps) => {
 	const currentClan = useSelector(selectCurrentClan);
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['clanMenu']);
@@ -24,6 +23,13 @@ const ChannelListHeader = ({ onPress, onOpenEvent, onOpenInvite }: IProps) => {
 
 	const styles = style(themeValue);
 	const members = useSelector(selectMembersClanCount);
+	const previousClanName = useRef<string | null>(null);
+
+	useEffect(() => {
+		previousClanName.current = currentClan?.clan_name || '';
+	}, [currentClan?.clan_name]);
+
+	const clanName = !currentClan?.id || currentClan?.id === '0' ? previousClanName.current : currentClan?.clan_name;
 
 	const navigateToSearchPage = () => {
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -34,12 +40,16 @@ const ChannelListHeader = ({ onPress, onOpenEvent, onOpenInvite }: IProps) => {
 			}
 		});
 	};
+
+	const onOpenInvite = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL);
+	};
 	return (
 		<View style={[styles.container]}>
 			<TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.listHeader}>
 				<View style={styles.titleNameWrapper}>
 					<Text numberOfLines={1} style={styles.titleServer}>
-						{currentClan?.clan_name}
+						{clanName}
 					</Text>
 					<VerifyIcon width={size.s_18} height={size.s_18} color={baseColor.blurple} />
 				</View>

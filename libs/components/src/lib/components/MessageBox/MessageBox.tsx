@@ -4,12 +4,14 @@ import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import {
 	EOverriddenPermission,
+	ILongPressType,
 	IMessageSendPayload,
 	MAX_FILE_ATTACHMENTS,
 	MIN_THRESHOLD_CHARS,
 	MentionDataProps,
 	ThreadValue,
-	processFile
+	processFile,
+	useLongPress
 } from '@mezon/utils';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { Fragment, ReactElement, memo, useCallback, useState } from 'react';
@@ -127,6 +129,11 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 		setIsRecording(false);
 	}, []);
 
+	const voiceLongPressHandlers: ILongPressType = useLongPress<HTMLDivElement>({
+		onStart: () => setIsRecording(true),
+		onFinish: () => setIsRecording(false)
+	});
+
 	if (!shouldRender) return <></>;
 
 	return (
@@ -158,41 +165,39 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 				</div>
 			)}
 
-			{isRecording ? (
-				<AudioRecorderControl onSendRecord={handleEndRecording} />
-			) : (
-				<div
-					className={`flex flex-inline items-start gap-2 box-content mb-4 max-sm:mb-0
+			<AudioRecorderControl outerRecording={isRecording} onSendRecord={handleEndRecording} />
+			<div
+				className={`flex flex-inline items-start gap-2 box-content mb-4 max-sm:mb-0
 			dark:bg-channelTextarea bg-channelTextareaLight rounded-lg relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}
 			${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
-				>
-					<FileSelectionButton
-						currentClanId={currentClanId || ''}
-						currentChannelId={currentChannelId || ''}
-						hasPermissionEdit={canSendMessage}
-					/>
+			>
+				<FileSelectionButton
+					currentClanId={currentClanId || ''}
+					currentChannelId={currentChannelId || ''}
+					hasPermissionEdit={canSendMessage}
+				/>
 
-					<div className={`w-full dark:bg-channelTextarea bg-channelTextareaLight gap-3 flex items-center rounded-e-md`}>
-						<div
-							className={`w-full rounded-r-lg dark:bg-channelTextarea bg-channelTextareaLight gap-3 relative whitespace-pre-wrap`}
-							onContextMenu={handleChildContextMenu}
-						>
-							<MentionReactInput
-								handlePaste={onPastedFiles}
-								listMentions={props.listMentions}
-								onSend={props.onSend}
-								onTyping={props.onTyping}
-								currentChannelId={props.currentChannelId ?? ''}
-								handleConvertToFile={onConvertToFiles}
-								currentClanId={currentClanId}
-								mode={props.mode}
-								hasPermissionEdit={canSendMessage}
-								onStartRecord={handleStartRecording}
-							/>
-						</div>
+				<div className={`w-full dark:bg-channelTextarea bg-channelTextareaLight gap-3 flex items-center rounded-e-md`}>
+					<div
+						className={`w-full rounded-r-lg dark:bg-channelTextarea bg-channelTextareaLight gap-3 relative whitespace-pre-wrap`}
+						onContextMenu={handleChildContextMenu}
+					>
+						<MentionReactInput
+							handlePaste={onPastedFiles}
+							listMentions={props.listMentions}
+							onSend={props.onSend}
+							onTyping={props.onTyping}
+							currentChannelId={props.currentChannelId ?? ''}
+							handleConvertToFile={onConvertToFiles}
+							currentClanId={currentClanId}
+							mode={props.mode}
+							hasPermissionEdit={canSendMessage}
+							voiceLongPress={voiceLongPressHandlers}
+							isRecording={isRecording}
+						/>
 					</div>
 				</div>
-			)}
+			</div>
 		</div>
 	);
 };

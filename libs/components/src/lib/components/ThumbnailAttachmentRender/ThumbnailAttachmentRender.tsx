@@ -1,8 +1,9 @@
 import { Icons } from '@mezon/ui';
 import { SHOW_POSITION, fileTypeImage, fileTypeVideo } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
+import { MessageAudioControl } from '../MessageWithUser/MessageAudio/MessageAudioControl';
 import MessageVideo from '../MessageWithUser/MessageVideo';
 import { typeFormats } from './TypeFormats';
 
@@ -15,6 +16,8 @@ export const RenderAttachmentThumbnail = (attachment: ApiMessageAttachment, size
 
 	const hasFileVideo = fileType && fileTypeVideo.includes(fileType);
 
+	const isAudioFile = fileType && fileType.startsWith('audio');
+
 	const { setPositionShow } = useMessageContextMenu();
 
 	const handleContextMenu = useCallback(() => {
@@ -24,6 +27,8 @@ export const RenderAttachmentThumbnail = (attachment: ApiMessageAttachment, size
 	}, [attachment.filetype]);
 	return (
 		<div onContextMenu={handleContextMenu}>
+			{isAudioFile && <AudioAttachment attachment={attachment} size={size} />}
+
 			{hasFileImage && (
 				<img
 					key="image-thumbnail"
@@ -42,7 +47,44 @@ export const RenderAttachmentThumbnail = (attachment: ApiMessageAttachment, size
 
 			{renderIcon && <renderIcon.icon defaultSize={size} />}
 
-			{!hasFileImage && !hasFileVideo && !renderIcon && <Icons.EmptyType defaultSize={size} />}
+			{!hasFileImage && !hasFileVideo && !renderIcon && !isAudioFile && <Icons.EmptyType defaultSize={size} />}
+		</div>
+	);
+};
+
+interface IAudioAttachmentProps {
+	attachment: ApiMessageAttachment;
+	size?: string;
+}
+
+const AudioAttachment = ({ attachment, size }: IAudioAttachmentProps) => {
+	const [isPlaying, setIsPlaying] = useState(false);
+	const [currentTime, setCurrentTime] = useState(0);
+	const [duration, setDuration] = useState<number>(0);
+	const audioControlRef = useRef<{ togglePlay: () => void }>(null);
+
+	const handleTogglePlay = () => {
+		if (audioControlRef.current) {
+			audioControlRef.current.togglePlay();
+		}
+	};
+	return (
+		<div className="relative">
+			<div
+				onClick={handleTogglePlay}
+				className={`absolute top-[23px] right-[8px] p-[10px] ${isPlaying ? '' : 'pr-[8px] pl-[12px]'} border-[4px] border-gray-600 bg-gray-400 rounded-full`}
+			>
+				{isPlaying ? <Icons.PauseButton className="w-7" /> : <Icons.PlayButton className="w-7" />}
+			</div>
+			<Icons.EmptyType defaultSize={size} />
+			<MessageAudioControl
+				ref={audioControlRef}
+				audioUrl={attachment.url || ''}
+				setDuration={setDuration}
+				setCurrentTime={setCurrentTime}
+				setIsPlaying={setIsPlaying}
+				isPlaying={isPlaying}
+			/>
 		</div>
 	);
 };

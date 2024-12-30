@@ -12,9 +12,9 @@ import {
 	messagesActions,
 	notificationActions,
 	RootState,
-	selectAllTopics,
 	selectCurrentClanId,
 	selectLastNotificationId,
+	selectTopicsSort,
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -40,7 +40,7 @@ import { EActionDataNotify, ENotifyBsToShow } from './types';
 const Notifications = () => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const allTopics = useSelector(selectAllTopics);
+	const allTopics = useSelector(selectTopicsSort);
 	const { notification, deleteNotify } = useNotification();
 	const [notify, setNotify] = useState<INotification>();
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -59,23 +59,9 @@ const Notifications = () => {
 	const [notificationsFilter, setNotificationsFilter] = useState<NotificationEntity[]>([]);
 	const lastNotificationId = useSelector(selectLastNotificationId);
 
-	const topicsNotification = useMemo(() => {
-		return allTopics?.map((topic) => {
-			const topicNotification: NotificationEntity = {
-				code: NotificationCode.NOTIFICATION_TOPIC,
-				content: Object.assign({}, topic.message, { repliers: topic?.last_sent_message?.repliers }),
-				id: topic.id,
-				subject: topic?.last_sent_message?.content,
-				sender_id: topic?.last_sent_message?.sender_id,
-				create_time: topic?.create_time
-			};
-			return topicNotification;
-		});
-	}, [allTopics]);
-
 	const mergeNotifications = useMemo(() => {
-		return [...(notification || []), ...(topicsNotification || [])];
-	}, [notification, topicsNotification]);
+		return [...(notification || []), ...(allTopics || [])];
+	}, [allTopics, notification]);
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -115,14 +101,14 @@ const Notifications = () => {
 								notification?.code !== NotificationCode.USER_REPLIED &&
 								notification?.code !== NotificationCode.USER_MENTIONED &&
 								notification?.code !== NotificationCode.NOTIFICATION_CLAN &&
-								notification?.code !== NotificationCode.NOTIFICATION_TOPIC
+								notification?.code
 							);
 						case EActionDataNotify.Mention:
 							return notification?.code === NotificationCode.USER_REPLIED || notification?.code === NotificationCode.USER_MENTIONED;
 						case EActionDataNotify.Messages:
 							return notification?.code === NotificationCode.NOTIFICATION_CLAN;
 						case EActionDataNotify.Topics:
-							return notification?.code === NotificationCode.NOTIFICATION_TOPIC;
+							return !notification?.code;
 						default:
 							return false;
 					}
@@ -132,7 +118,7 @@ const Notifications = () => {
 			const filteredNotifications = sortNotifications.filter(isNotificationIncluded);
 			setNotificationsFilter(filteredNotifications);
 		},
-		[notification]
+		[mergeNotifications]
 	);
 
 	const initLoader = async () => {

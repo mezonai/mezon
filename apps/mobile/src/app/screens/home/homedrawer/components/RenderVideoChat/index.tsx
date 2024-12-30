@@ -47,6 +47,7 @@ export const RenderVideoChat = React.memo(
 					onError={(err) => {
 						console.log('load error', err);
 					}}
+					isLooping={true}
 					onReadyForDisplay={(event) => {
 						const { width, height } = event.naturalSize || {};
 						const aspectRatio = width / height;

@@ -1,7 +1,6 @@
 import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useCategory, useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import {
-	ActionEmitEvent,
 	ENotificationActive,
 	ENotificationChannelId,
 	Icons,
@@ -27,7 +26,7 @@ import { ChannelThreads, EOverriddenPermission, EPermission, IChannel } from '@m
 import { useNavigation } from '@react-navigation/native';
 import React, { MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonConfirm, MezonMenu, reserve } from '../../../../../componentUI';
@@ -107,7 +106,6 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 		{
 			title: isFavorite ? t('menu.inviteMenu.unMarkFavorite') : t('menu.inviteMenu.markFavorite'),
 			onPress: () => {
-				DeviceEventEmitter.emit(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, { isActiveScroll: false });
 				isFavorite ? removeFavoriteChannel() : markFavoriteChannel();
 				dismiss();
 			},

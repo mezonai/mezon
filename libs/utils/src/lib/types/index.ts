@@ -38,6 +38,7 @@ import {
 import { ApiNotifiReactMessage, ApiNotificationChannelCategorySetting, ApiPermissionRoleChannel } from 'mezon-js/dist/api.gen';
 import { HTMLInputTypeAttribute } from 'react';
 import { MentionItem } from 'react-mentions';
+import { ILongPressType } from '../hooks';
 import { CanvasDataResponse } from './htmlCanvas';
 import { IEmojiOnMessage, IHashtagOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from './messageLine';
 
@@ -1325,7 +1326,8 @@ export type MentionReactInputProps = {
 	readonly currentChannelId?: string;
 	readonly mode?: number;
 	hasPermissionEdit?: boolean;
-	onStartRecord?: () => void;
+	voiceLongPress?: ILongPressType;
+	isRecording?: boolean;
 };
 
 export type IOtherCall = {

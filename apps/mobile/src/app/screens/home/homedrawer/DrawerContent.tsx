@@ -1,7 +1,7 @@
 import { useCategory } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { RootState, selectAllClans, selectIsShowEmptyCategory } from '@mezon/store-mobile';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import ChannelListSkeleton from '../../../components/Skeletons/ChannelListSkeleton';
@@ -18,14 +18,20 @@ const ChannelListWrapper = React.memo(() => {
 	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
 	const { categorizedChannels: categorizedChannelsRaw } = useCategory();
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
+	const previousCategorizedChannels = useRef(null);
 
 	const categorizedChannels = useMemo(() => {
-		return categorizedChannelsRaw.map((item) => {
+		if (!categorizedChannelsRaw?.length && !!previousCategorizedChannels?.current) {
+			return previousCategorizedChannels?.current;
+		}
+		const dataFormat = categorizedChannelsRaw.map((item) => {
 			if (!isShowEmptyCategory && item?.channels?.length === 0) {
 				return null;
 			}
 			return item;
 		});
+		previousCategorizedChannels.current = dataFormat;
+		return dataFormat;
 	}, [categorizedChannelsRaw, isShowEmptyCategory]);
 
 	return (

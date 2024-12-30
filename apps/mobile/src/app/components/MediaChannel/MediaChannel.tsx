@@ -1,5 +1,5 @@
 import { Block, size, useTheme } from '@mezon/mobile-ui';
-import { AttachmentEntity, RootState, selectAllListAttachmentByChannel, selectCurrentChannelId } from '@mezon/store-mobile';
+import { AttachmentEntity, RootState, selectAllListAttachmentByChannel } from '@mezon/store-mobile';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Dimensions, FlatList, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -9,11 +9,10 @@ import { style } from './MediaChannel.styles';
 import { MediaItem } from './MediaItem';
 import MediaSkeleton from './MediaSkeleton/MediaSkeleton';
 
-const MediaChannel = memo(() => {
+const MediaChannel = memo(({ channelId }: { channelId: string }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, currentChannelId));
+	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, channelId));
 	const loadStatus = useSelector((state: RootState) => state?.attachments?.loadingStatus);
 	const [imageSelected, setImageSelected] = useState<AttachmentEntity>();
 	const [visibleImageModal, setVisibleImageModal] = useState<boolean>(false);
@@ -58,7 +57,9 @@ const MediaChannel = memo(() => {
 					ListEmptyComponent={<EmptySearchPage />}
 				/>
 			)}
-			{visibleImageModal && <ImageListModal visible={visibleImageModal} onClose={onCloseModalImage} imageSelected={imageSelected} />}
+			{visibleImageModal && (
+				<ImageListModal channelId={channelId} visible={visibleImageModal} onClose={onCloseModalImage} imageSelected={imageSelected} />
+			)}
 		</View>
 	);
 });

@@ -62,14 +62,14 @@ export const ChatBox = memo((props: IChatBoxProps) => {
 				justifyContent="space-between"
 			>
 				<RecordAudioMessage channelId={props?.channelId} mode={props?.mode} />
-				{messageActionNeedToResolve && (
+				{messageActionNeedToResolve && (canSendMessage || isDM) && (
 					<ActionMessageSelected
 						messageActionNeedToResolve={messageActionNeedToResolve}
 						onClose={() => setMessageActionNeedToResolve(null)}
 					/>
 				)}
-				{!canSendMessage && !isDM && (
-					<Block position={'absolute'} zIndex={10} width={'100%'} top={size.s_6} left={-1}>
+				{!canSendMessage && !isDM ? (
+					<Block zIndex={10} width={'95%'} marginVertical={size.s_6} alignSelf={'center'} marginBottom={size.s_20}>
 						<Block backgroundColor={themeValue.charcoal} padding={size.s_16} borderRadius={size.s_20} marginHorizontal={size.s_6}>
 							<Text
 								style={{
@@ -80,17 +80,17 @@ export const ChatBox = memo((props: IChatBoxProps) => {
 							</Text>
 						</Block>
 					</Block>
+				) : (
+					<ChatBoxBottomBar
+						messageActionNeedToResolve={messageActionNeedToResolve}
+						onDeleteMessageActionNeedToResolve={deleteMessageActionNeedToResolve}
+						channelId={props?.channelId}
+						mode={props?.mode}
+						hiddenIcon={props?.hiddenIcon}
+						messageAction={props?.messageAction}
+						onShowKeyboardBottomSheet={props?.onShowKeyboardBottomSheet}
+					/>
 				)}
-
-				<ChatBoxBottomBar
-					messageActionNeedToResolve={messageActionNeedToResolve}
-					onDeleteMessageActionNeedToResolve={deleteMessageActionNeedToResolve}
-					channelId={props?.channelId}
-					mode={props?.mode}
-					hiddenIcon={props?.hiddenIcon}
-					messageAction={props?.messageAction}
-					onShowKeyboardBottomSheet={props?.onShowKeyboardBottomSheet}
-				/>
 			</Block>
 		</Block>
 	);

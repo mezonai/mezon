@@ -5,6 +5,7 @@ import {
 	AttachmentEntity,
 	DMCallActions,
 	JoinPTTActions,
+	RootState,
 	TalkPTTActions,
 	acitvitiesActions,
 	appActions,
@@ -125,7 +126,7 @@ import {
 import { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiPermissionUpdate, ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useAppParams } from '../../app/hooks/useAppParams';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -145,6 +146,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) => {
 	const { socketRef, reconnectWithTimeout } = useMezon();
 	const { userId } = useAuth();
+	const store = useStore();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const { directId, channelId, clanId } = useAppParams();
 	const dispatch = useAppDispatch();
@@ -162,9 +164,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const userCallId = useSelector(selectUserCallId);
 	const isClanView = useSelector(selectClanView);
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
-
-	const allThreadChannelPrivate = useSelector(selectAllTextChannel);
-	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
 
 	const clanIdActive = useMemo(() => {
 		if (clanId !== undefined || currentClanId) {
@@ -281,7 +280,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onchannelmessage = useCallback(
 		async (message: ChannelMessage) => {
-			console.log('message: ', message);
 			if (message.code === TypeMessage.MessageBuzz) {
 				handleBuzz(message.channel_id, message.sender_id, true, message.mode);
 			}
@@ -1037,6 +1035,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				}
 
 				if (isActionUpdating) {
+					const allThreadChannelPrivate = selectAllTextChannel(store.getState() as RootState);
+					const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
 					const newChannelId = eventCreatedEvent.channel_id;
 					const notUpdateChannelId = !newChannelId || newChannelId === '0';
 					const userHasChannel = allThreadChannelPrivateIds.includes(newChannelId);
@@ -1058,7 +1058,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				console.error('Error handling eventCreatedEvent:', error);
 			}
 		},
-		[dispatch, allThreadChannelPrivateIds]
+		[dispatch]
 	);
 
 	const oncoffeegiven = useCallback((coffeeEvent: ApiGiveCoffeeEvent) => {

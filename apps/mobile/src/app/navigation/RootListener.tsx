@@ -9,7 +9,6 @@ import {
 	directActions,
 	emojiSuggestionActions,
 	friendsActions,
-	getStoreAsync,
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	messagesActions,
@@ -17,6 +16,7 @@ import {
 	selectCurrentClanId,
 	selectIsFromFCMMobile,
 	selectIsLogin,
+	useAppDispatch,
 	userStatusActions,
 	voiceActions
 } from '@mezon/store-mobile';
@@ -45,6 +45,7 @@ const RootListener = () => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const isFromFcmMobile = useSelector(selectIsFromFCMMobile);
 	const { handleReconnect } = useContext(ChatContext);
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		let timer: string | number | NodeJS.Timeout;
@@ -65,10 +66,9 @@ const RootListener = () => {
 	}, [isLoggedIn]);
 
 	const refreshMessageInitApp = useCallback(async () => {
-		const store = await getStoreAsync();
-		store.dispatch(appActions.setLoadingMainMobile(false));
+		dispatch(appActions.setLoadingMainMobile(false));
 		if (currentChannelId) {
-			store.dispatch(
+			dispatch(
 				messagesActions.fetchMessages({
 					channelId: currentChannelId,
 					noCache: true,
@@ -77,7 +77,7 @@ const RootListener = () => {
 					clanId: currentClanId
 				})
 			);
-			store.dispatch(
+			dispatch(
 				channelsActions.fetchChannels({
 					clanId: currentClanId
 				})
@@ -95,12 +95,11 @@ const RootListener = () => {
 			if (!currentChannelId) {
 				return null;
 			}
-			const store = await getStoreAsync();
 			handleReconnect('Initial reconnect attempt');
-			store.dispatch(appActions.setLoadingMainMobile(false));
+			dispatch(appActions.setLoadingMainMobile(false));
 			await notifee.cancelAllNotifications();
 			const promise = [
-				store.dispatch(
+				dispatch(
 					messagesActions.fetchMessages({
 						channelId: currentChannelId,
 						noCache: true,
@@ -109,7 +108,7 @@ const RootListener = () => {
 						clanId: currentClanId
 					})
 				),
-				store.dispatch(
+				dispatch(
 					voiceActions.fetchVoiceChannelMembers({
 						clanId: currentClanId ?? '',
 						channelId: '',
@@ -156,15 +155,20 @@ const RootListener = () => {
 		};
 	}, [currentChannelId, isFromFcmMobile, isLoggedIn, currentClanId, handleAppStateChange]);
 
+	useEffect(() => {
+		if (currentClanId && currentClanId?.toString() !== '0') {
+			dispatch(channelsActions.fetchListFavoriteChannel({ clanId: currentClanId }));
+		}
+	}, [currentClanId]);
+
 	const authLoader = useCallback(async () => {
-		const store = await getStoreAsync();
 		try {
-			const response = await store.dispatch(authActions.refreshSession());
+			const response = await dispatch(authActions.refreshSession());
 			if ((response as unknown as IWithError).error) {
 				console.log('Session expired');
 				return;
 			}
-			const profileResponse = await store.dispatch(accountActions.getUserProfile());
+			const profileResponse = await dispatch(accountActions.getUserProfile());
 			if ((profileResponse as unknown as IWithError).error) {
 				console.log('Session expired');
 				return;
@@ -175,39 +179,37 @@ const RootListener = () => {
 	}, []);
 
 	const mainLoader = useCallback(async () => {
-		const store = await getStoreAsync();
 		try {
 			const promises = [];
-			promises.push(store.dispatch(listUsersByUserActions.fetchListUsersByUser({})));
-			promises.push(store.dispatch(friendsActions.fetchListFriends({})));
-			promises.push(store.dispatch(clansActions.joinClan({ clanId: '0' })));
-			promises.push(store.dispatch(directActions.fetchDirectMessage({})));
-			promises.push(store.dispatch(emojiSuggestionActions.fetchEmoji({})));
-			promises.push(store.dispatch(listChannelsByUserActions.fetchListChannelsByUser({})));
-			promises.push(store.dispatch(userStatusActions.getUserStatus()));
+			promises.push(dispatch(listUsersByUserActions.fetchListUsersByUser({})));
+			promises.push(dispatch(friendsActions.fetchListFriends({})));
+			promises.push(dispatch(clansActions.joinClan({ clanId: '0' })));
+			promises.push(dispatch(directActions.fetchDirectMessage({})));
+			promises.push(dispatch(emojiSuggestionActions.fetchEmoji({})));
+			promises.push(dispatch(listChannelsByUserActions.fetchListChannelsByUser({})));
+			promises.push(dispatch(userStatusActions.getUserStatus()));
 			await Promise.all(promises);
 			return null;
 		} catch (error) {
 			console.log('error mainLoader', error);
-			store.dispatch(appActions.setLoadingMainMobile(false));
+			dispatch(appActions.setLoadingMainMobile(false));
 		}
 	}, []);
 
 	const mainLoaderTimeout = useCallback(
 		async ({ isFromFCM = false }) => {
-			const store = await getStoreAsync();
 			try {
-				store.dispatch(appActions.setLoadingMainMobile(false));
+				dispatch(appActions.setLoadingMainMobile(false));
 				const currentClanIdCached = await load(STORAGE_CLAN_ID);
 				const clanId = currentClanId?.toString() !== '0' ? currentClanId : currentClanIdCached;
 				const promises = [];
-				promises.push(store.dispatch(clansActions.fetchClans()));
-				promises.push(store.dispatch(acitvitiesActions.listActivities()));
+				promises.push(dispatch(clansActions.fetchClans()));
+				promises.push(dispatch(acitvitiesActions.listActivities()));
 				if (!isFromFCM) {
 					if (clanId) {
 						save(STORAGE_CLAN_ID, clanId);
-						promises.push(store.dispatch(clansActions.joinClan({ clanId })));
-						promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId })));
+						promises.push(dispatch(clansActions.joinClan({ clanId })));
+						promises.push(dispatch(clansActions.changeCurrentClan({ clanId })));
 					}
 				}
 				const results = await Promise.all(promises);
@@ -217,7 +219,7 @@ const RootListener = () => {
 					} else {
 						const clanResp = results.find((result) => result.type === 'clans/fetchClans/fulfilled');
 						if (clanResp) {
-							await setCurrentClanLoader(clanResp.payload);
+							await setCurrentClanLoader(clanResp.payload, clanId);
 						}
 					}
 				}
@@ -225,7 +227,7 @@ const RootListener = () => {
 				return null;
 			} catch (error) {
 				console.log('error mainLoader', error);
-				store.dispatch(appActions.setLoadingMainMobile(false));
+				dispatch(appActions.setLoadingMainMobile(false));
 			}
 		},
 		[currentChannelId, currentClanId]

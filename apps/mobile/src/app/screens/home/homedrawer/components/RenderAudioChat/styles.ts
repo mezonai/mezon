@@ -1,5 +1,5 @@
 import { Attributes, baseColor, size } from '@mezon/mobile-ui';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		totalTime: {
@@ -11,6 +11,6 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_14,
 			fontWeight: 'bold'
 		},
-		soundLottie: { width: size.s_100, height: size.s_4 },
-		container: { width: '60%', backgroundColor: baseColor.bgDeepLavender, padding: size.s_6, borderRadius: size.s_30, marginVertical: size.s_2 }
+		soundLottie: { width: Platform.OS === 'ios' ? size.s_80 : size.s_100, height: Platform.OS === 'ios' ? size.s_14 : size.s_4 },
+		container: { width: '65%', backgroundColor: baseColor.bgDeepLavender, padding: size.s_6, borderRadius: size.s_30, marginVertical: size.s_2 }
 	});

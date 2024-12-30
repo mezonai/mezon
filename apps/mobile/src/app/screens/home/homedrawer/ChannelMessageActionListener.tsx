@@ -114,7 +114,9 @@ const ChannelMessageActionListener = React.memo(({ mode, isPublic, clanId, chann
 
 	return (
 		<View>
-			{visibleImageModal && <ImageListModal visible={visibleImageModal} onClose={onCloseModalImage} imageSelected={imageSelected} />}
+			{visibleImageModal && (
+				<ImageListModal channelId={channelId} visible={visibleImageModal} onClose={onCloseModalImage} imageSelected={imageSelected} />
+			)}
 			<MessageItemBS
 				mode={mode}
 				message={messageSelected}
