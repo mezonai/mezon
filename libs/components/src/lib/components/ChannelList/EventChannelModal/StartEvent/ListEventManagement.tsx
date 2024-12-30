@@ -12,7 +12,6 @@ type ListEventManagementProps = {
 
 const ListEventManagement = (props: ListEventManagementProps) => {
 	const { allEventManagement, onOpenDetailItem, openModelUpdate, onUpdateEventId } = props;
-	console.log('allEventManagement :', allEventManagement);
 	const allThreadChannelPrivate = useSelector(selectAllTextChannel);
 	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
 

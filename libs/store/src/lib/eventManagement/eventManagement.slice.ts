@@ -191,7 +191,7 @@ export interface EventManagementState extends EntityState<EventManagementEntity,
 	error?: string | null;
 	chooseEvent: EventManagementEntity | null;
 	ongoingEvent: EventManagementOnGogoing | null;
-	triggerSendMess: boolean | null;
+	triggerSendMessState: Record<string, boolean>;
 }
 
 export const initialEventManagementState: EventManagementState = eventManagementAdapter.getInitialState({
@@ -200,7 +200,7 @@ export const initialEventManagementState: EventManagementState = eventManagement
 	chooseEvent: null,
 	ongoingEvent: null,
 	creatingStatus: 'not loaded',
-	triggerSendMess: null
+	triggerSendMessState: {}
 });
 
 export const eventManagementSlice = createSlice({
@@ -237,7 +237,7 @@ export const eventManagementSlice = createSlice({
 					event_status
 				}
 			});
-			state.triggerSendMess = true;
+			state.triggerSendMessState[action.payload.event_id] = true;
 		},
 		addOneEvent: (state, action) => {
 			const { event_id, channel_id, event_status, channel_voice_id, ...restPayload } = action.payload;
@@ -267,8 +267,8 @@ export const eventManagementSlice = createSlice({
 				...restWithoutEventStatus
 			});
 		},
-		resetTriggerSendMessage: (state) => {
-			state.triggerSendMess = null;
+		resetTriggerMessageStatus: (state, action) => {
+			state.triggerSendMessState[action.payload.eventId] = false;
 		},
 		clearOngoingEvent: (state, action) => {
 			state.ongoingEvent = null;
@@ -342,26 +342,25 @@ export const selectNumberEventPrivate = createSelector(
 	selectAllEventManagement,
 	(events) => events.filter((event) => event.channel_id && event.channel_id !== '0' && event.channel_id !== '').length
 );
-export const selectEventByChannelId = createSelector([selectAllEventManagement, (_, channelId: string) => channelId], (events, channelId) =>
-	events
-		.filter((event) => event.channel_id === channelId)
-		.sort((a, b) => {
-			const isEventAActive = a.event_status === EEventStatus.ONGOING;
-			const isEventBActive = b.event_status === EEventStatus.ONGOING;
+export const selectEventsByChannelId = createSelector([selectAllEventManagement, (_, channelId: string) => channelId], (events, channelId) => {
+	const filteredEvents = events.filter((event) => event.channel_id === channelId);
 
-			if (isEventAActive && !isEventBActive) return -1;
-			if (!isEventAActive && isEventBActive) return 1;
+	const ongoingEvents = filteredEvents.filter((event) => event.event_status === EEventStatus.ONGOING);
+	if (ongoingEvents.length > 0) {
+		const oldestOngoingTime = Math.min(...ongoingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
+		return ongoingEvents.filter((event) => new Date(event.start_time as string).getTime() === oldestOngoingTime);
+	}
 
-			if (isEventAActive && isEventBActive) {
-				const startTimeA = a.start_time ? new Date(a.start_time).getTime() : 0;
-				const startTimeB = b.start_time ? new Date(b.start_time).getTime() : 0;
-				return startTimeA - startTimeB;
-			}
+	const upcomingEvents = filteredEvents.filter((event) => event.event_status === EEventStatus.UPCOMING);
+	if (upcomingEvents.length > 0) {
+		const nearestUpcomingTime = Math.min(...upcomingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
+		return upcomingEvents.filter((event) => new Date(event.start_time as string).getTime() === nearestUpcomingTime);
+	}
 
-			const startTimeA = a.start_time ? new Date(a.start_time).getTime() : 0;
-			const startTimeB = b.start_time ? new Date(b.start_time).getTime() : 0;
-			return startTimeA - startTimeB;
-		})
+	return [];
+});
+
+export const selectTriggerSendMessStateByEventId = createSelector(
+	[getEventManagementState, (state, channelId: string) => channelId],
+	(state, channelId) => state.triggerSendMessState?.[channelId]
 );
-
-export const selectTriggerSendMessState = createSelector(getEventManagementState, (state) => state.triggerSendMess);

@@ -1,6 +1,6 @@
 import { messagesActions, selectAllAccount, selectAnonymousMode, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload } from '@mezon/utils';
+import { IMessageSendPayload, TypeMessage } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -8,10 +8,11 @@ import { useSelector } from 'react-redux';
 export type UseChatSendingOptions = {
 	mode: number;
 	channelOrDirect: ApiChannelDescription | undefined;
+	isEventMessage?: boolean;
 };
 
 // TODO: separate this hook into 2 hooks for send and edit message
-export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions) {
+export function useChatSending({ mode, channelOrDirect, isEventMessage = false }: UseChatSendingOptions) {
 	const dispatch = useAppDispatch();
 	const getClanId = channelOrDirect?.clan_id;
 	const isPublic = !channelOrDirect?.channel_private;
@@ -44,11 +45,11 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 					references,
 					anonymous,
 					mentionEveryone,
-					senderId: currentUserId,
-					avatar: userProfile?.user?.avatar_url,
+					senderId: isEventMessage ? '0' : currentUserId,
+					avatar: isEventMessage ? '' : userProfile?.user?.avatar_url,
 					isMobile,
-					username: userProfile?.user?.display_name,
-					code: code
+					username: isEventMessage ? 'Sytem' : userProfile?.user?.display_name,
+					code: isEventMessage ? TypeMessage.Welcome : code
 				})
 			);
 		},

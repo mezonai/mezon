@@ -72,7 +72,6 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	});
 
 	const eventIsUpcomming = event?.event_status === EEventStatus.UPCOMING;
-	console.log('event list:', event);
 	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
 
 	const handleStopPropagation = (e: any) => {

@@ -281,6 +281,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onchannelmessage = useCallback(
 		async (message: ChannelMessage) => {
+			console.log('message: ', message);
 			if (message.code === TypeMessage.MessageBuzz) {
 				handleBuzz(message.channel_id, message.sender_id, true, message.mode);
 			}
