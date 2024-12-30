@@ -4,7 +4,9 @@ import {
 	ChannelsEntity,
 	clansActions,
 	markAsReadProcessing,
+	RootState,
 	selectChannelsByClanId,
+	selectChannelThreads,
 	selectCurrentClanId,
 	useAppDispatch,
 	useAppSelector
@@ -12,15 +14,15 @@ import {
 import { ChannelThreads, ICategoryChannel } from '@mezon/utils';
 import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useStore } from 'react-redux';
 
 export function useMarkAsRead() {
+	const store = useStore();
 	const dispatch = useAppDispatch();
-
 	const [statusMarkAsReadChannel, setStatusMarkAsReadChannel] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const [statusMarkAsReadCategory, setStatusMarkAsReadCategory] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const [statusMarkAsReadClan, setStatusMarkAsReadClan] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
-	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanId = useAppSelector(selectCurrentClanId);
 	const channelsInClan = useAppSelector((state) => selectChannelsByClanId(state, currentClanId ?? ''));
 
 	const actionMarkAsRead = useCallback(
@@ -78,10 +80,14 @@ export function useMarkAsRead() {
 				category_id: category.category_id
 			};
 
+			const channelsInCategory = selectChannelThreads(store.getState() as RootState)?.filter(
+				(channel) => channel.category_id === category.category_id
+			);
+
 			setStatusMarkAsReadCategory('pending');
 			try {
 				await actionMarkAsRead(body);
-				const allChannelsAndThreads = getChannelsWithBadgeCountCategory(category);
+				const allChannelsAndThreads = channelsInCategory.flatMap((channel) => [channel, ...(channel.threads || [])]);
 				setStatusMarkAsReadCategory('success');
 				const channelIds = allChannelsAndThreads.map((item) => item.id);
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
@@ -98,7 +104,6 @@ export function useMarkAsRead() {
 		},
 		[actionMarkAsRead]
 	);
-
 	const handleMarkAsReadClan = useCallback(
 		async (clanId: string) => {
 			const body: ApiMarkAsReadRequest = {

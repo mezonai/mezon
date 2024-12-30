@@ -162,7 +162,7 @@ const handleWindowAction = async (window: BrowserWindow, action: string) => {
 				if (updateCheckResult?.downloadPromise) {
 					await updateCheckResult.downloadPromise;
 					forceQuit.enable();
-					return autoUpdater.quitAndInstall();
+					return autoUpdater.quitAndInstall(false, true);
 				}
 			} catch (error) {
 				console.error('Update check failed:', error);
