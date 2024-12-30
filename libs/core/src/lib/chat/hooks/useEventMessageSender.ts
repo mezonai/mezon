@@ -75,5 +75,5 @@ export const useEventMessageSender = ({ event, channelId }: UseEventMessageSende
 		if (triggerSendMessageState && eventMatchChannel && matchUserId && availableEvent) {
 			sendMessageAsync();
 		}
-	}, [eventIsUpcoming, eventIsOngoing]);
+	}, [triggerSendMessageState]);
 };
