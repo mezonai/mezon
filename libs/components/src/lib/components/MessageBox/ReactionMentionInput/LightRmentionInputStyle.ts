@@ -13,12 +13,12 @@ export default {
 			outline: 'none'
 		},
 		highlighter: {
-			padding: 9,
+			padding: '9px 120px 9px 10px',
 			border: '1px solid transparent',
 			maxHeight: '350px'
 		},
 		input: {
-			padding: '9px 100px 9px 10px',
+			padding: '9px 120px 9px 10px',
 			border: 'none',
 			outline: 'none',
 			whiteSpace: 'pre-wrap',

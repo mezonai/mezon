@@ -753,7 +753,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	);
 
 	return (
-		<div className="relative">
+		<div className="relative border border-red-500 w-full">
 			{props.isThread && !props.isTopic && !threadCurrentChannel && (
 				<div className={`flex flex-col overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}>
 					<div className="flex flex-col justify-end flex-grow">
@@ -829,15 +829,15 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 					'&multiLine': {
 						highlighter: {
-							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 100px 9px 9px',
-							border: 'none',
+							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
+							border: '2px solid #4CAF50', // Màu xanh lá cho highlighter
 							maxHeight: '350px',
 							overflow: 'auto',
 							minWidth: '300px'
 						},
 						input: {
-							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 100px 9px 9px',
-							border: 'none',
+							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
+							border: '2px solid #2196F3', // Màu xanh dương cho input
 							outline: 'none',
 							maxHeight: '350px',
 							overflow: 'auto',
