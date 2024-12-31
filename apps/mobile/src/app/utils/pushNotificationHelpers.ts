@@ -226,7 +226,7 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			if (!isExistChannel) {
 				await setDefaultChannelLoader(respChannel.payload, clanId);
 			}
-			if (topicId) {
+			if (topicId && topicId !== '0') {
 				await handleOpenTopicDiscustion(store, topicId, channelId, navigation);
 			}
 			setTimeout(() => {
