@@ -235,7 +235,7 @@ export function PushToTalkControls() {
 					/>
 				</span>
 			</Tippy>
-
+   
 			<div {...longPressHandlers}>
 				<MicButton isTalking={isTalking} />
 			</div>

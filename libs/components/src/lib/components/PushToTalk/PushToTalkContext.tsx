@@ -12,7 +12,7 @@ interface PushToTalkContextProps {
 const PushToTalkContext = createContext<PushToTalkContextProps | undefined>(undefined);
 
 export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-	const { localStream, remoteStream, startLocalStream, stopSession, toggleMicrophone } = useWebRTC();
+	const { localStream, remoteStream, startLocalStream, stopSession, toggleMicrophone, handleStartSubscriberStream } = useWebRTC();
 	const [isJoined, setIsJoined] = useState(false);
 	const [isTalking, setIsTalking] = useState(false);
 
@@ -45,6 +45,7 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 	const startJoinPTT = async () => {
 		try {
 			setIsJoined(true);
+			// await handleStartSubscriberStream();
 			await startLocalStream();
 		} catch (err) {
 			console.error('Failed to start Push-to-Talk:', err);
