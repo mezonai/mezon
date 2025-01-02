@@ -1,4 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
+import { topicsActions } from '@mezon/store';
 import { IClan, LIMIT_CLAN_ITEM, LoadingStatus, TypeCheck } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiUpdateClanDescRequest, ChannelType } from 'mezon-js';
@@ -77,6 +78,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			thunkAPI.dispatch(defaultNotificationActions.getDefaultNotificationClan({ clanId: clanId }));
 			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
 			thunkAPI.dispatch(channelsActions.setStatusChannelFetch(clanId));
+			thunkAPI.dispatch(topicsActions.fetchTopics({ clanId: clanId as string }));
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
 					clanId: clanId ?? '',

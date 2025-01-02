@@ -59,6 +59,7 @@ function NotificationList({ rootRef }: NotificationProps) {
 	const getNotificationExcludeMentionAndReplyUnread = useSelector(selectAllNotificationExcludeMentionAndReply);
 	const getAllNotificationMentionAndReply = useSelector(selectAllNotificationMentionAndReply);
 	const getAllTopic = useSelector(selectTopicsSort);
+	console.log('getAllTopic :', getAllTopic);
 	const allTopic = useSelector(selectAllTopics);
 
 	const getExcludeMentionAndReply = useMemo(() => {

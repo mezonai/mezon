@@ -288,3 +288,8 @@ export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 		return timestampB - timestampA;
 	});
 });
+
+export const selectIsChannelIdExists = createSelector([selectAllTopics, (_, channelId: string) => channelId], (topics, channelId) => {
+	const exists = topics.some((topic) => topic.id === channelId);
+	return exists;
+});
