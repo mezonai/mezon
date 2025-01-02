@@ -15,9 +15,11 @@ import {
 	selectClanView,
 	selectCurrentChannel,
 	selectCurrentClanId,
+	selectCurrentTopicId,
 	selectDefaultCanvasByChannelId,
 	selectDmGroupCurrent,
 	selectDmGroupCurrentId,
+	selectIsMessageChannelIdMatched,
 	selectIsMessageHasReaction,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
@@ -88,6 +90,7 @@ const useIsOwnerGroupDM = () => {
 };
 
 function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic }: MessageContextMenuProps) {
+	console.log('isTopic: ', isTopic);
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -95,7 +98,16 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 	const listPinMessages = useSelector(selectPinMessageByChannelId(currentChannel?.id));
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const isClanView = useSelector(selectClanView);
-	const message = useAppSelector((state) => selectMessageByMessageId(state, isClanView ? currentChannel?.id : currentDmId, messageId));
+
+	const currentTopicId = useSelector(selectCurrentTopicId);
+
+	// const messageIsOnTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic);
+	const message = useAppSelector((state) =>
+		selectMessageByMessageId(state, isTopic ? currentTopicId : isClanView ? currentChannel?.id : currentDmId, messageId)
+	);
+	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channel_id ?? ''));
+	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topic_id ?? ''));
+
 	const currentDm = useSelector(selectDmGroupCurrent(currentDmId || ''));
 	const modeResponsive = useSelector(selectModeResponsive);
 	const allMessagesEntities = useAppSelector((state) =>
@@ -259,6 +271,7 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 	}, [convertedAllMessagesEntities, message?.isStartedMessageGroup, messagePosition]);
 
 	const handleReplyMessage = useCallback(() => {
+		console.log('message: ', message);
 		if (!message) {
 			return;
 		}

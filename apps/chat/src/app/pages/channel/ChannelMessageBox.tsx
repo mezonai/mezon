@@ -7,10 +7,12 @@ import {
 	selectAnonymousMode,
 	selectCurrentClan,
 	selectDataReferences,
+	selectIsChannelIdExists,
 	selectIsViewingOlderMessagesByChannelId,
 	selectMissionDone,
 	selectOnboardingByClan,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EmojiPlaces, IMessageSendPayload, SubPanelName, ThreadValue, blankReferenceObj } from '@mezon/utils';
@@ -34,7 +36,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const channelId = useMemo(() => {
 		return channel?.channel_id;
 	}, [channel?.channel_id]);
-
+	const checkChannelIdExistOnTopicList = useAppSelector((state) => selectIsChannelIdExists(state, channel.channel_id ?? ''));
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: channel, mode });
@@ -131,7 +133,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 					</div>
 				)}
 			</div>
-			{dataReferences.message_ref_id && (
+			{dataReferences.message_ref_id && !checkChannelIdExistOnTopicList && (
 				<div className="relative z-1 pb-[4px]">
 					<ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} className="pb-[15px]" />
 				</div>
