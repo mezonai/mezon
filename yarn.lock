@@ -12168,10 +12168,10 @@ metro@0.80.12:
     ws "^7.5.10"
     yargs "^17.6.2"
 
-mezon-active-windows@0.1.25:
-  version "0.1.25"
-  resolved "https://registry.yarnpkg.com/mezon-active-windows/-/mezon-active-windows-0.1.25.tgz#6edba86e51c400123f38a22108db2200a88716e3"
-  integrity sha512-vAy0kATA4FY5nnsmoH9o+kLBfNNc/YtFo7zi1nrX/eVEXCFjOtHTcyewf+Nv0atUWCjq4B7R6XnbQSba4lSpbw==
+mezon-active-windows@0.1.28:
+  version "0.1.28"
+  resolved "https://registry.yarnpkg.com/mezon-active-windows/-/mezon-active-windows-0.1.28.tgz#17dc3a07691fb06ae0f8bf47eb6eb4dc17c1b975"
+  integrity sha512-zqy3/EMx2AjHUEpwFe4Xr0G8vngFyHAzq28PHH1c8uV02APuBFvs5u1lkU2J7cwWsBiQAvx/5lOLOtr2CYissg==
   dependencies:
     node-addon-api "^1.7.2"
 
