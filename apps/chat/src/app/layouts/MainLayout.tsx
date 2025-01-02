@@ -7,12 +7,11 @@ import {
 	selectBadgeCountAllClan,
 	useAppDispatch
 } from '@mezon/store';
-import { MessageCrypt } from '@mezon/utils';
 
 import { WebRTCStreamProvider } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store-mobile';
 import { MezonSuspense } from '@mezon/transport';
-import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { MessageCrypt, SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
 import { ApiPubKey } from 'mezon-js/api.gen';

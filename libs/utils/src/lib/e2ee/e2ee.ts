@@ -138,7 +138,7 @@ export class PrivateKeyMaterial {
 	}
 
 	static async create(exportable = true): Promise<PrivateKeyMaterial> {
-		const ecdh_key = subtle.generateKey(
+		const ecdh_v2_key = subtle.generateKey(
 			{
 				name: 'ECDH',
 				namedCurve: CurveName
@@ -146,7 +146,7 @@ export class PrivateKeyMaterial {
 			exportable,
 			['deriveBits']
 		);
-		const ecdsa_key = subtle.generateKey(
+		const ecdsa_v2_key = subtle.generateKey(
 			{
 				name: 'ECDSA',
 				namedCurve: CurveName
@@ -154,7 +154,7 @@ export class PrivateKeyMaterial {
 			exportable,
 			['sign', 'verify']
 		);
-		const keys = await Promise.all([ecdh_key, ecdsa_key]);
+		const keys = await Promise.all([ecdh_v2_key, ecdsa_v2_key]);
 
 		return new PrivateKeyMaterial(keys[0], keys[1]);
 	}
@@ -205,13 +205,13 @@ export class PrivateKeyMaterial {
 	}
 
 	public async save(ks: KeyStore, userID: string, erase = false) {
-		return Promise.all([ks.saveKey('ecdh_' + userID, this.ecdh, erase), ks.saveKey('ecdsa_' + userID, this.ecdsa, erase)]);
+		return Promise.all([ks.saveKey('ecdh_v2_' + userID, this.ecdh, erase), ks.saveKey('ecdsa_v2_' + userID, this.ecdsa, erase)]);
 	}
 
 	static async load(ks: KeyStore, userID: string): Promise<PrivateKeyMaterial> {
-		const ecdh_key = ks.loadKey('ecdh_' + userID);
-		const ecdsa_key = ks.loadKey('ecdsa_' + userID);
-		const values = await Promise.all([ecdh_key, ecdsa_key]);
+		const ecdh_v2_key = ks.loadKey('ecdh_v2_' + userID);
+		const ecdsa_v2_key = ks.loadKey('ecdsa_v2_' + userID);
+		const values = await Promise.all([ecdh_v2_key, ecdsa_v2_key]);
 		return new PrivateKeyMaterial(values[0], values[1]);
 	}
 
@@ -268,8 +268,8 @@ export class PrivateKeyMaterial {
 		const keyStore = await KeyStore.open();
 
 		try {
-			await keyStore.saveKey('ecdh_' + userID, privateKeyMaterial.ecdh, true);
-			await keyStore.saveKey('ecdsa_' + userID, privateKeyMaterial.ecdsa, true);
+			await keyStore.saveKey('ecdh_v2_' + userID, privateKeyMaterial.ecdh, true);
+			await keyStore.saveKey('ecdsa_v2_' + userID, privateKeyMaterial.ecdsa, true);
 		} finally {
 			await keyStore.close();
 		}
@@ -560,8 +560,8 @@ export class MessageCrypt {
 	static async checkExistingKeys(userID: string): Promise<boolean> {
 		const keyStore = await KeyStore.open();
 		try {
-			await keyStore.loadKey('ecdh_' + userID);
-			await keyStore.loadKey('ecdsa_' + userID);
+			await keyStore.loadKey('ecdh_v2_' + userID);
+			await keyStore.loadKey('ecdsa_v2_' + userID);
 			return true;
 		} catch (error) {
 			if (error instanceof KeyStoreError) {
@@ -578,13 +578,13 @@ export class MessageCrypt {
 		let pubKeyMaterial;
 
 		try {
-			await keyStore.loadKey('ecdh_' + userID);
+			await keyStore.loadKey('ecdh_v2_' + userID);
 		} catch (error) {
 			if (error instanceof KeyStoreError) {
 				const privateKeyMaterial = await PrivateKeyMaterial.create(true);
 				// await privateKeyMaterial.exportToFile(`mezon_private_key_${userID}.key`);
-				await keyStore.saveKey('ecdh_' + userID, privateKeyMaterial.ecdh, true);
-				await keyStore.saveKey('ecdsa_' + userID, privateKeyMaterial.ecdsa, true);
+				await keyStore.saveKey('ecdh_v2_' + userID, privateKeyMaterial.ecdh, true);
+				await keyStore.saveKey('ecdsa_v2_' + userID, privateKeyMaterial.ecdsa, true);
 				pubKeyMaterial = privateKeyMaterial.pubKey().jsonable(true);
 			} else {
 				throw error;
@@ -599,8 +599,8 @@ export class MessageCrypt {
 	static async encryptPrivateKeyWithPIN(userID: string, pin: string): Promise<string> {
 		const keyStore = await KeyStore.open();
 		try {
-			const ecdhKey = await keyStore.loadKey('ecdh_' + userID);
-			const ecdsaKey = await keyStore.loadKey('ecdsa_' + userID);
+			const ecdhKey = await keyStore.loadKey('ecdh_v2_' + userID);
+			const ecdsaKey = await keyStore.loadKey('ecdsa_v2_' + userID);
 			const privateKeyMaterial = new PrivateKeyMaterial(ecdhKey, ecdsaKey);
 			return privateKeyMaterial.encryptWithPIN(pin);
 		} finally {
@@ -612,8 +612,8 @@ export class MessageCrypt {
 		const privateKeyMaterial = await PrivateKeyMaterial.decryptWithPIN(encryptedKey, pin);
 		const keyStore = await KeyStore.open();
 		try {
-			await keyStore.saveKey('ecdh_' + userID, privateKeyMaterial.ecdh, true);
-			await keyStore.saveKey('ecdsa_' + userID, privateKeyMaterial.ecdsa, true);
+			await keyStore.saveKey('ecdh_v2_' + userID, privateKeyMaterial.ecdh, true);
+			await keyStore.saveKey('ecdsa_v2_' + userID, privateKeyMaterial.ecdsa, true);
 		} finally {
 			await keyStore.close();
 		}
@@ -623,8 +623,8 @@ export class MessageCrypt {
 		const keyStore = await KeyStore.open();
 
 		try {
-			const ecdhKey = await keyStore.loadKey('ecdh_' + userID);
-			const ecdsaKey = await keyStore.loadKey('ecdsa_' + userID);
+			const ecdhKey = await keyStore.loadKey('ecdh_v2_' + userID);
+			const ecdsaKey = await keyStore.loadKey('ecdsa_v2_' + userID);
 			const privateKeyMaterial = new PrivateKeyMaterial(ecdhKey, ecdsaKey);
 
 			const messageBuffer = new TextEncoder().encode(message);
@@ -640,8 +640,8 @@ export class MessageCrypt {
 	static async decryptMessage(encryptedString: string, userID: string): Promise<string> {
 		const keyStore = await KeyStore.open();
 		try {
-			const ecdhKey = await keyStore.loadKey('ecdh_' + userID);
-			const ecdsaKey = await keyStore.loadKey('ecdsa_' + userID);
+			const ecdhKey = await keyStore.loadKey('ecdh_v2_' + userID);
+			const ecdsaKey = await keyStore.loadKey('ecdsa_v2_' + userID);
 			const privateKeyMaterial = new PrivateKeyMaterial(ecdhKey, ecdsaKey);
 			const publicKeyMaterial = privateKeyMaterial.pubKey();
 			const encryptedJson = JSON.parse(atob(encryptedString));
@@ -654,6 +654,7 @@ export class MessageCrypt {
 	}
 
 	static async mapE2EEcontent(t: string | null, userId: string, lock = false): Promise<string> {
+		// console.log(lock, 'lock');
 		let content = '';
 		if (t) {
 			try {
@@ -668,8 +669,8 @@ export class MessageCrypt {
 	static async decryptMessageWithKeyStore(encryptedString: string, userID: string, keyStore: KeyStore): Promise<string> {
 		let content = '';
 		try {
-			const ecdhKey = await keyStore.loadKey('ecdh_' + userID);
-			const ecdsaKey = await keyStore.loadKey('ecdsa_' + userID);
+			const ecdhKey = await keyStore.loadKey('ecdh_v2_' + userID);
+			const ecdsaKey = await keyStore.loadKey('ecdsa_v2_' + userID);
 			const privateKeyMaterial = new PrivateKeyMaterial(ecdhKey, ecdsaKey);
 			const publicKeyMaterial = privateKeyMaterial.pubKey();
 			const encryptedJson = JSON.parse(atob(encryptedString));

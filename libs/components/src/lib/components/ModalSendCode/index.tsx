@@ -8,6 +8,7 @@ import {
 	selectDirectById,
 	selectDirectMesIdE2ee,
 	selectDmGroupCurrent,
+	selectDmGroupCurrentId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -164,8 +165,9 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 	const dispatch = useAppDispatch();
-	const currentDmId = useSelector(selectDirectMesIdE2ee);
-	const directMessageValue = useAppSelector((state) => selectDirectById(state, currentDmId));
+	const currentDmId = useSelector(selectDmGroupCurrentId);
+	const directMesIdE2ee = useSelector(selectDirectMesIdE2ee);
+	const directMessageValue = useAppSelector((state) => selectDirectById(state, directMesIdE2ee));
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageValue?.id ?? ''));
 
 	useEffect(() => {
@@ -255,10 +257,12 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 				onClose();
 				clearAllMemoizedFunctions();
 				dispatch(e2eeActions.setHasKey(true));
-				if (currentDmId) {
+				if (directMesIdE2ee) {
 					if (!directMessageValue?.e2ee) {
 						handleEnableE2ee(directMessageValue?.id, directMessageValue?.e2ee);
 					}
+				}
+				if (currentDmId) {
 					dispatch(messagesActions.fetchMessages({ clanId: '0', channelId: currentDmId as string, foundE2ee: true }));
 				}
 			} else {
@@ -274,7 +278,10 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 							encrypt_private_key: encryptWithPIN
 						})
 					);
-					handleEnableE2ee(directMessageValue?.id, directMessageValue?.e2ee);
+					if (!directMessageValue?.e2ee) {
+						handleEnableE2ee(directMessageValue?.id, directMessageValue?.e2ee);
+					}
+					dispatch(e2eeActions.setHasKey(true));
 					onClose();
 				} else {
 					setOtp(Array(6).fill(''));
