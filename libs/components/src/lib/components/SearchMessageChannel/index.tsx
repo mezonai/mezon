@@ -243,11 +243,14 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 		};
 	}, [handleOutsideClick]);
 
+	const sanitizedValue = useMemo(() => {
+		return valueInputSearch?.replace(/^from:/, '').trim();
+	}, [valueInputSearch]);
 	const handleSearchUserMention = useCallback(
 		(search: string, callback: any) => {
-			callback(searchMentionsHashtag(search, userListDataSearchByMention));
+			callback(searchMentionsHashtag(sanitizedValue, userListDataSearchByMention));
 		},
-		[userListDataSearchByMention]
+		[userListDataSearchByMention, sanitizedValue]
 	);
 
 	const handleSearchFocus = useCallback(
@@ -331,12 +334,12 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 					/>
 
 					<Mention
-						markup="from:[__display__](__id__)"
+						markup="[__display__](__id__)"
 						appendSpaceOnAdd={true}
 						data={handleSearchUserMention}
 						trigger="from:"
 						displayTransform={(id: string, display: string) => {
-							return `from:${display}`;
+							return `${display}`;
 						}}
 						renderSuggestion={(suggestion, search, highlightedDisplay, index, focused) => {
 							return (
