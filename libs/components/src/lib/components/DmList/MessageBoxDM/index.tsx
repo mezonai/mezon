@@ -5,7 +5,8 @@ import {
 	referencesActions,
 	selectDataReferences,
 	selectIsViewingOlderMessagesByChannelId,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EmojiPlaces, IMessageSendPayload, SubPanelName, blankReferenceObj } from '@mezon/utils';
@@ -29,7 +30,7 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 		return direct?.channel_id ?? '';
 	}, [direct?.channel_id]);
 
-	const isViewingOldMessage = useSelector(selectIsViewingOlderMessagesByChannelId(direct?.channel_id ?? ''));
+	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, direct?.channel_id ?? ''));
 
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: direct, mode: mode });
 	// TODO: move selector to store
@@ -87,6 +88,7 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 
 	const handleJumpToPresent = useCallback(() => {
+		dispatch(messagesActions.setIsJumpingToPresent({ channelId: directParamId, status: true }));
 		dispatch(
 			messagesActions.fetchMessages({
 				clanId: '0',

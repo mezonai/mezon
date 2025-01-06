@@ -141,7 +141,7 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 	}, [message?.content.t]);
 
 	const checkMessageInPinnedList = useMemo(() => {
-		return listPinMessages?.some((pinMessage) => pinMessage?.message_id === messageId);
+		return listPinMessages?.some((pinMessage) => pinMessage?.id === messageId);
 	}, [listPinMessages, messageId]);
 
 	const [canManageThread, canDeleteMessage, canSendMessage] = usePermissionChecker(
@@ -337,7 +337,14 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 	}, [dispatch, dmGroupChatList?.length, message]);
 
 	const handlePinMessage = async () => {
-		dispatch(pinMessageActions.setChannelPinMessage({ clan_id: currentClanId ?? '', channel_id: message?.channel_id, message_id: message?.id }));
+		dispatch(
+			pinMessageActions.setChannelPinMessage({
+				clan_id: currentClanId ?? '',
+				channel_id: message?.channel_id,
+				message_id: message?.id,
+				message: message
+			})
+		);
 		dispatch(
 			pinMessageActions.joinPinMessage({
 				clanId:

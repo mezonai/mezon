@@ -12,8 +12,8 @@ export function ChannelJumpToPresent({ clanId, channelId, className }: ChannelJu
 	const dispatch = useAppDispatch();
 	const handleJumpToPresent = () => {
 		// Jump to present
-		dispatch(messagesActions.fetchMessages({ clanId, channelId, isFetchingLatestMessages: true, noCache: true, isClearMessage: true }));
-		dispatch(messagesActions.setIdMessageToJump(null));
+		dispatch(messagesActions.setIsJumpingToPresent({ channelId: channelId, status: true }));
+		dispatch(messagesActions.fetchMessages({ clanId, channelId, isFetchingLatestMessages: true, noCache: true }));
 	};
 
 	return (

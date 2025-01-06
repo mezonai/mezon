@@ -117,6 +117,7 @@ export interface MessagesState {
 			id: string;
 		}
 	>;
+	channelViewPortMessageIds: Record<string, string[]>;
 	isViewingOlderMessagesByChannelId: Record<string, boolean>;
 	channelIdLastFetch: string;
 	directMessageUnread: Record<string, ChannelMessage[]>;
@@ -125,6 +126,7 @@ export type FetchMessagesMeta = {
 	arg: {
 		channelId: string;
 		direction?: Direction_Mode;
+		messageId?: string;
 	};
 };
 export type DirectTimeStampArg = {
@@ -139,6 +141,7 @@ type FetchMessagesPayloadAction = {
 	isClearMessage?: boolean;
 	viewingOlder?: boolean;
 	foundE2ee?: boolean;
+	fromCache?: boolean;
 };
 
 export interface MessagesRootState {
@@ -213,6 +216,52 @@ type fetchMessageChannelPayload = {
 	foundE2ee?: boolean;
 };
 
+const MESSAGE_LIST_SLICE = 50;
+
+function findClosestIndex(sourceIds: string[], offsetId: string) {
+	if (offsetId < sourceIds[0]) {
+		return 0;
+	}
+
+	if (offsetId > sourceIds[sourceIds.length - 1]) {
+		return sourceIds.length - 1;
+	}
+
+	return sourceIds.findIndex((id, i) => id === offsetId || (id < offsetId && sourceIds[i + 1] > offsetId));
+}
+
+function getViewportSlice(sourceIds: string[], offsetId: string | undefined, direction: Direction_Mode) {
+	const { length } = sourceIds;
+	const index = offsetId ? findClosestIndex(sourceIds, offsetId) : -1;
+	const isBackwards = direction === Direction_Mode.BEFORE_TIMESTAMP;
+	const isAround = direction === Direction_Mode.AROUND_TIMESTAMP;
+	const indexForDirection = isBackwards ? index : index + 1 || length;
+	const sliceSize = isAround ? Math.round(MESSAGE_LIST_SLICE / 2) : MESSAGE_LIST_SLICE;
+	const from = indexForDirection - sliceSize;
+	const to = indexForDirection + sliceSize - 1;
+	const newViewportIds = sourceIds.slice(Math.max(0, from), to + 1);
+
+	let areSomeLocal;
+	let areAllLocal;
+	switch (direction) {
+		case Direction_Mode.BEFORE_TIMESTAMP:
+			areSomeLocal = indexForDirection >= 0;
+			areAllLocal = from >= 0;
+			break;
+		case Direction_Mode.AFTER_TIMESTAMP:
+			areSomeLocal = indexForDirection < length;
+			areAllLocal = to <= length - 1;
+			break;
+		case Direction_Mode.AROUND_TIMESTAMP:
+		default:
+			areSomeLocal = newViewportIds.length > 0;
+			areAllLocal = newViewportIds.length === MESSAGE_LIST_SLICE;
+			break;
+	}
+
+	return { newViewportIds, areSomeLocal, areAllLocal };
+}
+
 export const fetchMessages = createAsyncThunk(
 	'messages/fetchMessages',
 	async (
@@ -251,25 +300,6 @@ export const fetchMessages = createAsyncThunk(
 				return {
 					messages: []
 				};
-			}
-
-			const oldMessages = channelMessagesAdapter
-				.getSelectors()
-				.selectAll(state.messages.channelMessages[channelId] || { ids: [], entities: {} });
-
-			if (!response.messages || Date.now() - response.time > 1000) {
-				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
-				return {
-					messages: []
-				};
-			} else if (!isFetchingLatestMessages && !foundE2ee) {
-				const { entities, ids } = state.messages.channelMessages?.[channelId] || {};
-				if (ids?.length >= response.messages.length && response.messages.every((item) => entities[item.id]?.id === item.id)) {
-					thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
-					return {
-						messages: []
-					};
-				}
 			}
 
 			const firstMessage = response.messages[response.messages.length - 1];
@@ -334,7 +364,6 @@ export const fetchMessages = createAsyncThunk(
 			}
 
 			if (isFetchingLatestMessages) {
-				thunkAPI.dispatch(messagesActions.setIsJumpingToPresent({ channelId: chlId, status: true }));
 				thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 			}
 
@@ -398,7 +427,8 @@ export const loadMoreMessage = createAsyncThunk(
 						clanId: clanId,
 						channelId: channelId,
 						messageId: lastScrollMessageId,
-						direction: direction
+						direction: direction,
+						noCache: true
 					})
 				);
 			} else {
@@ -785,7 +815,8 @@ export const initialMessagesState: MessagesState = {
 	isJumpingToPresent: {},
 	idMessageToJump: null,
 	channelIdLastFetch: '',
-	directMessageUnread: {}
+	directMessageUnread: {},
+	channelViewPortMessageIds: {}
 };
 
 export type SetCursorChannelArgs = {
@@ -1101,16 +1132,16 @@ export const messagesSlice = createSlice({
 			.addCase(
 				fetchMessages.fulfilled,
 				(state: MessagesState, action: PayloadAction<FetchMessagesPayloadAction, string, FetchMessagesMeta>) => {
-					const channelId = action?.payload.messages.at(0)?.channel_id;
+					const channelId = action.meta.arg.channelId;
 					const isFetchingLatestMessages = action.payload.isFetchingLatestMessages || false;
 					const isClearMessage = action.payload.isClearMessage || false;
 					const viewingOlder = action.payload.viewingOlder || false;
 					const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId || ''];
-					const foundE2ee = action.payload.foundE2ee || false;
+					// const foundE2ee = action.payload.foundE2ee || false;
 					state.loadingStatus = 'loaded';
 
-					const isNew = channelId && action.payload.messages.some(({ id }) => !state.channelMessages?.[channelId]?.entities?.[id]);
-					if ((!isNew || !channelId) && !isClearMessage && !foundE2ee) return state;
+					// const isNew = channelId && action.payload.messages.some(({ id }) => !state.channelMessages?.[channelId]?.entities?.[id]);
+					// if ((!isNew || !channelId) && !isClearMessage && !foundE2ee) return state;
 					// const reversedMessages = action.payload.messages.reverse();
 
 					// remove all messages if clear message is true
@@ -1132,8 +1163,13 @@ export const messagesSlice = createSlice({
 						direction,
 						isClearMessage
 					});
-					state.isViewingOlderMessagesByChannelId[channelId || ''] =
-						viewingOlder || state.channelMessages[channelId || '']?.ids.length >= 200;
+
+					const messageIds = state.channelMessages[channelId]?.ids as string[];
+					const offsetId = action.meta.arg.messageId;
+					const { newViewportIds } = getViewportSlice(messageIds, offsetId, direction);
+					state.channelViewPortMessageIds[channelId] = newViewportIds;
+
+					state.isViewingOlderMessagesByChannelId[channelId] = viewingOlder || state.channelViewPortMessageIds[channelId]?.length > 50;
 				}
 			)
 			.addCase(fetchMessages.rejected, (state: MessagesState, action) => {
@@ -1259,14 +1295,21 @@ export const selectParamByChannelId = (channelId: string) =>
 export const selectHasMoreMessageByChannelId = (channelId: string) =>
 	createSelector(getMessagesState, (state) => {
 		const firstMessageId = state.firstMessageId[channelId];
-
 		if (!firstMessageId) return true;
-
 		const isFirstMessageInChannel = state.channelMessages[channelId]?.entities[firstMessageId];
-
-		// if the first message is not in the channel's messages, then there are more messages
 		return !isFirstMessageInChannel;
 	});
+
+export const selectHasMoreMessageByChannelId2 = createSelector([getMessagesState, getChannelIdAsSecondParam], (state, channelId) => {
+	const firstMessageId = state.firstMessageId[channelId];
+
+	if (!firstMessageId) return true;
+
+	const isFirstMessageInChannel = state.channelMessages[channelId]?.entities[firstMessageId];
+
+	// if the first message is not in the channel's messages, then there are more messages
+	return !isFirstMessageInChannel;
+});
 
 // has more bottom when last message is not the channel's messages
 export const selectHasMoreBottomByChannelId = (channelId: string) =>
@@ -1279,6 +1322,16 @@ export const selectHasMoreBottomByChannelId = (channelId: string) =>
 
 		return !isLastMessageInChannel;
 	});
+
+export const selectHasMoreBottomByChannelId2 = createSelector([getMessagesState, getChannelIdAsSecondParam], (state, channelId) => {
+	const lastMessage = state.lastMessageByChannel[channelId];
+
+	if (!lastMessage || !lastMessage.id) return false;
+
+	const isLastMessageInChannel = state.channelViewPortMessageIds[channelId]?.includes(lastMessage?.id);
+
+	return !isLastMessageInChannel;
+});
 
 export const selectLastLoadMessageIDByChannelId = (channelId: string) =>
 	createSelector(selectMessageParams, (param) => {
@@ -1309,7 +1362,7 @@ export const selectFirstLoadedMessageIdByChannelId = (channelId: string) =>
 
 export const selectLastLoadedMessageIdByChannelId = (channelId: string) =>
 	createSelector(getMessagesState, (state) => {
-		return state.channelMessages[channelId]?.ids.at(-1);
+		return state.channelViewPortMessageIds[channelId]?.at(-1);
 	});
 
 export const selectMessageEntitiesByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
@@ -1318,6 +1371,17 @@ export const selectMessageEntitiesByChannelId = createCachedSelector([getMessage
 
 export const selectMessageIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelMessages[channelId]?.ids || emptyArray;
+});
+
+export const selectMessageIdsByChannelId2 = createSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
+	const allIds = messagesState?.channelMessages[channelId]?.ids || emptyArray;
+	const viewportIds = messagesState.channelViewPortMessageIds[channelId];
+
+	if (!viewportIds?.length) {
+		return allIds;
+	}
+
+	return allIds.filter((id) => viewportIds.includes(id));
 });
 
 export const selectMessagesByChannel = createSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
@@ -1374,19 +1438,23 @@ export const selectLastMessageIdByChannelId = createSelector(selectMessageIdsByC
 	return ids.at(-1);
 });
 
-export const selectIsViewingOlderMessagesByChannelId = (channelId: string) =>
-	createSelector(getMessagesState, (state) => {
-		return (state.isViewingOlderMessagesByChannelId[channelId] && state.channelMessages[channelId]?.ids.length) || false;
-	});
-
 export const selectMessageIsLoading = createSelector(getMessagesState, (state) => state.loadingStatus === 'loading');
 
-export const selectIsMessageIdExist = (channelId: string, messageId: string) =>
-	createSelector(getMessagesState, (state) => {
-		return Boolean(state.channelMessages[channelId]?.entities[messageId]);
-	});
+export const selectIsViewingOlderMessagesByChannelId = createSelector([getMessagesState, getChannelIdAsSecondParam], (state, channelId) => {
+	return (state.isViewingOlderMessagesByChannelId[channelId] && state.channelMessages[channelId]?.ids.length) || false;
+});
 
-export const selectIsJumpingToPresent = (channelId: string) => createSelector(getMessagesState, (state) => state.isJumpingToPresent[channelId]);
+export const selectIsMessageIdExist = createSelector(
+	[getMessagesState, getChannelIdAsSecondParam, (_, __, messageId) => messageId],
+	(state, channelId, messageId) => {
+		return Boolean(state.channelMessages[channelId]?.entities[messageId]);
+	}
+);
+
+export const selectIsJumpingToPresent = createSelector(
+	[getMessagesState, getChannelIdAsSecondParam],
+	(state, channelId) => state.isJumpingToPresent[channelId]
+);
 
 export const selectIdMessageToJump = createSelector(getMessagesState, (state: MessagesState) => state.idMessageToJump);
 
@@ -1455,13 +1523,18 @@ const handleRemoveOneMessage = ({ state, channelId, messageId }: { state: Messag
 			}
 		}
 	}
-
+	if (Array.isArray(state.channelViewPortMessageIds[channelId])) {
+		state.channelViewPortMessageIds[channelId] = state.channelViewPortMessageIds[channelId].filter((item) => item !== messageId);
+	}
 	return channelMessagesAdapter.removeOne(channelEntity, messageId);
 };
 
 const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: MessagesState; channelId: string; adapterPayload: MessagesEntity }) => {
 	if (state.channelMessages[channelId]) {
 		state.channelMessages[channelId] = channelMessagesAdapter.addOne(state.channelMessages[channelId], adapterPayload);
+		if (Array.isArray(state.channelViewPortMessageIds[channelId])) {
+			state.channelViewPortMessageIds[channelId] = [...state.channelViewPortMessageIds[channelId], adapterPayload.id];
+		}
 	}
 };
 

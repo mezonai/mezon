@@ -1,4 +1,4 @@
-import { useAppDispatch, userStatusActions } from '@mezon/store';
+import { accountActions, useAppDispatch, userStatusActions } from '@mezon/store';
 import { Dropdown } from 'flowbite-react';
 import { ReactNode } from 'react';
 import ItemStatus from './ItemStatus';
@@ -22,6 +22,7 @@ const ItemStatusUpdate = ({ children, dropdown, startIcon, type, onClick, disabl
 				until_turn_on: untilTurnOn
 			})
 		);
+		dispatch(accountActions.updateUserStatus(status));
 	};
 	return (
 		<Dropdown

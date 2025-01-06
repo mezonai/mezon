@@ -1,9 +1,10 @@
-import { ActionEmitEvent, load, resetCachedMessageActionNeedToResolve, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
+import { ActionEmitEvent, load, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text } from 'react-native';
+import { resetCachedMessageActionNeedToResolve } from '../../../utils/helpers';
 import { ActionMessageSelected } from './components/ChatBox/ActionMessageSelected';
 import { ChatBoxBottomBar } from './components/ChatBox/ChatBoxBottomBar';
 import { RecordAudioMessage } from './components/ChatBox/RecordAudioMessage';
@@ -21,6 +22,7 @@ interface IChatBoxProps {
 	canSendMessage?: boolean;
 	onShowKeyboardBottomSheet?: (isShow: boolean, type?: string) => void;
 }
+
 export const ChatBoxMain = memo((props: IChatBoxProps) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['message']);

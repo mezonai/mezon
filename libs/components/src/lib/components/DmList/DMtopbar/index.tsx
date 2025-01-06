@@ -26,9 +26,9 @@ import { Icons } from '@mezon/ui';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { IMessageSendPayload, IMessageTypeCallLog, isMacDesktop } from '@mezon/utils';
 import Tippy from '@tippy.js/react';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useSelector } from 'react-redux';
 import { HelpButton } from '../../ChannelTopbar';
@@ -74,6 +74,19 @@ export const decompress = async (compressedStr: string, encoding = 'gzip' as Com
 function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps) {
 	const dispatch = useAppDispatch();
 	const currentDmGroup = useSelector(selectDmGroupCurrent(dmGroupId ?? ''));
+
+	const metadata = useMemo(() => {
+		if (typeof currentDmGroup.metadata?.at(0) === 'string') {
+			try {
+				return safeJSONParse(currentDmGroup.metadata?.at(0) || '');
+			} catch (error) {
+				console.error('Error parsing JSON:', currentDmGroup.metadata?.at(0), error);
+			}
+		} else if (typeof currentDmGroup.metadata?.at(0) === 'object') {
+			return currentDmGroup.metadata?.at(0);
+		}
+	}, [currentDmGroup.metadata]);
+
 	const { setStatusMenu } = useMenu();
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
@@ -157,6 +170,7 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 							isHideIconStatus={Boolean(currentDmGroup?.user_id && currentDmGroup.user_id.length >= 2)}
 							key={currentDmGroup?.channel_id}
 							isHiddenAvatarPanel={true}
+							metaDataDM={metadata}
 						/>
 						<LabelDm dmGroupId={dmGroupId || ''} currentDmGroup={currentDmGroup} />
 					</div>

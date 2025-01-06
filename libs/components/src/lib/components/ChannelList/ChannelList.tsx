@@ -150,15 +150,16 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 					channelRefs.current[parentId]?.scrollIntoThread(id);
 				});
 			}
-			dispatch(categoriesActions.setCtrlKFocusChannel(null));
 		} else if (id) {
 			if (channelRefs.current[id]?.channelRef) {
 				requestAnimationFrame(() => {
-					dispatch(categoriesActions.setCtrlKFocusChannel(null));
 					channelRefs.current[id]?.scrollIntoChannel();
 				});
 			}
 		}
+		setTimeout(() => {
+			dispatch(categoriesActions.setCtrlKFocusChannel(null));
+		}, 100);
 	});
 	return (
 		<SimpleBarReact scrollableNodeProps={{ ref: parentRef }} style={{ maxHeight: height }}>

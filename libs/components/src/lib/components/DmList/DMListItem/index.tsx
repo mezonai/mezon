@@ -9,8 +9,8 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelMembersEntity, MemberProfileType } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { memo, useRef } from 'react';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import { memo, useMemo, useRef } from 'react';
 import BuzzBadge from '../../BuzzBadge';
 import { MemberProfile } from '../../MemberProfile';
 export type DirectMessProp = {
@@ -31,6 +31,17 @@ export type directMessageValueProps = {
 function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFriends, isActive }: DirectMessProp) {
 	const dispatch = useAppDispatch();
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
+	const metadata = useMemo(() => {
+		if (typeof directMessage.metadata?.at(0) === 'string') {
+			try {
+				return safeJSONParse(directMessage.metadata?.at(0) || '');
+			} catch (error) {
+				console.error('Error parsing JSON:', directMessage.metadata?.at(0), error);
+			}
+		} else if (typeof directMessage.metadata?.at(0) === 'object') {
+			return directMessage.metadata?.at(0);
+		}
+	}, [directMessage.metadata]);
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
 
@@ -86,6 +97,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 				user={directMessage as ChannelMembersEntity}
 				isMute={directMessage?.is_mute}
 				isDM
+				metaDataDM={metadata}
 			/>
 			{buzzStateDM?.isReset ? (
 				<BuzzBadge

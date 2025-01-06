@@ -1,3 +1,4 @@
+import { load, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
 import { Platform } from 'react-native';
 
 type Size =
@@ -77,3 +78,9 @@ export const clanDirectMessageLinkRegex = /chat\/direct\/message\/(\d+)\/(\d+)$/
 
 export const validTextInputRegex = /^(?![_\-\s])[a-zA-Z0-9\p{L}\p{N}_\-\s]{1,64}$/u;
 export const linkGoogleMeet = 'https://meet.google.com/';
+
+export const resetCachedMessageActionNeedToResolve = (channelId: string) => {
+	const allCachedMessage = load(STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE) || {};
+	if (allCachedMessage?.[channelId]) allCachedMessage[channelId] = null;
+	save(STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE, allCachedMessage);
+};

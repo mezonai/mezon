@@ -62,6 +62,7 @@ export type MemberProfileProps = {
 	hideLongName?: boolean;
 	isDM?: boolean;
 	isMute?: boolean;
+	metaDataDM?: string;
 };
 
 export enum ModalType {
@@ -95,7 +96,8 @@ export function MemberProfile({
 	userNameAva,
 	hideLongName,
 	isDM,
-	isMute
+	isMute,
+	metaDataDM
 }: MemberProfileProps) {
 	const [coords, setCoords] = useState<Coords>({
 		mouseX: 0,
@@ -269,6 +271,7 @@ export function MemberProfile({
 					name={name}
 					isDM={isDM}
 					activityByUserId={activityByUserId}
+					user={user}
 				/>
 			</div>
 		);
@@ -332,10 +335,13 @@ export function MemberProfile({
 			const metadata = safeJSONParse(userProfile?.user?.metadata);
 			return metadata;
 		}
+		if (metaDataDM) {
+			return metaDataDM;
+		}
 		if (user?.user?.metadata) {
 			return user?.user?.metadata;
 		}
-	}, [user?.user?.id, userProfile?.user?.id]);
+	}, [user?.user?.id, userProfile?.user?.id, user?.user?.metadata, userProfile?.user?.metadata]);
 
 	return (
 		<div className="relative group">

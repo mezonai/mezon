@@ -20,6 +20,7 @@ export interface E2eeState extends EntityState<PubKeyEntity, string> {
 	openModalE2ee: boolean;
 	hasKeyE2ee: boolean;
 	directMesIdE2ee: string;
+	pubkey: ApiPubKey;
 }
 
 export interface E2eeRootState {
@@ -67,7 +68,8 @@ export const initialE2eeState: E2eeState = e2eeAdapter.getInitialState({
 	error: null,
 	openModalE2ee: false,
 	hasKeyE2ee: false,
-	directMesIdE2ee: ''
+	directMesIdE2ee: '',
+	pubkey: {}
 });
 
 export const e2eeSlice = createSlice({
@@ -82,6 +84,9 @@ export const e2eeSlice = createSlice({
 		},
 		setDirectMesIdE2ee(state, action) {
 			state.directMesIdE2ee = action.payload;
+		},
+		setPubkey(state, action) {
+			state.pubkey = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -151,3 +156,5 @@ export const selectOpenModalE2ee = createSelector(getE2eeState, (state) => state
 export const selectHasKeyE2ee = createSelector(getE2eeState, (state) => state.hasKeyE2ee);
 
 export const selectDirectMesIdE2ee = createSelector(getE2eeState, (state) => state.directMesIdE2ee);
+
+export const selectPubkey = createSelector(getE2eeState, (state) => state.pubkey);

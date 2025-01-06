@@ -62,9 +62,9 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const isFetching = useSelector(selectMessageIsLoading);
 	const hasMoreTop = useSelector(selectHasMoreMessageByChannelId(channelId));
 	const hasMoreBottom = useSelector(selectHasMoreBottomByChannelId(channelId));
-	const isViewingOldMessage = useSelector(selectIsViewingOlderMessagesByChannelId(channelId ?? ''));
+	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channelId ?? ''));
 	const idMessageToJump = useSelector(selectIdMessageToJump);
-	const isMessageExist = useSelector(selectIsMessageIdExist(channelId, idMessageToJump?.id));
+	const isMessageExist = useAppSelector((state) => selectIsMessageIdExist(state, channelId, idMessageToJump?.id));
 	const flatListRef = useRef(null);
 	const timeOutRef = useRef(null);
 	const timeOutRef2 = useRef(null);

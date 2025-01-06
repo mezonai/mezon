@@ -51,7 +51,6 @@ import {
 	selectCurrentClanId,
 	selectCurrentStreamInfo,
 	selectDmGroupCurrentId,
-	selectHasKeyE2ee,
 	selectModeResponsive,
 	selectPttMembersByChannelId,
 	selectStreamMembersByChannelId,
@@ -121,6 +120,7 @@ import {
 	UserChannelAddedEvent,
 	UserChannelRemovedEvent,
 	UserClanRemovedEvent,
+	UserProfileUpdatedEvent,
 	VoiceEndedEvent,
 	VoiceJoinedEvent,
 	VoiceLeavedEvent,
@@ -166,7 +166,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 	const userCallId = useSelector(selectUserCallId);
 	const isClanView = useSelector(selectClanView);
-	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
 
 	const clanIdActive = useMemo(() => {
 		if (clanId !== undefined || currentClanId) {
@@ -286,7 +285,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			if (message.code === TypeMessage.MessageBuzz) {
 				handleBuzz(message.channel_id, message.sender_id, true, message.mode);
 			}
-			if (message.topic_id) {
+			if (message.topic_id && message.topic_id !== '0') {
 				const lastMsg: ApiChannelMessageHeader = {
 					content: message.content,
 					sender_id: message.sender_id,
@@ -863,7 +862,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onchanneldeleted = useCallback(
 		(channelDeleted: ChannelDeletedEvent) => {
-			if (channelDeleted?.deletor === userId) return;
+			if (channelDeleted?.deletor === userId) {
+				dispatch(listChannelsByUserActions.remove(channelDeleted.channel_id));
+				return;
+			}
 			if (channelDeleted) {
 				if (channelDeleted.channel_id === currentChannelId) {
 					navigate(`/chat/clans/${clanId}`);
@@ -873,6 +875,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			}
 		},
 		[dispatch, currentChannelId, clanId, userId]
+	);
+
+	const onuserprofileupdate = useCallback(
+		(userUpdated: UserProfileUpdatedEvent) => {
+			if (userUpdated.user_id === userId) {
+				dispatch(accountActions.setUpdateAccount({ encrypt_private_key: userUpdated?.encrypt_private_key }));
+			}
+		},
+		[dispatch, userId]
 	);
 
 	const onchannelupdated = useCallback(
@@ -1294,6 +1305,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			socket.onchannelupdated = onchannelupdated;
 
+			socket.onuserprofileupdate = onuserprofileupdate;
+
 			socket.onpermissionset = onpermissionset;
 
 			socket.onpermissionchanged = onpermissionchanged;
@@ -1325,6 +1338,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			onchannelmessage,
 			onchannelpresence,
 			onchannelupdated,
+			onuserprofileupdate,
 			onpermissionset,
 			onpermissionchanged,
 			onunmuteevent,
@@ -1484,6 +1498,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		onchannelcreated,
 		onchanneldeleted,
 		onchannelupdated,
+		onuserprofileupdate,
 		onpermissionset,
 		onpermissionchanged,
 		onunmuteevent,

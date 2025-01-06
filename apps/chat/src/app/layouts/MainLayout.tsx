@@ -15,7 +15,6 @@ import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
-import { ApiPubKey } from 'mezon-js/api.gen';
 import { memo, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -88,18 +87,22 @@ const GlobalEventListener = () => {
 				.catch((error) => {
 					console.error(error);
 				});
-		} else {
-			if (!user?.user?.id) return;
-			MessageCrypt.initializeKeys(user?.user?.id as string)
-				.then((pubkey) => {
-					if (!pubkey) return;
-					dispatch(e2eeActions.pushPubKey(pubkey as ApiPubKey));
+		}
+	}, [dispatch, user?.encrypt_private_key, user?.user?.id]);
+
+	useEffect(() => {
+		if (!user?.encrypt_private_key) {
+			MessageCrypt.checkExistingKeys(user?.user?.id as string)
+				.then((found) => {
+					if (found) {
+						MessageCrypt.clearKeys(user?.user?.id as string);
+					}
 				})
 				.catch((error) => {
 					console.error(error);
 				});
 		}
-	}, [dispatch, user?.encrypt_private_key, user?.user?.id]);
+	}, []);
 
 	return null;
 };

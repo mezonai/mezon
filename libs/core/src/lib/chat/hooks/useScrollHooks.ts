@@ -36,8 +36,8 @@ export function useScrollHooks(
 		() =>
 			type === 'thread'
 				? [
-						debounce(() => loadViewportMessages({ direction: LoadMoreDirection.Backwards }), 1000),
-						debounce(() => loadViewportMessages({ direction: LoadMoreDirection.Forwards }), 1000)
+						debounce(() => loadViewportMessages({ direction: LoadMoreDirection.Backwards }), 300),
+						debounce(() => loadViewportMessages({ direction: LoadMoreDirection.Forwards }), 300)
 					]
 				: [],
 		[loadViewportMessages, messageIds]

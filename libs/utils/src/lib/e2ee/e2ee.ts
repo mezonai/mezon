@@ -715,4 +715,14 @@ export class MessageCrypt {
 			await keyStore.close();
 		}
 	}
+
+	static async clearKeys(userID: string): Promise<void> {
+		const keyStore = await KeyStore.open();
+		try {
+			await keyStore.deleteKey('ecdh_v2_' + userID);
+			await keyStore.deleteKey('ecdsa_v2_' + userID);
+		} finally {
+			await keyStore.close();
+		}
+	}
 }

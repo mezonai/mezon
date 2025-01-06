@@ -1,6 +1,6 @@
 import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ActivitiesName, ChannelMembersEntity, IUserAccount, MemberProfileType, createImgproxyUrl } from '@mezon/utils';
+import { ActivitiesName, ChannelMembersEntity, EUserStatus, IUserAccount, MemberProfileType, createImgproxyUrl } from '@mezon/utils';
 import { ApiUserActivity } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ type AvatarProfileProps = {
 	isFooterProfile?: boolean;
 	activityByUserId?: ApiUserActivity;
 	userStatus?: { status?: boolean; isMobile?: boolean };
+	statusOnline?: EUserStatus;
 };
 
 const AvatarProfile = ({
@@ -31,7 +32,8 @@ const AvatarProfile = ({
 	positionType,
 	isFooterProfile,
 	activityByUserId,
-	userStatus
+	userStatus,
+	statusOnline
 }: AvatarProfileProps) => {
 	const isMemberDMGroup = useMemo(() => positionType === MemberProfileType.DM_MEMBER_GROUP, [positionType]);
 
@@ -79,6 +81,7 @@ const AvatarProfile = ({
 						userId={userID}
 						isTyping={false}
 						sizeStatusIcon={'w-4 h-4'}
+						customStatus={statusOnline}
 					/>
 				</div>
 			</div>

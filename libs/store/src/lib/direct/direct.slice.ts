@@ -194,7 +194,13 @@ export const joinDirectMessage = createAsyncThunk<void, JoinDirectMessagePayload
 				thunkAPI.dispatch(directActions.setDmGroupCurrentId(directMessageId));
 				thunkAPI.dispatch(directActions.setDmGroupCurrentType(type ?? ChannelType.CHANNEL_TYPE_DM));
 				thunkAPI.dispatch(
-					messagesActions.fetchMessages({ clanId: '0', channelId: directMessageId, noCache, isFetchingLatestMessages, isClearMessage })
+					messagesActions.fetchMessages({
+						clanId: '0',
+						channelId: directMessageId,
+						noCache: true,
+						isFetchingLatestMessages,
+						isClearMessage
+					})
 				);
 				const fetchChannelMembersResult = await thunkAPI.dispatch(
 					channelMembersActions.fetchChannelMembers({

@@ -132,4 +132,15 @@ export class KeyStore {
 			fulfill(null);
 		});
 	}
+
+	async deleteKey(name: string): Promise<void> {
+		return new Promise((fulfill, reject) => {
+			const transaction = this.db.transaction([this.objectStoreName], 'readwrite');
+			const objectStore = transaction.objectStore(this.objectStoreName);
+			const request = objectStore.delete(name);
+
+			request.onsuccess = () => fulfill();
+			request.onerror = () => reject(request.error);
+		});
+	}
 }

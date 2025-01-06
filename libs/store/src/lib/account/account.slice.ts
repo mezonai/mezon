@@ -88,6 +88,27 @@ export const accountSlice = createSlice({
 					console.error('Error updating wallet by action:', error);
 				}
 			}
+		},
+		updateUserStatus(state: AccountState, action: PayloadAction<string>) {
+			if (state.userProfile?.user?.metadata) {
+				try {
+					const metadataObj = JSON.parse(state.userProfile.user.metadata);
+					if (metadataObj && typeof metadataObj === 'object') {
+						metadataObj.user_status = action.payload;
+						state.userProfile.user.metadata = JSON.stringify(metadataObj);
+					}
+				} catch (error) {
+					console.error('Error updating user status in metadata:', error);
+				}
+			}
+		},
+		setUpdateAccount(state, action: PayloadAction<IUserAccount>) {
+			state.userProfile = {
+				...state.userProfile,
+				user: { ...state.userProfile?.user, ...action.payload.user },
+				encrypt_private_key: action.payload.encrypt_private_key
+			};
+			state.logo = action.payload.logo;
 		}
 	},
 	extraReducers: (builder) => {

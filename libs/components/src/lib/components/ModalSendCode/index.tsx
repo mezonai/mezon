@@ -8,18 +8,20 @@ import {
 	selectDirectById,
 	selectDirectMesIdE2ee,
 	selectDmGroupCurrent,
+	selectHasKeyE2ee,
+	selectPubkey,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
-import { ApiAccount } from 'mezon-js/api.gen';
+import { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 interface ModalProps {
-	onClose: () => void;
+	onClose: (check?: boolean) => void;
 	onNext?: () => void;
 	onBack?: () => void;
 }
@@ -32,7 +34,7 @@ const ModalIntro = ({ onNext, onClose }: ModalProps) => {
 		>
 			<div className="flex flex-col items-center max-w-sm mx-auto bg-white shadow-md rounded-md relative">
 				<div className="w-full dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black flex justify-end items-center p-4 rounded-t">
-					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={() => onClose()}>
 						<Icons.CloseButton className="w-4" />
 					</button>
 				</div>
@@ -129,7 +131,7 @@ const ModalCreatePin = ({ onNext, onBack, onClose, setPin }: ModalProps & { setP
 					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={onBack}>
 						<Icons.LeftArrowIcon className="w-full" />
 					</button>
-					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={() => onClose()}>
 						<Icons.CloseButton className="w-4" />
 					</button>
 				</div>
@@ -167,6 +169,7 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 	const currentDmId = useSelector(selectDirectMesIdE2ee);
 	const directMessageValue = useAppSelector((state) => selectDirectById(state, currentDmId));
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageValue?.id ?? ''));
+	const pubkey = useSelector(selectPubkey);
 
 	useEffect(() => {
 		if (inputsRef.current[activeIndex]) {
@@ -252,7 +255,7 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 		try {
 			if (userProfile?.encrypt_private_key) {
 				await MessageCrypt.decryptPrivateKeyWithPIN(userProfile?.encrypt_private_key, otpCode, userProfile?.user?.id as string);
-				onClose();
+				onClose(true);
 				clearAllMemoizedFunctions();
 				dispatch(e2eeActions.setHasKey(true));
 				if (currentDmId) {
@@ -274,8 +277,15 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 							encrypt_private_key: encryptWithPIN
 						})
 					);
-					handleEnableE2ee(directMessageValue?.id, directMessageValue?.e2ee);
-					onClose();
+					if (!directMessageValue?.e2ee) {
+						handleEnableE2ee(directMessageValue?.id, directMessageValue?.e2ee);
+					}
+					if (currentDmId) {
+						dispatch(messagesActions.fetchMessages({ clanId: '0', channelId: currentDmId as string, foundE2ee: true }));
+					}
+					dispatch(e2eeActions.pushPubKey(pubkey as ApiPubKey));
+					dispatch(e2eeActions.setHasKey(true));
+					onClose(true);
 				} else {
 					setOtp(Array(6).fill(''));
 					setActiveIndex(0);
@@ -306,7 +316,7 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 							<Icons.LeftArrowIcon className="w-full" />
 						</button>
 					)}
-					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={() => onClose()}>
 						<Icons.CloseButton className="w-4" />
 					</button>
 				</div>
@@ -349,16 +359,42 @@ const MultiStepModalE2ee = ({ onClose }: ModalSendCodeProps) => {
 	const [step, setStep] = useState(1);
 	const [pin, setPin] = useState<string[]>(Array(6).fill(''));
 	const { userProfile } = useAuth();
+	const dispatch = useAppDispatch();
+	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
 
 	const handleNext = () => setStep((prev) => prev + 1);
 	const handleBack = () => setStep((prev) => prev - 1);
-	const handleClose = () => onClose();
+	const handleClose = (check?: boolean) => {
+		if (!check) {
+			MessageCrypt.checkExistingKeys(userProfile?.user?.id as string)
+				.then((found) => {
+					if (found) {
+						MessageCrypt.clearKeys(userProfile?.user?.id as string);
+					}
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+		}
+		onClose();
+	};
 
 	useEffect(() => {
 		if (userProfile?.encrypt_private_key) {
 			setStep(3);
+		} else {
+			if (!hasKeyE2ee) {
+				MessageCrypt.initializeKeys(userProfile?.user?.id as string)
+					.then((pubkey) => {
+						if (!pubkey) return;
+						dispatch(e2eeActions.setPubkey(pubkey));
+					})
+					.catch((error) => {
+						console.error(error);
+					});
+			}
 		}
-	}, [userProfile]);
+	}, [dispatch, hasKeyE2ee, userProfile]);
 
 	return (
 		<>

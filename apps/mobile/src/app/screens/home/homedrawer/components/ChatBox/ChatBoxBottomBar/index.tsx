@@ -7,7 +7,6 @@ import {
 	getChannelHashtag,
 	load,
 	mentionRegexSplit,
-	resetCachedMessageActionNeedToResolve,
 	save
 } from '@mezon/mobile-components';
 import { Block, Colors, size } from '@mezon/mobile-ui';
@@ -34,6 +33,7 @@ import RNFS from 'react-native-fs';
 import { useSelector } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
+import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';

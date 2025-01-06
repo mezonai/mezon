@@ -3,6 +3,7 @@ import { LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import { EntityState, PayloadAction, Update, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ClanUserListClanUser } from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx } from '../helpers';
+import { RootState } from '../store';
 import { clanMembersMetaActions, extracMeta, selectClanMembersMetaEntities } from './clan.members.meta';
 export const USERS_CLANS_FEATURE_KEY = 'usersClan';
 
@@ -31,7 +32,8 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 		const response = await mezon.client.listClanUsers(mezon.session, clanId);
 		const users = response?.clan_users?.map(mapUsersClanToEntity) || [];
 		thunkAPI.dispatch(usersClanActions.setAll(users));
-		thunkAPI.dispatch(clanMembersMetaActions.updateBulkMetadata(users.map((item) => extracMeta(item))));
+		const state = thunkAPI.getState() as RootState;
+		thunkAPI.dispatch(clanMembersMetaActions.updateBulkMetadata(users.map((item) => extracMeta(item, state))));
 	} catch (error) {
 		captureSentryError(error, 'UsersClan/fetchUsersClan');
 		return thunkAPI.rejectWithValue(error);

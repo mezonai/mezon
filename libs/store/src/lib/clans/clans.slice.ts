@@ -270,7 +270,23 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
+				// thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
+				thunkAPI.dispatch(
+					accountActions.setUpdateAccount({
+						logo,
+						encrypt_private_key,
+						user: {
+							avatar_url: avatar_url || '',
+							display_name: display_name || '',
+							lang_tag: 'en',
+							location: '',
+							timezone: '',
+							username: user_name,
+							about_me: about_me,
+							dob: dob
+						}
+					})
+				);
 			}
 			return response as true;
 		} catch (error) {

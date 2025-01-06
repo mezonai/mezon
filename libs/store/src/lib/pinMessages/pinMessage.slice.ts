@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { IPinMessage, LoadingStatus, TypeMessage } from '@mezon/utils';
+import { IMessageWithUser, IPinMessage, LoadingStatus, TypeMessage } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelMessage, safeJSONParse } from 'mezon-js';
 import { ApiMessageMention, ApiPinMessageRequest } from 'mezon-js/api.gen';
@@ -76,6 +76,7 @@ type SetChannelPinMessagesPayload = {
 	clan_id?: string;
 	channel_id: string;
 	message_id: string;
+	message?: IMessageWithUser;
 };
 
 export const clearPinMessagesCacheThunk = createAsyncThunk('pinmessage/clearCache', async (channelId: string, thunkAPI) => {
@@ -90,7 +91,7 @@ export const clearPinMessagesCacheThunk = createAsyncThunk('pinmessage/clearCach
 
 export const setChannelPinMessage = createAsyncThunk(
 	'pinmessage/setChannelPinMessage',
-	async ({ clan_id, channel_id, message_id }: SetChannelPinMessagesPayload, thunkAPI) => {
+	async ({ clan_id, channel_id, message_id, message }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
@@ -128,7 +129,7 @@ export const setChannelPinMessage = createAsyncThunk(
 			mess.isMe = true;
 			mess.hide_editted = true;
 			thunkAPI.dispatch(messagesActions.addNewMessage(mess));
-			thunkAPI.dispatch(pinMessageActions.add(mess));
+			thunkAPI.dispatch(pinMessageActions.add(message as IMessageWithUser));
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'pinmessage/setChannelPinMessage');

@@ -86,6 +86,20 @@ const ModalUserProfile = ({
 	const userCustomStatus = useMemberCustomStatus(userID || '', isDM);
 	const userById = useUserById(userID);
 	const userStatus = useMemberStatus(userID || '');
+	const statusOnline = useMemo(() => {
+		const metadataArray = userById?.user?.metadata;
+		if (Array.isArray(metadataArray) && metadataArray[0]) {
+			try {
+				const metadataObject = JSON.parse(metadataArray[0]);
+				return metadataObject;
+			} catch (error) {
+				console.error('Invalid JSON in metadata:', metadataArray[0], error);
+			}
+		}
+		if (userById?.user?.metadata) {
+			return userById?.user?.metadata as any;
+		}
+	}, [userById?.user?.id]);
 
 	const date = new Date(userById?.user?.create_time as string | Date);
 	const { timeFormatted } = useFormatDate({ date });
@@ -219,6 +233,7 @@ const ModalUserProfile = ({
 				isFooterProfile={isFooterProfile}
 				activityByUserId={activityByUserId}
 				userStatus={userStatus}
+				statusOnline={statusOnline?.user_status}
 			/>
 			<div className="px-[16px]">
 				<div className="dark:bg-bgPrimary bg-white w-full p-2 my-[16px] dark:text-white text-black rounded-[10px] flex flex-col text-justify">

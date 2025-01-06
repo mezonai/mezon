@@ -1,5 +1,13 @@
 import { useAuth, useMemberCustomStatus } from '@mezon/core';
-import { ChannelMembersEntity, giveCoffeeActions, selectUserStatus, useAppDispatch, userClanProfileActions, userStatusActions } from '@mezon/store';
+import {
+	ChannelMembersEntity,
+	accountActions,
+	giveCoffeeActions,
+	selectUserStatus,
+	useAppDispatch,
+	userClanProfileActions,
+	userStatusActions
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EUserStatus, formatNumber } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
@@ -71,6 +79,7 @@ const StatusProfile = ({ userById, isDM }: StatusProfileProps) => {
 				until_turn_on: untilTurnOn
 			})
 		);
+		dispatch(accountActions.updateUserStatus(status));
 	};
 	return (
 		<>

@@ -10,7 +10,8 @@ import {
 	selectIsViewingOlderMessagesByChannelId,
 	selectMissionDone,
 	selectOnboardingByClan,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EmojiPlaces, IMessageSendPayload, SubPanelName, ThreadValue, blankReferenceObj } from '@mezon/utils';
@@ -29,7 +30,7 @@ export type ChannelMessageBoxProps = {
 };
 
 export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMessageBoxProps>) {
-	const isViewingOldMessage = useSelector(selectIsViewingOlderMessagesByChannelId(channel?.channel_id ?? ''));
+	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channel?.channel_id ?? ''));
 	const currentMission = useSelector(selectMissionDone);
 	const channelId = useMemo(() => {
 		return channel?.channel_id;
