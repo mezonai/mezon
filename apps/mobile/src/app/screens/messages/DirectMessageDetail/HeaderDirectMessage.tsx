@@ -1,4 +1,4 @@
-import { useSeenMessagePool } from '@mezon/core';
+import { useMemberActiveStatus, useSeenMessagePool } from '@mezon/core';
 import { IUserStatus, Icons } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import {
@@ -8,6 +8,7 @@ import {
 	directMetaActions,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
+	selectMemberClanByUserId2,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
@@ -88,6 +89,8 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({
 	useChannelSeen(directMessageId || '');
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
+	const user = useSelector((state) => selectMemberClanByUserId2(state, firstUserId));
+	const status = useMemberActiveStatus(user);
 
 	const goToCall = () => {
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -130,7 +133,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({
 								<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>
 							</View>
 						)}
-						<UserStatus status={userStatus} />
+						<UserStatus status={userStatus} customStatus={status} />
 					</View>
 				)}
 				<Text style={styles.titleText} numberOfLines={1}>

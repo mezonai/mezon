@@ -1,4 +1,4 @@
-import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
+import { useMemberActiveStatus, useMemberStatus, useSeenMessagePool } from '@mezon/core';
 import { ActionEmitEvent, Icons, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
@@ -12,6 +12,7 @@ import {
 	selectCurrentChannel,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
+	selectMemberClanByUserId2,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
@@ -103,6 +104,9 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	}, [currentDmGroup?.user_id?.[0]]);
 
 	const userStatus = useMemberStatus(isModeDM ? firstUserId : '');
+
+	const user = useSelector((state) => selectMemberClanByUserId2(state, firstUserId));
+	const status = useMemberActiveStatus(user);
 
 	const navigateToThreadDetail = () => {
 		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.BOTTOM_SHEET, params: { directMessage: currentDmGroup } });
@@ -216,7 +220,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 									<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>
 								</View>
 							)}
-							<UserStatus status={userStatus} />
+							<UserStatus status={userStatus} customStatus={status} />
 						</View>
 					)}
 					<Text style={styles.titleText} numberOfLines={1}>

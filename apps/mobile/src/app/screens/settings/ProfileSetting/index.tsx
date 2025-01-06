@@ -122,6 +122,10 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		return isEqual(originUserProfileValue, currentUserProfileValue);
 	}, [originUserProfileValue, currentUserProfileValue]);
 
+	const isUserProfileEmptyName = useMemo(() => {
+		return !!originUserProfileValue.displayName;
+	}, [originUserProfileValue.displayName]);
+
 	const isClanProfileNotChanged = useMemo(() => {
 		return isEqual(originClanProfileValue, currentClanProfileValue);
 	}, [originClanProfileValue, currentClanProfileValue]);
@@ -167,7 +171,12 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	navigation.setOptions({
 		headerRight: () => (
 			<Pressable onPress={() => saveCurrentTab()}>
-				<Text style={[styles.saveChangeButton, !isUserProfileNotChanged || !isClanProfileNotChanged ? styles.changed : styles.notChange]}>
+				<Text
+					style={[
+						styles.saveChangeButton,
+						(!isUserProfileNotChanged || !isClanProfileNotChanged) && !isClanProfileNotChanged ? styles.changed : styles.notChange
+					]}
+				>
 					{t('header.save')}
 				</Text>
 			</Pressable>
@@ -207,7 +216,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	};
 
 	const saveCurrentTab = () => {
-		if (isUserProfileNotChanged && isClanProfileNotChanged) {
+		if ((isUserProfileNotChanged && isClanProfileNotChanged) || isUserProfileEmptyName) {
 			return;
 		}
 

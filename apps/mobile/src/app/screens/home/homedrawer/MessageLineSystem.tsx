@@ -4,6 +4,7 @@ import { MessagesEntity, messagesActions, selectAllChannelMemberIds, useAppDispa
 import { ETokenMessage, TypeMessage, convertTimeString } from '@mezon/utils';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter } from 'react-native';
+import { MezonAvatar } from '../../../componentUI';
 import { style } from './styles';
 
 export const MessageLineSystem = memo(({ message }: { message: MessagesEntity }) => {
@@ -155,6 +156,9 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 				{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon />}
 				{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
 				{message?.code === TypeMessage.CreatePin && <Icons.PinIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
+				{message?.code === TypeMessage.AuditLog && (
+					<MezonAvatar width={size.s_20} height={size.s_20} avatarUrl={'https://cdn.mezon.vn/images/system_icon.png'} username="" />
+				)}
 			</Block>
 			<Block style={styles.messageSystemBox}>
 				<Text style={styles.messageText}>

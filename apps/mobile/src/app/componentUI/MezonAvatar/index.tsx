@@ -12,6 +12,7 @@ interface IMezonAvatarProps {
 	width?: number;
 	height?: number;
 	userStatus?: IUserStatus;
+	customStatus?: string;
 	isBorderBoxImage?: boolean;
 	stacks?: {
 		avatarUrl: string;
@@ -28,6 +29,7 @@ const MezonAvatar = React.memo((props: IMezonAvatarProps) => {
 		width = size.s_40,
 		height = size.s_40,
 		userStatus,
+		customStatus,
 		isBorderBoxImage,
 		stacks,
 		isShow = true,
@@ -57,7 +59,7 @@ const MezonAvatar = React.memo((props: IMezonAvatarProps) => {
 				<MezonClanAvatar alt={username} image={avatarUrl} lightMode />
 			</View>
 
-			{!!userStatus && <UserStatus status={userStatus} customStyles={statusUserStyles} />}
+			{!!userStatus && <UserStatus status={userStatus} customStyles={statusUserStyles} customStatus={customStatus} />}
 		</View>
 	);
 });

@@ -1,5 +1,5 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
+import { useAuth, useDirect, useFriends, useMemberActiveStatus, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -68,6 +68,8 @@ const UserProfile = React.memo(
 		const isDMGroup = useMemo(() => [ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type), [currentChannel?.type]);
 		const { dismiss } = useBottomSheetModal();
 		const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
+
+		const status = useMemberActiveStatus(userById);
 
 		const isKicked = useMemo(() => {
 			return !userById;
@@ -224,6 +226,7 @@ const UserProfile = React.memo(
 							avatarUrl={messageAvatar || userById?.clan_avatar || userById?.user?.avatar_url || user?.avatar_url}
 							username={userById?.clan_nick || user?.display_name || userById?.user?.username}
 							userStatus={userStatus}
+							customStatus={status}
 							isBorderBoxImage={true}
 							statusUserStyles={styles.statusUser}
 						/>
