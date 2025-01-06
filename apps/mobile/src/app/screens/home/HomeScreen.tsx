@@ -13,7 +13,7 @@ import { styles } from './styles';
 
 const Drawer = createDrawerNavigator();
 
-const HomeScreen = React.memo((props: any) => {
+const HomeScreen = React.memo(() => {
 	const dispatch = useDispatch();
 	const isTabletLandscape = useTabletLandscape();
 	const navigation = useNavigation();

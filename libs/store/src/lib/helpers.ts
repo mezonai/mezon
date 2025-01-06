@@ -18,7 +18,7 @@ export type MezonValueContext = MezonContextValue & {
 export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
 	return new Promise((resolve, reject) => {
 		const interval = setInterval(() => {
-			if (mezon.clientRef.current && mezon.sessionRef.current) {
+			if (mezon?.clientRef?.current && mezon?.sessionRef?.current) {
 				clearInterval(interval);
 				resolve(ensureClient(mezon));
 			}
@@ -41,7 +41,7 @@ export async function ensureSocket(mezon: MezonContextValue): Promise<MezonValue
 export async function ensureClientAsync(mezon: MezonContextValue): Promise<MezonValueContext> {
 	return new Promise((resolve, reject) => {
 		const interval = setInterval(() => {
-			if (mezon.clientRef.current) {
+			if (mezon?.clientRef?.current) {
 				clearInterval(interval);
 				resolve(ensureClient(mezon));
 			}
@@ -56,7 +56,7 @@ export function ensureClient(mezon: MezonContextValue): MezonValueContext {
 
 	return {
 		...mezon,
-		client: mezon.clientRef.current,
+		client: mezon?.clientRef?.current,
 		session: mezon.sessionRef.current
 	} as MezonValueContext;
 }

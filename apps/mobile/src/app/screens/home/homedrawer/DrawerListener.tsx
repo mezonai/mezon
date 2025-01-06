@@ -1,7 +1,9 @@
 import { useSeenMessagePool } from '@mezon/core';
 import {
+	channelMembersActions,
 	channelMetaActions,
 	channelsActions,
+	ChannelsEntity,
 	clansActions,
 	listChannelsByUserActions,
 	selectAnyUnreadChannels,
@@ -12,12 +14,12 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { TIME_OFFSET } from '@mezon/utils';
+import { useFocusEffect } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useEffect } from 'react';
-import { NativeModules, View } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-const { SharedPreferences } = NativeModules;
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
@@ -52,8 +54,32 @@ function useChannelSeen(channelId: string) {
 	}, [currentChannel?.id, statusFetchChannel, channelId, currentChannel, dispatch, resetBadgeCount]);
 }
 
-function DrawerListener({ channelId }: { channelId: string }) {
-	useChannelSeen(channelId || '');
+function DrawerListener({ currentChannel }: { currentChannel: ChannelsEntity }) {
+	const prevChannelIdRef = useRef<string>();
+	const dispatch = useAppDispatch();
+	useChannelSeen(currentChannel?.channel_id || '');
+
+	const fetchMemberChannel = useCallback(async () => {
+		if (!currentChannel) {
+			return;
+		}
+		await dispatch(
+			channelMembersActions.fetchChannelMembers({
+				clanId: currentChannel?.clan_id || '',
+				channelId: currentChannel?.channel_id || '',
+				channelType: currentChannel?.type
+			})
+		);
+	}, [currentChannel, dispatch]);
+
+	useFocusEffect(
+		useCallback(() => {
+			if (prevChannelIdRef.current !== currentChannel?.channel_id) {
+				fetchMemberChannel();
+			}
+			prevChannelIdRef.current = currentChannel?.channel_id;
+		}, [currentChannel?.channel_id])
+	);
 
 	return <View />;
 }

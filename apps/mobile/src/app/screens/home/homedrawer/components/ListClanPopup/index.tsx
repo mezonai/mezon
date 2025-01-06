@@ -26,7 +26,6 @@ import { style } from './styles';
 export const ListClanPopup = React.memo(() => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const clans = useSelector(selectAllClans);
 	const [isVisibleCreateClanModal, setIsVisibleCreateClanModal] = useState<boolean>(false);
 	const timerRef = useRef(null);
 	const navigation = useNavigation();
@@ -36,7 +35,11 @@ export const ListClanPopup = React.memo(() => {
 	const { disconnect } = useWebRTCStream();
 	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
 	const { userProfile } = useAuth();
-
+	const clans = useSelector(selectAllClans).sort((a, b) => {
+		const nameA = a.clan_name ?? '';
+		const nameB = b.clan_name ?? '';
+		return nameA.localeCompare(nameB);
+	});
 	useEffect(() => {
 		return () => {
 			timerRef?.current && clearTimeout(timerRef.current);

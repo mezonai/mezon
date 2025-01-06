@@ -16,7 +16,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 		await createLocalNotification(remoteMessage.notification?.title, remoteMessage.notification?.body, remoteMessage.data);
 	}
 });
-AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
+AppRegistry.registerComponent('ComingCallApp', () => CustomIncomingCall);
 AppRegistry.registerComponent('Mobile', () => HeadlessCheck);
 
 function HeadlessCheck({ isHeadless }) {

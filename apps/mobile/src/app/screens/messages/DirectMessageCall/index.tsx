@@ -12,7 +12,7 @@ import {
 import { IMessageTypeCallLog } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { BackHandler, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import InCallManager from 'react-native-incall-manager';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,6 +36,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 	const receiverAvatar = route.params?.receiverAvatar;
 	const isVideoCall = route.params?.isVideoCall;
 	const isAnswerCall = route.params?.isAnswerCall;
+	const isFromNative = route.params?.isFromNative;
 	const userProfile = useSelector(selectAllAccount);
 	const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
 	const [isShowControl, setIsShowControl] = useState<boolean>(true);
@@ -59,6 +60,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 		userId: userProfile?.user?.id as string,
 		channelId: directMessageId as string,
 		isVideoCall,
+		isFromNative,
 		callerName: userProfile?.user?.username,
 		callerAvatar: userProfile?.user?.avatar_url
 	});
@@ -88,6 +90,11 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 						text1: 'User is currently on another call',
 						text2: 'Please call back later!'
 					});
+					if (isFromNative) {
+						InCallManager.stop();
+						BackHandler.exitApp();
+						return;
+					}
 					navigation.goBack();
 				}
 			}

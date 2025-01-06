@@ -153,7 +153,6 @@ public class IncomingCallService extends Service {
   }
 
   private PendingIntent onButtonNotificationClick(int id, String action, String eventName) {
-    Log.d(TAG, "onButtonNotificationClickonButtonNotificationClickonButtonNotificationClickonButtonNotificationClickonButtonNotificationClick");
     if (action == Constants.ACTION_PRESS_DECLINE_CALL) {
       Intent buttonIntent = new Intent();
       buttonIntent.setAction(action);
@@ -309,11 +308,15 @@ public class IncomingCallService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
+    registerReceiver(notificationReceiver, filter);
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
+    unregisterReceiver(notificationReceiver);
     Log.d(TAG, "onDestroy service");
     cancelTimer();
     stopForeground(true);
@@ -383,6 +386,19 @@ public class IncomingCallService extends Service {
 
     return desiredColor;
   }
+
+  private final BroadcastReceiver notificationReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+          String action = intent.getAction();
+          String eventName = intent.getStringExtra("eventName");
+          if (Constants.ACTION_PRESS_ANSWER_CALL.equals(action)) {
+             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+             notificationManager.cancelAll();
+             stopForeground(true);
+          }
+      }
+  };
 
   private BroadcastReceiver mReceiver = new BroadcastReceiver() {
     @Override

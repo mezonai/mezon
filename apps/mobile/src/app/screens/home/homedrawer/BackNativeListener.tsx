@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { selectHiddenBottomTabMobile } from '@mezon/store';
+import { selectDmGroupCurrentId, selectHiddenBottomTabMobile } from '@mezon/store';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import { DrawerActions, useNavigation, useNavigationState } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -11,6 +11,7 @@ function BackNativeListener() {
 	const navigation = useNavigation<any>();
 	const drawerStatus = useDrawerStatus();
 	const isHiddenTab = useSelector(selectHiddenBottomTabMobile);
+	const currentDirectId = useSelector(selectDmGroupCurrentId);
 	const [isOpenBottomSheetClan, setIsOpenBottomSheetClan] = useState<boolean>(false);
 
 	const routesNavigation = useNavigationState((state) => state?.routes?.[state?.index]);
@@ -37,7 +38,7 @@ function BackNativeListener() {
 			if (drawerStatus === 'closed') {
 				navigation.dispatch(DrawerActions.openDrawer());
 				return true;
-			} else if (isHomeActive && !isHiddenTab) {
+			} else if (isHomeActive && !isHiddenTab && !currentDirectId) {
 				if (isOpenBottomSheetClan) {
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_MENU_CLAN_CHANNEL, true);
 					return true;
@@ -68,7 +69,7 @@ function BackNativeListener() {
 		return () => {
 			backHandler.remove();
 		};
-	}, [isHomeActive, drawerStatus, navigation, isHiddenTab, isOpenBottomSheetClan]);
+	}, [isHomeActive, drawerStatus, navigation, isHiddenTab, isOpenBottomSheetClan, currentDirectId]);
 
 	return <View />;
 }

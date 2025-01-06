@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DeviceEventEmitter, Platform } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Platform } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
@@ -49,9 +49,17 @@ type MediaControl = {
 	speaker?: boolean;
 };
 
-type IProps = { dmUserId: string; channelId: string; userId: string; isVideoCall: boolean; callerName: string; callerAvatar: string };
+type IProps = {
+	dmUserId: string;
+	channelId: string;
+	userId: string;
+	isVideoCall: boolean;
+	callerName: string;
+	callerAvatar: string;
+	isFromNative?: boolean;
+};
 
-export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, callerName, callerAvatar }: IProps) {
+export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, callerName, callerAvatar, isFromNative = false }: IProps) {
 	const [callState, setCallState] = useState<CallState>({
 		localStream: null,
 		remoteStream: null,
@@ -194,7 +202,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 					type: 'error',
 					text1: 'Micro is not available'
 				});
-				navigation.goBack();
+				if (!isFromNative) navigation.goBack();
 				return;
 			} else {
 				setLocalMediaControl((prev) => ({
@@ -402,6 +410,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				peerConnection: null
 			});
 			if (!isCancelGoBack) {
+				if (isFromNative) {
+					InCallManager.stop();
+					BackHandler.exitApp();
+					return;
+				}
 				navigation.goBack();
 			}
 		} catch (error) {

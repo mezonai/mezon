@@ -20,13 +20,15 @@ import com.facebook.react.ReactFragment;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.squareup.picasso.Picasso;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
+import android.provider.Settings;
 
-public class IncomingCallActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler {
-
+public class IncomingCallActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
   private static final String TAG = "MessagingService";
   private static final String TAG_KEYGUARD = "Incoming:unLock";
   private TextView tvName;
@@ -42,6 +44,7 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   private String uuid = "";
   static boolean active = false;
   static IncomingCallActivity instance;
+  private PermissionListener permissionListener;
 
   public static IncomingCallActivity getInstance() {
     return instance;
@@ -96,6 +99,7 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
       setContentView(R.layout.custom_ingcoming_call_rn);
       Fragment reactNativeFragment = new ReactFragment.Builder()
         .setComponentName(mainComponent)
+        .setFabricEnabled(false)
         .setLaunchOptions(bundle)
         .build();
 
@@ -210,4 +214,17 @@ public class IncomingCallActivity extends AppCompatActivity implements DefaultHa
   public void invokeDefaultOnBackPressed() {
     super.onBackPressed();
   }
+
+  @Override
+    public void requestPermissions(String[] permissions, int requestCode, PermissionListener listener) {
+      this.permissionListener = listener;
+      requestPermissions(permissions, requestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+      if (permissionListener != null && permissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+        permissionListener = null;
+      }
+    }
 }

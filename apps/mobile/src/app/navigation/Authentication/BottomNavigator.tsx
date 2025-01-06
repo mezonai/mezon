@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { selectHiddenBottomTabMobile } from '@mezon/store-mobile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigationState } from '@react-navigation/native';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ import { APP_SCREEN } from '../ScreenTypes';
 
 const TabStack = createBottomTabNavigator();
 
-const BottomNavigator = () => {
+const BottomNavigator = memo(() => {
 	const isTabletLandscape = useTabletLandscape();
 	const isHiddenTab = useSelector(selectHiddenBottomTabMobile);
 	const { themeValue } = useTheme();
@@ -152,6 +152,6 @@ const BottomNavigator = () => {
 			</TabStack.Navigator>
 		</SafeAreaView>
 	);
-};
+});
 
 export default BottomNavigator;

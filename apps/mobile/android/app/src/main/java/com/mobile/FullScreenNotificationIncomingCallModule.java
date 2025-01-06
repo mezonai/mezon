@@ -40,6 +40,13 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     return NAME;
   }
 
+    @ReactMethod
+    public void triggerNotificationClick(String action, String eventName) {
+        Intent intent = new Intent(action);
+        intent.putExtra("eventName", eventName);
+        getReactApplicationContext().sendBroadcast(intent);
+    }
+
   @ReactMethod
   public void displayNotification(String uuid, @Nullable String avatar, @Nullable int timeout,
       ReadableMap foregroundOptions) throws JSONException {
@@ -61,7 +68,7 @@ public class FullScreenNotificationIncomingCallModule extends ReactContextBaseJa
     intent.putExtra("declineText", foregroundOptions.getString("declineText"));
     intent.putExtra("notificationColor", foregroundOptions.getString("notificationColor"));
     intent.putExtra("notificationSound", foregroundOptions.getString("notificationSound"));
-//     intent.putExtra("mainComponent", foregroundOptions.getString("mainComponent"));
+    intent.putExtra("mainComponent", foregroundOptions.getString("mainComponent"));
 
 //     Boolean isVideo;
 //     if(foregroundOptions.hasKey("isVideo")){

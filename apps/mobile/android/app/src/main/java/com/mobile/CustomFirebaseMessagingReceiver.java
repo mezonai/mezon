@@ -137,6 +137,7 @@ public class CustomFirebaseMessagingReceiver extends ReactNativeFirebaseMessagin
                 map.putString("notificationBody", offer.getString("callerName") + " is calling you");
                 map.putString("channelId", "com.mezon.mobile");
                 map.putString("channelName", "Incoming Call");
+                map.putString("mainComponent", "ComingCallApp");
                 map.putString("notificationIcon", "ic_notification");
                 map.putString("answerText", "Answer");
                 map.putString("declineText", "Decline");

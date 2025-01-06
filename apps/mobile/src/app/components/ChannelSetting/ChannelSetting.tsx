@@ -89,7 +89,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			!!channelsClan?.length && channelsClan?.some((channel) => channel?.channel_label === currentSettingValue?.channelName);
 		setIsCheckDuplicateNameChannel(isCheckNameChannelValue);
 		const updateChannel: ApiUpdateChannelDescRequest = {
-			channel_id: channel.channel_id || '',
+			channel_id: channel?.channel_id || '',
 			channel_label: currentSettingValue?.channelName,
 			category_id: channel.category_id,
 			app_url: ''

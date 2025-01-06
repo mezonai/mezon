@@ -40,12 +40,17 @@ public class NotificationReceiverHandler {
       case Constants.onPressNotification:
         if(!openedInComing) return;
         openedInComing=false;
-        handleNotificationPressIntent(context, intent);
+        handleNotificationPressIntent(context, intent, false);
         break;
       case Constants.ACTION_PRESS_ANSWER_CALL:
-        canClick=false;
-        handleNotificationActionIntent(context,intent);
+        if(!openedInComing) return;
+        openedInComing=false;
+        handleNotificationPressIntent(context, intent, true);
         break;
+//         old logic
+//         canClick=false;
+//         handleNotificationActionIntent(context,intent);
+//         break;
     }
   }
 
@@ -85,12 +90,13 @@ public class NotificationReceiverHandler {
   }
 
   @SuppressLint("LongLogTag")
-  private static void handleNotificationPressIntent(Context context, Intent intent) {
+  private static void handleNotificationPressIntent(Context context, Intent intent, Boolean isForceAnswer) {
     Intent newIntent = new Intent(context, IncomingCallActivity.class);
     Log.d(TAG, "Handle press notification content");
     Bundle bundle = intent.getExtras();
     if (bundle != null) {
-      newIntent.putExtras(bundle);
+        bundle.putBoolean("isForceAnswer", isForceAnswer);
+        newIntent.putExtras(bundle);
     }
     newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(newIntent);
