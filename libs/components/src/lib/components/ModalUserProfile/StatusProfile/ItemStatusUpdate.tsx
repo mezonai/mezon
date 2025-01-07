@@ -1,4 +1,5 @@
-import { accountActions, useAppDispatch, userStatusActions } from '@mezon/store';
+import { useAuth } from '@mezon/core';
+import { accountActions, clanMembersMetaActions, useAppDispatch, userStatusActions } from '@mezon/store';
 import { Dropdown } from 'flowbite-react';
 import { ReactNode } from 'react';
 import ItemStatus from './ItemStatus';
@@ -14,6 +15,7 @@ type ItemStatusUpdateProps = {
 
 const ItemStatusUpdate = ({ children, dropdown, startIcon, type, onClick, disabled = false }: ItemStatusUpdateProps) => {
 	const dispatch = useAppDispatch();
+	const { userProfile } = useAuth();
 	const updateUserStatus = (status: string, minutes: number, untilTurnOn: boolean) => {
 		dispatch(
 			userStatusActions.updateUserStatus({
@@ -22,6 +24,7 @@ const ItemStatusUpdate = ({ children, dropdown, startIcon, type, onClick, disabl
 				until_turn_on: untilTurnOn
 			})
 		);
+		dispatch(clanMembersMetaActions.updateUserStatus({ userId: userProfile?.user?.id || '', user_status: status }));
 		dispatch(accountActions.updateUserStatus(status));
 	};
 	return (

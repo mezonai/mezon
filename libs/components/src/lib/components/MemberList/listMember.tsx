@@ -34,6 +34,7 @@ const MemoizedMemberItem = memo((props: MemberItemProps) => {
 			listProfile={true}
 			isOffline={!userMeta?.online}
 			isMobile={userMeta?.isMobile}
+			statusOnline={userMeta.status}
 		/>
 	);
 });

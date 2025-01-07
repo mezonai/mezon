@@ -63,7 +63,8 @@ export type MemberProfileProps = {
 	hideLongName?: boolean;
 	isDM?: boolean;
 	isMute?: boolean;
-	metaDataDM?: string;
+	metaDataDM?: any;
+	statusOnline?: any;
 };
 
 export enum ModalType {
@@ -98,7 +99,8 @@ export function MemberProfile({
 	hideLongName,
 	isDM,
 	isMute,
-	metaDataDM
+	metaDataDM,
+	statusOnline
 }: MemberProfileProps) {
 	const [coords, setCoords] = useState<Coords>({
 		mouseX: 0,
@@ -333,17 +335,19 @@ export function MemberProfile({
 
 	const userStatus = useMemo(() => {
 		if (isFooter && userProfile?.user?.metadata) {
-			const metadata = safeJSONParse(userProfile?.user?.metadata);
-			return metadata;
+			const metadata = safeJSONParse(userProfile?.user?.metadata) as any;
+			return metadata?.user_status;
 		}
 		if (metaDataDM) {
-			return metaDataDM;
+			return metaDataDM?.user_status;
+		}
+		if (statusOnline) {
+			return statusOnline;
 		}
 		if (user?.user?.metadata) {
 			return user?.user?.metadata;
 		}
-	}, [user?.user?.id, userProfile?.user?.id, user?.user?.metadata, userProfile?.user?.metadata]);
-
+	}, [user?.user?.id, userProfile?.user?.id, user?.user?.metadata, userProfile?.user?.metadata, statusOnline, metaDataDM]);
 	return (
 		<div className="relative group">
 			<div
@@ -365,7 +369,7 @@ export function MemberProfile({
 						<span
 							className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode rounded-full right-[-4px]`}
 						>
-							<UserStatusIcon status={userStatus?.user_status} />
+							<UserStatusIcon status={userStatus} />
 						</span>
 					)}
 					{!isFooter && !isHideIconStatus && (
@@ -376,7 +380,7 @@ export function MemberProfile({
 							status={status}
 							directMessageValue={directMessageValue}
 							userId={user?.user?.id}
-							customStatus={userStatus?.user_status}
+							customStatus={userStatus}
 						/>
 					)}
 				</div>

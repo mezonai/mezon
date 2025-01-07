@@ -1132,7 +1132,7 @@ export const messagesSlice = createSlice({
 			.addCase(
 				fetchMessages.fulfilled,
 				(state: MessagesState, action: PayloadAction<FetchMessagesPayloadAction, string, FetchMessagesMeta>) => {
-					const channelId = action.meta.arg.channelId;
+					const channelId = action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
 					const isFetchingLatestMessages = action.payload.isFetchingLatestMessages || false;
 					const isClearMessage = action.payload.isClearMessage || false;
 					const viewingOlder = action.payload.viewingOlder || false;

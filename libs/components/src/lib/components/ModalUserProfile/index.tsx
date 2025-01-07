@@ -14,7 +14,7 @@ import {
 import { EStateFriend, selectAccountCustomStatus, selectAllAccount, selectCurrentUserId, selectFriendStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ActivitiesName, ActivitiesType, ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiUserActivity } from 'mezon-js/api.gen';
 import { RefObject, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -96,10 +96,14 @@ const ModalUserProfile = ({
 				console.error('Invalid JSON in metadata:', metadataArray[0], error);
 			}
 		}
+		if (userProfile?.user?.metadata && userId === userID) {
+			const metadata = safeJSONParse(userProfile?.user?.metadata);
+			return metadata;
+		}
 		if (userById?.user?.metadata) {
 			return userById?.user?.metadata as any;
 		}
-	}, [userById?.user?.id]);
+	}, [userById?.user?.id, userProfile?.user?.metadata]);
 
 	const date = new Date(userById?.user?.create_time as string | Date);
 	const { timeFormatted } = useFormatDate({ date });

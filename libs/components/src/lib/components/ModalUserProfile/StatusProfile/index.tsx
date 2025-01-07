@@ -2,6 +2,7 @@ import { useAuth, useMemberCustomStatus } from '@mezon/core';
 import {
 	ChannelMembersEntity,
 	accountActions,
+	clanMembersMetaActions,
 	giveCoffeeActions,
 	selectUserStatus,
 	useAppDispatch,
@@ -66,7 +67,7 @@ const StatusProfile = ({ userById, isDM }: StatusProfileProps) => {
 			case EUserStatus.DO_NOT_DISTURB:
 				return <Icons.MinusCircleIcon />;
 			case EUserStatus.INVISIBLE:
-				return <Icons.OnlineStatus />;
+				return <Icons.OfflineStatus />;
 			default:
 				return <Icons.OnlineStatus />;
 		}
@@ -79,6 +80,7 @@ const StatusProfile = ({ userById, isDM }: StatusProfileProps) => {
 				until_turn_on: untilTurnOn
 			})
 		);
+		dispatch(clanMembersMetaActions.updateUserStatus({ userId: userProfile?.user?.id || '', user_status: status }));
 		dispatch(accountActions.updateUserStatus(status));
 	};
 	return (

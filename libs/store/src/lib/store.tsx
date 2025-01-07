@@ -39,6 +39,7 @@ import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { clanMembersMetaReducer } from './clanMembers/clan.members.meta';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
+import { directMembersMetaReducer } from './direct/direct.members.meta';
 import { directMetaReducer } from './direct/directmeta.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
@@ -355,6 +356,7 @@ const reducer = {
 	giveCoffee: giveCoffeeReducer,
 	settingClanChannel: settingChannelReducer,
 	clanMembersMeta: clanMembersMetaReducer,
+	directmembersmeta: directMembersMetaReducer,
 	[ONBOARDING_FEATURE_KEY]: persistedOnboardingReducer,
 	dmcall: DMCallReducer,
 	joinPTT: JoinPTTReducer,

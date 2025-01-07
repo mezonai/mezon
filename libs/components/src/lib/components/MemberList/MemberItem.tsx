@@ -15,9 +15,21 @@ export type MemberItemProps = {
 	directMessageId?: string;
 	name?: string;
 	isDM: boolean;
+	statusOnline?: any;
 };
 
-function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCreate, directMessageId, name, isDM, isMobile }: MemberItemProps) {
+function MemberItem({
+	user,
+	listProfile,
+	isOffline,
+	positionType,
+	dataMemberCreate,
+	directMessageId,
+	name,
+	isDM,
+	isMobile,
+	statusOnline
+}: MemberItemProps) {
 	const userCustomStatus = useMemberCustomStatus(user.user?.id || '', isDM);
 	const { userProfile } = useAuth();
 	const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
@@ -45,6 +57,7 @@ function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCrea
 			dataMemberCreate={dataMemberCreate}
 			hideLongName={true}
 			isDM={isDM}
+			statusOnline={statusOnline}
 		/>
 	);
 }

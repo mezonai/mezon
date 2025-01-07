@@ -1260,11 +1260,11 @@ export type IUserProfileActivity = {
 	id?: string;
 	username?: string;
 	online?: boolean;
-	metadata?: { status?: string };
+	metadata?: { status?: string; user_status?: string };
 };
 
 export type IUserItemActivity = {
-	id?: string;
+	id: string;
 	user?: IUserProfileActivity;
 };
 

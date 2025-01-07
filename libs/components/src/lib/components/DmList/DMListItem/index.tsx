@@ -3,6 +3,7 @@ import {
 	directMetaActions,
 	selectBuzzStateByDirectId,
 	selectDirectById,
+	selectDirectMemberMetaUserId,
 	selectIsUnreadDMById,
 	useAppDispatch,
 	useAppSelector
@@ -31,17 +32,18 @@ export type directMessageValueProps = {
 function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFriends, isActive }: DirectMessProp) {
 	const dispatch = useAppDispatch();
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
+	const user = useAppSelector((state) => selectDirectMemberMetaUserId(state, directMessage.user_id?.at(0) || ''));
 	const metadata = useMemo(() => {
-		if (typeof directMessage.metadata?.at(0) === 'string') {
+		if (typeof user?.user?.metadata === 'string') {
 			try {
-				return safeJSONParse(directMessage.metadata?.at(0) || '');
+				return safeJSONParse(user?.user?.metadata || '');
 			} catch (error) {
-				console.error('Error parsing JSON:', directMessage.metadata?.at(0), error);
+				console.error('Error parsing JSON:', user?.user?.metadata, error);
 			}
-		} else if (typeof directMessage.metadata?.at(0) === 'object') {
-			return directMessage.metadata?.at(0);
+		} else if (typeof user?.user?.metadata === 'object') {
+			return user?.user?.metadata;
 		}
-	}, [directMessage.metadata]);
+	}, [user?.user?.metadata?.user_status]);
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
 

@@ -12,6 +12,7 @@ import { e2eeActions } from '../e2ee/e2ee.slice';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { messagesActions } from '../messages/messages.slice';
 import { RootState } from '../store';
+import { directMembersMetaActions } from './direct.members.meta';
 import { DMMetaEntity, directMetaActions, selectEntitiesDirectMeta } from './directmeta.slice';
 
 export const DIRECT_FEATURE_KEY = 'direct';
@@ -162,6 +163,8 @@ export const fetchDirectMessage = createAsyncThunk(
 			const channels = sorted.map(mapDmGroupToEntity).filter((item) => item.active);
 			thunkAPI.dispatch(directMetaActions.setDirectMetaEntities(channels));
 			thunkAPI.dispatch(directActions.setAll(channels));
+			const users = mapChannelsToUsers(channels);
+			thunkAPI.dispatch(directMembersMetaActions.updateBulkMetadata(users));
 			return channels;
 		} catch (error) {
 			captureSentryError(error, 'direct/fetchDirectMessage');
@@ -169,6 +172,48 @@ export const fetchDirectMessage = createAsyncThunk(
 		}
 	}
 );
+
+function mapChannelsToUsers(channels: any[]): IUserItemActivity[] {
+	return channels.reduce<IUserItemActivity[]>((acc, dm) => {
+		if (dm?.active === 1) {
+			dm?.user_id?.forEach((userId: string, index: number) => {
+				if (!acc.some((existingUser) => existingUser.id === userId)) {
+					const user = {
+						avatar_url: dm?.channel_avatar ? dm?.channel_avatar[index] : '',
+						display_name: dm?.usernames ? dm?.usernames.split(',')[index] : '',
+						id: userId,
+						username: dm?.usernames ? dm?.usernames.split(',')[index] : '',
+						online: dm?.is_online ? dm?.is_online[index] : false,
+						metadata: (() => {
+							if (!dm?.metadata) {
+								return {};
+							}
+							try {
+								return JSON.parse(dm?.metadata[index]);
+							} catch (e) {
+								const unescapedJSON = dm?.metadata[index].replace(/\\./g, (match: string) => {
+									switch (match) {
+										case '\\"':
+											return '"';
+										default:
+											return match[1]; // Bỏ ký tự escape
+									}
+								});
+								return safeJSONParse(unescapedJSON);
+							}
+						})()
+					};
+
+					acc.push({
+						user,
+						id: userId
+					});
+				}
+			});
+		}
+		return acc;
+	}, []);
+}
 
 interface JoinDirectMessagePayload {
 	directMessageId: string;

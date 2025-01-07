@@ -10,6 +10,7 @@ export interface ClanMembersMetaEntity {
 	id: string;
 	online: boolean;
 	isMobile: boolean;
+	status: any;
 }
 
 export interface ClanMembersMetaState extends EntityState<ClanMembersMetaEntity, string> {
@@ -40,7 +41,8 @@ export function extracMeta(user: UsersClanEntity, state: RootState): ClanMembers
 	return {
 		id: user.id,
 		online: (!isUserInvisible && !!user?.user?.online) || (!isUserInvisible && isMe),
-		isMobile: !isUserInvisible && !!user?.user?.is_mobile
+		isMobile: !isUserInvisible && !!user?.user?.is_mobile,
+		status: metadata?.user_status
 	};
 }
 
@@ -69,6 +71,13 @@ export const clanMembersMetaSlice = createSlice({
 					clanMemberMeta.isMobile = statusUser.isMobile;
 				}
 			});
+		},
+		updateUserStatus: (state, action: PayloadAction<{ userId: string; user_status: any }>) => {
+			const { userId, user_status } = action.payload;
+			const clanMembersMeta = state.entities[userId];
+			if (clanMembersMeta) {
+				clanMembersMeta.status = user_status;
+			}
 		}
 	}
 });
