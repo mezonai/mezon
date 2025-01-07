@@ -123,7 +123,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	}, [originUserProfileValue, currentUserProfileValue]);
 
 	const isUserProfileEmptyName = useMemo(() => {
-		return !!originUserProfileValue.displayName;
+		return !!originUserProfileValue?.displayName;
 	}, [originUserProfileValue.displayName]);
 
 	const isClanProfileNotChanged = useMemo(() => {

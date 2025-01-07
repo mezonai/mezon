@@ -28,5 +28,5 @@ export function useMemberActiveStatus(user: UsersClanEntity) {
 		}
 	}, [user?.user?.metadata, userProfile?.user?.metadata]);
 
-	return status.user_status;
+	return status?.user_status;
 }

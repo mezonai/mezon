@@ -14,16 +14,16 @@ export const TypingDmItem = React.memo(({ directMessage }: { directMessage: Dire
 	const styles = style(themeValue);
 	const { typingUsers } = useChatTypings({ channelId: directMessage?.channel_id, mode: directMessage?.type, isPublic: false, isDM: true });
 	const metadata = useMemo(() => {
-		if (typeof directMessage.metadata?.at(0) === 'string') {
+		if (typeof directMessage?.metadata?.at(0) === 'string') {
 			try {
-				return safeJSONParse(directMessage.metadata?.at(0) || '');
+				return safeJSONParse(directMessage?.metadata?.at(0) || '');
 			} catch (error) {
-				console.error('Error parsing JSON:', directMessage.metadata?.at(0), error);
+				console.error('Error parsing JSON:', directMessage?.metadata?.at(0), error);
 			}
-		} else if (typeof directMessage.metadata?.at(0) === 'object') {
-			return directMessage.metadata?.at(0);
+		} else if (typeof directMessage?.metadata?.at(0) === 'object') {
+			return directMessage?.metadata?.at(0);
 		}
-	}, [directMessage.metadata]);
+	}, [directMessage?.metadata]);
 
 	return (
 		<View>
