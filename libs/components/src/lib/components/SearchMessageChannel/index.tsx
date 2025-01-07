@@ -213,10 +213,11 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 
 	const handleClickSearchOptions = useCallback(
 		(value: string) => {
+			const convertedValue = value === 'from:' ? '$' : value === 'mentions:' ? '@' : 'has:';
 			dispatch(
 				searchMessagesActions.setValueInputSearch({
 					channelId,
-					value: !valueInputSearch ? value : valueInputSearch + value
+					value: !valueInputSearch ? convertedValue : valueInputSearch + convertedValue
 				})
 			);
 			searchRef.current?.focus();
@@ -334,7 +335,7 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 						markup="from:[__display__](__id__)"
 						appendSpaceOnAdd={true}
 						data={handleSearchUserMention}
-						trigger="from:"
+						trigger="$"
 						displayTransform={(id: string, display: string) => {
 							return `from:${display}`;
 						}}
@@ -355,8 +356,8 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 					<Mention
 						markup="mention:[__display__](__id__)"
 						appendSpaceOnAdd={true}
-						data={userListDataSearchByMention}
-						trigger="mentions:"
+						data={handleSearchUserMention}
+						trigger="@"
 						displayTransform={(id: string, display: string) => {
 							return `mentions:${display}`;
 						}}
@@ -389,16 +390,19 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 					<Icons.Close defaultSize="w-4 h-4" />
 				</button>
 			</div>
-			{isShowSearchMessageModal && !hasKeySearch(valueInputSearch ?? '') && (
-				<SearchMessageChannelModal
-					theme={appearanceTheme}
-					hasKeySearch={hasKeySearch(valueInputSearch ?? '')}
-					valueInputSearch={valueInputSearch}
-					valueDisplay={valueDisplay}
-					isShowSearchOptions={isShowSearchOptions}
-					onClickSearchOptions={handleClickSearchOptions}
-				/>
-			)}
+			{isShowSearchMessageModal &&
+				!hasKeySearch(valueInputSearch ?? '') &&
+				!valueInputSearch?.includes('$') &&
+				!valueInputSearch?.includes('@') && (
+					<SearchMessageChannelModal
+						theme={appearanceTheme}
+						hasKeySearch={hasKeySearch(valueInputSearch ?? '')}
+						valueInputSearch={valueInputSearch}
+						valueDisplay={valueDisplay}
+						isShowSearchOptions={isShowSearchOptions}
+						onClickSearchOptions={handleClickSearchOptions}
+					/>
+				)}
 		</div>
 	);
 };
