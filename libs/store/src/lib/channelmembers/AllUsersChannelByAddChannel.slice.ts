@@ -1,6 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit';
+import { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
 import { USERS_CLANS_FEATURE_KEY, UsersClanState } from '../clanMembers/clan.members';
 import { ensureSession, getMezonCtx, MezonValueContext } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
@@ -25,7 +26,10 @@ export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapte
 });
 
 export const fetchUserChannelsCached = memoizeAndTrack(
-	async (mezon: MezonValueContext, channelId: string, limit: number) => {
+	async (mezon: MezonValueContext, channelId: string, limit: number, defaultResponse?: ApiAllUsersAddChannelResponse) => {
+		if (defaultResponse) {
+			return { ...defaultResponse, time: Date.now() };
+		}
 		const response = await mezon.client.listChannelUsersUC(mezon.session, channelId, limit);
 		return { ...response, time: Date.now() };
 	},
@@ -38,6 +42,32 @@ export const fetchUserChannelsCached = memoizeAndTrack(
 	}
 );
 
+export const updateCacheUserChannels = async (mezon: MezonValueContext, channelId: string, userIdToLeave?: string, userIdsToAdd?: string[]) => {
+	const response = await fetchUserChannelsCached(mezon, channelId, 500);
+	if (response && response.user_ids) {
+		let updateUserIds = response.user_ids;
+
+		// remove user
+		if (userIdToLeave) {
+			updateUserIds = updateUserIds.filter((user_id: string) => user_id !== userIdToLeave);
+		}
+
+		// add users
+		if (userIdsToAdd && userIdsToAdd.length > 0) {
+			userIdsToAdd.forEach((userId: string) => {
+				const isAlreadyExists = updateUserIds.some((user_id: string) => user_id === userId);
+				if (!isAlreadyExists) {
+					updateUserIds.push(userId);
+				}
+			});
+		}
+
+		// update cache
+		fetchUserChannelsCached.delete(mezon, channelId, 500);
+		fetchUserChannelsCached(mezon, channelId, 500, { user_ids: updateUserIds });
+	}
+};
+
 export const fetchUserChannels = createAsyncThunk(
 	'allUsersByAddChannel/fetchUserChannels',
 	async ({ channelId, noCache }: { channelId: string; noCache?: boolean }, thunkAPI) => {
@@ -45,21 +75,12 @@ export const fetchUserChannels = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
-				fetchUserChannelsCached.clear(mezon, channelId, 500);
+				fetchUserChannelsCached.delete(mezon, channelId, 500);
 			}
 
 			const response = await fetchUserChannelsCached(mezon, channelId, 500);
 
-			if (Date.now() - response.time > 100) {
-				return {
-					...response,
-					fromCache: true
-				};
-			}
-
-			if (response) {
-				return { ...response, fromCache: false };
-			}
+			return response;
 		} catch (error) {
 			captureSentryError(error, 'allUsersByAddChannel/fetchUserChannels');
 			return thunkAPI.rejectWithValue(error);
