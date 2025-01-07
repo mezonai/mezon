@@ -1,7 +1,8 @@
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
+	DMCallActions,
 	accountActions,
 	authActions,
-	DMCallActions,
 	selectAllAccount,
 	selectSignalingDataByUserId,
 	useAppDispatch,
@@ -9,17 +10,27 @@ import {
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { IWithError } from '@mezon/utils';
-import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
+import LottieView from 'lottie-react-native';
+import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import * as React from 'react';
 import { memo, useCallback, useEffect } from 'react';
-import { BackHandler, Image, NativeModules, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Wave } from 'react-native-animated-spinkit';
+import { BackHandler, Image, ImageBackground, NativeModules, Text, TouchableOpacity, View } from 'react-native';
+import { Bounce } from 'react-native-animated-spinkit';
 import { useSelector } from 'react-redux';
 import { DirectMessageCall } from '../messages/DirectMessageCall';
 
-const AVATAR_DEFAULT = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKet-b99huP_BtZT_HUqvsaSz32lhrcLtIDQ&s';
+import LOTTIE_PHONE_DECLINE from './phone-decline.json';
+import LOTTIE_PHONE_RING from './phone-ring.json';
+import { style } from './styles';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import BG_CALLING from './bgCalling.png';
+
+const AVATAR_DEFAULT = 'https://cdn.mezon.vn/1775731152322039808/1820659489792069632/mezon_logo.png';
 const { FullScreenNotificationIncomingCall, SharedPreferences } = NativeModules;
 const IncomingHomeScreen = memo((props: any) => {
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const [isInCall, setIsInCall] = React.useState(false);
 	const [isRefreshSessionSuccess, setIsRefreshSessionSuccess] = React.useState(false);
@@ -75,9 +86,18 @@ const IncomingHomeScreen = memo((props: any) => {
 	}, [authLoader]);
 
 	useEffect(() => {
+		let timer;
 		if (props?.isForceAnswer && signalingData?.[signalingData?.length - 1]?.callerId) {
-			onJoinCall();
+			timer = setTimeout(() => {
+				onJoinCall();
+			}, 1000);
 		}
+
+		return () => {
+			if (timer) {
+				clearTimeout(timer);
+			}
+		};
 	}, [signalingData]);
 
 	useEffect(() => {
@@ -123,76 +143,40 @@ const IncomingHomeScreen = memo((props: any) => {
 	}
 
 	return (
-		<View style={styles.container}>
+		<ImageBackground source={BG_CALLING} style={styles.container}>
 			{/* Caller Info */}
-			<Text style={styles.callerName}>{props.name || 'Unknown Caller'}</Text>
-			<Image
-				source={{
-					uri: props?.avatar || AVATAR_DEFAULT
-				}}
-				style={styles.callerImage}
-			/>
+			<View style={styles.headerCall}>
+				<Text style={styles.callerName}>{'Incoming Call'}</Text>
+				<Image
+					source={{
+						uri: props?.avatar || AVATAR_DEFAULT
+					}}
+					style={styles.callerImage}
+				/>
+				<Text style={styles.callerInfo}>{props?.info || ''}</Text>
+			</View>
 
 			{/* Decline and Answer Buttons */}
 			{!props?.isForceAnswer ? (
 				<View style={styles.buttonContainer}>
-					<TouchableOpacity style={[styles.button, styles.declineButton]} onPress={onDeniedCall}>
-						<Text style={styles.buttonText}>Decline</Text>
+					<TouchableOpacity onPress={onDeniedCall}>
+						{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+						{/*// @ts-expect-error*/}
+						<LottieView source={LOTTIE_PHONE_DECLINE} autoPlay loop style={styles.deniedCall} />
 					</TouchableOpacity>
 
-					<TouchableOpacity style={[styles.button, styles.answerButton]} onPress={onJoinCall}>
-						<Text style={styles.buttonText}>Answer</Text>
+					<TouchableOpacity onPress={onJoinCall}>
+						<LottieView source={LOTTIE_PHONE_RING} autoPlay loop style={styles.answerCall} />
 					</TouchableOpacity>
 				</View>
 			) : (
-				<Wave size={100} color="#fff" />
+				<View style={styles.wrapperConnecting}>
+					<Bounce size={size.s_80} color="#fff" />
+					<Text style={styles.callerName}>Connecting...</Text>
+				</View>
 			)}
-		</View>
+		</ImageBackground>
 	);
 });
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		backgroundColor: '#1c1d22',
-		paddingHorizontal: 20
-	},
-	callerName: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		marginVertical: 10,
-		color: 'white'
-	},
-	callerImage: {
-		width: 100,
-		height: 100,
-		borderRadius: 50,
-		marginBottom: 30
-	},
-	buttonContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		width: '90%',
-		marginTop: 30
-	},
-	button: {
-		flex: 1,
-		alignItems: 'center',
-		paddingVertical: 15,
-		marginHorizontal: 10,
-		borderRadius: 10
-	},
-	declineButton: {
-		backgroundColor: '#ff4d4d'
-	},
-	answerButton: {
-		backgroundColor: '#4CAF50'
-	},
-	buttonText: {
-		color: '#fff',
-		fontSize: 18,
-		fontWeight: '600'
-	}
-});
+
 export default IncomingHomeScreen;

@@ -162,11 +162,11 @@ public class IncomingCallService extends Service {
     emptyScreenIntent.setAction(action);
     emptyScreenIntent.putExtras(bundleData);
     emptyScreenIntent.putExtra("eventName", eventName);
-    ReactApplication reactApplication = (ReactApplication) getApplicationContext();
-    ReactInstanceManager reactInstanceManager = reactApplication.getReactNativeHost().getReactInstanceManager();
-    ReactApplicationContext reactApplicationContext = (ReactApplicationContext) reactInstanceManager.getCurrentReactContext();
-    FullScreenNotificationIncomingCallModule module = new FullScreenNotificationIncomingCallModule(reactApplicationContext);
-    module.backToApp();
+//     ReactApplication reactApplication = (ReactApplication) getApplicationContext();
+//     ReactInstanceManager reactInstanceManager = reactApplication.getReactNativeHost().getReactInstanceManager();
+//     ReactApplicationContext reactApplicationContext = (ReactApplicationContext) reactInstanceManager.getCurrentReactContext();
+//     FullScreenNotificationIncomingCallModule module = new FullScreenNotificationIncomingCallModule(reactApplicationContext);
+//     module.backToApp();
     return PendingIntent.getActivity(this, 0, emptyScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
   }
 
@@ -307,10 +307,14 @@ public class IncomingCallService extends Service {
 
   @Override
   public void onCreate() {
-    super.onCreate();
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
-    registerReceiver(notificationReceiver, filter);
+      super.onCreate();
+      IntentFilter filter = new IntentFilter();
+      filter.addAction(Constants.ACTION_PRESS_ANSWER_CALL);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        registerReceiver(notificationReceiver, filter, Context.RECEIVER_EXPORTED);
+      } else {
+        registerReceiver(notificationReceiver, filter);
+      }
   }
 
   @Override
