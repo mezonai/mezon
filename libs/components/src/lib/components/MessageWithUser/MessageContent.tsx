@@ -84,7 +84,7 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 	const avatarToDisplay = topicCreator?.clan_avatar ? topicCreator?.clan_avatar : topicCreator?.user?.avatar_url;
 
 	return (
-		<div>
+		<>
 			<MessageText
 				isOnlyContainEmoji={isOnlyContainEmoji}
 				isSearchMessage={isSearchMessage}
@@ -115,7 +115,7 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 					/>
 				</div>
 			)}
-		</div>
+		</>
 	);
 });
 
