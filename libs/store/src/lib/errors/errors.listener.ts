@@ -83,36 +83,42 @@ errorListenerMiddleware.startListening({
 	effect: async (action: any, listenerApi) => {
 		const error = normalizeError(action);
 
-		trackError(error);
-
-		if (action.payload) {
-			const key = Object.keys(action.payload);
-			if (key.length === 0) {
-				if (typeof action.payload.json === 'function') {
-					action.payload.json().then((data: any) => {
-						Sentry.captureException(data.message);
-					});
-				}
-			} else {
-				if (typeof action.payload[key[0]].json === 'function') {
-					action.payload[key[0]].json().then((data: any) => {
-						Sentry.captureException(data.message);
-					});
-				} else {
-					Sentry.captureException(action.payload);
-				}
-			}
-		}
-
 		if (!error) {
 			return;
 		}
 
-		if (error && error.config && !error.config.toast) {
-			return;
-		}
+		trackError(error);
 
 		const toast = createErrorToast(error);
+
+		if (action.payload) {
+			const key = Object.keys(action.payload);
+
+			const getMessageFromPayload = async (payload: any) => {
+				if (key.length === 0) {
+					if (typeof payload.json === 'function') {
+						const data = await payload.json();
+						return data.message;
+					}
+				} else {
+					if (typeof payload[key[0]].json === 'function') {
+						const data = await payload[key[0]].json();
+						return data.message;
+					}
+				}
+				return null;
+			};
+
+			const messageFromServer = await getMessageFromPayload(action.payload);
+			if (messageFromServer) {
+				if (toast) {
+					toast.message = messageFromServer;
+				}
+				Sentry.captureException(messageFromServer);
+			} else {
+				Sentry.captureException(action.payload);
+			}
+		}
 
 		if (!toast) {
 			return;
