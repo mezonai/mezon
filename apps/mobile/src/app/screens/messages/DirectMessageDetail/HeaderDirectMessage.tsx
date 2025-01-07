@@ -1,4 +1,4 @@
-import { useMemberActiveStatus, useSeenMessagePool } from '@mezon/core';
+import { useSeenMessagePool } from '@mezon/core';
 import { IUserStatus, Icons } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import {
@@ -14,8 +14,8 @@ import {
 } from '@mezon/store-mobile';
 import { TIME_OFFSET, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useEffect, useRef } from 'react';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
@@ -90,7 +90,11 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
 	const user = useSelector((state) => selectMemberClanByUserId2(state, firstUserId));
-	const status = useMemberActiveStatus(user);
+	const status = useMemo(() => {
+		return typeof user?.user?.metadata === 'string'
+			? safeJSONParse(user?.user?.metadata || '')?.user_status
+			: (user?.user?.metadata as any)?.user_status;
+	}, [user?.user?.metadata]);
 
 	const goToCall = () => {
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {

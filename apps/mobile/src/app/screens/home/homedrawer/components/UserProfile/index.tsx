@@ -1,5 +1,5 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { useAuth, useDirect, useFriends, useMemberActiveStatus, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
+import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -13,7 +13,7 @@ import {
 } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -69,7 +69,11 @@ const UserProfile = React.memo(
 		const { dismiss } = useBottomSheetModal();
 		const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 
-		const status = useMemberActiveStatus(userById);
+		const status = useMemo(() => {
+			return typeof userById?.user?.metadata === 'string'
+				? safeJSONParse(userById?.user?.metadata || '')?.user_status
+				: (userById?.user?.metadata as any)?.user_status;
+		}, [userById?.user?.metadata]);
 
 		const isKicked = useMemo(() => {
 			return !userById;

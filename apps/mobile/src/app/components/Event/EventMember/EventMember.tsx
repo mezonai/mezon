@@ -1,6 +1,8 @@
-import { useMemberActiveStatus, useMemberStatus } from '@mezon/core';
+import { useMemberStatus } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
+import { safeJSONParse } from 'mezon-js';
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { style } from './styles';
@@ -15,7 +17,11 @@ const Avatar = ({ id, index }: { id: string; index: number }) => {
 	const styles = style(themeValue);
 	const userStatus = useMemberStatus(id || '');
 
-	const customStatus = useMemberActiveStatus(user);
+	const customStatus = useMemo(() => {
+		return typeof user?.user?.metadata === 'string'
+			? safeJSONParse(user?.user?.metadata || '')?.user_status
+			: (user?.user?.metadata as any)?.user_status;
+	}, [user?.user?.metadata]);
 
 	return (
 		<View style={styles.item}>

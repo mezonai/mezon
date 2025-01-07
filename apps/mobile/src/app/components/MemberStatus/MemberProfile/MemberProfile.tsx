@@ -1,8 +1,7 @@
-import { useMemberActiveStatus } from '@mezon/core';
 import { IUserStatus, OwnerIcon } from '@mezon/mobile-components';
 import { useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, safeJSONParse } from 'mezon-js';
 import { useContext, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { MezonAvatar } from '../../../componentUI';
@@ -54,7 +53,11 @@ export function MemberProfile({
 			: DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR;
 	}, [userColorRolesClan, currentChannel?.type]);
 
-	const status = useMemberActiveStatus(user);
+	const status = useMemo(() => {
+		return typeof user?.user?.metadata === 'string'
+			? safeJSONParse(user?.user?.metadata || '')?.user_status
+			: (user?.user?.metadata as any)?.user_status;
+	}, [user?.user?.metadata]);
 
 	return (
 		<View style={{ ...styles.container, opacity: isOffline ? 0.5 : 1 }}>

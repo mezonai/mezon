@@ -1,4 +1,4 @@
-import { useMemberActiveStatus, useMemberStatus, useSeenMessagePool } from '@mezon/core';
+import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
 import { ActionEmitEvent, Icons, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
@@ -18,7 +18,7 @@ import {
 } from '@mezon/store-mobile';
 import { SubPanelName } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Image, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -106,7 +106,11 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	const userStatus = useMemberStatus(isModeDM ? firstUserId : '');
 
 	const user = useSelector((state) => selectMemberClanByUserId2(state, firstUserId));
-	const status = useMemberActiveStatus(user);
+	const status = useMemo(() => {
+		return typeof user?.user?.metadata === 'string'
+			? safeJSONParse(user?.user?.metadata || '')?.user_status
+			: (user?.user?.metadata as any)?.user_status;
+	}, [user?.user?.metadata]);
 
 	const navigateToThreadDetail = () => {
 		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.BOTTOM_SHEET, params: { directMessage: currentDmGroup } });

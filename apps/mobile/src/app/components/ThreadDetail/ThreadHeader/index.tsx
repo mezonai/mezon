@@ -1,11 +1,11 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useMemberActiveStatus, useMemberStatus } from '@mezon/core';
+import { useMemberStatus } from '@mezon/core';
 import { Icons, OverflowMenuHorizontalIcon } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectDmGroupCurrent, selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, safeJSONParse } from 'mezon-js';
 import { memo, useContext, useMemo, useRef } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -33,7 +33,11 @@ export const ThreadHeader = memo(() => {
 	const userStatus = useMemberStatus(currentChannel?.user_id?.length === 1 ? currentChannel?.user_id[0] : '');
 
 	const user = useSelector((state) => selectMemberClanByUserId2(state, currentChannel?.user_id?.length === 1 ? currentChannel?.user_id[0] : ''));
-	const status = useMemberActiveStatus(user);
+	const status = useMemo(() => {
+		return typeof user?.user?.metadata === 'string'
+			? safeJSONParse(user?.user?.metadata || '')?.user_status
+			: (user?.user?.metadata as any)?.user_status;
+	}, [user?.user?.metadata]);
 
 	const navigation = useNavigation<any>();
 	const openMenu = () => {
