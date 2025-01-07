@@ -13,7 +13,7 @@ import {
 } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType, safeJSONParse } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux';
 import { useMixImageColor } from '../../../../../../app/hooks/useMixImageColor';
 import { APP_SCREEN } from '../../../../../../app/navigation/ScreenTypes';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from './UserProfile.styles';
 import ActivityAppComponent from './component/ActivityAppComponent';
 import EditUserProfileBtn from './component/EditUserProfileBtn';
@@ -69,11 +70,7 @@ const UserProfile = React.memo(
 		const { dismiss } = useBottomSheetModal();
 		const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 
-		const status = useMemo(() => {
-			return typeof userById?.user?.metadata === 'string'
-				? safeJSONParse(userById?.user?.metadata || '')?.user_status
-				: (userById?.user?.metadata as any)?.user_status;
-		}, [userById?.user?.metadata]);
+		const status = getUserStatusByMetadata(user?.user?.metadata);
 
 		const isKicked = useMemo(() => {
 			return !userById;

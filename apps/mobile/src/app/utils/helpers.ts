@@ -1,4 +1,5 @@
 import { load, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
+import { safeJSONParse } from 'mezon-js';
 import { Platform } from 'react-native';
 
 type Size =
@@ -83,4 +84,8 @@ export const resetCachedMessageActionNeedToResolve = (channelId: string) => {
 	const allCachedMessage = load(STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE) || {};
 	if (allCachedMessage?.[channelId]) allCachedMessage[channelId] = null;
 	save(STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE, allCachedMessage);
+};
+
+export const getUserStatusByMetadata = (metadata: string | { status: string; user_status: string }) => {
+	return typeof metadata === 'string' ? safeJSONParse(metadata)?.user_status : metadata?.user_status;
 };

@@ -2,10 +2,10 @@ import { useMemberStatus } from '@mezon/core';
 import { IUserMention } from '@mezon/mobile-components';
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
-import { safeJSONParse } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { MezonAvatar } from '../../../../../componentUI';
+import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from '../SearchOptionPage.styles';
 
 interface UserInfoSearchProps {
@@ -18,11 +18,7 @@ export default function UserInfoSearch({ onSelectUserInfo, userData }: UserInfoS
 	const styles = style(themeValue);
 	const userStatus = useMemberStatus((userData?.id as string) || '');
 	const user = useAppSelector((state) => selectMemberClanByUserId2(state, (userData?.id as string) || ''));
-	const status = useMemo(() => {
-		return typeof user?.user?.metadata === 'string'
-			? safeJSONParse(user?.user?.metadata || '')?.user_status
-			: (user?.user?.metadata as any)?.user_status;
-	}, [user?.user?.metadata]);
+	const status = getUserStatusByMetadata(user?.user?.metadata);
 	return (
 		<TouchableOpacity onPress={() => onSelectUserInfo(userData)} style={styles.userInfoBox}>
 			<MezonAvatar

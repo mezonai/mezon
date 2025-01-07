@@ -5,13 +5,14 @@ import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectDmGroupCurrent, selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType, safeJSONParse } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { memo, useContext, useMemo, useRef } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonAvatar, MezonBottomSheet } from '../../../componentUI';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import { getUserStatusByMetadata } from '../../../utils/helpers';
 import MenuCustomDm from '../../MenuCustomDm';
 import { threadDetailContext } from '../MenuThreadDetail';
 import { style } from './styles';
@@ -33,11 +34,7 @@ export const ThreadHeader = memo(() => {
 	const userStatus = useMemberStatus(currentChannel?.user_id?.length === 1 ? currentChannel?.user_id[0] : '');
 
 	const user = useSelector((state) => selectMemberClanByUserId2(state, currentChannel?.user_id?.length === 1 ? currentChannel?.user_id[0] : ''));
-	const status = useMemo(() => {
-		return typeof user?.user?.metadata === 'string'
-			? safeJSONParse(user?.user?.metadata || '')?.user_status
-			: (user?.user?.metadata as any)?.user_status;
-	}, [user?.user?.metadata]);
+	const status = getUserStatusByMetadata(user?.user?.metadata);
 
 	const navigation = useNavigation<any>();
 	const openMenu = () => {
