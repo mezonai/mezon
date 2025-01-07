@@ -81,7 +81,6 @@ export const userChannelsSlice = createSlice({
 		builder
 			.addCase(fetchUserChannels.fulfilled, (state: UsersByAddChannelState, actions) => {
 				state.loadingStatus = 'loaded';
-				if (actions.payload?.fromCache) return;
 				if (actions.payload?.user_ids) {
 					UserChannelAdapter.setAll(state, actions.payload.user_ids);
 				} else {
