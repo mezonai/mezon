@@ -142,6 +142,7 @@ type FetchMessagesPayloadAction = {
 	viewingOlder?: boolean;
 	foundE2ee?: boolean;
 	fromCache?: boolean;
+	lastMessageId?: string;
 };
 
 export interface MessagesRootState {
@@ -216,7 +217,7 @@ type fetchMessageChannelPayload = {
 	foundE2ee?: boolean;
 };
 
-const MESSAGE_LIST_SLICE = 50;
+const MESSAGE_LIST_SLICE = 100;
 
 function findClosestIndex(sourceIds: string[], offsetId: string) {
 	if (offsetId < sourceIds[0]) {
@@ -372,7 +373,8 @@ export const fetchMessages = createAsyncThunk(
 				isFetchingLatestMessages,
 				isClearMessage,
 				viewingOlder,
-				foundE2ee
+				foundE2ee,
+				lastMessageId: response.last_sent_message?.id
 			};
 		} catch (error) {
 			captureSentryError(error, 'messages/fetchMessages');
@@ -1168,8 +1170,8 @@ export const messagesSlice = createSlice({
 					const offsetId = action.meta.arg.messageId;
 					const { newViewportIds } = getViewportSlice(messageIds, offsetId, direction);
 					state.channelViewPortMessageIds[channelId] = newViewportIds;
-
-					state.isViewingOlderMessagesByChannelId[channelId] = viewingOlder || state.channelViewPortMessageIds[channelId]?.length > 50;
+					const showFab = !newViewportIds.includes(action.payload.lastMessageId as string);
+					state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 				}
 			)
 			.addCase(fetchMessages.rejected, (state: MessagesState, action) => {
@@ -1373,15 +1375,15 @@ export const selectMessageIdsByChannelId = createCachedSelector([getMessagesStat
 	return messagesState?.channelMessages[channelId]?.ids || emptyArray;
 });
 
-export const selectMessageIdsByChannelId2 = createSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
-	const allIds = messagesState?.channelMessages[channelId]?.ids || emptyArray;
-	const viewportIds = messagesState.channelViewPortMessageIds[channelId];
+export const selectViewportIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
+	return messagesState?.channelViewPortMessageIds[channelId] || emptyArray;
+});
 
+export const selectMessageIdsByChannelId2 = createSelector([selectMessageIdsByChannelId, selectViewportIdsByChannelId], (messageIds, viewportIds) => {
 	if (!viewportIds?.length) {
-		return allIds;
+		return messageIds;
 	}
-
-	return allIds.filter((id) => viewportIds.includes(id));
+	return messageIds.filter((id) => viewportIds.includes(id));
 });
 
 export const selectMessagesByChannel = createSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {

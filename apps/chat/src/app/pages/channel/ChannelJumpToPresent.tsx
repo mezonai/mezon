@@ -10,10 +10,13 @@ type ChannelJumpProps = {
 
 export function ChannelJumpToPresent({ clanId, channelId, className }: ChannelJumpProps) {
 	const dispatch = useAppDispatch();
-	const handleJumpToPresent = () => {
+	const handleJumpToPresent = async () => {
 		// Jump to present
 		dispatch(messagesActions.setIsJumpingToPresent({ channelId: channelId, status: true }));
-		dispatch(messagesActions.fetchMessages({ clanId, channelId, isFetchingLatestMessages: true, noCache: true }));
+		await dispatch(messagesActions.fetchMessages({ clanId, channelId, isFetchingLatestMessages: true, noCache: true }));
+		setTimeout(() => {
+			dispatch(messagesActions.setIsJumpingToPresent({ channelId: channelId, status: true }));
+		}, 200);
 	};
 
 	return (

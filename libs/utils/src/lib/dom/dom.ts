@@ -19,5 +19,5 @@ export function toggleDisableHover(element: HTMLDivElement | null, timeoutId: Re
 
 	timeoutId.current = setTimeout(() => {
 		requestAnimationFrame(removeHover);
-	}, 150);
+	}, 300);
 }

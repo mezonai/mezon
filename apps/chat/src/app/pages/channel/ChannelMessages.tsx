@@ -27,7 +27,6 @@ import {
 	selectIdMessageToJump,
 	selectIsJumpingToPresent,
 	selectIsMessageIdExist,
-	selectIsViewingOlderMessagesByChannelId,
 	selectJumpPinMessageId,
 	selectLastMessageByChannelId,
 	selectMessageEntitiesByChannelId,
@@ -74,7 +73,7 @@ type ChannelMessagesProps = {
 
 const MESSAGE_LIST_SLICE = 50;
 const MESSAGE_ANIMATION_DURATION = 500;
-const BOTTOM_THRESHOLD = 50;
+const BOTTOM_THRESHOLD = 100;
 const BOTTOM_FOCUS_MARGIN = 20;
 
 function ChannelMessages({
@@ -96,10 +95,8 @@ function ChannelMessages({
 	const messageIds = useAppSelector((state) => selectMessageIdsByChannelId2(state, channelId));
 	const idMessageNotified = useSelector(selectMessageNotified);
 	const isJumpingToPresent = useAppSelector((state) => selectIsJumpingToPresent(state, channelId));
-	const isViewOlderMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channelId));
 	const isFetching = useSelector(selectMessageIsLoading);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const userId = useSelector(selectAllAccount)?.user?.id;
 	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, currentInbox?.channel_id as string));
 	const allUserIdsInChannel = isThreadBox ? userIdsFromThreadBox : getMemberIds;
 	const allRolesInClan = useSelector(selectAllRoleIds);
@@ -112,6 +109,10 @@ function ChannelMessages({
 
 	const isFetchingRef = useRef<boolean>(false);
 	const skipCalculateScroll = useRef<boolean>(false);
+
+	const anchorIdRef = useRef<string | null>(null);
+	const anchorTopRef = useRef<number | null>(null);
+	const setAnchor = useRef<number | null>(null);
 
 	useSyncEffect(() => {
 		userActiveScroll.current = false;
@@ -204,7 +205,6 @@ function ChannelMessages({
 				case LoadMoreDirection.Backwards:
 					currentScrollDirection.current = ELoadMoreDirection.top;
 					isLoadMore.current = true;
-					skipCalculateScroll.current = false;
 					await loadMoreMessage(ELoadMoreDirection.top);
 					setTimeout(() => {
 						isLoadMore.current = false;
@@ -212,7 +212,6 @@ function ChannelMessages({
 					break;
 				case LoadMoreDirection.Forwards:
 					currentScrollDirection.current = ELoadMoreDirection.bottom;
-					skipCalculateScroll.current = false;
 					isLoadMore.current = true;
 					await loadMoreMessage(ELoadMoreDirection.bottom);
 					setTimeout(() => {
@@ -224,13 +223,14 @@ function ChannelMessages({
 		[loadMoreMessage, messageIds]
 	);
 
-	useSyncEffect(() => {
-		if (isJumpingToPresent) {
-			skipCalculateScroll.current = true;
-		}
-	}, [isJumpingToPresent]);
-
 	const scrollToLastMessage = useCallback(() => {
+		if (userActiveScroll.current) {
+			userActiveScroll.current = false;
+			skipCalculateScroll.current = true;
+			anchorIdRef.current = null;
+			anchorTopRef.current = null;
+		}
+
 		return new Promise((rs) => {
 			if (isLoadMore.current) return rs(true);
 			chatRef.current && (chatRef.current.scrollTop = chatRef.current.scrollHeight);
@@ -249,23 +249,10 @@ function ChannelMessages({
 		if (isJumpingToPresent) {
 			scrollToLastMessage().then(() => {
 				dispatch(messagesActions.setIsJumpingToPresent({ channelId, status: false }));
+				setAnchor.current = new Date().getTime();
 			});
 		}
 	}, [dispatch, isJumpingToPresent, channelId, scrollToLastMessage]);
-
-	// Handle scroll to bottom when user on the bottom and received new message
-	useEffect(() => {
-		if (isViewOlderMessage) {
-			return;
-		}
-
-		const isNearAtBottom = getChatScrollBottomOffset() <= 100;
-
-		if (userId === lastMessage?.sender_id || isNearAtBottom) {
-			scrollToLastMessage();
-			return;
-		}
-	}, [userId, messageIds.length, isViewOlderMessage, scrollToLastMessage, getChatScrollBottomOffset]);
 
 	const shouldRender = useIdleRender();
 	if (!shouldRender) return null;
@@ -290,6 +277,9 @@ function ChannelMessages({
 				onChange={handleOnChange}
 				isTopic={isTopicBox}
 				skipCalculateScroll={skipCalculateScroll}
+				anchorIdRef={anchorIdRef}
+				anchorTopRef={anchorTopRef}
+				setAnchor={setAnchor}
 			/>
 		</MessageContextMenuProvider>
 	);
@@ -327,6 +317,9 @@ type ChatMessageListProps = {
 	channelLabel?: string;
 	onChange: (direction: LoadMoreDirection) => void;
 	isTopic?: boolean;
+	anchorIdRef: React.MutableRefObject<string | null>;
+	anchorTopRef: React.MutableRefObject<number | null>;
+	setAnchor: React.MutableRefObject<number | null>;
 };
 
 const ChatMessageList: React.FC<ChatMessageListProps> = memo(
@@ -346,10 +339,15 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		channelLabel,
 		onChange,
 		isTopic,
-		skipCalculateScroll
+		skipCalculateScroll,
+		anchorIdRef,
+		anchorTopRef,
+		setAnchor
 	}) => {
 		const store = useStore();
 		const dispatch = useAppDispatch();
+		const userId = useSelector(selectAllAccount)?.user?.id;
+		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 		const idMessageToJump = useSelector(selectIdMessageToJump);
 		const jumpPinMessageId = useSelector(selectJumpPinMessageId);
 		const entities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, channelId));
@@ -384,15 +382,14 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const scrollOffsetRef = useRef<number>(0);
 
-		const anchorIdRef = useRef<string>();
-
-		const anchorTopRef = useRef<number>();
-
 		const memoFocusingIdRef = useRef<number>();
 
 		useSyncEffect(() => {
 			if (idMessageToJump || jumpPinMessageId) {
+				userActiveScroll.current = false;
 				skipCalculateScroll.current = true;
+				anchorIdRef.current = null;
+				anchorTopRef.current = null;
 			}
 		}, [idMessageToJump, jumpPinMessageId]);
 
@@ -420,6 +417,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 				const container = chatRef.current!;
 				listItemElementsRef.current = Array.from(container.querySelectorAll<HTMLDivElement>('.message-list-item'));
+
 				const lastItemElement = listItemElementsRef.current[listItemElementsRef.current.length - 1];
 				// const firstUnreadElement = memoFirstUnreadIdRef.current
 				// 	? container.querySelector<HTMLDivElement>(`#${getMessageHtmlId(memoFirstUnreadIdRef.current)}`)
@@ -461,11 +459,14 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						const lastItemHeight = lastItemElement ? lastItemElement.offsetHeight : 0;
 						bottomOffset -= lastItemHeight;
 					}
-					const isAtBottom = isViewportNewest && prevIsViewportNewest && bottomOffset <= BOTTOM_THRESHOLD;
+					// const isAtBottom = isViewportNewest && prevIsViewportNewest && bottomOffset <= BOTTOM_THRESHOLD;
+					const isAtBottom =
+						chatRef?.current &&
+						Math.abs(chatRef.current.scrollHeight - chatRef.current.clientHeight - chatRef.current.scrollTop) <= BOTTOM_THRESHOLD;
 					// const isAlreadyFocusing = messageIds && memoFocusingIdRef.current === messageIds[messageIds.length - 1];
 					const isAlreadyFocusing = false;
 					// Animate incoming message, but if app is in background mode, scroll to the first unread
-					if (wasMessageAdded && isAtBottom && !isAlreadyFocusing) {
+					if (isAtBottom && !isAlreadyFocusing) {
 						// Break out of `forceLayout`
 						requestMeasure(() => {
 							const shouldScrollToBottom = !isBackgroundModeActive();
@@ -482,6 +483,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 								undefined
 							);
 						});
+						if (userId === lastMessage?.sender_id) return;
 					}
 
 					const isResized = prevContainerHeight !== undefined && prevContainerHeight !== containerHeight;
@@ -538,10 +540,18 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			anchorTopRef.current = anchor.getBoundingClientRect().top;
 		});
 
+		useEffect(() => {
+			if (!setAnchor?.current) return;
+			const container = chatRef?.current;
+			if (!container) return;
+			listItemElementsRef.current = Array.from(container.querySelectorAll<HTMLDivElement>('.message-list-item'));
+			rememberScrollPositionRef.current();
+		}, [setAnchor?.current, rememberScrollPositionRef]);
+
 		useSyncEffect(
 			() => forceMeasure(() => rememberScrollPositionRef.current()),
 			// This will run before modifying content and should match deps for `useLayoutEffectWithPrevDeps` below
-			[messageIds, isViewportNewest, rememberScrollPositionRef]
+			[messageIds, userActiveScroll.current, isViewportNewest, rememberScrollPositionRef]
 		);
 
 		useEffect(
@@ -570,6 +580,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			const scrollToMessage = (messageId: string) => {
 				const messageElement = document.getElementById('msg-' + messageId);
 				if (messageElement) {
+					setAnchor.current = new Date().getTime();
 					userActiveScroll.current = true;
 					messageElement.scrollIntoView({ behavior: 'auto', block: 'center' });
 				}
@@ -619,12 +630,15 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					onWheelCapture={() => {
 						toggleDisableHover(chatRef.current, scrollTimeoutId2);
 						userActiveScroll.current = true;
+						skipCalculateScroll.current = false;
 					}}
 					onTouchStart={() => {
 						userActiveScroll.current = true;
+						skipCalculateScroll.current = false;
 					}}
 					onMouseDown={() => {
 						userActiveScroll.current = true;
+						skipCalculateScroll.current = false;
 					}}
 					ref={chatRef}
 					id="scrollLoading"
@@ -655,7 +669,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					{messageIds.map((messageId, index) => {
 						const checkMessageTargetToMoved = idMessageToJump?.id === messageId && messageId !== lastMessageId;
 						const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
-
 						return (
 							<div className="message-list-item" key={messageId} id={'msg-' + messageId}>
 								<MemorizedChannelMessage

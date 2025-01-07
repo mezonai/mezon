@@ -1,7 +1,5 @@
-import { selectTheme } from '@mezon/store';
 import { getSrcEmoji, SHOW_POSITION } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { useMessageContextMenu } from '../ContextMenu';
 import PlainText from './PlainText';
 
@@ -13,7 +11,6 @@ type EmojiMarkupOpt = {
 };
 
 export const EmojiMarkup: React.FC<EmojiMarkupOpt> = ({ emojiId, emojiSyntax, onlyEmoji, isOne }) => {
-	const appearanceTheme = useSelector(selectTheme);
 	const srcEmoji = useMemo(() => {
 		return getSrcEmoji(emojiId);
 	}, [emojiId]);
@@ -38,7 +35,7 @@ export const EmojiMarkup: React.FC<EmojiMarkupOpt> = ({ emojiId, emojiSyntax, on
 		<span onContextMenu={handleContextMenu} style={{ display: 'inline-block', height: onlyEmoji ? '50px' : 'auto' }}>
 			{srcEmoji ? (
 				// <Tooltip style={appearanceTheme === 'light' ? 'light' : 'dark'} content={<p style={{ width: 'max-content' }}>{emojiSyntax}</p>}>
-				<div style={{ height: 24 }}>{emojiElement}</div>
+				<div style={{ height: onlyEmoji ? 48 : 24 }}>{emojiElement}</div>
 			) : (
 				// </Tooltip>
 				<PlainText text={emojiSyntax} />

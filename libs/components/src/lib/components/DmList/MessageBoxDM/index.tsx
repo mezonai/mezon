@@ -87,9 +87,9 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 
 	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 
-	const handleJumpToPresent = useCallback(() => {
+	const handleJumpToPresent = useCallback(async () => {
 		dispatch(messagesActions.setIsJumpingToPresent({ channelId: directParamId, status: true }));
-		dispatch(
+		await dispatch(
 			messagesActions.fetchMessages({
 				clanId: '0',
 				channelId: directParamId,
@@ -98,6 +98,9 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 				isClearMessage: true
 			})
 		);
+		setTimeout(() => {
+			dispatch(messagesActions.setIsJumpingToPresent({ channelId: directParamId, status: true }));
+		}, 200);
 		dispatch(messagesActions.setIdMessageToJump(null));
 	}, [directParamId]);
 

@@ -2,7 +2,7 @@ import { ThreadError } from '../types';
 
 export const TIME_COMBINE = 120;
 export const TIME_OFFSET = 3;
-export const LIMIT_MESSAGE = 25;
+export const LIMIT_MESSAGE = 50;
 export const LIMIT_CLAN_ITEM = 50;
 export const SIZE_PAGE_SEARCH = 25;
 export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
