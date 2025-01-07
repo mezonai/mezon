@@ -117,14 +117,7 @@ export const MessageContextMenuProvider = ({
 		messageIdRef.current = '';
 	}, []);
 
-	const onVisibilityChange = useCallback(
-		(status: boolean) => {
-			if (!status) {
-				resetMenuState();
-			}
-		},
-		[resetMenuState]
-	);
+	const onVisibilityChange = useCallback((status: boolean) => {}, [resetMenuState]);
 	const setImageURL = useCallback((src: string) => {
 		setImageSrc(src);
 	}, []);
