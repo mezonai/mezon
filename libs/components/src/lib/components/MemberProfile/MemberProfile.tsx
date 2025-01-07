@@ -384,7 +384,7 @@ export function MemberProfile({
 						/>
 					)}
 				</div>
-				<div className="flex flex-col items-start h-full">
+				<div className="flex flex-col items-start h-full ml-0.5">
 					<div
 						ref={subNameRef}
 						className={`absolute top-[22px] mr-5 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col items-start justify-start ${isFooter ? 'ml-[2px]' : ''} ${isHideAnimation ? '' : 'group-hover:-translate-y-4'}`}
@@ -412,7 +412,7 @@ export function MemberProfile({
 						)}
 					</div>
 					{!isHideUserName && (
-						<div className={'h-full flex-col'}>
+						<div className={'h-full flex-col '}>
 							<div className="flex flex-row items-center w-full overflow-x-hidden" style={{ minWidth: `${minWidthNameMain}px` }}>
 								<p
 									className={`text-base font-medium nameMemberProfile

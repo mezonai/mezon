@@ -41,7 +41,7 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 			}
 		>
 			<div className={className} onClick={handleOpenVoiceChannel}>
-				<Icons.IconEvents defaultSize={`w-5 h-5 ${cssEventStatus}`} />
+				<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
 			</div>
 		</Tippy>
 	);

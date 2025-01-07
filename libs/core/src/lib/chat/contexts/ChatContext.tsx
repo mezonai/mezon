@@ -1037,6 +1037,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			// Check action remove
 			const shouldRemoveEvent = isEventNotRepeat && isEventCompleted;
+			const onlyHidingEvent = !isEventNotRepeat && isEventCompleted;
 			const onlyUpdateStatus = isEventUpcoming || isEventOngoing;
 
 			try {
@@ -1045,7 +1046,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					return;
 				}
 
-				if (onlyUpdateStatus) {
+				if (onlyUpdateStatus || onlyHidingEvent) {
 					dispatch(eventManagementActions.updateEventStatus(eventCreatedEvent));
 					return;
 				}

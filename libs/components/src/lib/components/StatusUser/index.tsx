@@ -60,14 +60,14 @@ const StatusUser = memo((props: StatusUserProps) => {
 	return checkDmGroup ? (
 		isTyping && checkTypingUser && (
 			<span
-				className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode ${checkTypingUser ? 'rounded-lg -right-3' : 'rounded-full right-[-4px]'}`}
+				className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode ${checkTypingUser ? 'rounded-lg -right-2' : 'rounded-full right-[-4px]'}`}
 			>
 				<Icons.IconLoadingTyping bgFill="bg-colorSuccess" />
 			</span>
 		)
 	) : (
 		<span
-			className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode ${checkTypingUser ? 'rounded-lg -right-3' : 'rounded-full right-[-4px]'}`}
+			className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode ${checkTypingUser ? 'rounded-lg -right-2' : 'rounded-full right-[-4px]'}`}
 		>
 			{isTyping && checkTypingUser ? (
 				<Icons.IconLoadingTyping bgFill="bg-colorSuccess" />
