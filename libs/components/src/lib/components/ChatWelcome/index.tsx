@@ -1,5 +1,6 @@
 import { useAppParams, useFriends } from '@mezon/core';
 import {
+	ChannelsEntity,
 	EStateFriend,
 	selectCurrentChannel,
 	selectDirectById,
@@ -43,7 +44,12 @@ function ChatWelCome({ name, userName, avatarDM, mode }: ChatWelComeProp) {
 					<>
 						{isChannel &&
 							(isChannelThread ? (
-								<WelcomeChannelThread name={name} classNameSubtext={classNameSubtext} userName={user?.user?.username} />
+								<WelcomeChannelThread
+									currentThread={currentChannel}
+									name={name}
+									classNameSubtext={classNameSubtext}
+									userName={user?.user?.username}
+								/>
 							) : (
 								<WelComeChannel
 									name={name}
@@ -109,10 +115,11 @@ type WelcomeChannelThreadProps = {
 	name?: string;
 	classNameSubtext: string;
 	userName?: string;
+	currentThread: ChannelsEntity | null;
 };
 
 const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
-	const { name = '', classNameSubtext, userName = '' } = props;
+	const { name = '', classNameSubtext, userName = '', currentThread } = props;
 	return (
 		<>
 			<div className="h-[75px] w-[75px] rounded-full bg-bgLightModeButton dark:bg-zinc-700 flex items-center justify-center pl-2">
@@ -120,7 +127,7 @@ const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
 			</div>
 			<div>
 				<p className="text-xl md:text-3xl font-bold pt-1 dark:text-white text-black" style={{ wordBreak: 'break-word' }}>
-					{name}
+					{currentThread?.channel_label}
 				</p>
 			</div>
 			<p className={classNameSubtext}>

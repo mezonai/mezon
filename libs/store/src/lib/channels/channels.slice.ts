@@ -22,7 +22,7 @@ import {
 	Update
 } from '@reduxjs/toolkit';
 import isEqual from 'lodash.isequal';
-import { ApiUpdateChannelDescRequest, ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
+import { ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
 import {
 	ApiAddFavoriteChannelRequest,
 	ApiChangeChannelPrivateRequest,
@@ -314,7 +314,18 @@ export const deleteChannel = createAsyncThunk('channels/deleteChannel', async (b
 	}
 });
 
-export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: ApiUpdateChannelDescRequest, thunkAPI) => {
+export interface IUpdateChannelRequest {
+	channel_id: string;
+	channel_label: string | undefined;
+	category_id: string | undefined;
+	app_url: string | undefined;
+	e2ee?: number;
+	topic?: string;
+	age_restricted?: number;
+	parrent_id?: string;
+}
+
+export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const state = thunkAPI.getState() as RootState;

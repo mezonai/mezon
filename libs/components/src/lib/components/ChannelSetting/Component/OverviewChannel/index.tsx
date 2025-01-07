@@ -3,6 +3,7 @@ import {
 	ChannelsEntity,
 	checkDuplicateChannelInCategory,
 	checkDuplicateThread,
+	IUpdateChannelRequest,
 	IUpdateSystemMessage,
 	selectAppChannelById,
 	selectClanSystemMessage,
@@ -15,7 +16,7 @@ import { checkIsThread, IChannel, ValidateSpecialCharacters, ValidateURL } from 
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Dropdown } from 'flowbite-react';
 import { ModalSaveChanges } from 'libs/components/src/lib/components';
-import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -176,14 +177,15 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		setAgeRestrictedInit(isAgeRestricted);
 		setE2eeInit(isE2ee);
 
-		const updateChannel: ApiUpdateChannelDescRequest = {
+		const updateChannel: IUpdateChannelRequest = {
 			channel_id: channel.channel_id || '',
 			channel_label: updatedChannelLabel,
 			category_id: channel.category_id,
 			app_url: updatedAppUrl,
 			topic: topic,
 			age_restricted: isAgeRestricted,
-			e2ee: isE2ee
+			e2ee: isE2ee,
+			parrent_id: channel?.parrent_id
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));
 	}, [channelLabel, channelLabelInit, appUrl, appUrlInit, topic, channel, isCheckForSystemMsg, dispatch, isAgeRestricted, isE2ee]);

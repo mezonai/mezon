@@ -1,9 +1,11 @@
-import { selectBuzzStateByChannelId, selectEventsByChannelId, selectIsUnreadChannelById, useAppSelector } from '@mezon/store';
+import { selectBuzzStateByChannelId, selectEventsByChannelId, selectIsUnreadChannelById, selectTheme, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IChannel } from '@mezon/utils';
+import Tippy from '@tippy.js/react';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useImperativeHandle, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import BuzzBadge from '../BuzzBadge';
 import { Coords, classes } from '../ChannelLink';
@@ -28,6 +30,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, i
 	const numberNotification = thread.count_mess_unread ? thread.count_mess_unread : 0;
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const threadLinkRef = useRef<HTMLAnchorElement | null>(null);
+	const appearanceTheme = useSelector(selectTheme);
 	const coords = useRef<Coords>({
 		mouseX: 0,
 		mouseY: 0,
@@ -111,7 +114,16 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, i
 			>
 				<div className="flex items-center gap-2">
 					{events[0] && <EventSchedule event={events[0]} className="inline" />}
-					<span>{thread.channel_label}</span>
+
+					<span className="truncate">
+						<Tippy
+							enabled={(thread?.channel_label && thread?.channel_label?.length >= 15) as boolean}
+							content={thread.channel_label as string}
+							className={` ${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
+						>
+							<span>{thread.channel_label}</span>
+						</Tippy>
+					</span>
 				</div>
 			</Link>
 
