@@ -93,3 +93,5 @@ export const AMOUNT_TOKEN = {
 export const TOKEN_TO_AMOUNT = {
 	ONE_THOUNSAND: 1000
 };
+
+export const ADD_ROLE_CHANNEL_STATUS = 'Add Role Channel';
