@@ -438,64 +438,6 @@ export const selectMemberCustomStatusById = createSelector(
 	}
 );
 
-export const selectChannelMemberByUserIds = createSelector(
-	[
-		selectEntitesUserClans,
-		selectDirectMessageEntities,
-		selectAllAccount,
-		(state, channelId: string, userIds?: string, isDm?: string) => {
-			return `${channelId},${userIds},${isDm}`;
-		}
-	],
-	(usersClanState, directs, currentUser, payload) => {
-		const [channelId, userIds, isDm] = payload.split(',');
-		const users = isDm ? directs : usersClanState;
-		if (!userIds.trim() || !users) return [];
-		const members: ChannelMembersEntity[] = [];
-		userIds.split('/')?.forEach((userId) => {
-			const userInfo = users[isDm ? channelId : userId];
-			if (!userInfo) return;
-			if (isDm) {
-				if (currentUser?.user?.id === userId) {
-					members.push({
-						...currentUser,
-						channelId: channelId,
-						userChannelId: channelId,
-						id: currentUser?.user?.id as string
-					} as ChannelMembersEntity);
-					return;
-				}
-				const { usernames, channel_label, user_id, is_online, channel_avatar } = userInfo as DirectEntity;
-				const currentUserIndex = Array.isArray(user_id) ? user_id.findIndex((id) => id === userId) : -1;
-				if (currentUserIndex === -1) return;
-				const groupDisplayNames = usernames?.split(',');
-				const groupLabels = channel_label?.split(',');
-				members.push({
-					channelId,
-					userChannelId: channelId,
-					user: {
-						...userInfo,
-						id: userId,
-						username: groupDisplayNames?.[currentUserIndex],
-						display_name: groupLabels?.[currentUserIndex],
-						online: is_online?.[currentUserIndex],
-						avatar_url: channel_avatar?.[currentUserIndex]
-					},
-					id: userId
-				} as ChannelMembersEntity);
-			} else {
-				members.push({
-					channelId,
-					userChannelId: channelId,
-					...userInfo,
-					id: userInfo?.id
-				} as ChannelMembersEntity);
-			}
-		});
-		return members as ChannelMembersEntity[];
-	}
-);
-
 export const selectGrouplMembers = createSelector(
 	[selectDirectById, selectAllAccount, (state, groupId: string) => groupId],
 	(group, currentUser, groupId) => {
@@ -627,5 +569,61 @@ export const selectAllChannelMemberIds = createSelector(
 				? channelMembersState.memberChannels[channelId]?.ids || []
 				: Object.keys(usersClanState.entities);
 		return memberIds;
+	}
+);
+
+export const selectChannelMemberByUserIds = createSelector(
+	[
+		selectEntitesUserClans,
+		selectDirectMessageEntities,
+		selectAllAccount,
+		selectGroupMembersEntities,
+		(state, channelId: string, userIds?: string, isDm?: string) => {
+			return `${channelId},${userIds},${isDm}`;
+		}
+	],
+	(usersClanState, directs, currentUser, dmMembers, payload) => {
+		const [channelId, userIds, isDm] = payload.split(',');
+
+		const users = isDm ? directs : usersClanState;
+		if (!userIds.trim() || !users) return [];
+		const members: ChannelMembersEntity[] = [];
+		userIds.split('/')?.forEach((userId) => {
+			const userInfo = users[isDm ? channelId : userId];
+			if (!userInfo) return;
+			if (isDm) {
+				if (currentUser?.user?.id === userId) {
+					members.push({
+						...currentUser,
+						channelId: channelId,
+						userChannelId: channelId,
+						id: currentUser?.user?.id as string
+					} as ChannelMembersEntity);
+					return;
+				}
+				const { usernames, channel_label, user_id, is_online, channel_avatar } = userInfo as DirectEntity;
+				const currentUserIndex = Array.isArray(user_id) ? user_id.findIndex((id) => id === userId) : -1;
+				if (currentUserIndex === -1) return;
+				const groupDisplayNames = usernames?.split(',');
+				const groupLabels = channel_label?.split(',');
+				members.push({
+					channelId,
+					userChannelId: channelId,
+					user: {
+						online: is_online?.[currentUserIndex],
+						...dmMembers?.[userId]?.user
+					},
+					id: userId
+				} as ChannelMembersEntity);
+			} else {
+				members.push({
+					channelId,
+					userChannelId: channelId,
+					...userInfo,
+					id: userInfo?.id
+				} as ChannelMembersEntity);
+			}
+		});
+		return members as ChannelMembersEntity[];
 	}
 );
