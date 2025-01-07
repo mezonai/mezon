@@ -109,22 +109,8 @@ export const MessageContextMenuProvider = ({
 		channelId && setIsMenuVisible(false);
 	}, [channelId]);
 
-	const resetMenuState = useCallback(() => {
-		setIsMenuVisible(false);
-		setElementTarget(null);
-		setActiveMode(ChannelStreamMode.STREAM_MODE_CHANNEL);
-		setIsTopic(false);
-		messageIdRef.current = '';
-	}, []);
+	const onVisibilityChange = useCallback((status: boolean) => {}, []);
 
-	const onVisibilityChange = useCallback(
-		(status: boolean) => {
-			if (!status) {
-				resetMenuState();
-			}
-		},
-		[resetMenuState]
-	);
 	const setImageURL = useCallback((src: string) => {
 		setImageSrc(src);
 	}, []);

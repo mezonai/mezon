@@ -1,4 +1,4 @@
-import { MentionReactInput, MessageContextMenuProvider, ReplyMessageBox, UserMentionList } from '@mezon/components';
+import { MentionReactInput, MessageContextMenuProvider, UserMentionList } from '@mezon/components';
 import { useAuth, useTopics } from '@mezon/core';
 import {
 	RootState,
@@ -10,7 +10,6 @@ import {
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectCurrentTopicId,
-	selectDataReferences,
 	selectFirstMessageOfCurrentTopic,
 	topicsActions,
 	useAppDispatch
@@ -39,8 +38,6 @@ const TopicDiscussionBox = () => {
 	const currentTopicId = useSelector(selectCurrentTopicId);
 	const [isFetchMessageDone, setIsFetchMessageDone] = useState(false);
 	const { userProfile } = useAuth();
-	const dataReferences = useSelector(selectDataReferences(currentTopicId ?? ''));
-
 	useEffect(() => {
 		const fetchMsgResult = async () => {
 			await dispatch(fetchMessages({ channelId: currentChannelId as string, clanId: currentClanId as string, topicId: currentTopicId || '' }));
@@ -156,11 +153,6 @@ const TopicDiscussionBox = () => {
 							topicId={currentTopicId}
 						/>
 					</MessageContextMenuProvider>
-				</div>
-			)}
-			{dataReferences.message_ref_id && (
-				<div className="relative z-1 pb-[4px] w-[450px] ml-3">
-					<ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} className="pb-[15px]" />
 				</div>
 			)}
 			<div className="flex flex-col flex-1">

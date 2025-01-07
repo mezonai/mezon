@@ -159,10 +159,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const [undoHistory, setUndoHistory] = useState<HistoryItem[]>([]);
 	const [redoHistory, setRedoHistory] = useState<HistoryItem[]>([]);
 	const currentDmOrChannelId = useCurrentInbox()?.channel_id;
-
-	const currTopicId = useSelector(selectCurrentTopicId);
 	const dataReferences = useSelector(selectDataReferences(currentDmOrChannelId ?? ''));
-	const dataReferencesTopic = useSelector(selectDataReferences(currTopicId ?? ''));
 
 	const { request, setRequestInput } = useMessageValue(isNotChannel ? currentChannelId + String(isNotChannel) : (currentChannelId as string));
 	const { linkList, markdownList, voiceLinkRoomList } = useProcessedContent(request?.content);
@@ -292,10 +289,6 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		}
 	}, [attachmentFilteredByChannelId?.files]);
 
-	const isReplyOnChannel = dataReferences.message_ref_id && !props.isTopic ? true : false;
-	const isReplyOnTopic = dataReferencesTopic.message_ref_id && props.isTopic ? true : false;
-	const isSendMessageOnThreadBox = openThreadMessageState && !props.isTopic ? true : false;
-
 	const handleSend = useCallback(
 		(anonymousMessage?: boolean) => {
 			const payload = {
@@ -359,13 +352,13 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 				joinningToThread(currentChannel, [userProfile?.user?.id ?? '']);
 			}
 
-			if (isReplyOnChannel) {
+			if (dataReferences.message_ref_id !== '') {
 				props.onSend(
 					filterEmptyArrays(payload),
 					isPasteMulti ? mentionUpdated : mentionList,
 					attachmentData,
 					[dataReferences],
-					{ nameValueThread, isPrivate },
+					{ nameValueThread: nameValueThread, isPrivate },
 					anonymousMessage,
 					mentionEveryone
 				);
@@ -380,55 +373,35 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 				dispatch(threadsActions.setNameValueThread({ channelId: currentChannelId as string, nameValue: '' }));
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
-			} else if (isSendMessageOnThreadBox) {
-				props.onSend(
-					{ t: valueThread?.content.t || '' },
-					valueThread?.mentions,
-					valueThread?.attachments,
-					valueThread?.references,
-					{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
-					anonymousMessage,
-					mentionEveryone
-				);
-				setOpenThreadMessageState(false);
-			} else if (isReplyOnTopic) {
-				props.onSend(
-					filterEmptyArrays(payload),
-					mentionList,
-					attachmentData,
-					[dataReferencesTopic],
-					{ nameValueThread, isPrivate },
-					anonymousMessage,
-					mentionEveryone
-				);
-				setRequestInput({ ...request, valueTextInput: '', content: '' }, isNotChannel);
-				setMentionEveryone(false);
-				dispatch(
-					referencesActions.setDataReferences({
-						channelId: currTopicId ?? '',
-						dataReferences: blankReferenceObj
-					})
-				);
-				dispatch(threadsActions.setNameValueThread({ channelId: currTopicId as string, nameValue: '' }));
-				setMentionData([]);
-				dispatch(threadsActions.setIsPrivate(0));
 			} else {
-				props.onSend(
-					filterEmptyArrays(payload),
-					isPasteMulti ? mentionUpdated : mentionList,
-					attachmentData,
-					undefined,
-					{ nameValueThread, isPrivate },
-					anonymousMessage,
-					mentionEveryone
-				);
+				if (openThreadMessageState) {
+					props.onSend(
+						{ t: valueThread?.content.t || '' },
+						valueThread?.mentions,
+						valueThread?.attachments,
+						valueThread?.references,
+						{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
+						anonymousMessage,
+						mentionEveryone
+					);
+					setOpenThreadMessageState(false);
+				} else {
+					props.onSend(
+						filterEmptyArrays(payload),
+						isPasteMulti ? mentionUpdated : mentionList,
+						attachmentData,
+						undefined,
+						{ nameValueThread: nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone
+					);
+				}
 				setRequestInput({ ...request, valueTextInput: '', content: '' }, isNotChannel);
 				setMentionEveryone(false);
 				dispatch(threadsActions.setNameValueThread({ channelId: currentChannelId as string, nameValue: '' }));
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			}
-
 			setSubPanelActive(SubPanelName.NONE);
 			dispatch(
 				emojiSuggestionActions.setSuggestionEmojiObjPicked({
