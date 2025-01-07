@@ -123,8 +123,8 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	}, [originUserProfileValue, currentUserProfileValue]);
 
 	const isUserProfileEmptyName = useMemo(() => {
-		return !!originUserProfileValue?.displayName;
-	}, [originUserProfileValue.displayName]);
+		return !currentUserProfileValue?.displayName;
+	}, [currentUserProfileValue?.displayName]);
 
 	const isClanProfileNotChanged = useMemo(() => {
 		return isEqual(originClanProfileValue, currentClanProfileValue);
@@ -174,7 +174,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 				<Text
 					style={[
 						styles.saveChangeButton,
-						(!isUserProfileNotChanged || !isClanProfileNotChanged) && !isClanProfileNotChanged ? styles.changed : styles.notChange
+						(!isUserProfileNotChanged || !isClanProfileNotChanged) && !isUserProfileEmptyName ? styles.changed : styles.notChange
 					]}
 				>
 					{t('header.save')}
