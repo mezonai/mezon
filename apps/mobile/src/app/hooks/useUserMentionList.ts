@@ -13,7 +13,7 @@ import {
 import { EVERYONE_ROLE_ID, getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiRole } from 'mezon-js/api.gen';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 interface UserMentionListProps {
@@ -28,6 +28,8 @@ function UseMentionList({ channelID, channelMode }: UserMentionListProps): Menti
 	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parrent_id));
 	const rolesInClan = useSelector(selectAllRolesClan);
 	const clanId = useSelector(selectCurrentClanId);
+	const [retryCount, setRetryCount] = useState(0);
+	const maxRetry = 2;
 
 	const dispatch = useAppDispatch();
 
@@ -38,11 +40,19 @@ function UseMentionList({ channelID, channelMode }: UserMentionListProps): Menti
 			return rolesInClan;
 		}
 	}, [channel?.parrent_id, channelparrent?.channel_private, rolesChannel, rolesInClan]);
+
 	useEffect(() => {
-		if (!membersOfParent?.length) {
-			dispatch(channelMembersActions.fetchChannelMembers({ clanId, channelId: channelID || '', channelType: ChannelType.CHANNEL_TYPE_TEXT }));
+		if (!membersOfParent?.length && retryCount < maxRetry) {
+			dispatch(
+				channelMembersActions.fetchChannelMembers({
+					clanId,
+					channelId: channelID || '',
+					channelType: ChannelType.CHANNEL_TYPE_TEXT
+				})
+			);
+			setRetryCount((prev) => prev + 1);
 		}
-	}, [membersOfParent, channelID, dispatch, clanId]);
+	}, [membersOfParent, channelID, dispatch, clanId, retryCount]);
 
 	const filteredRoles = useMemo(() => {
 		return rolesToUse.filter((role) => role.id !== EVERYONE_ROLE_ID);
