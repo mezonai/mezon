@@ -1,10 +1,19 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-import { ChannelMembersEntity, selectAllChannelMembers, selectAllRolesClan, selectChannelById, selectRolesByChannelId } from '@mezon/store';
-import { useAppSelector } from '@mezon/store-mobile';
-import { EVERYONE_ROLE_ID, ID_MENTION_HERE, MentionDataProps, getNameForPrioritize } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import {
+	channelMembersActions,
+	ChannelMembersEntity,
+	selectAllChannelMembers,
+	selectAllRolesClan,
+	selectChannelById,
+	selectCurrentClanId,
+	selectRolesByChannelId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
+import { EVERYONE_ROLE_ID, getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiRole } from 'mezon-js/api.gen';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 interface UserMentionListProps {
@@ -18,6 +27,10 @@ function UseMentionList({ channelID, channelMode }: UserMentionListProps): Menti
 	const channelparrent = useAppSelector((state) => selectChannelById(state, channel?.parrent_id || ''));
 	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parrent_id));
 	const rolesInClan = useSelector(selectAllRolesClan);
+	const clanId = useSelector(selectCurrentClanId);
+
+	const dispatch = useAppDispatch();
+
 	const rolesToUse = useMemo(() => {
 		if (channel?.parrent_id !== '0' && channelparrent?.channel_private === 1) {
 			return rolesChannel;
@@ -25,6 +38,11 @@ function UseMentionList({ channelID, channelMode }: UserMentionListProps): Menti
 			return rolesInClan;
 		}
 	}, [channel?.parrent_id, channelparrent?.channel_private, rolesChannel, rolesInClan]);
+	useEffect(() => {
+		if (!membersOfParent?.length) {
+			dispatch(channelMembersActions.fetchChannelMembers({ clanId, channelId: channelID || '', channelType: ChannelType.CHANNEL_TYPE_TEXT }));
+		}
+	}, [membersOfParent, channelID, dispatch, clanId]);
 
 	const filteredRoles = useMemo(() => {
 		return rolesToUse.filter((role) => role.id !== EVERYONE_ROLE_ID);

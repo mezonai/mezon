@@ -18,6 +18,7 @@ export interface IReplyBottomSheet {
 	senderDisplayName?: string;
 	isPublic?: boolean;
 	channelId?: string;
+	handleBottomSheetExpand?: () => void;
 }
 
 export interface IMessageActionPayload {
