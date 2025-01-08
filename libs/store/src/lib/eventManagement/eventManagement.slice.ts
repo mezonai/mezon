@@ -15,13 +15,36 @@ export interface EventManagementEntity extends IEventManagement {
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
 
 const EVENT_MANAGEMENT_CACHED_TIME = 1000 * 60 * 60;
-const fetchEventManagementCached = memoizeAndTrack((mezon: MezonValueContext, clanId: string) => mezon.client.listEvents(mezon.session, clanId), {
-	promise: true,
-	maxAge: EVENT_MANAGEMENT_CACHED_TIME,
-	normalizer: (args) => {
-		return args[1] + args[0].session.username;
+const fetchEventManagementCached = memoizeAndTrack(
+	async (mezon: MezonValueContext, clanId: string, eventUpdated?: any) => {
+		const eventsResponse = await mezon.client.listEvents(mezon.session, clanId);
+
+		if (eventUpdated) {
+			const updatedEvents = eventsResponse.events
+				? eventsResponse.events.map((event) => (event.id === eventUpdated.event_id ? { ...event, ...eventUpdated } : event))
+				: [];
+
+			const eventExists = updatedEvents.some((event) => event.id === eventUpdated.event_id);
+			if (!eventExists) {
+				updatedEvents.push({
+					id: eventUpdated.event_id,
+					...eventUpdated
+				});
+			}
+
+			return { events: updatedEvents };
+		} else {
+			return eventsResponse;
+		}
+	},
+	{
+		promise: true,
+		maxAge: EVENT_MANAGEMENT_CACHED_TIME,
+		normalizer: (args) => {
+			return args[1] + args[0].session.username + args[2];
+		}
 	}
-});
+);
 
 export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?: string) => {
 	return {
@@ -49,7 +72,7 @@ export const fetchEventManagement = createAsyncThunk(
 
 			const response = await fetchEventManagementCached(mezon, clanId);
 
-			if (!response.events) {
+			if (!response?.events) {
 				return [];
 			}
 
@@ -57,6 +80,25 @@ export const fetchEventManagement = createAsyncThunk(
 			return events;
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+type UpdateCacheEventPayload = {
+	clanId: string;
+	eventUpdated: any;
+};
+
+export const updateCacheEvent = createAsyncThunk(
+	'eventManagement/updateCacheEvent',
+	async ({ clanId, eventUpdated }: UpdateCacheEventPayload, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const updateCacheResult = await fetchEventManagementCached(mezon, clanId, eventUpdated);
+			thunkAPI.dispatch(fetchEventManagement({ clanId: clanId }));
+		} catch (error) {
+			captureSentryError(error, 'eventManagement/updateCacheEvent');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -318,7 +360,8 @@ export const eventManagementActions = {
 	fetchEventManagement,
 	fetchCreateEventManagement,
 	fetchDeleteEventManagement,
-	updateEventManagement
+	updateEventManagement,
+	updateCacheEvent
 };
 
 const { selectAll, selectEntities } = eventManagementAdapter.getSelectors();

@@ -129,7 +129,7 @@ import {
 	VoiceLeavedEvent,
 	WebrtcSignalingFwd
 } from 'mezon-js';
-import { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction } from 'mezon-js/api.gen';
+import { ApiGiveCoffeeEvent, ApiMessageReaction } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiPermissionUpdate, ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useStore } from 'react-redux';
@@ -1023,7 +1023,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[channelId]
 	);
 	const oneventcreated = useCallback(
-		(eventCreatedEvent: ApiCreateEventRequest) => {
+		(eventCreatedEvent: any) => {
 			// Check actions
 			const isActionCreating = eventCreatedEvent.action === EEventAction.CREATED;
 			const isActionUpdating = eventCreatedEvent.action === EEventAction.UPDATE;
@@ -1042,10 +1042,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			const shouldRemoveEvent = isEventNotRepeat && isEventCompleted;
 			const onlyHidingEvent = !isEventNotRepeat && isEventCompleted;
 			const onlyUpdateStatus = isEventUpcoming || isEventOngoing;
-
+			// Current view check
+			const clanIdEvent = eventCreatedEvent.clan_id;
+			const isUpdateCache = clanIdActive === '0' || clanIdActive !== clanIdEvent;
 			try {
 				if (isActionCreating) {
-					dispatch(eventManagementActions.addOneEvent(eventCreatedEvent));
+					dispatch(eventManagementActions.updateCacheEvent({ clanId: eventCreatedEvent.clan_id, eventUpdated: eventCreatedEvent }));
 					return;
 				}
 
