@@ -47,6 +47,7 @@ import {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
+import { getStore } from "@mezon/store";
 export * from './animateScroll';
 export * from './audio';
 export * from './callbacks';
@@ -1004,8 +1005,11 @@ export const transformTextWithMentions = (
 	text: string,
 	mentions: ApiMessageMention[],
 	usersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
-	rolesEntities: Record<string, IRolesClan>
 ): string => {
+	const appStore = getStore();
+	const appState = appStore.getState();
+	const clanRoles = appState.rolesclan.entities;
+	
 	let offsetAdjustment = 0;
 
 	for (const mention of mentions) {
@@ -1014,7 +1018,7 @@ export const transformTextWithMentions = (
 		const end = (e as number) + offsetAdjustment;
 
 		if (role_id) {
-			const role = rolesEntities?.[role_id as string];
+			const role = clanRoles?.[role_id as string];
 			if (role) {
 				const roleName = role.title || '';
 				const replacement = `@[${roleName}](${role_id})`;
