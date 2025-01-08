@@ -2090,3 +2090,20 @@ export const HashtagWarning = ({ width = 24, height = 24, color = '#AEAEAE', ...
 		</Svg>
 	);
 };
+
+export const AuditLogIcon = ({ width = 24, height = 24, color = '#AEAEAE', ...props }) => {
+	return (
+		<Svg width={width} height={height} fill="none" viewBox="0 0 24 24" {...props}>
+			<G id="Live area">
+				<Line x1="2" y1="9" x2="10" y2="9" stroke="#186CF2" strokeWidth="2" strokeLinecap="round" />
+				<Path
+					id="Vector"
+					fillRule="evenodd"
+					clipRule="evenodd"
+					d="M10.0893 3.41075C10.4148 3.08531 10.9424 3.08531 11.2679 3.41075L16.2679 8.41075C16.5933 8.73619 16.5933 9.26382 16.2679 9.58926L11.2679 14.5893C10.9424 14.9147 10.4148 14.9147 10.0893 14.5893C9.7639 14.2638 9.7639 13.7362 10.0893 13.4107L14.5 9L10.0893 4.58926C9.7639 4.26382 9.7639 3.73619 10.0893 3.41075Z"
+					fill="#186CF2"
+				/>
+			</G>
+		</Svg>
+	);
+};
