@@ -746,7 +746,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			if (!pastedData) return;
 
 			const parsedData = parsePastedMentionData(pastedData);
-			// console.log(pastedData)
+			
 			if (!parsedData) return;
 
 			const { message: pastedContent, startIndex, endIndex } = parsedData;
