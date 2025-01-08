@@ -15,13 +15,54 @@ export interface EventManagementEntity extends IEventManagement {
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
 
 const EVENT_MANAGEMENT_CACHED_TIME = 1000 * 60 * 60;
-const fetchEventManagementCached = memoizeAndTrack((mezon: MezonValueContext, clanId: string) => mezon.client.listEvents(mezon.session, clanId), {
-	promise: true,
-	maxAge: EVENT_MANAGEMENT_CACHED_TIME,
-	normalizer: (args) => {
-		return args[1] + args[0].session.username;
+const fetchEventManagementCached = memoizeAndTrack(
+	async (mezon: MezonValueContext, clanId: string, eventUpdated?: any) => {
+		if (eventUpdated) {
+			return eventUpdated;
+		} else {
+			const eventsResponse = await mezon.client.listEvents(mezon.session, clanId);
+			return eventsResponse;
+		}
+	},
+	{
+		promise: true,
+		maxAge: EVENT_MANAGEMENT_CACHED_TIME,
+		normalizer: (args) => {
+			return args[1] + args[0].session.username + args[2];
+		}
 	}
-});
+);
+export const cachingEventUpdate = async (mezon: MezonValueContext, clanId: string, eventUpdated: any) => {
+	const eventsResponse = await fetchEventManagementCached(mezon, clanId);
+
+	if (eventsResponse && Array.isArray(eventsResponse.events)) {
+		let updatedEvents = eventsResponse.events;
+
+		if (eventUpdated) {
+			// Check if the event exists in the current list
+			const eventExists = updatedEvents.some((event: any) => event.id === eventUpdated.event_id);
+
+			if (eventExists) {
+				// Update the existing event
+				updatedEvents = updatedEvents.map((event: any) => (event.id === eventUpdated.event_id ? { ...event, ...eventUpdated } : event));
+			} else {
+				// Add a new event if it doesn't exist
+				updatedEvents = [...updatedEvents, { id: eventUpdated.event_id, ...eventUpdated }];
+			}
+
+			// Clear the cache for the clanId
+			fetchEventManagementCached.delete(mezon, clanId);
+
+			// Update the cache with the new events
+			fetchEventManagementCached(mezon, clanId, { events: updatedEvents });
+
+			return { events: updatedEvents };
+		}
+	}
+
+	// If no eventsResponse or events array is invalid, return it unchanged
+	return eventsResponse;
+};
 
 export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?: string) => {
 	return {
@@ -35,25 +76,31 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 type fetchEventManagementPayload = {
 	clanId: string;
 	noCache?: boolean;
+	updateEvent?: boolean;
+	eventUpdated?: any;
 };
 
 export const fetchEventManagement = createAsyncThunk(
 	'eventManagement/fetchEventManagement',
-	async ({ clanId, noCache }: fetchEventManagementPayload, thunkAPI) => {
+	async ({ clanId, noCache, updateEvent = false, eventUpdated }: fetchEventManagementPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
 				fetchEventManagementCached.clear(mezon, clanId);
 			}
+			let response = await fetchEventManagementCached(mezon, clanId);
 
-			const response = await fetchEventManagementCached(mezon, clanId);
+			if (updateEvent) {
+				response = await cachingEventUpdate(mezon, clanId, eventUpdated);
+				console.log('response: ', response);
+			}
 
 			if (!response.events) {
 				return [];
 			}
 
-			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes, clanId));
+			const events = response.events.map((eventRes: any) => mapEventManagementToEntity(eventRes, clanId));
 			return events;
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');

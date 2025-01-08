@@ -1045,7 +1045,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			try {
 				if (isActionCreating) {
-					dispatch(eventManagementActions.addOneEvent(eventCreatedEvent));
+					// dispatch(eventManagementActions.addOneEvent(eventCreatedEvent));
+					dispatch(
+						eventManagementActions.fetchEventManagement({
+							clanId: eventCreatedEvent.clan_id ?? '',
+							noCache: false,
+							updateEvent: true,
+							eventUpdated: eventCreatedEvent
+						})
+					);
+
 					return;
 				}
 
