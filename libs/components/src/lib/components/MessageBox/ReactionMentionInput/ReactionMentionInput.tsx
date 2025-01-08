@@ -52,7 +52,7 @@ import {
 	selectThreadCurrentChannel,
 	threadsActions,
 	useAppDispatch,
-	useAppSelector
+	useAppSelector, RootState
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
@@ -86,7 +86,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
 import { KeyboardEvent, ReactElement, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Mention, MentionItem, MentionsInput, OnChangeHandlerFunc } from 'react-mentions';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 import textFieldEdit from 'text-field-edit';
 import { ThreadNameTextField } from '../../../components';
 import PrivateThread from '../../ChannelTopbar/TopBarComponents/Threads/CreateThread/PrivateThread';
@@ -752,10 +752,13 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			const { message: pastedContent, startIndex, endIndex } = parsedData;
 			const currentInputValueLength = (request?.valueTextInput ?? '').length;
 			const currentFocusIndex = editorRef.current?.selectionStart as number;
+			const appStore = useStore()
+			const appState = appStore.getState() as RootState;
+			const clanRolesEntities = appState.rolesclan.entities;
 
 			const transformedText =
 				pastedContent?.content?.t && pastedContent?.mentions
-					? transformTextWithMentions(pastedContent.content.t, pastedContent.mentions, currentChatUsersEntities)
+					? transformTextWithMentions(pastedContent.content.t, pastedContent.mentions, currentChatUsersEntities, clanRolesEntities)
 					: pastedContent?.content?.t || '';
 
 			const mentionRaw = generateMentionItems(

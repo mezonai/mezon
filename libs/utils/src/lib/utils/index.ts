@@ -47,7 +47,6 @@ import {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { getStore } from "@mezon/store";
 export * from './animateScroll';
 export * from './audio';
 export * from './callbacks';
@@ -1005,10 +1004,9 @@ export const transformTextWithMentions = (
 	text: string,
 	mentions: ApiMessageMention[],
 	usersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
+	clanRoles: Record<string, IRolesClan>
 ): string => {
-	const appStore = getStore();
-	const appState = appStore.getState();
-	const clanRoles = appState.rolesclan.entities;
+	
 	
 	let offsetAdjustment = 0;
 
