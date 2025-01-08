@@ -1,6 +1,7 @@
-import { useAuth, useMemberCustomStatus } from '@mezon/core';
+import { useAuth, useMemberCustomStatus, useUserMetaById } from '@mezon/core';
 import { ChannelMembersEntity, selectAccountCustomStatus } from '@mezon/store';
 import { MemberProfileType } from '@mezon/utils';
+import { safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { DataMemberCreate } from '../DmList/MemberListGroupChat';
@@ -15,26 +16,23 @@ export type MemberItemProps = {
 	directMessageId?: string;
 	name?: string;
 	isDM: boolean;
-	statusOnline?: any;
 };
 
-function MemberItem({
-	user,
-	listProfile,
-	isOffline,
-	positionType,
-	dataMemberCreate,
-	directMessageId,
-	name,
-	isDM,
-	isMobile,
-	statusOnline
-}: MemberItemProps) {
+function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCreate, directMessageId, name, isDM, isMobile }: MemberItemProps) {
 	const userCustomStatus = useMemberCustomStatus(user.user?.id || '', isDM);
 	const { userProfile } = useAuth();
 	const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 	const displayCustomStatus = user.user?.id === userProfile?.user?.id ? currentUserCustomStatus : userCustomStatus;
-
+	const userMetaById = useUserMetaById(user.user?.id);
+	const statusOnline = useMemo(() => {
+		if (userProfile?.user?.metadata && user.user?.id === userProfile.user.id) {
+			const metadata = safeJSONParse(userProfile?.user?.metadata);
+			return metadata?.user_status;
+		}
+		if (userMetaById) {
+			return userMetaById as any;
+		}
+	}, [user.user?.id, userMetaById, userProfile?.user?.id, userProfile?.user?.metadata]);
 	const isMe = useMemo(() => {
 		return user?.user?.id === userProfile?.user?.id;
 	}, [user?.user?.id, userProfile?.user?.id]);

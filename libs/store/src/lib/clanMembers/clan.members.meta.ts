@@ -77,6 +77,10 @@ export const clanMembersMetaSlice = createSlice({
 			const clanMembersMeta = state.entities[userId];
 			if (clanMembersMeta) {
 				clanMembersMeta.status = user_status;
+				clanMembersMeta.online = true;
+				if (user_status === EUserStatus.INVISIBLE) {
+					clanMembersMeta.online = false;
+				}
 			}
 		}
 	}

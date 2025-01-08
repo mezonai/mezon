@@ -156,6 +156,15 @@ export const friendsSlice = createSlice({
 					friend.user.is_mobile = statusUser.isMobile;
 				}
 			});
+		},
+		updateUserStatus: (state, action: PayloadAction<{ userId: string; user_status: any }>) => {
+			const { userId, user_status } = action.payload;
+			const friendMeta = state.entities[userId];
+			if (friendMeta) {
+				friendMeta.user = friendMeta.user || {};
+				friendMeta.user.metadata = friendMeta.user.metadata || {};
+				friendMeta.user.metadata.user_status = user_status;
+			}
 		}
 	},
 	extraReducers: (builder) => {

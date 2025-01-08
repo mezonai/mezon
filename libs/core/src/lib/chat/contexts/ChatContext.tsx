@@ -1257,6 +1257,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			if (userStatusEvent.user_id !== userId) {
 				dispatch(clanMembersMetaActions.updateUserStatus({ userId: userStatusEvent.user_id, user_status: userStatusEvent.custom_status }));
 				dispatch(directMembersMetaActions.updateUserStatus({ userId: userStatusEvent.user_id, user_status: userStatusEvent.custom_status }));
+				dispatch(friendsActions.updateUserStatus({ userId: userStatusEvent.user_id, user_status: userStatusEvent.custom_status }));
 			}
 		},
 		[userId, dispatch]

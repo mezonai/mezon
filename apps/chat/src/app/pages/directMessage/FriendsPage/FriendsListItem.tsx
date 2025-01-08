@@ -4,6 +4,7 @@ import { ChannelMembersEntity, FriendsEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MemberProfileType, MetaDateStatusUser } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
+import { useMemo } from 'react';
 
 type FriendProps = {
 	friend: FriendsEntity;
@@ -37,6 +38,12 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		unBlockFriend(userName, id);
 	};
 
+	const userFriend = useMemo(() => {
+		if (friend.user) {
+			return friend.user as any;
+		}
+	}, [friend.user]);
+
 	return (
 		<div className="border-t-[1px] dark:border-[#3f4147] border-gray-300 group/list_friends">
 			<div
@@ -60,6 +67,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 						customStatus={(friend.user?.metadata as MetaDateStatusUser).status ?? ''}
 						isDM={true}
 						user={friend as ChannelMembersEntity}
+						statusOnline={userFriend?.metadata?.user_status}
 					/>
 				</div>
 				<div onClick={(e) => e.stopPropagation()}>
