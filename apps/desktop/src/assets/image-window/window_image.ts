@@ -167,11 +167,11 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
           <path fill-rule="evenodd" clip-rule="evenodd" d="M10 14C10 14.5523 10.4477 15 11 15C11.5523 15 12 14.5523 12 14V12H14C14.5523 12 15 11.5523 15 11C15 10.4477 14.5523 10 14 10H12V8C12 7.44772 11.5523 7 11 7C10.4477 7 10 7.44772 10 8V10H8C7.44772 10 7 10.4477 7 11C7 11.5523 7.44772 12 8 12H10V14Z" fill="currentColor"></path>
         </svg>
       </button>
-      <button class="control-button" id="resetBtn">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="currentColor"></path>
-          <text font-size="6" x="11" y="11" text-anchor="middle" font-weight="700" dominant-baseline="middle" fill="currentColor">1 : 1</text>
-        </svg>
+      <button class="control-button" id="zoomOutBtn">
+          <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="#ffffff"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15 11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z" fill="#ffffff"/>
+          </svg>
       </button>
     </div>
     <div class="toggle-list">
@@ -224,6 +224,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 	// Show window when ready with fade-in effect
 	popupWindow.once('ready-to-show', () => {
 		popupWindow.show();
+		popupWindow.webContents.openDevTools();
 		popupWindow.webContents.executeJavaScript(`
 
 	    const selectedImage = document.getElementById('selectedImage');
@@ -252,13 +253,13 @@ window.electron.handleActionShowImage('saveImage',currentImageUrl.url);
 });
 
   document.getElementById('toggleListBtn').addEventListener('click', () => {
-  
+
   if(document.getElementById('thumbnails').classList.contains('thumbnail-contain-hide')){
-  document.getElementById('thumbnails').classList.remove('thumbnail-contain-hide');    
+  document.getElementById('thumbnails').classList.remove('thumbnail-contain-hide');
   return;
   }
-  document.getElementById('thumbnails').classList.add('thumbnail-contain-hide');    
-  
+  document.getElementById('thumbnails').classList.add('thumbnail-contain-hide');
+
   });
 
 
@@ -372,16 +373,14 @@ const scriptRotateAndZoom = () => {
 
  document.getElementById('zoomInBtn').addEventListener('click', () => {
   currentZoom = currentZoom + 0.25
- selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0)  scale(\${currentZoom}) \`; });
+ selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0)  scale(\${currentZoom}) \`;
+  });
 
-document.getElementById('resetBtn').addEventListener('click', () => {
-  currentRotation = 0;
-	currentZoom = 1;
-		currenPosition = {
-			x: 0,
-			y: 0
-		};
- selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0) scale(\${currentZoom}) \`;
+document.getElementById('zoomOutBtn').addEventListener('click', () => {
+if (currentZoom - 0.25 >= 1) {
+  currentZoom = currentZoom - 0.25;
+  selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0)  scale(\${currentZoom}) \`;
+}
 
  });
 
@@ -479,7 +478,7 @@ menu.addEventListener('click', async (e) => {
 						window.electron.handleActionShowImage(action,currentImageUrl.realUrl );
 						break;
 					}
-          default : 
+          default :
           window.electron.handleActionShowImage(action, selectedImage.src);
 						break;
 				}
