@@ -1003,19 +1003,36 @@ export const parsePastedMentionData = (data: string): { message: IMessageWithUse
 export const transformTextWithMentions = (
 	text: string,
 	mentions: ApiMessageMention[],
-	usersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>
+	usersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
+	rolesEntities: Record<string, IRolesClan>
 ): string => {
 	let offsetAdjustment = 0;
 
 	for (const mention of mentions) {
-		const { s, e, user_id } = mention;
+		const { s, e, user_id, role_id } = mention;
 		const start = (s || 0) + offsetAdjustment;
 		const end = (e as number) + offsetAdjustment;
+
+		if (role_id) {
+			const role = rolesEntities?.[role_id as string];
+			if (role) {
+				const roleName = role.title || '';
+				const replacement = `@[${roleName}](${role_id})`;
+				text = text.slice(0, start) + replacement + text.slice(end);
+				offsetAdjustment += replacement.length - (end - start);
+			}
+		}
 
 		const user = usersEntities?.[user_id as string];
 		if (user) {
 			const name = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 			const replacement = `@[${name}](${user_id})`;
+			text = text.slice(0, start) + replacement + text.slice(end);
+			offsetAdjustment += replacement.length - (end - start);
+		}
+
+		if (user_id === ID_MENTION_HERE) {
+			const replacement = `@[here](${user_id})`;
 			text = text.slice(0, start) + replacement + text.slice(end);
 			offsetAdjustment += replacement.length - (end - start);
 		}

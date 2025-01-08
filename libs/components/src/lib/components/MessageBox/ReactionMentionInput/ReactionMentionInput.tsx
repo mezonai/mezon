@@ -46,6 +46,7 @@ import {
 	selectOpenThreadMessageState,
 	selectOpenTopicMessageState,
 	selectReactionRightState,
+	selectRolesClanEntities,
 	selectStatusMenu,
 	selectTheme,
 	selectThreadCurrentChannel,
@@ -152,6 +153,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const isShowDMUserProfile = useSelector(selectIsUseProfileDM);
 	const isFocusOnChannelInput = useSelector(selectIsFocusOnChannelInput);
 	const { currentChatUsersEntities } = useCurrentChat();
+	const clanRolesEntities = useSelector(selectRolesClanEntities);
 	const isNotChannel = props.isThread || props.isTopic;
 	const inputElementId = isNotChannel ? GENERAL_INPUT_ID : CHANNEL_INPUT_ID;
 	const isShowEmojiPicker = !props.isThread;
@@ -745,6 +747,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			if (!pastedData) return;
 
 			const parsedData = parsePastedMentionData(pastedData);
+			// console.log(pastedData)
 			if (!parsedData) return;
 
 			const { message: pastedContent, startIndex, endIndex } = parsedData;
@@ -753,7 +756,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 			const transformedText =
 				pastedContent?.content?.t && pastedContent?.mentions
-					? transformTextWithMentions(pastedContent.content.t, pastedContent.mentions, currentChatUsersEntities)
+					? transformTextWithMentions(pastedContent.content.t, pastedContent.mentions, currentChatUsersEntities, clanRolesEntities)
 					: pastedContent?.content?.t || '';
 
 			const mentionRaw = generateMentionItems(
