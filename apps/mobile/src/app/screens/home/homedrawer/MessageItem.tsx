@@ -54,8 +54,6 @@ const MessageItem = React.memo(
 		const [showHighlightReply, setShowHighlightReply] = useState(false);
 		const { t: contentMessage, lk = [] } = message?.content || {};
 
-		// console.log('>channel message: ', message);
-
 		const isInviteLink = useMemo(() => {
 			if (!lk) return false;
 			return Array.isArray(lk) && validLinkInviteRegex.test(contentMessage);
@@ -178,9 +176,6 @@ const MessageItem = React.memo(
 				timeoutRef.current && clearTimeout(timeoutRef.current);
 			};
 		}, [dispatch, message?.id]);
-
-		console.log('>message: ', message?.content?.t);
-		console.log('topic message: ', message?.code);
 
 		useEffect(() => {
 			if (props?.messageId || message?.id) {
