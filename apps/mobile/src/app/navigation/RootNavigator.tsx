@@ -2,16 +2,12 @@
 import { MezonStoreProvider, initStore } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { NavigationContainer } from '@react-navigation/native';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContextProvider } from '@mezon/core';
-import { sleep } from '@mezon/utils';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT, remove } from '@mezon/mobile-components';
 import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
-import notifee from '@notifee/react-native';
 import { Platform, StatusBar } from 'react-native';
-import BootSplash from 'react-native-bootsplash';
 import codePush from 'react-native-code-push';
 import Toast from 'react-native-toast-message';
 import VersionInfo from 'react-native-version-info';
@@ -24,7 +20,6 @@ import RootStack from './RootStack';
 
 const NavigationMain = memo(
 	() => {
-		const [isReadyForUse, setIsReadyForUse] = useState<boolean>(false);
 		const [isShowUpdateModal, setIsShowUpdateModal] = React.useState<boolean>(false);
 
 		useEffect(() => {
@@ -32,20 +27,6 @@ const NavigationMain = memo(
 				checkForUpdate();
 			}, 2000);
 			return () => clearTimeout(timer);
-		}, []);
-
-		useEffect(() => {
-			const timer = setTimeout(async () => {
-				setIsReadyForUse(true);
-				await notifee.cancelAllNotifications();
-				await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-				await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-				await sleep(100);
-				BootSplash.hide({ fade: true });
-			}, 500);
-			return () => {
-				clearTimeout(timer);
-			};
 		}, []);
 
 		const checkForUpdate = async () => {
@@ -64,8 +45,8 @@ const NavigationMain = memo(
 			<NavigationContainer>
 				<NetInfoComp />
 				<RootListener />
-				{isReadyForUse && <MezonUpdateVersionModal visible={isShowUpdateModal} onClose={() => setIsShowUpdateModal(false)} />}
-				{isReadyForUse && <RootStack />}
+				<MezonUpdateVersionModal visible={isShowUpdateModal} onClose={() => setIsShowUpdateModal(false)} />
+				<RootStack />
 			</NavigationContainer>
 		);
 	},

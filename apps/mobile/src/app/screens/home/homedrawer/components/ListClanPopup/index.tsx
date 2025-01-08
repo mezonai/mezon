@@ -35,10 +35,18 @@ export const ListClanPopup = React.memo(() => {
 	const { disconnect } = useWebRTCStream();
 	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
 	const { userProfile } = useAuth();
-	const clans = useSelector(selectAllClans).sort((a, b) => {
+	const clans = useSelector(selectAllClans);
+	clans.sort((a, b) => {
 		const nameA = a.clan_name ?? '';
 		const nameB = b.clan_name ?? '';
-		return nameA.localeCompare(nameB);
+
+		if (nameA < nameB) {
+			return -1;
+		}
+		if (nameA > nameB) {
+			return 1;
+		}
+		return 0;
 	});
 	useEffect(() => {
 		return () => {

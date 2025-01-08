@@ -330,7 +330,7 @@ export const setupNotificationListeners = async (navigation) => {
 					processNotification({
 						notification: { ...remoteMessage?.notification, data: remoteMessage?.data },
 						navigation,
-						time: 600
+						time: 1
 					});
 				}
 			}

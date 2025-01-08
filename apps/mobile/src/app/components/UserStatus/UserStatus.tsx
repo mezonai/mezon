@@ -19,6 +19,10 @@ export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_
 				return <OfflineStatus width={iconSize} height={iconSize} />;
 
 			default:
+				if (!status?.status) return <OfflineStatus width={iconSize} height={iconSize} />;
+				if (status?.isMobile) {
+					return <Icons.IconMobileDevice width={mobileIconSize} height={mobileIconSize} />;
+				}
 				return <OnlineStatus width={iconSize} height={iconSize} />;
 		}
 	}, []);
@@ -33,13 +37,7 @@ export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_
 			borderRadius={size.s_20}
 			{...(customStyles && customStyles)}
 		>
-			{status?.isMobile ? (
-				<Icons.IconMobileDevice width={mobileIconSize} height={mobileIconSize} />
-			) : !status?.status ? (
-				<OfflineStatus width={iconSize} height={iconSize} />
-			) : (
-				onlineStatus
-			)}
+			{onlineStatus}
 		</Block>
 	);
 });

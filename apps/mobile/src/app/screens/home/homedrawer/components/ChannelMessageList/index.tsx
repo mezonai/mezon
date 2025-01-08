@@ -35,7 +35,7 @@ const ChannelListMessage = React.memo(
 		const isCannotLoadMore = useMemo(() => {
 			const lastMessage = messages?.[messages?.length - 1];
 
-			return lastMessage?.sender_id === '0' && !lastMessage?.content?.t && lastMessage?.username === 'system';
+			return lastMessage?.sender_id === '0' && !lastMessage?.content?.t && lastMessage?.username?.toLowerCase() === 'system';
 		}, [messages]);
 
 		const handleEndReached = () => {
