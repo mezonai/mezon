@@ -127,6 +127,7 @@ type HistoryItem = {
 };
 
 export const MentionReactInput = memo((props: MentionReactInputProps): ReactElement => {
+	const appStore = useStore();
 	const channels = useSelector(selectAllChannels);
 	const rolesClan = useSelector(selectAllRolesClan);
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -752,9 +753,8 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			const { message: pastedContent, startIndex, endIndex } = parsedData;
 			const currentInputValueLength = (request?.valueTextInput ?? '').length;
 			const currentFocusIndex = editorRef.current?.selectionStart as number;
-			const appStore = useStore()
 			const appState = appStore.getState() as RootState;
-			const clanRolesEntities = appState.rolesclan.entities;
+			const clanRolesEntities = selectRolesClanEntities(appState);
 
 			const transformedText =
 				pastedContent?.content?.t && pastedContent?.mentions
