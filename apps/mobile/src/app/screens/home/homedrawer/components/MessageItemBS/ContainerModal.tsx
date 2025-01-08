@@ -49,7 +49,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const { userProfile, userId } = useAuth();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
-	const { type, onClose, onConfirmAction, message, mode, isOnlyEmojiPicker = false, user, senderDisplayName = '' } = props;
+	const { type, onClose, onConfirmAction, message, mode, isOnlyEmojiPicker = false, user, senderDisplayName = '', handleBottomSheetExpand } = props;
 	const checkAnonymous = useMemo(() => message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.sender_id]);
 	const timeoutRef = useRef(null);
 	const [content, setContent] = useState<React.ReactNode>(<View />);
@@ -640,7 +640,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const renderEmojiSelector = () => {
 		return (
 			<View style={{ padding: size.s_10 }}>
-				<EmojiSelector onSelected={onSelectEmoji} isReactMessage />
+				<EmojiSelector onSelected={onSelectEmoji} isReactMessage handleBottomSheetExpand={handleBottomSheetExpand} />
 			</View>
 		);
 	};

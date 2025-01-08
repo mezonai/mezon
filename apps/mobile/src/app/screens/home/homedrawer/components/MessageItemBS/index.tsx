@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useTheme } from '@mezon/mobile-ui';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { MezonBottomSheet } from '../../../../../componentUI';
 import { EMessageBSToShow } from '../../enums';
@@ -52,6 +52,10 @@ export const MessageItemBS = React.memo((props: IReplyBottomSheet) => {
 		return ['50%'];
 	}, [isShowEmojiPicker, isOnlyEmojiPicker, type]);
 
+	const handleBottomSheetExpand = useCallback(() => {
+		bottomSheetRef && bottomSheetRef?.current && bottomSheetRef.current.expand();
+	}, []);
+
 	return (
 		<MezonBottomSheet
 			ref={bottomSheetRef}
@@ -70,7 +74,7 @@ export const MessageItemBS = React.memo((props: IReplyBottomSheet) => {
 				);
 			}}
 		>
-			<ContainerModal {...props} />
+			<ContainerModal {...props} handleBottomSheetExpand={handleBottomSheetExpand} />
 		</MezonBottomSheet>
 	);
 });

@@ -4,7 +4,7 @@ import { Colors, useTheme } from '@mezon/mobile-ui';
 import { EmojiDataOptionals, SenderInfoOptionals, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { UserInformationBottomSheet } from '../../../../../../app/components/UserInformationBottomSheet';
 import { IMessageReactionProps } from '../../types';
@@ -57,6 +57,7 @@ export const MessageReactionWrapper = React.memo(
 		);
 
 		const onReactItemLongPress = (emojiId: string) => {
+			Keyboard.dismiss();
 			bottomSheetRef.current?.present();
 			setCurrentEmojiSelectedId(emojiId);
 		};
