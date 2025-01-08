@@ -20,7 +20,8 @@ export enum EActivities {
 	SPOTIFY = 'Spotify',
 	LOL = 'LeagueClientUx',
 	LOL_MACOS = 'League Of Legends',
-	CURSOR = 'Cursor'
+	CURSOR = 'Cursor',
+	XCODE = 'Xcode'
 }
 
 const IMAGE_WINDOW_KEY = 'IMAGE_WINDOW_KEY';
@@ -279,7 +280,8 @@ export default class App {
 						EActivities.LOL,
 						EActivities.VISUAL_STUDIO_CODE,
 						EActivities.LOL_MACOS,
-						EActivities.CURSOR
+						EActivities.CURSOR,
+						EActivities.XCODE
 					].includes(appName as EActivities)
 				) {
 					const newAppInfo = { appName, windowTitle, startTime };

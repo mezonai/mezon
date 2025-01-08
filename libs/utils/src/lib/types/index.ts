@@ -1076,7 +1076,8 @@ export enum ActivitiesName {
 	SPOTIFY = 'Spotify',
 	LOL = 'LeagueClientUx',
 	LOL_MACOS = 'League Of Legends',
-	CURSOR = 'Cursor'
+	CURSOR = 'Cursor',
+	XCODE = 'Xcode'
 }
 
 export enum TypeMessage {
