@@ -13,11 +13,11 @@ import {
 } from '@mezon/store';
 import { Button, Icons, Image, InputField } from '@mezon/ui';
 import { isMacDesktop } from '@mezon/utils';
+import isElectron from 'is-electron';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
 import FriendList from './FriendsList';
-
 const tabData = [
 	{ title: 'All', value: 'all' },
 	{ title: 'Online', value: 'online' },
@@ -176,7 +176,7 @@ const FriendsPage = () => {
 					</button>
 				</div>
 			</div>
-			<div className="flex-1 flex w-full h-full">
+			<div className={`flex-1 flex w-full h-full ${isElectron() ? 'pb-8' : ''}`}>
 				<div className=" flex-1 dark:bg-bgPrimary bg-[#F0F0F0] flex flex-col">
 					{!openModalAddFriend && (
 						<>

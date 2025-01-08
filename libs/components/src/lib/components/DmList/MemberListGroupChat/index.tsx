@@ -1,6 +1,7 @@
 import { useAppParams } from '@mezon/core';
 import { ChannelMembersEntity, selectGrouplMembers, useAppSelector } from '@mezon/store';
 import { MemberProfileType } from '@mezon/utils';
+import isElectron from 'is-electron';
 import { memo } from 'react';
 import MemberItem from '../../MemberList/MemberItem';
 
@@ -33,7 +34,7 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 					MEMBER - {memberGroups.length}
 				</p>
 				{
-					<div className="flex flex-col gap-4 text-[#AEAEAE]">
+					<div className={`flex flex-col gap-4 text-[#AEAEAE] ${isElectron() ? 'pb-8' : ''}`}>
 						{memberGroups.map((user: ChannelMembersEntity) => (
 							<div key={user.id} className="p-2 rounded dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton">
 								<MemberItem
