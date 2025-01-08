@@ -1,7 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import { EEventStatus, ERepeatType, IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { convertTime } from 'libs/components/src/lib/components/ChannelList/EventChannelModal/timeFomatEvent';
 import { ApiEventManagement } from 'mezon-js/api.gen';
 import { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
@@ -239,11 +238,7 @@ export const eventManagementSlice = createSlice({
 		},
 		updateNewStartTime: (state, action) => {
 			const { event_id, start_time } = action.payload;
-			// console.log('start_time :', start_time);
-			const newStartTimeFormat = convertTime(start_time);
-			// console.log('newStartTimeFormat :', newStartTimeFormat);
 			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
-			// console.log('existingEvent :', existingEvent);
 			if (!existingEvent) {
 				return;
 			}

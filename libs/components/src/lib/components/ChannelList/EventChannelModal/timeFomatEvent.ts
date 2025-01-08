@@ -159,19 +159,3 @@ export const formatToLocalDateString = (timeString: string | Date) => {
 
 	throw new Error(`Invalid input: timeString must be a string or Date object`);
 };
-
-//Wed Jan 08 2025 05:26:00 GMT+0700 (Indochina Time) => 2025-01-07T15:06:51Z
-export const convertTime = (timeStr: string | Date) => {
-	const cleanedTimeStr = (typeof timeStr === 'string' ? timeStr : timeStr.toString()).split(' (')[0];
-	const originalDate = new Date(cleanedTimeStr);
-	const adjustedDate = new Date(originalDate.getTime() - 7 * 60 * 60 * 1000);
-
-	const dayOfWeek = adjustedDate.getDay();
-	if (dayOfWeek === 6) {
-		adjustedDate.setDate(adjustedDate.getDate() + 2);
-	} else if (dayOfWeek === 0) {
-		adjustedDate.setDate(adjustedDate.getDate() + 1);
-	}
-	const isoString = adjustedDate.toISOString();
-	return isoString;
-};
