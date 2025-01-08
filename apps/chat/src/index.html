@@ -56,11 +56,13 @@
       const authData = localStorage.getItem('persist:auth');
       const appData = localStorage.getItem('persist:apps');
       const categoriesData = localStorage.getItem('persist:categories');
+      const rememberChannelData = localStorage.getItem('remember_channel');
       localStorage.clear();
 
       authData && localStorage.setItem('persist:auth', authData);
       appData && localStorage.setItem('persist:apps', appData);
       categoriesData && localStorage.setItem('persist:categories', categoriesData);
+      rememberChannelData && localStorage.setItem('remember_channel', rememberChannelData)
 
       const isCrashScreen = document.getElementById('error-crash');
       if (isCrashScreen) {

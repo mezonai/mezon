@@ -18,7 +18,9 @@ export enum EActivities {
 	CODE = 'Code',
 	VISUAL_STUDIO_CODE = 'Visual Studio Code',
 	SPOTIFY = 'Spotify',
-	LOL = 'LeagueClientUx'
+	LOL = 'LeagueClientUx',
+	LOL_MACOS = 'League Of Legends',
+	CURSOR = 'Cursor'
 }
 
 const IMAGE_WINDOW_KEY = 'IMAGE_WINDOW_KEY';
@@ -259,11 +261,6 @@ export default class App {
 	}
 
 	private static setupWindowManager() {
-		if (process.platform === 'darwin') {
-			console.error('not implemented');
-			return;
-		}
-
 		let defaultApp = null;
 		const usageThreshold = 30 * 60 * 1000;
 		let activityTimeout = null;
@@ -275,7 +272,16 @@ export default class App {
 				const windowTitle = window?.windowName;
 				const startTime = new Date().toISOString();
 
-				if ([EActivities.SPOTIFY, EActivities.CODE, EActivities.LOL, EActivities.VISUAL_STUDIO_CODE].includes(appName as EActivities)) {
+				if (
+					[
+						EActivities.SPOTIFY,
+						EActivities.CODE,
+						EActivities.LOL,
+						EActivities.VISUAL_STUDIO_CODE,
+						EActivities.LOL_MACOS,
+						EActivities.CURSOR
+					].includes(appName as EActivities)
+				) {
 					const newAppInfo = { appName, windowTitle, startTime };
 
 					if (!defaultApp || defaultApp?.appName !== newAppInfo?.appName || defaultApp.windowTitle !== newAppInfo?.windowTitle) {
