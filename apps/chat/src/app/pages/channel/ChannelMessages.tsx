@@ -50,6 +50,7 @@ import {
 	restartCurrentScrollAnimation,
 	toggleDisableHover
 } from '@mezon/utils';
+import classNames from 'classnames';
 import { ChannelMessage as ChannelMessageType, ChannelType } from 'mezon-js';
 import { ApiMessageRef } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -639,7 +640,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 		return (
-			<div className="messages-container">
+			<div className="w-full h-full relative messages-container">
 				<div
 					onWheelCapture={() => {
 						toggleDisableHover(chatRef.current, scrollTimeoutId2);
@@ -656,7 +657,14 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					}}
 					ref={chatRef}
 					id="scrollLoading"
-					className="dark:bg-bgPrimary"
+					className={classNames([
+						'absolute top-0 left-0 bottom-0 right-0',
+						'overflow-y-scroll overflow-x-hidden',
+						'dark:bg-bgPrimary bg-bgLightPrimary',
+						{
+							customScrollLightMode: appearanceTheme === 'light'
+						}
+					])}
 				>
 					<div className="flex flex-col min-h-full mt-auto justify-end">
 						{isTopic && convertedFirstMsgOfThisTopic && (

@@ -356,7 +356,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				>
 					{!isShowCanvas && !isShowAgeRestricted && (
 						<div
-							className={`flex flex-col flex-1 min-w-60 ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && 'hidden'} z-10`}
+							className={`flex flex-col flex-1 min-w-60 pb-[10px] ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING && 'hidden'} z-10`}
 						>
 							<div
 								className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}
