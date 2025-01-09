@@ -6,7 +6,7 @@
         "electron-store": "8.2.0",
         "electron-updater": "^6.3.4",
         "tslib": "^2.7.0",
-        "mezon-active-windows": "0.1.33"
+        "mezon-active-windows": "0.1.32"
     },
     "devDependencies": {}
 }
