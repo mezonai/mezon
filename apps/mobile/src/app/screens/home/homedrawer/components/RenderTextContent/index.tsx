@@ -51,7 +51,7 @@ export const renderTextContent = (text: string) => {
 		return parts?.map?.((part, index) => {
 			const isHighlighted = highlightEmojiRegex.test(part);
 			return (
-				<Text key={index} style={isHighlighted && { fontWeight: 'bold', color: Colors.bgViolet }}>
+				<Text key={`${index}-${part}-renderTextWithMention`} style={isHighlighted && { fontWeight: 'bold', color: Colors.bgViolet }}>
 					{part}
 				</Text>
 			);

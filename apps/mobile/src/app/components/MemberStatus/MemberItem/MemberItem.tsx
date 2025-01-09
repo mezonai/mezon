@@ -1,4 +1,5 @@
-import { useAuth, useMemberStatus } from '@mezon/core';
+import { useMemberStatus } from '@mezon/core';
+import { STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
 import { ChannelMembersEntity, DirectEntity, selectCurrentClan, selectUserClanProfileByClanID } from '@mezon/store-mobile';
 import { IChannel, UsersClanEntity } from '@mezon/utils';
 import { memo, useMemo } from 'react';
@@ -35,10 +36,12 @@ export function MemberItem({ user, isOffline, onPress, currentChannel, isDMThrea
 
 	const currentClan = useSelector(selectCurrentClan);
 	const clanProfile = useSelector(selectUserClanProfileByClanID(currentClan?.clan_id as string, user?.user?.id as string));
-	const { userProfile } = useAuth();
+	const userId = useMemo(() => {
+		return load(STORAGE_MY_USER_ID);
+	}, []);
 	const isMe = useMemo(() => {
-		return user?.user?.id === userProfile?.user?.id;
-	}, [user?.user?.id, userProfile?.user?.id]);
+		return user?.user?.id === userId;
+	}, [user?.user?.id, userId]);
 	return (
 		<TouchableOpacity
 			activeOpacity={0.8}

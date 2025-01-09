@@ -54,7 +54,6 @@ export interface IMessageReactionProps {
 	mode: number;
 	openEmojiPicker?: () => void;
 	preventAction?: boolean;
-	userProfile?: IUserAccount;
 	messageReactions?: EmojiDataOptionals[];
 }
 

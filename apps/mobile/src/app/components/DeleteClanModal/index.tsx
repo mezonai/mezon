@@ -1,6 +1,14 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { useAuth, useChannelMembersActions } from '@mezon/core';
-import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID, remove, save, setDefaultChannelLoader } from '@mezon/mobile-components';
+import { useChannelMembersActions } from '@mezon/core';
+import {
+	STORAGE_CHANNEL_CURRENT_CACHE,
+	STORAGE_CLAN_ID,
+	STORAGE_MY_USER_ID,
+	load,
+	remove,
+	save,
+	setDefaultChannelLoader
+} from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
@@ -38,8 +46,9 @@ const DeleteClanModal = ({
 	const { themeValue } = useTheme();
 	const { removeMemberClan } = useChannelMembersActions();
 	const currentChannelId = useSelector(selectCurrentVoiceChannelId);
-	const { userProfile } = useAuth();
-
+	const userId = useMemo(() => {
+		return load(STORAGE_MY_USER_ID);
+	}, []);
 	const currentClanName = useMemo(() => {
 		return currentClan?.clan_name;
 	}, [currentClan?.clan_name]);
@@ -49,7 +58,7 @@ const DeleteClanModal = ({
 			await removeMemberClan({
 				channelId: currentChannelId,
 				clanId: currentClan?.clan_id,
-				userIds: [userProfile?.user?.id]
+				userIds: [userId]
 			});
 		} else {
 			await dispatch(clansActions.deleteClan({ clanId: currentClan?.clan_id || '' }));

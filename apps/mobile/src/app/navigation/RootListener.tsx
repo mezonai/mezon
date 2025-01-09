@@ -30,6 +30,7 @@ import {
 	ActionEmitEvent,
 	STORAGE_CLAN_ID,
 	STORAGE_IS_DISABLE_LOAD_BACKGROUND,
+	STORAGE_MY_USER_ID,
 	jumpToChannel,
 	load,
 	save,
@@ -169,6 +170,10 @@ const RootListener = () => {
 				return;
 			}
 			const profileResponse = await dispatch(accountActions.getUserProfile());
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			const userId = profileResponse?.payload?.user?.id as string;
+			if (userId) save(STORAGE_MY_USER_ID, userId?.toString());
 			if ((profileResponse as unknown as IWithError).error) {
 				console.log('Session expired');
 				return;

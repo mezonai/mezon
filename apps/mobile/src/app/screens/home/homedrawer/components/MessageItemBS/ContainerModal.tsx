@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useAuth, useChannelMembers, useChatSending, usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, CopyIcon, Icons, formatContentEditMessage } from '@mezon/mobile-components';
+import { useChannelMembers, useChatSending, usePermissionChecker } from '@mezon/core';
+import { ActionEmitEvent, CopyIcon, Icons, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
@@ -46,7 +46,6 @@ import { style } from './styles';
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const { themeValue } = useTheme();
-	const { userProfile, userId } = useAuth();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const { type, onClose, onConfirmAction, message, mode, isOnlyEmojiPicker = false, user, senderDisplayName = '', handleBottomSheetExpand } = props;
@@ -62,6 +61,10 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(currentDmId ?? ''));
 	const navigation = useNavigation<any>();
+	const userId = useMemo(() => {
+		return load(STORAGE_MY_USER_ID);
+	}, []);
+
 	const { sendMessage } = useChatSending({
 		mode,
 		channelOrDirect:
@@ -115,13 +118,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 					token_count: AMOUNT_TOKEN.TEN_TOKENS
 				};
 				dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
-				handleReact(
-					mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
-					message.id,
-					EMOJI_GIVE_COFFEE.emoji_id,
-					EMOJI_GIVE_COFFEE.emoji,
-					userProfile?.user?.id
-				);
+				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji, userId);
 			}
 		} catch (error) {
 			console.error('Failed to give cofffee message', error);
@@ -431,7 +428,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	};
 
 	const messageActionList = useMemo(() => {
-		const isMyMessage = userProfile?.user?.id === message?.user?.id;
+		const isMyMessage = userId === message?.user?.id;
 		const isMessageError = message?.isError;
 		const isUnPinMessage = listPinMessages.some((pinMessage) => pinMessage?.message_id === message?.id);
 		const isHideCreateThread = isDM || !isCanManageThread || !isCanManageChannel || currentChannel?.parrent_id !== '0';
@@ -483,7 +480,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 			warning: availableMessageActions.filter((action) => warningActionList.includes(action.type))
 		};
 	}, [
-		userProfile?.user?.id,
+		userId,
 		message?.user?.id,
 		message?.isError,
 		message?.code,
@@ -517,7 +514,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const handleReact = async (mode, messageId, emoji_id: string, emoji: string, senderId) => {
 		if (currentChannel?.parrent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
 			await dispatch(threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channel_id ?? '', activeCode: ThreadStatus.joined }));
-			joinningToThread(currentChannel, [userProfile?.user?.id ?? '']);
+			joinningToThread(currentChannel, [userId ?? '']);
 		}
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
@@ -569,13 +566,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 								key={index}
 								style={styles.favouriteIconItem}
 								onPress={() =>
-									handleReact(
-										mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
-										message.id,
-										item.id,
-										item.shortname,
-										userProfile?.user?.id
-									)
+									handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, item.id, item.shortname, userId)
 								}
 							>
 								<FastImage
@@ -632,9 +623,9 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 
 	const onSelectEmoji = useCallback(
 		async (emoji_id: string, emoij: string) => {
-			await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij, userProfile?.user?.id);
+			await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij, userId);
 		},
-		[handleReact, message?.id, mode, userProfile?.user?.id]
+		[handleReact, message?.id, mode, userId]
 	);
 
 	const renderEmojiSelector = () => {

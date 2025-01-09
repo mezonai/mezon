@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useChannelMembers, useChatSending } from '@mezon/core';
-import { ActionEmitEvent, ID_MENTION_HERE, IRoleMention, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, ID_MENTION_HERE, IRoleMention, Icons, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
 import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	emojiSuggestionActions,
 	messagesActions,
 	referencesActions,
-	selectAllAccount,
 	selectAllRolesClan,
 	selectAttachmentByChannelId,
 	selectChannelById,
@@ -88,7 +87,9 @@ export const ChatMessageSending = memo(
 			mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
 		});
 		const { clientRef, sessionRef, socketRef } = useMezon();
-		const userProfile = useSelector(selectAllAccount);
+		const userId = useMemo(() => {
+			return load(STORAGE_MY_USER_ID);
+		}, []);
 		const currentTopicId = useSelector(selectCurrentTopicId);
 		const valueTopic = useSelector(selectValueTopic);
 		const isCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, currentChannel?.id as string));
@@ -163,7 +164,7 @@ export const ChatMessageSending = memo(
 				await dispatch(
 					threadsActions.updateActiveCodeThread({ channelId: currentChannel.channel_id ?? '', activeCode: ThreadStatus.joined })
 				);
-				joinningToThread(currentChannel, [userProfile?.user?.id ?? '']);
+				joinningToThread(currentChannel, [userId ?? '']);
 			}
 			const payloadSendMessage: IMessageSendPayload = {
 				t: removeTags(valueInputRef?.current),
@@ -318,7 +319,7 @@ export const ChatMessageSending = memo(
 								channelId: currentChannel?.channel_id as string,
 								messageId: valueTopic?.id as string,
 								topicId: topic.id as string,
-								creatorId: userProfile?.user?.id as string
+								creatorId: userId as string
 							})
 						);
 
@@ -335,7 +336,7 @@ export const ChatMessageSending = memo(
 					}
 				}
 			},
-			[currentChannel?.channel_id, currentChannel?.clan_id, currentTopicId, dispatch, sendMessageTopic, valueTopic?.id, userProfile?.user?.id]
+			[currentChannel?.channel_id, currentChannel?.clan_id, currentTopicId, dispatch, sendMessageTopic, valueTopic?.id, userId]
 		);
 
 		const startRecording = async () => {
