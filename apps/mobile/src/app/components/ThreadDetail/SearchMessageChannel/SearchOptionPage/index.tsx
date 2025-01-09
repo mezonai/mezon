@@ -3,6 +3,7 @@ import { Block, size } from '@mezon/mobile-ui';
 import { DirectEntity, selectCurrentChannel } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
+import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import UseMentionList from '../../../../hooks/useUserMentionList';
@@ -18,7 +19,11 @@ interface ISeachOptionPageProps {
 
 function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPageProps) {
 	const currentChannel = useSelector(selectCurrentChannel);
-	const userListData = UseMentionList({ channelID: currentChannel?.id ?? '', channelMode: currentChannel?.type });
+
+	const userListData = UseMentionList({
+		channelID: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parrent_id : currentChannel?.channel_id) || '',
+		channelMode: currentChannel?.type
+	});
 	const userListDataSearchByMention = useMemo(
 		() =>
 			userListData?.map((user) => {

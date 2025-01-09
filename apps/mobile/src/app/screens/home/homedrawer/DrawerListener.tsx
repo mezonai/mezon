@@ -66,8 +66,8 @@ function DrawerListener({ currentChannel }: { currentChannel: ChannelsEntity }) 
 		await dispatch(
 			channelMembersActions.fetchChannelMembers({
 				clanId: currentChannel?.clan_id || '',
-				channelId: currentChannel?.channel_id || '',
-				channelType: currentChannel?.type
+				channelId: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parrent_id : currentChannel?.channel_id) || '',
+				channelType: ChannelType.CHANNEL_TYPE_TEXT
 			})
 		);
 	}, [currentChannel, dispatch]);
