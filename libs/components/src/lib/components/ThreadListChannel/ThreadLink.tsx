@@ -38,7 +38,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, i
 
 	const channelPath = `/chat/clans/${thread.clan_id}/channels/${thread.channel_id}`;
 	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, thread?.channel_id ?? ''));
-	const events = useAppSelector((state) => selectEventsByChannelId(state, thread?.channel_id ?? ''));
+	const events = useAppSelector((state) => selectEventsByChannelId(state, thread?.clan_id ?? '', thread?.channel_id ?? ''));
 
 	const state = isActive ? 'active' : thread?.unread ? 'inactiveUnread' : 'inactiveRead';
 
