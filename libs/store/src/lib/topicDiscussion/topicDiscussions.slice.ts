@@ -1,8 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
-import { IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
-import { ApiSdTopic } from 'mezon-js/api.gen';
+import { Socket } from 'mezon-js';
+import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { RootState } from '../store';
@@ -138,6 +139,60 @@ export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotif
 	}
 });
 
+type SendTopicPayload = {
+	socket: Socket;
+	clanId: string;
+	channelId: string;
+	mode: number;
+	isPublic: boolean;
+	content: IMessageSendPayload;
+	mentions?: Array<ApiMessageMention>;
+	attachments?: Array<ApiMessageAttachment>;
+	references?: Array<ApiMessageRef>;
+	anonymous?: boolean;
+	mentionEveryone?: boolean;
+	isMobile?: boolean;
+	code?: number;
+	topicId: string;
+};
+
+export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async (payload: SendTopicPayload, thunkAPI) => {
+	const {
+		socket,
+		clanId,
+		channelId,
+		mode,
+		isPublic,
+		content,
+		mentions,
+		attachments,
+		references,
+		anonymous,
+		mentionEveryone,
+		isMobile,
+		code,
+		topicId
+	} = payload;
+
+	if (socket) {
+		await socket.writeChatMessage(
+			clanId as string,
+			channelId as string,
+			mode,
+			isPublic,
+			content,
+			mentions,
+			attachments,
+			references,
+			false,
+			false,
+			'',
+			0,
+			topicId
+		);
+	}
+});
+
 export const topicsSlice = createSlice({
 	name: TOPIC_DISCUSSIONS_FEATURE_KEY,
 	initialState: initialTopicsState,
@@ -234,7 +289,7 @@ export const topicsReducer = topicsSlice.reducer;
  *
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
-export const topicsActions = { ...topicsSlice.actions, createTopic, fetchTopics };
+export const topicsActions = { ...topicsSlice.actions, createTopic, fetchTopics, handleSendTopic };
 
 /*
  * Export selectors to query state. For use with the `useSelector` hook.

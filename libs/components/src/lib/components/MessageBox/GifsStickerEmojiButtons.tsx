@@ -10,90 +10,102 @@ export type GifStickerEmojiButtonsProps = {
 	hasPermissionEdit: boolean;
 	voiceLongPress?: ILongPressType;
 	isRecording?: boolean;
+	focusTargetInput?: () => void;
 };
 
-const GifStickerEmojiButtons = memo(({ activeTab, currentClanId, hasPermissionEdit, voiceLongPress, isRecording }: GifStickerEmojiButtonsProps) => {
-	const dispatch = useAppDispatch();
-	const { setSubPanelActive, subPanelActive } = useGifsStickersEmoji();
-	const { setShowCategories } = useGifs();
-	const { setValueInputSearch } = useGifsStickersEmoji();
-	const { directId: currentDmGroupId } = useAppParams();
+const GifStickerEmojiButtons = memo(
+	({ activeTab, currentClanId, hasPermissionEdit, voiceLongPress, isRecording, focusTargetInput }: GifStickerEmojiButtonsProps) => {
+		const dispatch = useAppDispatch();
+		const { setSubPanelActive, subPanelActive } = useGifsStickersEmoji();
+		const { setShowCategories } = useGifs();
+		const { setValueInputSearch } = useGifsStickersEmoji();
+		const { directId: currentDmGroupId } = useAppParams();
 
-	const handleOpenGifs = useCallback(
-		(e: React.MouseEvent<HTMLDivElement>) => {
-			e.stopPropagation();
-			setSubPanelActive(SubPanelName.GIFS);
-			setShowCategories(true);
-			setValueInputSearch('');
-			dispatch(reactionActions.setReactionRightState(false));
-			dispatch(reactionActions.setReactionBottomState(false));
-			if (subPanelActive === SubPanelName.GIFS) {
-				setSubPanelActive(SubPanelName.NONE);
-			} else {
+		const handleFocusOnTargetInput = () => {
+			if (focusTargetInput) {
+				focusTargetInput();
+			}
+		};
+
+		const handleOpenGifs = useCallback(
+			(e: React.MouseEvent<HTMLDivElement>) => {
+				e.stopPropagation();
+				handleFocusOnTargetInput();
 				setSubPanelActive(SubPanelName.GIFS);
-			}
-			dispatch(referencesActions.setIdReferenceMessageReaction(''));
-		},
-		[subPanelActive, setSubPanelActive]
-	);
+				setShowCategories(true);
+				setValueInputSearch('');
+				dispatch(reactionActions.setReactionRightState(false));
+				dispatch(reactionActions.setReactionBottomState(false));
+				if (subPanelActive === SubPanelName.GIFS) {
+					setSubPanelActive(SubPanelName.NONE);
+				} else {
+					setSubPanelActive(SubPanelName.GIFS);
+				}
+				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+			},
+			[subPanelActive, setSubPanelActive]
+		);
 
-	const handleOpenStickers = useCallback(
-		(e: React.MouseEvent<HTMLDivElement>) => {
-			e.stopPropagation();
-			setSubPanelActive(SubPanelName.STICKERS);
-			setShowCategories(true);
-			setValueInputSearch('');
-
-			dispatch(reactionActions.setReactionRightState(false));
-			dispatch(reactionActions.setReactionBottomState(false));
-			if (subPanelActive === SubPanelName.STICKERS) {
-				setSubPanelActive(SubPanelName.NONE);
-			} else {
+		const handleOpenStickers = useCallback(
+			(e: React.MouseEvent<HTMLDivElement>) => {
+				e.stopPropagation();
+				handleFocusOnTargetInput();
 				setSubPanelActive(SubPanelName.STICKERS);
-			}
-			dispatch(referencesActions.setIdReferenceMessageReaction(''));
-		},
-		[subPanelActive, setSubPanelActive]
-	);
+				setShowCategories(true);
+				setValueInputSearch('');
 
-	const handleOpenEmoji = useCallback(
-		(e: React.MouseEvent<HTMLDivElement>) => {
-			e.stopPropagation();
-			setShowCategories(true);
-			setValueInputSearch('');
-			dispatch(reactionActions.setReactionRightState(false));
-			dispatch(reactionActions.setReactionBottomState(false));
-			if (subPanelActive === SubPanelName.EMOJI) {
-				setSubPanelActive(SubPanelName.NONE);
-			} else {
-				setSubPanelActive(SubPanelName.EMOJI);
-			}
-			dispatch(referencesActions.setIdReferenceMessageReaction(''));
-		},
-		[setSubPanelActive, subPanelActive]
-	);
+				dispatch(reactionActions.setReactionRightState(false));
+				dispatch(reactionActions.setReactionBottomState(false));
+				if (subPanelActive === SubPanelName.STICKERS) {
+					setSubPanelActive(SubPanelName.NONE);
+				} else {
+					setSubPanelActive(SubPanelName.STICKERS);
+				}
+				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+			},
+			[subPanelActive, setSubPanelActive]
+		);
 
-	return (
-		<div className="flex flex-row absolute h-11 items-center gap-1 mr-3 top-0 right-0">
-			<div {...voiceLongPress} className={`w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
-				<Icons.MicEnable
-					className={`w-6 h-6 ${isRecording ? 'text-red-600' : 'dark:text-[#AEAEAE] text-colorTextLightMode dark:hover:text-white hover:text-black'}`}
-				/>
+		const handleOpenEmoji = useCallback(
+			(e: React.MouseEvent<HTMLDivElement>) => {
+				e.stopPropagation();
+				handleFocusOnTargetInput();
+				setShowCategories(true);
+				setValueInputSearch('');
+				dispatch(reactionActions.setReactionRightState(false));
+				dispatch(reactionActions.setReactionBottomState(false));
+				if (subPanelActive === SubPanelName.EMOJI) {
+					setSubPanelActive(SubPanelName.NONE);
+				} else {
+					setSubPanelActive(SubPanelName.EMOJI);
+				}
+				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+			},
+			[setSubPanelActive, subPanelActive]
+		);
+
+		return (
+			<div className="flex flex-row absolute h-11 items-center gap-1 mr-3 top-0 right-0">
+				<div {...voiceLongPress} className={`w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
+					<Icons.MicEnable
+						className={`w-6 h-6 ${isRecording ? 'text-red-600' : 'dark:text-[#AEAEAE] text-colorTextLightMode dark:hover:text-white hover:text-black'}`}
+					/>
+				</div>
+
+				<div onClick={handleOpenGifs} className={`block max-sm:hidden w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
+					<Icons.Gif defaultSize="w-6 h-6" isWhite={subPanelActive === SubPanelName.GIFS} />
+				</div>
+
+				<div onClick={handleOpenStickers} className={`block max-sm:hidden w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
+					<Icons.Sticker defaultSize="w-6 h-6" isWhite={subPanelActive === SubPanelName.STICKERS} />
+				</div>
+
+				<div onClick={handleOpenEmoji} className={`w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
+					<Icons.Smile defaultSize="w-6 h-6" defaultFill={`${subPanelActive === SubPanelName.EMOJI ? '#FFFFFF' : '#AEAEAE'}`} />
+				</div>
 			</div>
-
-			<div onClick={handleOpenGifs} className={`block max-sm:hidden w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
-				<Icons.Gif defaultSize="w-6 h-6" isWhite={subPanelActive === SubPanelName.GIFS} />
-			</div>
-
-			<div onClick={handleOpenStickers} className={`block max-sm:hidden w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
-				<Icons.Sticker defaultSize="w-6 h-6" isWhite={subPanelActive === SubPanelName.STICKERS} />
-			</div>
-
-			<div onClick={handleOpenEmoji} className={`w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
-				<Icons.Smile defaultSize="w-6 h-6" defaultFill={`${subPanelActive === SubPanelName.EMOJI ? '#FFFFFF' : '#AEAEAE'}`} />
-			</div>
-		</div>
-	);
-});
+		);
+	}
+);
 
 export default GifStickerEmojiButtons;

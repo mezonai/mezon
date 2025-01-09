@@ -1,9 +1,10 @@
 import { useChatSending, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
-import { selectAllStickerSuggestion, selectCurrentClan, useAppSelector } from '@mezon/store';
+import { selectAllStickerSuggestion, selectCurrentClan, selectCurrentTopicId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, SubPanelName } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 type ChannelMessageBoxProps = {
 	channel: ApiChannelDescription | undefined;
@@ -30,6 +31,7 @@ type StickerPanel = {
 
 function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 	const { sendMessage } = useChatSending({ channelOrDirect: channel, mode });
+	const currentTopicId = useSelector(selectCurrentTopicId);
 	const handleSend = useCallback(
 		(
 			content: IMessageSendPayload,
