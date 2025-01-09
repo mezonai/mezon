@@ -294,7 +294,11 @@ export default class App {
 			}
 		};
 
-		fetchActiveWindow();
+		try {
+			fetchActiveWindow();
+		} catch (ex) {
+			console.error(ex);
+		}
 
 		if (activityTimeout) {
 			clearInterval(activityTimeout);
