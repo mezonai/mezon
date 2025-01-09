@@ -376,12 +376,6 @@ export const selectCreatingLoaded = createSelector(getEventManagementState, (sta
 
 export const selectEventLoading = createSelector(getEventManagementState, (state) => state.loadingStatus);
 
-export const selectEventById = (eventId: string) =>
-	createSelector(getEventManagementState, (state) => {
-		const entities = selectEventManagementEntities({ eventmanagement: state });
-		return entities[eventId] || null;
-	});
-
 export const selectNumberEventPrivate = createSelector(
 	selectEventsByClanId,
 	(events) => events.filter((event) => event.channel_id && event.channel_id !== '0' && event.channel_id !== '').length
@@ -405,5 +399,13 @@ export const selectEventsByChannelId = createSelector(
 		}
 
 		return [];
+	}
+);
+
+export const selectEventById = createSelector(
+	[(state: RootState) => state.eventmanagement, (state: RootState, clanId: string, eventId: string) => ({ clanId, eventId })],
+	(events, { clanId, eventId }) => {
+		const event = events.byClans[clanId]?.entities.entities[eventId];
+		return event;
 	}
 );

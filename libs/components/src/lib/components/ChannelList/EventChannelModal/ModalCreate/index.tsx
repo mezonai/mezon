@@ -41,8 +41,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 	const tabs = ['Location', 'Event Info', 'Review'];
 	const [currentModal, setCurrentModal] = useState(0);
-	const currentEvent = useSelector(selectEventById(eventId || ''));
+	const currentEvent = useAppSelector((state) => selectEventById(state, currentClanId ?? '', eventId ?? ''));
 	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : '')) || {};
+
 	const createStatus = useSelector(selectCreatingLoaded);
 	const dispatch = useAppDispatch();
 
