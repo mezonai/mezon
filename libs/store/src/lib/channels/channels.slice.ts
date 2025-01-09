@@ -323,6 +323,7 @@ export interface IUpdateChannelRequest {
 	topic?: string;
 	age_restricted?: number;
 	parrent_id?: string;
+	channel_private?: number;
 }
 
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {

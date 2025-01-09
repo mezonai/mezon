@@ -185,7 +185,8 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			topic: topic,
 			age_restricted: isAgeRestricted,
 			e2ee: isE2ee,
-			parrent_id: channel?.parrent_id
+			parrent_id: channel?.parrent_id,
+			channel_private: channel?.channel_private
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));
 	}, [channelLabel, channelLabelInit, appUrl, appUrlInit, topic, channel, isCheckForSystemMsg, dispatch, isAgeRestricted, isE2ee]);
