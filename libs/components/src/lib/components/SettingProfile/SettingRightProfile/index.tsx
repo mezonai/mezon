@@ -31,7 +31,7 @@ const SettingRightProfile = ({ menuIsOpen, isDM }: SettingRightProfileProps) => 
 
 	useEffect(() => {
 		setActiveType(currentClanId === '0' && isShowSettingFooter.isUserProfile ? EActiveType.USER_SETTING : EActiveType.CLAN_SETTING);
-		setClanId(isShowSettingFooter.clanId !== '' ? isShowSettingFooter.clanId || '' : currentClanId || '');
+		setClanId(isShowSettingFooter.clanId ? isShowSettingFooter.clanId || '' : currentClanId || '');
 	}, [isShowSettingFooter?.profileInitTab, isShowSettingFooter.clanId, currentClanId]);
 
 	return (
