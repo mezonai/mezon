@@ -237,7 +237,7 @@ export const eventManagementSlice = createSlice({
 
 		removeOneEvent: (state, action) => {
 			const { event_id } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
@@ -245,7 +245,7 @@ export const eventManagementSlice = createSlice({
 		},
 		updateEventStatus: (state, action) => {
 			const { event_id, event_status } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
@@ -258,7 +258,7 @@ export const eventManagementSlice = createSlice({
 		},
 		updateNewStartTime: (state, action) => {
 			const { event_id, start_time } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
@@ -289,7 +289,10 @@ export const eventManagementSlice = createSlice({
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
 			const { event_status: _, ...restWithoutEventStatus } = restPayload;
-
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
+			if (!existingEvent) {
+				return;
+			}
 			eventManagementAdapter.upsertOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				channel_id: normalizedChannelId,
