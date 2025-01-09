@@ -66,7 +66,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 				);
 			}
 		},
-		[currentChannel, dispatch, socketRef, handleReconnect, reactionMessageDispatch]
+		[currentChannel, dispatch, socketRef, handleReconnect, reactionMessageDispatch, intervalRef]
 	);
 
 	const onReactionMessageRetry = useCallback(
@@ -87,7 +87,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 				);
 			}
 		},
-		[currentChannel, reactionMessageDispatch, socketRef]
+		[currentChannel, reactionMessageDispatch, socketRef, intervalRef]
 	);
 
 	useEffect(() => {
