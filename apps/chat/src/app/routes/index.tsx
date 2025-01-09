@@ -48,6 +48,7 @@ const ChannelIndex = loadable(() => import('../pages/channel/ChannelIndex'));
 const ClanIndex = loadable(() => import('../pages/clan/ClanIndex'));
 const DirectMessage = loadable(() => import('../pages/directMessage/DMPage'));
 const DirectMessageIndex = loadable(() => import('../pages/directMessage/DMPage/DirectMessageIndex'));
+const DirectMessageTemporary = loadable(() => import('../pages/directMessage/DMPage/DirectMessageTemporary'));
 const FriendsPage = loadable(() => import('../pages/directMessage/FriendsPage'));
 const ClanLayout = loadable(() => import('../layouts/ClanLayout'));
 const ChannelLayout = loadable(() => import('../layouts/ChannelLayout'));
@@ -241,6 +242,10 @@ export const Routes = memo(() => {
 																		loader: loaderWithStore(directMessageLoader),
 																		shouldRevalidate: shouldRevalidateChannel,
 																		element: <DirectMessage />
+																	},
+																	{
+																		path: 'temporary',
+																		element: <DirectMessageTemporary />
 																	}
 																]
 															}
