@@ -125,7 +125,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	);
 
 	const isHaveJumpToPresent = useMemo(() => {
-		return (isViewingOldMessage || messages?.length >= LIMIT_MESSAGE * 2) && !!messages?.length;
+		return (isViewingOldMessage || messages?.length >= LIMIT_MESSAGE * 3) && !!messages?.length;
 	}, [isViewingOldMessage, messages?.length]);
 
 	const onLoadMore = useCallback(
