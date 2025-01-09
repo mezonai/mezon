@@ -1,4 +1,4 @@
-import { BrowserWindow, app, clipboard, dialog, ipcMain, nativeImage, screen, shell } from 'electron';
+import { BrowserWindow, app, clipboard, dialog, ipcMain, screen, shell } from 'electron';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
@@ -207,23 +207,6 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 		}
 		case 'openLink': {
 			shell.openExternal(fileURL);
-			break;
-		}
-		case 'copyImage': {
-			const blobImage = await fetch(fileURL).then((response) => response.blob());
-			const base64data = await blobImage.arrayBuffer();
-			const uint8Array = new Uint8Array(base64data);
-
-			let base64String = '';
-			const chunkSize = 8192; // Adjust the chunk size as needed
-			for (let i = 0; i < uint8Array.length; i += chunkSize) {
-				const chunk = uint8Array.subarray(i, i + chunkSize);
-				base64String += String.fromCharCode.apply(null, chunk);
-			}
-
-			const base64DataUrl = `data:image/png;base64,${btoa(base64String)}`;
-			clipboard.write({ image: nativeImage.createFromDataURL(base64DataUrl) });
-
 			break;
 		}
 		case 'saveImage': {

@@ -291,8 +291,6 @@ width : 0 !important;
         overflow-y: hidden;
     }
 
-    
-
     .bottom-bar {
         flex-wrap: wrap;
         height: auto;
@@ -376,6 +374,25 @@ width : 0 !important;
     background-color: #434343;
     margin: 4px 0;
 }
+
+    .toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(33, 33, 33, 0.9);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .toast.show {
+        opacity: 1;
+    }
 
 
 `;

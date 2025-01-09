@@ -37,9 +37,7 @@ function DirectMessageList() {
 					<CreateMessageGroupModal />
 				</div>
 			</div>
-			<div
-				className={`flex-1 font-medium text-gray-300 px-2 h-2/3 ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
-			>
+			<div className={`flex-1 font-medium text-gray-300 pl-2 h-2/3`}>
 				<div className="flex flex-col gap-1 text-[#AEAEAE] text-center relative">
 					<ListDMChannel listDM={dmGroupChatList} />
 				</div>

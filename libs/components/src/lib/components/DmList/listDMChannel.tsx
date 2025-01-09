@@ -9,7 +9,7 @@ import {
 	selectTheme,
 	useAppDispatch
 } from '@mezon/store';
-import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -74,13 +74,18 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 		[closeMenu]
 	);
 
+	const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
+
 	return (
 		<div
 			ref={parentRef}
-			className={`custom-member-list ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
+			className={`thread-scroll`}
 			style={{
 				height: height,
 				overflow: 'auto'
+			}}
+			onWheelCapture={() => {
+				toggleDisableHover(parentRef.current, scrollTimeoutId2);
 			}}
 		>
 			<div

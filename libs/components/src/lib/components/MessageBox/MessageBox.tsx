@@ -167,7 +167,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 			<AudioRecorderControl outerRecording={isRecording} onSendRecord={handleEndRecording} />
 			<div
-				className={`flex flex-inline items-start gap-2 box-content mb-4 max-sm:mb-0
+				className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
 			dark:bg-channelTextarea bg-channelTextareaLight rounded-lg relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}
 			${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
 			>

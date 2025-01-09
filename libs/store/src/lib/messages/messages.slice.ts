@@ -1170,7 +1170,10 @@ export const messagesSlice = createSlice({
 					const offsetId = action.meta.arg.messageId;
 					const { newViewportIds } = getViewportSlice(messageIds, offsetId, direction);
 					state.channelViewPortMessageIds[channelId] = newViewportIds;
-					const showFab = !newViewportIds.includes(action.payload.lastMessageId as string);
+					const showFab =
+						!!action.payload?.lastMessageId &&
+						!newViewportIds.includes(action.payload.lastMessageId as string) &&
+						messageIds.length > LIMIT_MESSAGE - 1;
 					state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 				}
 			)
