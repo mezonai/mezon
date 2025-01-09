@@ -32,5 +32,8 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_12,
 			paddingHorizontal: size.s_10,
 			color: colors.text
+		},
+		stylesDatePicker: {
+			backgroundColor: colors.tertiary
 		}
 	});

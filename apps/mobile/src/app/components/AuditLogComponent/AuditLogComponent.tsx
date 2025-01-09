@@ -154,10 +154,16 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 				</Block>
 			</TouchableOpacity>
 			<Block paddingHorizontal={size.s_10}>
-				<MezonDateTimePicker value={selectDate} onChange={handleDatePicked} mode={'date'} maximumDate={today} />
+				<MezonDateTimePicker
+					value={selectDate}
+					onChange={handleDatePicked}
+					mode={'date'}
+					maximumDate={today}
+					containerStyle={styles.stylesDatePicker}
+				/>
 			</Block>
 
-			<Block flex={1} paddingHorizontal={size.s_20} paddingVertical={size.s_10}>
+			<Block flex={1} paddingHorizontal={size.s_10} paddingVertical={size.s_10}>
 				{loadingStatus === 'loaded' && !auditLogData?.logs?.length ? (
 					<EmptyAuditLog />
 				) : (
