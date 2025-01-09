@@ -243,7 +243,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
         url : '${imageData.url}',
           realUrl : '${imageData.realUrl}'
       };
-      let currentIndex = ${activeIndex}
+    
       document.getElementById('close-window').addEventListener('click', () => {
 		selectedImage.src = null;
     	window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::CLOSE_IMAGE_WINDOW');
@@ -308,6 +308,7 @@ document.addEventListener('keydown', (e) => {
 		ipcMain.removeHandler('minimize-window');
 		ipcMain.removeHandler('maximize-window');
 		App.imageViewerWindow = null;
+		App.imageScriptWindowLoaded = false;
 	});
 	App.imageViewerWindow = popupWindow;
 	return popupWindow;
