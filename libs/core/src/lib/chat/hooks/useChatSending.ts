@@ -44,10 +44,9 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			isMobile?: boolean,
 			code?: number
 		) => {
-			if (!isFocusOnChannelInput && isShowCreateTopic && socketRef.current) {
+			if (!isFocusOnChannelInput && isShowCreateTopic) {
 				dispatch(
 					topicsActions.handleSendTopic({
-						socket: socketRef.current,
 						clanId: getClanId as string,
 						channelId: channelIdOrDirectId as string,
 						mode: mode,

@@ -81,7 +81,6 @@ const TopicDiscussionBox = () => {
 
 			dispatch(
 				topicsActions.handleSendTopic({
-					socket: socket,
 					clanId: currentClanId as string,
 					channelId: currentChannel?.channel_id as string,
 					mode: mode,

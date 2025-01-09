@@ -1,11 +1,16 @@
 import { captureSentryError } from '@mezon/logger';
-import { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import {
+	getMobileUploadedAttachments,
+	getWebUploadedAttachments,
+	IMessageSendPayload,
+	IMessageWithUser,
+	LoadingStatus
+} from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
-import { Socket } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
+import { MezonValueContext, ensureSession, getMezonCtx, ensureSocket } from '../helpers';
 import { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 const LIST_TOPIC_DISCUSSIONS_CACHED_TIME = 1000 * 60 * 60;
@@ -140,7 +145,6 @@ export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotif
 });
 
 type SendTopicPayload = {
-	socket: Socket;
 	clanId: string;
 	channelId: string;
 	mode: number;
@@ -158,7 +162,6 @@ type SendTopicPayload = {
 
 export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async (payload: SendTopicPayload, thunkAPI) => {
 	const {
-		socket,
 		clanId,
 		channelId,
 		mode,
@@ -173,24 +176,44 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		code,
 		topicId
 	} = payload;
-
-	if (socket) {
-		await socket.writeChatMessage(
-			clanId as string,
-			channelId as string,
-			mode,
-			isPublic,
-			content,
-			mentions,
-			attachments,
-			references,
-			false,
-			false,
-			'',
-			0,
-			topicId
-		);
+	
+	const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+	
+	const session = mezon.sessionRef.current;
+	const client = mezon.clientRef.current;
+	const socket = mezon.socketRef.current;
+	
+	if (!client || !session || !socket || !channelId) {
+		throw new Error('Client is not initialized');
 	}
+	
+	let uploadedFiles: ApiMessageAttachment[] = [];
+	
+	if (attachments && attachments.length > 0) {
+		if (isMobile) {
+			uploadedFiles = await getMobileUploadedAttachments({ attachments, channelId, clanId, client, session });
+		} else {
+			uploadedFiles = await getWebUploadedAttachments({ attachments, channelId: topicId, clanId, client, session });
+		}
+	}
+
+	
+	await socket.writeChatMessage(
+		clanId as string,
+		channelId as string,
+		mode,
+		isPublic,
+		content,
+		mentions,
+		uploadedFiles,
+		references,
+		false,
+		false,
+		'',
+		0,
+		topicId
+	);
+	
 });
 
 export const topicsSlice = createSlice({
