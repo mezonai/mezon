@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { EEventStatus, ERepeatType, IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiEventManagement } from 'mezon-js/api.gen';
-import { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
+import { ApiCreateEventRequest, ApiEventList, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 
@@ -13,38 +13,6 @@ export interface EventManagementEntity extends IEventManagement {
 }
 
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
-
-const EVENT_MANAGEMENT_CACHED_TIME = 1000 * 60 * 60;
-const fetchEventManagementCached = memoizeAndTrack(
-	async (mezon: MezonValueContext, clanId: string, eventUpdated?: any) => {
-		const eventsResponse = await mezon.client.listEvents(mezon.session, clanId);
-
-		if (eventUpdated) {
-			const updatedEvents = eventsResponse.events
-				? eventsResponse.events.map((event) => (event.id === eventUpdated.event_id ? { ...event, ...eventUpdated } : event))
-				: [];
-
-			const eventExists = updatedEvents.some((event) => event.id === eventUpdated.event_id);
-			if (!eventExists) {
-				updatedEvents.push({
-					id: eventUpdated.event_id,
-					...eventUpdated
-				});
-			}
-
-			return { events: updatedEvents };
-		} else {
-			return eventsResponse;
-		}
-	},
-	{
-		promise: true,
-		maxAge: EVENT_MANAGEMENT_CACHED_TIME,
-		normalizer: (args) => {
-			return args[1] + args[0].session.username + args[2];
-		}
-	}
-);
 
 export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?: string) => {
 	return {
@@ -58,7 +26,112 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 type fetchEventManagementPayload = {
 	clanId: string;
 	noCache?: boolean;
+	shouldUpdateCache?: boolean;
 };
+
+const EVENT_MANAGEMENT_CACHED_TIME = 1000 * 60 * 60;
+const fetchEventManagementCached = memoizeAndTrack(
+	async (mezon: MezonValueContext, clanId: string, eventsUpdated?: ApiEventList) => {
+		if (eventsUpdated) {
+			return eventsUpdated;
+		} else {
+			const eventsResponse = await mezon.client.listEvents(mezon.session, clanId);
+			return eventsResponse;
+		}
+	},
+	{
+		promise: true,
+		maxAge: EVENT_MANAGEMENT_CACHED_TIME,
+		normalizer: (args) => {
+			return args[1] + args[0].session.username + args[2]?.events;
+		}
+	}
+);
+type UpdateCacheEventPayload = {
+	clanId: string;
+	eventUpdated: any;
+	isCreating?: boolean;
+	onlyUpdateStatus?: boolean;
+	updateStatusAndNewStartTime?: boolean;
+	isActionUpdating?: boolean;
+	isAddEventAgain?: boolean;
+	isRemoving?: boolean;
+};
+
+export const updateCacheEvent = createAsyncThunk(
+	'eventManagement/updateCacheEvent',
+	async (
+		{
+			clanId,
+			eventUpdated,
+			isCreating,
+			onlyUpdateStatus,
+			updateStatusAndNewStartTime,
+			isActionUpdating,
+			isAddEventAgain,
+			isRemoving
+		}: UpdateCacheEventPayload,
+		thunkAPI
+	) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const eventResponseCached = await fetchEventManagementCached(mezon, clanId, undefined);
+			let mergedEvents = eventResponseCached.events || [];
+			// Add new event
+			if (eventUpdated && isCreating) {
+				mergedEvents.push({
+					id: eventUpdated.event_id,
+					...eventUpdated
+				});
+				return;
+			}
+
+			mergedEvents = mergedEvents.map((event) => (event.id === eventUpdated.event_id ? { ...event, ...eventUpdated } : event));
+			const eventExists = mergedEvents.some((event) => event.id === eventUpdated.event_id);
+			// Only update status event
+			if (eventUpdated && onlyUpdateStatus && eventExists) {
+				mergedEvents = mergedEvents.map((event) =>
+					event.id === eventUpdated.event_id ? { ...event, event_status: eventUpdated.event_status } : event
+				);
+				return;
+			}
+			// Update status and new start time
+			if (eventUpdated && updateStatusAndNewStartTime && eventExists) {
+				mergedEvents = mergedEvents.map((event) =>
+					event.id === eventUpdated.event_id
+						? { ...event, event_status: eventUpdated.event_status, start_time: eventUpdated.start_time }
+						: event
+				);
+				return;
+			}
+			// Update information event
+			if (eventUpdated && isActionUpdating && isAddEventAgain && eventExists) {
+				const { event_id, channel_id, channel_voice_id, event_status, ...restPayload } = eventUpdated;
+				const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
+				const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
+
+				mergedEvents = mergedEvents.map((event) =>
+					event.id === eventUpdated.event_id
+						? { ...event, channel_id: normalizedChannelId, channel_voice_id: normalizedVoiceChannelId, ...restPayload }
+						: event
+				);
+				return;
+			}
+			// Remove event
+			if (eventUpdated && isRemoving && eventExists) {
+				mergedEvents = mergedEvents.filter((event) => event.id !== eventUpdated.event_id);
+				return;
+			}
+			const newEventsUpdated = { ...eventResponseCached, events: mergedEvents };
+			await fetchEventManagementCached.delete(mezon, clanId);
+			await fetchEventManagementCached(mezon, clanId, newEventsUpdated);
+			thunkAPI.dispatch(fetchEventManagement({ clanId: clanId, noCache: false }));
+		} catch (error) {
+			captureSentryError(error, 'eventManagement/updateCacheEvent');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
 
 export const fetchEventManagement = createAsyncThunk(
 	'eventManagement/fetchEventManagement',
@@ -69,36 +142,15 @@ export const fetchEventManagement = createAsyncThunk(
 			if (noCache) {
 				fetchEventManagementCached.clear(mezon, clanId);
 			}
-
 			const response = await fetchEventManagementCached(mezon, clanId);
-
 			if (!response?.events) {
 				return [];
 			}
 
-			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes, clanId));
+			const events = response?.events.map((eventRes) => mapEventManagementToEntity(eventRes, clanId));
 			return events;
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
-
-type UpdateCacheEventPayload = {
-	clanId: string;
-	eventUpdated: any;
-};
-
-export const updateCacheEvent = createAsyncThunk(
-	'eventManagement/updateCacheEvent',
-	async ({ clanId, eventUpdated }: UpdateCacheEventPayload, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const updateCacheResult = await fetchEventManagementCached(mezon, clanId, eventUpdated);
-			thunkAPI.dispatch(fetchEventManagement({ clanId: clanId }));
-		} catch (error) {
-			captureSentryError(error, 'eventManagement/updateCacheEvent');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -257,68 +309,68 @@ export const eventManagementSlice = createSlice({
 			state.chooseEvent = action.payload;
 		},
 
-		removeOneEvent: (state, action) => {
-			const { event_id } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
-			if (!existingEvent) {
-				return;
-			}
-			eventManagementAdapter.removeOne(state, event_id);
-		},
-		updateEventStatus: (state, action) => {
-			const { event_id, event_status } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
-			if (!existingEvent) {
-				return;
-			}
-			eventManagementAdapter.updateOne(state, {
-				id: event_id,
-				changes: {
-					event_status
-				}
-			});
-		},
-		updateNewStartTime: (state, action) => {
-			const { event_id, start_time } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
-			if (!existingEvent) {
-				return;
-			}
-			eventManagementAdapter.updateOne(state, {
-				id: event_id,
-				changes: {
-					start_time
-				}
-			});
-		},
-		addOneEvent: (state, action) => {
-			const { event_id, channel_id, event_status, channel_voice_id, ...restPayload } = action.payload;
-			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
-			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
+		// removeOneEvent: (state, action) => {
+		// 	const { event_id } = action.payload;
+		// 	const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+		// 	if (!existingEvent) {
+		// 		return;
+		// 	}
+		// 	eventManagementAdapter.removeOne(state, event_id);
+		// },
+		// updateEventStatus: (state, action) => {
+		// 	const { event_id, event_status } = action.payload;
+		// 	const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+		// 	if (!existingEvent) {
+		// 		return;
+		// 	}
+		// 	eventManagementAdapter.updateOne(state, {
+		// 		id: event_id,
+		// 		changes: {
+		// 			event_status
+		// 		}
+		// 	});
+		// },
+		// updateNewStartTime: (state, action) => {
+		// 	const { event_id, start_time } = action.payload;
+		// 	const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+		// 	if (!existingEvent) {
+		// 		return;
+		// 	}
+		// 	eventManagementAdapter.updateOne(state, {
+		// 		id: event_id,
+		// 		changes: {
+		// 			start_time
+		// 		}
+		// 	});
+		// },
+		// addOneEvent: (state, action) => {
+		// 	const { event_id, channel_id, event_status, channel_voice_id, ...restPayload } = action.payload;
+		// 	const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
+		// 	const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
-			eventManagementAdapter.addOne(state, {
-				id: event_id,
-				channel_id: normalizedChannelId,
-				channel_voice_id: normalizedVoiceChannelId,
-				event_status,
-				...restPayload
-			});
-		},
-		upsertEvent: (state, action) => {
-			const { event_id, channel_id, channel_voice_id, event_status, ...restPayload } = action.payload;
+		// 	eventManagementAdapter.addOne(state, {
+		// 		id: event_id,
+		// 		channel_id: normalizedChannelId,
+		// 		channel_voice_id: normalizedVoiceChannelId,
+		// 		event_status,
+		// 		...restPayload
+		// 	});
+		// },
+		// upsertEvent: (state, action) => {
+		// 	const { event_id, channel_id, channel_voice_id, event_status, ...restPayload } = action.payload;
 
-			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
-			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
+		// 	const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
+		// 	const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
-			const { event_status: _, ...restWithoutEventStatus } = restPayload;
+		// 	const { event_status: _, ...restWithoutEventStatus } = restPayload;
 
-			eventManagementAdapter.upsertOne(state, {
-				id: event_id,
-				channel_id: normalizedChannelId,
-				channel_voice_id: normalizedVoiceChannelId,
-				...restWithoutEventStatus
-			});
-		},
+		// 	eventManagementAdapter.upsertOne(state, {
+		// 		id: event_id,
+		// 		channel_id: normalizedChannelId,
+		// 		channel_voice_id: normalizedVoiceChannelId,
+		// 		...restWithoutEventStatus
+		// 	});
+		// },
 
 		clearOngoingEvent: (state, action) => {
 			state.ongoingEvent = null;

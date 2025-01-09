@@ -1024,12 +1024,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	);
 	const oneventcreated = useCallback(
 		(eventCreatedEvent: any) => {
+			const clanID1 = '1840651316007800832';
+			// eslint-disable-next-line no-console
+			console.log('eventCreatedEvent: ', eventCreatedEvent);
 			// Check actions
 			const isActionCreating = eventCreatedEvent.action === EEventAction.CREATED;
 			const isActionUpdating = eventCreatedEvent.action === EEventAction.UPDATE;
 			const isActionDeleting = eventCreatedEvent.action === EEventAction.DELETE;
 
-			// Check repeat
+			// Check option is repeat or not
 			const isEventNotRepeat =
 				eventCreatedEvent.repeat_type === ERepeatType.DOES_NOT_REPEAT || eventCreatedEvent.repeat_type === ERepeatType.DEFAULT;
 
@@ -1040,26 +1043,41 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			// Check action remove
 			const shouldRemoveEvent = isEventNotRepeat && isEventCompleted;
-			const onlyHidingEvent = !isEventNotRepeat && isEventCompleted;
+			// Check action update
+			const updateStatusAndNewStartTime = !isEventNotRepeat && isEventCompleted;
 			const onlyUpdateStatus = isEventUpcoming || isEventOngoing;
-			// Current view check
-			const clanIdEvent = eventCreatedEvent.clan_id;
-			const isUpdateCache = clanIdActive === '0' || clanIdActive !== clanIdEvent;
+
 			try {
 				if (isActionCreating) {
-					dispatch(eventManagementActions.updateCacheEvent({ clanId: eventCreatedEvent.clan_id, eventUpdated: eventCreatedEvent }));
+					dispatch(
+						eventManagementActions.updateCacheEvent({
+							clanId: clanID1,
+							eventUpdated: eventCreatedEvent,
+							isCreating: isActionCreating
+						})
+					);
 					return;
 				}
 
 				if (onlyUpdateStatus) {
-					dispatch(eventManagementActions.updateEventStatus(eventCreatedEvent));
+					dispatch(
+						eventManagementActions.updateCacheEvent({
+							clanId: clanID1,
+							eventUpdated: eventCreatedEvent,
+							onlyUpdateStatus: onlyUpdateStatus
+						})
+					);
 					return;
 				}
 
-				if (onlyHidingEvent) {
-					// hide schedule event icon
-					dispatch(eventManagementActions.updateEventStatus(eventCreatedEvent));
-					dispatch(eventManagementActions.updateNewStartTime(eventCreatedEvent));
+				if (updateStatusAndNewStartTime) {
+					dispatch(
+						eventManagementActions.updateCacheEvent({
+							clanId: clanID1,
+							eventUpdated: eventCreatedEvent,
+							onlyUpdateStatus: updateStatusAndNewStartTime
+						})
+					);
 					return;
 				}
 
@@ -1069,18 +1087,37 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					const newChannelId = eventCreatedEvent.channel_id;
 					const notUpdateChannelId = !newChannelId || newChannelId === '0';
 					const userHasChannel = allThreadChannelPrivateIds.includes(newChannelId);
+					const isAddEventAgain = notUpdateChannelId || userHasChannel;
 
-					if (notUpdateChannelId || userHasChannel) {
-						dispatch(eventManagementActions.upsertEvent(eventCreatedEvent));
+					if (isAddEventAgain) {
+						dispatch(
+							eventManagementActions.updateCacheEvent({
+								clanId: clanID1,
+								eventUpdated: eventCreatedEvent,
+								isActionUpdating: isActionUpdating,
+								isAddEventAgain: isAddEventAgain
+							})
+						);
 						return;
 					} else {
-						dispatch(eventManagementActions.removeOneEvent(eventCreatedEvent));
-						return;
+						dispatch(
+							eventManagementActions.updateCacheEvent({
+								clanId: clanID1,
+								eventUpdated: eventCreatedEvent,
+								isRemoving: true
+							})
+						);
 					}
 				}
 
 				if (shouldRemoveEvent || isActionDeleting) {
-					dispatch(eventManagementActions.removeOneEvent(eventCreatedEvent));
+					dispatch(
+						eventManagementActions.updateCacheEvent({
+							clanId: clanID1,
+							eventUpdated: eventCreatedEvent,
+							isRemoving: true
+						})
+					);
 					return;
 				}
 			} catch (error) {
