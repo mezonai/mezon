@@ -5,9 +5,9 @@ import { EmojiDataOptionals, calculateTotalCount, getSrcEmoji } from '@mezon/uti
 import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Dimensions, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 import { style } from '../styles';
 import { ReactionMember } from './ReactionMember';
 
@@ -20,11 +20,17 @@ interface IMessageReactionContentProps {
 	channelId?: string;
 }
 
+const { width } = Dimensions.get('window');
+
 export const MessageReactionContent = memo((props: IMessageReactionContentProps) => {
 	const { allReactionDataOnOneMessage, emojiSelectedId, channelId, userId, onShowUserInformation, removeEmoji } = props;
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation('message');
+	const [isScrollable, setIsScrollable] = useState(false);
+	const handleContentSizeChange = (contentWidth) => {
+		setIsScrollable(contentWidth > width - size.s_20);
+	};
 
 	const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
 	const [showConfirmDeleteEmoji, setShowConfirmDeleteEmoji] = useState<boolean>(false);
@@ -81,26 +87,29 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 
 	const getTabHeader = () => {
 		return (
-			<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-				{allReactionDataOnOneMessage.map((emojiItem) => {
-					return (
-						<Pressable
-							key={`${emojiItem.emojiId}_TabHeaderEmoji`}
-							onPress={() => selectEmoji(emojiItem.emojiId)}
-							style={[styles.tabHeaderItem, selectedTabId === emojiItem.emojiId && styles.activeTab]}
-						>
-							<FastImage
-								source={{
-									uri: getSrcEmoji(emojiItem.emojiId)
-								}}
-								resizeMode={'contain'}
-								style={styles.iconEmojiReactionDetail}
-							/>
-							<Text style={[styles.reactCount, styles.headerTabCount]}>{calculateTotalCount(emojiItem.senders)}</Text>
-						</Pressable>
-					);
-				})}
-			</ScrollView>
+			<FlatList
+				onContentSizeChange={handleContentSizeChange}
+				horizontal
+				scrollEnabled={isScrollable}
+				showsHorizontalScrollIndicator={false}
+				data={allReactionDataOnOneMessage}
+				keyExtractor={(item) => `${item.emojiId}_TabHeaderEmoji`}
+				renderItem={({ item }) => (
+					<Pressable
+						onPress={() => selectEmoji(item.emojiId)}
+						style={[styles.tabHeaderItem, selectedTabId === item.emojiId && styles.activeTab]}
+					>
+						<FastImage
+							source={{
+								uri: getSrcEmoji(item.emojiId)
+							}}
+							resizeMode={'contain'}
+							style={styles.iconEmojiReactionDetail}
+						/>
+						<Text style={[styles.reactCount, styles.headerTabCount]}>{calculateTotalCount(item.senders)}</Text>
+					</Pressable>
+				)}
+			/>
 		);
 	};
 
