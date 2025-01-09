@@ -1006,8 +1006,6 @@ export const transformTextWithMentions = (
 	usersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
 	clanRoles: Record<string, IRolesClan>
 ): string => {
-	
-	
 	let offsetAdjustment = 0;
 
 	for (const mention of mentions) {

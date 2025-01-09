@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		thumbnailContainer.innerHTML = '';
 
 		const channelLabel = document.getElementById('channel-label');
-		channelLabel.innerHTML = data.channelLabel;
+		channelLabel.innerHTML = data?.channelLabel;
 
 		data?.images.forEach((image, index) => {
 			const wrapper = document.createElement('div');

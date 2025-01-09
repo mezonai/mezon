@@ -5,8 +5,11 @@ import { useCallback, useMemo } from 'react';
 const activityTypeMap: Record<ActivitiesName, ActivitiesType> = {
 	[ActivitiesName.CODE]: ActivitiesType.VISUAL_STUDIO_CODE,
 	[ActivitiesName.VISUAL_STUDIO_CODE]: ActivitiesType.VISUAL_STUDIO_CODE,
+	[ActivitiesName.CURSOR]: ActivitiesType.VISUAL_STUDIO_CODE,
+	[ActivitiesName.XCODE]: ActivitiesType.VISUAL_STUDIO_CODE,
 	[ActivitiesName.SPOTIFY]: ActivitiesType.SPOTIFY,
-	[ActivitiesName.LOL]: ActivitiesType.LOL
+	[ActivitiesName.LOL]: ActivitiesType.LOL,
+	[ActivitiesName.LOL_MACOS]: ActivitiesType.LOL
 };
 
 export function useActivities() {

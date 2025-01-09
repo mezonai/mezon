@@ -1,9 +1,11 @@
-import { BrowserWindow, ipcMain, screen } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import App from '../../app/app';
 import image_window_css from './image-window-css';
 
+import { writeFileSync } from 'fs';
 import { ApiChannelAttachment } from 'mezon-js/api.gen';
+import { format } from 'url';
 import menu from '../menu-context';
 
 interface IAttachmentEntity extends ApiChannelAttachment {
@@ -44,7 +46,6 @@ export type ImageData = {
 
 function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.mainWindow, params?: Record<string, string>) {
 	const parentBounds = parentWindow.getBounds();
-	const screenBounds = screen.getPrimaryDisplay().workAreaSize;
 	const activeIndex = imageData.channelImagesData.selectedImageIndex;
 	// Calculate initial size (80% of parent window)
 	const width = Math.floor(parentBounds.width * 0.8);
@@ -74,6 +75,8 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 		movable: true, // Allow moving
 		hasShadow: true
 	});
+
+	const htmlPath = join(__dirname, 'image-viewer.html');
 
 	const imageViewerHtml = `
      <!DOCTYPE html>
@@ -197,14 +200,22 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
       </button>
     </div>
   </div>
-
+  <div id="toast" class="toast">Image copied</div>
 </div>
 
 </body>
 </html>
   `;
 	// Load the HTML content
-	popupWindow.loadURL('data:text/html;charset=UTF-8,' + encodeURIComponent(imageViewerHtml));
+	writeFileSync(htmlPath, imageViewerHtml);
+
+	popupWindow.loadURL(
+		format({
+			pathname: htmlPath,
+			protocol: 'file:',
+			slashes: true
+		})
+	);
 
 	// Add IPC handlers for window controls
 	ipcMain.removeHandler('minimize-window');
@@ -465,6 +476,48 @@ document.addEventListener('contextmenu', (e) => {
 	}
 })
 
+const convertImageToBlobFile = async (urlData) => {
+	try {
+		const response = await fetch(urlData);
+		const blob = await response.blob();
+		return blob;
+	} catch (error) {
+		console.error('Error converting image to blob:', error);
+		return null;
+	}
+};
+
+const handleCopyImage = async (urlData) => {
+	try {
+        const blob = await convertImageToBlobFile(urlData);
+        if (!blob) {
+          console.error('Failed to fetch or convert image');
+          return;
+        }
+        const file = new File([blob], 'image.png', { type: 'image/png' });
+        if (navigator.clipboard && navigator.clipboard.write) {
+          try {
+            const clipboardItem = new ClipboardItem({ 'image/png': file });
+            await navigator.clipboard.write([clipboardItem]);
+          } catch (error) {
+            console.error('Failed to write image to clipboard:', error);
+          }
+        } else {
+          console.error('Clipboard API not supported. Image data not copied.');
+        }
+      } catch (error) {
+        console.error('Error fetching or converting image:', error);
+      }
+    };
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
 menu.addEventListener('click', async (e) => {
 			e.stopPropagation();
 			const action = e.target.closest('.menu-item')?.dataset.action;
@@ -474,7 +527,8 @@ menu.addEventListener('click', async (e) => {
 
 				switch (action) {
 					case 'copyImage': {
-						window.electron.handleActionShowImage(action,currentImageUrl.realUrl );
+						await handleCopyImage(currentImageUrl.realUrl);
+            showToast();
 						break;
 					}
           default :

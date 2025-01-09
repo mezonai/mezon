@@ -50,7 +50,6 @@ import {
 	restartCurrentScrollAnimation,
 	toggleDisableHover
 } from '@mezon/utils';
-import classNames from 'classnames';
 import { ChannelMessage as ChannelMessageType, ChannelType } from 'mezon-js';
 import { ApiMessageRef } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -117,6 +116,8 @@ function ChannelMessages({
 	useSyncEffect(() => {
 		userActiveScroll.current = false;
 		skipCalculateScroll.current = false;
+		anchorIdRef.current = null;
+		anchorTopRef.current = null;
 	}, [channelId]);
 
 	useEffect(() => {
@@ -384,6 +385,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const memoFocusingIdRef = useRef<number>();
 
+		const attachmentSending = useRef<string | null>();
+
 		useSyncEffect(() => {
 			if (idMessageToJump || jumpPinMessageId) {
 				userActiveScroll.current = false;
@@ -466,7 +469,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					// const isAlreadyFocusing = messageIds && memoFocusingIdRef.current === messageIds[messageIds.length - 1];
 					const isAlreadyFocusing = false;
 					// Animate incoming message, but if app is in background mode, scroll to the first unread
-					if (isAtBottom && !isAlreadyFocusing) {
+					if (lastMessage?.isSending && lastMessage?.attachments?.[0]) {
+						attachmentSending.current = lastMessage?.attachments[0].url;
+					}
+					if (
+						(isAtBottom || (attachmentSending.current && attachmentSending.current === lastMessage?.attachments?.[0]?.url)) &&
+						!isAlreadyFocusing
+					) {
 						// Break out of `forceLayout`
 						requestMeasure(() => {
 							const shouldScrollToBottom = !isBackgroundModeActive();
@@ -483,7 +492,12 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 								undefined
 							);
 						});
-						if (userId === lastMessage?.sender_id) return;
+						if (userId === lastMessage?.sender_id) {
+							if (attachmentSending.current === lastMessage?.attachments?.[0]?.url && !lastMessage?.isSending) {
+								attachmentSending.current = null;
+							}
+							return;
+						}
 					}
 
 					const isResized = prevContainerHeight !== undefined && prevContainerHeight !== containerHeight;
@@ -625,7 +639,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 		return (
-			<div className="w-full h-full relative messages-container">
+			<div className="messages-container">
 				<div
 					onWheelCapture={() => {
 						toggleDisableHover(chatRef.current, scrollTimeoutId2);
@@ -642,59 +656,54 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					}}
 					ref={chatRef}
 					id="scrollLoading"
-					className={classNames([
-						'absolute top-0 left-0 bottom-0 right-0',
-						'overflow-y-scroll overflow-x-hidden',
-						'dark:bg-bgPrimary bg-bgLightPrimary',
-						{
-							customScrollLightMode: appearanceTheme === 'light'
-						}
-					])}
+					className="dark:bg-bgPrimary"
 				>
-					{isTopic && convertedFirstMsgOfThisTopic && (
-						<div className="sticky top-0 z-[1] dark:bg-bgPrimary bg-bgLightPrimary">
-							<div
-								className={`fullBoxText relative group ${convertedFirstMsgOfThisTopic?.references?.[0]?.message_ref_id ? 'pt-3' : ''}`}
-							>
-								<MessageWithUser
-									isTopic={isTopic}
-									allowDisplayShortProfile={true}
-									message={convertedFirstMsgOfThisTopic}
-									mode={mode}
-								/>
+					<div className="flex flex-col min-h-full mt-auto justify-end">
+						{isTopic && convertedFirstMsgOfThisTopic && (
+							<div className="sticky top-0 z-[1] dark:bg-bgPrimary bg-bgLightPrimary">
+								<div
+									className={`fullBoxText relative group ${convertedFirstMsgOfThisTopic?.references?.[0]?.message_ref_id ? 'pt-3' : ''}`}
+								>
+									<MessageWithUser
+										isTopic={isTopic}
+										allowDisplayShortProfile={true}
+										message={convertedFirstMsgOfThisTopic}
+										mode={mode}
+									/>
+								</div>
 							</div>
-						</div>
-					)}
-					{withHistoryTriggers && <div ref={backwardsTriggerRef} key="backwards-trigger" className="backwards-trigger" />}
-					{messageIds.map((messageId, index) => {
-						const checkMessageTargetToMoved = idMessageToJump?.id === messageId && messageId !== lastMessageId;
-						const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
-						return (
-							<div className="message-list-item" key={messageId} id={'msg-' + messageId}>
-								<MemorizedChannelMessage
-									index={index}
-									message={entities[messageId]}
-									previousMessage={entities[messageIds[index - 1]]}
-									avatarDM={avatarDM}
-									userName={userName}
-									messageId={messageId}
-									nextMessageId={messageIds[index + 1]}
-									channelId={channelId}
-									isHighlight={messageId === idMessageNotified}
-									mode={mode}
-									channelLabel={channelLabel ?? ''}
-									isLastSeen={Boolean(messageId === lastMessageUnreadId && messageId !== lastMessageId)}
-									checkMessageTargetToMoved={checkMessageTargetToMoved}
-									messageReplyHighlight={messageReplyHighlight}
-									isTopic={isTopic}
-								/>
-							</div>
-						);
-					})}
-					{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
+						)}
+						{withHistoryTriggers && <div ref={backwardsTriggerRef} key="backwards-trigger" className="backwards-trigger" />}
+						{messageIds.map((messageId, index) => {
+							const checkMessageTargetToMoved = idMessageToJump?.id === messageId && messageId !== lastMessageId;
+							const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
+							return (
+								<div className="message-list-item" key={messageId} id={'msg-' + messageId}>
+									<MemorizedChannelMessage
+										index={index}
+										message={entities[messageId]}
+										previousMessage={entities[messageIds[index - 1]]}
+										avatarDM={avatarDM}
+										userName={userName}
+										messageId={messageId}
+										nextMessageId={messageIds[index + 1]}
+										channelId={channelId}
+										isHighlight={messageId === idMessageNotified}
+										mode={mode}
+										channelLabel={channelLabel ?? ''}
+										isLastSeen={Boolean(messageId === lastMessageUnreadId && messageId !== lastMessageId)}
+										checkMessageTargetToMoved={checkMessageTargetToMoved}
+										messageReplyHighlight={messageReplyHighlight}
+										isTopic={isTopic}
+									/>
+								</div>
+							);
+						})}
+						{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
 
-					<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger" />
-					<div className="h-[20px] w-[1px] pointer-events-none"></div>
+						<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger" />
+						<div className="h-[20px] w-[1px] pointer-events-none"></div>
+					</div>
 				</div>
 			</div>
 		);

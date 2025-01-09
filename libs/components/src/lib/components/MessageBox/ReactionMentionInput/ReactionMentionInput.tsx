@@ -13,6 +13,7 @@ import {
 } from '@mezon/core';
 import {
 	ChannelsEntity,
+	RootState,
 	appActions,
 	e2eeActions,
 	emojiSuggestionActions,
@@ -52,7 +53,7 @@ import {
 	selectThreadCurrentChannel,
 	threadsActions,
 	useAppDispatch,
-	useAppSelector, RootState
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
@@ -747,7 +748,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			if (!pastedData) return;
 
 			const parsedData = parsePastedMentionData(pastedData);
-			
+
 			if (!parsedData) return;
 
 			const { message: pastedContent, startIndex, endIndex } = parsedData;

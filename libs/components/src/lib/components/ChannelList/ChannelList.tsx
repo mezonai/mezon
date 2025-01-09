@@ -16,13 +16,11 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum, ICategoryChannel, createImgproxyUrl, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { ChannelStatusEnum, ICategoryChannel, createImgproxyUrl, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { default as SimpleBarReact } from 'simplebar-react';
-import 'simplebar/src/simplebar.css';
 import { CreateNewChannelModal } from '../CreateChannelModal';
 import CategorizedChannels from './CategorizedChannels';
 import { Events } from './ChannelListComponents';
@@ -37,15 +35,10 @@ function ChannelList() {
 	if (!shouldRender) return <></>;
 
 	return (
-		<div
-			onContextMenu={(event) => event.preventDefault()}
-			className={`overflow-y-scroll overflow-x-hidden w-[100%] h-[100%] ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
-			id="channelList"
-			role="button"
-		>
+		<div onContextMenu={(event) => event.preventDefault()} id="channelList" role="button">
 			{<CreateNewChannelModal />}
 			<hr className="h-[0.08px] w-full dark:border-borderDivider border-white mx-2" />
-			<div className={`overflow-y-scroll flex-1 space-y-[21px]  text-gray-300 scrollbar-hide`}>
+			<div className={`flex-1 space-y-[21px] text-gray-300`}>
 				<RowVirtualizerDynamic appearanceTheme={appearanceTheme} />
 			</div>
 		</div>
@@ -161,8 +154,20 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 			dispatch(categoriesActions.setCtrlKFocusChannel(null));
 		}, 100);
 	});
+
+	const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
+
 	return (
-		<SimpleBarReact scrollableNodeProps={{ ref: parentRef }} style={{ maxHeight: height }}>
+		<div
+			ref={parentRef}
+			style={{
+				height: height
+			}}
+			className={`thread-scroll`}
+			onWheelCapture={() => {
+				toggleDisableHover(parentRef.current, scrollTimeoutId2);
+			}}
+		>
 			<div
 				style={{
 					height: virtualizer.getTotalSize(),
@@ -212,7 +217,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 					})}
 				</div>
 			</div>
-		</SimpleBarReact>
+		</div>
 	);
 });
 

@@ -301,7 +301,6 @@ const DirectMessage = () => {
 							/>
 						</div>
 					</div>
-					<div className="w-1 h-full dark:bg-bgPrimary bg-bgLightPrimary"></div>
 					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
 						<div
 							className={`dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_60px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}

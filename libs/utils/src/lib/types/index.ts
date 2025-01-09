@@ -1074,7 +1074,10 @@ export enum ActivitiesName {
 	CODE = 'Code',
 	VISUAL_STUDIO_CODE = 'Visual Studio Code',
 	SPOTIFY = 'Spotify',
-	LOL = 'LeagueClientUx'
+	LOL = 'LeagueClientUx',
+	LOL_MACOS = 'League Of Legends',
+	CURSOR = 'Cursor',
+	XCODE = 'Xcode'
 }
 
 export enum TypeMessage {

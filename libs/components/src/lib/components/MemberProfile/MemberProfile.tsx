@@ -155,6 +155,7 @@ export function MemberProfile({
 
 	const activityStatus = customStatus || activityNames[activityByUserId?.activity_name as string];
 	const activityTitle = activityByUserId?.activity_description;
+	const activityName = activityByUserId?.activity_name;
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		// stop open popup default of web
@@ -444,7 +445,13 @@ export function MemberProfile({
 									className={`dark:text-channelTextLabel text-black w-full text-[12px] line-clamp-1 break-all ${isListActivity ? 'w-full' : 'max-w-[176px]'} `}
 									title={customStatus}
 								>
-									{status?.status ? (isListActivity ? activityTitle : activityStatus) : customStatus}
+									{status?.status
+										? isListActivity
+											? activityTitle
+												? activityTitle
+												: activityName
+											: activityStatus
+										: customStatus}
 								</p>
 							)}
 						</div>

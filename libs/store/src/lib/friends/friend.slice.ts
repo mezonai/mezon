@@ -163,7 +163,8 @@ export const friendsSlice = createSlice({
 			if (friendMeta) {
 				friendMeta.user = friendMeta.user || {};
 				friendMeta.user.metadata = friendMeta.user.metadata || {};
-				friendMeta.user.metadata.user_status = user_status;
+				//TODO: thai fix later
+				(friendMeta.user.metadata as any).user_status = user_status;
 			}
 		}
 	},

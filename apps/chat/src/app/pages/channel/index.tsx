@@ -388,7 +388,6 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							className={` dark:bg-bgSecondary bg-bgLightSecondary text-[#84ADFF] relative overflow-y-scroll hide-scrollbar ${currentChannel?.type === ChannelType.CHANNEL_TYPE_VOICE ? 'hidden' : 'flex'} ${closeMenu && !statusMenu && isShowMemberList ? 'w-full' : 'w-widthMemberList'}`}
 							id="memberList"
 						>
-							<div className="w-1 h-full dark:bg-bgPrimary bg-bgLightPrimary"></div>
 							<MemberList />
 						</div>
 					)}
