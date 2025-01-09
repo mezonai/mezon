@@ -473,7 +473,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						attachmentSending.current = lastMessage?.attachments[0].url;
 					}
 					if (
-						(isAtBottom || attachmentSending.current || attachmentSending.current === lastMessage?.attachments?.[0]?.url) &&
+						(isAtBottom || (attachmentSending.current && attachmentSending.current === lastMessage?.attachments?.[0]?.url)) &&
 						!isAlreadyFocusing
 					) {
 						// Break out of `forceLayout`
