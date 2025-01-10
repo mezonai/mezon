@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { ActiveDm, BuzzArgs, IChannel, IUserItemActivity, LoadingStatus } from '@mezon/utils';
+import { ActiveDm, BuzzArgs, IChannel, IUserItemActivity, LoadingStatus, SearchItemProps } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelMessage, ChannelType, ChannelUpdatedEvent, UserProfileRedis, safeJSONParse } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
@@ -30,6 +30,7 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	currentDirectMessageType?: number;
 	statusDMChannelUnread: Record<string, boolean>;
 	buzzStateDirect: Record<string, BuzzArgs | null>;
+	currentDirectMessageUser?: SearchItemProps;
 }
 
 export interface DirectRootState {
@@ -403,7 +404,8 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	socketStatus: 'not loaded',
 	error: null,
 	statusDMChannelUnread: {},
-	buzzStateDirect: {}
+	buzzStateDirect: {},
+	currentDirectMessageUser: {}
 });
 
 export const directSlice = createSlice({
@@ -479,6 +481,9 @@ export const directSlice = createSlice({
 					...action.payload
 				}
 			});
+		},
+		setDmCurrentUser: (state, action: PayloadAction<SearchItemProps>) => {
+			state.currentDirectMessageUser = action.payload;
 		},
 		setDmGroupCurrentId: (state, action: PayloadAction<string>) => {
 			state.currentDirectMessageId = action.payload;
@@ -682,3 +687,5 @@ export const selectIsShowPinBadgeByDmId = createSelector(
 	[getDirectState, (state, dmId: string) => dmId],
 	(state, dmId) => state?.entities[dmId]?.showPinBadge
 );
+
+export const selectCurrentUserDM = createSelector(getDirectState, (state) => state.currentDirectMessageUser);

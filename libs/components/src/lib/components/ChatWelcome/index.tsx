@@ -188,7 +188,7 @@ type StatusFriendProps = {
 	userID: string;
 };
 
-const StatusFriend = memo((props: StatusFriendProps) => {
+export const StatusFriend = memo((props: StatusFriendProps) => {
 	const { userName = '', checkAddFriend, userID } = props;
 	const { acceptFriend, deleteFriend, addFriend } = useFriends();
 

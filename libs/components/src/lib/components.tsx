@@ -104,3 +104,6 @@ export { WebRTCStreamProvider, useWebRTCStream } from './components/StreamContex
 export { WebRTCProvider } from './components/WebRTC/WebRTCContext';
 
 export * from './components/HtmlCanvas';
+
+export { StatusFriend } from './components/ChatWelcome';
+export { default as SearchMessageChannel } from './components/SearchMessageChannel';

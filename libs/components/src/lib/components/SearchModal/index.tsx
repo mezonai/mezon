@@ -240,7 +240,7 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListSortedWithoutPreviousList, totalListsSorted]);
 
 	const handleSelectMem = useCallback(
-		async (user: any) => {
+		async (user: SearchItemProps) => {
 			const foundDirect = listDirectSearch.find((item) => item.id === user.id);
 			if (foundDirect !== undefined) {
 				dispatch(
@@ -261,13 +261,20 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 				if (result) {
 					navigate(toDmGroupPageFromMainApp(foundDirect.idDM ?? '', user?.type ?? ChannelType.CHANNEL_TYPE_DM));
 				}
-			} else {
-				const response = await createDirectMessageWithUser(user.id);
-				if (response.channel_id) {
-					const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
-					navigate(directChat);
-				}
+				return;
 			}
+
+			if (!listDM?.length) {
+				return;
+			}
+			const checkExistChannel = listDM.find((dm) => dm.user_id && dm.user_id[0] === user.id);
+			if (!checkExistChannel) {
+				dispatch(directActions.setDmCurrentUser(user));
+				navigate(`chat/direct/message/temporary`);
+				return;
+			}
+			const directChat = toDmGroupPageFromMainApp(checkExistChannel.channel_id || '', Number(checkExistChannel.type));
+			navigate(directChat);
 		},
 		[createDirectMessageWithUser, dispatch, listDirectSearch, navigate, toDmGroupPageFromMainApp]
 	);
