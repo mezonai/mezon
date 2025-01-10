@@ -261,6 +261,7 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 				if (result) {
 					navigate(toDmGroupPageFromMainApp(foundDirect.idDM ?? '', user?.type ?? ChannelType.CHANNEL_TYPE_DM));
 				}
+				return;
 			}
 			if (!listDM?.length) {
 				return;
