@@ -1,5 +1,5 @@
 import { MentionReactInput, MessageContextMenuProvider, ReplyMessageBox, UserMentionList } from '@mezon/components';
-import { useAuth, useTopics } from '@mezon/core';
+import { useAuth, useCheckTokenOnMarkdown, useTopics } from '@mezon/core';
 import {
 	RootState,
 	fetchMessages,
@@ -78,6 +78,18 @@ const TopicDiscussionBox = () => {
 			if (!client || !session || !socket || !currentClanId) {
 				throw new Error('Client is not initialized');
 			}
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { validHashtagList, validMentionList, validEmojiList } = useCheckTokenOnMarkdown(
+				content.mk ?? [],
+				content.hg ?? [],
+				mentions ?? [],
+				content.ej ?? []
+			);
+			const validatedContent = {
+				...content,
+				hg: validHashtagList,
+				ej: validEmojiList
+			};
 
 			dispatch(
 				topicsActions.handleSendTopic({
@@ -87,10 +99,10 @@ const TopicDiscussionBox = () => {
 					anonymous: false,
 					attachments: attachments,
 					code: 0,
-					content: content,
+					content: validatedContent,
 					isPublic: currentChannel?.channel_private !== 1,
 					mentionEveryone: false,
-					mentions: mentions,
+					mentions: validMentionList,
 					references: references,
 					topicId: topicId as string
 				})
