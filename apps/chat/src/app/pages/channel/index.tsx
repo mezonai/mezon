@@ -47,7 +47,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons, Loading } from '@mezon/ui';
+import { Icons } from '@mezon/ui';
 import {
 	DONE_ONBOARDING_STATUS,
 	EOverriddenPermission,
@@ -61,6 +61,7 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiOnboardingItem, ApiTokenSentEvent } from 'mezon-js/api.gen';
 import { DragEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ChannelApps } from './ChannelApp';
 import { ChannelMedia } from './ChannelMedia';
 import { ChannelMessageBox } from './ChannelMessageBox';
 import { ChannelTyping } from './ChannelTyping';
@@ -334,13 +335,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	}, [currentChannel]);
 
 	return currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
-		appChannel?.url ? (
-			<iframe ref={miniAppRef} title={appChannel?.url} src={appChannel?.url + `#${miniAppDataHash}`} className={'w-full h-full'}></iframe>
-		) : (
-			<div className={'w-full h-full flex items-center justify-center'}>
-				<Loading />
-			</div>
-		)
+		<ChannelApps appChannel={appChannel} miniAppRef={miniAppRef} miniAppDataHash={miniAppDataHash} />
 	) : (
 		<>
 			{!isShowCanvas && !isShowAgeRestricted && draggingState && <FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />}
