@@ -305,7 +305,11 @@ export default class App {
 		}
 
 		activityTimeout = setInterval(() => {
-			fetchActiveWindow();
+			try {
+				fetchActiveWindow();
+			} catch (ex) {
+				console.error(ex);
+			}
 		}, usageThreshold);
 	}
 
