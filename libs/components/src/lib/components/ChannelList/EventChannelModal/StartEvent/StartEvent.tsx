@@ -1,5 +1,5 @@
 import { useEscapeKeyClose, useEventManagementQuantity } from '@mezon/core';
-import { selectAllEventManagement } from '@mezon/store';
+import { selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { RefObject } from 'react';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,8 @@ type StartEventModalProps = {
 export const StartEventModal = (props: StartEventModalProps) => {
 	const { onClose, onOpenCreate, onOpenDetailItem, onEventUpdateId } = props;
 	const { numberEventManagement } = useEventManagementQuantity();
-	const allEventManagement = useSelector(selectAllEventManagement);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const allEventManagement = useAppSelector((state) => selectEventsByClanId(state, currentClanId as string));
 	useEscapeKeyClose(props.rootRef, onClose);
 
 	return (

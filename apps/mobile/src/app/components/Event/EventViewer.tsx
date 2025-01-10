@@ -2,7 +2,8 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
-import { EventManagementEntity, selectAllEventManagement } from '@mezon/store-mobile';
+import { selectEventsByClanId, useAppSelector } from '@mezon/store';
+import { EventManagementEntity, selectCurrentClanId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useMemo, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -19,7 +20,10 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const allEventManagement = useSelector(selectAllEventManagement);
+
+	const currentClanId = useSelector(selectCurrentClanId);
+	const allEventManagement = useAppSelector((state) => selectEventsByClanId(state, currentClanId as string));
+
 	const [currentEvent, setCurrentEvent] = useState<EventManagementEntity>();
 	const bottomSheetDetail = useRef<BottomSheetModal>(null);
 	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([

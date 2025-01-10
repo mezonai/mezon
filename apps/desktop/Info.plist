@@ -4,5 +4,7 @@
     <string>This app requires microphone access to enable audio recording features.</string>
     <key>NSCameraUsageDescription</key>
     <string>This app needs camera access to capture photos or videos.</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.11</string>
 </dict>
 </plist>
