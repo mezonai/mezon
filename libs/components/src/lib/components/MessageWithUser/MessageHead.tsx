@@ -51,8 +51,8 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 
 	const nameShowed = useShowName(
 		clanNick ? clanNick : (pendingClannick ?? ''),
-		pendingDisplayName ?? '',
-		pendingUserName ?? '',
+		displayName ? displayName : (pendingDisplayName ?? ''),
+		usernameSender ? usernameSender : (pendingUserName ?? ''),
 		message?.sender_id ?? ''
 	);
 
