@@ -660,9 +660,9 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		}
 	};
 
-	const handleFocusInput = () => {
+	const handleFocusInput = useCallback(() => {
 		dispatch(appActions.setIsFocusOnChannelInput(!isNotChannel));
-	};
+	}, [isNotChannel]);
 
 	useClickUpToEdit(editorRef, request?.valueTextInput, clickUpToEditMessage);
 
@@ -972,6 +972,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 					hasPermissionEdit={props.hasPermissionEdit || true}
 					voiceLongPress={props.voiceLongPress}
 					isRecording={props.isRecording}
+					focusTargetInput={handleFocusInput}
 				/>
 			)}
 			{request?.content?.length > MIN_THRESHOLD_CHARS && (

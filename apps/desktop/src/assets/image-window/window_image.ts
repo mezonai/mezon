@@ -3,9 +3,7 @@ import { join } from 'path';
 import App from '../../app/app';
 import image_window_css from './image-window-css';
 
-import { writeFileSync } from 'fs';
 import { ApiChannelAttachment } from 'mezon-js/api.gen';
-import { format } from 'url';
 import menu from '../menu-context';
 
 interface IAttachmentEntity extends ApiChannelAttachment {
@@ -207,15 +205,17 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 </html>
   `;
 	// Load the HTML content
-	writeFileSync(htmlPath, imageViewerHtml);
+	// writeFileSync(htmlPath, imageViewerHtml);
 
-	popupWindow.loadURL(
-		format({
-			pathname: htmlPath,
-			protocol: 'file:',
-			slashes: true
-		})
-	);
+	// popupWindow.loadURL(
+	// 	format({
+	// 		pathname: htmlPath,
+	// 		protocol: 'file:',
+	// 		slashes: true
+	// 	})
+	// );
+
+	popupWindow.loadURL('data:text/html;charset=UTF-8,' + encodeURIComponent(imageViewerHtml));
 
 	// Add IPC handlers for window controls
 	ipcMain.removeHandler('minimize-window');
@@ -243,7 +243,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
         url : '${imageData.url}',
           realUrl : '${imageData.realUrl}'
       };
-      let currentIndex = ${activeIndex}
+    
       document.getElementById('close-window').addEventListener('click', () => {
 		selectedImage.src = null;
     	window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::CLOSE_IMAGE_WINDOW');
@@ -308,6 +308,7 @@ document.addEventListener('keydown', (e) => {
 		ipcMain.removeHandler('minimize-window');
 		ipcMain.removeHandler('maximize-window');
 		App.imageViewerWindow = null;
+		App.imageScriptWindowLoaded = false;
 	});
 	App.imageViewerWindow = popupWindow;
 	return popupWindow;
@@ -527,8 +528,7 @@ menu.addEventListener('click', async (e) => {
 
 				switch (action) {
 					case 'copyImage': {
-						await handleCopyImage(currentImageUrl.realUrl);
-            showToast();
+						window.electron.handleActionShowImage(action,currentImageUrl.realUrl );
 						break;
 					}
           default :

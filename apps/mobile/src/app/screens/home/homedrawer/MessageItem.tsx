@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
-import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
+import { ActionEmitEvent, load, STORAGE_MY_USER_ID, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
 import { Block, Text, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, messagesActions, MessagesEntity, seenMessagePool, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
+import { ChannelsEntity, messagesActions, MessagesEntity, seenMessagePool, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, DeviceEventEmitter, PanResponder, Pressable, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { EmbedMessage, MessageAction, RenderTextMarkdownContent } from './components';
 import { EMessageActionType, EMessageBSToShow } from './enums';
 import { style } from './styles';
@@ -67,9 +66,7 @@ const MessageItem = React.memo(
 			if (!lk) return false;
 			return Array.isArray(lk) && validLinkGoogleMapRegex.test(contentMessage);
 		}, [contentMessage, lk]);
-		const userProfile = useSelector(selectAllAccount);
 		const timeoutRef = useRef<NodeJS.Timeout>(null);
-
 		const checkAnonymous = useMemo(() => message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.sender_id]);
 		const checkSystem = useMemo(() => {
 			return message?.sender_id === '0' && message?.username?.toLowerCase() === 'system';
@@ -83,6 +80,7 @@ const MessageItem = React.memo(
 				message?.code === TypeMessage.AuditLog,
 			[message?.code]
 		);
+
 		const translateX = useRef(new Animated.Value(0)).current;
 		const onReplyMessage = useCallback(() => {
 			const payload: IMessageActionNeedToResolve = {
@@ -95,7 +93,7 @@ const MessageItem = React.memo(
 		}, []);
 
 		const hasIncludeMention = useMemo(() => {
-			const userId = userProfile?.user?.id;
+			const userId = load(STORAGE_MY_USER_ID);
 
 			if (!userId) return false;
 			const hasHereMention = message.content?.t?.includes('@here') ?? false;
@@ -103,7 +101,7 @@ const MessageItem = React.memo(
 			const isReplyToUser = message.references?.[0]?.message_sender_id === userId;
 
 			return hasHereMention || hasUserMention || isReplyToUser;
-		}, [userProfile?.user?.id, message?.mentions, message?.content?.t, message?.references]);
+		}, [message?.mentions, message?.content?.t, message?.references]);
 
 		const isSameUser = useMemo(() => {
 			return message?.user?.id === previousMessage?.user?.id;
@@ -396,7 +394,6 @@ const MessageItem = React.memo(
 								<MessageAction
 									message={message}
 									mode={mode}
-									userProfile={userProfile}
 									preventAction={preventAction}
 									openEmojiPicker={() => {
 										DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {

@@ -1,4 +1,5 @@
 import { BrowserWindow } from 'electron';
+import App from '../../app/app';
 import { ImageData, listThumnails, scriptThumnails } from './window_image';
 
 function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
@@ -13,11 +14,12 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
         document.getElementById('userAvatar').src = "${imageData.uploaderData.avatar}"
         document.getElementById('username').innerHTML  = "${imageData.uploaderData.name}"
         document.getElementById('timestamp').innerHTML  = "${time}"
-      ${scriptThumnails(imageData.channelImagesData.images, activeIndex)}
+        ${App.imageScriptWindowLoaded === false ? `let currentIndex = ${activeIndex};` : `currentIndex = ${activeIndex};`}
+      ${App.imageScriptWindowLoaded === false && scriptThumnails(imageData.channelImagesData.images, activeIndex)}
   `);
 
 	imageWindow.webContents.executeJavaScript(`
-      document.addEventListener('keydown', (e) => {
+      function handleKeydown(e){
 		switch (e.key) {
 			case 'ArrowUp':
         if(currentIndex > 0){
@@ -60,9 +62,13 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
       }
 				break;
 		}
-	});
-`);
+	}
 
+    ${App.imageScriptWindowLoaded === false && `document.addEventListener('keydown', handleKeydown);`} 
+`);
+	if (App.imageScriptWindowLoaded === false) {
+		App.imageScriptWindowLoaded = true;
+	}
 	imageWindow.focus();
 }
 

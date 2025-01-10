@@ -2,11 +2,11 @@ import { codeBlockRegex, codeBlockRegexGlobal, markdownDefaultUrlRegex, splitBlo
 import { Attributes, Colors, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
+	RootState,
 	selectAllChannelMembers,
 	selectAllUserClans,
 	selectChannelsEntities,
-	selectHashtagDmEntities,
-	useAppSelector
+	selectHashtagDmEntities
 } from '@mezon/store-mobile';
 import { ETokenMessage, IExtendedMessage } from '@mezon/utils';
 import { TFunction } from 'i18next';
@@ -14,6 +14,7 @@ import React, { useMemo } from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Markdown from 'react-native-markdown-display';
+import { useStore } from 'react-redux';
 import CustomIcon from '../../../../../../assets/CustomIcon';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { EmojiMarkup } from '../MarkdownFormatText/EmojiMarkup';
@@ -241,7 +242,7 @@ export const renderRulesCustom = (isOnlyContainEmoji, onLongPress) => ({
 
 		if (content?.startsWith(':')) {
 			return (
-				<View style={!isOnlyContainEmoji && styles.emojiInMessageContain}>
+				<View key={`${content}`} style={!isOnlyContainEmoji && styles.emojiInMessageContain}>
 					<FastImage
 						source={{ uri: payload }}
 						style={isOnlyContainEmoji ? styles.onlyIconEmojiInMessage : [styles.iconEmojiInMessage]}
@@ -409,10 +410,7 @@ export const RenderTextMarkdownContent = React.memo(
 	}: IMarkdownProps) => {
 		let customStyle = {};
 		const { themeValue } = useTheme();
-		const usersClan = useAppSelector(selectAllUserClans);
-		const usersInChannel = useAppSelector((state) => selectAllChannelMembers(state, currentChannelId as string));
-		const channelsEntities = useAppSelector(selectChannelsEntities);
-		const hashtagDmEntities = useAppSelector(selectHashtagDmEntities);
+		const store = useStore();
 
 		if (isMessageReply) {
 			customStyle = { ...styleMessageReply(themeValue) };
@@ -450,6 +448,10 @@ export const RenderTextMarkdownContent = React.memo(
 					if (isHiddenHashtag) {
 						formattedContent = contentInElement;
 					} else {
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-expect-error
+						const channelsEntities = selectChannelsEntities(store.getState() as RootState);
+						const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
 						formattedContent += ChannelHashtag({
 							channelHashtagId: element.channelid,
 							mode,
@@ -460,6 +462,8 @@ export const RenderTextMarkdownContent = React.memo(
 					}
 				}
 				if (element.kindOf === ETokenMessage.MENTIONS) {
+					const usersClan = selectAllUserClans(store.getState() as RootState);
+					const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
 					formattedContent += MentionUser({
 						tagName: contentInElement,
 						roleId: element.role_id || '',
@@ -478,6 +482,10 @@ export const RenderTextMarkdownContent = React.memo(
 				}
 
 				if (element.kindOf === ETokenMessage.VOICE_LINKS) {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					const channelsEntities = selectChannelsEntities(store.getState() as RootState);
+					const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
 					const meetingCode = contentInElement?.split('/').pop();
 					const allChannelVoice = Object.values(channelsEntities).flat();
 					const voiceChannelFound = allChannelVoice?.find((channel) => channel.meeting_code === meetingCode) || null;

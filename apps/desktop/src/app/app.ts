@@ -33,7 +33,7 @@ export default class App {
 	static BrowserWindow: typeof Electron.BrowserWindow;
 	static imageViewerWindow: Electron.BrowserWindow | null = null;
 	static attachmentData: any;
-	static listWindowOpen: Record<string, Electron.BrowserWindow | null>;
+	static imageScriptWindowLoaded = false;
 
 	public static isDevelopmentMode() {
 		return !app.isPackaged;

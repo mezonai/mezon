@@ -1,9 +1,8 @@
-import { useAuth } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
-import { baseColor, Block, Metrics, size, useTheme } from '@mezon/mobile-ui';
+import { Icons, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
+import { Block, Metrics, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentStreamInfo, selectStreamMembersByChannelId, useAppDispatch, usersStreamActions, videoStreamActions } from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -21,7 +20,9 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
 
-	const { userProfile } = useAuth();
+	const userId = useMemo(() => {
+		return load(STORAGE_MY_USER_ID);
+	}, []);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const { disconnect } = useWebRTCStream();
@@ -31,9 +32,9 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 			dispatch(videoStreamActions.stopStream());
 		}
 		disconnect();
-		const idStreamByMe = streamChannelMember?.find((member) => member?.user_id === userProfile?.user?.id)?.id;
+		const idStreamByMe = streamChannelMember?.find((member) => member?.user_id === userId)?.id;
 		dispatch(usersStreamActions.remove(idStreamByMe));
-	}, [currentStreamInfo, disconnect, streamChannelMember, dispatch, userProfile]);
+	}, [currentStreamInfo, disconnect, streamChannelMember, dispatch, userId]);
 
 	const handleEndCall = useCallback(() => {
 		requestAnimationFrame(async () => {

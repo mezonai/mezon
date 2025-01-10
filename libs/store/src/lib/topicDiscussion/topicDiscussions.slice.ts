@@ -1,10 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
-import { IMessageWithUser, LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { getMobileUploadedAttachments, getWebUploadedAttachments, IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
-import { ApiSdTopic } from 'mezon-js/api.gen';
+import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
 import { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 const LIST_TOPIC_DISCUSSIONS_CACHED_TIME = 1000 * 60 * 60;
@@ -138,6 +138,63 @@ export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotif
 	}
 });
 
+type SendTopicPayload = {
+	clanId: string;
+	channelId: string;
+	mode: number;
+	isPublic: boolean;
+	content: IMessageSendPayload;
+	mentions?: Array<ApiMessageMention>;
+	attachments?: Array<ApiMessageAttachment>;
+	references?: Array<ApiMessageRef>;
+	anonymous?: boolean;
+	mentionEveryone?: boolean;
+	isMobile?: boolean;
+	code?: number;
+	topicId: string;
+};
+
+export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async (payload: SendTopicPayload, thunkAPI) => {
+	const { clanId, channelId, mode, isPublic, content, mentions, attachments, references, anonymous, mentionEveryone, isMobile, code, topicId } =
+		payload;
+
+	const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+
+	const session = mezon.sessionRef.current;
+	const client = mezon.clientRef.current;
+	const socket = mezon.socketRef.current;
+
+	if (!client || !session || !socket || !channelId) {
+		throw new Error('Client is not initialized');
+	}
+
+	let uploadedFiles: ApiMessageAttachment[] = [];
+
+	if (attachments && attachments.length > 0) {
+		if (isMobile) {
+			uploadedFiles = await getMobileUploadedAttachments({ attachments, channelId, clanId, client, session });
+		} else {
+			uploadedFiles = await getWebUploadedAttachments({ attachments, channelId: topicId, clanId, client, session });
+		}
+	}
+
+	await socket.writeChatMessage(
+		clanId as string,
+		channelId as string,
+		mode,
+		isPublic,
+		content,
+		mentions,
+		uploadedFiles,
+		references,
+		false,
+		false,
+		'',
+		0,
+		topicId
+	);
+});
+
 export const topicsSlice = createSlice({
 	name: TOPIC_DISCUSSIONS_FEATURE_KEY,
 	initialState: initialTopicsState,
@@ -234,7 +291,7 @@ export const topicsReducer = topicsSlice.reducer;
  *
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
-export const topicsActions = { ...topicsSlice.actions, createTopic, fetchTopics };
+export const topicsActions = { ...topicsSlice.actions, createTopic, fetchTopics, handleSendTopic };
 
 /*
  * Export selectors to query state. For use with the `useSelector` hook.

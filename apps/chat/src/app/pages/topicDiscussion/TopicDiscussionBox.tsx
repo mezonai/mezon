@@ -79,20 +79,21 @@ const TopicDiscussionBox = () => {
 				throw new Error('Client is not initialized');
 			}
 
-			await socket.writeChatMessage(
-				currentClanId,
-				currentChannel?.channel_id as string,
-				ChannelStreamMode.STREAM_MODE_CHANNEL,
-				currentChannel?.channel_private !== 1,
-				content,
-				mentions,
-				attachments,
-				references,
-				false,
-				false,
-				'',
-				0,
-				topicId?.toString()
+			dispatch(
+				topicsActions.handleSendTopic({
+					clanId: currentClanId as string,
+					channelId: currentChannel?.channel_id as string,
+					mode: mode,
+					anonymous: false,
+					attachments: attachments,
+					code: 0,
+					content: content,
+					isPublic: currentChannel?.channel_private !== 1,
+					mentionEveryone: false,
+					mentions: mentions,
+					references: references,
+					topicId: topicId as string
+				})
 			);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps

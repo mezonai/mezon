@@ -18,6 +18,7 @@ type IMezonDateTimePicker = Omit<IMezonFakeBoxProps, 'onPress' | 'postfixIcon' |
 	needLocale?: { locale: string };
 	error?: string;
 	containerStyle?: StyleProp<ViewStyle>;
+	maximumDate?: Date;
 };
 
 export default memo(function MezonDateTimePicker({
@@ -29,6 +30,7 @@ export default memo(function MezonDateTimePicker({
 	needLocale,
 	error,
 	containerStyle,
+	maximumDate,
 	...props
 }: IMezonDateTimePicker) {
 	const { themeValue, themeBasic } = useTheme();
@@ -36,7 +38,6 @@ export default memo(function MezonDateTimePicker({
 	const bottomSheetRef = useRef<BottomSheetModalMethods>();
 	const [date, setDate] = useState(value || getNearTime(120));
 	const isModeTime = useMemo(() => mode === 'time', [mode]);
-
 	const [currentDate, setCurrentDate] = useState(value || getNearTime(120));
 
 	useEffect(() => {
@@ -75,23 +76,31 @@ export default memo(function MezonDateTimePicker({
 		return `${day}/${month}/${year}`;
 	};
 
+	const formatCurrentDateTime = (currentDate, isModeTime, need24HourFormat) => {
+		const day = String(currentDate.getDate()).padStart(2, '0');
+		const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+		const year = currentDate.getFullYear();
+		const hours = currentDate.getHours();
+		const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+		if (isModeTime) {
+			if (need24HourFormat) {
+				return `${String(hours).padStart(2, '0')}:${minutes}`;
+			} else {
+				const period = hours >= 12 ? 'PM' : 'AM';
+				const hours12 = hours % 12 || 12;
+				return `${hours12}:${minutes} ${period}`;
+			}
+		} else {
+			return `${day}/${month}/${year}`;
+		}
+	};
+
 	return (
 		<View>
 			<MezonFakeInputBox
 				{...props}
-				value={
-					isModeTime
-						? currentDate.toLocaleTimeString([], {
-								hour: '2-digit',
-								minute: '2-digit',
-								hour12: !need24HourFormat
-							})
-						: currentDate.toLocaleDateString([], {
-								year: 'numeric',
-								month: 'short',
-								day: 'numeric'
-							})
-				}
+				value={formatCurrentDateTime(currentDate, isModeTime, need24HourFormat)}
 				containerStyle={containerStyle}
 				onPress={handlePress}
 			/>
@@ -120,6 +129,7 @@ export default memo(function MezonDateTimePicker({
 						onDateChange={setDate}
 						mode={mode}
 						theme={themeBasic === ThemeModeBase.DARK ? 'dark' : 'light'}
+						{...(maximumDate ? { maximumDate } : {})}
 					/>
 				</View>
 			</MezonBottomSheet>

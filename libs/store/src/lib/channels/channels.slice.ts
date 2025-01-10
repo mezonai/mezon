@@ -323,6 +323,7 @@ export interface IUpdateChannelRequest {
 	topic?: string;
 	age_restricted?: number;
 	parrent_id?: string;
+	channel_private?: number;
 }
 
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {
@@ -671,6 +672,22 @@ export const channelsSlice = createSlice({
 
 		update: (state, action: PayloadAction<{ clanId: string; update: Update<ChannelsEntity, string> }>) => {
 			const { clanId, update } = action.payload;
+			if (!state.byClans[clanId]) {
+				state.byClans[clanId] = getInitialClanState();
+			}
+			//For the case: There is no changes in channel label
+			if (!update.changes.channel_label) {
+				const newUpdateValue: Update<ChannelsEntity, string> = {
+					id: update.id,
+					changes: {
+						...update.changes,
+						channel_label: state.byClans[clanId].entities?.entities?.[update.id].channel_label
+					}
+				};
+				channelsAdapter.updateOne(state.byClans[clanId].entities, newUpdateValue);
+				return;
+			}
+
 			if (state.byClans[clanId]) {
 				channelsAdapter.updateOne(state.byClans[clanId].entities, update);
 			}

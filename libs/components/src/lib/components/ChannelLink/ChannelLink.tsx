@@ -236,7 +236,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
 						<div className="relative mt-[-5px]">
 							{isPrivate === ChannelStatusEnum.isPrivate && <Icons.SpeakerLocked defaultSize="w-5 h-5 " />}
-							{(isPrivate === undefined || isPrivate === 0) && <Icons.Speaker defaultSize="w-5 5-5 " />}
+							{!isPrivate && <Icons.Speaker defaultSize="w-5 5-5 " />}
 						</div>
 						<p
 							className={`ml-2 w-full dark:group-hover:text-white group-hover:text-black text-base focus:bg-bgModifierHover ${highLightVoiceChannel ? 'dark:text-white text-black dark:font-medium font-semibold' : 'font-medium dark:text-channelTextLabel text-colorTextLightMode'}`}

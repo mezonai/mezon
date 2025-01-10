@@ -1,9 +1,8 @@
 import { useAppNavigation } from '@mezon/core';
-import { CategoriesEntity, channelsActions, selectAllCategories, useAppDispatch } from '@mezon/store';
+import { CategoriesEntity, channelsActions, IUpdateChannelRequest, selectAllCategories, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IChannel } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
-import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useSelector } from 'react-redux';
 
 export type CategoryChannelProps = {
@@ -17,11 +16,13 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	const dispatch = useAppDispatch();
 	const navigator = useAppNavigation();
 	const handleMoveChannelToNewCategory = async (category: CategoriesEntity) => {
-		const updateChannel: ApiUpdateChannelDescRequest = {
+		const updateChannel: IUpdateChannelRequest = {
 			category_id: category.id,
 			channel_id: channelID ?? '',
 			channel_label: channelLabel,
-			app_url: ''
+			app_url: '',
+			parrent_id: channel?.parrent_id,
+			channel_private: channel?.channel_private
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel)).then(() => {
 			const channelLink = navigator.toChannelPage(channelID ?? '', channel.clan_id ?? '');

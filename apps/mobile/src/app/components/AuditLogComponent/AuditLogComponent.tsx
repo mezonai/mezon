@@ -6,11 +6,11 @@ import { RootState, auditLogFilterActions, selectActionAuditLog, selectCurrentCl
 import { ActionLog, UserAuditLog } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import { MezonapiListAuditLog } from 'mezon-js/api.gen';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, MezonBottomSheet, MezonMenu } from '../../componentUI';
+import { IMezonMenuSectionProps, MezonBottomSheet, MezonDateTimePicker, MezonMenu } from '../../componentUI';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { AuditLogItem } from './AuditLogItem/AuditLogItem';
 import EmptyAuditLog from './EmptyAuditLog/EmptyAuditLog';
@@ -28,6 +28,16 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 	const currentClanId = useSelector(selectCurrentClanId) as string;
 	const { t } = useTranslation('auditLog');
 	const loadingStatus = useSelector((state: RootState) => state?.auditlog?.loadingStatus);
+	const [selectDate, setSelectDate] = useState<Date>(new Date());
+	const today = useMemo(() => new Date(), []);
+
+	const formatDate = (date: Date) => {
+		const day = String(date?.getDate())?.padStart(2, '0');
+		const month = String(date?.getMonth() + 1)?.padStart(2, '0');
+		const year = date?.getFullYear();
+		return `${day}-${month}-${year}`;
+	};
+
 	const styles = style(themeValue);
 
 	const displayUserName = useMemo(() => {
@@ -62,7 +72,14 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 		};
 	}, []);
 
-	const fetchAudiLogList = async (body) => {
+	const fetchAudiLogList = async () => {
+		const body = {
+			actionLog: actionAuditLog === ActionLog.ALL_ACTION_AUDIT ? '' : actionAuditLog,
+			userId: userAuditLog?.userId ?? '',
+			clanId: currentClanId ?? '',
+			noCache: true,
+			date_log: formatDate(selectDate)
+		};
 		const response = await dispatch(auditLogList(body));
 		if (response) {
 			setAuditLogData(response?.payload);
@@ -81,17 +98,9 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 
 	useEffect(() => {
 		if (currentClanId) {
-			const body = {
-				actionLog: actionAuditLog === ActionLog.ALL_ACTION_AUDIT ? '' : actionAuditLog,
-				userId: userAuditLog?.userId ?? '',
-				clanId: currentClanId ?? '',
-				page: 1,
-				pageSize: 10000,
-				noCache: true
-			};
-			fetchAudiLogList(body);
+			fetchAudiLogList();
 		}
-	}, [actionAuditLog, userAuditLog]);
+	}, [actionAuditLog, userAuditLog, selectDate]);
 
 	const menu = useMemo(
 		() =>
@@ -121,6 +130,11 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 		filterBSRef?.current?.present();
 	};
 
+	const handleDatePicked = useCallback((date) => {
+		setSelectDate(date);
+		dismiss();
+	}, []);
+
 	const renderAditLogItem = ({ item }) => <AuditLogItem data={item} />;
 	return (
 		<Block paddingVertical={size.s_10} width={'100%'} height={'100%'} backgroundColor={themeValue.primary}>
@@ -139,7 +153,17 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 					<Icons.ChevronSmallRightIcon width={size.s_18} height={size.s_18} color={themeValue.text} />
 				</Block>
 			</TouchableOpacity>
-			<Block flex={1} paddingHorizontal={size.s_20} paddingVertical={size.s_10}>
+			<Block paddingHorizontal={size.s_10}>
+				<MezonDateTimePicker
+					value={selectDate}
+					onChange={handleDatePicked}
+					mode={'date'}
+					maximumDate={today}
+					containerStyle={styles.stylesDatePicker}
+				/>
+			</Block>
+
+			<Block flex={1} paddingHorizontal={size.s_10} paddingVertical={size.s_10}>
 				{loadingStatus === 'loaded' && !auditLogData?.logs?.length ? (
 					<EmptyAuditLog />
 				) : (

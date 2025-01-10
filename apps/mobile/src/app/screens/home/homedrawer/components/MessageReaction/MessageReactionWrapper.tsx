@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent, FaceIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, FaceIcon, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
-import { EmojiDataOptionals, SenderInfoOptionals, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
+import { calculateTotalCount, EmojiDataOptionals, getSrcEmoji, SenderInfoOptionals } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
@@ -28,12 +28,14 @@ export const MessageReactionWrapper = React.memo(
 	(props: IMessageReactionProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const { message, openEmojiPicker, mode, preventAction = false, userProfile, messageReactions } = props || {};
+		const { message, openEmojiPicker, mode, preventAction = false, messageReactions } = props || {};
 		const [currentEmojiSelectedId, setCurrentEmojiSelectedId] = useState<string | null>(null);
 		const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 		const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-		const userId = useMemo(() => userProfile?.user?.id, [userProfile?.user?.id]);
+		const userId = useMemo(() => {
+			return load(STORAGE_MY_USER_ID);
+		}, []);
 
 		const removeEmoji = useCallback(
 			async (emojiData: EmojiDataOptionals) => {
@@ -135,8 +137,8 @@ export const MessageReactionWrapper = React.memo(
 	},
 	(prevProps, nextProps) => {
 		return (
-			prevProps?.message?.id + JSON.stringify(prevProps?.messageReactions) + prevProps?.userProfile?.user?.id ===
-			nextProps?.message?.id + JSON.stringify(nextProps?.messageReactions) + nextProps?.userProfile?.user?.id
+			prevProps?.message?.id + JSON.stringify(prevProps?.messageReactions) ===
+			nextProps?.message?.id + JSON.stringify(nextProps?.messageReactions)
 		);
 	}
 );

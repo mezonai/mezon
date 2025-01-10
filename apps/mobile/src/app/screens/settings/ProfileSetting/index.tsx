@@ -3,6 +3,7 @@ import { Icons, isEqual } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	ClansEntity,
+	appActions,
 	channelMembersActions,
 	selectCurrentChannelId,
 	selectCurrentClan,
@@ -132,24 +133,30 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 
 	const updateUserProfile = async () => {
 		const { username, imgUrl, displayName, aboutMe } = currentUserProfileValue;
-		const response = await updateUser(username, imgUrl, displayName || username, aboutMe, userProfile?.user?.dob, userProfile?.logo, true);
+		try {
+			dispatch(appActions.setLoadingMainMobile(true));
+			const response = await updateUser(username, imgUrl, displayName || username, aboutMe, userProfile?.user?.dob, userProfile?.logo, true);
 
-		if (response) {
-			if (currentChannelId && currentClanId) {
-				await dispatch(
-					channelMembersActions.fetchChannelMembers({
-						clanId: currentClanId || '',
-						channelId: currentChannelId || '',
-						channelType: ChannelType.CHANNEL_TYPE_TEXT,
-						repace: true
-					})
-				);
+			dispatch(appActions.setLoadingMainMobile(false));
+			if (response) {
+				if (currentChannelId && currentClanId) {
+					await dispatch(
+						channelMembersActions.fetchChannelMembers({
+							clanId: currentClanId || '',
+							channelId: currentChannelId || '',
+							channelType: ChannelType.CHANNEL_TYPE_TEXT,
+							repace: true
+						})
+					);
+				}
+				Toast.show({
+					type: 'info',
+					text1: t('updateProfileSuccess')
+				});
+				navigation.goBack();
 			}
-			Toast.show({
-				type: 'info',
-				text1: t('updateProfileSuccess')
-			});
-			navigation.goBack();
+		} catch (e) {
+			dispatch(appActions.setLoadingMainMobile(false));
 		}
 	};
 
@@ -157,13 +164,19 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		const { username = '', displayName, imgUrl } = currentClanProfileValue;
 
 		if (currentClanProfileValue?.imgUrl || currentClanProfileValue?.displayName) {
-			const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName || username, imgUrl || '');
-			if (response) {
-				Toast.show({
-					type: 'info',
-					text1: t('updateClanProfileSuccess')
-				});
-				navigation.goBack();
+			try {
+				dispatch(appActions.setLoadingMainMobile(true));
+				const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName || username, imgUrl || '');
+				dispatch(appActions.setLoadingMainMobile(false));
+				if (response) {
+					Toast.show({
+						type: 'info',
+						text1: t('updateClanProfileSuccess')
+					});
+					navigation.goBack();
+				}
+			} catch (e) {
+				dispatch(appActions.setLoadingMainMobile(false));
 			}
 		}
 	};

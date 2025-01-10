@@ -52,6 +52,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 					counterRef.current++;
 				}, 700); // Check and retry every 700ms
 			} else {
+				intervalRef.current && clearInterval(intervalRef.current);
 				await reactionMessageDispatch(
 					data?.id ?? '',
 					data?.messageId ?? '',
@@ -65,7 +66,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 				);
 			}
 		},
-		[socketRef, handleReconnect, reactionMessageDispatch, currentChannel]
+		[currentChannel, dispatch, socketRef, handleReconnect, reactionMessageDispatch, intervalRef]
 	);
 
 	const onReactionMessageRetry = useCallback(
@@ -86,7 +87,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 				);
 			}
 		},
-		[currentChannel, reactionMessageDispatch, socketRef]
+		[currentChannel, reactionMessageDispatch, socketRef, intervalRef]
 	);
 
 	useEffect(() => {
