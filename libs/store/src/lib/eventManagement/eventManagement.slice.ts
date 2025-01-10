@@ -5,6 +5,7 @@ import { ApiEventManagement } from 'mezon-js/api.gen';
 import { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
+import { RootState } from '../store';
 
 export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
 
@@ -15,13 +16,19 @@ export interface EventManagementEntity extends IEventManagement {
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
 
 const EVENT_MANAGEMENT_CACHED_TIME = 1000 * 60 * 60;
-const fetchEventManagementCached = memoizeAndTrack((mezon: MezonValueContext, clanId: string) => mezon.client.listEvents(mezon.session, clanId), {
-	promise: true,
-	maxAge: EVENT_MANAGEMENT_CACHED_TIME,
-	normalizer: (args) => {
-		return args[1] + args[0].session.username;
+const fetchEventManagementCached = memoizeAndTrack(
+	async (mezon: MezonValueContext, clanId: string) => {
+		const response = await mezon.client.listEvents(mezon.session, clanId);
+		return { ...response, time: Date.now() };
+	},
+	{
+		promise: true,
+		maxAge: EVENT_MANAGEMENT_CACHED_TIME,
+		normalizer: (args) => {
+			return args[1] + args[0].session.username;
+		}
 	}
-});
+);
 
 export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?: string) => {
 	return {
@@ -50,11 +57,17 @@ export const fetchEventManagement = createAsyncThunk(
 			const response = await fetchEventManagementCached(mezon, clanId);
 
 			if (!response.events) {
-				return [];
+				return { events: [], clanId };
 			}
-
+			if (Date.now() - response.time > 1000) {
+				return {
+					events: [],
+					clanId: clanId,
+					fromCache: true
+				};
+			}
 			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes, clanId));
-			return events;
+			return { events, clanId };
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');
 			return thunkAPI.rejectWithValue(error);
@@ -186,6 +199,12 @@ export const fetchDeleteEventManagement = createAsyncThunk(
 );
 
 export interface EventManagementState extends EntityState<EventManagementEntity, string> {
+	byClans: Record<
+		string,
+		{
+			entities: EntityState<EventManagementEntity, string>;
+		}
+	>;
 	loadingStatus: LoadingStatus;
 	creatingStatus: LoadingStatus;
 	error?: string | null;
@@ -194,6 +213,7 @@ export interface EventManagementState extends EntityState<EventManagementEntity,
 }
 
 export const initialEventManagementState: EventManagementState = eventManagementAdapter.getInitialState({
+	byClans: {},
 	loadingStatus: 'not loaded',
 	error: null,
 	chooseEvent: null,
@@ -217,19 +237,19 @@ export const eventManagementSlice = createSlice({
 
 		removeOneEvent: (state, action) => {
 			const { event_id } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.removeOne(state, event_id);
+			eventManagementAdapter.removeOne(state.byClans[action.payload.clan_id].entities, event_id);
 		},
 		updateEventStatus: (state, action) => {
 			const { event_id, event_status } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.updateOne(state, {
+			eventManagementAdapter.updateOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				changes: {
 					event_status
@@ -238,11 +258,11 @@ export const eventManagementSlice = createSlice({
 		},
 		updateNewStartTime: (state, action) => {
 			const { event_id, start_time } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.updateOne(state, {
+			eventManagementAdapter.updateOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				changes: {
 					start_time
@@ -254,7 +274,7 @@ export const eventManagementSlice = createSlice({
 			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
-			eventManagementAdapter.addOne(state, {
+			eventManagementAdapter.addOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				channel_id: normalizedChannelId,
 				channel_voice_id: normalizedVoiceChannelId,
@@ -269,8 +289,11 @@ export const eventManagementSlice = createSlice({
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
 			const { event_status: _, ...restWithoutEventStatus } = restPayload;
-
-			eventManagementAdapter.upsertOne(state, {
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
+			if (!existingEvent) {
+				return;
+			}
+			eventManagementAdapter.upsertOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				channel_id: normalizedChannelId,
 				channel_voice_id: normalizedVoiceChannelId,
@@ -287,10 +310,19 @@ export const eventManagementSlice = createSlice({
 			.addCase(fetchEventManagement.pending, (state: EventManagementState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchEventManagement.fulfilled, (state: EventManagementState, action: PayloadAction<any>) => {
-				eventManagementAdapter.setAll(state, action.payload);
-				state.loadingStatus = 'loaded';
-			})
+			.addCase(
+				fetchEventManagement.fulfilled,
+				(state: EventManagementState, action: PayloadAction<{ events: EventManagementEntity[]; clanId: string; fromCache?: boolean }>) => {
+					state.loadingStatus = 'loaded';
+					if (!state.byClans[action.payload.clanId]) {
+						state.byClans[action.payload.clanId] = {
+							entities: eventManagementAdapter.getInitialState()
+						};
+					}
+					if (action.payload.fromCache) return;
+					eventManagementAdapter.setAll(state.byClans[action.payload.clanId].entities, action.payload.events);
+				}
+			)
 			.addCase(fetchEventManagement.rejected, (state: EventManagementState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
@@ -328,9 +360,13 @@ export const getEventManagementState = (rootState: { [EVENT_MANAGEMENT_FEATURE_K
 
 export const selectAllEventManagement = createSelector(getEventManagementState, selectAll);
 
+export const selectEventsByClanId = createSelector(
+	[(state: RootState) => state.eventmanagement, (state: RootState, clanId: string) => clanId],
+	(events, clanId) => selectAll(events.byClans[clanId]?.entities ?? eventManagementAdapter.getInitialState())
+);
 export const selectEventManagementEntities = createSelector(getEventManagementState, selectEntities);
 
-export const selectNumberEvent = createSelector(selectAllEventManagement, (events) => events.length);
+export const selectNumberEvent = createSelector(selectEventsByClanId, (events) => events.length);
 
 export const selectChooseEvent = createSelector(getEventManagementState, (state) => state.chooseEvent);
 
@@ -340,30 +376,36 @@ export const selectCreatingLoaded = createSelector(getEventManagementState, (sta
 
 export const selectEventLoading = createSelector(getEventManagementState, (state) => state.loadingStatus);
 
-export const selectEventById = (eventId: string) =>
-	createSelector(getEventManagementState, (state) => {
-		const entities = selectEventManagementEntities({ eventmanagement: state });
-		return entities[eventId] || null;
-	});
-
 export const selectNumberEventPrivate = createSelector(
-	selectAllEventManagement,
+	selectEventsByClanId,
 	(events) => events.filter((event) => event.channel_id && event.channel_id !== '0' && event.channel_id !== '').length
 );
-export const selectEventsByChannelId = createSelector([selectAllEventManagement, (_, channelId: string) => channelId], (events, channelId) => {
-	const filteredEvents = events.filter((event) => event.channel_id === channelId);
 
-	const ongoingEvents = filteredEvents.filter((event) => event.event_status === EEventStatus.ONGOING);
-	if (ongoingEvents.length > 0) {
-		const oldestOngoingTime = Math.min(...ongoingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
-		return ongoingEvents.filter((event) => new Date(event.start_time as string).getTime() === oldestOngoingTime);
+export const selectEventsByChannelId = createSelector(
+	[selectEventsByClanId, (state: RootState, clanId: string, channelId: string) => channelId],
+	(entities, channelId) => {
+		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channel_id === channelId);
+		const ongoingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.ONGOING);
+		if (ongoingEvents.length > 0) {
+			const oldestOngoingTime = Math.min(...ongoingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
+			return ongoingEvents.filter((event) => new Date(event.start_time as string).getTime() === oldestOngoingTime);
+		}
+		const upcomingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.UPCOMING);
+		if (upcomingEvents.length > 0) {
+			const nearestUpcomingTime = Math.min(
+				...upcomingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity))
+			);
+			return upcomingEvents.filter((event) => new Date(event.start_time as string).getTime() === nearestUpcomingTime);
+		}
+
+		return [];
 	}
+);
 
-	const upcomingEvents = filteredEvents.filter((event) => event.event_status === EEventStatus.UPCOMING);
-	if (upcomingEvents.length > 0) {
-		const nearestUpcomingTime = Math.min(...upcomingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
-		return upcomingEvents.filter((event) => new Date(event.start_time as string).getTime() === nearestUpcomingTime);
+export const selectEventById = createSelector(
+	[(state: RootState) => state.eventmanagement, (state: RootState, clanId: string, eventId: string) => ({ clanId, eventId })],
+	(events, { clanId, eventId }) => {
+		const event = events.byClans[clanId]?.entities.entities[eventId];
+		return event;
 	}
-
-	return [];
-});
+);
