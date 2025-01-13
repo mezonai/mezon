@@ -1,12 +1,4 @@
-import {
-	IEmojiOnMessage,
-	IHashtagOnMessage,
-	ILinkOnMessage,
-	ILinkVoiceRoomOnMessage,
-	IMarkdownOnMessage,
-	IMentionOnMessage,
-	IStartEndIndex
-} from '../types/messageLine';
+import { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types/messageLine';
 
 export const isWithinMarkdownRanges = (item: { s: number; e: number }, markdownList: IMarkdownOnMessage[]): boolean => {
 	const result = !markdownList.some(
@@ -43,9 +35,4 @@ export const checkTokenOnMarkdown = (
 		validMentionList,
 		validEmojiList
 	};
-};
-
-export const checkLinkOnBacktick = (link: ILinkOnMessage[] | ILinkVoiceRoomOnMessage[], backtick: IMarkdownOnMessage[]): IStartEndIndex[] => {
-	const validLinks = filterValidItems(link, (item) => isWithinMarkdownRanges(item, backtick));
-	return validLinks;
 };
