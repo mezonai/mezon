@@ -1,5 +1,5 @@
 import { ChannelList, ChannelTopbar, ClanHeader, FooterProfile, StreamInfo, UpdateButton } from '@mezon/components';
-import { useApp, useAppParams } from '@mezon/core';
+import { useApp } from '@mezon/core';
 import {
 	ChannelsEntity,
 	ClansEntity,
@@ -8,7 +8,6 @@ import {
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentClan,
-	selectCurrentStreamInfo,
 	selectIsElectronDownloading,
 	selectIsElectronUpdateAvailable,
 	selectIsInCall,
@@ -43,10 +42,8 @@ const ClanEffects: React.FC<{
 }> = ({ currentClan, currentChannel, chatStreamRef, isShowChatStream, isShowCreateThread, isShowCreateTopic, userId, userName }) => {
 	// move code thanh.levan
 
-	const { canvasId } = useAppParams();
 	const dispatch = useAppDispatch();
 	const { setIsShowMemberList } = useApp();
-	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 
 	useEffect(() => {
 		const updateChatStreamWidth = () => {
@@ -62,12 +59,6 @@ const ClanEffects: React.FC<{
 			window.removeEventListener('resize', updateChatStreamWidth);
 		};
 	}, [isShowChatStream]);
-
-	useEffect(() => {
-		if (!canvasId) {
-			dispatch(appActions.setIsShowCanvas(false));
-		}
-	}, [currentStreamInfo, currentClan, currentChannel, canvasId, dispatch]);
 
 	useEffect(() => {
 		if (isShowCreateThread || isShowCreateTopic) {

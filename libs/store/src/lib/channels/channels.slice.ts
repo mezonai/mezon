@@ -619,15 +619,17 @@ export const markAsReadProcessing = createAsyncThunk(
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
-			thunkAPI.dispatch(
-				channelsActions.update({
-					clanId: clan_id as string,
-					update: {
-						id: channel_id as string,
-						changes: { count_mess_unread: 0 }
-					}
-				})
-			);
+			if (channel_id && clan_id) {
+				thunkAPI.dispatch(
+					channelsActions.update({
+						clanId: clan_id as string,
+						update: {
+							id: channel_id as string,
+							changes: { count_mess_unread: 0 }
+						}
+					})
+				);
+			}
 			thunkAPI.dispatch(clansActions.fetchClans());
 			return response;
 		} catch (error) {
