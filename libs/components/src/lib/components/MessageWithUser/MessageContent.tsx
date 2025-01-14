@@ -177,6 +177,7 @@ const MessageText = memo(
 									mode={mode}
 									code={message.code}
 									onCopy={onCopy}
+									messageId={message.message_id}
 								/>
 							)}
 							{(message.code === TypeMessage.Welcome ||

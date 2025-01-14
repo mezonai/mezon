@@ -1,7 +1,6 @@
 import { ChannelMessageOpt, ChatWelcome, MessageContextMenuProps, MessageWithUser, OnBoardWelcome, useMessageContextMenu } from '@mezon/components';
-import { usePermissionChecker } from '@mezon/core';
 import { MessagesEntity, selectChannelDraftMessage, selectIdMessageRefEdit, selectOpenEditMessageState, useAppSelector } from '@mezon/store';
-import { EOverriddenPermission, TypeMessage } from '@mezon/utils';
+import { TypeMessage } from '@mezon/utils';
 import { isSameDay } from 'date-fns';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
@@ -23,6 +22,7 @@ export type MessageProps = {
 	message: MessagesEntity;
 	previousMessage: MessagesEntity;
 	isTopic?: boolean;
+	canSendMessage: boolean;
 };
 
 export type MessageRef = {
@@ -49,7 +49,8 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	messageReplyHighlight,
 	message,
 	previousMessage,
-	isTopic = false
+	isTopic = false,
+	canSendMessage
 }: Readonly<MessageProps>) => {
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
@@ -57,7 +58,6 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	const channelDraftMessage = useAppSelector((state) => selectChannelDraftMessage(state, channelId));
 
 	const isEditing = channelDraftMessage?.message_id === messageId ? openEditMessageState : openEditMessageState && idMessageRefEdit === messageId;
-	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
 
 	const isSameUser = message?.user?.id === previousMessage?.user?.id;
 	const isTimeGreaterThan60Minutes =
@@ -92,7 +92,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 				isCombine={isCombine}
 				mode={mode}
 				isDifferentDay={isDifferentDay}
-				hasPermission={channelOrThread || !isTopic ? canSendMessage : true}
+				hasPermission={channelOrThread || !isTopic ? !!canSendMessage : true}
 				isTopic={isTopic}
 			/>
 		);

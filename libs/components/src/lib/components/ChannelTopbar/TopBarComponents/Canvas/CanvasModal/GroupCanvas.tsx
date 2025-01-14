@@ -75,7 +75,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 					style={{ top: '5px' }}
 					className={`absolute top-0 dark:border-black dark:shadow-[#000000] bg-white dark:bg-transparent shadow-emoji_item-delete font-bold w-6 h-6 flex items-center justify-center rounded-full ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}`}
 				>
-					{isCopied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}
+					{isCopied ? <Icons.PasteIcon /> : <Icons.CopyLink className="w-4 h-4" />}
 				</button>
 			</CopyToClipboard>
 			{!isDisableDelCanvas && (

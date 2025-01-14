@@ -9,7 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload } from '@mezon/utils';
+import { IMessageSendPayload, checkTokenOnMarkdown } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -44,6 +44,18 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			isMobile?: boolean,
 			code?: number
 		) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
+				content.mk ?? [],
+				content.hg ?? [],
+				mentions ?? [],
+				content.ej ?? []
+			);
+			const validatedContent = {
+				...content,
+				hg: validHashtagList,
+				ej: validEmojiList
+			};
 			if (!isFocusOnChannelInput && isShowCreateTopic) {
 				dispatch(
 					topicsActions.handleSendTopic({
@@ -53,11 +65,11 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 						anonymous: false,
 						attachments: attachments,
 						code: 0,
-						content: content,
+						content: validatedContent,
 						isMobile: isMobile,
 						isPublic: isPublic,
 						mentionEveryone: mentionEveryone,
-						mentions: mentions,
+						mentions: validMentionList,
 						references: references,
 						topicId: currentTopicId as string
 					})
@@ -70,8 +82,8 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 					clanId: getClanId || '',
 					mode,
 					isPublic: isPublic,
-					content,
-					mentions,
+					content: validatedContent,
+					mentions: validMentionList,
 					attachments,
 					references,
 					anonymous,
@@ -116,15 +128,26 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			if (!client || !session || !socket || !channelOrDirect) {
 				throw new Error('Client is not initialized');
 			}
-
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
+				content.mk ?? [],
+				content.hg ?? [],
+				mentions ?? [],
+				content.ej ?? []
+			);
+			const validatedContent = {
+				...content,
+				hg: validHashtagList,
+				ej: validEmojiList
+			};
 			await socket.updateChatMessage(
 				getClanId || '',
 				channelIdOrDirectId ?? '',
 				mode,
 				isPublic,
 				messageId,
-				content,
-				mentions,
+				validatedContent,
+				validMentionList,
 				attachments,
 				hide_editted,
 				topic_id

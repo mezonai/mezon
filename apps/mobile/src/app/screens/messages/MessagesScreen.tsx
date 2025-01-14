@@ -1,15 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Icons } from '@mezon/mobile-components';
 import { baseColor, Block, size, useTheme } from '@mezon/mobile-ui';
-import {
-	directActions,
-	DirectEntity,
-	RootState,
-	selectAllClans,
-	selectAllFriends,
-	selectDirectsOpenlistOrder,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import { directActions, DirectEntity, RootState, selectAllFriends, selectDirectsOpenlistOrder, useAppDispatch } from '@mezon/store-mobile';
 import { useFocusEffect } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -34,7 +26,6 @@ const MessagesScreen = ({ navigation }: { navigation: any }) => {
 	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
 	const { t } = useTranslation(['dmMessage', 'common']);
 	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
-	const clans = useSelector(selectAllClans);
 	const bottomSheetDMMessageRef = useRef<BottomSheetModal>(null);
 	const friends = useSelector(selectAllFriends);
 
@@ -106,7 +97,7 @@ const MessagesScreen = ({ navigation }: { navigation: any }) => {
 				</Pressable>
 			</View>
 			<SearchDmList />
-			{clansLoadingStatus === 'loaded' && !clans?.length && !dmGroupChatList?.length ? (
+			{clansLoadingStatus === 'loaded' && !dmGroupChatList?.length ? (
 				<UserEmptyMessage
 					onPress={() => {
 						navigateToAddFriendScreen();

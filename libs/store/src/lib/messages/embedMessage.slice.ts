@@ -34,16 +34,20 @@ export const embedSlice = createSlice({
 			}
 			if (!state.formDataEmbed[message_id]) {
 				state.formDataEmbed[message_id] = {
-					...state.formDataEmbed[message_id],
 					[data.id]: [data.value]
 				};
 				return;
 			}
 			if (state.formDataEmbed[message_id][data.id]) {
-				state.formDataEmbed[message_id][data.id] = [data.value];
+				const listData = [...state.formDataEmbed[message_id][data.id], data.value];
+				if (state.formDataEmbed[message_id][data.id].includes(data.value)) {
+					state.formDataEmbed[message_id][data.id] = listData.filter((item) => item !== data.value);
+					return;
+				}
+				state.formDataEmbed[message_id][data.id] = listData;
 				return;
 			}
-			state.formDataEmbed[message_id][data.id] = [data.value];
+			state.formDataEmbed[message_id][data.id] = [...state.formDataEmbed[message_id][data.id], data.value];
 		},
 		removeEmbedValuel: (state, action: PayloadAction<{ message_id: string; data: FormDataEmbed; multiple?: boolean }>) => {
 			const { message_id, data, multiple } = action.payload;

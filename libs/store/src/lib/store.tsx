@@ -409,7 +409,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 				},
 				immutableCheck: false,
 				serializableCheck: false
-			}).prepend(errorListenerMiddleware.middleware, toastListenerMiddleware.middleware, limitDataMiddleware)
+			}).prepend(errorListenerMiddleware.middleware, toastListenerMiddleware.middleware)
 	});
 	storeInstance = store;
 	storeCreated = true;

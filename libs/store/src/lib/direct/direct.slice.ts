@@ -242,9 +242,8 @@ export const joinDirectMessage = createAsyncThunk<void, JoinDirectMessagePayload
 					messagesActions.fetchMessages({
 						clanId: '0',
 						channelId: directMessageId,
-						noCache: true,
 						isFetchingLatestMessages,
-						isClearMessage: true
+						isClearMessage
 					})
 				);
 				const fetchChannelMembersResult = await thunkAPI.dispatch(

@@ -551,23 +551,21 @@ export const selectAllChannelMemberIds = createSelector(
 		getChannelMembersState,
 		getUsersClanState,
 		selectGrouplMembers,
-		(state: RootState, channelId: string) => {
+		(state: RootState, channelId: string, isDm?: boolean) => {
 			const currentClanId = state.clans?.currentClanId;
 			const channel = state.channels?.byClans[currentClanId as string]?.entities?.entities?.[channelId];
 			const isPrivate = channel?.channel_private;
 			const parentId = channel?.parrent_id;
-
-			const isDm = state.direct?.currentDirectMessageId === channelId || '';
-			return `${channelId},${isPrivate},${isDm},${parentId}`;
+			return `${channelId},${isPrivate},${isDm ? 1 : ''},${parentId}`;
 		}
 	],
 	(channelMembersState, usersClanState, directs, payload) => {
 		const [channelId, isPrivate, isDm, parentId] = payload.split(',');
-		if (isDm) return directs.map((dm) => dm.id);
+		if (isDm) return directs;
 		const memberIds =
 			isPrivate === '1' || (parentId !== '0' && parentId !== '')
 				? channelMembersState.memberChannels[channelId]?.ids || []
-				: Object.keys(usersClanState.entities);
+				: usersClanState.ids;
 		return memberIds;
 	}
 );
@@ -604,8 +602,6 @@ export const selectChannelMemberByUserIds = createSelector(
 				const { usernames, channel_label, user_id, is_online, channel_avatar } = userInfo as DirectEntity;
 				const currentUserIndex = Array.isArray(user_id) ? user_id.findIndex((id) => id === userId) : -1;
 				if (currentUserIndex === -1) return;
-				const groupDisplayNames = usernames?.split(',');
-				const groupLabels = channel_label?.split(',');
 				members.push({
 					channelId,
 					userChannelId: channelId,

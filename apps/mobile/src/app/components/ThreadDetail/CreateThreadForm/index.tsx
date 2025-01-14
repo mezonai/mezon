@@ -22,7 +22,7 @@ import {
 	selectThreadCurrentChannel,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { IChannel, IMessageSendPayload, ThreadValue, checkIsThread } from '@mezon/utils';
+import { IChannel, IMessageSendPayload, ThreadValue, checkIsThread, isPublicChannel } from '@mezon/utils';
 import { Formik } from 'formik';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
@@ -233,6 +233,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 								threadIcon: true
 							}}
 							onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
+							isPublic={isPublicChannel(currentChannel)}
 						/>
 						<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 						<Block height={Platform.OS === 'ios' ? size.s_40 : 0} />

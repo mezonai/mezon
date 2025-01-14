@@ -1,5 +1,6 @@
 import { useAppNavigation, useIdleRender, usePathMatch } from '@mezon/core';
 import {
+	RootState,
 	appActions,
 	channelsActions,
 	notificationActions,
@@ -15,6 +16,8 @@ import {
 	selectDefaultNotificationClan,
 	selectIsPinModalVisible,
 	selectIsShowChatStream,
+	selectIsShowCreateThread,
+	selectIsShowCreateTopic,
 	selectIsShowInbox,
 	selectIsShowMemberList,
 	selectIsShowPinBadgeByChannelId,
@@ -32,7 +35,7 @@ import Tippy from '@tippy.js/react';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import ModalInvite from '../ListMemberInvite/modalInvite';
 import NotificationList from '../NotificationList';
 import SearchMessageChannel from '../SearchMessageChannel';
@@ -103,10 +106,20 @@ const TopBarChannelVoice = memo(({ channel }: ChannelTopbarProps) => {
 
 const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }: ChannelTopbarProps) => {
 	const dispatch = useAppDispatch();
+	const store = useStore();
+
 	const setTurnOffThreadMessage = useCallback(() => {
-		dispatch(threadsActions.setOpenThreadMessageState(false));
-		dispatch(threadsActions.setValueThread(null));
-	}, [dispatch]);
+		const isShowCreateThread = selectIsShowCreateThread(store.getState() as RootState, channel?.id as string);
+		const isShowCreateTopic = selectIsShowCreateTopic(store.getState() as RootState, channel?.id as string);
+		if (isShowCreateThread) {
+			dispatch(threadsActions.setOpenThreadMessageState(false));
+			dispatch(threadsActions.setValueThread(null));
+		}
+		if (isShowCreateTopic) {
+			dispatch(topicsActions.setOpenTopicMessageState(false));
+			dispatch(topicsActions.setValueTopic(null));
+		}
+	}, [channel?.id, dispatch, store]);
 
 	const appearanceTheme = useSelector(selectTheme);
 	const isShowChatStream = useSelector(selectIsShowChatStream);

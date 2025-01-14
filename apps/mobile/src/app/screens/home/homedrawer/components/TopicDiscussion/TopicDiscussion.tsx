@@ -2,7 +2,7 @@ import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { messagesActions, selectCurrentChannel, selectCurrentClanId, selectCurrentTopicId, topicsActions, useAppDispatch } from '@mezon/store-mobile';
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { KeyboardAvoidingView, Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -103,6 +103,7 @@ export default function TopicDiscussion() {
 							isDisableLoadMore={true}
 							isPublic={isPublicChannel(currentChannel)}
 							mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
+							isDisableActionListener={true}
 						/>
 					</View>
 				</PanGestureHandler>
@@ -110,6 +111,10 @@ export default function TopicDiscussion() {
 					channelId={currentChannel?.channel_id}
 					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 					onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
+					hiddenIcon={{
+						threadIcon: currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD
+					}}
+					isPublic={isPublicChannel(currentChannel)}
 				/>
 				<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 				<ShareLocationConfirmModal

@@ -111,7 +111,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 				<View style={styles.newGroupContainer}>
 					<View style={styles.headerWrapper}>
-						<Pressable onPress={handleMenuThreadBack}>
+						<Pressable onPress={() => navigation.goBack()}>
 							<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.text} />
 						</Pressable>
 						<View style={styles.screenTitleWrapper}>

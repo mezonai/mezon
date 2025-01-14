@@ -1,5 +1,4 @@
-import { useAuth } from '@mezon/core';
-import { MessagesEntity, selectJumpPinMessageId, selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
+import { MessagesEntity, selectAllAccount, selectJumpPinMessageId, selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
 	HEIGHT_PANEL_PROFILE,
@@ -12,12 +11,11 @@ import {
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { ReactNode, memo, useCallback, useMemo, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
 import EmbedMessage from '../EmbedMessage/EmbedMessage';
-import { HtmlCanvasView } from '../HtmlCanvas';
 import { MessageActionsPanel } from '../MessageActionsPanel';
 import ModalUserProfile from '../ModalUserProfile';
 import MessageAttachment from './MessageAttachment';
@@ -73,9 +71,8 @@ function MessageWithUser({
 	messageReplyHighlight,
 	isTopic
 }: Readonly<MessageWithUserProps>) {
-	const userLogin = useAuth();
-	const userId = userLogin?.userId;
-	const user = useAppSelector((state) => selectMemberClanByUserId2(state, userLogin.userProfile?.user?.id as string));
+	const userId = useSelector(selectAllAccount)?.user?.id as string;
+	const user = useAppSelector((state) => selectMemberClanByUserId2(state, userId));
 	const positionShortUser = useRef<{ top: number; left: number } | null>(null);
 	const shortUserId = useRef('');
 	const checkAnonymous = message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -96,13 +93,13 @@ function MessageWithUser({
 		if (typeof message?.content?.t == 'string') {
 			if (message?.content.t?.includes('@here')) return true;
 		}
-		const userIdMention = userLogin.userProfile?.user?.id;
+		const userIdMention = userId;
 		const includesUser = message?.mentions?.some((mention) => mention.user_id === userIdMention);
 		const includesRole = message?.mentions?.some((item) => user?.role_id?.includes(item?.role_id as string));
 		return includesUser || includesRole;
 	})();
 
-	const checkMessageHasReply = !!message?.references?.length && message?.code == TypeMessage.Chat;
+	const checkMessageHasReply = !!message?.references?.length && message?.code === TypeMessage.Chat;
 
 	const checkMessageIncludeMention = hasIncludeMention;
 
@@ -179,14 +176,10 @@ function MessageWithUser({
 			return message?.avatar;
 		}
 
-		if (isDM) {
-			return message?.references?.[0]?.mesages_sender_avatar ?? '';
-		}
-
 		if (shortUserId.current === message?.sender_id) {
 			return message?.clan_avatar || message?.avatar;
 		}
-	}, [isDM, message?.avatar, message?.clan_avatar, message?.references, message?.sender_id]);
+	}, [isDM, message?.avatar, message?.clan_avatar, message?.sender_id]);
 
 	const messageHour = message ? convertTimeHour(message.create_time) : '';
 
@@ -313,7 +306,7 @@ function MessageWithUser({
 												)}
 
 												{/* show html canvas */}
-												{message?.content?.canvas && <HtmlCanvasView response={message?.content?.canvas} />}
+												{/* {message?.content?.canvas && <HtmlCanvasView response={message?.content?.canvas} />} */}
 
 												{Array.isArray(message?.content?.embed) &&
 													message?.content.embed?.map((embed, index) => (
@@ -328,7 +321,7 @@ function MessageWithUser({
 												{!!message?.content?.callLog?.callLogType && (
 													<CallLogMessage
 														userId={userId || ''}
-														userName={userLogin.userProfile?.user?.display_name || ''}
+														userName={user?.user?.display_name || ''}
 														channelId={message?.channel_id}
 														messageId={message?.id}
 														senderId={message?.sender_id}
@@ -361,7 +354,7 @@ function MessageWithUser({
 	);
 }
 
-const MessageDateDivider = memo(({ message }: { message: MessagesEntity }) => {
+const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const messageDate = !message?.create_time ? '' : convertDateString(message?.create_time as string);
 	return (
 		<div className="flex flex-row w-full px-4 items-center pt-3 text-zinc-400 text-[12px] font-[600] dark:bg-transparent bg-transparent">
@@ -370,7 +363,7 @@ const MessageDateDivider = memo(({ message }: { message: MessagesEntity }) => {
 			<div className="w-full border-b-[1px] dark:border-borderDivider border-borderDividerLight opacity-50 text-center"></div>
 		</div>
 	);
-});
+};
 
 interface HoverStateWrapperProps {
 	children: ReactNode;
@@ -380,10 +373,6 @@ interface HoverStateWrapperProps {
 const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, isSearchMessage }) => {
 	const [isHover, setIsHover] = useState(false);
 	const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
-
-	const memoizedChildren = useMemo(() => {
-		return children;
-	}, [children]);
 
 	const handleMouseEnter = () => {
 		if (hoverTimeout.current) {
@@ -408,10 +397,10 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, 
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>
-			{memoizedChildren}
+			{children}
 			{isHover && popup && popup()}
 		</div>
 	);
 };
 
-export default memo(MessageWithUser);
+export default MessageWithUser;

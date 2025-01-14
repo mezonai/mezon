@@ -223,6 +223,7 @@ const DirectMessage = () => {
 							{
 								<ChannelMessages
 									clanId="0"
+									isDM={true}
 									channelId={directId ?? ''}
 									channelLabel={currentDmGroup?.channel_label}
 									userName={isDmChannel ? currentDmGroup?.usernames : undefined}

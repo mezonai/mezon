@@ -55,10 +55,7 @@ import {
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import 'react-contexify/ReactContexify.css';
-import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import ModalDeleteMess from '../DeleteMessageModal/ModalDeleteMess';
-import { ModalAddPinMess } from '../PinMessModal';
 import DynamicContextMenu from './DynamicContextMenu';
 import { useMessageContextMenu } from './MessageContextMenuContext';
 
@@ -68,6 +65,8 @@ type MessageContextMenuProps = {
 	elementTarget?: boolean | HTMLElement | null;
 	activeMode: number | undefined;
 	isTopic: boolean;
+	openDeleteMessageModal: () => void;
+	openPinMessageModal: () => void;
 };
 
 type JsonObject = {
@@ -89,7 +88,15 @@ const useIsOwnerGroupDM = () => {
 	return isOwnerGroupDM;
 };
 
-function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic }: MessageContextMenuProps) {
+function MessageContextMenu({
+	id,
+	elementTarget,
+	messageId,
+	activeMode,
+	isTopic,
+	openPinMessageModal,
+	openDeleteMessageModal
+}: MessageContextMenuProps) {
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -124,22 +131,6 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 	const isMyMessage = useMemo(() => {
 		return message?.sender_id === userId && !message?.content?.callLog?.callLogType;
 	}, [message?.sender_id, userId, message?.content?.callLog?.callLogType]);
-	const mode = useMemo(() => {
-		if (modeResponsive === ModeResponsive.MODE_CLAN) {
-			if (currentChannel?.type === ChannelType.CHANNEL_TYPE_TEXT) {
-				return ChannelStreamMode.STREAM_MODE_CHANNEL;
-			}
-			if (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
-				return ChannelStreamMode.STREAM_MODE_THREAD;
-			}
-		}
-
-		if (currentDm?.type === ChannelType.CHANNEL_TYPE_DM) {
-			return ChannelStreamMode.STREAM_MODE_DM;
-		}
-
-		return ChannelStreamMode.STREAM_MODE_GROUP;
-	}, [modeResponsive, currentDm?.type, currentChannel?.type]);
 
 	const checkMessageHasText = useMemo(() => {
 		return message?.content.t !== '';
@@ -164,21 +155,6 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 	const [enableOpenLinkItem, setEnableOpenLinkItem] = useState<boolean>(false);
 	const [enableCopyImageItem, setEnableCopyImageItem] = useState<boolean>(false);
 	const [enableSaveImageItem, setEnableSaveImageItem] = useState<boolean>(false);
-	const [isOPenDeleteMessageModal, isCloseDeleteMessageModal] = useModal(() => {
-		return <ModalDeleteMess mess={message} closeModal={isCloseDeleteMessageModal} mode={mode} />;
-	}, [message?.id]);
-
-	const [openPinMessageModal, closePinMessageModal] = useModal(() => {
-		return (
-			<ModalAddPinMess
-				mess={message}
-				closeModal={closePinMessageModal}
-				handlePinMessage={handlePinMessage}
-				mode={activeMode || 0}
-				channelLabel={currentChannel?.channel_label || ''}
-			/>
-		);
-	}, [message]);
 
 	const handleAddToNote = useCallback(() => {
 		if (!message || !currentChannel || !currentClanId) return;
@@ -340,37 +316,6 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 		dispatch(setSelectedMessage(message));
 		dispatch(setIsForwardAll(true));
 	}, [dispatch, dmGroupChatList?.length, message]);
-
-	const handlePinMessage = async () => {
-		dispatch(
-			pinMessageActions.setChannelPinMessage({
-				clan_id: currentClanId ?? '',
-				channel_id: message?.channel_id,
-				message_id: message?.id,
-				message: message
-			})
-		);
-		dispatch(
-			pinMessageActions.joinPinMessage({
-				clanId:
-					activeMode !== ChannelStreamMode.STREAM_MODE_CHANNEL && activeMode !== ChannelStreamMode.STREAM_MODE_THREAD
-						? ''
-						: (currentClanId ?? ''),
-				channelId:
-					activeMode !== ChannelStreamMode.STREAM_MODE_CHANNEL && activeMode !== ChannelStreamMode.STREAM_MODE_THREAD
-						? currentDmId || ''
-						: (currentChannel?.channel_id ?? ''),
-				messageId: message?.id,
-				isPublic:
-					activeMode !== ChannelStreamMode.STREAM_MODE_CHANNEL && activeMode !== ChannelStreamMode.STREAM_MODE_THREAD
-						? false
-						: currentChannel
-							? !currentChannel.channel_private
-							: false,
-				mode: activeMode as number
-			})
-		);
-	};
 
 	const handleUnPinMessage = useCallback(() => {
 		dispatch(pinMessageActions.deleteChannelPinMessage({ channel_id: message?.channel_id, message_id: message?.id }));
@@ -708,7 +653,7 @@ function MessageContextMenu({ id, elementTarget, messageId, activeMode, isTopic 
 		});
 
 		builder.when(enableDelMessageItem, (builder) => {
-			builder.addMenuItem('deleteMessage', 'Delete Message', isOPenDeleteMessageModal, <Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />);
+			builder.addMenuItem('deleteMessage', 'Delete Message', openDeleteMessageModal, <Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />);
 		});
 
 		builder.when(enableReportMessageItem, (builder) => {

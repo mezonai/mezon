@@ -13,7 +13,7 @@ export function ChannelJumpToPresent({ clanId, channelId, className }: ChannelJu
 	const handleJumpToPresent = async () => {
 		// Jump to present
 		dispatch(messagesActions.setIsJumpingToPresent({ channelId: channelId, status: true }));
-		await dispatch(messagesActions.fetchMessages({ clanId, channelId, isFetchingLatestMessages: true, noCache: true }));
+		await dispatch(messagesActions.fetchMessages({ clanId, channelId, isFetchingLatestMessages: true, noCache: true, isClearMessage: true }));
 		setTimeout(() => {
 			dispatch(messagesActions.setIsJumpingToPresent({ channelId: channelId, status: true }));
 		}, 200);

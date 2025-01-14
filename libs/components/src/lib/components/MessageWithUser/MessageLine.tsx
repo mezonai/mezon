@@ -1,6 +1,6 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { selectAllChannels, useAppSelector } from '@mezon/store';
-import { EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown } from '@mezon/utils';
+import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
@@ -18,6 +18,7 @@ type MessageLineProps = {
 	isInPinMsg?: boolean;
 	code?: number;
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
+	messageId?: string;
 };
 
 const MessageLineComponent = ({
@@ -32,7 +33,8 @@ const MessageLineComponent = ({
 	isEditted,
 	isInPinMsg,
 	code,
-	onCopy
+	onCopy,
+	messageId
 }: MessageLineProps) => {
 	return (
 		<div
@@ -57,6 +59,7 @@ const MessageLineComponent = ({
 				isInPinMsg={isInPinMsg}
 				code={code}
 				onCopy={onCopy}
+				messsageId={messageId}
 			/>
 		</div>
 	);
@@ -77,6 +80,7 @@ interface RenderContentProps {
 	isInPinMsg?: boolean;
 	code?: number;
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
+	messsageId?: string;
 }
 
 export interface ElementToken {
@@ -103,7 +107,8 @@ const RenderContent = memo(
 		isEditted,
 		isInPinMsg,
 		code,
-		onCopy
+		onCopy,
+		messsageId
 	}: RenderContentProps) => {
 		const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [] } = data;
 		const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
@@ -132,22 +137,23 @@ const RenderContent = memo(
 
 				if (lastindex < s) {
 					formattedContent.push(
-						<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}`} text={t?.slice(lastindex, s) ?? ''} />
+						<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-${messsageId}`} text={t?.slice(lastindex, s) ?? ''} />
 					);
 				}
 
 				if (element.kindOf === ETokenMessage.HASHTAGS) {
 					formattedContent.push(
 						<ChannelHashtag
+							key={`hashtag-${s}-${messsageId}`}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
-							key={`hashtag-${index}-${s}-${element.channelid}`}
 							channelHastagId={`<#${element.channelid}>`}
 						/>
 					);
 				} else if (element.kindOf === ETokenMessage.MENTIONS && element.user_id) {
 					formattedContent.push(
 						<MentionContent
+							key={`mentionUser-${s}-${messsageId}`}
 							element={element}
 							contentInElement={contentInElement}
 							isTokenClickAble={isTokenClickAble}
@@ -160,6 +166,7 @@ const RenderContent = memo(
 				} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
 					formattedContent.push(
 						<RoleMentionContent
+							key={`mentionRole-${s}-${messsageId}`}
 							element={element}
 							contentInElement={contentInElement}
 							isTokenClickAble={isTokenClickAble}
@@ -172,8 +179,8 @@ const RenderContent = memo(
 				} else if (element.kindOf === ETokenMessage.EMOJIS) {
 					formattedContent.push(
 						<EmojiMarkup
+							key={`emoji-${s}-${messsageId}`}
 							isOne={Number(t?.length) - 1 === Number(element?.e) - Number(element.s)}
-							key={`emoji-${index}-${s}-${element.emojiid}`}
 							emojiSyntax={contentInElement ?? ''}
 							onlyEmoji={isOnlyContainEmoji ?? false}
 							emojiId={element.emojiid ?? ''}
@@ -182,10 +189,10 @@ const RenderContent = memo(
 				} else if (element.kindOf === ETokenMessage.LINKS && !isHideLinkOneImage) {
 					formattedContent.push(
 						<MarkdownContent
+							key={`link${s}-${messsageId}`}
 							isLink={true}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
-							key={`link-${index}-${s}-${contentInElement}`}
 							content={contentInElement}
 						/>
 					);
@@ -193,6 +200,7 @@ const RenderContent = memo(
 					const meetingCode = contentInElement?.split('/').pop();
 					formattedContent.push(
 						<VoiceLinkContent
+							key={`voiceLink-${s}-${messsageId}`}
 							meetingCode={meetingCode}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
@@ -215,10 +223,10 @@ const RenderContent = memo(
 					}
 					formattedContent.push(
 						<MarkdownContent
+							key={`markdown-${s}-${messsageId}`}
 							isBacktick={true}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
-							key={`markdown-${index}-${s}-${contentInElement}`}
 							content={content}
 							isInPinMsg={isInPinMsg}
 							typeOfBacktick={element.type}
@@ -230,7 +238,9 @@ const RenderContent = memo(
 			});
 
 			if (t && lastindex < t?.length) {
-				formattedContent.push(<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-end`} text={t.slice(lastindex)} />);
+				formattedContent.push(
+					<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-end-${messsageId}`} text={t.slice(lastindex)} />
+				);
 			}
 
 			if (isEditted) {
@@ -346,21 +356,12 @@ export const VoiceLinkContent = memo(({ meetingCode, isTokenClickAble, isJumMess
 			<ChannelHashtag
 				isTokenClickAble={isTokenClickAble}
 				isJumMessageEnabled={isJumMessageEnabled}
-				key={`voicelink-${index}-${s}-${voiceChannelFound?.channel_id}`}
 				channelHastagId={`<#${voiceChannelFound?.channel_id}>`}
 			/>
 		);
 	}
 
-	return (
-		<MarkdownContent
-			isLink={true}
-			isTokenClickAble={isTokenClickAble}
-			isJumMessageEnabled={isJumMessageEnabled}
-			key={`voicelink-${index}-${s}-${contentInElement}`}
-			content={contentInElement}
-		/>
-	);
+	return <MarkdownContent isLink={true} isTokenClickAble={isTokenClickAble} isJumMessageEnabled={isJumMessageEnabled} content={contentInElement} />;
 });
 
 interface MentionContentProps {
@@ -375,15 +376,22 @@ interface MentionContentProps {
 
 export const MentionContent = memo(({ element, contentInElement, isTokenClickAble, isJumMessageEnabled, mode, index, s }: MentionContentProps) => {
 	const { allUserIdsInChannel } = useMessageContextMenu();
+	let isValidMention = false;
 
-	const isValidMention = allUserIdsInChannel.indexOf(element.user_id ?? '') !== -1 || contentInElement === '@here';
+	if (allUserIdsInChannel && allUserIdsInChannel?.length > 0) {
+		if (typeof allUserIdsInChannel?.[0] === 'string') {
+			isValidMention = (allUserIdsInChannel as string[])?.includes(element.user_id ?? '') || contentInElement === '@here';
+		} else {
+			isValidMention =
+				(allUserIdsInChannel as ChannelMembersEntity[])?.some((member) => member.id === element.user_id) || contentInElement === '@here';
+		}
+	}
 
 	if (isValidMention) {
 		return (
 			<MentionUser
 				isTokenClickAble={isTokenClickAble}
 				isJumMessageEnabled={isJumMessageEnabled}
-				key={`mentionUser-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
 				tagUserName={contentInElement ?? ''}
 				tagUserId={element.user_id}
 				mode={mode}
@@ -391,13 +399,7 @@ export const MentionContent = memo(({ element, contentInElement, isTokenClickAbl
 		);
 	}
 
-	return (
-		<PlainText
-			isSearchMessage={false}
-			key={`userDeleted-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
-			text={contentInElement ?? ''}
-		/>
-	);
+	return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
 });
 
 interface RoleMentionContentProps {
@@ -421,7 +423,6 @@ export const RoleMentionContent = memo(
 				<MentionUser
 					isTokenClickAble={isTokenClickAble}
 					isJumMessageEnabled={isJumMessageEnabled}
-					key={`roleMention-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
 					tagRoleName={contentInElement ?? ''}
 					tagRoleId={element.role_id}
 					mode={mode}
@@ -429,12 +430,6 @@ export const RoleMentionContent = memo(
 			);
 		}
 
-		return (
-			<PlainText
-				isSearchMessage={false}
-				key={`roleDeleted-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
-				text={contentInElement ?? ''}
-			/>
-		);
+		return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
 	}
 );

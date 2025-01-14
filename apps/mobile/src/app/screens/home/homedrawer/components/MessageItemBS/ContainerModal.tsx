@@ -434,8 +434,8 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		const isHideCreateThread = isDM || !isCanManageThread || !isCanManageChannel || currentChannel?.parrent_id !== '0';
 		const isHideThread = currentChannel?.parrent_id !== '0';
 		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage);
-		const isHideTopicDiscussion = message?.code === TypeMessage.Topic || isDM || !canSendMessage || currentChannelId !== message?.channel_id;
-
+		const isHideTopicDiscussion =
+			message?.topic_id || message?.code === TypeMessage.Topic || isDM || !canSendMessage || currentChannelId !== message?.channel_id;
 		const listOfActionOnlyMyMessage = [EMessageActionType.EditMessage];
 		const listOfActionOnlyOtherMessage = [EMessageActionType.Report];
 

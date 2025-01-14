@@ -36,7 +36,7 @@ export const MessageRatioButton: React.FC<MessageRatioButtonProps> = ({ name, on
 				type="radio"
 				className={`appearance-none text-white w-5 h-5 bg-transparent cursor-pointer relative rounded-full  border-2  border-channelTextLabel checked:after:absolute checked:after:w-3 checked:after:h-3 checked:after:top-[2.4px] checked:after:left-[2.4px] checked:after:content-[""] checked:after:rounded-full
 				 ${buttonColor}`}
-				onChange={onCheckRatio}
+				onClick={onCheckRatio}
 				checked={checked}
 			/>
 		</div>

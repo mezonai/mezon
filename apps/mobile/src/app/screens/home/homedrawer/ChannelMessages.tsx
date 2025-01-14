@@ -230,8 +230,10 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 					isLoadMoreTop={isLoadMore.current?.[ELoadMoreDirection.top]}
 					isLoadMoreBottom={isLoadMore.current?.[ELoadMoreDirection.bottom]}
 				/>
-			) : (
+			) : !isDisableLoadMore ? (
 				<MessageItemSkeleton skeletonNumber={15} />
+			) : (
+				<View />
 			)}
 			<Block height={size.s_8} />
 			{isHaveJumpToPresent && (

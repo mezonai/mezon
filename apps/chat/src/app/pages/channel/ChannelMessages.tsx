@@ -4,9 +4,9 @@ import {
 	LoadMoreDirection,
 	isBackgroundModeActive,
 	useContainerHeight,
-	useCurrentInbox,
 	useIdleRender,
 	useLayoutEffectWithPrevDeps,
+	usePermissionChecker,
 	useScrollHooks,
 	useStateRef,
 	useSyncEffect
@@ -40,6 +40,7 @@ import {
 } from '@mezon/store';
 import {
 	Direction_Mode,
+	EOverriddenPermission,
 	animateScroll,
 	convertInitialMessageOfTopic,
 	forceMeasure,
@@ -69,6 +70,7 @@ type ChannelMessagesProps = {
 	isThreadBox?: boolean;
 	isTopicBox?: boolean;
 	topicId?: string;
+	isDM?: boolean;
 };
 
 const MESSAGE_LIST_SLICE = 50;
@@ -86,18 +88,18 @@ function ChannelMessages({
 	userIdsFromThreadBox,
 	isThreadBox = false,
 	isTopicBox,
+	isDM,
 	topicId
 }: ChannelMessagesProps) {
 	const store = useStore();
 	const appearanceTheme = useSelector(selectTheme);
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentInbox = useCurrentInbox();
 	const messageIds = useAppSelector((state) => selectMessageIdsByChannelId2(state, channelId));
 	const idMessageNotified = useSelector(selectMessageNotified);
 	const isJumpingToPresent = useAppSelector((state) => selectIsJumpingToPresent(state, channelId));
 	const isFetching = useSelector(selectMessageIsLoading);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, currentInbox?.channel_id as string));
+	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, isDM));
 	const allUserIdsInChannel = isThreadBox ? userIdsFromThreadBox : getMemberIds;
 	const allRolesInClan = useSelector(selectAllRoleIds);
 	const dataReferences = useSelector(selectDataReferences(channelId ?? ''));
@@ -113,13 +115,28 @@ function ChannelMessages({
 	const anchorIdRef = useRef<string | null>(null);
 	const anchorTopRef = useRef<number | null>(null);
 	const setAnchor = useRef<number | null>(null);
+	const previousChannelId = useRef<string | null>(null);
 
 	useSyncEffect(() => {
 		userActiveScroll.current = false;
 		skipCalculateScroll.current = false;
 		anchorIdRef.current = null;
 		anchorTopRef.current = null;
+		requestIdleCallback &&
+			requestIdleCallback(() => {
+				previousChannelId.current && dispatch(messagesActions.updateLastFiftyMessagesAction(previousChannelId.current));
+				previousChannelId.current = channelId;
+			});
 	}, [channelId]);
+
+	useSyncEffect(() => {
+		return () => {
+			requestIdleCallback &&
+				requestIdleCallback(() => {
+					previousChannelId.current && dispatch(messagesActions.updateLastFiftyMessagesAction(previousChannelId.current));
+				});
+		};
+	}, []);
 
 	useEffect(() => {
 		isFetchingRef.current = isFetching;
@@ -260,7 +277,7 @@ function ChannelMessages({
 	if (!shouldRender) return null;
 
 	return (
-		<MessageContextMenuProvider channelId={channelId} allUserIdsInChannel={allUserIdsInChannel as string[]} allRolesInClan={allRolesInClan}>
+		<MessageContextMenuProvider channelId={channelId} allRolesInClan={allRolesInClan} allUserIdsInChannel={allUserIdsInChannel}>
 			<ChatMessageList
 				key={channelId}
 				messageIds={messageIds}
@@ -478,6 +495,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						!isAlreadyFocusing
 					) {
 						// Break out of `forceLayout`
+						if (!lastItemElement) return;
 						requestMeasure(() => {
 							const shouldScrollToBottom = !isBackgroundModeActive();
 							// firstUnreadElement
@@ -612,6 +630,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					dispatch(pinMessageActions.setJumpPinMessageId(null));
 				}, 1000);
 			} else if (idMessageToJump && isMessageExist && !jumpPinMessageId) {
+				if (idMessageToJump.id === 'temp') return;
 				if (idMessageToJump?.navigate) {
 					setTimeout(() => {
 						scrollToMessage(idMessageToJump.id);
@@ -637,6 +656,52 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				dispatch(pinMessageActions.setJumpPinMessageId(null));
 			};
 		}, [dispatch]);
+
+		const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
+
+		const renderedMessages = useMemo(() => {
+			return messageIds.map((messageId, index) => {
+				const checkMessageTargetToMoved = idMessageToJump?.id === messageId && messageId !== lastMessageId;
+				const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
+				return (
+					<div className="message-list-item" key={messageId} id={'msg-' + messageId}>
+						<MemorizedChannelMessage
+							index={index}
+							message={entities[messageId]}
+							previousMessage={entities[messageIds[index - 1]]}
+							avatarDM={avatarDM}
+							userName={userName}
+							messageId={messageId}
+							nextMessageId={messageIds[index + 1]}
+							channelId={channelId}
+							isHighlight={messageId === idMessageNotified}
+							mode={mode}
+							channelLabel={channelLabel ?? ''}
+							isLastSeen={Boolean(messageId === lastMessageUnreadId && messageId !== lastMessageId)}
+							checkMessageTargetToMoved={checkMessageTargetToMoved}
+							messageReplyHighlight={messageReplyHighlight}
+							isTopic={isTopic}
+							canSendMessage={canSendMessage}
+						/>
+					</div>
+				);
+			});
+		}, [
+			messageIds,
+			avatarDM,
+			canSendMessage,
+			channelId,
+			channelLabel,
+			dataReferences?.message_ref_id,
+			entities,
+			idMessageNotified,
+			idMessageToJump?.id,
+			isTopic,
+			lastMessageId,
+			lastMessageUnreadId,
+			mode,
+			userName
+		]);
 
 		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 		return (
@@ -682,31 +747,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 							</div>
 						)}
 						{withHistoryTriggers && <div ref={backwardsTriggerRef} key="backwards-trigger" className="backwards-trigger" />}
-						{messageIds.map((messageId, index) => {
-							const checkMessageTargetToMoved = idMessageToJump?.id === messageId && messageId !== lastMessageId;
-							const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
-							return (
-								<div className="message-list-item" key={messageId} id={'msg-' + messageId}>
-									<MemorizedChannelMessage
-										index={index}
-										message={entities[messageId]}
-										previousMessage={entities[messageIds[index - 1]]}
-										avatarDM={avatarDM}
-										userName={userName}
-										messageId={messageId}
-										nextMessageId={messageIds[index + 1]}
-										channelId={channelId}
-										isHighlight={messageId === idMessageNotified}
-										mode={mode}
-										channelLabel={channelLabel ?? ''}
-										isLastSeen={Boolean(messageId === lastMessageUnreadId && messageId !== lastMessageId)}
-										checkMessageTargetToMoved={checkMessageTargetToMoved}
-										messageReplyHighlight={messageReplyHighlight}
-										isTopic={isTopic}
-									/>
-								</div>
-							);
-						})}
+						{renderedMessages}
 						{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
 
 						<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger" />

@@ -4,6 +4,7 @@ import {
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectIsShowCreateThread,
+	selectIsShowCreateTopic,
 	selectPositionEmojiButtonSmile,
 	selectReactionTopState,
 	selectStatusMenu
@@ -26,7 +27,7 @@ const ChannelLayout = () => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
 	const { isShowMemberList } = useApp();
 	const positionOfSmileButton = useSelector(selectPositionEmojiButtonSmile);
-
+	const isShowCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, currentChannel?.id as string));
 	const HEIGHT_EMOJI_PANEL = 457;
 	const WIDTH_EMOJI_PANEL = 500;
 	const distanceToBottom = window.innerHeight - positionOfSmileButton.bottom;
@@ -55,7 +56,7 @@ const ChannelLayout = () => {
 					{subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT && (
 						<div
 							id="emojiPicker"
-							className={`z-20 fixed size-[500px] max-sm:hidden right-1 ${closeMenu && !statusMenu && 'w-[370px]'} ${reactionTopState ? 'top-20' : 'bottom-20'} ${isShowCreateThread && 'ssm:right-[650px]'} ${isShowMemberList && 'ssm:right-[420px]'} ${!isShowCreateThread && !isShowMemberList && 'ssm:right-44'}`}
+							className={`z-20 fixed size-[500px] max-sm:hidden right-1 ${closeMenu && !statusMenu && 'w-[370px]'} ${reactionTopState ? 'top-20' : 'bottom-20'} ${(isShowCreateThread || isShowCreateTopic) && 'ssm:right-[650px]'} ${isShowMemberList && 'ssm:right-[420px]'} ${!isShowCreateThread && !isShowMemberList && !isShowCreateTopic && 'ssm:right-44'}`}
 						>
 							<div className="mb-0 z-10 h-full">
 								<GifStickerEmojiPopup mode={ChannelStreamMode.STREAM_MODE_CHANNEL} emojiAction={EmojiPlaces.EMOJI_REACTION} />

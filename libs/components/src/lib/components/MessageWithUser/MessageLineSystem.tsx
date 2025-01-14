@@ -1,5 +1,5 @@
 import { messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
-import { EBacktickType, ETokenMessage, IExtendedMessage, IMessageWithUser, TypeMessage, parseThreadInfo } from '@mezon/utils';
+import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, IMessageWithUser, TypeMessage, parseThreadInfo } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -90,7 +90,16 @@ const RenderContentSystem = memo(({ message, data, mode, isSearchMessage, isJumM
 			}
 
 			if (element.kindOf === ETokenMessage.MENTIONS && element.user_id) {
-				if (allUserIdsInChannel.indexOf(element.user_id) !== -1 || contentInElement === '@here') {
+				let isValidMention = false;
+				if (typeof allUserIdsInChannel?.[0] === 'string') {
+					isValidMention = (allUserIdsInChannel as string[])?.includes(element.user_id) || contentInElement === '@here';
+				} else {
+					isValidMention =
+						(allUserIdsInChannel as ChannelMembersEntity[])?.some((member) => member.id === element.user_id) ||
+						contentInElement === '@here';
+				}
+
+				if (isValidMention) {
 					formattedContent.push(
 						<MentionUser
 							isTokenClickAble={isTokenClickAble}

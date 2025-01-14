@@ -108,6 +108,10 @@ const HomeDefault = React.memo((props: any) => {
 						channelId={currentChannel?.channel_id}
 						mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 						onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
+						hiddenIcon={{
+							threadIcon: currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD
+						}}
+						isPublic={isPublicChannel(currentChannel)}
 					/>
 					<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 					<ShareLocationConfirmModal

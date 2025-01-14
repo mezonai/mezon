@@ -15,25 +15,28 @@ type ChannelMessagesProps = {
 	isPublic?: boolean;
 	isDM?: boolean;
 	isDisableLoadMore?: boolean;
+	isDisableActionListener?: boolean;
 };
 
-const ChannelMessagesWrapper = React.memo(({ channelId, topicId, clanId, mode, isPublic, isDM, isDisableLoadMore }: ChannelMessagesProps) => {
-	return (
-		<View style={{ flex: 1 }}>
-			<ChannelMessages
-				channelId={channelId}
-				topicId={topicId}
-				clanId={clanId}
-				mode={mode}
-				isDM={isDM}
-				isPublic={isPublic}
-				isDisableLoadMore={isDisableLoadMore}
-			/>
-			<ChannelMessageListener />
-			<ChannelMessageReactionListener />
-			<ChannelMessageActionListener mode={mode} isPublic={isPublic} clanId={clanId} channelId={channelId} />
-		</View>
-	);
-});
+const ChannelMessagesWrapper = React.memo(
+	({ channelId, topicId, clanId, mode, isPublic, isDM, isDisableLoadMore, isDisableActionListener = false }: ChannelMessagesProps) => {
+		return (
+			<View style={{ flex: 1 }}>
+				<ChannelMessages
+					channelId={channelId}
+					topicId={topicId}
+					clanId={clanId}
+					mode={mode}
+					isDM={isDM}
+					isPublic={isPublic}
+					isDisableLoadMore={isDisableLoadMore}
+				/>
+				<ChannelMessageListener />
+				<ChannelMessageReactionListener />
+				{!isDisableActionListener && <ChannelMessageActionListener mode={mode} isPublic={isPublic} clanId={clanId} channelId={channelId} />}
+			</View>
+		);
+	}
+);
 
 export default ChannelMessagesWrapper;

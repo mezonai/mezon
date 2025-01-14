@@ -57,6 +57,7 @@ export const ChatMessageWrapper = memo(({ handleBack, directMessageId, isModeDM,
 				hiddenIcon={{
 					threadIcon: true
 				}}
+				isPublic={false}
 			/>
 			<PanelKeyboard
 				ref={panelKeyboardRef}

@@ -1,18 +1,22 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
+import { selectCurrentChannel } from '@mezon/store';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useEffect, useRef } from 'react';
 import { DeviceEventEmitter } from 'react-native';
+import { useSelector } from 'react-redux';
 import UseMentionList from '../../../../../../hooks/useUserMentionList';
 
 interface IChatMessageLeftAreaProps {
 	mode: ChannelStreamMode;
-	channelId: string;
-	parentId: string;
 }
 
-export const ChatBoxListener = memo(({ parentId, mode, channelId }: IChatMessageLeftAreaProps) => {
+export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
+	const currentChannel = useSelector(selectCurrentChannel);
 	const listMentions = UseMentionList({
-		channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? parentId : channelId || '',
+		channelID:
+			mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parrent_id
+				? currentChannel?.parrent_id
+				: currentChannel?.channel_id || '',
 		channelMode: mode
 	});
 	const previousListMentions = useRef(null);

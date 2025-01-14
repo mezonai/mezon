@@ -10,27 +10,15 @@ import {
 	save
 } from '@mezon/mobile-components';
 import { Block, Colors, size } from '@mezon/mobile-ui';
-import {
-	emojiSuggestionActions,
-	referencesActions,
-	selectAllChannels,
-	selectAllHashtagDm,
-	selectCurrentChannel,
-	threadsActions,
-	useAppDispatch
-} from '@mezon/store-mobile';
-import { handleUploadFileMobile, useMezon } from '@mezon/transport';
-import { IHashtagOnMessage, IMentionOnMessage, MIN_THRESHOLD_CHARS, MentionDataProps, isPublicChannel, typeConverts } from '@mezon/utils';
+import { RootState, emojiSuggestionActions, selectAllChannels, selectAllHashtagDm, threadsActions, useAppDispatch } from '@mezon/store-mobile';
+import { IHashtagOnMessage, IMentionOnMessage, MIN_THRESHOLD_CHARS, MentionDataProps } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
-import { IFile } from 'apps/mobile/src/app/componentUI';
 import { ChannelStreamMode } from 'mezon-js';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, TextInput } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
-import RNFS from 'react-native-fs';
-import { useSelector } from 'react-redux';
+import { useStore } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
@@ -75,6 +63,7 @@ interface IChatInputProps {
 	messageAction?: EMessageActionType;
 	onDeleteMessageActionNeedToResolve?: () => void;
 	onShowKeyboardBottomSheet?: (isShow: boolean, type?: string) => void;
+	isPublic: boolean;
 }
 
 export const ChatBoxBottomBar = memo(
@@ -85,8 +74,10 @@ export const ChatBoxBottomBar = memo(
 		messageActionNeedToResolve,
 		messageAction,
 		onDeleteMessageActionNeedToResolve,
-		onShowKeyboardBottomSheet
+		onShowKeyboardBottomSheet,
+		isPublic = false
 	}: IChatInputProps) => {
+		const store = useStore();
 		const dispatch = useAppDispatch();
 		const [text, setText] = useState<string>('');
 		const [mentionTextValue, setMentionTextValue] = useState('');
@@ -94,12 +85,11 @@ export const ChatBoxBottomBar = memo(
 		const [isShowAttachControl, setIsShowAttachControl] = useState<boolean>(false);
 		const [isFocus, setIsFocus] = useState<boolean>(false);
 		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<IModeKeyboardPicker>('text');
-		const currentChannel = useSelector(selectCurrentChannel);
+
 		const navigation = useNavigation<any>();
 		const inputRef = useRef<TextInput>();
 		const cursorPositionRef = useRef(0);
 		const currentTextInput = useRef('');
-		const { sessionRef, clientRef } = useMezon();
 		useEffect(() => {
 			const eventDataMention = DeviceEventEmitter.addListener(
 				ActionEmitEvent.ON_SET_LIST_MENTION_DATA,
@@ -113,8 +103,6 @@ export const ChatBoxBottomBar = memo(
 		}, []);
 
 		const [textChange, setTextChange] = useState<string>('');
-		const listHashtagDm = useSelector(selectAllHashtagDm);
-		const listChannel = useSelector(selectAllChannels);
 
 		const isAvailableSending = useMemo(() => {
 			return text?.length > 0 && text?.trim()?.length > 0;
@@ -144,10 +132,6 @@ export const ChatBoxBottomBar = memo(
 		const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 		const mentionsOnMessage = useRef<IMentionOnMessage[]>([]);
 		const hashtagsOnMessage = useRef<IHashtagOnMessage[]>([]);
-
-		const isShowCreateThread = useMemo(() => {
-			return !hiddenIcon?.threadIcon && !!currentChannel?.channel_label && !Number(currentChannel?.parrent_id);
-		}, [currentChannel?.channel_label, currentChannel?.parrent_id, hiddenIcon?.threadIcon]);
 
 		const saveMessageToCache = (text: string) => {
 			const allCachedMessage = load(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES) || {};
@@ -222,7 +206,7 @@ export const ChatBoxBottomBar = memo(
 			if (text?.length > MIN_THRESHOLD_CHARS) {
 				setText('');
 				currentTextInput.current = '';
-				await onConvertToFiles(text);
+				// await onConvertToFiles(text);
 				return;
 			}
 
@@ -256,6 +240,10 @@ export const ChatBoxBottomBar = memo(
 				}
 
 				if (word?.startsWith?.('<#') && word?.endsWith?.('>')) {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					const listChannel = selectAllChannels(store.getState() as RootState);
+					const listHashtagDm = selectAllHashtagDm(store.getState() as RootState);
 					const channelLabel = word?.slice?.(2, -1);
 					const channelInfo = getChannelHashtag(listHashtagDm, listChannel, mode, channelLabel);
 
@@ -341,84 +329,84 @@ export const ChatBoxBottomBar = memo(
 			[messageActionNeedToResolve?.targetMessage?.sender_id, onDeleteMessageActionNeedToResolve]
 		);
 
-		const onConvertToFiles = useCallback(async (content: string) => {
-			try {
-				if (content?.length > MIN_THRESHOLD_CHARS) {
-					const fileTxtSaved = await writeTextToFile(content);
-					const session = sessionRef.current;
-					const client = clientRef.current;
+		// const onConvertToFiles = useCallback(async (content: string) => {
+		// 	try {
+		// 		if (content?.length > MIN_THRESHOLD_CHARS) {
+		// 			const fileTxtSaved = await writeTextToFile(content);
+		// 			const session = sessionRef.current;
+		// 			const client = clientRef.current;
+		//
+		// 			if (!client || !session || !currentChannel.channel_id) {
+		// 				console.log('Client is not initialized');
+		// 			}
+		// 			handleUploadFileMobile(client, session, currentChannel.clan_id, currentChannel.channel_id, fileTxtSaved.name, fileTxtSaved)
+		// 				.then((attachment) => {
+		// 					handleFinishUpload(attachment);
+		// 					return 'handled';
+		// 				})
+		// 				.catch((err) => {
+		// 					console.log('err', err);
+		// 					return 'not-handled';
+		// 				});
+		// 		}
+		// 	} catch (e) {
+		// 		console.log('err', e);
+		// 	}
+		// }, []);
 
-					if (!client || !session || !currentChannel.channel_id) {
-						console.log('Client is not initialized');
-					}
-					handleUploadFileMobile(client, session, currentChannel.clan_id, currentChannel.channel_id, fileTxtSaved.name, fileTxtSaved)
-						.then((attachment) => {
-							handleFinishUpload(attachment);
-							return 'handled';
-						})
-						.catch((err) => {
-							console.log('err', err);
-							return 'not-handled';
-						});
-				}
-			} catch (e) {
-				console.log('err', e);
-			}
-		}, []);
+		// const handleFinishUpload = useCallback(
+		// 	(attachment: ApiMessageAttachment) => {
+		// 		typeConverts.map((typeConvert) => {
+		// 			if (typeConvert.type === attachment.filetype) {
+		// 				return (attachment.filetype = typeConvert.typeConvert);
+		// 			}
+		// 		});
+		// 		dispatch(
+		// 			referencesActions.setAtachmentAfterUpload({
+		// 				channelId: currentChannel?.id,
+		// 				files: [
+		// 					{
+		// 						filename: attachment.filename,
+		// 						size: attachment.size,
+		// 						filetype: attachment.filetype,
+		// 						url: attachment.url
+		// 					}
+		// 				]
+		// 			})
+		// 		);
+		// 	},
+		// 	[channelId, dispatch]
+		// );
 
-		const handleFinishUpload = useCallback(
-			(attachment: ApiMessageAttachment) => {
-				typeConverts.map((typeConvert) => {
-					if (typeConvert.type === attachment.filetype) {
-						return (attachment.filetype = typeConvert.typeConvert);
-					}
-				});
-				dispatch(
-					referencesActions.setAtachmentAfterUpload({
-						channelId: currentChannel?.id,
-						files: [
-							{
-								filename: attachment.filename,
-								size: attachment.size,
-								filetype: attachment.filetype,
-								url: attachment.url
-							}
-						]
-					})
-				);
-			},
-			[channelId, dispatch]
-		);
-
-		const writeTextToFile = async (text: string) => {
-			// Define the path to the file
-			const now = Date.now();
-			const filename = now + '.txt';
-			const path = RNFS.DocumentDirectoryPath + `/${filename}`;
-
-			// Write the text to the file
-			await RNFS.writeFile(path, text, 'utf8')
-				.then((success) => {
-					//console.log('FILE WRITTEN!');
-				})
-				.catch((err) => {
-					console.log(err.message);
-				});
-
-			// Read the file to get its base64 representation
-			const fileData = await RNFS.readFile(path, 'base64');
-
-			// Create the file object
-			const fileFormat: IFile = {
-				uri: path,
-				name: filename,
-				type: 'text/plain',
-				size: (await RNFS.stat(path)).size.toString(),
-				fileData: fileData
-			};
-
-			return fileFormat;
-		};
+		// const writeTextToFile = async (text: string) => {
+		// 	// Define the path to the file
+		// 	const now = Date.now();
+		// 	const filename = now + '.txt';
+		// 	const path = RNFS.DocumentDirectoryPath + `/${filename}`;
+		//
+		// 	// Write the text to the file
+		// 	await RNFS.writeFile(path, text, 'utf8')
+		// 		.then((success) => {
+		// 			//console.log('FILE WRITTEN!');
+		// 		})
+		// 		.catch((err) => {
+		// 			console.log(err.message);
+		// 		});
+		//
+		// 	// Read the file to get its base64 representation
+		// 	const fileData = await RNFS.readFile(path, 'base64');
+		//
+		// 	// Create the file object
+		// 	const fileFormat: IFile = {
+		// 		uri: path,
+		// 		name: filename,
+		// 		type: 'text/plain',
+		// 		size: (await RNFS.stat(path)).size.toString(),
+		// 		fileData: fileData
+		// 	};
+		//
+		// 	return fileFormat;
+		// };
 
 		const resetInput = () => {
 			setIsFocus(false);
@@ -472,7 +460,7 @@ export const ChatBoxBottomBar = memo(
 				{triggers?.hashtag?.keyword !== undefined && <HashtagSuggestions directMessageId={channelId} mode={mode} {...triggers.hashtag} />}
 				{triggers?.emoji?.keyword !== undefined && <EmojiSuggestion {...triggers.emoji} />}
 				<AttachmentPreview channelId={channelId} />
-				<ChatBoxListener mode={mode} channelId={channelId} parentId={currentChannel?.parrent_id} />
+				<ChatBoxListener mode={mode} />
 				<Block
 					flexDirection="row"
 					justifyContent="space-between"
@@ -485,7 +473,7 @@ export const ChatBoxBottomBar = memo(
 						isShowAttachControl={isShowAttachControl}
 						setIsShowAttachControl={setIsShowAttachControl}
 						isAvailableSending={isAvailableSending}
-						isShowCreateThread={isShowCreateThread}
+						isShowCreateThread={!hiddenIcon?.threadIcon}
 						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
 						handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
 					/>
@@ -512,8 +500,8 @@ export const ChatBoxBottomBar = memo(
 						linksOnMessage={linkList}
 						markdownsOnMessage={markdownList}
 						voiceLinkRoomOnMessage={voiceLinkRoomList}
-						isShowCreateThread={isShowCreateThread}
-						isPublic={isPublicChannel(currentChannel)}
+						isShowCreateThread={!hiddenIcon?.threadIcon}
+						isPublic={isPublic}
 					/>
 				</Block>
 			</Block>

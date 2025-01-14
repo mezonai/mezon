@@ -30,7 +30,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 
 	const handleToggle = useCallback(() => {
 		setValueToggle(!valueToggle);
-	}, []);
+	}, [valueToggle]);
 
 	const handleReset = useCallback(() => {
 		setSelectedRoleIds([]);

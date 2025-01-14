@@ -1,9 +1,8 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, Icons, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
+import { Block, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import {
-	DMCallActions,
 	appActions,
-	selectAllAccount,
+	DMCallActions,
 	selectAllUserClans,
 	selectIsInCall,
 	selectSignalingDataByUserId,
@@ -13,7 +12,7 @@ import {
 import { useMezon } from '@mezon/transport';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
-import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, DeviceEventEmitter, NativeModules, Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
 import Sound from 'react-native-sound';
@@ -30,8 +29,10 @@ const CallingModal = () => {
 	const dispatch = useAppDispatch();
 	const ringtoneRef = useRef<Sound | null>(null);
 	const navigation = useNavigation<any>();
-	const userProfile = useSelector(selectAllAccount);
-	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
+	const userId = useMemo(() => {
+		return load(STORAGE_MY_USER_ID);
+	}, []);
+	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const isInCall = useSelector(selectIsInCall);
 	const usersClan = useSelector(selectAllUserClans);
 	const mezon = useMezon();
@@ -167,7 +168,7 @@ const CallingModal = () => {
 					};
 					dispatch(
 						DMCallActions.addOrUpdate({
-							calleeId: userProfile?.user?.id,
+							calleeId: userId,
 							signalingData: signalingData as WebrtcSignalingFwd,
 							id: payload?.callerId,
 							callerId: payload?.callerId
@@ -209,7 +210,7 @@ const CallingModal = () => {
 			if (appStateSubscription) appStateSubscription.remove();
 			if (timer) clearTimeout(timer);
 		};
-	}, [dispatch, navigation, userProfile?.user?.id]);
+	}, [dispatch, navigation, userId]);
 
 	if (!isVisible) {
 		return <View />;

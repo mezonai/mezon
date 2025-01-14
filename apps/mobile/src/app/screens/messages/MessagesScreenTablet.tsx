@@ -7,7 +7,6 @@ import {
 	appActions,
 	directActions,
 	getStoreAsync,
-	selectAllClans,
 	selectDirectsOpenlistOrder,
 	selectDmGroupCurrentId,
 	useAppDispatch
@@ -37,7 +36,6 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
 	const { t } = useTranslation(['dmMessage', 'common']);
 	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
-	const clans = useSelector(selectAllClans);
 	const bottomSheetDMMessageRef = useRef<BottomSheetModal>(null);
 	const searchInputRef = useRef(null);
 	const dispatch = useAppDispatch();
@@ -132,7 +130,7 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 							<Text style={styles.headerTitle}>{t('dmMessage:friends')}</Text>
 						</Pressable>
 
-						{clansLoadingStatus === 'loaded' && !clans?.length && !dmGroupChatList?.length ? (
+						{clansLoadingStatus === 'loaded' && !dmGroupChatList?.length ? (
 							<UserEmptyMessage
 								onPress={() => {
 									navigateToAddFriendScreen();

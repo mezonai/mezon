@@ -29,6 +29,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode }) =
 		(e: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => {
 			e.stopPropagation();
 			if (messageIdRef) {
+				dispatch(messagesActions.setIdMessageToJump({ id: 'temp', navigate: false }));
 				dispatch(messagesActions.jumpToMessage({ clanId: message?.clan_id || '', messageId: messageIdRef, channelId: message?.channel_id }));
 			}
 		},
@@ -97,6 +98,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode }) =
 										isJumMessageEnabled={true}
 										onClickToMessage={getIdMessageToJump}
 										content={safeJSONParse(message?.references?.[0]?.content ?? '{}')}
+										messageId={message.message_id}
 									/>
 								</div>
 							)}

@@ -95,6 +95,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							content={messageContentObject}
 							isJumMessageEnabled={false}
 							isTokenClickAble={false}
+							messageId={message?.message_id}
 						/>
 					</div>
 					{message?.attachments?.length ? <ListPinAttachment attachments={message?.attachments} /> : <></>}

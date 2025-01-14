@@ -34,6 +34,7 @@ import {
 	selectClanView,
 	selectCloseMenu,
 	selectCurrentChannel,
+	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectCurrentStartDmCall,
 	selectCurrentStreamInfo,
@@ -261,9 +262,6 @@ function MyApp() {
 
 	const isShowPopupQuickMess = useSelector(selectIsShowPopupQuickMess);
 
-	const allUserIdsInChannel = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannel?.id as string));
-	const allRolesInClan = useSelector(selectAllRoleIds);
-
 	const streamStyle = isShowChatStream
 		? { width: `calc(100vw - ${chatStreamWidth}px - 352px)`, right: `${chatStreamWidth + 8}px` }
 		: { width: closeMenu ? undefined : `calc(100vw - 344px)`, right: '0' };
@@ -311,11 +309,7 @@ function MyApp() {
 
 			<DmCalling ref={dmCallingRef} dmGroupId={groupCallId} directId={directId || ''} />
 			{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
-			{openModalAttachment && (
-				<MessageContextMenuProvider allRolesInClan={allRolesInClan} allUserIdsInChannel={allUserIdsInChannel}>
-					<MessageModalImage />
-				</MessageContextMenuProvider>
-			)}
+			{openModalAttachment && <MessageModalImageWrapper />}
 			{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} onclose={() => setIsShowFirstJoinPopup(false)} />}
 			{isShowPopupQuickMess && <PopupQuickMess />}
 		</div>
@@ -467,5 +461,17 @@ const PreviewOnboardingMode = () => {
 			</div>
 			<div className="text-base text-white font-semibold">You are viewing the clan as a new member. You have no roles.</div>
 		</div>
+	);
+};
+
+const MessageModalImageWrapper = () => {
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const allUserIdsInChannel = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannelId));
+	const allRolesInClan = useSelector(selectAllRoleIds);
+
+	return (
+		<MessageContextMenuProvider allRolesInClan={allRolesInClan} allUserIdsInChannel={allUserIdsInChannel}>
+			<MessageModalImage />
+		</MessageContextMenuProvider>
 	);
 };

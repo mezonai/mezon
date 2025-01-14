@@ -372,7 +372,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 					anonymousMessage,
 					mentionEveryone
 				);
-				setRequestInput({ ...request, valueTextInput: '', content: '' }, isNotChannel);
+
 				setMentionEveryone(false);
 				dispatch(
 					referencesActions.setDataReferences({
@@ -393,6 +393,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 					anonymousMessage,
 					mentionEveryone
 				);
+
 				setOpenThreadMessageState(false);
 			} else if (isReplyOnTopic) {
 				props.onSend(
@@ -404,7 +405,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 					anonymousMessage,
 					mentionEveryone
 				);
-				setRequestInput({ ...request, valueTextInput: '', content: '' }, isNotChannel);
+
 				setMentionEveryone(false);
 				dispatch(
 					referencesActions.setDataReferences({
@@ -425,13 +426,13 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 					anonymousMessage,
 					mentionEveryone
 				);
-				setRequestInput({ ...request, valueTextInput: '', content: '' }, isNotChannel);
+
 				setMentionEveryone(false);
 				dispatch(threadsActions.setNameValueThread({ channelId: currentChannelId as string, nameValue: '' }));
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			}
-
+			setRequestInput({ ...request, valueTextInput: '', content: '' }, isNotChannel);
 			setSubPanelActive(SubPanelName.NONE);
 			dispatch(
 				emojiSuggestionActions.setSuggestionEmojiObjPicked({

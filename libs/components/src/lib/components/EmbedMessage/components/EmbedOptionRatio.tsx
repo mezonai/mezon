@@ -1,6 +1,6 @@
 import { embedActions } from '@mezon/store';
 import { IMessageRatioOption } from '@mezon/utils';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MessageRatioButton } from '../../MessageActionsPanel/components/MessageRatio';
 import { EmbedDescription } from './EmbedDescription';
@@ -22,6 +22,7 @@ export function EmbedOptionRatio({ options, message_id, idRadio }: EmbedOptionRa
 		}
 		if (checked.includes(index)) {
 			setChecked(checked.filter((check) => check !== index));
+			handleAddEmbedRadioValue(index);
 			return;
 		}
 		setChecked([...checked, index]);
@@ -34,21 +35,24 @@ export function EmbedOptionRatio({ options, message_id, idRadio }: EmbedOptionRa
 		if (options.length > 1 && options[0].name) {
 			return options[0].name === options[1].name;
 		}
-		return false;
+		return true;
 	}, [options]);
 
-	const handleAddEmbedRadioValue = (index: number) => {
-		dispatch(
-			embedActions.addEmbedValue({
-				message_id: message_id,
-				data: {
-					id: idRadio,
-					value: options[index].value
-				},
-				multiple: checkMultiple
-			})
-		);
-	};
+	const handleAddEmbedRadioValue = useCallback(
+		(index: number) => {
+			dispatch(
+				embedActions.addEmbedValue({
+					message_id: message_id,
+					data: {
+						id: idRadio,
+						value: options[index].value
+					},
+					multiple: !checkMultiple
+				})
+			);
+		},
+		[checkMultiple]
+	);
 	return (
 		<>
 			{options &&

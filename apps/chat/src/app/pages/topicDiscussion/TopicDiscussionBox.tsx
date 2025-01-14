@@ -1,4 +1,4 @@
-import { MentionReactInput, MessageContextMenuProvider, ReplyMessageBox, UserMentionList } from '@mezon/components';
+import { MentionReactInput, ReplyMessageBox, UserMentionList } from '@mezon/components';
 import { useAuth, useTopics } from '@mezon/core';
 import {
 	RootState,
@@ -16,7 +16,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload, sleep } from '@mezon/utils';
+import { IMessageSendPayload, checkTokenOnMarkdown, sleep } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
@@ -78,22 +78,33 @@ const TopicDiscussionBox = () => {
 			if (!client || !session || !socket || !currentClanId) {
 				throw new Error('Client is not initialized');
 			}
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
+				content.mk ?? [],
+				content.hg ?? [],
+				mentions ?? [],
+				content.ej ?? []
+			);
+			const validatedContent = {
+				...content,
+				hg: validHashtagList,
+				ej: validEmojiList
+			};
 
-			dispatch(
-				topicsActions.handleSendTopic({
-					clanId: currentClanId as string,
-					channelId: currentChannel?.channel_id as string,
-					mode: mode,
-					anonymous: false,
-					attachments: attachments,
-					code: 0,
-					content: content,
-					isPublic: currentChannel?.channel_private !== 1,
-					mentionEveryone: false,
-					mentions: mentions,
-					references: references,
-					topicId: topicId as string
-				})
+			await socket.writeChatMessage(
+				currentClanId,
+				currentChannel?.channel_id as string,
+				mode,
+				currentChannel?.channel_private !== 1,
+				validatedContent,
+				validMentionList,
+				attachments,
+				references,
+				false,
+				false,
+				'',
+				0,
+				topicId?.toString()
 			);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,20 +154,14 @@ const TopicDiscussionBox = () => {
 		<>
 			{(isFetchMessageDone || firstMessageOfThisTopic) && (
 				<div className={isElectron() ? 'h-[calc(100%_-_60px_-_80px)]' : 'h-full'}>
-					<MessageContextMenuProvider
-						channelId={currentChannelId as string}
-						allUserIdsInChannel={allUserIdsInChannel as string[]}
-						allRolesInClan={allRolesIdsInClan}
-					>
-						<MemoizedChannelMessages
-							channelId={currentTopicId as string}
-							clanId={currentClanId as string}
-							type={ChannelType.CHANNEL_TYPE_TEXT}
-							mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-							isTopicBox
-							topicId={currentTopicId}
-						/>
-					</MessageContextMenuProvider>
+					<MemoizedChannelMessages
+						channelId={currentTopicId as string}
+						clanId={currentClanId as string}
+						type={ChannelType.CHANNEL_TYPE_TEXT}
+						mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+						isTopicBox
+						topicId={currentTopicId}
+					/>
 				</div>
 			)}
 			{dataReferences.message_ref_id && (

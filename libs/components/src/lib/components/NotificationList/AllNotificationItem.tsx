@@ -161,7 +161,13 @@ function AllTabContent({ message, subject, code, senderId }: IMentionTabContent)
 					code === NotificationCode.NOTIFICATION_CLAN ? (
 						<div>
 							<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
-							<MessageLine isEditted={false} content={contentUpdatedMention} isTokenClickAble={false} isJumMessageEnabled={false} />
+							<MessageLine
+								messageId={message.message_id}
+								isEditted={false}
+								content={contentUpdatedMention}
+								isTokenClickAble={false}
+								isJumMessageEnabled={false}
+							/>
 							{Array.isArray(message.attachments) && (
 								<MessageAttachment mode={ChannelStreamMode.STREAM_MODE_CHANNEL} message={message} />
 							)}
