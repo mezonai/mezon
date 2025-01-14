@@ -1278,7 +1278,7 @@ export const MutePTT: React.FC<IconProps> = ({ isWhite }) => {
 	);
 };
 
-export function NotJoinedPTT(props: React.HTMLAttributes<SVGElement>) {
+export function NotJoinedSFU(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg x="0" y="0" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" className="" viewBox="0 0 32 32" {...props}>
 			<path
@@ -1289,7 +1289,7 @@ export function NotJoinedPTT(props: React.HTMLAttributes<SVGElement>) {
 	);
 }
 
-export function JoinedPTT(props: React.HTMLAttributes<SVGElement>) {
+export function JoinedSFU(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="" {...props}>
 			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
@@ -1302,7 +1302,7 @@ export function JoinedPTT(props: React.HTMLAttributes<SVGElement>) {
 	);
 }
 
-export function LeavePtt(props: React.HTMLAttributes<SVGElement>) {
+export function LeaveSFU(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" className="" {...props}>
 			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

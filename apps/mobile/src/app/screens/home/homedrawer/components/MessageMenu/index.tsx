@@ -6,7 +6,9 @@ import {
 	channelsActions,
 	deleteChannel,
 	directActions,
+	directMetaActions,
 	fetchDirectMessage,
+	markAsReadProcessing,
 	notificationSettingActions,
 	removeMemberChannel,
 	selectCurrentClan,
@@ -18,6 +20,7 @@ import {
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
+import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -91,9 +94,27 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		}
 	];
 
+	const handleMarkAsRead = async (channel_id: string) => {
+		if (!channel_id) return;
+		const timestamp = Date.now() / 1000;
+		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: channel_id, timestamp }));
+
+		const body: ApiMarkAsReadRequest = {
+			clan_id: '',
+			category_id: '',
+			channel_id
+		};
+		try {
+			await dispatch(markAsReadProcessing(body));
+		} catch (error) {
+			console.error('Failed to mark as read:', error);
+			dismiss();
+		}
+	};
+
 	const markAsReadMenu: IMezonMenuItemProps[] = [
 		{
-			onPress: () => reserve(),
+			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
 			icon: <Icons.EyeIcon color={baseColor.gray} />
 		}

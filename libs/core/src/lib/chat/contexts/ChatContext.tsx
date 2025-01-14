@@ -4,9 +4,7 @@ import {
 	ActivitiesEntity,
 	AttachmentEntity,
 	DMCallActions,
-	JoinPTTActions,
 	RootState,
-	TalkPTTActions,
 	accountActions,
 	acitvitiesActions,
 	appActions,
@@ -41,7 +39,6 @@ import {
 	permissionRoleChannelActions,
 	pinMessageActions,
 	policiesActions,
-	pttMembersActions,
 	reactionActions,
 	rolesClanActions,
 	selectAllTextChannel,
@@ -53,9 +50,10 @@ import {
 	selectCurrentStreamInfo,
 	selectDmGroupCurrentId,
 	selectModeResponsive,
-	selectPttMembersByChannelId,
+	selectSFUMembersByChannelId,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
+	sfuMembersActions,
 	stickerSettingActions,
 	toastActions,
 	topicsActions,
@@ -83,7 +81,6 @@ import {
 	ThreadStatus,
 	TypeMessage
 } from '@mezon/utils';
-import { Snowflake } from '@theinternetfolks/snowflake';
 import isElectron from 'is-electron';
 import {
 	AddClanUserEvent,
@@ -98,18 +95,16 @@ import {
 	ClanProfileUpdatedEvent,
 	CustomStatusEvent,
 	EventEmoji,
-	JoinPTTChannel,
 	LastPinMessageEvent,
 	LastSeenMessageEvent,
 	ListActivity,
 	MessageButtonClicked,
 	MessageTypingEvent,
 	Notification,
-	PTTJoinedEvent,
-	PTTLeavedEvent,
 	PermissionChangedEvent,
 	PermissionSet,
 	RoleEvent,
+	SFUSignalingFwd,
 	Socket,
 	StatusPresenceEvent,
 	StickerCreateEvent,
@@ -117,7 +112,6 @@ import {
 	StickerUpdateEvent,
 	StreamingJoinedEvent,
 	StreamingLeavedEvent,
-	TalkPTTChannel,
 	UnmuteEvent,
 	UserChannelAddedEvent,
 	UserChannelRemovedEvent,
@@ -165,7 +159,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const navigate = useNavigate();
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
-	const pttMembers = useSelector(selectPttMembersByChannelId(channelId || ''));
+	const pttMembers = useSelector(selectSFUMembersByChannelId(channelId || ''));
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 	const userCallId = useSelector(selectUserCallId);
 	const isClanView = useSelector(selectClanView);
@@ -225,22 +219,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[dispatch]
 	);
 
-	const onPTTchannelJoined = useCallback(
-		(user: PTTJoinedEvent) => {
+	const onsfusignalingfwd = useCallback(
+		(user: SFUSignalingFwd) => {
 			const existingMember = pttMembers?.find((member) => member?.user_id === user?.user_id);
 			if (existingMember) {
-				dispatch(pttMembersActions.remove(existingMember?.id));
+				dispatch(sfuMembersActions.remove(existingMember?.id));
 			}
-			dispatch(pttMembersActions.add(user));
+			// TODO:
+			//dispatch(sfuMembersActions.add(user));
 		},
 		[dispatch, pttMembers]
-	);
-
-	const onPTTchannelLeaved = useCallback(
-		(user: PTTLeavedEvent) => {
-			dispatch(pttMembersActions.remove(user?.id));
-		},
-		[dispatch]
 	);
 
 	const onactivityupdated = useCallback(
@@ -1231,29 +1219,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[userCallId]
 	);
 
-	const onjoinpttchannel = useCallback((event: JoinPTTChannel) => {
-		dispatch(
-			JoinPTTActions.add({
-				joinPttData: event,
-				// todo: refactor this
-				id: Snowflake.generate()
-			})
-		);
-	}, []);
-
-	const ontalkpttchannel = useCallback((event: TalkPTTChannel) => {
-		if (event.is_talk) {
-			dispatch(
-				TalkPTTActions.add({
-					talkPttData: event,
-					id: event.user_id
-				})
-			);
-		} else {
-			dispatch(TalkPTTActions.remove(event.user_id));
-		}
-	}, []);
-
 	const onuserstatusevent = useCallback(
 		async (userStatusEvent: UserStatusEvent) => {
 			if (userStatusEvent.user_id !== userId) {
@@ -1272,10 +1237,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			socket.onvoiceended = onvoiceended;
 
 			socket.onvoiceleaved = onvoiceleaved;
-
-			socket.onpttchanneljoined = onPTTchannelJoined;
-
-			socket.onpttchannelleaved = onPTTchannelLeaved;
 
 			socket.onstreamingchanneljoined = onstreamingchanneljoined;
 
@@ -1355,9 +1316,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			socket.onwebrtcsignalingfwd = onwebrtcsignalingfwd;
 
-			socket.ontalkpttchannel = ontalkpttchannel;
-
-			socket.onjoinpttchannel = onjoinpttchannel;
+			socket.onsfusignalingfwd = onsfusignalingfwd;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -1400,10 +1359,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			ontokensent,
 			onmessagebuttonclicked,
 			onwebrtcsignalingfwd,
-			onjoinpttchannel,
-			ontalkpttchannel,
-			onPTTchannelJoined,
-			onPTTchannelLeaved
+			onsfusignalingfwd
 		]
 	);
 
@@ -1539,9 +1495,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		oncoffeegiven,
 		onroleevent,
 		onuserstatusevent,
-		ontokensent,
-		onPTTchannelJoined,
-		onPTTchannelLeaved
+		ontokensent
 	]);
 
 	const value = React.useMemo<ChatContextValue>(

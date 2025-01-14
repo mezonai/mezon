@@ -546,6 +546,39 @@ export const selectAllChannelMembers = createSelector(
 	}
 );
 
+export const selectMemberByUsername = createSelector(
+	[
+		selectMemberIdsByChannelId,
+		getUsersClanState,
+		(state: RootState, channelId: string, username: string) => {
+			const currentClanId = state.clans?.currentClanId;
+			const channel = state.channels?.byClans[currentClanId as string]?.entities?.entities?.[channelId];
+			const isPrivate = channel?.channel_private;
+			const parentId = channel?.parrent_id;
+			return `${channelId},${isPrivate},${parentId},${username}`;
+		}
+	],
+	(channelMembers, usersClanState, payload) => {
+		const [channelId, isPrivate, parentId, username] = payload.split(',');
+		if (!usersClanState?.ids?.length) return null;
+		const members = isPrivate === '1' || (parentId !== '0' && parentId !== '') ? { ids: channelMembers } : usersClanState;
+		if (!members?.ids) return null;
+		const ids = members.ids || [];
+		for (const id of ids) {
+			const member = {
+				...usersClanState.entities[id],
+				channelId,
+				userChannelId: channelId
+			};
+			if (member.user?.username === username) {
+				return member;
+			}
+		}
+
+		return null;
+	}
+);
+
 export const selectAllChannelMemberIds = createSelector(
 	[
 		getChannelMembersState,

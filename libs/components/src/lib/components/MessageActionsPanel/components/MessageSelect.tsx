@@ -32,7 +32,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 	const [availableOptions, setAvailableOptions] = useState(select?.options || []);
 	const dispatch = useAppDispatch();
 	const handleOptionSelect = (option: { value: string; label: string }) => {
-		if (selectedOptions.length > (select?.max_options || 1)) {
+		if (selectedOptions.length >= (select?.max_options || select.options.length)) {
 			return;
 		}
 		if (!select.min_options && !select.max_options) {
@@ -75,13 +75,14 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 					id: buttonId,
 					value: option.value
 				},
-				multiple: true
+				multiple: true,
+				onlyChooseOne: checkMultipleSelect
 			})
 		);
 	};
 
 	const checkMultipleSelect = useMemo(() => {
-		return (!!select.min_options && select.min_options > 1) || (!!select.max_options && select.max_options > 1);
+		return (!!select.min_options && select.min_options > 1) || (!!select.max_options && select.max_options >= 2);
 	}, [select.min_options, select.max_options]);
 	useEffect(() => {
 		if (select.valueSelected) {

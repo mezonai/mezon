@@ -1,10 +1,10 @@
 import { useAuth } from '@mezon/core';
-import { selectCurrentChannelId, selectCurrentClanId, selectJoinPTTByChannelId, useAppSelector } from '@mezon/store';
+import { selectCurrentChannelId, selectCurrentClanId, selectJoinSFUByChannelId, useAppSelector } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { decompress } from '../DmList/DMtopbar';
+import { compress, decompress } from '../DmList/DMtopbar';
 
 // Define the context value type
 interface WebRTCContextType {
@@ -32,7 +32,6 @@ interface WebRTCProviderProps {
 export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 	const { userId } = useAuth();
 	const mezon = useMezon();
-	const pushToTalkData = useAppSelector((state) => selectJoinPTTByChannelId(state, userId));
 	const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -40,6 +39,8 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const clanId = useRef<string | null>(currentClanId || null);
 	const peerConnection = useRef<RTCPeerConnection | null>(null);
+
+	const sfuData = useAppSelector((state) => selectJoinSFUByChannelId(state, userId));
 
 	const servers: RTCConfiguration = useMemo(
 		() => ({
@@ -74,7 +75,13 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 
 		peerConnection.current.onicecandidate = async (event) => {
 			if (event && event.candidate && mezon.socketRef.current?.isOpen() === true) {
-				// TODO: send ptt oncandidate to STN
+				await mezon.socketRef.current?.forwardSFUSignaling(
+					userId || '',
+					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+					clanId.current || '',
+					channelId.current || '',
+					JSON.stringify(event.candidate)
+				);
 			}
 		};
 		return peerConnection.current;
@@ -95,7 +102,13 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 					// do nothing
 				}
 			});
-			// TODO: send join ptt to STN
+			await mezon.socketRef.current?.forwardSFUSignaling(
+				'userId',
+				WebrtcSignalingType.WEBRTC_SDP_INIT,
+				clanId.current || '',
+				channelId.current || '',
+				''
+			);
 		} catch (error) {
 			console.error('Error accessing audio devices: ', error);
 		}
@@ -114,11 +127,6 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 
 	const toggleMicrophone = useCallback(
 		async (value: boolean) => {
-			if (peerConnection.current && channelId.current) {
-				if (value === true) {
-					// TODO: send ptt talk to STN
-				}
-			}
 			if (localStream) {
 				localStream?.getAudioTracks().forEach((track) => {
 					track.enabled = value;
@@ -133,9 +141,9 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 			return;
 		}
 
-		const lastData = pushToTalkData?.[pushToTalkData?.length - 1];
+		const lastData = sfuData?.[sfuData?.length - 1];
 		if (!lastData) return;
-		const data = lastData?.joinPttData;
+		const data = lastData?.joinSFUData;
 		switch (data.data_type) {
 			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
 				{
@@ -148,7 +156,14 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 						await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
 						const answer = await peerConnection.current.createAnswer();
 						await peerConnection.current.setLocalDescription(new RTCSessionDescription(answer));
-						// TODO: send join ptt to STN
+						const answerEnc = await compress(JSON.stringify(answer));
+						await mezon.socketRef.current?.forwardSFUSignaling(
+							'userId',
+							WebrtcSignalingType.WEBRTC_SDP_ANSWER,
+							clanId.current || '',
+							channelId.current || '',
+							answerEnc
+						);
 					};
 					processData().catch(console.error);
 				}
@@ -167,7 +182,7 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 			default:
 				break;
 		}
-	}, [mezon.socketRef, pushToTalkData]);
+	}, [mezon.socketRef, sfuData]);
 
 	const value: WebRTCContextType = {
 		clanId: clanId.current,

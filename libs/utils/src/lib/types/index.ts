@@ -4,10 +4,9 @@ import {
 	ChannelStreamMode,
 	ChannelType,
 	HashtagDm,
-	JoinPTTChannel,
 	Notification,
 	NotificationType,
-	TalkPTTChannel,
+	SFUSignalingFwd,
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import {
@@ -420,12 +419,8 @@ export type IDMCall = {
 	signalingData: WebrtcSignalingFwd;
 };
 
-export type IJoinPtt = {
-	joinPttData: JoinPTTChannel;
-};
-
-export type ITalkPtt = {
-	talkPttData: TalkPTTChannel;
+export type IJoinSFU = {
+	joinSFUData: SFUSignalingFwd;
 };
 
 export interface CategoryNameProps {

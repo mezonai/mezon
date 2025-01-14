@@ -92,6 +92,7 @@ export interface ElementToken {
 	channelid?: string;
 	emojiid?: string;
 	type?: EBacktickType;
+	username?: string;
 }
 
 const RenderContent = memo(
@@ -150,7 +151,10 @@ const RenderContent = memo(
 							channelHastagId={`<#${element.channelid}>`}
 						/>
 					);
-				} else if (element.kindOf === ETokenMessage.MENTIONS && element.user_id) {
+				} else if (
+					(element.kindOf === ETokenMessage.MENTIONS && element.user_id) ||
+					(element.kindOf === ETokenMessage.MENTIONS && element.username)
+				) {
 					formattedContent.push(
 						<MentionContent
 							key={`mentionUser-${s}-${messsageId}`}
@@ -161,6 +165,7 @@ const RenderContent = memo(
 							mode={mode}
 							index={index}
 							s={s}
+							mention={element.username}
 						/>
 					);
 				} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
@@ -219,7 +224,7 @@ const RenderContent = memo(
 							content = content.replace(/```/g, '`');
 						}
 					} else {
-						content = convertMarkdown(content);
+						content = convertMarkdown(content, element.type as EBacktickType);
 					}
 					formattedContent.push(
 						<MarkdownContent
@@ -372,35 +377,39 @@ interface MentionContentProps {
 	mode: number;
 	index: number;
 	s: number;
+	mention?: string;
 }
 
-export const MentionContent = memo(({ element, contentInElement, isTokenClickAble, isJumMessageEnabled, mode, index, s }: MentionContentProps) => {
-	const { allUserIdsInChannel } = useMessageContextMenu();
-	let isValidMention = false;
+export const MentionContent = memo(
+	({ mention, element, contentInElement, isTokenClickAble, isJumMessageEnabled, mode, index, s }: MentionContentProps) => {
+		const { allUserIdsInChannel } = useMessageContextMenu();
+		let isValidMention = false;
 
-	if (allUserIdsInChannel && allUserIdsInChannel?.length > 0) {
-		if (typeof allUserIdsInChannel?.[0] === 'string') {
-			isValidMention = (allUserIdsInChannel as string[])?.includes(element.user_id ?? '') || contentInElement === '@here';
-		} else {
-			isValidMention =
-				(allUserIdsInChannel as ChannelMembersEntity[])?.some((member) => member.id === element.user_id) || contentInElement === '@here';
+		if (allUserIdsInChannel && allUserIdsInChannel?.length > 0) {
+			if (typeof allUserIdsInChannel?.[0] === 'string') {
+				isValidMention = (allUserIdsInChannel as string[])?.includes(element.user_id ?? '') || contentInElement === '@here';
+			} else {
+				isValidMention =
+					(allUserIdsInChannel as ChannelMembersEntity[])?.some((member) => member.id === element.user_id) || contentInElement === '@here';
+			}
 		}
-	}
 
-	if (isValidMention) {
-		return (
-			<MentionUser
-				isTokenClickAble={isTokenClickAble}
-				isJumMessageEnabled={isJumMessageEnabled}
-				tagUserName={contentInElement ?? ''}
-				tagUserId={element.user_id}
-				mode={mode}
-			/>
-		);
-	}
+		if (isValidMention || mention) {
+			return (
+				<MentionUser
+					isTokenClickAble={isTokenClickAble}
+					isJumMessageEnabled={isJumMessageEnabled}
+					tagUserName={contentInElement ?? ''}
+					tagUserId={element.user_id}
+					mode={mode}
+					mention={mention}
+				/>
+			);
+		}
 
-	return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
-});
+		return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
+	}
+);
 
 interface RoleMentionContentProps {
 	element: ElementToken;

@@ -157,10 +157,11 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 
 const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticker }) => {
 	return (
+		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
 			{stickerList.length > 0 && (
 				<div className="w-auto pb-2 px-2">
-					<div className="grid grid-cols-3 gap-4 max-h-[400px] overflow-y-scroll hide-scrollbar">
+					<div className="grid grid-cols-3 gap-4">
 						{stickerList.map((sticker: StickerPanel) => (
 							<img
 								key={sticker.id}

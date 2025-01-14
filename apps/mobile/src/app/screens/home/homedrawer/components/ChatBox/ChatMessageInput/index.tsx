@@ -86,6 +86,7 @@ export const ChatMessageInput = memo(
 			const clearInputAfterSendMessage = useCallback(() => {
 				onSendSuccess();
 				ref.current?.clear?.();
+				setHeightInput(size.s_40);
 			}, [onSendSuccess, ref]);
 
 			const handleTyping = useCallback(async () => {

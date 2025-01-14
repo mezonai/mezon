@@ -1,4 +1,4 @@
-import { convertMarkdown, ETokenMessage } from '@mezon/utils';
+import { convertMarkdown, EBacktickType, ETokenMessage } from '@mezon/utils';
 import { useMemo } from 'react';
 import { MarkdownContent } from '../../MarkdownFormatText/MarkdownContent';
 import useProcessedContent from '../../MessageBox/ReactionMentionInput/useProcessedContent';
@@ -29,7 +29,7 @@ export function EmbedDescription({ description }: EmbedDescriptionProps) {
 
 			if (element.kindOf === ETokenMessage.MARKDOWNS) {
 				let content = contentInElement ?? '';
-				content = convertMarkdown(content);
+				content = convertMarkdown(content, element.type as EBacktickType);
 				formattedContent.push(
 					<MarkdownContent
 						isBacktick={true}

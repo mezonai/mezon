@@ -51,6 +51,7 @@ export * from './animateScroll';
 export * from './audio';
 export * from './callbacks';
 export * from './checkTokenMarkdown';
+export * from './detectTokenMessage';
 export * from './file';
 export * from './forceReflow';
 export * from './heavyAnimation';
@@ -220,28 +221,28 @@ export const getTimeDifferenceDate = (dateString: string) => {
 	}
 };
 
-export const convertMarkdown = (markdown: string): string => {
-	return markdown
-		.split('```')
-		.map((part, index) => {
-			if (part.length === 0) {
-				return '```';
-			}
-			const start = part.startsWith('\n');
-			const end = part.endsWith('\n');
+export const convertMarkdown = (markdown: string, type: EBacktickType): string => {
+	const backtickLength = type === EBacktickType.TRIPLE ? 3 : type === EBacktickType.SINGLE ? 1 : 0;
+	if (backtickLength === 0) {
+		throw new Error('Invalid backtick type');
+	}
+	const s = backtickLength;
+	const e = markdown.length - backtickLength;
+	const substring = markdown.slice(s, e);
 
-			if (start && end) {
-				return part;
-			}
-			if (start) {
-				return part + '\n';
-			}
-			if (end) {
-				return '\n' + part;
-			}
-			return '\n' + part + '\n';
-		})
-		.join('');
+	const start = substring.startsWith('\n');
+	const end = substring.endsWith('\n');
+
+	if (start && end) {
+		return substring;
+	}
+	if (start) {
+		return substring + '\n';
+	}
+	if (end) {
+		return '\n' + substring;
+	}
+	return '\n' + substring + '\n';
 };
 
 export const getSrcEmoji = (id: string) => {
@@ -570,78 +571,6 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 	result += t.slice(lastIndex);
 
 	return result;
-};
-
-export const processText = (inputString: string) => {
-	const links: ILinkOnMessage[] = [];
-	const markdowns: IMarkdownOnMessage[] = [];
-	const voiceRooms: ILinkVoiceRoomOnMessage[] = [];
-
-	const singleBacktick = '`';
-	const tripleBacktick = '```';
-	const googleMeetPrefix = 'https://meet.google.com/';
-
-	let i = 0;
-	while (i < inputString?.length) {
-		if (inputString.startsWith('http://', i) || inputString.startsWith('https://', i)) {
-			// Link processing
-			const startindex = i;
-			i += inputString.startsWith('https://', i) ? 'https://'.length : 'http://'.length;
-			while (i < inputString?.length && ![' ', '\n', '\r', '\t'].includes(inputString[i])) {
-				i++;
-			}
-			const endindex = i;
-			const link = inputString.substring(startindex, endindex);
-
-			if (link.startsWith(googleMeetPrefix)) {
-				voiceRooms.push({
-					s: startindex,
-					e: endindex
-				});
-			} else {
-				links.push({
-					s: startindex,
-					e: endindex
-				});
-			}
-		} else if (inputString.substring(i, i + tripleBacktick.length) === tripleBacktick) {
-			// Triple backtick markdown processing
-			const startindex = i;
-			i += tripleBacktick.length;
-			let markdown = '';
-			while (i < inputString?.length && inputString.substring(i, i + tripleBacktick.length) !== tripleBacktick) {
-				markdown += inputString[i];
-				i++;
-			}
-			if (i < inputString?.length && inputString.substring(i, i + tripleBacktick.length) === tripleBacktick) {
-				i += tripleBacktick.length;
-				const endindex = i;
-				if (markdown.trim().length > 0) {
-					markdowns.push({ type: EBacktickType.TRIPLE, s: startindex, e: endindex });
-				}
-			}
-		} else if (inputString[i] === singleBacktick) {
-			// Single backtick markdown processing
-			const startindex = i;
-			i++;
-			let markdown = '';
-			while (i < inputString?.length && inputString[i] !== singleBacktick) {
-				markdown += inputString[i];
-				i++;
-			}
-			if (i < inputString?.length && inputString[i] === singleBacktick) {
-				const endindex = i + 1;
-				const nextChar = inputString[endindex];
-				if (!markdown.includes('``') && markdown.trim().length > 0 && nextChar !== singleBacktick) {
-					markdowns.push({ type: EBacktickType.SINGLE, s: startindex, e: endindex });
-				}
-				i++;
-			}
-		} else {
-			i++;
-		}
-	}
-	return { links, markdowns, voiceRooms };
 };
 
 export function addMention(obj: IMessageSendPayload | string, mentionValue: IMentionOnMessage[]): IExtendedMessage {

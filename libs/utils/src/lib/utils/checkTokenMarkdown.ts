@@ -1,5 +1,17 @@
 import { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types/messageLine';
 
+export const isWithinMarkdownRanges = (item: { s: number; e: number }, markdownList: IMarkdownOnMessage[]): boolean => {
+	const result = !markdownList.some(
+		(markdown) => markdown.s !== undefined && markdown.e !== undefined && markdown.s < item.s && item.e < markdown.e
+	);
+	return result;
+};
+
+export const filterValidItems = <T extends { s?: number; e?: number }>(list: T[], validator: (item: { s: number; e: number }) => boolean): T[] => {
+	const filteredList = list.filter((item) => item.s !== undefined && item.e !== undefined && validator(item as { s: number; e: number }));
+	return filteredList;
+};
+
 export const checkTokenOnMarkdown = (
 	markdownList: IMarkdownOnMessage[],
 	hashtagList: IHashtagOnMessage[],
@@ -13,21 +25,10 @@ export const checkTokenOnMarkdown = (
 			validEmojiList: emojiList
 		};
 	}
-	const isWithinMarkdownRanges = (item: { s: number; e: number }) => {
-		const result = !markdownList.some(
-			(markdown) => markdown.s !== undefined && markdown.e !== undefined && markdown.s < item.s && item.e < markdown.e
-		);
-		return result;
-	};
 
-	const filterValidItems = <T extends { s?: number; e?: number }>(list: T[], validator: (item: { s: number; e: number }) => boolean) => {
-		const filteredList = list.filter((item) => item.s !== undefined && item.e !== undefined && validator(item as { s: number; e: number }));
-		return filteredList;
-	};
-
-	const validHashtagList = filterValidItems(hashtagList, isWithinMarkdownRanges);
-	const validMentionList = filterValidItems(mentionList, isWithinMarkdownRanges);
-	const validEmojiList = filterValidItems(emojiList, isWithinMarkdownRanges);
+	const validHashtagList = filterValidItems(hashtagList, (item) => isWithinMarkdownRanges(item, markdownList));
+	const validMentionList = filterValidItems(mentionList, (item) => isWithinMarkdownRanges(item, markdownList));
+	const validEmojiList = filterValidItems(emojiList, (item) => isWithinMarkdownRanges(item, markdownList));
 
 	return {
 		validHashtagList,

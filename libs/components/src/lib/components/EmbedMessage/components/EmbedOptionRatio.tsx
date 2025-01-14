@@ -47,7 +47,8 @@ export function EmbedOptionRatio({ options, message_id, idRadio }: EmbedOptionRa
 						id: idRadio,
 						value: options[index].value
 					},
-					multiple: !checkMultiple
+					multiple: true,
+					onlyChooseOne: checkMultiple
 				})
 			);
 		},

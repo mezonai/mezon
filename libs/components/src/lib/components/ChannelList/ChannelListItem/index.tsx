@@ -4,17 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import {
 	clansActions,
-	IPttUsersEntity,
+	ISFUUsersEntity,
 	selectCategoryExpandStateByCategoryId,
 	selectIsUnreadChannelById,
-	selectPttMembersByChannelId,
 	selectStreamMembersByChannelId,
 	selectVoiceChannelMembersByChannelId,
 	useAppSelector,
 	UsersStreamEntity,
 	VoiceEntity
 } from '@mezon/store';
-
 import { Icons } from '@mezon/ui';
 import { ChannelThreads } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -80,18 +78,12 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 	const isUnreadChannel = useSelector((state) => selectIsUnreadChannelById(state, channel.id));
 	const voiceChannelMembers = useSelector(selectVoiceChannelMembersByChannelId(channel.id));
 	const streamChannelMembers = useSelector(selectStreamMembersByChannelId(channel.id));
-	const inPushToTalkMembers = useSelector(selectPttMembersByChannelId(channel.id));
-
-	const channelHasPushToTalkFeature = useMemo(() => {
-		return channel.type === ChannelType.CHANNEL_TYPE_TEXT && channel.channel_private === 1;
-	}, [channel.channel_private, channel.type]);
 
 	const channelMemberList = useMemo(() => {
 		if (channel.type === ChannelType.CHANNEL_TYPE_VOICE) return voiceChannelMembers;
 		if (channel.type === ChannelType.CHANNEL_TYPE_STREAMING) return streamChannelMembers;
-		if (channelHasPushToTalkFeature) return inPushToTalkMembers;
 		return [];
-	}, [channel.type, voiceChannelMembers, streamChannelMembers, channelHasPushToTalkFeature, inPushToTalkMembers]);
+	}, [channel.type, voiceChannelMembers, streamChannelMembers]);
 
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
 	const unreadMessageCount = channel?.count_mess_unread || 0;
@@ -125,12 +117,16 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 	};
 
 	const renderChannelContent = useMemo(() => {
-		if (channel.type !== ChannelType.CHANNEL_TYPE_VOICE && channel.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
+		if (
+			channel.type !== ChannelType.CHANNEL_TYPE_VOICE &&
+			channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
+			channel.type !== ChannelType.CHANNEL_TYPE_APP
+		) {
 			return (
 				<>
 					{renderChannelLink()}
 					{channel.threads && <ThreadListChannel ref={listThreadRef} threads={channel.threads} isCollapsed={!isCategoryExpanded} />}
-					{channelMemberList?.length > 0 && channelHasPushToTalkFeature && (
+					{channelMemberList?.length > 0 && (
 						<div className="flex gap-1 px-4">
 							<div className="flex gap-1 h-fit">
 								<Icons.InPttCall className="w-5 dark:text-channelTextLabel text-colorTextLightMode" />
@@ -157,7 +153,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 			);
 		}
 
-		if (isCategoryExpanded && !channelHasPushToTalkFeature) {
+		if (isCategoryExpanded) {
 			return (
 				<>
 					{renderChannelLink()}
@@ -172,22 +168,13 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 				<CollapsedMemberList channelMemberList={channelMemberList} />
 			</>
 		) : null;
-	}, [
-		channel.type,
-		channel.threads,
-		channel.channel_id,
-		isCategoryExpanded,
-		channelHasPushToTalkFeature,
-		channelMemberList,
-		renderChannelLink,
-		listThreadRef
-	]);
+	}, [channel.type, channel.threads, channel.channel_id, isCategoryExpanded, channelMemberList, renderChannelLink, listThreadRef]);
 
 	return <>{renderChannelContent} </>;
 };
 
 interface ICollapsedMemberListProps {
-	channelMemberList: VoiceEntity[] | UsersStreamEntity[] | IPttUsersEntity[];
+	channelMemberList: VoiceEntity[] | UsersStreamEntity[] | ISFUUsersEntity[];
 	isPttList?: boolean;
 }
 

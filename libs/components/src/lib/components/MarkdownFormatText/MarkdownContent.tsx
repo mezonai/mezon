@@ -25,15 +25,6 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	isBacktick,
 	typeOfBacktick
 }) => {
-	const contentRemovedBacktick = (contentArg: string) => {
-		if (typeOfBacktick === EBacktickType.SINGLE) {
-			return contentArg?.split('`')[1] || '';
-		} else if (typeOfBacktick === EBacktickType.TRIPLE) {
-			return contentArg?.split('```')[1] || contentArg?.split('`')[1];
-		}
-		return contentArg;
-	};
-
 	const appearanceTheme = useSelector(selectTheme);
 	const { navigate } = useAppNavigation();
 	const dispatch = useAppDispatch();
@@ -78,16 +69,11 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				</a>
 			)}
 			{!isLink && isBacktick && typeOfBacktick === EBacktickType.SINGLE ? (
-				<SingleBacktick
-					contentBacktick={contentRemovedBacktick(content as string)}
-					isInPinMsg={isInPinMsg}
-					isLightMode={isLightMode}
-					posInNotification={posInNotification}
-				/>
+				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && typeOfBacktick === EBacktickType.TRIPLE && !posInReply && !isLink ? (
-				<TripleBackticks contentBacktick={contentRemovedBacktick(content as string)} isLightMode={isLightMode} isInPinMsg={isInPinMsg} />
+				<TripleBackticks contentBacktick={content} isLightMode={isLightMode} isInPinMsg={isInPinMsg} />
 			) : typeOfBacktick === EBacktickType.TRIPLE && posInReply && !isLink ? (
-				<SingleBacktick contentBacktick={contentRemovedBacktick(content as string)} isLightMode={isLightMode} />
+				<SingleBacktick contentBacktick={content} isLightMode={isLightMode} />
 			) : null}
 		</div>
 	);

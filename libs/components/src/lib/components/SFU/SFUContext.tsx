@@ -1,15 +1,15 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useWebRTC } from '../WebRTC/WebRTCContext';
 
-interface PushToTalkContextProps {
+interface SFUContextProps {
 	isJoined: boolean;
 	isTalking: boolean;
-	startJoinPTT: () => Promise<void>;
-	quitPTT: () => Promise<void>;
+	startJoinSFU: () => Promise<void>;
+	quitSFU: () => Promise<void>;
 	toggleTalking: (talking: boolean) => void;
 }
 
-const PushToTalkContext = createContext<PushToTalkContextProps | undefined>(undefined);
+const SFUContext = createContext<SFUContextProps | undefined>(undefined);
 
 export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { localStream, remoteStream, startLocalStream, stopSession, toggleMicrophone } = useWebRTC();
@@ -42,7 +42,7 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 		toggleMicrophone(talking);
 	};
 
-	const startJoinPTT = async () => {
+	const startJoinSFU = async () => {
 		try {
 			setIsJoined(true);
 			await startLocalStream();
@@ -51,7 +51,7 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 		}
 	};
 
-	const quitPTT = useCallback(async () => {
+	const quitSFU = useCallback(async () => {
 		setIsTalking(false);
 		setIsJoined(false);
 		toggleMicrophone(false);
@@ -59,12 +59,12 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 	}, [stopSession, toggleMicrophone]);
 
 	return (
-		<PushToTalkContext.Provider
+		<SFUContext.Provider
 			value={{
 				isJoined,
 				isTalking,
-				startJoinPTT,
-				quitPTT,
+				startJoinSFU,
+				quitSFU,
 				toggleTalking
 			}}
 		>
@@ -73,16 +73,16 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 				<audio ref={remoteAudioRef} autoPlay />
 			</div>
 			{children}
-		</PushToTalkContext.Provider>
+		</SFUContext.Provider>
 	);
 };
 
 export const usePushToTalk = () => {
-	const context = useContext(PushToTalkContext);
+	const context = useContext(SFUContext);
 	if (!context) {
 		throw new Error('usePushToTalk must be used within a PushToTalkProvider');
 	}
 	return context;
 };
 
-PushToTalkContext.displayName = 'PushToTalkContext';
+SFUContext.displayName = 'SFUContext';

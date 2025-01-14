@@ -1,7 +1,7 @@
 import { useChannels, useMenu } from '@mezon/core';
 import {
 	ETypeMission,
-	JoinPTTActions,
+	JoinSFUActions,
 	appActions,
 	channelsActions,
 	notificationSettingActions,
@@ -153,7 +153,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 						channelId: channel.id
 					})
 				);
-				dispatch(JoinPTTActions.clear());
+				dispatch(JoinSFUActions.clear());
 			}
 			dispatch(appActions.setIsShowCanvas(false));
 			if (currentMission && currentMission.channel_id === channel.id && currentMission.task_type === ETypeMission.VISIT) {

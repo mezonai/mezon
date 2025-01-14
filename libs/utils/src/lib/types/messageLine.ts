@@ -13,6 +13,7 @@ export enum EBacktickType {
 export interface IMention {
 	user_id?: string | undefined;
 	role_id?: string | undefined;
+	username?: string | undefined;
 }
 
 export interface IHashtag {

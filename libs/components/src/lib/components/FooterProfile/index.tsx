@@ -20,11 +20,11 @@ import { safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { MicButton } from '../ChannelTopbar/TopBarComponents/PushToTalkButton/MicIcon';
+import { MicButton } from '../ChannelTopbar/TopBarComponents/SFUButton/MicIcon';
 import { MemberProfile } from '../MemberProfile';
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
 import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
-import { usePushToTalk } from '../PushToTalk/PushToTalkContext';
+import { usePushToTalk } from '../SFU/SFUContext';
 import ModalFooterProfile from './ModalFooterProfile';
 
 export type FooterProfileProps = {
@@ -170,7 +170,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 						/>
 					)}
 				</div>
-				<PushToTalkControls />
+				<SFUControls />
 				<div className="flex items-center gap-2">
 					<Icons.MicIcon className="ml-auto w-[18px] h-[18px] opacity-80 text-[#f00] dark:hover:bg-[#5e5e5e] hover:bg-bgLightModeButton hidden" />
 					<Icons.HeadPhoneICon className="ml-auto w-[18px] h-[18px] opacity-80 dark:text-[#AEAEAE] text-black  dark:hover:bg-[#5e5e5e] hover:bg-bgLightModeButton hidden" />
@@ -214,8 +214,8 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	);
 }
 
-export function PushToTalkControls() {
-	const { isJoined, isTalking, toggleTalking, quitPTT } = usePushToTalk();
+export function SFUControls() {
+	const { isJoined, isTalking, toggleTalking, quitSFU } = usePushToTalk();
 	const appearanceTheme = useSelector(selectTheme);
 
 	const longPressHandlers = useLongPress<HTMLDivElement>({
@@ -227,10 +227,10 @@ export function PushToTalkControls() {
 
 	return (
 		<>
-			<Tippy content="Quit PTT" className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}>
+			<Tippy content="Quit SFU" className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}>
 				<span>
-					<Icons.LeavePtt
-						onClick={quitPTT}
+					<Icons.LeaveSFU
+						onClick={quitSFU}
 						className="cursor-pointer size-6 dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode"
 					/>
 				</span>
