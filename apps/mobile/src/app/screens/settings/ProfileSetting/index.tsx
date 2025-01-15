@@ -124,8 +124,12 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	}, [originUserProfileValue, currentUserProfileValue]);
 
 	const isUserProfileEmptyName = useMemo(() => {
-		return !currentUserProfileValue?.displayName;
+		return !currentUserProfileValue?.displayName?.trim();
 	}, [currentUserProfileValue?.displayName]);
+
+	const isClanProfileEmptyName = useMemo(() => {
+		return !currentClanProfileValue?.displayName?.trim();
+	}, [currentClanProfileValue?.displayName]);
 
 	const isClanProfileNotChanged = useMemo(() => {
 		return isEqual(originClanProfileValue, currentClanProfileValue);
@@ -135,7 +139,15 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		const { username, imgUrl, displayName, aboutMe } = currentUserProfileValue;
 		try {
 			dispatch(appActions.setLoadingMainMobile(true));
-			const response = await updateUser(username, imgUrl, displayName || username, aboutMe, userProfile?.user?.dob, userProfile?.logo, true);
+			const response = await updateUser(
+				username,
+				imgUrl,
+				displayName?.trim() || username,
+				aboutMe,
+				userProfile?.user?.dob,
+				userProfile?.logo,
+				true
+			);
 
 			dispatch(appActions.setLoadingMainMobile(false));
 			if (response) {
@@ -166,7 +178,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		if (currentClanProfileValue?.imgUrl || currentClanProfileValue?.displayName) {
 			try {
 				dispatch(appActions.setLoadingMainMobile(true));
-				const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName || username, imgUrl || '');
+				const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName?.trim() || username, imgUrl || '');
 				dispatch(appActions.setLoadingMainMobile(false));
 				if (response) {
 					Toast.show({
@@ -187,7 +199,9 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 				<Text
 					style={[
 						styles.saveChangeButton,
-						(!isUserProfileNotChanged || !isClanProfileNotChanged) && !isUserProfileEmptyName ? styles.changed : styles.notChange
+						(!isUserProfileNotChanged || !isClanProfileNotChanged) && !isUserProfileEmptyName && !isClanProfileEmptyName
+							? styles.changed
+							: styles.notChange
 					]}
 				>
 					{t('header.save')}
@@ -229,7 +243,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	};
 
 	const saveCurrentTab = () => {
-		if ((isUserProfileNotChanged && isClanProfileNotChanged) || isUserProfileEmptyName) {
+		if ((isUserProfileNotChanged && isClanProfileNotChanged) || isUserProfileEmptyName || isClanProfileEmptyName) {
 			return;
 		}
 

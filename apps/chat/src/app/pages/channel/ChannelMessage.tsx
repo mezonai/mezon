@@ -82,7 +82,11 @@ export const ChannelMessage: ChannelMessageComponent = ({
 		return message;
 	})();
 
-	const channelOrThread = mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD;
+	const isChannelThreadDmGroup =
+		mode === ChannelStreamMode.STREAM_MODE_CHANNEL ||
+		mode === ChannelStreamMode.STREAM_MODE_THREAD ||
+		mode === ChannelStreamMode.STREAM_MODE_DM ||
+		mode === ChannelStreamMode.STREAM_MODE_GROUP;
 
 	const popup = useCallback(() => {
 		return (
@@ -92,7 +96,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 				isCombine={isCombine}
 				mode={mode}
 				isDifferentDay={isDifferentDay}
-				hasPermission={channelOrThread || !isTopic ? !!canSendMessage : true}
+				hasPermission={isChannelThreadDmGroup || (!isTopic ? !!canSendMessage : true)}
 				isTopic={isTopic}
 			/>
 		);

@@ -94,6 +94,7 @@ export const DMCallSlice = createSlice({
 			if (existingEntity) {
 				DMCallActions.setIsInCall(false);
 			}
+			state.isInCall = false;
 		},
 
 		setIsMuteMicrophone: (state, action) => {

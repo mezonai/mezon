@@ -4,9 +4,10 @@ import { Colors, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { useMemo } from 'react';
-import { Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox/build/dist/BouncyCheckbox';
 import FastImage from 'react-native-fast-image';
+import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { UserStatus } from '../UserStatus';
 import { style } from './styles';
 
@@ -37,6 +38,7 @@ export const FriendItem = React.memo(
 		const isFriend = friend.state === 0;
 		const isSentRequestFriend = friend.state === 1;
 		const isPendingFriendRequest = [1, 2].includes(friend.state);
+		const isTabletLandscape = useTabletLandscape();
 
 		const onPressAction = (actionType: EFriendItemAction) => {
 			if (selectMode) {
@@ -64,12 +66,21 @@ export const FriendItem = React.memo(
 			>
 				<View style={styles.avatarWrapper}>
 					{friend?.user?.avatar_url ? (
-						<FastImage
-							source={{
-								uri: createImgproxyUrl(friend?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
-							}}
-							style={[styles.friendAvatar, disabled && styles.avatarDisabled]}
-						/>
+						isTabletLandscape ? (
+							<Image
+								source={{
+									uri: createImgproxyUrl(friend?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
+								}}
+								style={[styles.friendAvatar, disabled && styles.avatarDisabled]}
+							/>
+						) : (
+							<FastImage
+								source={{
+									uri: createImgproxyUrl(friend?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
+								}}
+								style={[styles.friendAvatar, disabled && styles.avatarDisabled]}
+							/>
+						)
 					) : (
 						<View style={styles.wrapperTextAvatar}>
 							<Text style={[styles.textAvatar, disabled && styles.avatarDisabled]}>

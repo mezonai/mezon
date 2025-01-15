@@ -2,10 +2,10 @@ import { useAuth, useMemberStatus } from '@mezon/core';
 import { size, useTheme } from '@mezon/mobile-ui';
 
 import { selectAccountCustomStatus } from '@mezon/store-mobile';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { memo } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Image, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { UserStatus } from '../../../../components/UserStatus';
 import { APP_SCREEN } from '../../../../navigation/ScreenTypes';
@@ -26,14 +26,19 @@ const ProfileBar = () => {
 	return (
 		<Pressable style={styles.wrapperProfile} onPress={handleOpenProfileSettings}>
 			<View>
-				<FastImage source={{ uri: user?.userProfile?.user?.avatar_url }} style={styles.imageWrapper} />
+				<Image
+					source={{ uri: createImgproxyUrl(user?.userProfile?.user?.avatar_url ?? '', { width: 150, height: 150, resizeType: 'fit' }) }}
+					style={styles.imageWrapper}
+				/>
 				<UserStatus status={userStatus} iconSize={size.s_16} />
 			</View>
-			<View>
+			<View style={styles.userInfo}>
 				<Text style={styles.userName}>{user?.userProfile?.user?.username}</Text>
-				<Text style={styles.status} numberOfLines={1}>
-					{currentUserCustomStatus}
-				</Text>
+				{!!currentUserCustomStatus && (
+					<Text style={styles.status} numberOfLines={1}>
+						{currentUserCustomStatus}
+					</Text>
+				)}
 			</View>
 		</Pressable>
 	);

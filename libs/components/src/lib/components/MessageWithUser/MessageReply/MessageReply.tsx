@@ -53,7 +53,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode }) =
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-5 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />
 					<div className="flex flex-row gap-1 pb-2 pr-12 items-center w-full">
-						<div className="w-5 h-5">
+						<div onClick={onClick} className="w-5 h-5">
 							<AvatarImage
 								className="w-5 h-5"
 								alt="user avatar"

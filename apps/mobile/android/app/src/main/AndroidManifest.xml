@@ -20,7 +20,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
                      android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.TURN_SCREEN_ON" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -40,7 +39,6 @@
     <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>
     <uses-permission android:name="android.permission.CALL_PHONE" android:required="false" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" android:required="false" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" android:required="false" />
 
     <application
       android:name=".MainApplication"

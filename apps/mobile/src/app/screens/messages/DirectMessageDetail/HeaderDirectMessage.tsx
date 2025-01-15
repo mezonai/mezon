@@ -16,7 +16,7 @@ import { TIME_OFFSET, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useEffect, useRef } from 'react';
-import { Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import { UserStatus } from '../../../components/UserStatus';
@@ -123,12 +123,21 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({
 				) : (
 					<View style={styles.avatarWrapper}>
 						{dmAvatar ? (
-							<FastImage
-								source={{
-									uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-								}}
-								style={styles.friendAvatar}
-							/>
+							isTabletLandscape ? (
+								<Image
+									source={{
+										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
+									}}
+									style={styles.friendAvatar}
+								/>
+							) : (
+								<FastImage
+									source={{
+										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
+									}}
+									style={styles.friendAvatar}
+								/>
+							)
 						) : (
 							<View style={styles.wrapperTextAvatar}>
 								<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>

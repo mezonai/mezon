@@ -155,6 +155,8 @@ function MyApp() {
 			case WebrtcSignalingType.WEBRTC_SDP_ANSWER:
 				break;
 			case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE:
+				dispatch(audioCallActions.setIsRingTone(false));
+				dispatch(audioCallActions.setIsDialTone(false));
 				break;
 			// 	CANCEL CALL
 			case 4:

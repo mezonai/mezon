@@ -1,19 +1,10 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import {
-	DMCallActions,
-	accountActions,
-	authActions,
-	selectAllAccount,
-	selectSignalingDataByUserId,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store-mobile';
+import { DMCallActions, selectAllAccount, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { IWithError } from '@mezon/utils';
 import LottieView from 'lottie-react-native';
 import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import * as React from 'react';
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { BackHandler, Image, ImageBackground, NativeModules, Text, TouchableOpacity, View } from 'react-native';
 import { Bounce } from 'react-native-animated-spinkit';
 import { useSelector } from 'react-redux';
@@ -33,7 +24,6 @@ const IncomingHomeScreen = memo((props: any) => {
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const [isInCall, setIsInCall] = React.useState(false);
-	const [isRefreshSessionSuccess, setIsRefreshSessionSuccess] = React.useState(false);
 	const userProfile = useSelector(selectAllAccount);
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
 	const mezon = useMezon();
@@ -47,7 +37,8 @@ const IncomingHomeScreen = memo((props: any) => {
 					channel_id: payload?.channelId,
 					json_data: payload?.offer,
 					data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,
-					caller_id: payload?.callerId
+					caller_id: payload?.callerId,
+					receiver_id: userProfile?.user?.id
 				};
 				dispatch(
 					DMCallActions.addOrUpdate({
@@ -62,28 +53,6 @@ const IncomingHomeScreen = memo((props: any) => {
 			console.error('Failed to retrieve data', error);
 		}
 	};
-
-	const authLoader = useCallback(async () => {
-		try {
-			const response = await dispatch(authActions.refreshSession());
-			if ((response as unknown as IWithError).error) {
-				console.error('Session expired');
-				return;
-			}
-			const profileResponse = await dispatch(accountActions.getUserProfile());
-			if ((profileResponse as unknown as IWithError).error) {
-				console.error('Session expired');
-				return;
-			}
-			setIsRefreshSessionSuccess(true);
-		} catch (error) {
-			console.error('error authLoader', error);
-		}
-	}, [dispatch]);
-
-	useEffect(() => {
-		authLoader();
-	}, [authLoader]);
 
 	useEffect(() => {
 		let timer;
@@ -101,10 +70,10 @@ const IncomingHomeScreen = memo((props: any) => {
 	}, [signalingData]);
 
 	useEffect(() => {
-		if (props && props?.payload && isRefreshSessionSuccess) {
+		if (props && props?.payload) {
 			getDataCall();
 		}
-	}, [props, isRefreshSessionSuccess]);
+	}, [props]);
 
 	const params = {
 		receiverId: signalingData?.[signalingData?.length - 1]?.callerId,
