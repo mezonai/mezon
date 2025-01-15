@@ -30,8 +30,8 @@ export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessa
 				if (boldText.trim().length > 0) {
 					if (isOutsideMarkdown(startIndex, endIndex, markdowns)) {
 						boldTexts.push({
-							s: startIndex + 2,
-							e: endIndex - 2
+							s: startIndex,
+							e: endIndex
 						});
 					}
 				}

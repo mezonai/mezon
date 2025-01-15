@@ -9,7 +9,17 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload, checkTokenOnMarkdown } from '@mezon/utils';
+import {
+	IBoldTextOnMessage,
+	IEmojiOnMessage,
+	IHashtagOnMessage,
+	ILinkOnMessage,
+	ILinkVoiceRoomOnMessage,
+	IMarkdownOnMessage,
+	IMentionOnMessage,
+	IMessageSendPayload,
+	checkTokenOnMarkdown
+} from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -33,6 +43,33 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 	const anonymousMode = useSelector(selectAnonymousMode);
 	const { clientRef, sessionRef, socketRef } = useMezon();
 
+	function getToken(t: string, token: (IHashtagOnMessage | IEmojiOnMessage | IMentionOnMessage)[]): string[] {
+		return token?.map(({ s = 0, e = 0 }) => t?.substring(s, e));
+	}
+	function removeSyntax(t: string, mk: IMarkdownOnMessage[], b: IBoldTextOnMessage[]) {
+		const mkContent = getToken(t, mk);
+		const bContent = getToken(t, b);
+
+		const cleanMkContent = mkContent?.map((content) => {
+			if (content.startsWith('```')) {
+				return content.slice(3, content.length - 3);
+			} else if (content.startsWith('`')) {
+				return content.slice(1, content.length - 1);
+			}
+			return content;
+		});
+		const cleanBContent = bContent?.map((content) => content.slice(2, content.length - 2));
+		let result = t;
+		mkContent?.forEach((content, index) => {
+			result = result.replace(content, cleanMkContent[index]);
+		});
+
+		bContent?.forEach((content, index) => {
+			result = result.replace(content, cleanBContent[index]);
+		});
+		return result;
+	}
+
 	const sendMessage = React.useCallback(
 		async (
 			content: IMessageSendPayload,
@@ -44,6 +81,26 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			isMobile?: boolean,
 			code?: number
 		) => {
+			const oldContentT = content.t;
+			const oldHgLabel = getToken(oldContentT as string, content?.hg as IHashtagOnMessage[]);
+			// console.log('oldHgLabel: ', oldHgLabel);
+			const oldMentionName = getToken(oldContentT as string, mentions as IMentionOnMessage[]);
+			// console.log('oldMentionName: ', oldMentionName);
+			const oldEmojiName = getToken(oldContentT as string, content?.ej as IEmojiOnMessage[]);
+			// console.log('oldEmojiName: ', oldEmojiName);
+			const oldLink = getToken(oldContentT as string, content?.lk as ILinkOnMessage[]);
+			// console.log('oldLink: ', oldLink);
+			const oldVoiceRoom = getToken(oldContentT as string, content?.vk as ILinkVoiceRoomOnMessage[]);
+			// console.log('oldVoiceRoom: ', oldVoiceRoom);
+			const oldBoldText = getToken(oldContentT as string, content?.b as IBoldTextOnMessage[]);
+			// console.log('oldBoldText: ', oldBoldText);
+			const oldBacktick = getToken(oldContentT as string, content?.mk as IMarkdownOnMessage[]);
+			// console.log('oldBacktick: ', oldBacktick);
+
+			const newContentT = removeSyntax(oldContentT as string, content.mk as IMarkdownOnMessage[], content.b as IBoldTextOnMessage[]);
+
+			// console.log('newContentT: ', newContentT);
+
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
 				content.mk ?? [],
