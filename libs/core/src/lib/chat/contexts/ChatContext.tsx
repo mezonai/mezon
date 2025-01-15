@@ -4,6 +4,7 @@ import {
 	ActivitiesEntity,
 	AttachmentEntity,
 	DMCallActions,
+	ISFUUsersEntity,
 	RootState,
 	accountActions,
 	acitvitiesActions,
@@ -161,7 +162,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const navigate = useNavigate();
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
-	const pttMembers = useSelector(selectSFUMembersByChannelId(channelId || ''));
+	const sfuMembers = useSelector(selectSFUMembersByChannelId(channelId || ''));
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 	const userCallId = useSelector(selectUserCallId);
 	const isClanView = useSelector(selectClanView);
@@ -223,14 +224,19 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onsfusignalingfwd = useCallback(
 		(user: SFUSignalingFwd) => {
-			const existingMember = pttMembers?.find((member) => member?.user_id === user?.user_id);
+			const existingMember = sfuMembers?.find((member) => member?.user_id === user?.user_id);
 			if (existingMember) {
 				dispatch(sfuMembersActions.remove(existingMember?.id));
 			}
+			const newUser: ISFUUsersEntity = {
+				id: user.user_id,
+				channel_id: user.channel_id,
+				user_id: user.user_id
+			};
 			// TODO:
-			//dispatch(sfuMembersActions.add(user));
+			dispatch(sfuMembersActions.add(newUser));
 		},
-		[dispatch, pttMembers]
+		[dispatch]
 	);
 
 	const onactivityupdated = useCallback(

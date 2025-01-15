@@ -11,7 +11,7 @@ interface SFUContextProps {
 
 const SFUContext = createContext<SFUContextProps | undefined>(undefined);
 
-export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SFUProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { localStream, remoteStream, startLocalStream, stopSession, toggleMicrophone } = useWebRTC();
 	const [isJoined, setIsJoined] = useState(false);
 	const [isTalking, setIsTalking] = useState(false);
@@ -47,7 +47,7 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 			setIsJoined(true);
 			await startLocalStream();
 		} catch (err) {
-			console.error('Failed to start Push-to-Talk:', err);
+			console.error('Failed to start SFU:', err);
 		}
 	};
 
@@ -80,7 +80,7 @@ export const PushToTalkProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 export const useSFU = () => {
 	const context = useContext(SFUContext);
 	if (!context) {
-		throw new Error('usePushToTalk must be used within a PushToTalkProvider');
+		throw new Error('useSFU must be used within a SFUProvider');
 	}
 	return context;
 };

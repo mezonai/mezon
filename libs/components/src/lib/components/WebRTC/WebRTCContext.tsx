@@ -78,9 +78,9 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 				await mezon.socketRef.current?.forwardSFUSignaling(
 					userId || '',
 					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-					clanId.current || '',
+					JSON.stringify(event.candidate),
 					channelId.current || '',
-					JSON.stringify(event.candidate)
+					clanId.current || ''
 				);
 			}
 		};
@@ -95,6 +95,7 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 
 			const connection = initializePeerConnection();
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+			setLocalStream(stream);
 			stream.getAudioTracks().forEach((track) => {
 				try {
 					connection.addTrack(track, stream);
@@ -103,11 +104,11 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 				}
 			});
 			await mezon.socketRef.current?.forwardSFUSignaling(
-				'userId',
+				userId || '',
 				WebrtcSignalingType.WEBRTC_SDP_INIT,
-				clanId.current || '',
+				'',
 				channelId.current || '',
-				''
+				clanId.current || ''
 			);
 		} catch (error) {
 			console.error('Error accessing audio devices: ', error);
@@ -158,11 +159,11 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 						await peerConnection.current.setLocalDescription(new RTCSessionDescription(answer));
 						const answerEnc = await compress(JSON.stringify(answer));
 						await mezon.socketRef.current?.forwardSFUSignaling(
-							'userId',
+							userId || '',
 							WebrtcSignalingType.WEBRTC_SDP_ANSWER,
-							clanId.current || '',
+							answerEnc,
 							channelId.current || '',
-							answerEnc
+							clanId.current || ''
 						);
 					};
 					processData().catch(console.error);

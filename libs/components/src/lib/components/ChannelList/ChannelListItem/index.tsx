@@ -86,7 +86,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, listTh
 		if (channel.type === ChannelType.CHANNEL_TYPE_STREAMING) return streamChannelMembers;
 		if (channel.type === ChannelType.CHANNEL_TYPE_APP) return sfuMembers;
 		return [];
-	}, [channel.type, voiceChannelMembers, streamChannelMembers]);
+	}, [channel.type, voiceChannelMembers, streamChannelMembers, sfuMembers]);
 
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
 	const unreadMessageCount = channel?.count_mess_unread || 0;

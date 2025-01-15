@@ -14,7 +14,7 @@ import {
 	userClanProfileActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { MemberProfileType, useLongPress } from '@mezon/utils';
+import { MemberProfileType } from '@mezon/utils';
 import Tippy from '@tippy.js/react';
 import { safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
@@ -218,10 +218,9 @@ export function SFUControls() {
 	const { isJoined, isTalking, toggleTalking, quitSFU } = useSFU();
 	const appearanceTheme = useSelector(selectTheme);
 
-	const longPressHandlers = useLongPress<HTMLDivElement>({
-		onStart: () => toggleTalking(true),
-		onFinish: () => toggleTalking(false)
-	});
+	const toggleMic = () => {
+		toggleTalking(!isTalking);
+	};
 
 	if (!isJoined) return null;
 
@@ -236,7 +235,7 @@ export function SFUControls() {
 				</span>
 			</Tippy>
 
-			<div {...longPressHandlers}>
+			<div onClick={toggleMic}>
 				<MicButton isTalking={isTalking} />
 			</div>
 		</>
