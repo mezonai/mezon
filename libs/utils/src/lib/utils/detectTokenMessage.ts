@@ -82,29 +82,46 @@ export const processSingleBacktick = (inputString: string, excludeRange: { start
 
 export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMessage[]; singleBackticks: IMarkdownOnMessage[] } => {
 	if (!input) return { tripleBackticks: [], singleBackticks: [] };
-	const backtick = '```';
+
+	const tripleBacktick = '```';
 	const singleBacktick = '`';
-	const firstStart = input.indexOf(backtick);
-	const lastEnd = input.lastIndexOf(backtick);
 
 	const tripleBackticks: IMarkdownOnMessage[] = [];
 	const singleBackticks: IMarkdownOnMessage[] = [];
 
-	const singleStart = input.indexOf(singleBacktick);
-	const singleEnd = input.lastIndexOf(singleBacktick);
+	const firstTripleStart = input.indexOf(tripleBacktick);
+	const lastTripleEnd = input.lastIndexOf(tripleBacktick);
 
-	if (singleStart !== -1 && singleEnd !== -1 && singleStart < firstStart && lastEnd + backtick.length < singleEnd) {
-		singleBackticks.push({ s: singleStart, e: singleEnd + 1, type: EBacktickType.SINGLE });
-	} else if (firstStart !== -1 && lastEnd !== -1 && firstStart !== lastEnd) {
-		const contentBetween = input.slice(firstStart + backtick.length, lastEnd).trim();
-		if (contentBetween) {
-			tripleBackticks.push({ s: firstStart, e: lastEnd + backtick.length, type: EBacktickType.TRIPLE });
-		}
-		const singles = processSingleBacktick(input, { start: firstStart, end: lastEnd + backtick.length });
-		singleBackticks.push(...singles);
-	} else {
-		const singles = processSingleBacktick(input, { start: 0, end: 0 });
-		singleBackticks.push(...singles);
+	const firstSingleStart = input.indexOf(singleBacktick);
+	const lastSingleEnd = input.lastIndexOf(singleBacktick);
+
+	const isTripleValid =
+		firstTripleStart !== -1 &&
+		lastTripleEnd !== -1 &&
+		lastTripleEnd >= firstTripleStart + tripleBacktick.length &&
+		input.slice(firstTripleStart + tripleBacktick.length, lastTripleEnd).trim().length > 0;
+
+	const isSingleValid =
+		firstSingleStart !== -1 &&
+		lastSingleEnd !== -1 &&
+		lastSingleEnd >= firstSingleStart + singleBacktick.length &&
+		input.slice(firstSingleStart + singleBacktick.length, lastSingleEnd).trim().length > 0;
+
+	if (
+		isTripleValid &&
+		((firstTripleStart <= firstSingleStart && lastTripleEnd + 2 === lastSingleEnd) || lastTripleEnd + 2 >= lastSingleEnd || !isSingleValid)
+	) {
+		tripleBackticks.push({
+			type: EBacktickType.TRIPLE,
+			s: firstTripleStart,
+			e: lastTripleEnd + tripleBacktick.length
+		});
+	} else if (isSingleValid || firstTripleStart > firstSingleStart) {
+		singleBackticks.push({
+			type: EBacktickType.SINGLE,
+			s: firstSingleStart,
+			e: lastSingleEnd + singleBacktick.length
+		});
 	}
 
 	return { tripleBackticks, singleBackticks };
