@@ -5,6 +5,8 @@ import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
 
+import React from 'react';
+
 type MessageLineProps = {
 	mode?: number;
 	content?: IExtendedMessage;
@@ -111,19 +113,22 @@ const RenderContent = memo(
 		onCopy,
 		messsageId
 	}: RenderContentProps) => {
-		const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [] } = data;
+		const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], b = [] } = data;
 		const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
 		const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 		const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
 		const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
 		const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
+		const bm = Array.isArray(b) ? b.map((item) => ({ ...item, kindOf: ETokenMessage.BOLDTEXT })) : [];
+
 		const elements: ElementToken[] = [
 			...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })),
 			...hgm,
 			...ejm,
 			...mkm,
 			...lkm,
-			...vkm
+			...vkm,
+			...bm
 		].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
 		let lastindex = 0;
@@ -237,6 +242,8 @@ const RenderContent = memo(
 							typeOfBacktick={element.type}
 						/>
 					);
+				} else if (element.kindOf === ETokenMessage.BOLDTEXT) {
+					formattedContent.push(<BoldText key={`boldText-${s}-${messsageId}`} contentInElement={contentInElement} />);
 				}
 
 				lastindex = e;
@@ -442,3 +449,11 @@ export const RoleMentionContent = memo(
 		return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
 	}
 );
+
+interface BoldTextOpt {
+	contentInElement: string | undefined;
+}
+
+export const BoldText: React.FC<BoldTextOpt> = ({ contentInElement }) => {
+	return <span className="font-semibold">{contentInElement}</span>;
+};

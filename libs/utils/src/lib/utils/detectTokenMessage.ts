@@ -1,4 +1,51 @@
-import { EBacktickType, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from '../types';
+import { EBacktickType, IBoldTextOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from '../types';
+
+export const isOutsideMarkdown = (start: number, end: number, markdowns: IMarkdownOnMessage[]): boolean => {
+	return !markdowns.some((markdown) => {
+		if (markdown.s !== undefined && markdown.e !== undefined) {
+			return start >= markdown.s && end <= markdown.e;
+		}
+		return false;
+	});
+};
+
+export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
+	const boldTexts: IBoldTextOnMessage[] = [];
+	let i = 0;
+
+	while (i < inputString.length) {
+		if (inputString[i] === '*' && inputString[i + 1] === '*') {
+			const startIndex = i;
+			i += 2;
+
+			let boldText = '';
+			while (i < inputString.length && !(inputString[i] === '*' && inputString[i + 1] === '*')) {
+				boldText += inputString[i];
+				i++;
+			}
+
+			if (i < inputString.length && inputString[i] === '*' && inputString[i + 1] === '*') {
+				const endIndex = i + 2;
+
+				if (boldText.trim().length > 0) {
+					if (isOutsideMarkdown(startIndex, endIndex, markdowns)) {
+						boldTexts.push({
+							s: startIndex + 2,
+							e: endIndex - 2
+						});
+					}
+				}
+
+				i += 2;
+			}
+		} else {
+			i++;
+		}
+	}
+
+	return boldTexts;
+};
+
 export const processSingleBacktick = (inputString: string, excludeRange: { start: number; end: number }) => {
 	const result: IMarkdownOnMessage[] = [];
 	let i = 0;
@@ -66,16 +113,6 @@ export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMe
 const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 	const links: ILinkOnMessage[] = [];
 	const voiceRooms: ILinkVoiceRoomOnMessage[] = [];
-
-	const isOutsideMarkdown = (start: number, end: number): boolean => {
-		return !markdowns.some((markdown) => {
-			if (markdown.s !== undefined && markdown.e !== undefined) {
-				return start >= markdown.s && end <= markdown.e;
-			}
-			return false;
-		});
-	};
-
 	let i = 0;
 
 	while (i < inputString.length) {
@@ -89,7 +126,7 @@ const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 
 			const endindex = i;
 			const link = inputString.substring(startindex, endindex);
-			if (isOutsideMarkdown(startindex, endindex)) {
+			if (isOutsideMarkdown(startindex, endindex, markdowns)) {
 				if (link.startsWith('https://meet.google.com/')) {
 					voiceRooms.push({
 						s: startindex,
@@ -110,11 +147,12 @@ const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 };
 
 export const processText = (inputString: string) => {
-	if (!inputString) return { links: [], voiceRooms: [], markdowns: [] };
+	if (!inputString) return { links: [], voiceRooms: [], markdowns: [], boldTexts: [] };
 
 	const { tripleBackticks, singleBackticks } = processBacktick(inputString);
 	const markdowns: IMarkdownOnMessage[] = [...singleBackticks, ...tripleBackticks];
 	const { links, voiceRooms } = processLinks(inputString, markdowns);
+	const boldTexts = processBoldText(inputString, markdowns);
 
-	return { links, voiceRooms, markdowns };
+	return { links, voiceRooms, markdowns, boldTexts };
 };

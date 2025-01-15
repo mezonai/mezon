@@ -34,5 +34,6 @@ export interface IExtendedMessage extends IMessageSendPayload {
 export interface IHashtagOnMessage extends IHashtag, IStartEndIndex {}
 export interface IEmojiOnMessage extends IEmoji, IStartEndIndex {}
 export type ILinkOnMessage = IStartEndIndex;
+export type IBoldTextOnMessage = IStartEndIndex;
 export interface IMarkdownOnMessage extends IMarkdown, IStartEndIndex {}
 export type ILinkVoiceRoomOnMessage = IStartEndIndex;

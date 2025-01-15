@@ -168,7 +168,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const dataReferencesTopic = useSelector(selectDataReferences(currTopicId ?? ''));
 
 	const { request, setRequestInput } = useMessageValue(isNotChannel ? currentChannelId + String(isNotChannel) : (currentChannelId as string));
-	const { linkList, markdownList, voiceLinkRoomList } = useProcessedContent(request?.content);
+	const { linkList, markdownList, voiceLinkRoomList, boldTextList } = useProcessedContent(request?.content);
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: currentChannelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
 	const { mentionList, hashtagList, emojiList, usersNotExistingInThread } = useProcessMention(
 		request?.mentionRaw,
@@ -307,7 +307,8 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 				ej: emojiList,
 				lk: linkList,
 				mk: markdownList,
-				vk: voiceLinkRoomList
+				vk: voiceLinkRoomList,
+				b: boldTextList
 			};
 			const addMentionToPayload = addMention(payload, mentionList);
 			const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);

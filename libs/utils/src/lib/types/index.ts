@@ -39,7 +39,7 @@ import { HTMLInputTypeAttribute } from 'react';
 import { MentionItem } from 'react-mentions';
 import { ILongPressType } from '../hooks';
 import { CanvasDataResponse } from './htmlCanvas';
-import { IEmojiOnMessage, IHashtagOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from './messageLine';
+import { IBoldTextOnMessage, IEmojiOnMessage, IHashtagOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from './messageLine';
 
 export * from './base';
 export * from './config';
@@ -361,6 +361,7 @@ export interface IMessageSendPayload {
 	lk?: ILinkOnMessage[];
 	mk?: IMarkdownOnMessage[];
 	vk?: ILinkVoiceRoomOnMessage[];
+	b?: IBoldTextOnMessage[];
 	embed?: IEmbedProps[];
 	canvas?: CanvasDataResponse;
 	components?: IMessageActionRow[];
@@ -921,7 +922,8 @@ export enum ETokenMessage {
 	HASHTAGS = 'hg',
 	LINKS = 'lk',
 	VOICE_LINKS = 'vk',
-	MARKDOWNS = 'mk'
+	MARKDOWNS = 'mk',
+	BOLDTEXT = 'b'
 }
 export type SearchFilter = {
 	field_name: string;
