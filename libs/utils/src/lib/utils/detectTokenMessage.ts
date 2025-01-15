@@ -46,40 +46,6 @@ export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessa
 	return boldTexts;
 };
 
-export const processSingleBacktick = (inputString: string, excludeRange: { start: number; end: number }) => {
-	const result: IMarkdownOnMessage[] = [];
-	let i = 0;
-
-	while (i < inputString.length) {
-		if (i >= excludeRange.start && i < excludeRange.end) {
-			i = excludeRange.end;
-			continue;
-		}
-
-		if (inputString[i] === '`') {
-			const startindex = i;
-			i++;
-			let markdown = '';
-			while (i < inputString.length && inputString[i] !== '`') {
-				markdown += inputString[i];
-				i++;
-			}
-			if (i < inputString.length && inputString[i] === '`') {
-				const endindex = i + 1;
-				const nextChar = inputString[endindex];
-				if (!markdown.includes('``') && markdown.trim().length > 0 && nextChar !== '`') {
-					result.push({ type: EBacktickType.SINGLE, s: startindex, e: endindex });
-				}
-				i++;
-			}
-		} else {
-			i++;
-		}
-	}
-
-	return result;
-};
-
 export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMessage[]; singleBackticks: IMarkdownOnMessage[] } => {
 	if (!input) return { tripleBackticks: [], singleBackticks: [] };
 
