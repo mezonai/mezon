@@ -19,7 +19,7 @@ import RootListener from './RootListener';
 import RootStack from './RootStack';
 
 const NavigationMain = memo(
-	() => {
+	(props) => {
 		const [isShowUpdateModal, setIsShowUpdateModal] = React.useState<boolean>(false);
 
 		useEffect(() => {
@@ -46,7 +46,7 @@ const NavigationMain = memo(
 				<NetInfoComp />
 				<RootListener />
 				<MezonUpdateVersionModal visible={isShowUpdateModal} onClose={() => setIsShowUpdateModal(false)} />
-				<RootStack />
+				<RootStack {...props} />
 			</NavigationContainer>
 		);
 	},
@@ -61,7 +61,7 @@ const CustomStatusBar = () => {
 	);
 };
 
-const RootNavigation = () => {
+const RootNavigation = (props) => {
 	const mezon = useMezon();
 	const { store, persistor } = useMemo(() => {
 		if (!mezon) {
@@ -75,7 +75,7 @@ const RootNavigation = () => {
 			<CustomStatusBar />
 			<ChatContextProvider>
 				<WebRTCStreamProvider>
-					<NavigationMain />
+					<NavigationMain {...props} />
 				</WebRTCStreamProvider>
 			</ChatContextProvider>
 			<Toast config={toastConfig} />

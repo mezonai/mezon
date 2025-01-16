@@ -66,6 +66,10 @@
         "threadDelete": {
             "title": "",
             "delete": "Delete Thread"
+        },
+        "threadLeave": {
+            "title": "",
+            "leave": "Leave Thread"
         }
     },
     "confirm": {
@@ -73,6 +77,11 @@
             "content": "Are you sure you want to delete #{{channelName}} ?. This cannot be undone",
             "confirmText": "Delete",
             "title": "Delete channel"
+        },
+        "leave": {
+            "content": "Are you sure you want to leave #{{channelName}} ?. This cannot be undone",
+            "confirmText": "Leave",
+            "title": "Leave channel"
         },
         "save": "Save"
     },

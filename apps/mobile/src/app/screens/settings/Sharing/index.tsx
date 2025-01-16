@@ -32,7 +32,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image as ImageRN, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import { Image, Video } from 'react-native-compressor';
 import FastImage from 'react-native-fast-image';
@@ -316,12 +316,31 @@ export const Sharing = ({ data, onClose }) => {
 						? await compressVideo(media?.filePath || media?.contentUri)
 						: await compressImage(media?.filePath || media?.contentUri);
 					const fileData = await RNFS.readFile(pathCompressed || media.filePath || media?.contentUri, 'base64');
-
+					let width = 600;
+					let height = 900;
+					if (!checkIsVideo) {
+						await new Promise((resolve, reject) => {
+							ImageRN.getSize(
+								media?.contentUri || media?.filePath,
+								(w, h) => {
+									width = w;
+									height = h;
+									resolve(null);
+								},
+								(error) => {
+									console.error('Failed to get image size: ', error);
+									reject(error);
+								}
+							);
+						});
+					}
 					return {
 						uri: media.contentUri || media?.filePath,
 						name: media?.fileName || media?.contentUri || media?.filePath,
 						type: media?.mimeType,
 						size: fileSize,
+						width,
+						height,
 						fileData
 					};
 				})
@@ -336,7 +355,7 @@ export const Sharing = ({ data, onClose }) => {
 		try {
 			return await Image.compress(image, {
 				compressionMethod: 'auto',
-				quality: 0.8
+				quality: 0.9
 			});
 		} catch (error) {
 			console.error('log  => error compressImage', error);

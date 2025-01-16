@@ -36,12 +36,12 @@ const mezon: CreateMezonClientOptions = {
 	ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
 };
 
-const App = () => {
+const App = (props) => {
 	return (
 		<SafeAreaProvider>
 			<I18nextProvider i18n={i18n}>
 				<MezonContextProvider mezon={mezon} connect={true} isFromMobile={true}>
-					<RootNavigation />
+					<RootNavigation {...props} />
 				</MezonContextProvider>
 			</I18nextProvider>
 		</SafeAreaProvider>

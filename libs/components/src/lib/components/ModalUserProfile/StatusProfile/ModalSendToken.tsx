@@ -74,6 +74,7 @@ const ModalSendToken = ({
 			setSearchTerm('');
 			setSelectedUserId('');
 		} else {
+			setIsDropdownOpen(true);
 			setSearchTerm(value);
 		}
 	};

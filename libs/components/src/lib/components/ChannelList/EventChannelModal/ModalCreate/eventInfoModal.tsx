@@ -39,18 +39,17 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const startDayOfWeek = weekdays[contentSubmit.selectedDateStart.getDay()];
 
-	const getWeekdayOccurrence = (date: Date) => {
+	const getWeekdayOccurrence = (date: Date): string => {
+		const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
 		const dayOfMonth = date.getDate();
 		const dayOfWeek = date.getDay();
 		const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 		const offset = (dayOfWeek - firstDayOfMonth + 7) % 7;
-		const occurrence = Math.floor((dayOfMonth - 1 - offset) / 7) + 1;
-
-		return occurrence;
+		const occurrenceIndex = Math.floor((dayOfMonth - 1 - offset) / 7);
+		return ordinals[occurrenceIndex] || 'Unknown';
 	};
 
-	const occurrence = ['First', 'Second', 'Third', 'Fourth'];
-	const weekdayOccurrence = occurrence[getWeekdayOccurrence(contentSubmit.selectedDateStart) - 1];
+	const weekdayOccurrence = getWeekdayOccurrence(contentSubmit.selectedDateStart);
 
 	const frequencies = useMemo(() => {
 		const options = [
@@ -59,7 +58,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 			{ value: ERepeatType.EVERY_OTHER_DAY, label: `Every other ${startDayOfWeek}` },
 			{
 				value: ERepeatType.MONTHLY,
-				label: `Monthly on the ${weekdayOccurrence || occurrence[0]} ${startDayOfWeek}`
+				label: `Monthly on the ${weekdayOccurrence} ${startDayOfWeek}`
 			},
 			{ value: ERepeatType.ANNUALLY, label: `Annually on ${startDate} ${startMonth}` }
 		];

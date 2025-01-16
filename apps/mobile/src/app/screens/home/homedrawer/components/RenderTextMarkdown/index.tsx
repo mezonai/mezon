@@ -19,6 +19,7 @@ import CustomIcon from '../../../../../../assets/CustomIcon';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { EmojiMarkup } from '../MarkdownFormatText/EmojiMarkup';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
+import RenderCanvasItem from '../RenderCanvasItem';
 interface ElementToken {
 	s?: number;
 	e?: number;
@@ -212,6 +213,18 @@ export type IMarkdownProps = {
 	onLongPress?: () => void;
 };
 
+export function extractIds(url: string): { clanId: string | null; channelId: string | null; canvasId: string | null } {
+	const clanIdMatch = url.match(/\/clans\/(\d+)\//);
+	const channelIdMatch = url.match(/\/channels\/(\d+)\//);
+	const canvasIdMatch = url.match(/\/canvas\/(\d+)/);
+
+	return {
+		clanId: clanIdMatch ? clanIdMatch[1] : null,
+		channelId: channelIdMatch ? channelIdMatch[1] : null,
+		canvasId: canvasIdMatch ? canvasIdMatch[1] : null
+	};
+}
+
 /**
  * custom render if you need
  * react-native-markdown-display/src/lib/renderRules.js to see more
@@ -238,6 +251,12 @@ export const renderRulesCustom = (isOnlyContainEmoji, onLongPress) => ({
 					{content}
 				</Text>
 			);
+		}
+
+		if (payload.includes('canvas')) {
+			const { clanId, channelId, canvasId } = extractIds(payload);
+			if (!canvasId || !clanId || !channelId) return;
+			return <RenderCanvasItem clanId={clanId} channelId={channelId} canvasId={canvasId} />;
 		}
 
 		if (content?.startsWith(':')) {

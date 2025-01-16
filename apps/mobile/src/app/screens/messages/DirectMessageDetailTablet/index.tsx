@@ -16,7 +16,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { SubPanelName } from '@mezon/utils';
+import { SubPanelName, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -215,7 +215,10 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 					) : (
 						<View style={styles.avatarWrapper}>
 							{dmAvatar ? (
-								<Image source={{ uri: dmAvatar || '' }} style={styles.friendAvatar} />
+								<Image
+									source={{ uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' }) }}
+									style={styles.friendAvatar}
+								/>
 							) : (
 								<View style={styles.wrapperTextAvatar}>
 									<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>

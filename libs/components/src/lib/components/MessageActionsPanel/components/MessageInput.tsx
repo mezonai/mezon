@@ -49,7 +49,7 @@ export const MessageInput: React.FC<MessageRatioButtonProps> = ({ input, message
 			) : (
 				<input
 					onChange={handleChangeInput}
-					min={type === 'number' ? 1 : undefined}
+					min={type === 'number' ? 0 : undefined}
 					placeholder={placeholder + (required ? '*' : '')}
 					type={type}
 					className={`outline-none p-4 py-2 dark:bg-bgTertiary bg-bgLightModeThird text-textSecondary800 dark:text-textSecondary rounded w-full hide-scrollbar`}

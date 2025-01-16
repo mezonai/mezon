@@ -16,6 +16,9 @@ export const style = (colors: Attributes) =>
 			width: size.s_50,
 			borderRadius: size.s_50
 		},
+		userInfo: {
+			justifyContent: 'center'
+		},
 		userName: {
 			color: colors.white,
 			fontSize: size.s_18

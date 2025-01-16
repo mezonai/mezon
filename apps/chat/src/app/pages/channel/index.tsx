@@ -197,11 +197,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	return (
 		<div className={`flex-shrink flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative ${isShowMemberList ? 'w-full' : 'w-full'}`}>
 			{showPreviewMode && <OnboardingGuide currentMission={currentMission} missionSum={missionSum} missionDone={missionDone} />}
-			{currentChannel ? (
-				<ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />
-			) : (
-				<ChannelMessageBox.Skeleton />
-			)}
+			{currentChannel && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />}
 			{currentChannel && (
 				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
 			)}
@@ -275,11 +271,15 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			};
 			const handleMessage = async (event: MessageEvent) => {
 				if (appChannel?.url && compareHost(event.origin, appChannel?.url ?? '')) {
-					const eventData = safeJSONParse(event.data ?? '{}');
+					const eventData = safeJSONParse(event.data ?? '{}') || {};
 					// eslint-disable-next-line no-console
 					console.log('[MEZON] < ', eventData);
 
-					if (eventData?.eventType === 'PING') {
+					const { eventType } = eventData;
+
+					if (!eventType) return;
+
+					if (eventType === 'PING') {
 						// send event to mini app
 						miniAppRef.current?.contentWindow?.postMessage(
 							JSON.stringify({ eventType: 'PONG', eventData: { message: 'PONG' } }),
@@ -290,9 +290,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							JSON.stringify({ eventType: 'CURRENT_USER_INFO', eventData: currentUser?.userProfile }),
 							appChannel.url ?? ''
 						);
-					}
-
-					if (eventData?.eventType === 'SEND_TOKEN') {
+					} else if (eventType === 'SEND_TOKEN') {
 						const { amount, note, receiver_id, extra_attribute } = (eventData.eventData || {}) as any;
 						const tokenEvent: ApiTokenSentEvent = {
 							sender_id: currentUser.userId as string,
@@ -315,6 +313,9 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 								appChannel.url ?? ''
 							);
 						}
+					} else if (eventType === 'CREATE_VOICE_ROOM') {
+						// eslint-disable-next-line no-console
+						console.log('mezon app handle CREATE_VOICE_ROOM');
 					}
 				}
 			};

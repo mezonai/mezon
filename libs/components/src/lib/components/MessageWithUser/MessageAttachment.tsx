@@ -80,18 +80,7 @@ const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMes
 				</div>
 			)}
 
-			{images.length > 0 && (
-				<div className="flex flex-row justify-start flex-wrap w-full gap-x-2">
-					{images.map((image, index) => {
-						const checkImage = notImplementForGifOrStickerSendFromPanel(image);
-						return (
-							<div key={index} className={`${checkImage ? '' : 'h-auto'}  `}>
-								<MessageImage messageId={message.id} mode={mode} attachmentData={image} onContextMenu={onContextMenu} />
-							</div>
-						);
-					})}
-				</div>
-			)}
+			{images.length > 0 && <ImageAlbum images={images} message={message} mode={mode} onContextMenu={onContextMenu} />}
 
 			{documents.length > 0 &&
 				documents.map((document, index) => (
@@ -111,6 +100,104 @@ const MessageAttachment = ({ message, onContextMenu, mode }: MessageAttachmentPr
 	if (!validateAttachment) return null;
 
 	return <Attachments mode={mode} message={message} attachments={validateAttachment} onContextMenu={onContextMenu} />;
+};
+
+const designLayout = (
+	images: (ApiMessageAttachment & {
+		create_time?: string;
+	})[]
+) => {
+	const listImageSize: { width: number; height: number }[] = [];
+
+	if (images.length > 2) {
+		for (let i = 0; i < images.length; i += 2) {
+			if (images[i + 1]) {
+				const heightPicOne = images[i].height || 0;
+				const heightPicTwo = images[i + 1].height || 0;
+
+				let sameHeight = 0;
+				if (heightPicOne > heightPicTwo) {
+					sameHeight = heightPicOne + Math.round((heightPicOne - heightPicTwo) / 2);
+				} else {
+					sameHeight = heightPicTwo + Math.round((heightPicTwo - heightPicOne) / 2);
+				}
+
+				const widthPicOneNew = ((images[i].width || 0) * sameHeight) / (images[i].height || 1);
+
+				const widthPicTwoNew = ((images[i + 1].width || 0) * sameHeight) / (images[i + 1].height || 1);
+
+				const percent = (widthPicOneNew + widthPicTwoNew) / 512;
+
+				listImageSize[i] = {
+					width: Math.round(widthPicOneNew / percent),
+					height: Math.round(sameHeight / percent)
+				};
+				listImageSize[i + 1] = {
+					width: Math.round(widthPicTwoNew / percent),
+					height: Math.round(sameHeight / percent)
+				};
+			} else {
+				const width = 520;
+				listImageSize[i] = {
+					width: width,
+					height: Math.round((width * (images[i].height || 1)) / (images[i].width || 1))
+				};
+			}
+		}
+	} else if (images.length == 1) {
+		if (!images[0]?.height) {
+			listImageSize[0] = {
+				height: 150,
+				width: images[0].width || 0
+			};
+			return listImageSize;
+		} else if ((images[0]?.width || 0) > 520) {
+			listImageSize[0] = {
+				height: Math.round((520 * (images[0].height || 1)) / (images[0].width || 1)),
+				width: 520
+			};
+			return listImageSize;
+		}
+		listImageSize[0] = {
+			height: images[0].height,
+			width: images[0].width || 0
+		};
+	}
+
+	return listImageSize;
+};
+
+const ImageAlbum = ({
+	images,
+	message,
+	mode,
+	onContextMenu
+}: {
+	images: (ApiMessageAttachment & { create_time?: string })[];
+	message: IMessageWithUser;
+	mode?: ChannelStreamMode;
+	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
+}) => {
+	const listImageSize = designLayout(images);
+
+	return (
+		<div className="flex flex-row justify-start flex-wrap w-full gap-x-2 max-w-[520px]">
+			{images.map((image, index) => {
+				const checkImage = notImplementForGifOrStickerSendFromPanel(image);
+				return (
+					<div key={index} className={`${checkImage ? '' : 'h-auto'} `}>
+						<MessageImage
+							messageId={message.id}
+							mode={mode}
+							attachmentData={image}
+							onContextMenu={onContextMenu}
+							size={listImageSize[index]}
+						/>
+					</div>
+				);
+			})}
+		</div>
+	);
 };
 
 export default memo(MessageAttachment);

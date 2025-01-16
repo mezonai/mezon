@@ -112,7 +112,7 @@ import lightMentionsInputStyle from './LightRmentionInputStyle';
 import darkMentionsInputStyle from './RmentionInputStyle';
 import mentionStyle from './RmentionStyle';
 import SuggestItem from './SuggestItem';
-import useProcessMention from './useProcessMention';
+import processMention from './processMention';
 import useProcessedContent from './useProcessedContent';
 
 type ChannelsMentionProps = {
@@ -170,7 +170,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const { request, setRequestInput } = useMessageValue(isNotChannel ? currentChannelId + String(isNotChannel) : (currentChannelId as string));
 	const { linkList, markdownList, voiceLinkRoomList } = useProcessedContent(request?.content);
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: currentChannelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
-	const { mentionList, hashtagList, emojiList, usersNotExistingInThread } = useProcessMention(
+	const { mentionList, hashtagList, emojiList, usersNotExistingInThread } = processMention(
 		request?.mentionRaw,
 		rolesClan,
 		membersOfChild as ChannelMembersEntity[],

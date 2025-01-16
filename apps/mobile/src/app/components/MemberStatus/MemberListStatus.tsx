@@ -86,12 +86,7 @@ export const MemberListStatus = React.memo(() => {
 		};
 	}, [isDMThread, membersDM, membersChannel, membersMetaEntities]);
 
-	const userChannels = useAppSelector((state) =>
-		selectAllChannelMembers(
-			state,
-			currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parrent_id : currentChannel?.channel_id
-		)
-	);
+	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, currentChannel?.channel_id));
 	const lisMembers = useMemo(() => {
 		if (!userChannels || !listMembersChannelGroupDM) {
 			return {

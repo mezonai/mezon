@@ -423,9 +423,7 @@ export const setupIncomingCall = async (body: string) => {
 		const bodyData = safeJSONParse(body || '{}');
 		if (bodyData?.offer === 'CANCEL_CALL') {
 			const callID = '6cb67209-4ef9-48c0-a8dc-2cec6cd6261d';
-			if (callID) {
-				RNCallKeep.endCall(callID);
-			}
+			RNCallKeep.endCall(callID);
 			return;
 		}
 		if (Platform.OS === 'ios') {
@@ -437,7 +435,6 @@ export const setupIncomingCall = async (body: string) => {
 				timeout: 30000
 			};
 			const callID = '6cb67209-4ef9-48c0-a8dc-2cec6cd6261d';
-			save('callID', callID);
 			RNCallKeep.displayIncomingCall(callID, callID, `${bodyData?.callerName} is calling you`, 'number', true, options);
 			await listRNCallKeep(bodyData);
 		}
