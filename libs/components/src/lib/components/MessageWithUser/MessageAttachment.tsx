@@ -154,7 +154,7 @@ const designLayout = (images: (ApiMessageAttachment & {
     if (!images[0]?.height) {
       listImageSize[0] = {
         height: 150,
-        width: (images[0].width || 150)
+        width: (images[0].width || 0)
       }
       return listImageSize;
     } else if ((images[0]?.width || 0) > 520) {
