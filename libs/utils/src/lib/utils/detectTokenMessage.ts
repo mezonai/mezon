@@ -11,10 +11,10 @@ import {
 	IMessageSendPayload
 } from '../types';
 
-export const isOutsideMarkdown = (start: number, end: number, markdowns: IMarkdownOnMessage[]): boolean => {
-	return !markdowns.some((markdown) => {
-		if (markdown.s !== undefined && markdown.e !== undefined) {
-			return start >= markdown.s && end <= markdown.e;
+export const isOutsideRange = (start: number, end: number, ranges: (IMarkdownOnMessage | IBoldTextOnMessage)[]): boolean => {
+	return !ranges.some((range) => {
+		if (range.s !== undefined && range.e !== undefined) {
+			return start >= range.s && end <= range.e;
 		}
 		return false;
 	});
@@ -39,7 +39,7 @@ export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessa
 				const endIndex = i + 2;
 
 				if (boldText.trim().length > 0) {
-					if (isOutsideMarkdown(startIndex, endIndex, markdowns)) {
+					if (isOutsideRange(startIndex, endIndex, markdowns)) {
 						boldTexts.push({
 							s: startIndex,
 							e: endIndex,
@@ -105,7 +105,7 @@ export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMe
 	return { tripleBackticks, singleBackticks };
 };
 
-const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
+const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[], boldtexts: IBoldTextOnMessage[]) => {
 	const links: ILinkOnMessage[] = [];
 	const voiceRooms: ILinkVoiceRoomOnMessage[] = [];
 	let i = 0;
@@ -121,7 +121,7 @@ const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 
 			const endindex = i;
 			const link = inputString.substring(startindex, endindex);
-			if (isOutsideMarkdown(startindex, endindex, markdowns)) {
+			if (isOutsideRange(startindex, endindex, markdowns) && isOutsideRange(startindex, endindex, boldtexts)) {
 				if (link.startsWith('https://meet.google.com/')) {
 					voiceRooms.push({
 						s: startindex,
@@ -146,8 +146,8 @@ export const processText = (inputString: string) => {
 
 	const { tripleBackticks, singleBackticks } = processBacktick(inputString);
 	const markdowns: IMarkdownOnMessage[] = [...singleBackticks, ...tripleBackticks];
-	const { links, voiceRooms } = processLinks(inputString, markdowns);
 	const boldTexts = processBoldText(inputString, markdowns);
+	const { links, voiceRooms } = processLinks(inputString, markdowns, boldTexts);
 
 	return { links, voiceRooms, markdowns, boldTexts };
 };

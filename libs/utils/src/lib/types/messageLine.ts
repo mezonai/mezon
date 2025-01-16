@@ -29,6 +29,7 @@ export interface IMarkdown {
 }
 export interface IBoldText {
 	type?: EBacktickType;
+	isLink?: boolean;
 }
 export interface IMentionOnMessage extends IMention, IStartEndIndex {}
 export interface IExtendedMessage extends IMessageSendPayload {
