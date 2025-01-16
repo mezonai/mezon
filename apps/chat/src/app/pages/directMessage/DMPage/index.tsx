@@ -280,6 +280,14 @@ const DirectMessage = () => {
 						)}
 
 						<div className="flex-shrink-0 flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative">
+							<DirectMessageBox
+								direct={currentDmGroup}
+								mode={
+									currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
+										? ChannelStreamMode.STREAM_MODE_DM
+										: ChannelStreamMode.STREAM_MODE_GROUP
+								}
+							/>
 							{directId && (
 								<ChannelTyping
 									channelId={directId}
@@ -292,14 +300,6 @@ const DirectMessage = () => {
 									isDM={true}
 								/>
 							)}
-							<DirectMessageBox
-								direct={currentDmGroup}
-								mode={
-									currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-										? ChannelStreamMode.STREAM_MODE_DM
-										: ChannelStreamMode.STREAM_MODE_GROUP
-								}
-							/>
 						</div>
 					</div>
 					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (

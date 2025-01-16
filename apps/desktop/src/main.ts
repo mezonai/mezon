@@ -206,20 +206,20 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 			break;
 		}
 		case 'copyImage': {
-			const blobImage = await fetch(fileURL).then((response) => response.blob());
-			const base64data = await blobImage.arrayBuffer();
-			const uint8Array = new Uint8Array(base64data);
+			try {
+				const blobImage = await fetch(fileURL).then((response) => response.blob());
+				const base64data = await blobImage.arrayBuffer();
+				const uint8Array = new Uint8Array(base64data);
+				const buffer = Buffer.from(uint8Array);
 
-			let base64String = '';
-			const chunkSize = 8192; // Adjust the chunk size as needed
-			for (let i = 0; i < uint8Array.length; i += chunkSize) {
-				const chunk = uint8Array.subarray(i, i + chunkSize);
-				base64String += String.fromCharCode.apply(null, chunk);
+				const image = nativeImage.createFromBuffer(buffer);
+				if (image.isEmpty()) {
+					break;
+				}
+				clipboard.writeImage(image);
+			} catch (error) {
+				console.error(error);
 			}
-
-			const base64DataUrl = `data:image/png;base64,${btoa(base64String)}`;
-			clipboard.write({ image: nativeImage.createFromDataURL(base64DataUrl) });
-
 			break;
 		}
 		case 'openLink': {

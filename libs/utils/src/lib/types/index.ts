@@ -1057,6 +1057,7 @@ export interface ActivitiesInfo {
 	appName: string;
 	windowTitle: string;
 	startTime: string;
+	typeActivity: number;
 }
 
 export enum ActivitiesType {

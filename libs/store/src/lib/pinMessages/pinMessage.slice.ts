@@ -19,7 +19,6 @@ export interface PinMessageEntity extends IPinMessage {
 export interface PinMessageState extends EntityState<PinMessageEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	jumpPinMessageId: string;
 	isPinModalVisible?: boolean;
 }
 
@@ -206,9 +205,6 @@ export const pinMessageSlice = createSlice({
 		add: pinMessageAdapter.addOne,
 		addMany: pinMessageAdapter.addMany,
 		remove: pinMessageAdapter.removeOne,
-		setJumpPinMessageId: (state, action) => {
-			state.jumpPinMessageId = action.payload;
-		},
 		togglePinModal: (state: PinMessageState) => {
 			state.isPinModalVisible = !state.isPinModalVisible;
 		}
@@ -291,5 +287,3 @@ export const selectLastPinMessageByChannelId = (channelId?: string | null) =>
 	});
 
 export const selectIsPinModalVisible = createSelector(getPinMessageState, (state: PinMessageState) => state.isPinModalVisible);
-
-export const selectJumpPinMessageId = createSelector(getPinMessageState, (state) => state.jumpPinMessageId);

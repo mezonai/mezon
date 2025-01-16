@@ -22,13 +22,13 @@ import {
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Mention, MentionsInput, OnChangeHandlerFunc } from 'react-mentions';
+import { Mention, MentionItem, MentionsInput, OnChangeHandlerFunc } from 'react-mentions';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalDeleteMess from '../../components/DeleteMessageModal/ModalDeleteMess';
 import CustomModalMentions from '../../components/MessageBox/ReactionMentionInput/CustomModalMentions';
 import SuggestItem from '../../components/MessageBox/ReactionMentionInput/SuggestItem';
-import useProcessMention from '../../components/MessageBox/ReactionMentionInput/useProcessMention';
+import processMention from '../../components/MessageBox/ReactionMentionInput/processMention';
 import { UserMentionList } from '../../components/UserMentionList';
 import lightMentionsInputStyle from './LightRmentionInputStyle';
 import darkMentionsInputStyle from './RmentionInputStyle';
@@ -135,6 +135,16 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		return message.content?.t;
 	}, [message.content?.t]);
 
+	const prepareProcessedContent = (processedContentDraft: IMessageSendPayload) => {
+		const { links, markdowns, voiceRooms } = processText(processedContentDraft.t ?? '');
+		return {
+			...processedContentDraft,
+			lk: links,
+			mk: markdowns,
+			vk: voiceRooms
+		};
+	};
+
 	const onSend = (e: React.KeyboardEvent<Element>) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
@@ -146,7 +156,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			} else if (draftContent === originalContent) {
 				handleCancelEdit();
 			} else {
-				handleSend(filterEmptyArrays(processedContentDraft), message.id, processedMentionDraft, message?.content?.tp || '');
+				const processedContentDraftUpdated = prepareProcessedContent(processedContentDraft);
+				handleSend(filterEmptyArrays(processedContentDraftUpdated), message.id, processedMentionDraft, message?.content?.tp || '');
 				handleCancelEdit();
 			}
 		}
@@ -164,32 +175,74 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		} else if (draftContent !== '' && draftContent === originalContent) {
 			return handleCancelEdit();
 		} else {
-			handleSend(filterEmptyArrays(processedContentDraft), message.id, processedMentionDraft, message?.content?.tp || '');
+			const processedContentDraftUpdated = prepareProcessedContent(processedContentDraft);
+			handleSend(filterEmptyArrays(processedContentDraftUpdated), message.id, processedMentionDraft, message?.content?.tp || '');
 		}
 		handleCancelEdit();
 	};
 
 	const [titleMention, setTitleMention] = useState('');
 
+	const findMentionIndex = (value: string, plainValue: string, mention: MentionItem, appearanceIndex: number) => {
+		const mentionMarkup = `@[${mention.display.slice(1)}](${mention.id})`;
+
+		let valueStartIndex = -1;
+		let count = 0;
+		for (let i = 0; i < value.length; i++) {
+			if (value.slice(i, i + mentionMarkup.length) === mentionMarkup) {
+				count++;
+				if (count === appearanceIndex) {
+					valueStartIndex = i;
+					break;
+				}
+			}
+		}
+
+		let plainValueStartIndex = -1;
+		count = 0;
+		for (let i = 0; i < plainValue.length; i++) {
+			if (plainValue.slice(i, i + mention.display.length) === mention.display) {
+				count++;
+				if (count === appearanceIndex) {
+					plainValueStartIndex = i;
+					break;
+				}
+			}
+		}
+
+		return {
+			valueStartIndex,
+			plainValueStartIndex
+		};
+	};
+
 	const handleChange: OnChangeHandlerFunc = (event, newValue, newPlainTextValue, mentions) => {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
-		const { mentionList, hashtagList, emojiList } = useProcessMention(
-			mentions,
+		const mentionAppearancesCount: Record<string, number> = {};
+
+		const newMentions: MentionItem[] = mentions.map((mention) => {
+			mentionAppearancesCount[mention.id] = (mentionAppearancesCount[mention.id] || 0) + 1;
+			const newMentionStartIndex = findMentionIndex(newValue, newPlainTextValue, mention, mentionAppearancesCount?.[mention.id]);
+			return {
+				...mention,
+				index: newMentionStartIndex.valueStartIndex,
+				plainTextIndex: newMentionStartIndex.plainValueStartIndex
+			};
+		});
+
+		const { mentionList, hashtagList, emojiList } = processMention(
+			newMentions,
 			rolesClan,
 			membersOfChild as ChannelMembersEntity[],
 			membersOfParent as ChannelMembersEntity[]
 		);
-		const { links, markdowns, voiceRooms } = processText(newPlainTextValue);
 		setChannelDraftMessage(
 			channelId,
 			messageId,
 			{
 				t: newPlainTextValue,
 				hg: hashtagList,
-				ej: emojiList,
-				lk: links,
-				mk: markdowns,
-				vk: voiceRooms
+				ej: emojiList
 			},
 			mentionList,
 			attachmentOnMessage ?? []

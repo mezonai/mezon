@@ -141,13 +141,14 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	);
 
 	useEffect(() => {
-		const sendMessage = DeviceEventEmitter.addListener(ActionEmitEvent.SEND_MESSAGE, ({ content }) => {
+		const sendMessage = DeviceEventEmitter.addListener(ActionEmitEvent.SEND_MESSAGE, ({ content, mentions }) => {
 			const { isPrivate, nameValueThread } = formikRef.current.values;
 			const valueForm = { isPrivate: isPrivate ? 1 : 0, nameValueThread: nameValueThread ?? valueThread?.content?.t };
 			const contentMessage = openThreadMessageState ? { t: valueThread?.content?.t } : { t: content?.t };
+			const mentionMessage = openThreadMessageState ? valueThread?.mentions : mentions;
 
 			if (validInput(nameValueThread)) {
-				handleSendMessageThread(contentMessage, [], [], [], valueForm);
+				handleSendMessageThread(contentMessage, mentionMessage, [], [], valueForm);
 			}
 		});
 		return () => {

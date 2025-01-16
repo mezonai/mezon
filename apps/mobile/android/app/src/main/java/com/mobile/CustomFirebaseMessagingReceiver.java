@@ -36,6 +36,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import javax.annotation.Nullable;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.app.ActivityManager;
 
 public class CustomFirebaseMessagingReceiver extends ReactNativeFirebaseMessagingService {
     private static final String TAG = "CustomFirebaseMessagingReceiver";
@@ -57,8 +58,19 @@ public class CustomFirebaseMessagingReceiver extends ReactNativeFirebaseMessagin
         Context context = getApplicationContext();
         Map<String, String> data = remoteMessage.getData();
         Log.d(TAG, "-------START onMessageReceived ------");
-
-        if (data.containsKey("offer")) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+         boolean isAppInBackground = true;
+            if (appProcesses != null) {
+                String packageName = context.getPackageName();
+                for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                    if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                        isAppInBackground = false;
+                        break;
+                    }
+                }
+            }
+        if (data.containsKey("offer") && isAppInBackground) {
         try {
               Boolean isCancel = "CANCEL_CALL".equals(new JSONObject(data.get("offer")).getString("offer"));
               ReactInstanceManager reactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();

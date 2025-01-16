@@ -48,6 +48,7 @@ export const fetchEventManagement = createAsyncThunk(
 	'eventManagement/fetchEventManagement',
 	async ({ clanId, noCache }: fetchEventManagementPayload, thunkAPI) => {
 		try {
+			thunkAPI.dispatch(eventManagementActions.initializeClanState(clanId as string));
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
@@ -198,7 +199,7 @@ export const fetchDeleteEventManagement = createAsyncThunk(
 	}
 );
 
-export interface EventManagementState extends EntityState<EventManagementEntity, string> {
+export interface EventManagementState {
 	byClans: Record<
 		string,
 		{
@@ -212,24 +213,26 @@ export interface EventManagementState extends EntityState<EventManagementEntity,
 	ongoingEvent: EventManagementOnGogoing | null;
 }
 
-export const initialEventManagementState: EventManagementState = eventManagementAdapter.getInitialState({
+export const initialEventManagementState: EventManagementState = {
 	byClans: {},
 	loadingStatus: 'not loaded',
 	error: null,
 	chooseEvent: null,
 	ongoingEvent: null,
 	creatingStatus: 'not loaded'
-});
+};
 
 export const eventManagementSlice = createSlice({
 	name: EVENT_MANAGEMENT_FEATURE_KEY,
 	initialState: initialEventManagementState,
 	reducers: {
-		add: eventManagementAdapter.addOne,
-		addMany: eventManagementAdapter.addMany,
-		remove: eventManagementAdapter.removeOne,
-		clearEntities: (state) => {
-			eventManagementAdapter.removeAll(state);
+		initializeClanState: (state, action: PayloadAction<string>) => {
+			const clanId = action.payload;
+			if (!state.byClans[clanId]) {
+				state.byClans[clanId] = {
+					entities: eventManagementAdapter.getInitialState()
+				};
+			}
 		},
 		setChooseEvent: (state, action) => {
 			state.chooseEvent = action.payload;
@@ -273,6 +276,12 @@ export const eventManagementSlice = createSlice({
 			const { event_id, channel_id, event_status, channel_voice_id, ...restPayload } = action.payload;
 			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
+
+			if (!state.byClans[action.payload.clan_id]) {
+				state.byClans[action.payload.clan_id] = {
+					entities: eventManagementAdapter.getInitialState()
+				};
+			}
 
 			eventManagementAdapter.addOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
@@ -353,20 +362,17 @@ export const eventManagementActions = {
 	updateEventManagement
 };
 
-const { selectAll, selectEntities } = eventManagementAdapter.getSelectors();
+const { selectAll } = eventManagementAdapter.getSelectors();
 
 export const getEventManagementState = (rootState: { [EVENT_MANAGEMENT_FEATURE_KEY]: EventManagementState }): EventManagementState =>
 	rootState[EVENT_MANAGEMENT_FEATURE_KEY];
-
-export const selectAllEventManagement = createSelector(getEventManagementState, selectAll);
 
 export const selectEventsByClanId = createSelector(
 	[(state: RootState) => state.eventmanagement, (state: RootState, clanId: string) => clanId],
 	(events, clanId) => selectAll(events.byClans[clanId]?.entities ?? eventManagementAdapter.getInitialState())
 );
-export const selectEventManagementEntities = createSelector(getEventManagementState, selectEntities);
 
-export const selectNumberEvent = createSelector(selectEventsByClanId, (events) => events.length);
+export const selectNumberEvent = createSelector(selectEventsByClanId, (events) => events?.length);
 
 export const selectChooseEvent = createSelector(getEventManagementState, (state) => state.chooseEvent);
 
@@ -381,6 +387,7 @@ export const selectNumberEventPrivate = createSelector(
 	(events) => events.filter((event) => event.channel_id && event.channel_id !== '0' && event.channel_id !== '').length
 );
 
+// check
 export const selectEventsByChannelId = createSelector(
 	[selectEventsByClanId, (state: RootState, clanId: string, channelId: string) => channelId],
 	(entities, channelId) => {

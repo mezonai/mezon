@@ -7,10 +7,11 @@ import { Linking, Pressable, View } from 'react-native';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
 
 type EventBadgeProps = {
+	clanId: string;
 	channelId: string;
 };
-export const EventBadge = memo(({ channelId }: EventBadgeProps) => {
-	const events = useAppSelector((state) => selectEventsByChannelId(state, channelId ?? ''));
+export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
+	const events = useAppSelector((state) => selectEventsByChannelId(state, clanId ?? '', channelId ?? ''));
 	const channelVoice = useAppSelector((state) => selectChannelById(state, events?.[0]?.channel_voice_id ?? ''));
 	const colorStatusEvent = events?.[0]?.event_status === EEventStatus.UPCOMING ? baseColor.blurple : baseColor.bgSuccess;
 

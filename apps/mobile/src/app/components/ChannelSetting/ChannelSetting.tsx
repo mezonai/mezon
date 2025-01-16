@@ -1,11 +1,30 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { BellIcon, CheckIcon, Icons, isEqual, LinkIcon, TrashIcon } from '@mezon/mobile-components';
+import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
+import {
+	BellIcon,
+	CheckIcon,
+	Icons,
+	LinkIcon,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE,
+	TrashIcon,
+	getUpdateOrAddClanChannelCache,
+	isEqual,
+	save
+} from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
-import { channelsActions, selectAllChannels, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import {
+	channelsActions,
+	getStoreAsync,
+	selectAllChannels,
+	selectChannelById,
+	selectCurrentUserId,
+	threadsActions,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { checkIsThread } from '@mezon/utils';
 import { DrawerActions } from '@react-navigation/native';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -36,6 +55,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	const channel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const isChannel = !checkIsThread(channel);
 	const [isVisibleDeleteChannelModal, setIsVisibleDeleteChannelModal] = useState<boolean>(false);
+	const [isVisibleLeaveChannelModal, setIsVisibleLeaveChannelModal] = useState<boolean>(false);
 	const [isCheckValid, setIsCheckValid] = useState<boolean>(true);
 	const [isCheckDuplicateNameChannel, setIsCheckDuplicateNameChannel] = useState<boolean>(false);
 	const channelsClan = useSelector(selectAllChannels);
@@ -55,6 +75,8 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		return channel?.category_name;
 	}, [channel?.category_name]);
 	useBackHardWare();
+	const { dismiss } = useBottomSheetModal();
+	const currentUserId = useSelector(selectCurrentUserId);
 
 	navigation.setOptions({
 		headerTitle: isChannel ? t1('menuChannelStack.channelSetting') : t1('menuChannelStack.threadSetting'),
@@ -205,9 +227,16 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					textStyle: { color: 'red' },
 					onPress: () => handlePressDeleteChannel(),
 					icon: <TrashIcon color="red" />
+				},
+				{
+					title: t('fields.threadLeave.leave'),
+					textStyle: { color: 'red' },
+					onPress: () => handlePressLeaveChannel(),
+					icon: <Icons.LeaveGroup color={Colors.textRed} />,
+					isShow: channel?.creator_id !== currentUserId
 				}
 			] satisfies IMezonMenuItemProps[],
-		[]
+		[channel?.creator_id, currentUserId, isChannel, t]
 	);
 
 	const topMenu = useMemo(
@@ -338,6 +367,40 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		}
 	};
 
+	const handleJoinChannel = async () => {
+		const channelId = channel?.parrent_id || '';
+		const clanId = channel?.clan_id || '';
+		const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
+		const store = await getStoreAsync();
+		requestAnimationFrame(async () => {
+			store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false }));
+		});
+		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
+	};
+
+	const handleConfirmLeaveThread = useCallback(async () => {
+		await dispatch(
+			threadsActions.leaveThread({
+				clanId: channel?.clan_id || '',
+				channelId: channel?.parrent_id || '',
+				threadId: channel?.id || '',
+				isPrivate: channel.channel_private || 0
+			})
+		);
+		navigation.navigate(APP_SCREEN.HOME);
+		navigation.dispatch(DrawerActions.openDrawer());
+		dismiss();
+		handleJoinChannel();
+	}, []);
+
+	const handleLeaveModalVisibleChange = (visible: boolean) => {
+		setIsVisibleLeaveChannelModal(visible);
+	};
+
+	const handlePressLeaveChannel = () => {
+		setIsVisibleLeaveChannelModal(true);
+	};
+
 	const handleDeleteModalVisibleChange = (visible: boolean) => {
 		setIsVisibleDeleteChannelModal(visible);
 	};
@@ -394,6 +457,17 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				title={t('confirm.delete.title')}
 				confirmText={t('confirm.delete.confirmText')}
 				content={t('confirm.delete.content', {
+					channelName: channel?.channel_label
+				})}
+			/>
+
+			<MezonConfirm
+				visible={isVisibleLeaveChannelModal}
+				onVisibleChange={handleLeaveModalVisibleChange}
+				onConfirm={handleConfirmLeaveThread}
+				title={t('confirm.leave.title')}
+				confirmText={t('confirm.leave.confirmText')}
+				content={t('confirm.leave.content', {
 					channelName: channel?.channel_label
 				})}
 			/>

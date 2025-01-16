@@ -2,7 +2,7 @@ import { ChannelMembersEntity, RolesClanEntity } from '@mezon/store';
 import { ETypeMEntion, IEmojiOnMessage, IHashtagOnMessage, IMentionOnMessage, getRoleList, uniqueUsers } from '@mezon/utils';
 import { MentionItem } from 'react-mentions';
 
-const useProcessMention = (
+const processMention = (
 	mentionsRaw: MentionItem[],
 	roles: RolesClanEntity[],
 	membersOfChild: ChannelMembersEntity[],
@@ -58,4 +58,4 @@ const useProcessMention = (
 	};
 };
 
-export default useProcessMention;
+export default processMention;

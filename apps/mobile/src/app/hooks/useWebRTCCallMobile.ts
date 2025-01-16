@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BackHandler, DeviceEventEmitter, Platform } from 'react-native';
+import { BackHandler, DeviceEventEmitter, NativeModules } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
@@ -16,11 +16,12 @@ import Toast from 'react-native-toast-message';
 import { MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription, mediaDevices } from 'react-native-webrtc';
 import { useSelector } from 'react-redux';
 import { usePermission } from './useRequestPermission';
+const { SharedPreferences } = NativeModules;
 
 const RTCConfig = {
 	iceServers: [
 		{
-			urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
+			urls: process.env.NX_WEBRTC_ICESERVERS_REPLY_URL as string,
 			username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
 			credential: process.env.NX_WEBRTC_ICESERVERS_CREDENTIAL
 		}
@@ -66,6 +67,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		peerConnection: null,
 		storedIceCandidates: null
 	});
+	const [isAnswerCall, setIsAnswerCall] = useState<boolean>(false);
 	const { requestMicrophonePermission, requestCameraPermission } = usePermission();
 	const mezon = useMezon();
 	const dispatch = useAppDispatch();
@@ -106,6 +108,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	}, [callState.localStream, callState.remoteStream]);
 
 	useEffect(() => {
+		SharedPreferences.removeItem('notificationDataCalling');
 		return () => {
 			endCallTimeout.current && clearTimeout(endCallTimeout.current);
 			endCallTimeout.current = null;
@@ -191,10 +194,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		});
 
 		return pc;
-	}, [mezon.socketRef, dmUserId, userId]);
+	}, [mezon.socketRef, dmUserId, userId, dispatch]);
 
-	const startCall = async (isVideoCall: boolean, isAnswerCall = false) => {
+	const startCall = async (isVideoCall: boolean, isAnswer = false) => {
 		try {
+			setIsAnswerCall(isAnswer);
 			// Request permission microphone
 			const haveMicrophonePermission = await requestMicrophonePermission();
 			if (!haveMicrophonePermission) {
@@ -240,7 +244,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 			});
 			dispatch(audioCallActions.setUserCallId(currentDmGroup?.user_id?.[0]));
 
-			if (!isAnswerCall) {
+			if (!isAnswer) {
 				playDialTone();
 				handleSend(
 					{
@@ -316,7 +320,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 						channelId,
 						userId
 					);
-					if (Platform.OS === 'android') {
+					if (isAnswerCall) {
 						await updatePeerConnectionOffer();
 					}
 

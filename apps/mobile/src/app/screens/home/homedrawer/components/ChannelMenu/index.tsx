@@ -266,6 +266,17 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 				});
 			},
 			isShow: isCanManageThread
+		},
+		{
+			title: t('menu.manageThreadMenu.deleteThread'),
+			icon: <Icons.TrashIcon color={Colors.textRed} />,
+			onPress: () => {
+				setIsShowModalDeleteChannel(true);
+			},
+			textStyle: {
+				color: Colors.textRed
+			},
+			isShow: isCanManageThread
 		}
 		// {
 		// 	title: t('menu.manageThreadMenu.copyLink'),

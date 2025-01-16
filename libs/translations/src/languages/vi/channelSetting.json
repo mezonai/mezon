@@ -65,6 +65,10 @@
         "threadDelete": {
             "title": "",
             "delete": "Xóa Thread"
+        },
+        "threadLeave": {
+            "title": "",
+            "leave": "Rời chuỗi"
         }
     },
     "confirm": {
@@ -72,6 +76,11 @@
             "content": "Bạn có chắc muốn xóa channel #{channelName} ?. Hành động này không thể khôi phục lại",
             "confirmText": "Xóa",
             "title": "Xóa channel"
+        },
+        "leave": {
+            "content": "Bạn có chắc muốn rời channel #{channelName} ?. Hành động này không thể khôi phục lại",
+            "confirmText": "Rời",
+            "title": "Rời channel"
         },
         "save": "Lưu"
     },

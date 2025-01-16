@@ -15,6 +15,11 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
         document.getElementById('username').innerHTML  = "${imageData.uploaderData.name}"
         document.getElementById('timestamp').innerHTML  = "${time}"
         ${App.imageScriptWindowLoaded === false ? `let currentIndex = ${activeIndex};` : `currentIndex = ${activeIndex};`}
+        currentImageUrl = {
+        fileName : '${imageData.filename}',
+        url : '${imageData.url}',
+          realUrl : '${imageData.realUrl}'
+      };
       ${App.imageScriptWindowLoaded === false && scriptThumnails(imageData.channelImagesData.images, activeIndex)}
   `);
 
@@ -69,6 +74,7 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 	if (App.imageScriptWindowLoaded === false) {
 		App.imageScriptWindowLoaded = true;
 	}
+	imageWindow.show();
 	imageWindow.focus();
 }
 

@@ -1,6 +1,6 @@
 import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ActivitiesName, ChannelMembersEntity, EUserStatus, IUserAccount, MemberProfileType, createImgproxyUrl } from '@mezon/utils';
+import { ActivitiesType, ChannelMembersEntity, EUserStatus, IUserAccount, MemberProfileType, createImgproxyUrl } from '@mezon/utils';
 import { ApiUserActivity } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -51,14 +51,13 @@ const AvatarProfile = ({
 		dispatch(channelMembersActions.updateCustomStatus({ clanId: currentClanId ?? '', customStatus: '' }));
 	};
 
-	const activityNames: { [key: string]: string } = {
-		[ActivitiesName.CODE]: 'Visual Studio Code',
-		[ActivitiesName.VISUAL_STUDIO_CODE]: 'Visual Studio Code',
-		[ActivitiesName.SPOTIFY]: 'Listening to Spotify',
-		[ActivitiesName.LOL]: 'League of Legends'
+	const activityNames: { [key: number]: string } = {
+		[ActivitiesType.VISUAL_STUDIO_CODE]: 'Coding',
+		[ActivitiesType.SPOTIFY]: 'Music',
+		[ActivitiesType.LOL]: 'Gaming'
 	};
 
-	const activityStatus = customStatus || activityNames[activityByUserId?.activity_name as string];
+	const activityStatus = customStatus || activityNames[activityByUserId?.activity_type as number];
 
 	return (
 		<div className=" text-black flex flex-1 flex-row gap-[6px] mt-[-50px] px-[16px]">

@@ -1,13 +1,5 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
-import {
-	PinMessageEntity,
-	messagesActions,
-	pinMessageActions,
-	selectCurrentClanId,
-	selectMessageByMessageId,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { PinMessageEntity, messagesActions, selectCurrentClanId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { convertTimeString } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
@@ -32,23 +24,21 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const dispatch = useAppDispatch();
 
 	const handleJumpMess = () => {
-		dispatch(pinMessageActions.setJumpPinMessageId(pinMessage.message_id));
-		onClose();
-
 		if (pinMessage.message_id && pinMessage.channel_id) {
 			dispatch(
 				messagesActions.jumpToMessage({
-					clanId: currentClanId || '',
-					messageId: pinMessage.message_id ?? '',
-					channelId: pinMessage.channel_id ?? ''
+					clanId: currentClanId || '0',
+					messageId: pinMessage.message_id,
+					channelId: pinMessage.channel_id
 				})
 			);
 		}
+		onClose();
 	};
 	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, pinMessage?.message_id as string));
 	const messageContentObject = useMemo(() => {
 		try {
-			return safeJSONParse(pinMessage.content || '{}');
+			return safeJSONParse(pinMessage.content || '{}') || {};
 		} catch (e) {
 			console.error({ e });
 		}

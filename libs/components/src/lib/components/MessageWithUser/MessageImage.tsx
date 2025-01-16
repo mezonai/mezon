@@ -28,9 +28,10 @@ export type MessageImage = {
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	mode?: ChannelStreamMode;
 	messageId?: string;
+	size?: { width: number; height: number };
 };
 
-const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId }: MessageImage) => {
+const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId, size }: MessageImage) => {
 	const dispatch = useAppDispatch();
 	const { setOpenModalAttachment, setAttachment } = useAttachments();
 	const checkImage = notImplementForGifOrStickerSendFromPanel(attachmentData);
@@ -209,8 +210,8 @@ const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId }: M
 		<div
 			className="my-1"
 			style={{
-				height,
-				width: width || 'auto'
+				height: size?.height,
+				width: size?.width || 'auto'
 			}}
 		>
 			<div style={{ height: 1, width: 1, opacity: 0 }}>.</div>
@@ -223,9 +224,9 @@ const MessageImage = memo(({ attachmentData, onContextMenu, mode, messageId }: M
 					<img
 						draggable="false"
 						onContextMenu={handleContextMenu}
-						className={` flex object-cover object-left-top rounded cursor-default`}
-						style={{ width: width || 'auto', height, cursor: 'pointer' }}
-						src={createImgproxyUrl(attachmentData.url ?? '', { width: 600, height: 300, resizeType: 'fit' })}
+						className={` flex object-cover object-left-top rounded cursor-pointer`}
+						style={{ width: size?.width || 'auto', height: size?.height }}
+						src={createImgproxyUrl(attachmentData.url ?? '', { width: size?.width, height: size?.height, resizeType: 'fit' })}
 						alt={'message'}
 					/>
 				</div>
