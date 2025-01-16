@@ -222,27 +222,19 @@ export const getTimeDifferenceDate = (dateString: string) => {
 };
 
 export const convertMarkdown = (markdown: string, type: EBacktickType): string => {
-	const backtickLength = type === EBacktickType.TRIPLE ? 3 : type === EBacktickType.SINGLE ? 1 : 0;
-	if (backtickLength === 0) {
-		throw new Error('Invalid backtick type');
-	}
-	const s = backtickLength;
-	const e = markdown.length - backtickLength;
-	const substring = markdown.slice(s, e);
-
-	const start = substring.startsWith('\n');
-	const end = substring.endsWith('\n');
+	const start = markdown.startsWith('\n');
+	const end = markdown.endsWith('\n');
 
 	if (start && end) {
-		return substring;
+		return markdown;
 	}
 	if (start) {
-		return substring + '\n';
+		return markdown + '\n';
 	}
 	if (end) {
-		return '\n' + substring;
+		return '\n' + markdown;
 	}
-	return '\n' + substring + '\n';
+	return '\n' + markdown + '\n';
 };
 
 export const getSrcEmoji = (id: string) => {

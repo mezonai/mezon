@@ -7,7 +7,8 @@ export interface IStartEndIndex {
 
 export enum EBacktickType {
 	TRIPLE = 't',
-	SINGLE = 's'
+	SINGLE = 's',
+	BOLD = 'b'
 }
 
 export interface IMention {
@@ -26,7 +27,9 @@ export interface IEmoji {
 export interface IMarkdown {
 	type?: EBacktickType;
 }
-
+export interface IBoldText {
+	type?: EBacktickType;
+}
 export interface IMentionOnMessage extends IMention, IStartEndIndex {}
 export interface IExtendedMessage extends IMessageSendPayload {
 	mentions?: IMentionOnMessage[];
@@ -34,6 +37,7 @@ export interface IExtendedMessage extends IMessageSendPayload {
 export interface IHashtagOnMessage extends IHashtag, IStartEndIndex {}
 export interface IEmojiOnMessage extends IEmoji, IStartEndIndex {}
 export type ILinkOnMessage = IStartEndIndex;
-export type IBoldTextOnMessage = IStartEndIndex;
 export interface IMarkdownOnMessage extends IMarkdown, IStartEndIndex {}
+export interface IBoldTextOnMessage extends IBoldText, IStartEndIndex {}
+
 export type ILinkVoiceRoomOnMessage = IStartEndIndex;
