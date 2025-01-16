@@ -15,7 +15,9 @@ import {
 	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageSendPayload,
+	addMention,
 	checkTokenOnMarkdown,
+	filterEmptyArrays,
 	updatePayload
 } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
@@ -69,6 +71,10 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 				hg: validHashtagList,
 				ej: validEmojiList
 			};
+
+			const addMentionToPayload = addMention(validatedContent, validMentionList);
+			const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);
+
 			if (!isFocusOnChannelInput && isShowCreateTopic) {
 				dispatch(
 					topicsActions.handleSendTopic({
@@ -78,7 +84,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 						anonymous: false,
 						attachments: attachments,
 						code: 0,
-						content: validatedContent,
+						content: removeEmptyOnPayload,
 						isMobile: isMobile,
 						isPublic: isPublic,
 						mentionEveryone: mentionEveryone,
@@ -95,7 +101,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 					clanId: getClanId || '',
 					mode,
 					isPublic: isPublic,
-					content: validatedContent,
+					content: removeEmptyOnPayload,
 					mentions: validMentionList,
 					attachments,
 					references,

@@ -151,6 +151,7 @@ export const processText = (inputString: string) => {
 
 	return { links, voiceRooms, markdowns, boldTexts };
 };
+
 // calc new s and e of token
 export function updateItems<T extends { s?: number; e?: number }>(
 	items: T[] | undefined,
@@ -159,7 +160,6 @@ export function updateItems<T extends { s?: number; e?: number }>(
 	return items?.map((item) => {
 		// eslint-disable-next-line prefer-const
 		let updatedItem = { ...item };
-
 		updatedItem.s = updatedItem.s ?? 0;
 		updatedItem.e = updatedItem.e ?? updatedItem.s;
 		let totalAdjustment = 0;
@@ -189,6 +189,7 @@ export function removeSyntaxMkOrBold(t: string, mk: IMarkdownOnMessage[], b: IBo
 		}
 		return content;
 	});
+
 	const cleanBContent = bContent?.map((content) => content.slice(2, content.length - 2));
 	let result = t;
 	mkContent?.forEach((content, index) => {
@@ -200,53 +201,62 @@ export function removeSyntaxMkOrBold(t: string, mk: IMarkdownOnMessage[], b: IBo
 	});
 	return result;
 }
-// create new s and e mk and boldtext
 
+export function calculateNewIndex(oldText: string, newText: string, boldOrMkRanges: (IMarkdownOnMessage | IBoldTextOnMessage)[]) {
+	const result: {
+		numMarkers: number;
+		oldRange: { s: number; e: number };
+		newRange: { s: number; e: number };
+		type: EBacktickType;
+	}[] = [];
+	const seenPositions = new Set<number>();
+
+	boldOrMkRanges.forEach((range) => {
+		const oldContent = oldText.slice(range.s, range.e);
+		let cleanedOldContent = '';
+		let type: EBacktickType;
+
+		if (oldContent.includes('```')) {
+			cleanedOldContent = oldContent.replace(/^```/, '').replace(/```$/, '');
+			type = EBacktickType.TRIPLE;
+		} else if (oldContent.includes('`')) {
+			cleanedOldContent = oldContent.replace(/^`/, '').replace(/`$/, '');
+			type = EBacktickType.SINGLE;
+		} else if (oldContent.includes('**')) {
+			cleanedOldContent = oldContent.replace(/\*\*/g, '');
+			type = EBacktickType.BOLD;
+		} else {
+			return;
+		}
+
+		let newStart = newText.indexOf(cleanedOldContent);
+
+		while (seenPositions.has(newStart) && newStart !== -1) {
+			newStart = newText.indexOf(cleanedOldContent, newStart + 1);
+		}
+
+		if (newStart === -1) {
+			console.error('Could not find new position for: ', oldContent);
+			return;
+		}
+		seenPositions.add(newStart);
+		const newEnd = newStart + cleanedOldContent.length;
+
+		result.push({
+			numMarkers: type === EBacktickType.BOLD ? 2 : type === EBacktickType.TRIPLE ? 3 : 1,
+			oldRange: { s: range.s ?? 0, e: range.e ?? 0 },
+			newRange: { s: newStart, e: newEnd },
+			type
+		});
+	});
+
+	return result;
+}
+
+// create new s and e mk and boldtext
 export const createReplacements = (mk: IMarkdownOnMessage[], b: IBoldTextOnMessage[], t: string) => {
 	const combinedItems = [...(mk ?? []), ...(b ?? [])];
 	const newT = removeSyntaxMkOrBold(t as string, mk as IMarkdownOnMessage[], b as IBoldTextOnMessage[]);
-
-	function calculateNewIndex(oldText: any, newText: any, boldRanges: any) {
-		const result: any[] = [];
-		const seenPositions = new Set();
-
-		boldRanges.forEach((range: any) => {
-			const oldContent = oldText.slice(range.s, range.e);
-			let cleanedOldContent = '';
-			let type = '';
-
-			if (oldContent.includes('**')) {
-				cleanedOldContent = oldContent.replace(/\*\*/g, '');
-				type = 'b';
-			} else if (oldContent.includes('```')) {
-				cleanedOldContent = oldContent.replace(/^```/, '').replace(/```$/, '');
-				type = 't';
-			} else if (oldContent.includes('`')) {
-				cleanedOldContent = oldContent.replace(/^`/, '').replace(/`$/, '');
-				type = 's';
-			}
-
-			let newStart = newText.indexOf(cleanedOldContent);
-
-			while (seenPositions.has(newStart) && newStart !== -1) {
-				newStart = newText.indexOf(cleanedOldContent, newStart + 1);
-			}
-
-			if (newStart === -1) {
-				console.error('Could not find new position for: ', oldContent);
-				return;
-			}
-
-			seenPositions.add(newStart);
-
-			const newEnd = newStart + cleanedOldContent.length;
-
-			result.push({ s: newStart, e: newEnd, type });
-		});
-
-		return result;
-	}
-
 	const updatedBoldText = calculateNewIndex(t, newT, combinedItems);
 	return updatedBoldText;
 };
@@ -259,22 +269,21 @@ export function getToken(t: string, token: (IHashtagOnMessage | IEmojiOnMessage 
 export function updatePayload(payload: IMessageSendPayload, mentions: IMentionOnMessage[]) {
 	// eslint-disable-next-line prefer-const
 	let { t, ej, lk, vk, hg, mk, b } = payload;
-
 	const replacements = createReplacements(mk as IMarkdownOnMessage[], b as IBoldTextOnMessage[], t as string);
 	const newT = removeSyntaxMkOrBold(t as string, mk as IMarkdownOnMessage[], b as IBoldTextOnMessage[]);
 	const updatedMk = replacements
-		.filter((r) => r.type === 's' || r.type === 't') // Filter replacements with type 's' or 't'
+		.filter((r) => r.type === EBacktickType.SINGLE || r.type === EBacktickType.TRIPLE)
 		.map((r) => ({
-			s: r.s,
-			e: r.e,
+			s: r.newRange.s,
+			e: r.newRange.e,
 			type: r.type
 		}));
 
 	const updatedB = replacements
-		.filter((r) => r.type === 'b')
+		.filter((r) => r.type === EBacktickType.BOLD)
 		.map((r) => ({
-			s: r.s,
-			e: r.e,
+			s: r.newRange.s,
+			e: r.newRange.e,
 			type: r.type
 		}));
 	const updatedHg = updateItems(hg, replacements);
