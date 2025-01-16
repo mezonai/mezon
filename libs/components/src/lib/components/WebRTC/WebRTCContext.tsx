@@ -120,7 +120,13 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 		peerConnection.current?.close();
 		peerConnection.current = null;
 		localStream?.getTracks().forEach((track) => track.stop());
-
+		await mezon.socketRef.current?.forwardSFUSignaling(
+			userId || '',
+			WebrtcSignalingType.WEBRTC_SDP_QUIT,
+			'',
+			channelId.current || '',
+			clanId.current || ''
+		);
 		// Reset state
 		setLocalStream(null);
 		setRemoteStream(null);

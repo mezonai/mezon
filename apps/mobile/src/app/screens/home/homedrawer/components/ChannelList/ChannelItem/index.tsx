@@ -40,7 +40,7 @@ function ChannelItem({ onLongPress, onPress, data, isUnRead, isActive }: IChanne
 				{(isUnRead || Number(numberNotification || 0) > 0) && <View style={styles.dotIsNew} />}
 
 				<ChannelStatusIcon channel={data} isUnRead={isUnRead || Number(numberNotification || 0) > 0} />
-				<EventBadge channelId={data.channel_id} />
+				<EventBadge clanId={data?.clan_id} channelId={data?.channel_id} />
 				<Text
 					style={[styles.channelListItemTitle, (isUnRead || Number(numberNotification || 0) > 0) && styles.channelListItemTitleActive]}
 					numberOfLines={1}

@@ -45,6 +45,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			code?: number
 		) => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const trimmedText = content?.t?.trim();
 			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
 				content.mk ?? [],
 				content.hg ?? [],
@@ -53,6 +54,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			);
 			const validatedContent = {
 				...content,
+				t: trimmedText,
 				hg: validHashtagList,
 				ej: validEmojiList
 			};

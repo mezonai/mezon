@@ -135,6 +135,16 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		return message.content?.t;
 	}, [message.content?.t]);
 
+	const prepareProcessedContent = (processedContentDraft: IMessageSendPayload) => {
+		const { links, markdowns, voiceRooms } = processText(processedContentDraft.t ?? '');
+		return {
+			...processedContentDraft,
+			lk: links,
+			mk: markdowns,
+			vk: voiceRooms
+		};
+	};
+
 	const onSend = (e: React.KeyboardEvent<Element>) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
@@ -146,7 +156,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			} else if (draftContent === originalContent) {
 				handleCancelEdit();
 			} else {
-				handleSend(filterEmptyArrays(processedContentDraft), message.id, processedMentionDraft, message?.content?.tp || '');
+				const processedContentDraftUpdated = prepareProcessedContent(processedContentDraft);
+				handleSend(filterEmptyArrays(processedContentDraftUpdated), message.id, processedMentionDraft, message?.content?.tp || '');
 				handleCancelEdit();
 			}
 		}
@@ -164,7 +175,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		} else if (draftContent !== '' && draftContent === originalContent) {
 			return handleCancelEdit();
 		} else {
-			handleSend(filterEmptyArrays(processedContentDraft), message.id, processedMentionDraft, message?.content?.tp || '');
+			const processedContentDraftUpdated = prepareProcessedContent(processedContentDraft);
+			handleSend(filterEmptyArrays(processedContentDraftUpdated), message.id, processedMentionDraft, message?.content?.tp || '');
 		}
 		handleCancelEdit();
 	};
@@ -224,18 +236,13 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			membersOfChild as ChannelMembersEntity[],
 			membersOfParent as ChannelMembersEntity[]
 		);
-
-		const { links, markdowns, voiceRooms } = processText(newPlainTextValue);
 		setChannelDraftMessage(
 			channelId,
 			messageId,
 			{
 				t: newPlainTextValue,
 				hg: hashtagList,
-				ej: emojiList,
-				lk: links,
-				mk: markdowns,
-				vk: voiceRooms
+				ej: emojiList
 			},
 			mentionList,
 			attachmentOnMessage ?? []

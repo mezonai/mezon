@@ -141,7 +141,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 			type: eventType,
 			channelId: eventType === OptionEvent.OPTION_SPEAKER ? channelID : null,
 			location: eventType === OptionEvent.OPTION_LOCATION ? location : null,
-			eventChannelId: eventChannel.channel_id || '',
+			eventChannelId: eventChannel?.channel_id || '',
 			onGoBack
 		});
 	}

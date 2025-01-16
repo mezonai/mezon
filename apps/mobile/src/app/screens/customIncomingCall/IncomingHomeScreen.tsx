@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { DMCallActions, selectAllAccount, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import LottieView from 'lottie-react-native';
-import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
+import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import * as React from 'react';
 import { memo, useEffect } from 'react';
 import { BackHandler, Image, ImageBackground, NativeModules, Text, TouchableOpacity, View } from 'react-native';
