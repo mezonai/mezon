@@ -15,7 +15,6 @@ import {
 	MessagesEntity,
 	RootState,
 	messagesActions,
-	pinMessageActions,
 	selectAllAccount,
 	selectAllChannelMemberIds,
 	selectAllRoleIds,
@@ -27,7 +26,6 @@ import {
 	selectIdMessageToJump,
 	selectIsJumpingToPresent,
 	selectIsMessageIdExist,
-	selectJumpPinMessageId,
 	selectLastMessageByChannelId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId2,
@@ -368,7 +366,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const userId = useSelector(selectAllAccount)?.user?.id;
 		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 		const idMessageToJump = useSelector(selectIdMessageToJump);
-		const jumpPinMessageId = useSelector(selectJumpPinMessageId);
 		const entities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, channelId));
 		const firstMsgOfThisTopic = useSelector(selectFirstMessageOfCurrentTopic);
 
@@ -406,13 +403,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const attachmentSending = useRef<string | null>();
 
 		useSyncEffect(() => {
-			if (idMessageToJump || jumpPinMessageId) {
+			if (idMessageToJump) {
 				userActiveScroll.current = false;
 				skipCalculateScroll.current = true;
 				anchorIdRef.current = null;
 				anchorTopRef.current = null;
 			}
-		}, [idMessageToJump, jumpPinMessageId]);
+		}, [idMessageToJump]);
 
 		// useSyncEffect(() => {
 		// 	memoFocusingIdRef.current = focusingId;
@@ -603,6 +600,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		// Handle scroll to specific message (jump/pin)
 		const timerRef = useRef<number | null>(null);
 		useEffect(() => {
+			if (!idMessageToJump?.id) return;
+
 			const clearTimer = () => {
 				if (timerRef.current) {
 					clearTimeout(timerRef.current);
@@ -611,7 +610,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			};
 
 			const scrollToMessage = (messageId: string) => {
-				const messageElement = document.getElementById('msg-' + messageId);
+				const messageElement = chatRef.current?.querySelector('#msg-' + messageId);
 				if (messageElement) {
 					setAnchor.current = new Date().getTime();
 					userActiveScroll.current = true;
@@ -621,41 +620,18 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 			clearTimer();
 
-			const isPinMessageExist = selectIsMessageIdExist(store.getState() as RootState, channelId, jumpPinMessageId);
 			const isMessageExist = selectIsMessageIdExist(store.getState() as RootState, channelId, idMessageToJump?.id);
 
-			if (jumpPinMessageId && isPinMessageExist) {
-				scrollToMessage(jumpPinMessageId);
-				timerRef.current = window.setTimeout(() => {
-					dispatch(pinMessageActions.setJumpPinMessageId(null));
-				}, 1000);
-			} else if (idMessageToJump && isMessageExist && !jumpPinMessageId) {
+			if (idMessageToJump && isMessageExist) {
 				if (idMessageToJump.id === 'temp') return;
-				if (idMessageToJump?.navigate) {
-					setTimeout(() => {
-						scrollToMessage(idMessageToJump.id);
-						timerRef.current = window.setTimeout(() => {
-							dispatch(messagesActions.setIdMessageToJump(null));
-						}, 1000);
-					});
-				} else {
-					scrollToMessage(idMessageToJump.id);
-					timerRef.current = window.setTimeout(() => {
-						dispatch(messagesActions.setIdMessageToJump(null));
-					}, 1000);
-				}
+				scrollToMessage(idMessageToJump.id);
+				timerRef.current = window.setTimeout(() => {
+					dispatch(messagesActions.setIdMessageToJump(null));
+				}, 1000);
 			}
 
 			return clearTimer;
-		}, [jumpPinMessageId, idMessageToJump]);
-
-		// Cleanup on unmount
-		useEffect(() => {
-			return () => {
-				dispatch(messagesActions.setIdMessageToJump(null));
-				dispatch(pinMessageActions.setJumpPinMessageId(null));
-			};
-		}, [dispatch]);
+		}, [idMessageToJump]);
 
 		const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
 

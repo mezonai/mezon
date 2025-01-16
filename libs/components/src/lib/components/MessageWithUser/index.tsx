@@ -1,4 +1,4 @@
-import { MessagesEntity, selectAllAccount, selectJumpPinMessageId, selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
+import { MessagesEntity, selectAllAccount, selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
 	HEIGHT_PANEL_PROFILE,
@@ -103,9 +103,6 @@ function MessageWithUser({
 
 	const checkMessageIncludeMention = hasIncludeMention;
 
-	const jumpPinMessageId = useSelector(selectJumpPinMessageId);
-	const checkJumpPinMessage = jumpPinMessageId === message?.id;
-
 	const containerClass = classNames('relative', 'message-container', {
 		'is-sending': message?.isSending,
 		'is-error': message?.isError,
@@ -116,10 +113,9 @@ function MessageWithUser({
 		'flex h-15 flex-col w-auto px-3',
 		{ 'mt-0': isMention },
 		{ 'pt-[2px]': !isCombine },
-		{ 'dark:bg-[#383B47]': hasIncludeMention || checkMessageTargetToMoved || checkJumpPinMessage },
+		{ 'dark:bg-[#383B47]': hasIncludeMention || checkMessageTargetToMoved },
 		{
-			'dark:bg-[#403D38] bg-[#EAB3081A]':
-				(checkMessageIncludeMention || checkReplied) && !messageReplyHighlight && !checkJumpPinMessage && !checkMessageTargetToMoved
+			'dark:bg-[#403D38] bg-[#EAB3081A]': (checkMessageIncludeMention || checkReplied) && !messageReplyHighlight && !checkMessageTargetToMoved
 		},
 		// {
 		// 	'dark:group-hover:bg-bgPrimary1 ': !hasIncludeMention && !checkReplied && !checkMessageTargetToMoved && !messageReplyHighlight

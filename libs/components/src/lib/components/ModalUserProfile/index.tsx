@@ -14,7 +14,7 @@ import {
 } from '@mezon/core';
 import { EStateFriend, selectAccountCustomStatus, selectAllAccount, selectCurrentUserId, selectFriendStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ActivitiesName, ActivitiesType, ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
+import { ActivitiesType, ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiUserActivity } from 'mezon-js/api.gen';
 import { RefObject, memo, useEffect, useMemo, useRef, useState } from 'react';
@@ -195,11 +195,10 @@ const ModalUserProfile = ({
 		[ActivitiesType.LOL]: <Icons.LoLGame defaultSize="w-6 h-6" />
 	};
 
-	const activityNames: { [key: string]: string } = {
-		[ActivitiesName.CODE]: 'Visual Studio Code',
-		[ActivitiesName.VISUAL_STUDIO_CODE]: 'Visual Studio Code',
-		[ActivitiesName.SPOTIFY]: 'Listening to Spotify',
-		[ActivitiesName.LOL]: 'League of Legends'
+	const activityNames: { [key: number]: string } = {
+		[ActivitiesType.VISUAL_STUDIO_CODE]: 'Coding',
+		[ActivitiesType.SPOTIFY]: 'Music',
+		[ActivitiesType.LOL]: 'Gaming'
 	};
 
 	return (
@@ -256,7 +255,7 @@ const ModalUserProfile = ({
 								<div className="">{iconMap[activityByUserId?.activity_type as ActivitiesType]}</div>
 								<div className="flex flex-col">
 									<div className='className="font-normal tracking-wider text-xs one-line'>
-										{activityNames[activityByUserId?.activity_name as string]}
+										{activityNames[activityByUserId?.activity_type as number]}
 									</div>
 									<div className="font-normal tracking-wider text-xs one-line">{activityByUserId?.activity_description}</div>
 								</div>

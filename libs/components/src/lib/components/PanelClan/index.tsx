@@ -1,11 +1,21 @@
-import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker, UserRestrictionZone, useSettingFooter } from '@mezon/core';
+import {
+	useChannelMembersActions,
+	useEscapeKeyClose,
+	useMarkAsRead,
+	useOnClickOutside,
+	usePermissionChecker,
+	UserRestrictionZone,
+	useSettingFooter
+} from '@mezon/core';
 import { clansActions, defaultNotificationActions, selectDefaultNotificationClan, useAppDispatch } from '@mezon/store';
 import { EPermission, EUserSettings, IClan } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
 import { ApiAccount } from 'mezon-js/dist/api.gen';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Coords } from '../ChannelLink';
+import ModalConfirm from '../ModalConfirm';
 import { notificationTypesList } from '../PanelChannel';
 import GroupPanels from '../PanelChannel/GroupPanels';
 import ItemPanel from '../PanelChannel/ItemPanel';
@@ -89,6 +99,20 @@ const PanelClan: React.FC<IPanelCLanProps> = ({ coords, clan, setShowClanListMen
 		handClosePannel();
 	};
 
+	const [isShowLeaveClanPopup, setIsShowLeaveClanPopup] = useState(false);
+	const navigate = useNavigate();
+	const toggleLeaveClanPopup = () => {
+		setIsShowLeaveClanPopup(!isShowLeaveClanPopup);
+	};
+	const { removeMemberClan } = useChannelMembersActions();
+	const handleLeaveClan = async () => {
+		const currentClanId = await removeMemberClan({ channelId: '', clanId: clan?.clan_id as string, userIds: [] });
+		toggleLeaveClanPopup();
+		if (currentClanId === clan?.clan_id) {
+			navigate('/chat/direct/friends');
+		}
+	};
+
 	return (
 		<div
 			ref={panelRef}
@@ -168,10 +192,19 @@ const PanelClan: React.FC<IPanelCLanProps> = ({ coords, clan, setShowClanListMen
 
 					<UserRestrictionZone policy={!canManageCLan}>
 						<GroupPanels>
-							<ItemPanel children={'Leave Clan'} danger />
+							<ItemPanel children={'Leave Clan'} danger onClick={toggleLeaveClanPopup} />
 						</GroupPanels>
 					</UserRestrictionZone>
 				</>
+			)}
+			{isShowLeaveClanPopup && (
+				<ModalConfirm
+					handleCancel={toggleLeaveClanPopup}
+					handleConfirm={handleLeaveClan}
+					modalName={clan?.clan_name}
+					title="leave"
+					buttonName="Leave Clan"
+				/>
 			)}
 		</div>
 	);

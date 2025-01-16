@@ -6,6 +6,7 @@ import { format } from 'url';
 import { rendererAppName, rendererAppPort } from './constants';
 
 import tray from '../Tray';
+import { EActivityCoding, EActivityGaming, EActivityMusic } from './activities';
 import setupAutoUpdates from './autoUpdates';
 import { ACTIVE_WINDOW, TRIGGER_SHORTCUT } from './events/constants';
 import setupRequestPermission from './requestPermission';
@@ -13,16 +14,9 @@ import { initBadge } from './services/badge';
 import { forceQuit } from './utils';
 
 const isQuitting = false;
-
-export enum EActivities {
-	CODE = 'Code',
-	VISUAL_STUDIO_CODE = 'Visual Studio Code',
-	SPOTIFY = 'Spotify',
-	LOL = 'LeagueClientUx',
-	LOL_MACOS = 'League Of Legends',
-	CURSOR = 'Cursor',
-	XCODE = 'Xcode'
-}
+const ACTIVITY_CODING = Object.values(EActivityCoding);
+const ACTIVITY_MUSIC = Object.values(EActivityMusic);
+const ACTIVITY_GAMING = Object.values(EActivityGaming);
 
 const IMAGE_WINDOW_KEY = 'IMAGE_WINDOW_KEY';
 export default class App {
@@ -264,34 +258,33 @@ export default class App {
 	private static setupWindowManager() {
 		let defaultApp = null;
 		const usageThreshold = 30 * 60 * 1000;
-		let activityTimeout = null;
+		let activityTimeout: NodeJS.Timeout | null = null;
 
-		const fetchActiveWindow = () => {
+		const fetchActiveWindow = (): void => {
 			const window = activeWindows?.getActiveWindow();
-			if (window) {
-				const appName = window?.windowClass.replace(/\.(exe|app)$/, '');
-				const windowTitle = window?.windowName;
-				const startTime = new Date().toISOString();
+			if (!window) return;
 
-				if (
-					[
-						EActivities.SPOTIFY,
-						EActivities.CODE,
-						EActivities.LOL,
-						EActivities.VISUAL_STUDIO_CODE,
-						EActivities.LOL_MACOS,
-						EActivities.CURSOR,
-						EActivities.XCODE
-					].includes(appName as EActivities)
-				) {
-					const newAppInfo = { appName, windowTitle, startTime };
+			const { windowClass, windowName } = window;
+			const appName = windowClass.replace(/\.(exe|app)$/, '');
+			const windowTitle = windowName;
+			const startTime = new Date().toISOString();
 
-					if (!defaultApp || defaultApp?.appName !== newAppInfo?.appName || defaultApp.windowTitle !== newAppInfo?.windowTitle) {
-						defaultApp = newAppInfo;
-						App.mainWindow.webContents.send(ACTIVE_WINDOW, defaultApp);
-					}
-				}
+			const typeActivity = getActivityType(appName);
+			if (typeActivity === null) return;
+
+			const newAppInfo = { appName, windowTitle, startTime, typeActivity };
+
+			if (!defaultApp || defaultApp.appName !== newAppInfo.appName || defaultApp.windowTitle !== newAppInfo.windowTitle) {
+				defaultApp = newAppInfo;
+				App.mainWindow.webContents.send(ACTIVE_WINDOW, defaultApp);
 			}
+		};
+
+		const getActivityType = (appName: string): number | null => {
+			if (ACTIVITY_CODING.includes(appName as EActivityCoding)) return 1;
+			if (ACTIVITY_MUSIC.includes(appName as EActivityMusic)) return 2;
+			if (ACTIVITY_GAMING.includes(appName as EActivityGaming)) return 3;
+			return null;
 		};
 
 		try {

@@ -85,7 +85,7 @@ export { AnchorScroll } from './components/AnchorScroll/AnchorScroll';
 export { default as ListChannelSetting } from './components/ClanSettings/SettingChannel/index';
 export { default as ModalDeleteMess } from './components/DeleteMessageModal/ModalDeleteMess';
 export { default as ModalRemoveMemberClan } from './components/MemberProfile/ModalRemoveMemberClan';
-export { default as useProcessMention } from './components/MessageBox/ReactionMentionInput/useProcessMention';
+export { default as processMention } from './components/MessageBox/ReactionMentionInput/processMention';
 export { default as PanelMember } from './components/PanelMember';
 export * from './components/ThumbnailAttachmentRender';
 

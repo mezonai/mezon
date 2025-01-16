@@ -105,7 +105,7 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	}, [directParamId]);
 
 	return (
-		<div className="mx-2 relative " role="button" ref={chatboxRef}>
+		<div className="mx-3 relative" role="button" ref={chatboxRef}>
 			{isEmojiOnChat && (
 				<div
 					onClick={(e) => {

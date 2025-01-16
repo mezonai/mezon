@@ -13,7 +13,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
-	ActivitiesName,
+	ActivitiesType,
 	createImgproxyUrl,
 	DEFAULT_ROLE_COLOR,
 	EUserStatus,
@@ -146,14 +146,13 @@ export function MemberProfile({
 		};
 	}, [user?.user?.id, rolesClanEntity]);
 
-	const activityNames: { [key: string]: string } = {
-		[ActivitiesName.CODE]: 'Visual Studio Code',
-		[ActivitiesName.VISUAL_STUDIO_CODE]: 'Visual Studio Code',
-		[ActivitiesName.SPOTIFY]: 'Listening to Spotify',
-		[ActivitiesName.LOL]: 'League of Legends'
+	const activityNames: { [key: number]: string } = {
+		[ActivitiesType.VISUAL_STUDIO_CODE]: 'Coding',
+		[ActivitiesType.SPOTIFY]: 'Music',
+		[ActivitiesType.LOL]: 'Gaming'
 	};
 
-	const activityStatus = customStatus || activityNames[activityByUserId?.activity_name as string];
+	const activityStatus = customStatus || activityNames[activityByUserId?.activity_type as number];
 	const activityTitle = activityByUserId?.activity_description;
 	const activityName = activityByUserId?.activity_name;
 

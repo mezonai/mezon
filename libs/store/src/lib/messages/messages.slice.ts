@@ -29,7 +29,7 @@ import {
 } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ChannelMessage } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
@@ -39,7 +39,6 @@ import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../
 import { memoizeAndTrack } from '../memoize';
 import { ReactionEntity, reactionActions } from '../reactionMessage/reactionMessage.slice';
 import { RootState } from '../store';
-import { seenMessagePool } from './SeenMessagePool';
 
 const FETCH_MESSAGES_CACHED_TIME = 1000 * 60 * 60;
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
@@ -89,7 +88,7 @@ export type ChannelTypingState = {
 };
 
 export type FetchMessageParam = {
-	lastLoadMessageId: string;
+	lastLoadMessageId?: string;
 	hasMore?: boolean;
 };
 
@@ -101,7 +100,7 @@ export interface MessagesState {
 	typingUsers?: Record<string, ChannelTypingState>;
 	paramEntries: Record<string, FetchMessageParam>;
 	openOptionMessageState: boolean;
-	firstMessageId: Record<string, string>;
+	firstMessageId: Record<string, string | null>;
 	lastMessageByChannel: Record<string, ApiChannelMessageHeaderWithChannel>;
 	dataReactionGetFromLoadMessage: EmojiDataOptionals[];
 	isFocused: boolean;
@@ -262,6 +261,30 @@ function getViewportSlice(sourceIds: string[], offsetId: string | undefined, dir
 	return { newViewportIds, areSomeLocal, areAllLocal };
 }
 
+const shouldReturnCachedMessages = (
+	isFetchingLatestMessages: boolean | undefined,
+	oldMessages: MessagesEntity[],
+	lastSentMessage: ApiChannelMessageHeader | undefined,
+	response: { messages?: ChannelMessage[]; time: number },
+	foundE2ee: boolean | undefined,
+	channelMessages: EntityState<MessagesEntity, string> | undefined
+): boolean => {
+	if (isFetchingLatestMessages && oldMessages.at(-1)?.id !== lastSentMessage?.id) {
+		return false;
+	}
+
+	if (!response.messages || Date.now() - response.time > 1000) {
+		return true;
+	}
+
+	if (!isFetchingLatestMessages && !foundE2ee) {
+		const { entities = {}, ids = [] } = channelMessages || {};
+		return ids?.length >= response.messages.length && response.messages.every((item) => entities[item.id]?.id === item.id);
+	}
+
+	return false;
+};
+
 export const fetchMessages = createAsyncThunk(
 	'messages/fetchMessages',
 	async (
@@ -283,6 +306,7 @@ export const fetchMessages = createAsyncThunk(
 		try {
 			const state = thunkAPI.getState() as RootState;
 			if (isFetchingLatestMessages) {
+				thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 				thunkAPI.dispatch(messagesActions.setIsViewingOlderMessages({ channelId, isViewing: false }));
 			}
 
@@ -296,37 +320,16 @@ export const fetchMessages = createAsyncThunk(
 			if (!currentUser) {
 				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
 			}
+
 			if (noCache) {
 				fetchMessagesCached.delete(mezon, clanId, channelId, messageId, direction, topicId);
 			}
 			const response = await fetchMessagesCached(mezon, clanId, channelId, messageId, direction, topicId);
+
 			if (!response.messages) {
 				return {
 					messages: []
 				};
-			}
-
-			const oldMessages = channelMessagesAdapter
-				.getSelectors()
-				.selectAll(state.messages.channelMessages[channelId] || { ids: [], entities: {} });
-
-			if (!response.messages || Date.now() - response.time > 1000) {
-				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
-				return {
-					messages: [],
-					isClearMessage,
-					fromCache: true
-				};
-			} else if (!isFetchingLatestMessages && !foundE2ee) {
-				const { entities, ids } = state.messages.channelMessages?.[channelId] || {};
-				if (ids?.length >= response.messages.length && response.messages.every((item) => entities[item.id]?.id === item.id)) {
-					thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
-					return {
-						messages: [],
-						isClearMessage,
-						fromCache: true
-					};
-				}
 			}
 
 			const firstMessage = response.messages[response.messages.length - 1];
@@ -334,15 +337,19 @@ export const fetchMessages = createAsyncThunk(
 				thunkAPI.dispatch(messagesActions.setFirstMessageId({ channelId: chlId, firstMessageId: firstMessage.id }));
 			}
 
-			let lastSentMessage = response.last_sent_message;
+			let lastSentMessage = (state.messages.lastMessageByChannel[channelId] as ApiChannelMessageHeader) || response.last_sent_message;
+
+			if (noCache) {
+				lastSentMessage = response.last_sent_message as ApiChannelMessageHeader;
+			}
 
 			// no message id and direction is before timestamp means load latest messages
 			// then the last sent message will be the last message of response
-			if ((!messageId && direction === Direction_Mode.BEFORE_TIMESTAMP) || isFetchingLatestMessages) {
+			if (noCache && ((!messageId && direction === Direction_Mode.BEFORE_TIMESTAMP) || isFetchingLatestMessages)) {
 				lastSentMessage = response.messages[response.messages.length - 1];
 			}
 
-			if (lastSentMessage && lastSentMessage.id) {
+			if (lastSentMessage && lastSentMessage.id && noCache) {
 				thunkAPI.dispatch(
 					messagesActions.setLastMessage({
 						...lastSentMessage,
@@ -350,7 +357,35 @@ export const fetchMessages = createAsyncThunk(
 					})
 				);
 			}
+
+			const lastLoadMessage = response.messages[response.messages.length - 1];
+			const hasMore = lastLoadMessage?.code !== EMessageCode.FIRST_MESSAGE;
+
+			thunkAPI.dispatch(messagesActions.setMessageParams({ channelId: chlId, param: { lastLoadMessageId: lastLoadMessage.id, hasMore } }));
+
 			thunkAPI.dispatch(messagesActions.setChannelIdLastFetch({ channelId: chlId }));
+
+			const oldMessages = channelMessagesAdapter
+				.getSelectors()
+				.selectAll(state.messages.channelMessages[channelId] || { ids: [], entities: {} });
+
+			if (
+				shouldReturnCachedMessages(
+					isFetchingLatestMessages,
+					oldMessages,
+					lastSentMessage,
+					response,
+					foundE2ee,
+					state.messages.channelMessages[channelId]
+				)
+			) {
+				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
+				return {
+					messages: [],
+					isClearMessage,
+					fromCache: true
+				};
+			}
 
 			let messages = response.messages.map((item) => {
 				return mapMessageChannelToEntity(item, response.last_seen_message?.id);
@@ -360,11 +395,7 @@ export const fetchMessages = createAsyncThunk(
 				messages = await MessageCrypt.decryptMessages(messages, currentUser.user?.id as string);
 			}
 
-			const lastLoadMessage = messages[messages.length - 1];
-			const hasMore = lastLoadMessage?.isFirst === false ? false : true;
-
 			if (messages.length > 0) {
-				thunkAPI.dispatch(messagesActions.setMessageParams({ channelId: chlId, param: { lastLoadMessageId: lastLoadMessage.id, hasMore } }));
 				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages }));
 			}
 
@@ -375,23 +406,6 @@ export const fetchMessages = createAsyncThunk(
 						messageId: response.last_seen_message?.id
 					})
 				);
-				const lastMessage = messages.find((message) => message.id === response.last_seen_message?.id);
-
-				if (lastMessage) {
-					seenMessagePool.updateKnownSeenMessage({
-						clanId: lastMessage.clan_id || '',
-						channelId: lastMessage.channel_id || '',
-						channelLabel: lastMessage.channel_label,
-						messageId: lastMessage.id,
-						messageCreatedAt: lastMessage.create_time_seconds ? +lastMessage.create_time_seconds : 0,
-						messageSeenAt: 0,
-						mode: lastMessage.mode as number
-					});
-				}
-			}
-
-			if (isFetchingLatestMessages) {
-				thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 			}
 
 			return {
@@ -515,6 +529,7 @@ export const jumpToMessage = createAsyncThunk(
 	'messages/jumpToMessage',
 	async ({ clanId, messageId, channelId, noCache = true, isFetchingLatestMessages = false, navigate, mode }: JumpToMessageArgs, thunkAPI) => {
 		try {
+			thunkAPI.dispatch(messagesActions.setIdMessageToJump({ id: 'temp', navigate: false }));
 			const channelMessages = selectMessageIdsByChannelId(getMessagesRootState(thunkAPI), channelId);
 			const isMessageExist = channelMessages.includes(messageId);
 			if (!isMessageExist) {
@@ -868,6 +883,8 @@ export const messagesSlice = createSlice({
 			channelMessagesAdapter.setAll(state.channelMessages[channelId], lastFiftyMessages);
 			state.channelViewPortMessageIds[channelId] = lastFiftyIds;
 			state.isViewingOlderMessagesByChannelId[channelId] = false;
+			// reset first message
+			state.firstMessageId[channelId] = null;
 		},
 		setIsViewingOlderMessages: (state, action: PayloadAction<{ channelId: string; isViewing: boolean }>) => {
 			const { channelId, isViewing } = action.payload;
@@ -1340,22 +1357,9 @@ export const selectTypingUserIdsByChannelId = createSelector([selectTypingUsersB
 });
 
 export const selectMessageParams = createSelector(getMessagesState, (state) => state.paramEntries);
-export const selectParamByChannelId = (channelId: string) =>
-	createSelector(selectMessageParams, (param) => {
-		return param?.[channelId];
-	});
-
-export const selectHasMoreMessageByChannelId = (channelId: string) =>
-	createSelector(getMessagesState, (state) => {
-		const firstMessageId = state.firstMessageId[channelId];
-		if (!firstMessageId) return true;
-		const isFirstMessageInChannel = state.channelMessages[channelId]?.entities[firstMessageId];
-		return !isFirstMessageInChannel;
-	});
 
 export const selectHasMoreMessageByChannelId2 = createSelector([getMessagesState, getChannelIdAsSecondParam], (state, channelId) => {
 	const firstMessageId = state.firstMessageId[channelId];
-
 	if (!firstMessageId) return true;
 
 	const isFirstMessageInChannel = state.channelMessages[channelId]?.entities[firstMessageId];
@@ -1402,11 +1406,6 @@ export const createCachedSelector = createSelectorCreator({
 	memoize: weakMapMemoize,
 	argsMemoize: weakMapMemoize
 });
-
-export const selectMessageParamsByChannelId = (channelId: string) =>
-	createSelector(selectMessageParams, (param) => {
-		return param[channelId];
-	});
 
 export const selectFirstLoadedMessageIdByChannelId = (channelId: string) =>
 	createSelector(getMessagesState, (state) => {

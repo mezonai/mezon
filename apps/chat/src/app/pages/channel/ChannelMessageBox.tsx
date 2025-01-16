@@ -106,7 +106,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 
 	return (
-		<div className="mx-4 relative" role="button" ref={chatboxRef}>
+		<div className="mx-3 relative" role="button" ref={chatboxRef}>
 			{isEmojiOnChat && (
 				<div
 					onClick={(e) => {
