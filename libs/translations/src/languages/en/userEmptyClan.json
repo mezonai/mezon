@@ -12,7 +12,9 @@
     "readyChat":"Ready for a next-level group chat ?",
     "buildYourCommunity":"Build your community with organized conversations, spontaneous hangouts, an powerful customization features!",
     "createClan":"Create Your Clan",
-    "joinClan":"Join a Clan"
+    "joinClan":"Join a Clan",
+    "joinChannel":"Join a Channel",
+    "findChannel":"You find yourself in a strange place. You don't have assess to any text channels"
   },
   "emptyMessage": {
     "dMsWith":"DMs with superpowers",

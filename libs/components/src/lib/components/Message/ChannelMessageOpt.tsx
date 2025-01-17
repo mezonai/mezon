@@ -128,7 +128,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean, channelId?: string) => {
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateTopic }));
+			dispatch(topicsActions.setIsShowCreateTopic(isShowCreateTopic));
 			dispatch(
 				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateThread: false })
 			);
@@ -136,9 +136,9 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		[currentChannel?.id, dispatch]
 	);
 
-	const setValueTopic = useCallback(
+	const setCurrentTopicInitMessage = useCallback(
 		(value: IMessageWithUser | null) => {
-			dispatch(topicsActions.setValueTopic(value));
+			dispatch(topicsActions.setCurrentTopicInitMessage(value));
 		},
 		[dispatch]
 	);
@@ -146,10 +146,10 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 	const handleCreateTopic = useCallback(() => {
 		setIsShowCreateTopic(true);
 		dispatch(topicsActions.setOpenTopicMessageState(true));
-		setValueTopic(realTimeMessage);
+		setCurrentTopicInitMessage(realTimeMessage);
 		dispatch(topicsActions.setCurrentTopicId(''));
 		dispatch(topicsActions.setFirstMessageOfCurrentTopic(message));
-	}, [dispatch, message, realTimeMessage, setIsShowCreateTopic, setValueTopic]);
+	}, [dispatch, message, realTimeMessage, setIsShowCreateTopic, setCurrentTopicInitMessage]);
 
 	const menuPlugin = useMemo(() => {
 		const plugin = {
@@ -432,7 +432,7 @@ function useThreadMenuBuilder(message: IMessageWithUser, isThread: boolean, hasP
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean) => {
 			dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channel_id as string, isShowCreateThread }));
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: message.channel_id as string, isShowCreateTopic: false }));
+			dispatch(topicsActions.setIsShowCreateTopic(false));
 		},
 		[message.channel_id, dispatch]
 	);

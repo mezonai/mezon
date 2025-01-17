@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { getAspectRatioSize, useImageResolution } from 'react-native-zoom-toolkit';
+import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
 const widthMedia = Metrics.screenWidth - 150;
@@ -14,6 +15,7 @@ const RenderImageChat = React.memo(({ image, index, disable, onPress, onLongPres
 		() => getImageSize({ height: image?.height, width: image?.width, url: image?.url }),
 		[image?.height, image?.url, image?.width]
 	);
+	const isTabletLandscape = useTabletLandscape();
 
 	if (imageSize?.height && imageSize?.width) {
 		return (
@@ -26,6 +28,7 @@ const RenderImageChat = React.memo(({ image, index, disable, onPress, onLongPres
 				onLongPress={onLongPress}
 				isMultiple={isMultiple}
 				remainingImagesCount={remainingImagesCount}
+				isTablet={isTabletLandscape}
 			/>
 		);
 	} else {
@@ -38,6 +41,7 @@ const RenderImageChat = React.memo(({ image, index, disable, onPress, onLongPres
 				onLongPress={onLongPress}
 				isMultiple={isMultiple}
 				remainingImagesCount={remainingImagesCount}
+				isTablet={isTabletLandscape}
 			/>
 		);
 	}
@@ -61,7 +65,7 @@ const getImageSize = ({ url, height, width }) => {
 	return {};
 };
 
-const RenderImage = React.memo(({ image, index, disable, onPress, onLongPress, isMultiple = false, remainingImagesCount }: any) => {
+const RenderImage = React.memo(({ image, index, disable, onPress, onLongPress, isMultiple = false, remainingImagesCount, isTablet = false }: any) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { resolution } = useImageResolution({ uri: image.url });
@@ -86,15 +90,17 @@ const RenderImage = React.memo(({ image, index, disable, onPress, onLongPress, i
 				style={[
 					styles.imageMessageRender,
 					{
-						width: photoSize?.width,
-						height: photoSize?.height,
+						width: photoSize?.width / (isTablet ? 1.8 : 1),
+						height: photoSize?.height / (isTablet ? 1.8 : 1),
 						opacity: isUploading ? 0.5 : 1,
 						marginVertical: !remainingImagesCount && !isMultiple ? size.s_6 : 0
 					}
 				]}
 				children={isUploading ? <UploadingIndicator /> : null}
 				source={{
-					uri: isLoadFailProxy ? image?.url : createImgproxyUrl(image?.url ?? '', { width: 500, height: 500, resizeType: 'fit' }),
+					uri: isLoadFailProxy
+						? image?.url
+						: createImgproxyUrl(image?.url ?? '', { width: image?.width || 500, height: image?.height || 500, resizeType: 'fit' }),
 					priority: FastImage.priority.high
 				}}
 				resizeMode={!imageSize?.height && !isUploading ? 'cover' : isMultiple ? 'cover' : 'contain'}
@@ -102,7 +108,9 @@ const RenderImage = React.memo(({ image, index, disable, onPress, onLongPress, i
 					setIsLoadFailProxy(true);
 				}}
 			/>
-			{!!remainingImagesCount && <RemainingImagesOverlay remainingImagesCount={remainingImagesCount} photoSize={photoSize} styles={styles} />}
+			{!!remainingImagesCount && (
+				<RemainingImagesOverlay remainingImagesCount={remainingImagesCount} photoSize={photoSize} styles={styles} isTablet={isTablet} />
+			)}
 		</TouchableOpacity>
 	);
 });
@@ -120,12 +128,12 @@ const UploadingIndicator = () => (
 	</Block>
 );
 
-const RemainingImagesOverlay = ({ remainingImagesCount, photoSize, styles }: any) => (
+const RemainingImagesOverlay = ({ remainingImagesCount, photoSize, styles, isTablet }: any) => (
 	<View
 		style={{
 			...styles.overlay,
-			width: photoSize?.width,
-			height: photoSize?.height
+			width: photoSize?.width / (isTablet ? 1.8 : 1),
+			height: photoSize?.height / (isTablet ? 1.8 : 1)
 		}}
 	>
 		<Text style={styles.moreText}>+{remainingImagesCount}</Text>
@@ -133,7 +141,7 @@ const RemainingImagesOverlay = ({ remainingImagesCount, photoSize, styles }: any
 );
 
 const RenderImageHaveSize = React.memo(
-	({ image, imageSize, index, disable, onPress, onLongPress, isMultiple = false, remainingImagesCount }: any) => {
+	({ image, imageSize, index, disable, onPress, onLongPress, isMultiple = false, remainingImagesCount, isTablet = false }: any) => {
 		const { themeValue } = useTheme();
 		const [isLoadFailProxy, setIsLoadFailProxy] = React.useState<boolean>(false);
 		const styles = style(themeValue);
@@ -158,15 +166,17 @@ const RenderImageHaveSize = React.memo(
 					style={[
 						styles.imageMessageRender,
 						{
-							width: photoSize?.width,
-							height: photoSize?.height,
+							width: photoSize?.width / (isTablet ? 1.8 : 1),
+							height: photoSize?.height / (isTablet ? 1.8 : 1),
 							opacity: isUploading ? 0.5 : 1,
 							marginVertical: !remainingImagesCount && !isMultiple ? size.s_6 : 0
 						}
 					]}
 					children={isUploading ? <UploadingIndicator /> : null}
 					source={{
-						uri: isLoadFailProxy ? image?.url : createImgproxyUrl(image?.url ?? '', { width: 500, height: 500, resizeType: 'fit' }),
+						uri: isLoadFailProxy
+							? image?.url
+							: createImgproxyUrl(image?.url ?? '', { width: image?.width || 500, height: image?.height || 500, resizeType: 'fit' }),
 						priority: FastImage.priority.high
 					}}
 					resizeMode={isMultiple ? 'cover' : 'contain'}
@@ -175,7 +185,7 @@ const RenderImageHaveSize = React.memo(
 					}}
 				/>
 				{!!remainingImagesCount && (
-					<RemainingImagesOverlay remainingImagesCount={remainingImagesCount} photoSize={photoSize} styles={styles} />
+					<RemainingImagesOverlay remainingImagesCount={remainingImagesCount} photoSize={photoSize} styles={styles} isTablet={isTablet} />
 				)}
 			</TouchableOpacity>
 		);

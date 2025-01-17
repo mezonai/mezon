@@ -1,4 +1,12 @@
-import { channelsActions, clansActions, emojiSuggestionActions, fetchSystemMessageByClanId, getAllSFUMembersInChannel } from '@mezon/store';
+import {
+	appActions,
+	channelsActions,
+	clansActions,
+	emojiSuggestionActions,
+	fetchSystemMessageByClanId,
+	getAllSFUMembersInChannel,
+	topicsActions
+} from '@mezon/store';
 import { ModeResponsive } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ShouldRevalidateFunction } from 'react-router-dom';
@@ -20,6 +28,9 @@ export const clanLoader: CustomLoaderFunction = async ({ params, dispatch }) => 
 	dispatch(channelsActions.fetchListFavoriteChannel({ clanId: clanId }));
 	dispatch(fetchSystemMessageByClanId(clanId));
 	dispatch(getAllSFUMembersInChannel({ channelId: '', channelType: ChannelType.CHANNEL_TYPE_CHANNEL, clanId: clanId ?? '' }));
+	dispatch(appActions.setIsShowCanvas(false));
+	dispatch(topicsActions.setIsShowCreateTopic(false));
+	dispatch(topicsActions.setCurrentTopicId(''));
 	return {
 		clanId
 	} as ClanLoaderData;

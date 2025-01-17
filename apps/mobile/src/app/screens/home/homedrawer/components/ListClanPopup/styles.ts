@@ -15,9 +15,9 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		wrapperPlusClan: {
-			height: verticalScale(50),
-			width: verticalScale(50),
-			borderRadius: verticalScale(50),
+			height: size.s_48,
+			width: size.s_48,
+			borderRadius: size.s_48,
 			overflow: 'hidden',
 			alignItems: 'center',
 			justifyContent: 'center',

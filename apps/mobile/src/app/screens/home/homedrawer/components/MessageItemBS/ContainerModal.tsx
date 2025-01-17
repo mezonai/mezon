@@ -255,19 +255,30 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		}
 	};
 
+	const downloadAndSaveMedia = async (media) => {
+		const url = media.url;
+		const filetype = media?.filetype;
+
+		const type = filetype.split('/');
+		try {
+			const filePath = await downloadImage(url, type[1]);
+
+			if (filePath) {
+				await saveImageToCameraRoll('file://' + filePath, type[0]);
+			}
+		} catch (error) {
+			console.error(`Error downloading or saving media from URL: ${url}`, error);
+		}
+	};
+
 	const handleActionSaveImage = async () => {
 		onClose();
 		const media = message?.attachments;
 		bottomSheetRef?.current?.dismiss();
 		dispatch(appActions.setLoadingMainMobile(true));
 		if (media && media.length > 0) {
-			const url = media[0].url;
-			const type = media?.[0]?.filetype?.split?.('/');
-			const filePath = await downloadImage(url, type[1]);
-
-			if (filePath) {
-				await saveImageToCameraRoll('file://' + filePath, type[0]);
-			}
+			const promises = media?.map(downloadAndSaveMedia);
+			await Promise.all(promises);
 		}
 		dispatch(appActions.setLoadingMainMobile(false));
 	};

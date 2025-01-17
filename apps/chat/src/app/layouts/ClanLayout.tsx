@@ -89,7 +89,7 @@ const ClanLayout = () => {
 	const memberPath = `/chat/clans/${currentClan?.clan_id}/member-safety`;
 	const currentChannel = useSelector(selectCurrentChannel);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
-	const isShowCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, currentChannel?.id as string));
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);

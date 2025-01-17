@@ -448,7 +448,7 @@ export const ChatBoxBottomBar = memo(
 		}, [handleEventAfterEmojiPicked]);
 
 		return (
-			<Block paddingHorizontal={size.s_6}>
+			<Block paddingHorizontal={size.s_2}>
 				{triggers?.mention?.keyword !== undefined && (
 					<Suggestions
 						{...triggers.mention}

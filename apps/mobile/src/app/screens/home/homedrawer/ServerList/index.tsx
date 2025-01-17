@@ -35,11 +35,11 @@ const ServerList = React.memo(() => {
 		<View style={styles.wrapperServerList}>
 			<TouchableOpacity style={styles.wrapperLogo} onPress={() => navigateToDM()}>
 				{logoCustom ? (
-					<MezonAvatar width={size.s_50} height={size.s_50} avatarUrl={logoCustom} username="" />
+					<MezonAvatar width={size.s_48} height={size.s_48} avatarUrl={logoCustom} username="" />
 				) : theme === 'light' ? (
-					<LogoMezonLight width={size.s_50} height={size.s_50} />
+					<LogoMezonLight width={size.s_48} height={size.s_48} />
 				) : (
-					<LogoMezonDark width={size.s_50} height={size.s_50} />
+					<LogoMezonDark width={size.s_48} height={size.s_48} />
 				)}
 				{quantityPendingRequest ? (
 					<View style={styles.badge}>

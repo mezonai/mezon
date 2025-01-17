@@ -1,7 +1,6 @@
-import { useWebRTC } from '@mezon/components';
 import { Loading } from '@mezon/ui';
 import { ApiChannelAppResponse } from 'mezon-js/api.gen';
-import { RefObject, useEffect } from 'react';
+import { RefObject } from 'react';
 
 export function ChannelApps({
 	appChannel,
@@ -12,18 +11,18 @@ export function ChannelApps({
 	miniAppRef: RefObject<HTMLIFrameElement>;
 	miniAppDataHash: string;
 }) {
-	const { setClanId, setChannelId, startLocalStream } = useWebRTC();
+	// const { setClanId, setChannelId, startLocalStream } = useWebRTC();
 
-	useEffect(() => {
-		if (appChannel) {
-			setClanId(appChannel.clan_id || '');
-			setChannelId(appChannel.channel_id || '');
+	// useEffect(() => {
+	// 	if (appChannel) {
+	// 		setClanId(appChannel.clan_id || '');
+	// 		setChannelId(appChannel.channel_id || '');
 
-			startLocalStream().catch((err) => {
-				console.error('Failed to start local WebRTC stream:', err);
-			});
-		}
-	}, [appChannel, setClanId, setChannelId, startLocalStream]);
+	// 		startLocalStream().catch((err) => {
+	// 			console.error('Failed to start local WebRTC stream:', err);
+	// 		});
+	// 	}
+	// }, [appChannel, setClanId, setChannelId, startLocalStream]);
 
 	return appChannel?.url ? (
 		<iframe ref={miniAppRef} title={appChannel?.url} src={`${appChannel?.url}#${miniAppDataHash}`} className="w-full h-full"></iframe>

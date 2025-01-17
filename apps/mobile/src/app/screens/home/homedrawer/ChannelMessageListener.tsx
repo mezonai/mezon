@@ -8,6 +8,7 @@ import {
 	selectAllUserClans,
 	selectCurrentClanId,
 	selectCurrentStreamInfo,
+	selectDmGroupCurrentId,
 	selectStatusStream,
 	useAppDispatch,
 	videoStreamActions
@@ -25,7 +26,9 @@ import { EMessageBSToShow } from './enums';
 const ChannelMessageListener = React.memo(() => {
 	const usersClan = useSelector(selectAllUserClans);
 	const rolesInClan = useSelector(selectAllRolesClan);
-	const currentClanId = useSelector(selectCurrentClanId);
+	const clanId = useSelector(selectCurrentClanId);
+	const currentDirectId = useSelector(selectDmGroupCurrentId);
+	const currentClanId = currentDirectId ? '0' : clanId;
 	const navigation = useNavigation<any>();
 	const playStream = useSelector(selectStatusStream);
 	const dispatch = useAppDispatch();

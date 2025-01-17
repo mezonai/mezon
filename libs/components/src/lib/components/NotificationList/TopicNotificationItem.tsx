@@ -46,7 +46,7 @@ function TopicNotificationItem({ topic }: TopicProps) {
 	}, [usernames, userIds]);
 	const handleOpenTopic = async () => {
 		await navigate(`/chat/clans/${topic.clan_id}/channels/${topic.channel_id}`);
-		dispatch(topicsActions.setIsShowCreateTopic({ channelId: topic.channel_id as string, isShowCreateTopic: true }));
+		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(threadsActions.setIsShowCreateThread({ channelId: topic.channel_id as string, isShowCreateThread: false }));
 		dispatch(topicsActions.setCurrentTopicId(topic.id || ''));
 		dispatch(getFirstMessageOfTopic(topic.id || ''));

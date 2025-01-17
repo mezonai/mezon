@@ -13,7 +13,7 @@ const TopicDiscussionMain = () => {
 
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean) => {
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: currentChannelId as string, isShowCreateTopic }));
+			dispatch(topicsActions.setIsShowCreateTopic(isShowCreateTopic));
 		},
 		[currentChannelId, dispatch]
 	);

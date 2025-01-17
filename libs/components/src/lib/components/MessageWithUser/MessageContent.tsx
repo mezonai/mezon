@@ -56,7 +56,7 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 	const theme = useAppSelector(selectTheme);
 
 	const handleOpenTopic = () => {
-		dispatch(topicsActions.setIsShowCreateTopic({ channelId: message.channel_id as string, isShowCreateTopic: true }));
+		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channel_id as string, isShowCreateThread: false }));
 		dispatch(topicsActions.setCurrentTopicId(currentMessage?.content?.tp || ''));
 		dispatch(getFirstMessageOfTopic(currentMessage?.content?.tp || ''));

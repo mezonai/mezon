@@ -12,7 +12,9 @@
     "readyChat":"Sẵn sàng cho cuộc trò chuyện nhóm cấp độ tiếp theo?",
     "buildYourCommunity":"Xây dựng cộng đồng của bạn với các cuộc trò chuyện có tổ chức, các buổi gặp gỡ tự phát và các tính năng tùy chỉnh mạnh mẽ!",
     "createClan":"Tạo Clan của bạn",
-    "joinClan":"Tham gia một Clan"
+    "joinClan":"Tham gia một Clan",
+    "joinChannel":"Tham gia một Channel",
+    "findChannel":"Bạn thấy mình đang ở một nơi xa lạ. Bạn không có quyền truy cập vào bất kỳ kênh văn bản nào\n"
   },
   "emptyMessage": {
     "dMsWith":"Tin nhắn trực tiếp với sức mạnh siêu phàm",

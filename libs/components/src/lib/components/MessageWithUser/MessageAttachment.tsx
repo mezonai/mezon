@@ -102,6 +102,10 @@ const MessageAttachment = ({ message, onContextMenu, mode }: MessageAttachmentPr
 	return <Attachments mode={mode} message={message} attachments={validateAttachment} onContextMenu={onContextMenu} />;
 };
 
+const MAX_WIDTH_ALBUM_IMAGE = 520;
+const NUMBER_IMAGE_ON_ROW = 2;
+const WIDTH_ALBUM_WITH_SPACE = MAX_WIDTH_ALBUM_IMAGE - 8 * (NUMBER_IMAGE_ON_ROW - 1);
+
 const designLayout = (
 	images: (ApiMessageAttachment & {
 		create_time?: string;
@@ -109,24 +113,24 @@ const designLayout = (
 ) => {
 	const listImageSize: { width: number; height: number }[] = [];
 
-	if (images.length > 2) {
+	if (images.length >= 2) {
 		for (let i = 0; i < images.length; i += 2) {
-			if (images[i + 1]) {
+			if (images[i + 1] && images[i]?.height && images[i + 1]?.height) {
 				const heightPicOne = images[i].height || 0;
 				const heightPicTwo = images[i + 1].height || 0;
 
 				let sameHeight = 0;
 				if (heightPicOne > heightPicTwo) {
-					sameHeight = heightPicOne + Math.round((heightPicOne - heightPicTwo) / 2);
+					sameHeight = heightPicTwo + Math.round(heightPicOne - heightPicTwo);
 				} else {
-					sameHeight = heightPicTwo + Math.round((heightPicTwo - heightPicOne) / 2);
+					sameHeight = heightPicOne + Math.round(heightPicTwo - heightPicOne);
 				}
 
 				const widthPicOneNew = ((images[i].width || 0) * sameHeight) / (images[i].height || 1);
 
 				const widthPicTwoNew = ((images[i + 1].width || 0) * sameHeight) / (images[i + 1].height || 1);
 
-				const percent = (widthPicOneNew + widthPicTwoNew) / 512;
+				const percent = (widthPicOneNew + widthPicTwoNew) / WIDTH_ALBUM_WITH_SPACE;
 
 				listImageSize[i] = {
 					width: Math.round(widthPicOneNew / percent),
@@ -136,8 +140,14 @@ const designLayout = (
 					width: Math.round(widthPicTwoNew / percent),
 					height: Math.round(sameHeight / percent)
 				};
+			} else if (images[i + 1]) {
+				const width = MAX_WIDTH_ALBUM_IMAGE;
+				listImageSize[i] = {
+					width: WIDTH_ALBUM_WITH_SPACE / NUMBER_IMAGE_ON_ROW,
+					height: 150
+				};
 			} else {
-				const width = 520;
+				const width = MAX_WIDTH_ALBUM_IMAGE;
 				listImageSize[i] = {
 					width: width,
 					height: Math.round((width * (images[i].height || 1)) / (images[i].width || 1))
@@ -145,23 +155,32 @@ const designLayout = (
 			}
 		}
 	} else if (images.length == 1) {
-		if (!images[0]?.height) {
+		if (!images[0]?.height || !images[0]?.width) {
 			listImageSize[0] = {
 				height: 150,
 				width: images[0].width || 0
 			};
 			return listImageSize;
-		} else if ((images[0]?.width || 0) > 520) {
+		} else {
+			const aspectRatio = images[0]?.width / images[0]?.height;
+			let heightAlonePic = images[0]?.height;
+			let widthAlonePic = images[0]?.width;
+			if (heightAlonePic >= 275) {
+				heightAlonePic = 275;
+				widthAlonePic = heightAlonePic * aspectRatio;
+			}
+
+			if (widthAlonePic >= 550) {
+				widthAlonePic = 550;
+				heightAlonePic = widthAlonePic / aspectRatio;
+			}
+
 			listImageSize[0] = {
-				height: Math.round((520 * (images[0].height || 1)) / (images[0].width || 1)),
-				width: 520
+				height: Math.round(heightAlonePic),
+				width: Math.round(widthAlonePic)
 			};
 			return listImageSize;
 		}
-		listImageSize[0] = {
-			height: images[0].height,
-			width: images[0].width || 0
-		};
 	}
 
 	return listImageSize;
@@ -181,7 +200,7 @@ const ImageAlbum = ({
 	const listImageSize = designLayout(images);
 
 	return (
-		<div className="flex flex-row justify-start flex-wrap w-full gap-x-2 max-w-[520px]">
+		<div className={`flex flex-row justify-start flex-wrap w-full gap-x-2 max-w-[${MAX_WIDTH_ALBUM_IMAGE}px]`}>
 			{images.map((image, index) => {
 				const checkImage = notImplementForGifOrStickerSendFromPanel(image);
 				return (

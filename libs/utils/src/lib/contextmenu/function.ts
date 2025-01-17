@@ -11,25 +11,49 @@ export const convertImageToBlobFile = async (urlData: string): Promise<Blob | nu
 
 export const handleCopyImage = async (urlData: string) => {
 	try {
+		if (!navigator.clipboard?.write) {
+			console.warn('Clipboard API not supported. Image data not copied.');
+			return false;
+		}
+
 		const blob = await convertImageToBlobFile(urlData);
 		if (!blob) {
 			console.error('Failed to fetch or convert image');
-			return;
+			return false;
 		}
 
-		const file = new File([blob], 'image.png', { type: 'image/png' });
-		if (navigator.clipboard && navigator.clipboard.write) {
-			try {
-				const clipboardItem = new ClipboardItem({ 'image/png': file });
-				await navigator.clipboard.write([clipboardItem]);
-			} catch (error) {
-				console.error('Failed to write image to clipboard:', error);
-			}
+		const fileName = urlData.split('/').pop()?.split('?')[0] || 'image';
+
+		let fileType: string;
+		if (blob.type) {
+			fileType = blob.type.split('/')[1];
 		} else {
-			console.warn('Clipboard API not supported. Image data not copied.');
+			const mimeTypes: Record<string, string> = {
+				jpg: 'jpeg',
+				jpeg: 'jpeg',
+				png: 'png',
+				gif: 'gif',
+				webp: 'webp',
+				bmp: 'bmp'
+			};
+
+			const extension = fileName.split('.').pop()?.toLowerCase();
+			fileType = mimeTypes[extension || ''] || 'png';
 		}
+
+		const file = new File([blob], fileName, {
+			type: `image/${fileType}`
+		});
+
+		const clipboardItem = new ClipboardItem({
+			[`image/${fileType}`]: file
+		});
+
+		await navigator.clipboard.write([clipboardItem]);
+		return true;
 	} catch (error) {
-		console.error('Error fetching or converting image:', error);
+		console.error('Error handling image copy:', error);
+		return false;
 	}
 };
 
@@ -37,10 +61,11 @@ export const handleSaveImage = (urlData: string) => {
 	fetch(urlData)
 		.then((response) => response.blob())
 		.then((blob) => {
+			const fileName = urlData.split('/').pop()?.split('?')[0] || 'image.png';
 			const url = window.URL.createObjectURL(new Blob([blob]));
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = 'image.png';
+			a.download = fileName;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);

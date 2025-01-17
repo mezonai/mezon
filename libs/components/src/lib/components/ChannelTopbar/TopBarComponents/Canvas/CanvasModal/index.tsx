@@ -2,6 +2,8 @@ import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import {
 	appActions,
 	canvasActions,
+	getChannelCanvasList,
+	selectCanvasCursors,
 	selectCanvasIdsByChannelId,
 	selectCurrentChannel,
 	selectCurrentClanId,
@@ -10,8 +12,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { Button } from 'flowbite-react';
-import { RefObject, useMemo, useRef, useState } from 'react';
+import { Button, Pagination } from 'flowbite-react';
+import { RefObject, useCallback, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import EmptyCanvas from './EmptyCanvas';
 import GroupCanvas from './GroupCanvas';
@@ -28,7 +30,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const appearanceTheme = useSelector(selectTheme);
 	const [keywordSearch, setKeywordSearch] = useState('');
-
+	const { countCanvas } = useAppSelector((state) => selectCanvasCursors(state, currentChannel?.channel_id ?? ''));
 	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, currentChannel?.channel_id ?? ''));
 	const filteredCanvases = useMemo(() => {
 		if (!keywordSearch) return canvases;
@@ -47,7 +49,25 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	useOnClickOutside(modalRef, onClose, rootRef);
-
+	const totalPages = countCanvas === undefined ? 0 : Math.ceil(countCanvas / 10);
+	const [currentPage, setCurrentPage] = useState(1);
+	const onPageChange = useCallback(
+		(page: number) => {
+			if (!currentChannel?.channel_id || !currentClanId) {
+				return;
+			}
+			setCurrentPage(page);
+			dispatch(
+				getChannelCanvasList({
+					channel_id: currentChannel?.channel_id,
+					clan_id: currentClanId,
+					page: page,
+					noCache: true
+				})
+			);
+		},
+		[dispatch, currentChannel?.channel_id, currentClanId]
+	);
 	return (
 		<div
 			ref={modalRef}
@@ -89,6 +109,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 							/>
 						);
 					})}
+					{canvases?.length && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />}
 
 					{!canvases?.length && <EmptyCanvas onClick={handleCreateCanvas} />}
 				</div>

@@ -33,7 +33,7 @@ const TopicDiscussionBox = () => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allUserIdsInChannel = useSelector(selectAllUserIdChannels);
 	const allRolesIdsInClan = useSelector(selectAllRoleIds);
-	const { valueTopic } = useTopics();
+	const { currentTopicInitMessage } = useTopics();
 	const sessionUser = useSelector((state: RootState) => state.auth.session);
 	const { clientRef, sessionRef, socketRef } = useMezon();
 	const currentTopicId = useSelector(selectCurrentTopicId);
@@ -42,12 +42,12 @@ const TopicDiscussionBox = () => {
 	const dataReferences = useSelector(selectDataReferences(currentTopicId ?? ''));
 
 	useEffect(() => {
-		const fetchMsgResult = async () => {
+		const fetchCurrentTopicMessages = async () => {
 			await dispatch(fetchMessages({ channelId: currentChannelId as string, clanId: currentClanId as string, topicId: currentTopicId || '' }));
 			setIsFetchMessageDone(true);
 		};
 		if (currentTopicId !== '') {
-			fetchMsgResult();
+			fetchCurrentTopicMessages();
 		}
 	}, [currentClanId, currentTopicId]);
 
@@ -55,13 +55,13 @@ const TopicDiscussionBox = () => {
 		const body: ApiSdTopicRequest = {
 			clan_id: currentClanId?.toString(),
 			channel_id: currentChannelId as string,
-			message_id: valueTopic?.id
+			message_id: currentTopicInitMessage?.id
 		};
 
 		const topic = (await dispatch(topicsActions.createTopic(body))).payload as ApiSdTopic;
 		dispatch(topicsActions.setCurrentTopicId(topic.id || ''));
 		return topic;
-	}, [currentChannelId, currentClanId, dispatch, valueTopic?.id]);
+	}, [currentChannelId, currentClanId, dispatch, currentTopicInitMessage?.id]);
 
 	const sendMessageTopic = React.useCallback(
 		async (
@@ -127,7 +127,7 @@ const TopicDiscussionBox = () => {
 					dispatch(
 						messagesActions.updateToBeTopicMessage({
 							channelId: currentChannelId as string,
-							messageId: valueTopic?.id as string,
+							messageId: currentTopicInitMessage?.id as string,
 							topicId: topic.id as string,
 							creatorId: userProfile?.user?.id as string
 						})

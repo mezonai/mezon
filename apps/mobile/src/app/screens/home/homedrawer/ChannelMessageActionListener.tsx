@@ -104,13 +104,12 @@ const ChannelMessageActionListener = React.memo(({ mode, isPublic, clanId, chann
 		const messageItemBSListener = DeviceEventEmitter.addListener(ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET, ({ isHiddenBottomSheet }) => {
 			isHiddenBottomSheet && setOpenBottomSheet(null);
 		});
-
 		return () => {
-			eventOpenImage.remove();
 			eventOpenMessageAction.remove();
 			messageItemBSListener.remove();
+			eventOpenImage.remove();
 		};
-	}, [onOpenImage, onMessageAction]);
+	}, [onMessageAction]);
 
 	return (
 		<View>

@@ -22,12 +22,14 @@ export type UseMessageReactionOption = {
 };
 interface ChatReactionProps {
 	isMobile?: boolean;
+	isClanViewMobile?: boolean;
 }
 
-export function useChatReaction({ isMobile = false }: ChatReactionProps = {}) {
+export function useChatReaction({ isMobile = false, isClanViewMobile = undefined }: ChatReactionProps = {}) {
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
-	const isClanView = useSelector(selectClanView);
+	const checkIsClanView = useSelector(selectClanView);
+	const isClanView = isClanViewMobile !== undefined ? isClanViewMobile : checkIsClanView;
 	const directId = useSelector(selectDmGroupCurrentId);
 	const direct = useAppSelector((state) => selectDirectById(state, directId));
 	const channel = useSelector(selectCurrentChannel);

@@ -1,7 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { inviteActions, selectInviteById, selectIsClickInvite, useAppDispatch } from '@mezon/store';
+import { channelsActions, inviteActions, selectInviteById, selectIsClickInvite, useAppDispatch } from '@mezon/store';
 import { Button, Modal } from 'flowbite-react';
 import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -31,11 +31,15 @@ export default function InvitePage() {
 
 	const joinChannel = async () => {
 		if (inviteIdParam) {
-			inviteUser(inviteIdParam).then((res) => {
+			await inviteUser(inviteIdParam).then((res) => {
 				if (res.channel_id && res.clan_id) {
 					navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
 				}
 			});
+			if (selectInvite.channel_desc) {
+				const channel = { ...selectInvite.channel_desc, id: selectInvite.channel_desc.channel_id as string };
+				dispatch(channelsActions.add({ clanId: selectInvite.channel_desc?.clan_id as string, channel: { ...channel, active: 1 } }));
+			}
 		}
 	};
 

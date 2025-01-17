@@ -122,12 +122,12 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 						<View>
 							{showConfirmDeleteEmoji ? (
 								<Pressable style={styles.confirmDeleteEmoji} onPress={() => onRemoveEmoji()}>
-									<TrashIcon />
+									<TrashIcon width={size.s_20} height={size.s_20} />
 									<Text style={styles.confirmText}>{t('reactions.removeActions')}</Text>
 								</Pressable>
 							) : (
 								<Pressable onPress={() => setShowConfirmDeleteEmoji(true)}>
-									<TrashIcon />
+									<TrashIcon width={size.s_20} height={size.s_20} />
 								</Pressable>
 							)}
 						</View>

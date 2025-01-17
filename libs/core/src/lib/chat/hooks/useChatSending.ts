@@ -35,7 +35,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 	const isPublic = !channelOrDirect?.channel_private;
 	const channelIdOrDirectId = channelOrDirect?.channel_id;
 	const currentTopicId = useSelector(selectCurrentTopicId);
-	const isShowCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, channelIdOrDirectId as string));
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const isFocusOnChannelInput = useSelector(selectIsFocusOnChannelInput);
 	const userProfile = useSelector(selectAllAccount);
 	const currentUserId = userProfile?.user?.id || '';
@@ -61,6 +61,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			const combineOldMkAndBold = [...(content.mk ?? []), ...(content.b ?? [])].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 			// check mk inside boldtext
 			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const trimmedText = content?.t?.trim();
 			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
 				combineOldMkAndBold,
 				shouldBeNeedUpdate ? (newIndexOfPayload?.payload?.hg ?? []) : ((content.hg as IHashtagOnMessage[]) ?? []),
@@ -69,6 +70,8 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			);
 			const validatedContent = {
 				...(shouldBeNeedUpdate ? newIndexOfPayload?.payload : content),
+				...content,
+				t: trimmedText,
 				hg: validHashtagList,
 				ej: validEmojiList
 			};

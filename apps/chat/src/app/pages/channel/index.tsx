@@ -232,7 +232,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean) => {
 			dispatch(threadsActions.setIsShowCreateThread({ channelId: currentChannel?.id, isShowCreateThread }));
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: currentChannel?.id as string, isShowCreateTopic: false }));
+			dispatch(topicsActions.setIsShowCreateTopic(false));
 		},
 		[currentChannel?.id, dispatch]
 	);
@@ -271,11 +271,15 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			};
 			const handleMessage = async (event: MessageEvent) => {
 				if (appChannel?.url && compareHost(event.origin, appChannel?.url ?? '')) {
-					const eventData = safeJSONParse(event.data ?? '{}');
+					const eventData = safeJSONParse(event.data ?? '{}') || {};
 					// eslint-disable-next-line no-console
 					console.log('[MEZON] < ', eventData);
 
-					if (eventData?.eventType === 'PING') {
+					const { eventType } = eventData;
+
+					if (!eventType) return;
+
+					if (eventType === 'PING') {
 						// send event to mini app
 						miniAppRef.current?.contentWindow?.postMessage(
 							JSON.stringify({ eventType: 'PONG', eventData: { message: 'PONG' } }),
@@ -286,9 +290,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							JSON.stringify({ eventType: 'CURRENT_USER_INFO', eventData: currentUser?.userProfile }),
 							appChannel.url ?? ''
 						);
-					}
-
-					if (eventData?.eventType === 'SEND_TOKEN') {
+					} else if (eventType === 'SEND_TOKEN') {
 						const { amount, note, receiver_id, extra_attribute } = (eventData.eventData || {}) as any;
 						const tokenEvent: ApiTokenSentEvent = {
 							sender_id: currentUser.userId as string,
@@ -311,6 +313,9 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 								appChannel.url ?? ''
 							);
 						}
+					} else if (eventType === 'CREATE_VOICE_ROOM') {
+						// eslint-disable-next-line no-console
+						console.log('mezon app handle CREATE_VOICE_ROOM');
 					}
 				}
 			};

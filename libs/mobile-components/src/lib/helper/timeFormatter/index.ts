@@ -142,16 +142,10 @@ export function getDayYearName(date: Date, lang: 'vi' | 'en'): string {
 
 export function getDayWeekName(date: Date, lang: 'vi' | 'en') {
 	const day = getDayName(date, lang);
-	let weekOfMonth = -1;
-	let d = date.getDate();
+	const weekOfMonth = Math.ceil(date.getDate() / 7) - 1;
 
-	while (d > 0) {
-		d -= 7;
-		weekOfMonth += 1;
-	}
-
-	const name_en = ['first', 'second', 'third', 'last'];
-	const name_vi = ['đầu tiên', 'thứ hai', 'thứ ba', 'cuối cùng'];
+	const name_en = ['first', 'second', 'third', 'fourth', 'fifth'];
+	const name_vi = ['đầu tiên', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm'];
 
 	return lang === 'vi' ? day + ' ' + name_vi[weekOfMonth] + ' của tháng' : name_en[weekOfMonth] + ' ' + day;
 }

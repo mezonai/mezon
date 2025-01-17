@@ -271,71 +271,81 @@ function MessageWithUser({
 												)}
 											</div>
 										)}
-
-										<div className="justify-start items-center  inline-flex w-full h-full pt-[2px] textChat select-text">
-											<div
-												className="flex flex-col whitespace-pre-wrap text-base w-full cursor-text"
-												style={{ wordBreak: 'break-word' }}
-											>
-												{isEditing && (
-													<MessageInput
-														messageId={message?.id}
-														channelId={message?.channel_id}
-														mode={mode}
-														channelLabel={channelLabel as string}
-														message={message}
-													/>
-												)}
-												{!isEditing && !message?.content?.callLog?.callLogType && (
-													<MessageContent
-														message={message}
-														isSending={message?.isSending}
-														isError={message?.isError}
-														mode={mode}
-														isSearchMessage={isSearchMessage}
-														isInTopic={isTopic}
-													/>
+										<div className={`flex gap-4 ${message?.content?.fwd ? 'pt-2' : ''}`}>
+											{!!message?.content?.fwd && (
+												<div className="border-l-4 dark:border-[#414348] border-[#ebebeb] rounded"></div>
+											)}
+											<div className="h-full">
+												{!!message?.content?.fwd && (
+													<div className="flex gap-1 items-center italic text-[#5e6068] dark:text-[#949ba4] font-medium">
+														<Icons.ForwardRightClick defaultSize="w-4 h-4" />
+														<p>Forwarded</p>
+													</div>
 												)}
 
-												{(message?.attachments?.length as number) > 0 && (
-													<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
-												)}
+												<div className="justify-start items-center inline-flex w-full h-full pt-[2px] textChat select-text">
+													<div
+														className="flex flex-col whitespace-pre-wrap text-base w-full cursor-text"
+														style={{ wordBreak: 'break-word' }}
+													>
+														{isEditing && (
+															<MessageInput
+																messageId={message?.id}
+																channelId={message?.channel_id}
+																mode={mode}
+																channelLabel={channelLabel as string}
+																message={message}
+															/>
+														)}
+														{!isEditing && !message?.content?.callLog?.callLogType && (
+															<MessageContent
+																message={message}
+																isSending={message?.isSending}
+																isError={message?.isError}
+																mode={mode}
+																isSearchMessage={isSearchMessage}
+																isInTopic={isTopic}
+															/>
+														)}
 
-												{/* show html canvas */}
-												{/* {message?.content?.canvas && <HtmlCanvasView response={message?.content?.canvas} />} */}
+														{(message?.attachments?.length as number) > 0 && (
+															<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
+														)}
 
-												{Array.isArray(message?.content?.embed) &&
-													message?.content.embed?.map((embed, index) => (
-														<EmbedMessage
-															key={index}
-															embed={embed}
-															senderId={message?.sender_id}
-															message_id={message?.id}
-														/>
-													))}
+														{Array.isArray(message?.content?.embed) &&
+															message?.content.embed?.map((embed, index) => (
+																<EmbedMessage
+																	key={index}
+																	embed={embed}
+																	senderId={message?.sender_id}
+																	message_id={message?.id}
+																/>
+															))}
 
-												{!!message?.content?.callLog?.callLogType && (
-													<CallLogMessage
-														userId={userId || ''}
-														userName={user?.user?.display_name || ''}
-														channelId={message?.channel_id}
-														messageId={message?.id}
-														senderId={message?.sender_id}
-														callLog={message?.content?.callLog}
-														contentMsg={message?.content?.t || ''}
-													/>
-												)}
-
-												{message?.content?.components &&
-													message?.content.components.map((actionRow, index) => (
-														<div className={'flex flex-col'} key={index}>
-															<MessageActionsPanel
-																actionRow={actionRow}
+														{!!message?.content?.callLog?.callLogType && (
+															<CallLogMessage
+																userId={userId || ''}
+																userName={user?.user?.display_name || ''}
+																channelId={message?.channel_id}
 																messageId={message?.id}
 																senderId={message?.sender_id}
+																callLog={message?.content?.callLog}
+																contentMsg={message?.content?.t || ''}
 															/>
-														</div>
-													))}
+														)}
+
+														{message?.content?.components &&
+															message?.content.components.map((actionRow, index) => (
+																<div className={'flex flex-col'} key={index}>
+																	<MessageActionsPanel
+																		actionRow={actionRow}
+																		messageId={message?.id}
+																		senderId={message?.sender_id}
+																	/>
+																</div>
+															))}
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>

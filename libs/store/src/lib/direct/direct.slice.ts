@@ -378,8 +378,8 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			channel_label: label.join(',')
 		};
 
-		thunkAPI.dispatch(directActions.upsertOne(directEntity));
 		thunkAPI.dispatch(directMetaActions.upsertOne(directEntity as DMMetaEntity));
+		thunkAPI.dispatch(directActions.addMemberDmGroup(directEntity));
 
 		return directEntity;
 	} catch (error) {
@@ -537,6 +537,15 @@ export const directSlice = createSlice({
 			const { dmId, isShow } = action.payload;
 			if (!state.entities?.[dmId]) return;
 			state.entities[dmId].showPinBadge = isShow;
+		},
+		addMemberDmGroup: (state, action: PayloadAction<DirectEntity>) => {
+			const dmGroup = state.entities?.[action.payload.channel_id as string];
+			if (dmGroup) {
+				dmGroup.user_id = [...(dmGroup.user_id ?? []), ...(action.payload.user_id ?? [])];
+
+				dmGroup.usernames = dmGroup.usernames + ',' + action.payload.usernames;
+				dmGroup.channel_avatar = [...(dmGroup.channel_avatar ?? []), ...(action.payload.channel_avatar ?? [])];
+			}
 		}
 	},
 	extraReducers: (builder) => {

@@ -40,7 +40,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean, channelId?: string) => {
 			channelId && dispatch(threadsActions.setIsShowCreateThread({ channelId: channelId, isShowCreateThread }));
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: currentChannel?.id as string, isShowCreateTopic: false }));
+			dispatch(topicsActions.setIsShowCreateTopic(false));
 		},
 		[currentChannel]
 	);

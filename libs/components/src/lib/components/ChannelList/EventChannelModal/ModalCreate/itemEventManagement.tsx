@@ -165,7 +165,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{checkOptionLocation && (
 						<>
 							<Icons.Location />
-							<p>{titleEvent}</p>
+							<p>{address}</p>
 						</>
 					)}
 					{option === '' && !address && !channelVoice && (

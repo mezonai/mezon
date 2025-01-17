@@ -243,7 +243,7 @@ export const getSrcEmoji = (id: string) => {
 
 export const convertReactionDataFromMessage = (message: IMessageWithUser) => {
 	const emojiDataItems: Record<string, EmojiDataOptionals> = {};
-	message.reactions!.forEach((reaction) => {
+	message.reactions?.forEach((reaction) => {
 		const key = `${message.id}_${reaction.sender_id}_${reaction.emoji}`;
 
 		if (!emojiDataItems[key]) {

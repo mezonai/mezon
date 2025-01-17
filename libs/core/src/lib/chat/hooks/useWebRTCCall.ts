@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 const STUN_SERVERS = [
 	{
-		urls: process.env.NX_WEBRTC_ICESERVERS_REPLY_URL as string,
+		urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
 		username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
 		credential: process.env.NX_WEBRTC_ICESERVERS_CREDENTIAL
 	}

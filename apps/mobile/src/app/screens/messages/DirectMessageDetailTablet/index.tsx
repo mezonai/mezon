@@ -1,5 +1,5 @@
 import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
-import { ActionEmitEvent, Icons, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
@@ -114,19 +114,21 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	};
 
 	const fetchMemberChannel = useCallback(async () => {
-		if (!currentChannel) {
+		const currentClanIdCached = await load(STORAGE_CLAN_ID);
+		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
+
+		if (!currentClanIdCached) {
 			return;
 		}
 		const store = await getStoreAsync();
-		store.dispatch(clansActions.setCurrentClanId(currentChannel?.clan_id));
+		store.dispatch(clansActions.setCurrentClanId(currentClanIdCached));
 		// Rejoin previous clan (other than 0) when exiting the DM detail screen
-		store.dispatch(clansActions.joinClan({ clanId: currentChannel?.clan_id }));
-	}, [currentChannel]);
+		store.dispatch(clansActions.joinClan({ clanId: currentClanIdCached }));
+	}, []);
 
 	const directMessageLoader = useCallback(async () => {
 		const store = await getStoreAsync();
 		await Promise.all([
-			store.dispatch(clansActions.setCurrentClanId('0')),
 			store.dispatch(
 				directActions.joinDirectMessage({
 					directMessageId: directMessageId,

@@ -368,6 +368,7 @@ export interface IMessageSendPayload {
 	callLog?: IMessageCallLog;
 	tp?: string;
 	cid?: string;
+	fwd?: boolean;
 }
 
 export type IUser = {

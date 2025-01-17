@@ -17,9 +17,9 @@ export const style = (colors: Attributes) =>
 		},
 		groupAvatar: {
 			backgroundColor: Colors.orange,
-			width: size.s_50,
-			height: size.s_50,
-			borderRadius: 50,
+			width: size.s_48,
+			height: size.s_48,
+			borderRadius: size.s_48,
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
@@ -27,7 +27,7 @@ export const style = (colors: Attributes) =>
 			backgroundColor: Colors.red,
 			position: 'absolute',
 			borderRadius: size.s_24,
-			borderWidth: 3,
+			borderWidth: size.s_4,
 			borderColor: Colors.secondary,
 			minWidth: size.s_24,
 			height: size.s_24,
@@ -39,20 +39,20 @@ export const style = (colors: Attributes) =>
 		badgeText: {
 			color: Colors.white,
 			fontWeight: 'bold',
-			fontSize: size.small
+			fontSize: size.tiny
 		},
 		mt10: {
 			marginTop: size.s_10
 		},
 		avatarWrapper: {
-			borderRadius: 50,
+			borderRadius: size.s_48,
 			backgroundColor: colors.colorAvatarDefault,
-			height: size.s_50,
-			width: size.s_50
+			height: size.s_48,
+			width: size.s_48
 		},
 		wrapperTextAvatar: {
-			width: size.s_50,
-			height: size.s_50,
+			width: size.s_48,
+			height: size.s_48,
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
