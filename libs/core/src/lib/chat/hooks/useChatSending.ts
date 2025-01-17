@@ -69,8 +69,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			);
 			const validatedContent = {
 				...(shouldBeNeedUpdate ? newIndexOfPayload?.payload : content),
-				...content,
-				t: trimmedText,
+				t: shouldBeNeedUpdate ? newIndexOfPayload?.payload.t.trim() : trimmedText,
 				hg: validHashtagList,
 				ej: validEmojiList
 			};
