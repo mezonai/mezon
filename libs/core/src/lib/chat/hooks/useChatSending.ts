@@ -12,7 +12,6 @@ import { useMezon } from '@mezon/transport';
 import {
 	IEmojiOnMessage,
 	IHashtagOnMessage,
-	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageSendPayload,
 	addMention,
@@ -59,9 +58,11 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			const isExistBoldtext = content.b && content?.b?.length > 0 ? true : false;
 			const shouldBeNeedUpdate = isExistMk || isExistBoldtext;
 			const newIndexOfPayload = shouldBeNeedUpdate ? updatePayload(content, mentions as IMentionOnMessage[]) : null;
+			const combineOldMkAndBold = [...(content.mk ?? []), ...(content.b ?? [])].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+			// check mk inside boldtext
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
-				shouldBeNeedUpdate ? (newIndexOfPayload?.payload?.mk ?? []) : ((content.mk as IMarkdownOnMessage[]) ?? []),
+				combineOldMkAndBold,
 				shouldBeNeedUpdate ? (newIndexOfPayload?.payload?.hg ?? []) : ((content.hg as IHashtagOnMessage[]) ?? []),
 				shouldBeNeedUpdate ? (newIndexOfPayload?.mentions ?? []) : ((mentions as IMentionOnMessage[]) ?? []),
 				shouldBeNeedUpdate ? (newIndexOfPayload?.payload?.ej ?? []) : ((content.ej as IEmojiOnMessage[]) ?? [])

@@ -26,10 +26,11 @@ export interface IEmoji {
 
 export interface IMarkdown {
 	type?: EBacktickType;
+	isBold?: boolean;
 }
 export interface IBoldText {
 	type?: EBacktickType;
-	isLink?: boolean;
+	isBold?: boolean;
 }
 export interface IMentionOnMessage extends IMention, IStartEndIndex {}
 export interface IExtendedMessage extends IMessageSendPayload {

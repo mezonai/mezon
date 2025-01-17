@@ -30,25 +30,35 @@ export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessa
 			i += 2;
 
 			let boldText = '';
-			while (i < inputString.length && !(inputString[i] === '*' && inputString[i + 1] === '*')) {
-				boldText += inputString[i];
-				i++;
-			}
+			let insideBoldText = 0;
 
-			if (i < inputString.length && inputString[i] === '*' && inputString[i + 1] === '*') {
-				const endIndex = i + 2;
-
-				if (boldText.trim().length > 0) {
-					if (isOutsideRange(startIndex, endIndex, markdowns)) {
-						boldTexts.push({
-							s: startIndex,
-							e: endIndex,
-							type: EBacktickType.BOLD
-						});
+			while (i < inputString.length) {
+				if (inputString[i] === '*' && inputString[i + 1] === '*') {
+					if (insideBoldText === 0) {
+						const endIndex = i + 2;
+						if (boldText.trim().length > 0) {
+							const isWrappingMarkdown = markdowns.some((md) => {
+								const mdStart = md.s ?? 0;
+								const mdEnd = md.e ?? 0;
+								return startIndex <= mdStart && endIndex >= mdEnd;
+							});
+							if (isOutsideRange(startIndex, endIndex, markdowns) && !isWrappingMarkdown) {
+								boldTexts.push({
+									s: startIndex,
+									e: endIndex,
+									type: EBacktickType.BOLD
+								});
+							}
+						}
+						i += 2;
+						break;
+					} else {
+						insideBoldText--;
 					}
+				} else {
+					boldText += inputString[i];
 				}
-
-				i += 2;
+				i++;
 			}
 		} else {
 			i++;
@@ -85,23 +95,31 @@ export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMe
 		lastSingleEnd >= firstSingleStart + singleBacktick.length &&
 		input.slice(firstSingleStart + singleBacktick.length, lastSingleEnd).trim().length > 0;
 
+	//case ** wrapper ` or ```
+	const isWrappedByAsterisks = (start: number, end: number): boolean => {
+		return input[start - 2] === '*' && input[start - 1] === '*' && input[end + 1] === '*' && input[end + 2] === '*';
+	};
+
 	if (
 		isTripleValid &&
-		((firstTripleStart <= firstSingleStart && lastTripleEnd + 2 === lastSingleEnd) || lastTripleEnd + 2 >= lastSingleEnd || !isSingleValid)
+		((firstTripleStart <= firstSingleStart && lastTripleEnd + 2 === lastSingleEnd) || lastTripleEnd + 2 > lastSingleEnd || !isSingleValid)
 	) {
+		const isBold = isWrappedByAsterisks(firstTripleStart, lastTripleEnd + tripleBacktick.length - 1);
 		tripleBackticks.push({
 			type: EBacktickType.TRIPLE,
 			s: firstTripleStart,
-			e: lastTripleEnd + tripleBacktick.length
+			e: lastTripleEnd + tripleBacktick.length,
+			...(isBold ? { isBold: true } : {})
 		});
-	} else if (isSingleValid || firstTripleStart > firstSingleStart) {
+	} else if (isSingleValid || firstTripleStart > firstSingleStart || lastTripleEnd + 2 === lastSingleEnd) {
+		const isBold = isWrappedByAsterisks(firstSingleStart, lastSingleEnd + singleBacktick.length - 1);
 		singleBackticks.push({
 			type: EBacktickType.SINGLE,
 			s: firstSingleStart,
-			e: lastSingleEnd + singleBacktick.length
+			e: lastSingleEnd + singleBacktick.length,
+			...(isBold ? { isBold: true } : {})
 		});
 	}
-
 	return { tripleBackticks, singleBackticks };
 };
 
@@ -148,7 +166,6 @@ export const processText = (inputString: string) => {
 	const markdowns: IMarkdownOnMessage[] = [...singleBackticks, ...tripleBackticks];
 	const boldTexts = processBoldText(inputString, markdowns);
 	const { links, voiceRooms } = processLinks(inputString, markdowns, boldTexts);
-
 	return { links, voiceRooms, markdowns, boldTexts };
 };
 
@@ -178,114 +195,119 @@ export function updateItems<T extends { s?: number; e?: number }>(
 	});
 }
 // create new content after remove syntax mk and boldtext
-export function removeSyntaxMkOrBold(t: string, mk: IMarkdownOnMessage[], b: IBoldTextOnMessage[]) {
-	const mkContent = getToken(t, mk);
-	const bContent = getToken(t, b);
-	const cleanMkContent = mkContent?.map((content) => {
-		if (content.startsWith('```')) {
-			return content.slice(3, content.length - 3);
-		} else if (content.startsWith('`')) {
-			return content.slice(1, content.length - 1);
+export function removeSyntaxMkOrBold(t: string, boldOrMkRanges: (IMarkdownOnMessage | IBoldTextOnMessage)[]): string {
+	const cleanContent = boldOrMkRanges.map((content) => {
+		const originalContent = t.slice(content.s, content.e);
+		if (originalContent.startsWith('```') && originalContent.endsWith('```')) {
+			return originalContent.slice(3, originalContent.length - 3);
+		} else if (originalContent.startsWith('`') && originalContent.endsWith('`')) {
+			return originalContent.slice(1, originalContent.length - 1);
+		} else if (originalContent.startsWith('**') && originalContent.endsWith('**')) {
+			return originalContent.slice(2, originalContent.length - 2);
 		}
-		return content;
+		return originalContent;
 	});
-
-	const cleanBContent = bContent?.map((content) => content.slice(2, content.length - 2));
 	let result = t;
-	mkContent?.forEach((content, index) => {
-		result = result.replace(content, cleanMkContent[index]);
+	boldOrMkRanges.forEach((content, index) => {
+		const originalContent = t.slice(content.s, content.e);
+		result = result.replace(originalContent, cleanContent[index]);
 	});
 
-	bContent?.forEach((content, index) => {
-		result = result.replace(content, cleanBContent[index]);
-	});
 	return result;
 }
-
-export function calculateNewIndex(oldText: string, newText: string, boldOrMkRanges: (IMarkdownOnMessage | IBoldTextOnMessage)[]) {
+// cal new index of mk and b
+export function calculateNewIndex(boldOrMkRanges: (IMarkdownOnMessage | IBoldTextOnMessage)[]) {
 	const result: {
 		numMarkers: number;
 		oldRange: { s: number; e: number };
-		newRange: { s: number; e: number };
+		newRange: { s: number; e: number; isBold: boolean };
 		type: EBacktickType;
 	}[] = [];
-	const seenPositions = new Set<number>();
 
-	boldOrMkRanges.forEach((range) => {
-		const oldContent = oldText.slice(range.s, range.e);
-		let cleanedOldContent = '';
-		let type: EBacktickType;
+	const updatedRanges = boldOrMkRanges
+		.map((range) => {
+			let numMarkers = 0;
 
-		if (oldContent.includes('```')) {
-			cleanedOldContent = oldContent.replace(/^```/, '').replace(/```$/, '');
-			type = EBacktickType.TRIPLE;
-		} else if (oldContent.includes('`')) {
-			cleanedOldContent = oldContent.replace(/^`/, '').replace(/`$/, '');
-			type = EBacktickType.SINGLE;
-		} else if (oldContent.includes('**')) {
-			cleanedOldContent = oldContent.replace(/\*\*/g, '');
-			type = EBacktickType.BOLD;
+			if (range.type === EBacktickType.TRIPLE) {
+				numMarkers = 3;
+			} else if (range.type === EBacktickType.SINGLE) {
+				numMarkers = 1;
+			} else if (range.type === EBacktickType.BOLD) {
+				numMarkers = 2;
+			} else {
+				numMarkers = 0;
+			}
+			return {
+				...range,
+				numMarkers
+			};
+		})
+		.sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+	let cumulativeMarkers = 0;
+
+	for (let i = 0; i < updatedRanges.length; i++) {
+		const range = updatedRanges[i];
+		let newStart = 0;
+		let newEnd = 0;
+
+		if (i === 0) {
+			newStart = range.s ?? 0;
+			newEnd = (range.e ?? 0) - range.numMarkers * 2;
 		} else {
-			return;
+			newStart = (range.s ?? 0) - cumulativeMarkers * 2;
+			newEnd = (range.e ?? 0) - cumulativeMarkers * 2 - range.numMarkers * 2;
 		}
 
-		let newStart = newText.indexOf(cleanedOldContent);
-
-		while (seenPositions.has(newStart) && newStart !== -1) {
-			newStart = newText.indexOf(cleanedOldContent, newStart + 1);
-		}
-
-		if (newStart === -1) {
-			console.error('Could not find new position for: ', oldContent);
-			return;
-		}
-		seenPositions.add(newStart);
-		const newEnd = newStart + cleanedOldContent.length;
+		cumulativeMarkers += range.numMarkers;
 
 		result.push({
-			numMarkers: type === EBacktickType.BOLD ? 2 : type === EBacktickType.TRIPLE ? 3 : 1,
+			numMarkers: range.numMarkers,
 			oldRange: { s: range.s ?? 0, e: range.e ?? 0 },
-			newRange: { s: newStart, e: newEnd },
-			type
+			newRange: { s: newStart, e: newEnd, isBold: range.isBold as boolean },
+			type: range.type as EBacktickType
 		});
-	});
-
+	}
 	return result;
 }
-
-// create new s and e mk and boldtext
-export const createReplacements = (mk: IMarkdownOnMessage[], b: IBoldTextOnMessage[], t: string) => {
-	const combinedItems = [...(mk ?? []), ...(b ?? [])];
-	const newT = removeSyntaxMkOrBold(t as string, mk as IMarkdownOnMessage[], b as IBoldTextOnMessage[]);
-	const updatedBoldText = calculateNewIndex(t, newT, combinedItems);
-	return updatedBoldText;
-};
-
+// get token text no prefix
 export function getToken(t: string, token: (IHashtagOnMessage | IEmojiOnMessage | IMentionOnMessage)[]): string[] {
 	return token?.map(({ s = 0, e = 0 }) => t?.substring(s, e));
+}
+// get new boldtext and mk
+export function getUpdatedRangesByType(
+	replacements: Array<{ type: EBacktickType; newRange: { s: number; e: number; isBold?: boolean } }>,
+	type: EBacktickType
+) {
+	return replacements
+		.filter((r) => r.type === type)
+		.map((r) => {
+			const { s, e, isBold } = r.newRange;
+			const result: { s: number; e: number; type: EBacktickType; isBold?: boolean } = { s, e, type: r.type };
+
+			if (isBold) {
+				result.isBold = isBold;
+			}
+			return result;
+		});
 }
 
 // get new index of payload and mention after remove syntax
 export function updatePayload(payload: IMessageSendPayload, mentions: IMentionOnMessage[]) {
 	// eslint-disable-next-line prefer-const
 	let { t, ej, lk, vk, hg, mk, b } = payload;
-	const replacements = createReplacements(mk as IMarkdownOnMessage[], b as IBoldTextOnMessage[], t as string);
-	const newT = removeSyntaxMkOrBold(t as string, mk as IMarkdownOnMessage[], b as IBoldTextOnMessage[]);
-	const updatedMk = replacements
-		.filter((r) => r.type === EBacktickType.SINGLE || r.type === EBacktickType.TRIPLE)
-		.map((r) => ({
-			s: r.newRange.s,
-			e: r.newRange.e,
-			type: r.type
-		}));
-
-	const updatedB = replacements
-		.filter((r) => r.type === EBacktickType.BOLD)
-		.map((r) => ({
-			s: r.newRange.s,
-			e: r.newRange.e,
-			type: r.type
-		}));
+	const combineMkB = [...(mk ?? []), ...(b ?? [])].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+	// console.log('combineMkB: ', combineMkB);
+	const replacements = calculateNewIndex(combineMkB);
+	// console.log('replacements: ', replacements);
+	const newT = removeSyntaxMkOrBold(t as string, combineMkB);
+	// console.log('newT: ', newT);
+	const updatedMkTypeS = getUpdatedRangesByType(replacements, EBacktickType.SINGLE);
+	// console.log('updatedMkTypeS: ', updatedMkTypeS);
+	const updatedMkTypeT = getUpdatedRangesByType(replacements, EBacktickType.TRIPLE);
+	// console.log('updatedMkTypeT: ', updatedMkTypeT);
+	const updatedMk = [...(updatedMkTypeS ?? []), ...(updatedMkTypeT ?? [])];
+	const updatedB = getUpdatedRangesByType(replacements, EBacktickType.BOLD);
+	// console.log('updatedB: ', updatedB);
 	const updatedHg = updateItems(hg, replacements);
 	const updatedEj = updateItems(ej, replacements);
 	const updatedLk = updateItems(lk, replacements);

@@ -95,6 +95,7 @@ export interface ElementToken {
 	emojiid?: string;
 	type?: EBacktickType;
 	username?: string;
+	isBold?: boolean;
 }
 
 const RenderContent = memo(
@@ -240,6 +241,7 @@ const RenderContent = memo(
 							content={content}
 							isInPinMsg={isInPinMsg}
 							typeOfBacktick={element.type}
+							isBold={element.isBold}
 						/>
 					);
 				} else if (element.kindOf === ETokenMessage.BOLDTEXT) {
