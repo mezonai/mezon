@@ -4,11 +4,6 @@ import Tippy from '@tippy.js/react';
 import { useSelector } from 'react-redux';
 import { useSFU } from '../../../SFU/SFUContext';
 import { useWebRTC } from '../../../WebRTC/WebRTCContext';
-
-export interface ISFUBtnProps {
-	isLightMode: boolean;
-}
-
 export interface ISFUBtnProps {
 	isLightMode: boolean;
 }

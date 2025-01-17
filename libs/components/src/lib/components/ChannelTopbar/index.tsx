@@ -38,12 +38,16 @@ import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import ModalInvite from '../ListMemberInvite/modalInvite';
 import NotificationList from '../NotificationList';
+import { useSFU } from '../SFU/SFUContext';
 import SearchMessageChannel from '../SearchMessageChannel';
+import { useWebRTC } from '../WebRTC/WebRTCContext';
 import { ChannelLabel } from './TopBarComponents';
 import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
 import PinnedMessages from './TopBarComponents/PinnedMessages';
+import { MeetButton } from './TopBarComponents/SFUButton/MeetIcon';
+import { MicButton } from './TopBarComponents/SFUButton/MicIcon';
 import ThreadModal from './TopBarComponents/Threads/ThreadModal';
 
 export type ChannelTopbarProps = {
@@ -138,20 +142,26 @@ const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }:
 				{channel?.type !== ChannelType.CHANNEL_TYPE_STREAMING ? (
 					<div className="justify-end items-center gap-2 flex">
 						<div className="hidden sbm:flex">
-							<div className="relative justify-start items-center gap-[15px] flex mr-4">
-								{!isMemberPath && <FileButton isLightMode={appearanceTheme === 'light'} />}
-								{!channelParent?.channel_label && !isMemberPath && <CanvasButton isLightMode={appearanceTheme === 'light'} />}
-								<ThreadButton isLightMode={appearanceTheme === 'light'} />
-								<MuteButton isLightMode={appearanceTheme === 'light'} />
-								<PinButton isLightMode={appearanceTheme === 'light'} />
-								<div onClick={() => setTurnOffThreadMessage()}>
-									<ChannelListButton isLightMode={appearanceTheme === 'light'} />
-								</div>
-							</div>
-							<SearchMessageChannel mode={mode} />
+							{channel?.type === ChannelType.CHANNEL_TYPE_APP ? (
+								<SFUControls />
+							) : (
+								<>
+									<div className="relative justify-start items-center gap-[15px] flex mr-4">
+										{!isMemberPath && <FileButton isLightMode={appearanceTheme === 'light'} />}
+										{!channelParent?.channel_label && !isMemberPath && <CanvasButton isLightMode={appearanceTheme === 'light'} />}
+										<ThreadButton isLightMode={appearanceTheme === 'light'} />
+										<MuteButton isLightMode={appearanceTheme === 'light'} />
+										<PinButton isLightMode={appearanceTheme === 'light'} />
+										<div onClick={() => setTurnOffThreadMessage()}>
+											<ChannelListButton isLightMode={appearanceTheme === 'light'} />
+										</div>
+									</div>
+									<SearchMessageChannel mode={mode} />
+								</>
+							)}
 						</div>
 						<div
-							className={`gap-4 relative flex  w-[82px] h-8 justify-center items-center left-[345px] sbm:left-auto sbm:right-0 ${isChannelVoice ? 'bg-[#1E1E1E]' : 'dark:bg-bgPrimary bg-bgLightPrimary'}`}
+							className={`gap-4 relative flex w-[82px] h-8 justify-center items-center left-[345px] sbm:left-auto sbm:right-0 ${isChannelVoice ? 'bg-[#1E1E1E]' : 'dark:bg-bgPrimary bg-bgLightPrimary'}`}
 							id="inBox"
 						>
 							<InboxButton isLightMode={appearanceTheme === 'light'} />
@@ -427,6 +437,68 @@ function ChatButton({ isLightMode }: { isLightMode?: boolean }) {
 					<Icons.Chat defaultSize="w-6 h-6 dark:text-channelTextLabel" />
 				</button>
 			</Tippy>
+		</div>
+	);
+}
+
+function SFUControls() {
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const { setClanId, setChannelId } = useWebRTC();
+	const { isJoined, isTalking, toggleTalking, quitSFU, startJoinSFU } = useSFU();
+	const [isMeeting, setIsMeeting] = useState(false);
+	const appearanceTheme = useSelector(selectTheme);
+
+	const toggleMic = () => {
+		toggleTalking(!isTalking);
+	};
+
+	const toggleMeet = () => {
+		setIsMeeting(!isMeeting);
+	};
+
+	return (
+		<div className="relative justify-start items-center gap-[15px] flex mt-1">
+			{isJoined ? (
+				<>
+					<Tippy content="Quit SFU" className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}>
+						<span>
+							<Icons.LeaveSFU
+								onClick={quitSFU}
+								className="cursor-pointer size-6 dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode"
+							/>
+						</span>
+					</Tippy>
+
+					<div onClick={toggleMic}>
+						<MicButton isTalking={isTalking} />
+					</div>
+
+					<div onClick={toggleMeet}>
+						<MeetButton isMeeting={isMeeting} />
+					</div>
+				</>
+			) : (
+				<div className="relative flex gap-[15px] leading-5 h-5">
+					<Tippy className={`w-[140px] flex justify-center items-center 'tooltip'}`} content={isJoined ? 'Leave SFU' : 'Join SFU'}>
+						<button
+							onClick={
+								!isJoined
+									? () => {
+											setClanId(currentClanId || '');
+											setChannelId(currentChannelId || '');
+											startJoinSFU();
+										}
+									: quitSFU
+							}
+							className="focus-visible:outline-none"
+							onContextMenu={(e) => e.preventDefault()}
+						>
+							<Icons.JoinedSFU className="size-6 dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+						</button>
+					</Tippy>
+				</div>
+			)}
 		</div>
 	);
 }

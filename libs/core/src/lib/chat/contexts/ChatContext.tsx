@@ -108,6 +108,7 @@ import {
 	PermissionSet,
 	RoleEvent,
 	SFUSignalingFwd,
+	SFUSignalingType,
 	Socket,
 	StatusPresenceEvent,
 	StickerCreateEvent,
@@ -225,19 +226,28 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onsfusignalingfwd = useCallback(
 		(user: SFUSignalingFwd) => {
-			const existingMember = sfuMembers?.find((member) => member?.user_id === user?.user_id);
-			if (existingMember) {
-				dispatch(sfuMembersActions.remove(existingMember?.id));
+			switch (user.data_type) {
+				case SFUSignalingType.JOINE: {
+					const existingMember = sfuMembers?.find((member) => member?.user_id === user?.user_id);
+					if (existingMember) {
+						dispatch(sfuMembersActions.remove(existingMember?.id));
+					}
+
+					const newUser: ISFUUsersEntity = {
+						id: user.user_id,
+						channel_id: user.channel_id,
+						user_id: user.user_id
+					};
+					dispatch(sfuMembersActions.add(newUser));
+					break;
+				}
+				case SFUSignalingType.LEAVE: {
+					dispatch(sfuMembersActions.remove(user.user_id));
+					break;
+				}
 			}
-			const newUser: ISFUUsersEntity = {
-				id: user.user_id,
-				channel_id: user.channel_id,
-				user_id: user.user_id
-			};
-			// TODO:
-			dispatch(sfuMembersActions.add(newUser));
 		},
-		[dispatch]
+		[dispatch, sfuMembers]
 	);
 
 	const onactivityupdated = useCallback(
