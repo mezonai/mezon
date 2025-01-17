@@ -59,7 +59,6 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			const shouldBeNeedUpdate = isExistMk || isExistBoldtext;
 			const newIndexOfPayload = shouldBeNeedUpdate ? updatePayload(content, mentions as IMentionOnMessage[]) : null;
 			const combineOldMkAndBold = [...(content.mk ?? []), ...(content.b ?? [])].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-			// check mk inside boldtext
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const trimmedText = content?.t?.trim();
 			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
