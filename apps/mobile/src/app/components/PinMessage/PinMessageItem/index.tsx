@@ -3,7 +3,6 @@ import { useTheme } from '@mezon/mobile-ui';
 import {
 	PinMessageEntity,
 	messagesActions,
-	pinMessageActions,
 	selectCurrentClanId,
 	selectMessageByMessageId,
 	useAppDispatch,
@@ -43,8 +42,6 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 	}, [currentChannel]);
 
 	const handleJumpMess = () => {
-		dispatch(pinMessageActions.setJumpPinMessageId(pinMessageItem.message_id));
-
 		if (pinMessageItem.message_id && pinMessageItem.channel_id) {
 			dispatch(
 				messagesActions.jumpToMessage({

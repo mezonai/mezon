@@ -27,7 +27,7 @@ const ChannelLayout = () => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
 	const { isShowMemberList } = useApp();
 	const positionOfSmileButton = useSelector(selectPositionEmojiButtonSmile);
-	const isShowCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, currentChannel?.id as string));
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const HEIGHT_EMOJI_PANEL = 457;
 	const WIDTH_EMOJI_PANEL = 500;
 	const distanceToBottom = window.innerHeight - positionOfSmileButton.bottom;

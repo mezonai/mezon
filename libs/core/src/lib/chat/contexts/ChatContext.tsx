@@ -128,6 +128,7 @@ import {
 } from 'mezon-js';
 import { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiPermissionUpdate, ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import { RemoveFriend } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useStore } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -561,6 +562,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		async (userAdds: UserChannelAddedEvent) => {
 			if (!userAdds?.channel_desc) return;
 			const { channel_desc, users, clan_id, create_time_second, caller } = userAdds;
+
 			const userIds = users.map((u) => u.user_id);
 			const user = users?.find((user) => user.user_id === userId);
 			if (user) {
@@ -579,15 +581,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						})
 					);
 				}
+			}
 
-				if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP) {
-					dispatch(
-						directActions.addGroupUserWS({
-							channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-							users: [...users].filter((item) => item.user_id !== userId)
-						})
-					);
-				}
+			if (channel_desc.type == ChannelType.CHANNEL_TYPE_GROUP) {
+				dispatch(
+					directActions.addGroupUserWS({
+						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
+						users: [...users].filter((item) => item.user_id !== userId)
+					})
+				);
 			}
 
 			if (clanIdActive === clan_id) {
@@ -650,6 +652,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		},
 		[clanIdActive, currentChannel?.channel_private, dispatch]
 	);
+
+	const onremovefriend = useCallback((userId: RemoveFriend) => {
+		//TODO: thanh.levan
+		// eslint-disable-next-line no-console
+		console.log('userId: ', userId);
+	}, []);
 
 	const onstickercreated = useCallback(
 		(stickerCreated: StickerCreateEvent) => {
@@ -1306,6 +1314,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			socket.onuserclanadded = onuserclanadded;
 
+			socket.onremovefriend = onremovefriend;
+
 			socket.onclanprofileupdated = onclanprofileupdated;
 
 			socket.oncustomstatus = oncustomstatus;
@@ -1366,6 +1376,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			onclandeleted,
 			onuserchanneladded,
 			onuserclanadded,
+			onremovefriend,
 			onstickercreated,
 			oneventemoji,
 			onstickerdeleted,
@@ -1462,6 +1473,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onuserclanadded = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.onremovefriend = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onstickercreated = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.oneventemoji = () => {};
@@ -1494,6 +1507,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		onclandeleted,
 		onuserchanneladded,
 		onuserclanadded,
+		onremovefriend,
 		onstickerupdated,
 		onstickerdeleted,
 		onstickercreated,

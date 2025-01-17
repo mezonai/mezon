@@ -9,9 +9,9 @@ export const style = (colors: Attributes) =>
 		},
 
 		clanIcon: {
-			height: verticalScale(50),
-			width: verticalScale(50),
-			borderRadius: verticalScale(50),
+			height: size.s_48,
+			width: size.s_48,
+			borderRadius: size.s_48,
 			overflow: 'hidden',
 			alignItems: 'center',
 			justifyContent: 'center',
@@ -25,9 +25,9 @@ export const style = (colors: Attributes) =>
 		},
 
 		logoClan: {
-			height: verticalScale(50),
-			width: verticalScale(50),
-			borderRadius: verticalScale(50),
+			height: size.s_48,
+			width: size.s_48,
+			borderRadius: size.s_48,
 			resizeMode: 'cover'
 		},
 
@@ -53,7 +53,7 @@ export const style = (colors: Attributes) =>
 			backgroundColor: Colors.red,
 			position: 'absolute',
 			borderRadius: size.s_24,
-			borderWidth: 3,
+			borderWidth: size.s_4,
 			borderColor: Colors.secondary,
 			minWidth: size.s_24,
 			height: size.s_24,
@@ -65,6 +65,6 @@ export const style = (colors: Attributes) =>
 		badgeText: {
 			color: Colors.white,
 			fontWeight: 'bold',
-			fontSize: size.small
+			fontSize: size.tiny
 		}
 	});

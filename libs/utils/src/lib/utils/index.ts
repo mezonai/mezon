@@ -223,9 +223,6 @@ export const getTimeDifferenceDate = (dateString: string) => {
 
 export const convertMarkdown = (markdown: string, type: EBacktickType): string => {
 	const backtickLength = type === EBacktickType.TRIPLE ? 3 : type === EBacktickType.SINGLE ? 1 : 0;
-	if (backtickLength === 0) {
-		throw new Error('Invalid backtick type');
-	}
 	const s = backtickLength;
 	const e = markdown.length - backtickLength;
 	const substring = markdown.slice(s, e);
@@ -251,7 +248,7 @@ export const getSrcEmoji = (id: string) => {
 
 export const convertReactionDataFromMessage = (message: IMessageWithUser) => {
 	const emojiDataItems: Record<string, EmojiDataOptionals> = {};
-	message.reactions!.forEach((reaction) => {
+	message.reactions?.forEach((reaction) => {
 		const key = `${message.id}_${reaction.sender_id}_${reaction.emoji}`;
 
 		if (!emojiDataItems[key]) {

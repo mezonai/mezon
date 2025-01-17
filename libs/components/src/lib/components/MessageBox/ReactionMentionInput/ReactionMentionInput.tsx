@@ -143,7 +143,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const [mentionEveryone, setMentionEveryone] = useState(false);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 	const { messageThreadError, isPrivate, nameValueThread, valueThread, isShowCreateThread } = useThreads();
-	const { valueTopic } = useTopics();
+	const { currentTopicInitMessage } = useTopics();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const usersClan = useSelector(selectAllUserClans);
 	const { emojis, emojiPicked, addEmojiState } = useEmojiSuggestionContext();
@@ -832,7 +832,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			{props.isTopic && props.isThread && !currentTopicId && (
 				<div className={`flex flex-col overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}>
 					<div className="flex flex-col justify-end flex-grow">
-						{valueTopic && openTopicMessageState && <ChannelMessageThread message={valueTopic} />}
+						{currentTopicInitMessage && openTopicMessageState && <ChannelMessageThread message={currentTopicInitMessage} />}
 					</div>
 				</div>
 			)}

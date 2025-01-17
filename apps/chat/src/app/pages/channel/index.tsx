@@ -232,7 +232,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean) => {
 			dispatch(threadsActions.setIsShowCreateThread({ channelId: currentChannel?.id, isShowCreateThread }));
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: currentChannel?.id as string, isShowCreateTopic: false }));
+			dispatch(topicsActions.setIsShowCreateTopic(false));
 		},
 		[currentChannel?.id, dispatch]
 	);

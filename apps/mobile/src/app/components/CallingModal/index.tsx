@@ -103,7 +103,8 @@ const CallingModal = () => {
 			stopAndReleaseSound();
 			Vibration.cancel();
 		} else {
-			/* empty */
+			stopAndReleaseSound();
+			Vibration.cancel();
 		}
 	}, [isInCall, isVisible, signalingData]);
 

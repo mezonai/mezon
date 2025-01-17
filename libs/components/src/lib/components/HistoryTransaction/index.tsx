@@ -55,9 +55,9 @@ const HistoryTransaction = ({ onClose }: IProps) => {
 				{walletLedger?.length ? (
 					<>
 						<div>
-							{walletLedger?.map((item) => {
+							{walletLedger?.map((item, index) => {
 								return (
-									<div key={item.transaction_id} className="bg-white flex  border-b border-zinc-400 px-6 py-2 justify-between ">
+									<div key={index} className="bg-white flex  border-b border-zinc-400 px-6 py-2 justify-between ">
 										<div className=" flex flex-col gap-2">
 											<p className="text-black">{formatDate(item.create_time ?? '')}</p>
 											<div className="text-zinc-400 flex flex-row gap-1">

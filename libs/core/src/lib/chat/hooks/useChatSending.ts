@@ -26,7 +26,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 	const isPublic = !channelOrDirect?.channel_private;
 	const channelIdOrDirectId = channelOrDirect?.channel_id;
 	const currentTopicId = useSelector(selectCurrentTopicId);
-	const isShowCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, channelIdOrDirectId as string));
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const isFocusOnChannelInput = useSelector(selectIsFocusOnChannelInput);
 	const userProfile = useSelector(selectAllAccount);
 	const currentUserId = userProfile?.user?.id || '';

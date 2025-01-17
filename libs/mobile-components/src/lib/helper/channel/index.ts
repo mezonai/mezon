@@ -30,15 +30,17 @@ export function getInfoChannelByClanId(data: ClanChannelPair[], clanId: string) 
 	return pairIndex !== -1 ? data[pairIndex] : null;
 }
 
-export const setCurrentClanLoader = async (clans: any, clan_id?: string) => {
+export const setCurrentClanLoader = async (clans: any, clan_id?: string, autoJoinChannel = true) => {
 	const lastClanId = clan_id ? clan_id : clans?.[clans?.length - 1]?.clan_id;
 	const store = await getStoreAsync();
 	if (lastClanId) {
 		save(STORAGE_CLAN_ID, lastClanId);
 		await store.dispatch(clansActions.joinClan({ clanId: lastClanId }));
 		await store.dispatch(clansActions.changeCurrentClan({ clanId: lastClanId }));
-		const respChannel = await store.dispatch(channelsActions.fetchChannels({ clanId: lastClanId, noCache: true }));
-		await setDefaultChannelLoader(respChannel.payload, lastClanId);
+		if (autoJoinChannel) {
+			const respChannel = await store.dispatch(channelsActions.fetchChannels({ clanId: lastClanId, noCache: true }));
+			await setDefaultChannelLoader(respChannel.payload, lastClanId);
+		}
 	}
 	return null;
 };

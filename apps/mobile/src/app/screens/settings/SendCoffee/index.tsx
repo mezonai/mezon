@@ -50,6 +50,7 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 				sender_id: userProfile?.user?.id || '',
 				sender_name: userProfile?.user?.username || '',
 				receiver_id: jsonObject?.receiver_id || '',
+				extra_attribute: jsonObject?.extra_attribute || '',
 				amount: Number(tokenCount || 1),
 				note: note || ''
 			};

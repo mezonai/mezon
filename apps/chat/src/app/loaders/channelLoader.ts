@@ -1,4 +1,4 @@
-import { canvasAPIActions, channelsActions } from '@mezon/store';
+import { canvasAPIActions, channelsActions, topicsActions } from '@mezon/store';
 import { notificationService } from '@mezon/utils';
 import { ShouldRevalidateFunction } from 'react-router-dom';
 import { CustomLoaderFunction } from './appLoader';
@@ -14,6 +14,8 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 	dispatch(channelsActions.setPreviousChannels({ clanId, channelId }));
 	notificationService.setCurrentChannelId(channelId);
 	dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: channelId, clan_id: clanId }));
+	dispatch(topicsActions.setIsShowCreateTopic(false));
+	dispatch(topicsActions.setCurrentTopicId(''));
 	return null;
 };
 

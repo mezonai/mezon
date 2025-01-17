@@ -1,6 +1,6 @@
 import { ChatContext, useChatReaction } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { mapReactionToEntity, reactionActions, useAppDispatch } from '@mezon/store';
+import { mapReactionToEntity, reactionActions, selectDmGroupCurrentId, useAppDispatch } from '@mezon/store';
 import { messagesActions, selectCurrentChannel } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { isPublicChannel } from '@mezon/utils';
@@ -10,10 +10,12 @@ import { useSelector } from 'react-redux';
 import { IReactionMessageProps } from './components';
 
 const maxRetries = 10;
+let isHaveEventListenerRef = false;
 const ChannelMessageReactionListener = React.memo(() => {
-	const { reactionMessageDispatch } = useChatReaction({ isMobile: true });
 	const dispatch = useAppDispatch();
 	const currentChannel = useSelector(selectCurrentChannel);
+	const currentDirectId = useSelector(selectDmGroupCurrentId);
+	const { reactionMessageDispatch } = useChatReaction({ isMobile: true, isClanViewMobile: !currentDirectId });
 	const { socketRef } = useMezon();
 	const { handleReconnect } = useContext(ChatContext);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,7 +32,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 				emoji_id: data.emojiId,
 				isSending: true,
 				id: new Date().getTime().toString(),
-				is_public: isPublicChannel(currentChannel),
+				is_public: currentDirectId ? false : isPublicChannel(currentChannel),
 				message_id: data.messageId,
 				message_sender_id: '',
 				mode: data.mode,
@@ -61,12 +63,12 @@ const ChannelMessageReactionListener = React.memo(() => {
 					data?.countToRemove ?? 0,
 					data?.senderId ?? '',
 					data?.actionDelete ?? false,
-					isPublicChannel(currentChannel),
+					currentDirectId ? false : isPublicChannel(currentChannel),
 					data?.topicId ?? ''
 				);
 			}
 		},
-		[currentChannel, dispatch, socketRef, handleReconnect, reactionMessageDispatch, intervalRef]
+		[currentDirectId, currentChannel, dispatch, socketRef, handleReconnect, reactionMessageDispatch]
 	);
 
 	const onReactionMessageRetry = useCallback(
@@ -82,23 +84,27 @@ const ChannelMessageReactionListener = React.memo(() => {
 					data?.countToRemove ?? 0,
 					data?.senderId ?? '',
 					data?.actionDelete ?? false,
-					isPublicChannel(currentChannel),
+					currentDirectId ? false : isPublicChannel(currentChannel),
 					data?.topicId ?? ''
 				);
 			}
 		},
-		[currentChannel, reactionMessageDispatch, socketRef, intervalRef]
+		[socketRef, reactionMessageDispatch, currentDirectId, currentChannel]
 	);
 
 	useEffect(() => {
-		const eventOnReaction = DeviceEventEmitter.addListener(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, onReactionMessage);
-		const eventOnRetryReaction = DeviceEventEmitter.addListener(ActionEmitEvent.ON_RETRY_REACTION_MESSAGE_ITEM, onReactionMessageRetry);
+		if (!isHaveEventListenerRef) {
+			const eventOnReaction = DeviceEventEmitter.addListener(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, onReactionMessage);
+			const eventOnRetryReaction = DeviceEventEmitter.addListener(ActionEmitEvent.ON_RETRY_REACTION_MESSAGE_ITEM, onReactionMessageRetry);
 
-		return () => {
-			eventOnReaction.remove();
-			eventOnRetryReaction.remove();
-			intervalRef?.current && clearInterval(intervalRef.current);
-		};
+			isHaveEventListenerRef = true;
+			return () => {
+				eventOnReaction.remove();
+				eventOnRetryReaction.remove();
+				intervalRef?.current && clearInterval(intervalRef.current);
+				isHaveEventListenerRef = false;
+			};
+		}
 	}, [onReactionMessage, onReactionMessageRetry]);
 
 	return <View />;

@@ -1,8 +1,7 @@
 import { useAuth } from '@mezon/core';
-import { PlusAltIcon, remove, save, setDefaultChannelLoader, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
+import { PlusAltIcon, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
-	channelsActions,
 	clansActions,
 	getStoreAsync,
 	selectAllClans,
@@ -13,6 +12,7 @@ import {
 	videoStreamActions
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -74,10 +74,10 @@ export const ListClanPopup = React.memo(() => {
 			await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 			save(STORAGE_CLAN_ID, clanId);
 			store.dispatch(clansActions.setCurrentClanId(clanId));
-			const channelResp = await store.dispatch(channelsActions.fetchChannels({ clanId: clanId }));
-			if (channelResp?.payload) {
-				await setDefaultChannelLoader(channelResp.payload, clanId);
-			}
+			// const channelResp = await store.dispatch(channelsActions.fetchChannels({ clanId: clanId }));
+			// if (channelResp?.payload) {
+			// 	await setDefaultChannelLoader(channelResp.payload, clanId);
+			// }
 			requestAnimationFrame(async () => {
 				const promises = [];
 				promises.push(store.dispatch(clansActions.joinClan({ clanId: clanId })));
@@ -91,17 +91,23 @@ export const ListClanPopup = React.memo(() => {
 
 	return (
 		<View style={styles.clansBox}>
-			{clans?.length > 0 ? (
-				clans?.map((clan, index) => <ClanIcon data={clan} onPress={handleChangeClan} key={`${index}_${clan?.id}_clan_item`} />)
-			) : (
-				<View />
-			)}
-
-			<Pressable style={styles.createClan} onPress={() => visibleCreateClanModal(!isVisibleCreateClanModal)}>
-				<View style={styles.wrapperPlusClan}>
-					<PlusAltIcon width={size.s_14} height={size.s_14} />
-				</View>
-			</Pressable>
+			<FlashList
+				scrollEnabled={false}
+				estimatedItemSize={size.s_48}
+				data={clans}
+				keyExtractor={(clan) => `${clan?.id}_clan_item`}
+				renderItem={({ item }) => <ClanIcon data={item} onPress={handleChangeClan} />}
+				ListEmptyComponent={<View />}
+				ListFooterComponent={() => {
+					return (
+						<Pressable style={styles.createClan} onPress={() => visibleCreateClanModal(!isVisibleCreateClanModal)}>
+							<View style={styles.wrapperPlusClan}>
+								<PlusAltIcon width={size.s_14} height={size.s_14} />
+							</View>
+						</Pressable>
+					);
+				}}
+			/>
 			<CreateClanModal visible={isVisibleCreateClanModal} setVisible={visibleCreateClanModal} />
 		</View>
 	);

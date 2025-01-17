@@ -22,6 +22,7 @@ import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../utils/helpers';
 import { EMessageBSToShow } from './enums';
 
+let isHaveEventListenerRef = false;
 const ChannelMessageListener = React.memo(() => {
 	const usersClan = useSelector(selectAllUserClans);
 	const rolesInClan = useSelector(selectAllRolesClan);
@@ -103,13 +104,17 @@ const ChannelMessageListener = React.memo(() => {
 	);
 
 	useEffect(() => {
-		const eventOnMention = DeviceEventEmitter.addListener(ActionEmitEvent.ON_MENTION_USER_MESSAGE_ITEM, onMention);
-		const eventOnChannelMention = DeviceEventEmitter.addListener(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, onChannelMention);
+		if (!isHaveEventListenerRef) {
+			const eventOnMention = DeviceEventEmitter.addListener(ActionEmitEvent.ON_MENTION_USER_MESSAGE_ITEM, onMention);
+			const eventOnChannelMention = DeviceEventEmitter.addListener(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, onChannelMention);
 
-		return () => {
-			eventOnMention.remove();
-			eventOnChannelMention.remove();
-		};
+			isHaveEventListenerRef = true;
+			return () => {
+				eventOnMention.remove();
+				eventOnChannelMention.remove();
+				isHaveEventListenerRef = false;
+			};
+		}
 	}, [onChannelMention, onMention]);
 
 	const jumpToChannel = async (channelId: string, clanId: string) => {

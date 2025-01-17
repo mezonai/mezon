@@ -1,10 +1,10 @@
 import { HomeTab, MessageTab, NotiTab, ProfileTab } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
 import { selectHiddenBottomTabMobile } from '@mezon/store-mobile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigationState } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo, useRef } from 'react';
-import { Animated } from 'react-native';
+import { Animated, Platform, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
@@ -20,7 +20,7 @@ const TabStack = createBottomTabNavigator();
 const BottomNavigator = memo(() => {
 	const isTabletLandscape = useTabletLandscape();
 	const isHiddenTab = useSelector(selectHiddenBottomTabMobile);
-	const { themeValue } = useTheme();
+	const { themeValue, themeBasic } = useTheme();
 	const tabBarTranslateY = useRef(new Animated.Value(0)).current;
 	const routesNavigation = useNavigationState((state) => state?.routes?.[state?.index]);
 
@@ -38,6 +38,16 @@ const BottomNavigator = memo(() => {
 			useNativeDriver: true
 		}).start();
 	}, [isHiddenTab, tabBarTranslateY]);
+
+	useEffect(() => {
+		const statusBarColor = isHiddenTab ? themeValue.primary : themeValue.secondary;
+		const statusBarStyle = themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content';
+
+		if (Platform.OS === 'android') {
+			StatusBar.setBackgroundColor(statusBarColor);
+		}
+		StatusBar.setBarStyle(statusBarStyle);
+	}, [isHiddenTab, themeBasic, themeValue.primary, themeValue.secondary]);
 
 	const AnimatedIcon = ({ color, Icon, focused }) => {
 		const scaleValue = useRef(new Animated.Value(1)).current;

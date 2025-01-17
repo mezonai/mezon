@@ -1,6 +1,6 @@
 import { toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageWithUser } from '@mezon/utils';
+import { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 
@@ -31,13 +31,17 @@ export function useSendForwardMessage() {
 				} else if (mode === ChannelStreamMode.STREAM_MODE_THREAD) {
 					type = ChannelType.CHANNEL_TYPE_THREAD;
 				}
+				const validatedContent = {
+					...(message.content as IMessageSendPayload),
+					fwd: true
+				};
 				await socket.joinChat(clanid, channel_id, type, isPublic);
 				await socket.writeChatMessage(
 					clanid,
 					channel_id,
 					mode,
 					isPublic,
-					message.content,
+					validatedContent,
 					message.mentions,
 					message.attachments,
 					message.references

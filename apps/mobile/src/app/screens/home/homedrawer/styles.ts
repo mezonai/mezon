@@ -308,9 +308,9 @@ export const style = (colors: Attributes) =>
 		},
 		wrapperMessageBox: {
 			flexDirection: 'row',
-			paddingLeft: size.s_10,
+			paddingLeft: size.s_6,
 			marginBottom: size.s_2,
-			paddingRight: size.s_28
+			paddingRight: size.s_20
 		},
 		aboveMessage: {
 			flexDirection: 'row',
@@ -362,7 +362,7 @@ export const style = (colors: Attributes) =>
 			// marginBottom: size.s_10,
 		},
 		rowMessageBox: {
-			marginLeft: size.s_15,
+			marginLeft: size.s_12,
 			justifyContent: 'space-between',
 			width: '90%'
 		},

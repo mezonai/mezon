@@ -5,7 +5,7 @@ import { IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiUser } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useState } from 'react';
-import { DeviceEventEmitter, Keyboard, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Platform, View } from 'react-native';
 import { ImageListModal } from '../../../components/ImageListModal';
 import { MessageItemBS } from './components';
 import { ConfirmPinMessageModal } from './components/ConfirmPinMessageModal';
@@ -20,6 +20,8 @@ type ChannelMessageActionListenerProps = {
 	channelId: string;
 	clanId: string;
 };
+let isHaveEventListenerRef = false;
+let isHaveEventListenerImageRef = false;
 const ChannelMessageActionListener = React.memo(({ mode, isPublic, clanId, channelId }: ChannelMessageActionListenerProps) => {
 	const dispatch = useAppDispatch();
 	const { socketRef } = useMezon();
@@ -99,18 +101,30 @@ const ChannelMessageActionListener = React.memo(({ mode, isPublic, clanId, chann
 	);
 
 	useEffect(() => {
-		const eventOpenImage = DeviceEventEmitter.addListener(ActionEmitEvent.ON_OPEN_IMAGE_DETAIL_MESSAGE_ITEM, onOpenImage);
-		const eventOpenMessageAction = DeviceEventEmitter.addListener(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, onMessageAction);
-		const messageItemBSListener = DeviceEventEmitter.addListener(ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET, ({ isHiddenBottomSheet }) => {
-			isHiddenBottomSheet && setOpenBottomSheet(null);
-		});
+		if (!isHaveEventListenerRef) {
+			const eventOpenMessageAction = DeviceEventEmitter.addListener(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, onMessageAction);
+			const messageItemBSListener = DeviceEventEmitter.addListener(ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET, ({ isHiddenBottomSheet }) => {
+				isHiddenBottomSheet && setOpenBottomSheet(null);
+			});
+			isHaveEventListenerRef = true;
+			return () => {
+				eventOpenMessageAction.remove();
+				messageItemBSListener.remove();
+				isHaveEventListenerRef = false;
+			};
+		}
+	}, [onMessageAction]);
 
-		return () => {
-			eventOpenImage.remove();
-			eventOpenMessageAction.remove();
-			messageItemBSListener.remove();
-		};
-	}, [onOpenImage, onMessageAction]);
+	useEffect(() => {
+		if (!isHaveEventListenerImageRef || Platform.OS === 'ios') {
+			const eventOpenImage = DeviceEventEmitter.addListener(ActionEmitEvent.ON_OPEN_IMAGE_DETAIL_MESSAGE_ITEM, onOpenImage);
+			isHaveEventListenerImageRef = true;
+			return () => {
+				eventOpenImage.remove();
+				isHaveEventListenerImageRef = false;
+			};
+		}
+	}, [onOpenImage]);
 
 	return (
 		<View>

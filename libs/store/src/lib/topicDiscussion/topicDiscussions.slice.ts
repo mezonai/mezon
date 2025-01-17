@@ -1,16 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
-import {
-	getMobileUploadedAttachments,
-	getWebUploadedAttachments,
-	IMessageSendPayload,
-	IMessageWithUser,
-	LoadingStatus
-} from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { getMobileUploadedAttachments, getWebUploadedAttachments, IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
-import { MezonValueContext, ensureSession, getMezonCtx, ensureSocket } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
 import { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 const LIST_TOPIC_DISCUSSIONS_CACHED_TIME = 1000 * 60 * 60;
@@ -27,10 +21,9 @@ export interface TopicDiscussionsEntity extends ApiSdTopic {
 export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	isShowCreateTopic?: Record<string, boolean>;
+	isShowCreateTopic: boolean;
 	messageTopicError?: string;
-	listTopicId?: Record<string, string>;
-	valueTopic: IMessageWithUser | null;
+	currentTopicInitMessage: IMessageWithUser | null;
 	openTopicMessageState: boolean;
 	currentTopicId?: string;
 	firstMessageOfCurrentTopic?: ApiSdTopic;
@@ -86,8 +79,8 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 			return [];
 		}
 
-		const threads = mapToTopicEntity(response.topics);
-		return threads;
+		const topics = mapToTopicEntity(response.topics);
+		return topics;
 	} catch (error) {
 		captureSentryError(error, 'topics/fetchTopics');
 		return thunkAPI.rejectWithValue(error);
@@ -97,10 +90,9 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
-	isShowCreateTopic: {},
+	isShowCreateTopic: false,
 	isPrivate: 0,
-	nameValueTopic: {},
-	valueTopic: null,
+	currentTopicInitMessage: null,
 	openTopicMessageState: false
 });
 
@@ -124,15 +116,10 @@ export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotif
 	const state = thunkAPI.getState() as RootState;
 	const currentTopicId = state.topicdiscussions.currentTopicId;
 	const currentChannelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
-	const isShowCreateTopic = currentChannelId ? !!state.topicdiscussions.isShowCreateTopic?.[currentChannelId] : false;
+	const isShowCreateTopic = !!currentChannelId;
 
 	if (msg?.extras?.topicId && msg?.extras?.topicId !== '0' && (currentTopicId !== msg?.extras?.topicId || !isShowCreateTopic)) {
-		thunkAPI.dispatch(
-			topicsActions.setIsShowCreateTopic({
-				channelId: msg.channel_id as string,
-				isShowCreateTopic: true
-			})
-		);
+		thunkAPI.dispatch(topicsActions.setIsShowCreateTopic(true));
 		thunkAPI.dispatch(
 			threadsActions.setIsShowCreateThread({
 				channelId: msg.channel_id as string,
@@ -161,34 +148,21 @@ type SendTopicPayload = {
 };
 
 export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async (payload: SendTopicPayload, thunkAPI) => {
-	const {
-		clanId,
-		channelId,
-		mode,
-		isPublic,
-		content,
-		mentions,
-		attachments,
-		references,
-		anonymous,
-		mentionEveryone,
-		isMobile,
-		code,
-		topicId
-	} = payload;
-	
+	const { clanId, channelId, mode, isPublic, content, mentions, attachments, references, anonymous, mentionEveryone, isMobile, code, topicId } =
+		payload;
+
 	const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-	
+
 	const session = mezon.sessionRef.current;
 	const client = mezon.clientRef.current;
 	const socket = mezon.socketRef.current;
-	
+
 	if (!client || !session || !socket || !channelId) {
 		throw new Error('Client is not initialized');
 	}
-	
+
 	let uploadedFiles: ApiMessageAttachment[] = [];
-	
+
 	if (attachments && attachments.length > 0) {
 		if (isMobile) {
 			uploadedFiles = await getMobileUploadedAttachments({ attachments, channelId, clanId, client, session });
@@ -197,7 +171,6 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		}
 	}
 
-	
 	await socket.writeChatMessage(
 		clanId as string,
 		channelId as string,
@@ -213,7 +186,6 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		0,
 		topicId
 	);
-	
 });
 
 export const topicsSlice = createSlice({
@@ -224,27 +196,11 @@ export const topicsSlice = createSlice({
 		remove: topicsAdapter.removeOne,
 		update: topicsAdapter.updateOne,
 
-		setIsShowCreateTopic: (state: TopicDiscussionsState, action: PayloadAction<{ channelId: string; isShowCreateTopic: boolean }>) => {
-			state.isShowCreateTopic = {
-				...state.isShowCreateTopic,
-				[action.payload.channelId]: action.payload.isShowCreateTopic
-			};
-			state.listTopicId = {
-				...state.listTopicId,
-				[action.payload.channelId]: ''
-			};
+		setIsShowCreateTopic: (state: TopicDiscussionsState, action: PayloadAction<boolean>) => {
+			state.isShowCreateTopic = action.payload;
 		},
-		setValueTopic: (state, action: PayloadAction<IMessageWithUser | null>) => {
-			state.valueTopic = action.payload;
-		},
-		setMessageTopicError: (state, action: PayloadAction<string>) => {
-			state.messageTopicError = action.payload;
-		},
-		setListTopicId: (state, action: PayloadAction<{ channelId: string; topicId: string }>) => {
-			state.listTopicId = {
-				...state.listTopicId,
-				[action.payload.channelId]: action.payload.topicId
-			};
+		setCurrentTopicInitMessage: (state, action: PayloadAction<IMessageWithUser | null>) => {
+			state.currentTopicInitMessage = action.payload;
 		},
 		setOpenTopicMessageState(state, action) {
 			state.openTopicMessageState = action.payload;
@@ -341,9 +297,7 @@ export const selectTopicById = createSelector([selectTopicsEntities, (state, top
 
 export const selectMessageTopicError = createSelector(getTopicsState, (state) => state.messageTopicError);
 
-export const selectListTopicId = createSelector(getTopicsState, (state) => state.listTopicId);
-
-export const selectValueTopic = createSelector(getTopicsState, (state) => state.valueTopic);
+export const selectCurrentTopicInitMessage = createSelector(getTopicsState, (state) => state.currentTopicInitMessage);
 
 export const selectOpenTopicMessageState = createSelector(getTopicsState, (state: TopicDiscussionsState) => state.openTopicMessageState);
 
@@ -354,11 +308,10 @@ export const selectIsMessageChannelIdMatched = createSelector(
 	(currentTopicId, messageChannelId) => currentTopicId === messageChannelId
 );
 
-export const selectIsShowCreateTopic = createSelector([getTopicsState, (_, channelId: string) => channelId], (state, channelId) => {
-	return !!state.isShowCreateTopic?.[channelId];
-});
+export const selectIsShowCreateTopic = createSelector(getTopicsState, (state) => state.isShowCreateTopic);
 
 export const selectFirstMessageOfCurrentTopic = createSelector(getTopicsState, (state) => state.firstMessageOfCurrentTopic);
+
 export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 	return data.sort((a, b) => {
 		const timestampA = a?.last_sent_message?.timestamp_seconds || 0;

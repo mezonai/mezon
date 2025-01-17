@@ -126,10 +126,12 @@ const HomeDefaultHeader = React.memo(
 							<Icons.BellIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
 						)}
 					</TouchableOpacity>
-				) : (
+				) : currentChannel ? (
 					<TouchableOpacity style={styles.iconBell} onPress={() => navigateToSearchPage()}>
 						<Icons.MagnifyingIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
 					</TouchableOpacity>
+				) : (
+					<View />
 				)}
 			</View>
 		);

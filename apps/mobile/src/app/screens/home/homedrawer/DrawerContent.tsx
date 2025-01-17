@@ -1,11 +1,9 @@
 import { useCategory } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { RootState, selectAllClans, selectIsShowEmptyCategory } from '@mezon/store-mobile';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
-import ChannelListSkeleton from '../../../components/Skeletons/ChannelListSkeleton';
-import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import BackNativeListener from './BackNativeListener';
 import ChannelList from './ChannelList';
 import ProfileBar from './ProfileBar';
@@ -49,37 +47,21 @@ const MemoizedChannelList = React.memo(ChannelList, (prevProps, nextProps) => {
 	return JSON.stringify(prevProps.categorizedChannels) === JSON.stringify(nextProps.categorizedChannels);
 });
 
-const DrawerContent = React.memo(() => {
+const DrawerContent = React.memo(({ isTablet }: { isTablet?: boolean }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const isTabletLandscape = useTabletLandscape();
-	const [isReadyForUse, setIsReadyForUse] = useState<boolean>(false);
 
-	useEffect(() => {
-		const timer = setTimeout(async () => {
-			setIsReadyForUse(true);
-		}, 2000);
-		return () => {
-			clearTimeout(timer);
-		};
-	}, []);
-	if (!isReadyForUse)
-		return (
-			<View style={[styles.containerDrawerEmpty, { backgroundColor: isTabletLandscape ? themeValue.tertiary : themeValue.primary }]}>
-				<ChannelListSkeleton numberSkeleton={6} />
-			</View>
-		);
 	return (
-		<View style={[styles.containerDrawerContent, { backgroundColor: isTabletLandscape ? themeValue.tertiary : themeValue.primary }]}>
+		<View style={[styles.containerDrawerContent, { backgroundColor: isTablet ? themeValue.tertiary : themeValue.primary }]}>
 			<View style={styles.container}>
 				<View style={styles.rowContainer}>
 					<ServerList />
-					{!isTabletLandscape && <BackNativeListener />}
+					{!isTablet && <BackNativeListener />}
 					<ChannelListWrapper />
 				</View>
-				{isTabletLandscape && <ProfileBar />}
+				{isTablet && <ProfileBar />}
 			</View>
-			{isTabletLandscape && <View style={styles.wall}></View>}
+			{isTablet && <View style={styles.wall}></View>}
 		</View>
 	);
 });

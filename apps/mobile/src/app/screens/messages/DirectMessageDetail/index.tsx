@@ -1,16 +1,7 @@
 import { ChatContext, useMemberStatus } from '@mezon/core';
-import { ActionEmitEvent, STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, load, save } from '@mezon/mobile-components';
 import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
-import {
-	appActions,
-	channelsActions,
-	clansActions,
-	directActions,
-	messagesActions,
-	selectCurrentChannel,
-	selectDmGroupCurrent,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import { appActions, channelsActions, clansActions, directActions, messagesActions, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Platform, StatusBar } from 'react-native';
@@ -29,7 +20,6 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 
 	const from = route.params?.from;
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
-	const currentChannel = useSelector(selectCurrentChannel);
 	const isFetchMemberChannelDmRef = useRef(false);
 	const { handleReconnect } = useContext(ChatContext);
 
@@ -64,17 +54,19 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 	}, [currentDmGroup, navigation]);
 
 	const fetchMemberChannel = async () => {
-		if (!currentChannel) {
+		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
+		const currentClanIdCached = await load(STORAGE_CLAN_ID);
+		if (!currentClanIdCached) {
 			return;
 		}
-		dispatch(clansActions.setCurrentClanId(currentChannel?.clan_id));
+		dispatch(clansActions.setCurrentClanId(currentClanIdCached));
 		// Rejoin previous clan (other than 0) when exiting the DM detail screen
-		dispatch(clansActions.joinClan({ clanId: currentChannel?.clan_id }));
+		dispatch(clansActions.joinClan({ clanId: currentClanIdCached }));
 	};
 
 	const directMessageLoader = async () => {
 		await Promise.all([
-			dispatch(clansActions.setCurrentClanId('0')),
+			// dispatch(clansActions.setCurrentClanId('0')),
 			dispatch(
 				directActions.joinDirectMessage({
 					directMessageId: directMessageId,

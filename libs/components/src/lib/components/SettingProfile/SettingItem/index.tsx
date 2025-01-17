@@ -1,5 +1,6 @@
 import { appActions, authActions, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
+import isElectron from 'is-electron';
 import { useEffect, useState } from 'react';
 const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName: string) => void; initSetting: string }) => {
 	const [selectedButton, setSelectedButton] = useState<string | null>(initSetting);
@@ -14,7 +15,9 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 	const handleLogOut = async () => {
 		await dispatch(authActions.logOut());
 		await dispatch(appActions.setIsShowSettingFooterStatus(false));
-		window.location.href = '/desktop/login';
+		if (!isElectron()) {
+			window.location.href = '/desktop/login';
+		}
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);

@@ -15,11 +15,11 @@ export const style = (colors: Attributes) =>
 		badge: {
 			backgroundColor: Colors.red,
 			position: 'absolute',
-			borderRadius: size.s_28,
+			borderRadius: size.s_24,
 			borderWidth: size.s_4,
 			borderColor: Colors.secondary,
-			minWidth: size.s_28,
-			height: size.s_28,
+			minWidth: size.s_24,
+			height: size.s_24,
 			alignItems: 'center',
 			justifyContent: 'center',
 			bottom: -5,
@@ -29,7 +29,7 @@ export const style = (colors: Attributes) =>
 		badgeText: {
 			color: Colors.white,
 			fontWeight: 'bold',
-			fontSize: size.small
+			fontSize: size.tiny
 		},
 		wrapperPlusClan: {
 			marginTop: verticalScale(5),
