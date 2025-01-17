@@ -296,18 +296,12 @@ export function updatePayload(payload: IMessageSendPayload, mentions: IMentionOn
 	// eslint-disable-next-line prefer-const
 	let { t, ej, lk, vk, hg, mk, b } = payload;
 	const combineMkB = [...(mk ?? []), ...(b ?? [])].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-	// console.log('combineMkB: ', combineMkB);
 	const replacements = calculateNewIndex(combineMkB);
-	// console.log('replacements: ', replacements);
 	const newT = removeSyntaxMkOrBold(t as string, combineMkB);
-	// console.log('newT: ', newT);
 	const updatedMkTypeS = getUpdatedRangesByType(replacements, EBacktickType.SINGLE);
-	// console.log('updatedMkTypeS: ', updatedMkTypeS);
 	const updatedMkTypeT = getUpdatedRangesByType(replacements, EBacktickType.TRIPLE);
-	// console.log('updatedMkTypeT: ', updatedMkTypeT);
 	const updatedMk = [...(updatedMkTypeS ?? []), ...(updatedMkTypeT ?? [])];
 	const updatedB = getUpdatedRangesByType(replacements, EBacktickType.BOLD);
-	// console.log('updatedB: ', updatedB);
 	const updatedHg = updateItems(hg, replacements);
 	const updatedEj = updateItems(ej, replacements);
 	const updatedLk = updateItems(lk, replacements);
