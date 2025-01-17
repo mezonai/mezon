@@ -74,7 +74,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 			tabIndex={-1}
 			className="absolute top-8 right-0 rounded-md dark:shadow-shadowBorder shadow-shadowInbox z-[99999999] origin-top-right"
 		>
-			<div className="flex flex-col rounded-md min-h-[400px] md:w-[480px] max-h-[80vh] lg:w-[540px]  shadow-sm overflow-hidden">
+			<div className="flex flex-col rounded-md dark:bg-bgSecondary bg-bgLightSecondary h-[400px] md:w-[480px] max-h-[80vh] lg:w-[540px] justify-between shadow-sm overflow-hidden">
 				<div className="dark:bg-bgTertiary bg-bgLightTertiary flex flex-row items-center justify-between p-[16px] h-12">
 					<div className="flex flex-row items-center border-r-[1px] dark:border-r-[#6A6A6A] border-r-[#E1E1E1] pr-[16px] gap-4">
 						<Icons.CanvasIcon />
@@ -95,7 +95,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 					</div>
 				</div>
 				<div
-					className={`flex flex-col gap-2 py-2 dark:bg-bgSecondary bg-bgLightSecondary px-[16px] min-h-full flex-1 overflow-y-auto ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
+					className={`flex flex-col gap-2 py-2 dark:bg-bgSecondary bg-bgLightSecondary px-[16px] flex-1 overflow-y-auto ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
 				>
 					{filteredCanvases?.map((canvas) => {
 						return (
@@ -109,13 +109,66 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 							/>
 						);
 					})}
-					{canvases?.length && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />}
 
 					{!canvases?.length && <EmptyCanvas onClick={handleCreateCanvas} />}
 				</div>
+				{totalPages > 1 && (
+					<div className="py-2">
+						<Pagination
+							theme={customTheme(totalPages <= 5)}
+							currentPage={currentPage}
+							totalPages={totalPages}
+							onPageChange={onPageChange}
+							previousLabel=""
+							nextLabel=""
+							showIcons={totalPages > 5}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);
+};
+
+const customTheme = (hiddenNextPage: boolean) => {
+	if (hiddenNextPage) {
+		return {
+			pages: {
+				base: '[&_li:is(:first-child,:last-child)]:hidden px-4 flex gap-2 justify-end',
+				selector: {
+					base: 'w-5 h-5 rounded-full overflow-hidden text-[12px] flex items-center justify-center bg-gray-700',
+					active: '!bg-white !text-black',
+					disabled: 'cursor-not-allowed opacity-50 bg-cyan-50 hover:bg-cyan-100'
+				},
+				previous: {
+					base: '!h-5 !w-5 overflow-hidden flex items-center  justify-center text-white',
+					icon: 'h-5 w-5'
+				},
+				next: {
+					base: '!h-5 !w-5 overflow-hidden flex items-center  justify-center text-white',
+					icon: 'h-5 w-5'
+				}
+			}
+		};
+	}
+	return {
+		pages: {
+			base: ' flex gap-2 px-4 justify-end',
+			selector: {
+				base: 'w-5 h-5 rounded-full overflow-hidden text-[12px] flex items-center justify-center bg-gray-700',
+				active: '!bg-white !text-black',
+				disabled: 'cursor-not-allowed opacity-50 bg-cyan-50 hover:bg-cyan-100'
+			},
+			previous: {
+				base: '!h-5 !w-5 overflow-hidden flex items-center  justify-center text-white',
+				icon: 'h-5 w-5'
+			},
+			next: {
+				base: '!h-5 !w-5 overflow-hidden flex items-center  justify-center text-white',
+				icon: 'h-5 w-5'
+			}
+		}
+	};
 };
 
 export default CanvasModal;

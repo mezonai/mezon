@@ -63,7 +63,7 @@ export default function TopicDiscussion() {
 	useEffect(() => {
 		return () => {
 			dispatch(topicsActions.setCurrentTopicId(''));
-			dispatch(topicsActions.setIsShowCreateTopic({ channelId: currentChannel?.channel_id as string, isShowCreateTopic: false }));
+			dispatch(topicsActions.setIsShowCreateTopic(false));
 		};
 	}, [currentChannel?.channel_id, dispatch]);
 

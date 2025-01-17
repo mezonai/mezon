@@ -14,7 +14,7 @@ type ModalSendTokenProps = {
 	token: number;
 	setToken: (token: number) => void;
 	setSelectedUserId: (id: string) => void;
-	handleSaveSendToken?: () => void;
+	handleSaveSendToken: (id: string) => void;
 	setNote: (note: string) => void;
 	error: string | null;
 	userSearchError: string | null;
@@ -70,12 +70,8 @@ const ModalSendToken = ({
 		const value = e.target.value;
 		setSearchTerm(value);
 
-		if (value.length < searchTerm.length) {
-			setSearchTerm('');
+		if (selectedUserId) {
 			setSelectedUserId('');
-		} else {
-			setIsDropdownOpen(true);
-			setSearchTerm(value);
 		}
 	};
 
@@ -259,7 +255,7 @@ const ModalSendToken = ({
 						<Button
 							className="h-10 px-4 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover focus:!ring-transparent"
 							type="button"
-							onClick={handleSaveSendToken}
+							onClick={() => handleSaveSendToken(filteredUsers.find((user) => user.username === searchTerm)?.id ?? '')}
 						>
 							Send
 						</Button>

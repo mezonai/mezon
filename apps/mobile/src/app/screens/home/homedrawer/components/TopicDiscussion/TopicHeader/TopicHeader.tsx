@@ -1,6 +1,6 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { Block, Text, size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, selectValueTopic } from '@mezon/store-mobile';
+import { ChannelsEntity, selectCurrentTopicInitMessage } from '@mezon/store-mobile';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo } from 'react';
@@ -20,7 +20,7 @@ type TopicHeaderProps = {
 };
 
 const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
-	const valueTopic = useSelector(selectValueTopic);
+	const valueTopic = useSelector(selectCurrentTopicInitMessage);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation('message');

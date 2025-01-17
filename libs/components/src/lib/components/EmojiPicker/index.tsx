@@ -47,14 +47,12 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const [emojisSearch, setEmojiSearch] = useState<IEmoji[]>();
 	const modeResponsive = useAppSelector(selectModeResponsive);
 
-	const memoizedSearchEmojis = useMemo(() => searchEmojis, []);
-
 	useEffect(() => {
 		if (valueInputToCheckHandleSearch !== '') {
-			const result = memoizedSearchEmojis(emojis, valueInputToCheckHandleSearch ?? '');
+			const result = searchEmojis(emojis, valueInputToCheckHandleSearch ?? '');
 			setEmojiSearch(result);
 		}
-	}, [valueInputToCheckHandleSearch, subPanelActive, emojis, memoizedSearchEmojis]);
+	}, [valueInputToCheckHandleSearch, subPanelActive, emojis]);
 
 	const categoryIcons = useMemo(
 		() => [

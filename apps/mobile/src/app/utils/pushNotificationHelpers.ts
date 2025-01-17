@@ -285,9 +285,9 @@ export const navigateToNotification = async (store: any, notification: any, navi
 
 const handleOpenTopicDiscustion = async (store: any, topicId: string, channelId: string, navigation: any) => {
 	const promises = [];
-	promises.push(store.dispatch(topicsActions.setValueTopic(null)));
+	promises.push(store.dispatch(topicsActions.setCurrentTopicInitMessage(null)));
 	promises.push(store.dispatch(topicsActions.setCurrentTopicId(topicId || '')));
-	promises.push(store.dispatch(topicsActions.setIsShowCreateTopic({ channelId: channelId as string, isShowCreateTopic: true })));
+	promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
 
 	await Promise.all(promises);
 

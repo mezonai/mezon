@@ -2,8 +2,9 @@ import { useChatSending, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/
 import { selectAllStickerSuggestion, selectCurrentClan, selectCurrentTopicId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, SubPanelName } from '@mezon/utils';
+import { ClanSticker } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 type ChannelMessageBoxProps = {
@@ -16,6 +17,7 @@ interface ICategorizedStickerProps {
 	stickerList: any[];
 	categoryName: string;
 	onClickSticker: (stickerUrl: StickerPanel) => void;
+	valueInputToCheckHandleSearch?: string;
 }
 
 interface IStickerPanelProps {
@@ -24,14 +26,29 @@ interface IStickerPanelProps {
 }
 
 type StickerPanel = {
-	type: string;
-	url: string;
-	id: string;
+	type?: string;
+	url?: string;
+	id?: string;
+};
+
+const searchStickers = (stickers: ClanSticker[], searchTerm: string) => {
+	if (!searchTerm) return stickers;
+	const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
+	return stickers.filter((item) => item?.shortname?.toLowerCase().includes(lowerCaseSearchTerm));
 };
 
 function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
+	const clanStickers = useAppSelector(selectAllStickerSuggestion);
 	const { sendMessage } = useChatSending({ channelOrDirect: channel, mode });
 	const currentTopicId = useSelector(selectCurrentTopicId);
+	const { valueInputToCheckHandleSearch, subPanelActive } = useGifsStickersEmoji();
+	const [searchedStickers, setSearchStickers] = useState<ClanSticker[]>([]);
+
+	useEffect(() => {
+		const result = searchStickers(clanStickers, valueInputToCheckHandleSearch ?? '');
+		setSearchStickers(result);
+	}, [valueInputToCheckHandleSearch, subPanelActive, clanStickers]);
+
 	const handleSend = useCallback(
 		(
 			content: IMessageSendPayload,
@@ -44,7 +61,6 @@ function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 		[sendMessage]
 	);
 
-	const clanStickers = useAppSelector(selectAllStickerSuggestion);
 	const categoryLogo = clanStickers
 		.map((sticker) => ({
 			id: sticker.clan_id,
@@ -53,13 +69,15 @@ function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 		}))
 		.filter((sticker, index, self) => index === self.findIndex((s) => s.id === sticker.id));
 
-	const stickers = [
-		...clanStickers.map((sticker) => ({
-			id: sticker.id,
-			url: sticker.source,
-			type: sticker.clan_name
-		}))
-	].filter(Boolean);
+	const stickers = useMemo(() => {
+		return [
+			...searchedStickers.map((sticker) => ({
+				id: sticker.id,
+				url: sticker.source,
+				type: sticker.clan_name
+			}))
+		].filter(Boolean);
+	}, [searchedStickers]);
 
 	const { setSubPanelActive } = useGifsStickersEmoji();
 	const [selectedType, setSelectedType] = useState('');
@@ -119,18 +137,29 @@ function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 				</div>
 			</div>
 			<div className="flex flex-col h-[400px] overflow-y-auto flex-1 hide-scrollbar" ref={containerRef}>
-				{categoryLogo.map((avt) => (
-					<div ref={(el) => (categoryRefs.current[avt.type || ''] = el)} key={avt.id}>
-						<CategorizedStickers stickerList={stickers} onClickSticker={handleClickImage} categoryName={avt.type || ''} />
-					</div>
-				))}
+				{valueInputToCheckHandleSearch ? (
+					<StickerPanel stickerList={stickers} onClickSticker={handleClickImage} />
+				) : (
+					<>
+						{categoryLogo.map((avt) => (
+							<div ref={(el) => (categoryRefs.current[avt.type || ''] = el)} key={avt.id}>
+								<CategorizedStickers
+									valueInputToCheckHandleSearch={valueInputToCheckHandleSearch}
+									stickerList={stickers}
+									onClickSticker={handleClickImage}
+									categoryName={avt.type || ''}
+								/>
+							</div>
+						))}
+					</>
+				)}
 			</div>
 		</div>
 	);
 }
 export default StickerSquare;
 
-const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, categoryName, onClickSticker }) => {
+const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, categoryName, onClickSticker, valueInputToCheckHandleSearch }) => {
 	const stickersListByCategoryName = stickerList.filter((sticker) => sticker.type === categoryName);
 	const [isShowStickerList, setIsShowStickerList] = useState(true);
 	const currentClan = useAppSelector(selectCurrentClan);

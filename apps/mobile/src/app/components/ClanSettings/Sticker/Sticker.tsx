@@ -33,7 +33,7 @@ export function StickerSetting() {
 	}, [currentClanId]);
 
 	const handleUploadImage = useCallback(async (file: IFile) => {
-		if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG)) {
+		if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
 			Toast.show({
 				type: 'error',
 				text1: t('toast.errorSizeLimit')
@@ -74,6 +74,14 @@ export function StickerSetting() {
 
 					// TODO: check category
 					const category = 'Among Us';
+
+					if (Number(croppedFile.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
+						Toast.show({
+							type: 'error',
+							text1: t('toast.errorSizeLimit')
+						});
+						return;
+					}
 
 					const { id, url } = await handleUploadImage({
 						fileData: croppedFile?.data,

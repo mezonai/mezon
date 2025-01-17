@@ -259,7 +259,7 @@ function MessageWithUser({
 										</div>
 									)}
 
-									<div className="w-full relative h-full">
+									<div className="w-full relative h-full select-text">
 										{!isMessageSystem && (
 											<div>
 												{!(isCombine && message?.references?.length === 0 && !isShowFull) && (
@@ -275,7 +275,7 @@ function MessageWithUser({
 											{!!message?.content?.fwd && (
 												<div className="border-l-4 dark:border-[#414348] border-[#ebebeb] rounded"></div>
 											)}
-											<div className="h-full">
+											<div className="h-full w-full">
 												{!!message?.content?.fwd && (
 													<div className="flex gap-1 items-center italic text-[#5e6068] dark:text-[#949ba4] font-medium">
 														<Icons.ForwardRightClick defaultSize="w-4 h-4" />
@@ -283,7 +283,7 @@ function MessageWithUser({
 													</div>
 												)}
 
-												<div className="justify-start items-center inline-flex w-full h-full pt-[2px] textChat select-text">
+												<div className="justify-start items-center inline-flex w-full h-full pt-[2px] textChat">
 													<div
 														className="flex flex-col whitespace-pre-wrap text-base w-full cursor-text"
 														style={{ wordBreak: 'break-word' }}

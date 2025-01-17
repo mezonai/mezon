@@ -42,11 +42,11 @@ export const handleCopyImage = async (urlData: string) => {
 		}
 
 		const file = new File([blob], fileName, {
-			type: `image/${fileType}`
+			type: `image/png`
 		});
 
 		const clipboardItem = new ClipboardItem({
-			[`image/${fileType}`]: file
+			[`image/png`]: file
 		});
 
 		await navigator.clipboard.write([clipboardItem]);

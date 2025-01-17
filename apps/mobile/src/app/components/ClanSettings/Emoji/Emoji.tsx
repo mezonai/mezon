@@ -2,7 +2,7 @@ import { handleUploadEmoticonMobile, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, createEmojiSetting, selectCurrentClanId, selectEmojiByClanId, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { MAX_FILE_NAME_EMOJI } from '@mezon/utils';
+import { LIMIT_SIZE_UPLOAD_IMG, MAX_FILE_NAME_EMOJI } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiClanEmojiCreateRequest, ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useEffect, useRef } from 'react';
@@ -11,6 +11,7 @@ import { Dimensions, Platform, Pressable, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { openCropper } from 'react-native-image-crop-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
+import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { EmojiList } from './EmojiList';
@@ -89,6 +90,15 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 							uri: croppedFile.path,
 							fileData: croppedFile.data
 						} as IFile;
+
+						if (Number(croppedFile.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 4)) {
+							Toast.show({
+								type: 'error',
+								text1: t('toast.errorSizeLimit')
+							});
+							return;
+						}
+
 						dispatch(appActions.setLoadingMainMobile(true));
 
 						const session = sessionRef.current;

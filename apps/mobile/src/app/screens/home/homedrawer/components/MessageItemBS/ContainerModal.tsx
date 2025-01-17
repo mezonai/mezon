@@ -325,9 +325,9 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 
 	const handleActionTopicDiscussion = async () => {
 		if (!message) return;
-		dispatch(topicsActions.setValueTopic(message));
+		dispatch(topicsActions.setCurrentTopicInitMessage(message));
 		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
-		dispatch(topicsActions.setIsShowCreateTopic({ channelId: message?.channel_id as string, isShowCreateTopic: true }));
+		dispatch(topicsActions.setIsShowCreateTopic(true));
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
 		});

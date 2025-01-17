@@ -83,11 +83,14 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		setToken(0);
 		setSelectedUserId('');
 		setNote('send token');
+		setUserSearchError('');
+		setError('');
 		dispatch(giveCoffeeActions.setShowModalSendToken(false));
 	};
 
-	const handleSaveSendToken = () => {
-		if (!selectedUserId) {
+	const handleSaveSendToken = (id: string) => {
+		const userId = selectedUserId !== '' ? selectedUserId : id;
+		if (userId === '') {
 			setUserSearchError('Please select a user');
 			return;
 		}
@@ -103,7 +106,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		const tokenEvent: ApiTokenSentEvent = {
 			sender_id: myProfile.userId as string,
 			sender_name: myProfile?.userProfile?.user?.username as string,
-			receiver_id: selectedUserId,
+			receiver_id: userId,
 			amount: token,
 			note: note
 		};

@@ -58,7 +58,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 	return (
 		<div className="w-full flex gap-2 relative">
 			<div
-				className="w-full pt-1 pb-1 pl-4 pr-4 cursor-pointer rounded-lg dark:bg-bgPrimary bg-bgLightPrimary border border-transparent dark:hover:border-bgModifierHover hover:border-bgModifierHover hover:bg-bgLightModeButton"
+				className="w-full py-2 pl-4 pr-4 cursor-pointer rounded-lg dark:bg-bgPrimary bg-bgLightPrimary border border-transparent dark:hover:border-bgModifierHover hover:border-bgModifierHover hover:bg-bgLightModeButton"
 				role="button"
 			>
 				<Link to={`/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`} onClick={handleOpenCanvas}>
@@ -72,7 +72,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 				onCopy={() => setIsCopied(true)}
 			>
 				<button
-					style={{ top: '5px' }}
+					style={{ top: '9px' }}
 					className={`absolute top-0 dark:border-black dark:shadow-[#000000] bg-white dark:bg-transparent shadow-emoji_item-delete font-bold w-6 h-6 flex items-center justify-center rounded-full ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}`}
 				>
 					{isCopied ? <Icons.PasteIcon /> : <Icons.CopyLink className="w-4 h-4" />}
@@ -81,7 +81,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 			{!isDisableDelCanvas && (
 				<button
 					title="Delete Canvas"
-					style={{ top: '5px' }}
+					style={{ top: '9px' }}
 					onClick={handleDeleteCanvas}
 					className="absolute top-0 right-[5px] dark:border-black dark:shadow-[#000000] bg-white dark:bg-transparent text-red-600 shadow-emoji_item-delete text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full"
 				>

@@ -36,17 +36,15 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 
 	const onPageChange = async (page: number) => {
 		setCurrentPage(page);
-		if (page * pageSize > listChannel.length && countChannel && listChannel.length < countChannel) {
-			await dispatch(
-				channelSettingActions.fetchChannelSettingInClan({
-					clanId,
-					parentId: '0',
-					page,
-					limit: pageSize,
-					typeFetch: ETypeFetchChannelSetting.MORE_CHANNEL
-				})
-			);
-		}
+		await dispatch(
+			channelSettingActions.fetchChannelSettingInClan({
+				clanId,
+				parentId: '0',
+				page,
+				limit: pageSize,
+				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL
+			})
+		);
 	};
 
 	const handleChangePageSize = async (pageSizeChange: number) => {
@@ -77,7 +75,7 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 				<span className="pr-1">Creator</span>
 			</div>
 			<AnchorScroll anchorId={clanId} ref={parentRef} className={['hide-scrollbar']} classNameChild={['!justify-start']}>
-				{listChannel.slice(pageSize * (currentPage - 1), pageSize * (currentPage - 1) + pageSize).map((channel) => (
+				{listChannel.map((channel) => (
 					<RenderChannelAndThread
 						channelParrent={channel}
 						key={`group_${channel.id}`}

@@ -11,9 +11,9 @@ import {
 	selectAttachmentByChannelId,
 	selectChannelById,
 	selectCurrentTopicId,
+	selectCurrentTopicInitMessage,
 	selectDmGroupCurrent,
 	selectIsShowCreateTopic,
-	selectValueTopic,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -91,8 +91,8 @@ export const ChatMessageSending = memo(
 			return load(STORAGE_MY_USER_ID);
 		}, []);
 		const currentTopicId = useSelector(selectCurrentTopicId);
-		const valueTopic = useSelector(selectValueTopic);
-		const isCreateTopic = useSelector((state) => selectIsShowCreateTopic(state, currentChannel?.id as string));
+		const valueTopic = useSelector(selectCurrentTopicInitMessage);
+		const isCreateTopic = useSelector(selectIsShowCreateTopic);
 		const { editSendMessage, sendMessage } = useChatSending({
 			mode,
 			channelOrDirect:

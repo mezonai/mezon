@@ -99,13 +99,13 @@ const AvatarProfile = ({
 									<div className="absolute -top-4 right-1 hidden group-hover:flex gap-[1px] dark:text-[#d1d4d6] text-[#303236] rounded-full bg-white dark:bg-bgPrimary border dark:border-[#1e1e1e] p-[2px] shadow-md">
 										<div
 											onClick={handleCustomStatus}
-											className="pl-2 pr-1 py-1 w-fit hover:bg-bgLightModeButton dark:hover:bg-[#25272a] rounded-l-full"
+											className="pl-2 pr-1 py-1 w-fit hover:bg-bgLightModeButton dark:hover:bg-[#25272a] rounded-l-full cursor-pointer"
 										>
 											<Icons.EditMessageRightClick defaultSize="w-4 h-4" />
 										</div>
 										<div
 											onClick={handleClearCustomStatus}
-											className="pl-1 pr-2 py-1 w-fit hover:bg-bgLightModeButton dark:hover:bg-[#25272a] rounded-r-full text-red-600"
+											className="pl-1 pr-2 py-1 w-fit hover:bg-bgLightModeButton dark:hover:bg-[#25272a] rounded-r-full text-red-600 cursor-pointer"
 										>
 											<Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />
 										</div>

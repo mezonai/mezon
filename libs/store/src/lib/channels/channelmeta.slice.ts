@@ -1,6 +1,5 @@
 import { LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-
 export const CHANNELMETA_FEATURE_KEY = 'channelmeta';
 
 export const enableMute = 0;
