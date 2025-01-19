@@ -72,6 +72,8 @@ function MessageWithUser({
 	isTopic
 }: Readonly<MessageWithUserProps>) {
 	const userId = useSelector(selectAllAccount)?.user?.id as string;
+	const username = useSelector(selectAllAccount)?.user?.username as string;
+
 	const user = useAppSelector((state) => selectMemberClanByUserId2(state, userId));
 	const positionShortUser = useRef<{ top: number; left: number } | null>(null);
 	const shortUserId = useRef('');
@@ -95,8 +97,10 @@ function MessageWithUser({
 		}
 		const userIdMention = userId;
 		const includesUser = message?.mentions?.some((mention) => mention.user_id === userIdMention);
+		const includesUserByUsername = message?.mentions?.some((mention) => mention.username === username);
+
 		const includesRole = message?.mentions?.some((item) => user?.role_id?.includes(item?.role_id as string));
-		return includesUser || includesRole;
+		return includesUser || includesRole || includesUserByUsername;
 	})();
 
 	const checkMessageHasReply = !!message?.references?.length && message?.code === TypeMessage.Chat;
