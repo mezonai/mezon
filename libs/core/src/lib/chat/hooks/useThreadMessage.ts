@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { checkTokenOnMarkdown, IMessageSendPayload, uniqueUsers } from '@mezon/utils';
+import { IMessageSendPayload, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
@@ -57,29 +57,19 @@ export function useThreadMessage({ channelId, mode }: UseThreadMessage) {
 			if (!client || !session || !socket || !thread || !currentClanId) {
 				throw new Error('Client is not initialized');
 			}
-			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
-				content.mk ?? [],
-				content.hg ?? [],
-				mentions ?? [],
-				content.ej ?? []
-			);
-			const validatedContent = {
-				...content,
-				hg: validHashtagList,
-				ej: validEmojiList
-			};
+
 			await socket.writeChatMessage(
 				currentClanId,
 				thread.channel_id as string,
 				ChannelStreamMode.STREAM_MODE_THREAD,
 				thread.channel_private === 0,
-				validatedContent,
-				validMentionList,
+				content,
+				mentions,
 				attachments,
 				references
 			);
 
-			const userIds = uniqueUsers(validMentionList as ApiMessageMention[], membersOfChild, rolesClan, []).slice(0, -1);
+			const userIds = uniqueUsers(mentions as ApiMessageMention[], membersOfChild, rolesClan, []).slice(0, -1);
 			const usersNotExistingInThread = userIds.filter((userId) => !mapToMemberIds?.includes(userId as string));
 			if (usersNotExistingInThread.length > 0) {
 				addMemberToThread(thread as ChannelsEntity, usersNotExistingInThread as string[]);

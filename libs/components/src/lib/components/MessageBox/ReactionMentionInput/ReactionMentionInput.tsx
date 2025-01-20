@@ -175,7 +175,9 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		rolesClan,
 		membersOfChild as ChannelMembersEntity[],
 		membersOfParent as ChannelMembersEntity[],
-		dataReferences?.message_sender_id || ''
+		dataReferences?.message_sender_id || '',
+		boldTextList,
+		markdownList
 	);
 
 	const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(props.currentChannelId ?? ''));
@@ -302,7 +304,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const handleSend = useCallback(
 		(anonymousMessage?: boolean) => {
 			const payload = {
-				t: request?.content,
+				t: request?.content.trim(),
 				hg: hashtagList,
 				ej: emojiList,
 				lk: linkList,

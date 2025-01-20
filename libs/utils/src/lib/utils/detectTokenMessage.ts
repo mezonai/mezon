@@ -21,19 +21,20 @@ export const isOutsideRange = (start: number, end: number, ranges: (IMarkdownOnM
 		return false;
 	});
 };
+// to check token is wrapper markdown or boldtext ranges
+
+export const isWrapperRange = (start: number, end: number, ranges: (IMarkdownOnMessage | IBoldTextOnMessage)[]): boolean => {
+	return ranges.some((range) => {
+		if (range.s !== undefined && range.e !== undefined) {
+			return start <= range.s && end >= range.e;
+		}
+		return false;
+	});
+};
 
 export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 	const boldTexts: IBoldTextOnMessage[] = [];
 	const stack: number[] = [];
-	const markdownRanges = new Set<number>();
-
-	for (const md of markdowns) {
-		const start = md.s ?? 0;
-		const end = md.e ?? 0;
-		for (let i = start; i <= end; i++) {
-			markdownRanges.add(i);
-		}
-	}
 
 	let i = 0;
 
@@ -48,11 +49,8 @@ export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessa
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			const startIndex = stack.pop()!;
 			const endIndex = i + 2;
-
-			const hasOverlap = Array.from({ length: endIndex - startIndex }, (_, idx) => startIndex + idx).some((index) => markdownRanges.has(index));
 			const isNotEmpty = inputString.substring(startIndex + 2, i).trim().length > 0;
-
-			if (!hasOverlap && isNotEmpty) {
+			if (isNotEmpty) {
 				boldTexts.push({
 					s: startIndex,
 					e: endIndex,
@@ -67,7 +65,12 @@ export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessa
 		i++;
 	}
 
-	return boldTexts;
+	const filteredBoldTexts = boldTexts.filter((boldText) => {
+		const isOutside = isOutsideRange(boldText.s as number, boldText.e as number, markdowns);
+		const isWrapper = isWrapperRange(boldText.s as number, boldText.e as number, markdowns);
+		return isOutside || isWrapper;
+	});
+	return filteredBoldTexts;
 };
 
 export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMessage[]; singleBackticks: IMarkdownOnMessage[] } => {

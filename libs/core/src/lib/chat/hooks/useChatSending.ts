@@ -9,16 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import {
-	IEmojiOnMessage,
-	IHashtagOnMessage,
-	IMentionOnMessage,
-	IMessageSendPayload,
-	addMention,
-	checkTokenOnMarkdown,
-	filterEmptyArrays,
-	updatePayload
-} from '@mezon/utils';
+import { IMentionOnMessage, IMessageSendPayload, updatePayload } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -57,25 +48,9 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			const isExistMk = content.mk && content?.mk?.length > 0 ? true : false;
 			const isExistBoldtext = content.b && content?.b?.length > 0 ? true : false;
 			const shouldBeNeedUpdate = isExistMk || isExistBoldtext;
-			const newIndexOfPayload = shouldBeNeedUpdate ? updatePayload(content, mentions as IMentionOnMessage[]) : null;
-			const combineOldMkAndBold = [...(content.mk ?? []), ...(content.b ?? [])].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const trimmedText = content?.t?.trim();
-			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
-				combineOldMkAndBold,
-				shouldBeNeedUpdate ? (newIndexOfPayload?.payload?.hg ?? []) : ((content.hg as IHashtagOnMessage[]) ?? []),
-				shouldBeNeedUpdate ? (newIndexOfPayload?.mentions ?? []) : ((mentions as IMentionOnMessage[]) ?? []),
-				shouldBeNeedUpdate ? (newIndexOfPayload?.payload?.ej ?? []) : ((content.ej as IEmojiOnMessage[]) ?? [])
-			);
-			const validatedContent = {
-				...(shouldBeNeedUpdate ? newIndexOfPayload?.payload : content),
-				t: shouldBeNeedUpdate ? newIndexOfPayload?.payload.t.trim() : trimmedText,
-				hg: validHashtagList,
-				ej: validEmojiList
-			};
-
-			const addMentionToPayload = addMention(validatedContent, validMentionList);
-			const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);
+			const newPayloadIndex = shouldBeNeedUpdate ? updatePayload(content, mentions as IMentionOnMessage[]) : null;
+			const contentNewIndex = newPayloadIndex?.payload;
+			const mentionsNewIndex = newPayloadIndex?.mentions;
 
 			if (!isFocusOnChannelInput && isShowCreateTopic) {
 				dispatch(
@@ -86,11 +61,11 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 						anonymous: false,
 						attachments: attachments,
 						code: 0,
-						content: removeEmptyOnPayload,
+						content: contentNewIndex ? contentNewIndex : content,
 						isMobile: isMobile,
 						isPublic: isPublic,
 						mentionEveryone: mentionEveryone,
-						mentions: validMentionList,
+						mentions: mentionsNewIndex ? mentionsNewIndex : mentions,
 						references: references,
 						topicId: currentTopicId as string
 					})
@@ -103,8 +78,8 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 					clanId: getClanId || '',
 					mode,
 					isPublic: isPublic,
-					content: removeEmptyOnPayload,
-					mentions: validMentionList,
+					content: contentNewIndex ? contentNewIndex : content,
+					mentions: mentionsNewIndex ? mentionsNewIndex : mentions,
 					attachments,
 					references,
 					anonymous,
@@ -149,26 +124,15 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			if (!client || !session || !socket || !channelOrDirect) {
 				throw new Error('Client is not initialized');
 			}
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const { validHashtagList, validMentionList, validEmojiList } = checkTokenOnMarkdown(
-				content.mk ?? [],
-				content.hg ?? [],
-				mentions ?? [],
-				content.ej ?? []
-			);
-			const validatedContent = {
-				...content,
-				hg: validHashtagList,
-				ej: validEmojiList
-			};
+
 			await socket.updateChatMessage(
 				getClanId || '',
 				channelIdOrDirectId ?? '',
 				mode,
 				isPublic,
 				messageId,
-				validatedContent,
-				validMentionList,
+				content,
+				mentions,
 				attachments,
 				hide_editted,
 				topic_id
