@@ -11,6 +11,8 @@ import {
 	IMessageSendPayload
 } from '../types';
 
+// to check token is outside markdown or boldtext ranges
+// example: link {s = 3; e = 7} markdown {s= 0; e = 10} => the link will be not detect.
 export const isOutsideRange = (start: number, end: number, ranges: (IMarkdownOnMessage | IBoldTextOnMessage)[]): boolean => {
 	return !ranges.some((range) => {
 		if (range.s !== undefined && range.e !== undefined) {
@@ -22,47 +24,47 @@ export const isOutsideRange = (start: number, end: number, ranges: (IMarkdownOnM
 
 export const processBoldText = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 	const boldTexts: IBoldTextOnMessage[] = [];
+	const stack: number[] = [];
+	const markdownRanges = new Set<number>();
+
+	for (const md of markdowns) {
+		const start = md.s ?? 0;
+		const end = md.e ?? 0;
+		for (let i = start; i <= end; i++) {
+			markdownRanges.add(i);
+		}
+	}
+
 	let i = 0;
 
 	while (i < inputString.length) {
 		if (inputString[i] === '*' && inputString[i + 1] === '*') {
-			const startIndex = i;
-			i += 2;
-
-			let boldText = '';
-			let insideBoldText = 0;
-
-			while (i < inputString.length) {
-				if (inputString[i] === '*' && inputString[i + 1] === '*') {
-					if (insideBoldText === 0) {
-						const endIndex = i + 2;
-						if (boldText.trim().length > 0) {
-							const isWrappingMarkdown = markdowns.some((md) => {
-								const mdStart = md.s ?? 0;
-								const mdEnd = md.e ?? 0;
-								return startIndex <= mdStart && endIndex >= mdEnd;
-							});
-							if (isOutsideRange(startIndex, endIndex, markdowns) && !isWrappingMarkdown) {
-								boldTexts.push({
-									s: startIndex,
-									e: endIndex,
-									type: EBacktickType.BOLD
-								});
-							}
-						}
-						i += 2;
-						break;
-					} else {
-						insideBoldText--;
-					}
-				} else {
-					boldText += inputString[i];
-				}
-				i++;
+			if (stack.length === 0) {
+				stack.push(i);
+				i += 2;
+				continue;
 			}
-		} else {
-			i++;
+
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			const startIndex = stack.pop()!;
+			const endIndex = i + 2;
+
+			const hasOverlap = Array.from({ length: endIndex - startIndex }, (_, idx) => startIndex + idx).some((index) => markdownRanges.has(index));
+			const isNotEmpty = inputString.substring(startIndex + 2, i).trim().length > 0;
+
+			if (!hasOverlap && isNotEmpty) {
+				boldTexts.push({
+					s: startIndex,
+					e: endIndex,
+					type: EBacktickType.BOLD
+				});
+			}
+
+			i += 2;
+			continue;
 		}
+
+		i++;
 	}
 
 	return boldTexts;
