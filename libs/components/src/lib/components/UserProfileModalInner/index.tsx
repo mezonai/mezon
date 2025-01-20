@@ -41,6 +41,11 @@ type UserProfileModalInnerProps = {
 	isDM?: boolean;
 	directId?: string;
 	user?: ChannelMembersEntity;
+	avatar?: string;
+	name?: string;
+	userNameAva?: string;
+	status?: { status?: boolean; isMobile?: boolean };
+	customStatus?: string;
 };
 
 const initOpenModal = {
@@ -48,7 +53,19 @@ const initOpenModal = {
 	openOption: false
 };
 
-const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }: UserProfileModalInnerProps) => {
+const UserProfileModalInner = ({
+	userId,
+	directId,
+	notify,
+	onClose,
+	isDM,
+	user,
+	avatar,
+	name,
+	userNameAva,
+	status,
+	customStatus
+}: UserProfileModalInnerProps) => {
 	const dispatch = useAppDispatch();
 	const userProfileRef = useRef<HTMLDivElement | null>(null);
 	const modeResponsive = useAppSelector(selectModeResponsive);
@@ -67,7 +84,7 @@ const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }
 	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
 		useSettingFooter();
 	const displayAvatar = userById?.clan_avatar || userById?.user?.avatar_url;
-	const displayUsername = userById?.clan_nick || userById?.user?.display_name || userById?.user?.username;
+	const displayUsername = name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username;
 	const userStatus = useMemberStatus(userId || '');
 	const currentClan = useSelector(selectCurrentClan);
 	const directMessageWithUser = async (userId: string) => {
@@ -165,12 +182,12 @@ const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }
 					</div>
 					<div className="flex absolute bottom-[-60px] w-full">
 						<AvatarProfile
-							avatar={displayAvatar}
+							avatar={avatar || displayAvatar}
 							username={displayUsername || notify?.content?.username}
 							userToDisplay={userById}
-							customStatus={userCustomStatus}
+							customStatus={customStatus || userCustomStatus}
 							userID={userId}
-							userStatus={userStatus}
+							userStatus={status || userStatus}
 							styleAvatar="w-[120px] h-[120px] rounded-full"
 						/>
 						{isSelf ? (
@@ -211,9 +228,9 @@ const UserProfileModalInner = ({ userId, directId, notify, onClose, isDM, user }
 					<div className="flex flex-col gap-3 h-full">
 						<div className="mt-4">
 							<h3 className="text-2xl font-semibold">
-								{userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || notify?.content?.username}
+								{name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || notify?.content?.username}
 							</h3>
-							<p className="text-sm font-normal">{userById?.user?.username || notify?.content?.username}</p>
+							<p className="text-sm font-normal">{userNameAva || userById?.user?.username || notify?.content?.username}</p>
 						</div>
 						<div className="flex-1 dark:bg-bgSearchHover bg-bgLightSearchHover rounded-lg shadow-shadowInbox">
 							<ProfileTabs activeTab={activeTab} onActiveTabChange={handleActiveTabChange} />

@@ -367,7 +367,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							})
 						);
 					}
-					dispatch(channelMetaActions.setChannelLastSentTimestamp({ channelId: message.channel_id, timestamp }));
+					dispatch(
+						channelMetaActions.setChannelLastSentTimestamp({ channelId: message.channel_id, timestamp, senderId: message.sender_id })
+					);
 					dispatch(listChannelsByUserActions.updateLastSentTime({ channelId: message.channel_id }));
 				}
 				// check
@@ -647,11 +649,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[clanIdActive, currentChannel?.channel_private, dispatch]
 	);
 
-	const onremovefriend = useCallback((userId: RemoveFriend) => {
-		//TODO: thanh.levan
-		// eslint-disable-next-line no-console
-		console.log('userId: ', userId);
-	}, []);
+	const onremovefriend = useCallback(
+		(removeFriend: RemoveFriend) => {
+			dispatch(friendsActions.remove(removeFriend.user_id));
+		},
+		[dispatch]
+	);
 
 	const onstickercreated = useCallback(
 		(stickerCreated: StickerCreateEvent) => {
@@ -832,7 +835,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 								lastSeenTimestamp: extendChannelCreated.last_seen_message.timestamp_seconds,
 								lastSentTimestamp: extendChannelCreated.last_sent_message.timestamp_seconds,
 								clanId: extendChannelCreated.clan_id ?? '',
-								isMute: false
+								isMute: false,
+								senderId: ''
 							}
 						])
 					);

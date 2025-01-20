@@ -142,10 +142,12 @@ export const setMuteNotificationSetting = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (clan_id !== '0' && clan_id !== '') {
-				thunkAPI.dispatch(channelsActions.update({ clanId: clan_id, update: { changes: { is_mute: false }, id: channel_id as string } }));
+				thunkAPI.dispatch(
+					channelsActions.update({ clanId: clan_id, update: { changes: { is_mute: active === 0 }, id: channel_id as string } })
+				);
 				thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
 			} else {
-				thunkAPI.dispatch(directActions.update({ id: channel_id as string, changes: { is_mute: false } }));
+				thunkAPI.dispatch(directActions.update({ id: channel_id as string, changes: { is_mute: active === 0 } }));
 			}
 			thunkAPI.dispatch(getNotificationSetting({ channelId: channel_id || '', isCurrentChannel: is_current_channel, noCache: true }));
 			return response;

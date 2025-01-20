@@ -152,7 +152,9 @@ const SuggestItem = ({
 
 				{display && (
 					<span className={`text-[15px] font-thin dark:text-white text-textLightTheme one-line flex items-center`} style={{ color: color }}>
-						<span className={`${isUnread ? ' font-medium' : ''}`}>
+						<span
+							className={`${isUnread || (count && count > 0) ? 'dark:text-white text-black dark:font-medium font-semibold' : 'font-medium dark:text-channelTextLabel text-colorTextLightMode'}`}
+						>
 							{isHightLight ? HighlightMatchBold(display ?? '', valueHightLight ?? '') : display}
 						</span>
 						{count && count > 0 && (

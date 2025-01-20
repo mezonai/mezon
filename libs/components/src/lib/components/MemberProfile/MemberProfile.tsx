@@ -308,6 +308,11 @@ export function MemberProfile({
 				onClose={() => closeModal(ModalType.UserProfile)}
 				isDM={isDM}
 				user={user}
+				avatar={avatar}
+				name={name}
+				userNameAva={userNameAva}
+				status={status}
+				customStatus={customStatus || metaDataDM?.status}
 			/>
 		);
 	});

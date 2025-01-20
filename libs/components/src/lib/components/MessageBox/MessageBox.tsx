@@ -7,7 +7,6 @@ import {
 	ILongPressType,
 	IMessageSendPayload,
 	MAX_FILE_ATTACHMENTS,
-	MIN_THRESHOLD_CHARS,
 	MentionDataProps,
 	ThreadValue,
 	processFile,
@@ -50,31 +49,29 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 	const onConvertToFiles = useCallback(
 		async (content: string) => {
-			if (content.length > MIN_THRESHOLD_CHARS) {
-				const fileContent = new Blob([content], { type: 'text/plain' });
-				const now = Date.now();
-				const filename = now + '.txt';
-				const file = new File([fileContent], filename, { type: 'text/plain' });
+			const fileContent = new Blob([content], { type: 'text/plain' });
+			const now = Date.now();
+			const filename = now + '.txt';
+			const file = new File([fileContent], filename, { type: 'text/plain' });
 
-				if (attachmentFilteredByChannelId?.files?.length + 1 > 10) {
-					setOverUploadingState(true);
-					return;
-				}
-
-				dispatch(
-					referencesActions.setAtachmentAfterUpload({
-						channelId: currentChannelId,
-						files: [
-							{
-								filename: file.name,
-								filetype: file.type,
-								size: file.size,
-								url: URL.createObjectURL(file)
-							}
-						]
-					})
-				);
+			if (attachmentFilteredByChannelId?.files?.length + 1 > 10) {
+				setOverUploadingState(true);
+				return;
 			}
+
+			dispatch(
+				referencesActions.setAtachmentAfterUpload({
+					channelId: currentChannelId,
+					files: [
+						{
+							filename: file.name,
+							filetype: file.type,
+							size: file.size,
+							url: URL.createObjectURL(file)
+						}
+					]
+				})
+			);
 		},
 		[attachmentFilteredByChannelId?.files?.length, currentChannelId]
 	);
