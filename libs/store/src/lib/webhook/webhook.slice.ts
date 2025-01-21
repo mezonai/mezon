@@ -158,21 +158,23 @@ export const integrationWebhookSlice = createSlice({
 			})
 			.addCase(fetchWebhooks.fulfilled, (state, action: PayloadAction<any>) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.fromCache) return;
+				if (action.payload?.fromCache) return;
 				const webhooks: ApiWebhook[] = action.payload;
-				webhooks.forEach((webhook) => {
-					const { channel_id } = webhook;
-					if (!channel_id) return;
+				if (webhooks) {
+					webhooks.forEach((webhook) => {
+						const { channel_id } = webhook;
+						if (!channel_id) return;
 
-					if (!state.webhookList[channel_id]) {
-						state.webhookList[channel_id] = webhookAdapter.getInitialState({
-							id: channel_id
-						});
-					}
+						if (!state.webhookList[channel_id]) {
+							state.webhookList[channel_id] = webhookAdapter.getInitialState({
+								id: channel_id
+							});
+						}
 
-					const updatedChannelWebhook = webhookAdapter.setMany(state.webhookList[channel_id], [webhook]);
-					state.webhookList[channel_id] = updatedChannelWebhook;
-				});
+						const updatedChannelWebhook = webhookAdapter.setMany(state.webhookList[channel_id], [webhook]);
+						state.webhookList[channel_id] = updatedChannelWebhook;
+					});
+				}
 			})
 			.addCase(fetchWebhooks.rejected, (state) => {
 				state.loadingStatus = 'error';

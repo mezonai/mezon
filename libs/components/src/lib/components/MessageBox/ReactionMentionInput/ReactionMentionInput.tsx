@@ -642,7 +642,8 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 						message_id: idRefMessage,
 						draftContent: lastMessageByUserId?.content,
 						draftMention: lastMessageByUserId.mentions ?? [],
-						draftAttachment: lastMessageByUserId.attachments ?? []
+						draftAttachment: lastMessageByUserId.attachments ?? [],
+						draftTopicId: lastMessageByUserId.content.tp as string
 					}
 				})
 			);

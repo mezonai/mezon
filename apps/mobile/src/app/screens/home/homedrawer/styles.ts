@@ -748,6 +748,11 @@ export const style = (colors: Attributes) =>
 			color: colors.text,
 			fontSize: size.s_14
 		},
+		forward: {
+			fontSize: size.s_12,
+			color: Colors.gray72,
+			fontStyle: 'italic'
+		},
 		messageTime: { fontSize: size.s_10, color: colors.textDisabled },
 		textMention: {
 			fontSize: size.small,

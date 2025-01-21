@@ -381,7 +381,8 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 					message_id: messageId,
 					draftContent: message.content,
 					draftMention: message.mentions ?? [],
-					draftAttachment: message.attachments ?? []
+					draftAttachment: message.attachments ?? [],
+					draftTopicId: message.content.tp as string
 				}
 			})
 		);

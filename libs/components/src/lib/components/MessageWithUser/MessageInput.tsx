@@ -103,7 +103,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			ej: channelDraftMessage?.draftContent?.ej,
 			lk: channelDraftMessage?.draftContent?.lk,
 			mk: channelDraftMessage?.draftContent?.mk,
-			vk: channelDraftMessage?.draftContent?.vk
+			vk: channelDraftMessage?.draftContent?.vk,
+			tp: channelDraftMessage?.draftTopicId
 		};
 	}, [channelDraftMessage?.draftContent, messageId]);
 
@@ -245,7 +246,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 				ej: emojiList
 			},
 			mentionList,
-			attachmentOnMessage ?? []
+			attachmentOnMessage ?? [],
+			message.content.tp as string
 		);
 
 		if (newPlainTextValue.endsWith('@')) {

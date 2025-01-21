@@ -203,7 +203,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 				}}
 			>
 				{firstChannelWithBadgeCount && isChannelRefOutOfViewport() && (
-					<div className={'sticky top-0 z-50 w-full flex justify-center'}>
+					<div className={'sticky top-0 z-10 w-full flex justify-center'}>
 						<MentionFloatButton onClick={handleScrollChannelIntoView} />
 					</div>
 				)}

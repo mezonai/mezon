@@ -292,7 +292,8 @@ function MessageContextMenu({
 					message_id: message?.id,
 					draftContent: message?.content,
 					draftMention: message?.mentions ?? [],
-					draftAttachment: message?.attachments ?? []
+					draftAttachment: message?.attachments ?? [],
+					draftTopicId: message?.topic_id as string
 				}
 			})
 		);

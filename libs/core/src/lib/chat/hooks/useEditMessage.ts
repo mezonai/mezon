@@ -50,7 +50,8 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 			message_id: string,
 			draftContent: IMessageSendPayload,
 			draftMention: ApiMessageMention[],
-			attachmentsOnMessage: ApiMessageAttachment[]
+			attachmentsOnMessage: ApiMessageAttachment[],
+			draftTopicId: string
 		) => {
 			dispatch(
 				messagesActions.setChannelDraftMessage({
@@ -59,7 +60,8 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 						message_id: message_id,
 						draftContent: draftContent,
 						draftMention: draftMention,
-						draftAttachment: attachmentsOnMessage
+						draftAttachment: attachmentsOnMessage,
+						draftTopicId: draftTopicId
 					}
 				})
 			);
@@ -70,7 +72,7 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 	const handleSend = useCallback(
 		(editMessage: IMessageSendPayload, messageId: string, draftMention: ApiMessageMention[], topic_id: string) => {
 			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id);
-			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? []);
+			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topic_id as string);
 			dispatch(referencesActions.setOpenEditMessageState(false));
 		},
 		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, clanIdInMes, mode, message]

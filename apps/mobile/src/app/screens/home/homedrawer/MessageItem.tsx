@@ -14,6 +14,7 @@ import { ETypeLinkMedia, isValidEmojiData, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import Entypo from 'react-native-vector-icons/Entypo';
 import { AvatarMessage } from './components/AvatarMessage';
 import { EmbedComponentsPanel } from './components/EmbedComponents';
 import { InfoUserMessage } from './components/InfoUserMessage';
@@ -332,62 +333,72 @@ const MessageItem = React.memo(
 								messageSenderId={message?.sender_id}
 								mode={mode}
 							/>
-							{message?.attachments?.length > 0 && (
-								<MessageAttachment
-									attachments={message?.attachments}
-									senderId={message?.sender_id}
-									createTime={message?.create_time}
-									onLongPressImage={onLongPressImage}
-								/>
-							)}
-							<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>
-								{isInviteLink || isGoogleMapsLink ? (
-									<RenderMessageBlock
-										isGoogleMapsLink={isGoogleMapsLink}
-										isInviteLink={isInviteLink}
-										contentMessage={contentMessage}
-									/>
-								) : isMessageCallLog ? (
-									<MessageCallLog
-										contentMsg={message?.content?.t}
-										channelId={message?.channel_id}
-										senderId={message?.sender_id}
-										callLog={message?.content?.callLog}
-									/>
-								) : (
-									<RenderTextMarkdownContent
-										content={{
-											...(typeof message.content === 'object' ? message.content : {}),
-											mentions: message.mentions,
-											...(checkOneLinkImage ? { t: '' } : {})
-										}}
-										isEdited={isEdited}
-										translate={t}
-										onMention={onMention}
-										onChannelMention={onChannelMention}
-										isNumberOfLine={isNumberOfLine}
-										isMessageReply={false}
-										isBuzzMessage={isBuzzMessage}
-										mode={mode}
-										currentChannelId={channelId}
-										isOnlyContainEmoji={isOnlyContainEmoji}
-										onLongPress={handleLongPressMessage}
-									/>
-								)}
-								{!!message?.content?.embed?.length &&
-									message?.content?.embed?.map((embed, index) => (
-										<EmbedMessage message_id={message?.id} embed={embed} key={`message_embed_${message?.id}_${index}`} />
-									))}
-								{!!message?.content?.components?.length &&
-									message?.content.components?.map((component, index) => (
-										<EmbedComponentsPanel
-											key={`message_embed_component_${message?.id}_${index}`}
-											actionRow={component}
-											messageId={message?.id}
+
+							<Block {...(message?.content?.fwd && { display: 'flex' })}>
+								<Block {...(message?.content?.fwd && { borderLeftWidth: 2, borderColor: 'gray', paddingLeft: 10 })}>
+									{!!message?.content?.fwd && (
+										<Text style={styles.forward}>
+											<Entypo name="forward" size={15} /> Forwarded
+										</Text>
+									)}
+									<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>
+										{isInviteLink || isGoogleMapsLink ? (
+											<RenderMessageBlock
+												isGoogleMapsLink={isGoogleMapsLink}
+												isInviteLink={isInviteLink}
+												contentMessage={contentMessage}
+											/>
+										) : isMessageCallLog ? (
+											<MessageCallLog
+												contentMsg={message?.content?.t}
+												channelId={message?.channel_id}
+												senderId={message?.sender_id}
+												callLog={message?.content?.callLog}
+											/>
+										) : (
+											<RenderTextMarkdownContent
+												content={{
+													...(typeof message.content === 'object' ? message.content : {}),
+													mentions: message.mentions,
+													...(checkOneLinkImage ? { t: '' } : {})
+												}}
+												isEdited={isEdited}
+												translate={t}
+												onMention={onMention}
+												onChannelMention={onChannelMention}
+												isNumberOfLine={isNumberOfLine}
+												isMessageReply={false}
+												isBuzzMessage={isBuzzMessage}
+												mode={mode}
+												currentChannelId={channelId}
+												isOnlyContainEmoji={isOnlyContainEmoji}
+												onLongPress={handleLongPressMessage}
+											/>
+										)}
+										{!!message?.content?.embed?.length &&
+											message?.content?.embed?.map((embed, index) => (
+												<EmbedMessage message_id={message?.id} embed={embed} key={`message_embed_${message?.id}_${index}`} />
+											))}
+										{!!message?.content?.components?.length &&
+											message?.content.components?.map((component, index) => (
+												<EmbedComponentsPanel
+													key={`message_embed_component_${message?.id}_${index}`}
+													actionRow={component}
+													messageId={message?.id}
+													senderId={message?.sender_id}
+													channelId={message?.channel_id || ''}
+												/>
+											))}
+									</Block>
+									{message?.attachments?.length > 0 && (
+										<MessageAttachment
+											attachments={message?.attachments}
 											senderId={message?.sender_id}
-											channelId={message?.channel_id || ''}
+											createTime={message?.create_time}
+											onLongPressImage={onLongPressImage}
 										/>
-									))}
+									)}
+								</Block>
 							</Block>
 							{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
 							{!preventAction ? (

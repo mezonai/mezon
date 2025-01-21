@@ -640,6 +640,7 @@ export type ChannelDraftMessages = {
 	draftContent: IMessageSendPayload;
 	draftMention: ApiMessageMention[];
 	draftAttachment: ApiMessageAttachment[];
+	draftTopicId?: string;
 };
 
 export interface IGifCategory {
