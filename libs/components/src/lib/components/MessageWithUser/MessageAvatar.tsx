@@ -50,15 +50,15 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 			srcImgProxy={createImgproxyUrl(
 				((mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
 					? clanAvatar || pendingClanAvatar || pendingUserAvatar
-					: pendingUserAvatar) ||
-					userAvatar) ??
+					: userAvatar) ||
+					message.avatar) ??
 					'',
 				{ width: 100, height: 100, resizeType: 'fit' }
 			)}
 			src={
 				(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
 					? clanAvatar || pendingClanAvatar || pendingUserAvatar
-					: pendingUserAvatar) || userAvatar
+					: userAvatar) || message.avatar
 			}
 			className="min-w-10 min-h-10"
 			classNameText="font-semibold"
