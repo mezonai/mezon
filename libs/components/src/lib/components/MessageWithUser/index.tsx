@@ -1,3 +1,4 @@
+import { useAuth } from '@mezon/core';
 import { MessagesEntity, selectAllAccount, selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
@@ -71,6 +72,7 @@ function MessageWithUser({
 	messageReplyHighlight,
 	isTopic
 }: Readonly<MessageWithUserProps>) {
+	const { userProfile } = useAuth();
 	const userId = useSelector(selectAllAccount)?.user?.id as string;
 	const user = useAppSelector((state) => selectMemberClanByUserId2(state, userId));
 	const positionShortUser = useRef<{ top: number; left: number } | null>(null);
@@ -168,11 +170,15 @@ function MessageWithUser({
 	}, [mode]);
 
 	const avatar = useMemo(() => {
+		const isMe = message?.sender_id === userProfile?.user?.id;
 		if (shortUserId.current === message?.sender_id) {
+			if (isMe) {
+				return isDM ? userProfile?.user?.avatar_url : message?.clan_avatar || message?.avatar;
+			}
 			return isDM ? message?.avatar : message?.clan_avatar || message?.avatar;
 		}
 		return message?.avatar;
-	}, [isDM, shortUserId.current, message?.avatar, message?.clan_avatar, message?.sender_id]);
+	}, [message?.sender_id, message?.avatar, message?.clan_avatar, userProfile?.user?.id, userProfile?.user?.avatar_url, isDM]);
 
 	const messageHour = message ? convertTimeHour(message.create_time) : '';
 

@@ -1,12 +1,14 @@
 import { useAccount, useAuth } from '@mezon/core';
 import {
+	IUpdateCLanProfileRequest,
 	channelMembersActions,
 	clansActions,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectLogoCustom,
 	selectTheme,
-	useAppDispatch
+	useAppDispatch,
+	usersClanActions
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, InputField } from '@mezon/ui';
@@ -69,6 +71,14 @@ const SettingRightUser = ({
 						repace: true
 					})
 				);
+
+				const newProfileInClan: IUpdateCLanProfileRequest = {
+					myId: userProfile?.user?.id,
+					avatar: urlImage,
+					displayName: valueDisplayName,
+					username: name
+				};
+				dispatch(usersClanActions.updateMyProfile(newProfileInClan));
 			}
 		}
 	};

@@ -1,7 +1,8 @@
+import { useAuth } from '@mezon/core';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
 import { IMessageWithUser, createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import usePendingNames from './usePendingNames';
 
@@ -14,6 +15,13 @@ type IMessageAvatarProps = {
 
 const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 	const userClan = useAppSelector((state) => selectMemberClanByUserId2(state, message.sender_id));
+	const { userProfile } = useAuth();
+
+	const userAvatar = useMemo(() => {
+		if (userProfile?.user?.id === message?.user?.id) return userProfile?.user?.avatar_url;
+		return message?.avatar;
+	}, [message?.avatar, message?.user?.id, userProfile?.user?.avatar_url, userProfile?.user?.id]);
+
 	const clanAvatar = userClan?.clan_avatar;
 	const generalAvatar = userClan?.user?.avatar_url;
 	const { pendingUserAvatar, pendingClanAvatar } = usePendingNames(
@@ -43,14 +51,14 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 				((mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
 					? clanAvatar || pendingClanAvatar || pendingUserAvatar
 					: pendingUserAvatar) ||
-					message?.avatar) ??
+					userAvatar) ??
 					'',
 				{ width: 100, height: 100, resizeType: 'fit' }
 			)}
 			src={
 				(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
 					? clanAvatar || pendingClanAvatar || pendingUserAvatar
-					: pendingUserAvatar) || message?.avatar
+					: pendingUserAvatar) || userAvatar
 			}
 			className="min-w-10 min-h-10"
 			classNameText="font-semibold"

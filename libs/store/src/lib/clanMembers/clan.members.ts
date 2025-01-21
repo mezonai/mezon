@@ -45,6 +45,13 @@ export const initialUsersClanState: UsersClanState = UsersClanAdapter.getInitial
 	error: null
 });
 
+export interface IUpdateCLanProfileRequest {
+	username?: string;
+	avatar?: string;
+	displayName?: string;
+	myId?: string;
+}
+
 export const UsersClanSlice = createSlice({
 	name: USERS_CLANS_FEATURE_KEY,
 	initialState: initialUsersClanState,
@@ -123,6 +130,24 @@ export const UsersClanSlice = createSlice({
 				const roleIds = existingMember.role_id || [];
 				const updatedRoleIds = roleIds.filter((roleId) => roleId !== id);
 				existingMember.role_id = updatedRoleIds;
+			}
+		},
+		updateMyProfile: (state, action: PayloadAction<IUpdateCLanProfileRequest>) => {
+			const { username, avatar, displayName, myId } = action.payload;
+			if (!myId) return;
+
+			const newDetail = {
+				avatar_url: avatar,
+				username: username,
+				display_name: displayName
+			};
+			const myProfileInClan = state.entities?.[myId]?.user;
+
+			if (state.entities[myId] && myProfileInClan) {
+				state.entities[myId].user = {
+					...myProfileInClan,
+					...newDetail
+				};
 			}
 		}
 	},

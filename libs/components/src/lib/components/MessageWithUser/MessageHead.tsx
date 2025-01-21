@@ -1,4 +1,4 @@
-import { useShowName } from '@mezon/core';
+import { useAuth, useShowName } from '@mezon/core';
 import { RolesClanEntity, selectMemberClanByUserId2, selectRolesClanEntities, useAppSelector } from '@mezon/store';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, DEFAULT_ROLE_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -13,6 +13,7 @@ type IMessageHeadProps = {
 };
 
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
+	const { userProfile } = useAuth();
 	const messageTime = convertTimeString(message?.create_time as string);
 	const userClan = useAppSelector((state) => selectMemberClanByUserId2(state, message?.sender_id));
 	const usernameSender = userClan?.user?.username;
@@ -49,12 +50,30 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 		message?.username ?? ''
 	);
 
-	const nameShowed = useShowName(
+	const priorityNameInClan = useShowName(
 		clanNick ? clanNick : (pendingClannick ?? ''),
 		displayName ? displayName : (pendingDisplayName ?? ''),
 		usernameSender ? usernameSender : (pendingUserName ?? ''),
 		message?.sender_id ?? ''
 	);
+
+	const priorityNameInDm = useMemo(() => {
+		const isMe = message?.user?.id === userProfile?.user?.id;
+		if (isMe) {
+			if (userProfile?.user?.display_name) return userProfile?.user?.display_name;
+			return userProfile?.user?.username;
+		} else {
+			if (message?.display_name) return message?.display_name;
+			return message?.username;
+		}
+	}, [
+		message?.display_name,
+		message?.user?.id,
+		message?.username,
+		userProfile?.user?.display_name,
+		userProfile?.user?.id,
+		userProfile?.user?.username
+	]);
 
 	return (
 		<div className="relative group">
@@ -72,10 +91,8 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 					}}
 				>
 					{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
-						? nameShowed
-						: message?.display_name
-							? message?.display_name
-							: message?.username}
+						? priorityNameInClan
+						: priorityNameInDm}
 				</div>
 				<div className=" dark:text-zinc-400 text-colorTextLightMode text-[10px] cursor-default">{messageTime}</div>
 			</div>
