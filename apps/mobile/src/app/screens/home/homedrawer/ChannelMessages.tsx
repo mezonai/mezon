@@ -36,7 +36,6 @@ type ChannelMessagesProps = {
 	mode: ChannelStreamMode;
 	isDM?: boolean;
 	isPublic?: boolean;
-	isDisableLoadMore?: boolean;
 };
 
 const getEntitiesArray = (state: any) => {
@@ -50,7 +49,7 @@ if (Platform.OS === 'android') {
 	}
 }
 
-const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, isPublic, isDisableLoadMore }: ChannelMessagesProps) => {
+const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, isPublic }: ChannelMessagesProps) => {
 	const dispatch = useAppDispatch();
 	const { themeValue } = useTheme();
 	const store = useStore();
@@ -130,7 +129,6 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 
 	const onLoadMore = useCallback(
 		async (direction: ELoadMoreDirection) => {
-			if (isDisableLoadMore) return;
 			if (isLoadMore?.current?.[direction] || isFetching) return;
 			if (direction === ELoadMoreDirection.bottom) {
 				const hasMoreBottom = selectHasMoreBottomByChannelId2(store.getState() as RootState, channelId);
@@ -173,7 +171,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 
 			return true;
 		},
-		[isDisableLoadMore, isFetching, dispatch, clanId, channelId, topicId, store]
+		[isFetching, dispatch, clanId, channelId, topicId, store, scrollChannelMessageToIndex]
 	);
 
 	const renderItem = useCallback(
@@ -230,7 +228,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 					isLoadMoreTop={isLoadMore.current?.[ELoadMoreDirection.top]}
 					isLoadMoreBottom={isLoadMore.current?.[ELoadMoreDirection.bottom]}
 				/>
-			) : !isDisableLoadMore ? (
+			) : isFetching ? (
 				<MessageItemSkeleton skeletonNumber={15} />
 			) : (
 				<View />
