@@ -143,7 +143,7 @@ const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }:
 								{!channelParent?.channel_label && !isMemberPath && <CanvasButton isLightMode={appearanceTheme === 'light'} />}
 								<ThreadButton isLightMode={appearanceTheme === 'light'} />
 								<MuteButton isLightMode={appearanceTheme === 'light'} />
-								<PinButton isLightMode={appearanceTheme === 'light'} />
+								<PinButton mode={mode} isLightMode={appearanceTheme === 'light'} />
 								<div onClick={() => setTurnOffThreadMessage()}>
 									<ChannelListButton isLightMode={appearanceTheme === 'light'} />
 								</div>
@@ -310,7 +310,7 @@ function MuteButton({ isLightMode }: { isLightMode: boolean }) {
 	);
 }
 
-function PinButton({ isLightMode }: { isLightMode: boolean }) {
+function PinButton({ isLightMode, mode }: { isLightMode: boolean; mode?: number }) {
 	const dispatch = useAppDispatch();
 	const isShowPinMessage = useSelector(selectIsPinModalVisible);
 	const pinRef = useRef<HTMLDivElement | null>(null);
@@ -338,7 +338,7 @@ function PinButton({ isLightMode }: { isLightMode: boolean }) {
 					)}
 				</button>
 			</Tippy>
-			{isShowPinMessage && <PinnedMessages rootRef={pinRef} onClose={handleTogglePinMessage} />}
+			{isShowPinMessage && <PinnedMessages mode={mode} rootRef={pinRef} onClose={handleTogglePinMessage} />}
 		</div>
 	);
 }

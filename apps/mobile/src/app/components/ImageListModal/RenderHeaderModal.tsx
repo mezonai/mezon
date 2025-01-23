@@ -67,7 +67,9 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 						</Block>
 						<Block style={styles.messageBoxTop}>
 							<Text style={styles.userNameMessageBox}>
-								{(currentDirectId ? uploader?.user?.display_name : uploader?.clan_nick) || 'Anonymous'}
+								{(currentDirectId
+									? uploader?.user?.display_name || uploader?.user?.username
+									: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username) || 'Anonymous'}
 							</Text>
 							<Text style={styles.dateMessageBox}>
 								{imageSelected?.create_time ? convertTimeString(imageSelected?.create_time) : ''}

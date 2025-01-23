@@ -2,7 +2,7 @@ import { Icons } from '@mezon/mobile-components';
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import { embedActions, useAppDispatch } from '@mezon/store-mobile';
 import { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import MessageSelect from '../MessageSelect';
 import { style } from './styles';
@@ -11,14 +11,36 @@ type EmbedSelectProps = {
 	select: IMessageSelect;
 	messageId: string;
 	buttonId: string;
-	onSelectionChanged: (value: number | string, id: string) => void;
 };
 
-export const EmbedSelect = memo(({ select, messageId, buttonId, onSelectionChanged }: EmbedSelectProps) => {
+export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectProps) => {
 	const dispatch = useAppDispatch();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [selectedOptions, setSelectedOptions] = useState<IMessageSelectOption[]>([]);
+
+	const checkMultipleSelect = useMemo(() => {
+		return (!!select.min_options && select.min_options > 1) || (!!select.max_options && select.max_options >= 2);
+	}, [select.min_options, select.max_options]);
+	useEffect(() => {
+		if (select.valueSelected) {
+			handleChangeDataInput(select.valueSelected.value, buttonId);
+		}
+	}, []);
+
+	const handleChangeDataInput = (value: string, id?: string) => {
+		dispatch(
+			embedActions.addEmbedValue({
+				message_id: messageId,
+				data: {
+					id: id,
+					value: value
+				},
+				multiple: true,
+				onlyChooseOne: !checkMultipleSelect
+			})
+		);
+	};
 
 	const handleSelectChanged = (option) => {
 		if ((!select?.max_options || select?.max_options === 1) && selectedOptions?.length === 1) {
@@ -40,12 +62,12 @@ export const EmbedSelect = memo(({ select, messageId, buttonId, onSelectionChang
 			);
 			return;
 		}
-		onSelectionChanged(option?.value, buttonId);
+		handleChangeDataInput(option?.value, buttonId);
 	};
 
 	useEffect(() => {
 		if (select?.valueSelected) {
-			handleSelectChanged({ title: select?.valueSelected?.label, value: select?.valueSelected?.value });
+			handleChangeDataInput(select?.valueSelected?.value, buttonId);
 		}
 	}, []);
 

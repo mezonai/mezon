@@ -19,6 +19,7 @@ export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {
 	tokenSocket: Record<string, ApiGiveCoffeeEvent>;
 	tokenUpdate: Record<string, number>;
 	infoSendToken: ApiTokenSentEvent | null;
+	isSendToken: boolean | null;
 }
 
 export const giveCoffeeAdapter = createEntityAdapter<GiveCoffeeEntity>();
@@ -55,7 +56,8 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 	showModalSendToken: false,
 	tokenSocket: {},
 	tokenUpdate: {},
-	infoSendToken: null
+	infoSendToken: null,
+	isSendToken: null
 });
 
 export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: ApiTokenSentEvent, thunkAPI) => {
@@ -92,6 +94,9 @@ export const giveCoffeeSlice = createSlice({
 		},
 		setInfoSendToken: (state, action: PayloadAction<ApiTokenSentEvent | null>) => {
 			state.infoSendToken = action.payload;
+		},
+		setIsSendToken: (state, action: PayloadAction<boolean | null>) => {
+			state.isSendToken = action.payload;
 		},
 		updateTokenUser: (state, action: PayloadAction<{ tokenEvent: ApiTokenSentEvent }>) => {
 			const { tokenEvent } = action.payload;
@@ -167,6 +172,8 @@ export const getCoffeeState = (rootState: { [GIVE_COFEE]: GiveCoffeeState }): Gi
 export const selectShowModalSendToken = createSelector(getCoffeeState, (state) => state.showModalSendToken);
 
 export const selectInfoSendToken = createSelector(getCoffeeState, (state) => state.infoSendToken);
+
+export const selectIsSendToken = createSelector(getCoffeeState, (state) => state.isSendToken);
 
 export const selectUpdateToken = (userId: string) =>
 	createSelector(getCoffeeState, (state) => {

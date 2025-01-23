@@ -10,6 +10,7 @@ import ListPinMessage from './ListPinMessage';
 type PinnedMessagesProps = {
 	onClose: () => void;
 	rootRef?: RefObject<HTMLElement>;
+	mode?: number;
 };
 
 export type UnpinMessageObject = {
@@ -18,7 +19,7 @@ export type UnpinMessageObject = {
 	attachments: ApiMessageAttachment[];
 };
 
-const PinnedMessages = ({ onClose, rootRef }: PinnedMessagesProps) => {
+const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 	const appearanceTheme = useSelector(selectTheme);
 	const modalRef = useRef<HTMLDivElement>(null);
 	const dispatch = useAppDispatch();
@@ -78,7 +79,7 @@ const PinnedMessages = ({ onClose, rootRef }: PinnedMessagesProps) => {
 				<div
 					className={`flex flex-col dark:bg-bgSecondary bg-bgLightSecondary flex-1 overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'thread-scroll'}`}
 				>
-					<ListPinMessage onClose={onClose} handleUnPinConfirm={handleUnPinConfirm} />
+					<ListPinMessage mode={mode} onClose={onClose} handleUnPinConfirm={handleUnPinConfirm} />
 				</div>
 			</div>
 		</div>

@@ -98,7 +98,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		dispatch(giveCoffeeActions.setShowModalSendToken(false));
 	};
 
-	const handleSaveSendToken = (id: string) => {
+	const handleSaveSendToken = async (id: string) => {
 		const userId = selectedUserId !== '' ? selectedUserId : id;
 		if (userId === '') {
 			setUserSearchError('Please select a user');
@@ -122,8 +122,19 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			extra_attribute: extraAttribute
 		};
 
-		dispatch(giveCoffeeActions.sendToken(tokenEvent));
-		dispatch(giveCoffeeActions.setInfoSendToken(null));
+		try {
+			const response = await dispatch(giveCoffeeActions.sendToken(tokenEvent)).unwrap();
+			if (response) {
+				dispatch(giveCoffeeActions.setIsSendToken(true));
+			}
+		} catch (err) {
+			dispatch(giveCoffeeActions.setIsSendToken(false));
+		}
+		handleCloseModalSendToken();
+	};
+
+	const handleClosePopup = () => {
+		dispatch(giveCoffeeActions.setIsSendToken(false));
 		handleCloseModalSendToken();
 	};
 
@@ -222,7 +233,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 					selectedUserId={selectedUserId}
 					handleSaveSendToken={handleSaveSendToken}
 					openModal={showModalSendToken}
-					onClose={handleCloseModalSendToken}
+					onClose={handleClosePopup}
 					setSelectedUserId={setSelectedUserId}
 					setNote={setNote}
 					error={error}

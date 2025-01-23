@@ -1,6 +1,7 @@
 {
     "btn": {
-        "upload": "Upload Sticker"
+        "upload": "Upload Sticker",
+        "delete": "Delete"
     },
     "content": {
         "description": "Add upto 250 custom stickers that anyone can use in this server.",

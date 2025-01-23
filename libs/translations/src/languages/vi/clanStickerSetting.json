@@ -1,6 +1,7 @@
 {
     "btn": {
-        "upload": "Tải lên Nhãn dán"
+        "upload": "Tải lên Nhãn dán",
+        "delete": "Xóa"
     },
     "content": {
         "description": "Thêm tối đa 250 nhãn dán tùy chỉnh mà bất kỳ ai cũng có thể sử dụng trong máy chủ này.",

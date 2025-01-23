@@ -29,7 +29,9 @@ import {
 	selectCurrentChannel,
 	selectCurrentClan,
 	selectFetchChannelStatus,
+	selectInfoSendToken,
 	selectIsSearchMessage,
+	selectIsSendToken,
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowMemberList,
@@ -226,6 +228,8 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
 	const currentUser = useAuth();
 	const allRolesInClan = useSelector(selectAllRolesClan);
+	const isSendToken = useSelector(selectIsSendToken);
+	const infoSendToken = useSelector(selectInfoSendToken);
 
 	const closeAgeRestricted = () => {
 		setIsShowAgeRestricted(false);
@@ -295,6 +299,8 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					} else if (eventType === 'SEND_TOKEN') {
 						const { amount, note, receiver_id, extra_attribute } = (eventData.eventData || {}) as any;
 						const tokenEvent: ApiTokenSentEvent = {
+							sender_id: currentUser.userId as string,
+							sender_name: currentUser?.userProfile?.user?.username as string,
 							receiver_id,
 							amount,
 							note,
@@ -322,6 +328,22 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			return () => window.removeEventListener('message', handleMessage);
 		}
 	}, [appChannel?.url]);
+
+	useEffect(() => {
+		if (isSendToken === true) {
+			miniAppRef.current?.contentWindow?.postMessage(
+				JSON.stringify({ eventType: 'SEND_TOKEN_RESPONSE_SUCCESS', eventData: infoSendToken?.sender_id }),
+				appChannel.url ?? ''
+			);
+		} else if (isSendToken === false) {
+			miniAppRef.current?.contentWindow?.postMessage(
+				JSON.stringify({ eventType: 'SEND_TOKEN_RESPONSE_FAILED', eventData: infoSendToken?.sender_id }),
+				appChannel.url ?? ''
+			);
+		}
+		dispatch(giveCoffeeActions.setIsSendToken(null));
+		dispatch(giveCoffeeActions.setInfoSendToken(null));
+	}, [isSendToken]);
 
 	useEffect(() => {
 		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '[]');

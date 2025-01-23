@@ -1,7 +1,7 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { PinMessageEntity, messagesActions, selectCurrentClanId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { convertTimeString } from '@mezon/utils';
-import { safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -14,10 +14,11 @@ type ItemPinMessageProps = {
 	contentString: string | undefined;
 	handleUnPinMessage: (unpinValue: UnpinMessageObject) => void;
 	onClose: () => void;
+	mode?: number;
 };
 
 const ItemPinMessage = (props: ItemPinMessageProps) => {
-	const { pinMessage, contentString, handleUnPinMessage, onClose } = props;
+	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
 	const messageTime = convertTimeString(pinMessage?.create_time as string);
 	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -53,6 +54,11 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		});
 	};
 
+	const avatarToShow =
+		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? priorityAvatar : pinMessage.avatar) || '';
+
+	const nameToShow =
+		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? namePriority : pinMessage.username) || '';
 	return (
 		<div
 			key={pinMessage.id}
@@ -63,8 +69,8 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 					{' '}
 					<MemberProfile
 						isHideUserName={true}
-						avatar={priorityAvatar ? priorityAvatar : pinMessage.avatar || ''}
-						name={namePriority ? namePriority : pinMessage.username || ''}
+						avatar={avatarToShow}
+						name={nameToShow}
 						isHideStatus={true}
 						isHideIconStatus={true}
 						textColor="#fff"
@@ -73,9 +79,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 				<div className="flex flex-col gap-1 text-left w-[85%] enableSelectText cursor-text">
 					<div className="flex items-center gap-4">
-						<div className="font-medium dark:text-textDarkTheme text-textLightTheme">
-							{namePriority ? namePriority : pinMessage.username || ''}
-						</div>
+						<div className="font-medium dark:text-textDarkTheme text-textLightTheme">{nameToShow}</div>
 						<div className="dark:text-zinc-400 text-colorTextLightMode text-[10px] cursor-default">{messageTime}</div>
 					</div>
 					<div className="leading-6">

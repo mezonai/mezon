@@ -193,7 +193,7 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 									</Tippy>
 								</button>
 								<div>
-									<PinButton isLightMode={isLightMode} />
+									<PinButton mode={mode} isLightMode={isLightMode} />
 								</div>
 								<AddMemberToGroupDm currentDmGroup={currentDmGroup} appearanceTheme={appearanceTheme} />
 								{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
@@ -258,7 +258,7 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 	);
 }
 
-function PinButton({ isLightMode }: { isLightMode: boolean }) {
+function PinButton({ isLightMode, mode }: { isLightMode: boolean; mode?: number }) {
 	const dispatch = useAppDispatch();
 	const currentDm = useSelector(selectCurrentDM);
 	const isShowPinBadge = useAppSelector((state) => selectIsShowPinBadgeByDmId(state, currentDm?.id as string));
@@ -290,7 +290,7 @@ function PinButton({ isLightMode }: { isLightMode: boolean }) {
 					</button>
 				</div>
 			</Tippy>
-			{isShowPinMessage && <PinnedMessages onClose={handleClose} rootRef={threadRef} />}
+			{isShowPinMessage && <PinnedMessages mode={mode} onClose={handleClose} rootRef={threadRef} />}
 		</div>
 	);
 }

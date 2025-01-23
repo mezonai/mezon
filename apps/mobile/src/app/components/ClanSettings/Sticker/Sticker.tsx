@@ -1,12 +1,12 @@
 import { handleUploadEmoticonMobile, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { createSticker, settingClanStickerActions, useAppDispatch } from '@mezon/store';
+import { createSticker, useAppDispatch } from '@mezon/store';
 import { selectCurrentClanId, selectStickerByClanId } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiClanStickerAddRequest } from 'mezon-js/api.gen';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Platform, ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { openCropper } from 'react-native-image-crop-picker';
@@ -14,7 +14,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { handleSelectImage, IFile } from '../../../componentUI';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../componentUI/MezonButton2';
-import { StickerSettingItem } from './StickerItem';
+import { StickerList } from './StickerList';
 import { style } from './styles';
 
 export function StickerSetting() {
@@ -27,10 +27,6 @@ export function StickerSetting() {
 	const availableLeft = useMemo(() => 50 - listSticker?.length, [listSticker]);
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['clanStickerSetting']);
-
-	const loadSticker = useCallback(async () => {
-		await dispatch(settingClanStickerActions.fetchStickerByUserId({}));
-	}, [currentClanId]);
 
 	const handleUploadImage = useCallback(async (file: IFile) => {
 		if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
@@ -63,52 +59,71 @@ export function StickerSetting() {
 		if (file) {
 			timerRef.current = setTimeout(
 				async () => {
-					const croppedFile = await openCropper({
-						path: file.uri,
-						mediaType: 'photo',
-						includeBase64: true,
-						compressImageQuality: QUALITY_IMAGE_UPLOAD,
-						width: 320,
-						height: 320
-					});
+					if (file.type === 'image/gif') {
+						if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
+							Toast.show({
+								type: 'error',
+								text1: t('toast.errorSizeLimit')
+							});
+							return;
+						}
+						const { id, url } = await handleUploadImage(file);
 
-					// TODO: check category
-					const category = 'Among Us';
+						const category = 'Among Us';
 
-					if (Number(croppedFile.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
-						Toast.show({
-							type: 'error',
-							text1: t('toast.errorSizeLimit')
+						const request: ApiClanStickerAddRequest = {
+							id: id,
+							category: category,
+							clan_id: currentClanId,
+							shortname: 'sticker_00',
+							source: url
+						};
+
+						dispatch(createSticker({ request: request, clanId: currentClanId }));
+					} else {
+						const croppedFile = await openCropper({
+							path: file.uri,
+							mediaType: 'photo',
+							includeBase64: true,
+							compressImageQuality: QUALITY_IMAGE_UPLOAD,
+							width: 320,
+							height: 320
 						});
-						return;
+
+						// TODO: check category
+						const category = 'Among Us';
+
+						if (Number(croppedFile.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
+							Toast.show({
+								type: 'error',
+								text1: t('toast.errorSizeLimit')
+							});
+							return;
+						}
+
+						const { id, url } = await handleUploadImage({
+							fileData: croppedFile?.data,
+							name: file.name,
+							uri: croppedFile.path,
+							size: croppedFile.size,
+							type: croppedFile.mime
+						});
+
+						const request: ApiClanStickerAddRequest = {
+							id: id,
+							category: category,
+							clan_id: currentClanId,
+							shortname: 'sticker_00',
+							source: url
+						};
+
+						dispatch(createSticker({ request: request, clanId: currentClanId }));
 					}
-
-					const { id, url } = await handleUploadImage({
-						fileData: croppedFile?.data,
-						name: file.name,
-						uri: croppedFile.path,
-						size: croppedFile.size,
-						type: croppedFile.mime
-					});
-
-					const request: ApiClanStickerAddRequest = {
-						id: id,
-						category: category,
-						clan_id: currentClanId,
-						shortname: 'sticker_00',
-						source: url
-					};
-
-					dispatch(createSticker({ request: request, clanId: currentClanId }));
 				},
 				Platform.OS === 'ios' ? 500 : 0
 			);
 		}
-	}, []);
-
-	useEffect(() => {
-		loadSticker();
-	}, []);
+	}, [currentClanId, dispatch, handleUploadImage, t]);
 
 	return (
 		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -131,8 +146,7 @@ export function StickerSetting() {
 					<Text style={styles.text}>{t('content.reqSize')}</Text>
 
 					<Text style={[styles.text, styles.textTitle]}>{t('content.available', { left: availableLeft })}</Text>
-
-					{listSticker?.map((item, index) => <StickerSettingItem data={item} clanID={currentClanId} key={'sticker_' + item.id} />)}
+					<StickerList listSticker={listSticker} clanID={currentClanId} />
 				</ScrollView>
 			</View>
 		</TouchableWithoutFeedback>

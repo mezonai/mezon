@@ -182,7 +182,7 @@ export const MemberListStatus = React.memo(() => {
 					windowSize={5}
 				/>
 			) : null}
-			<UserInformationBottomSheet userId={selectedUser?.user?.id} onClose={onClose} />
+			<UserInformationBottomSheet userId={selectedUser?.user?.id} user={selectedUser} onClose={onClose} currentChannel={currentChannel} />
 			<InviteToChannel isUnknownChannel={false} ref={bottomSheetRef} isDMThread={isDMThread} />
 		</View>
 	);

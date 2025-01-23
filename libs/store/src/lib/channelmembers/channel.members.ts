@@ -201,6 +201,12 @@ export const updateCustomStatus = createAsyncThunk(
 	async ({ clanId, customStatus, minutes, noClear }: UpdateCustomStatus, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+			if (minutes === 0) {
+				const now = new Date();
+				const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+				const timeDifference = endOfDay.getTime() - now.getTime();
+				minutes = Math.floor(timeDifference / (1000 * 60));
+			}
 			const response = await mezon.socketRef.current?.writeCustomStatus(clanId, customStatus, minutes, noClear);
 			thunkAPI.dispatch(accountActions.setCustomStatus(customStatus));
 			thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));

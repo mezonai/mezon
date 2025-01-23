@@ -11,10 +11,12 @@ const ListPinMessage = ({
 	onClose = () => {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 	},
-	handleUnPinConfirm
+	handleUnPinConfirm,
+	mode
 }: {
 	onClose?: () => void;
 	handleUnPinConfirm: (unpinValue: UnpinMessageObject) => void;
+	mode?: number;
 }) => {
 	const { directId } = useAppParams();
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -55,6 +57,7 @@ const ListPinMessage = ({
 								handleUnPinMessage={handleUnPinConfirm}
 								key={pinMessage.id}
 								onClose={onClose}
+								mode={mode}
 							/>
 						);
 					})}

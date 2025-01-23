@@ -1,5 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Block, size } from '@mezon/mobile-ui';
+import { ChannelsEntity } from '@mezon/store';
 import { User } from 'mezon-js';
 import React, { useEffect, useRef } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
@@ -13,10 +14,11 @@ interface IUserInformationBottomSheetProps {
 	onClose: () => void;
 	showAction?: boolean;
 	showRole?: boolean;
+	currentChannel?: ChannelsEntity;
 }
 
 export const UserInformationBottomSheet = React.memo((props: IUserInformationBottomSheetProps) => {
-	const { onClose, userId, user, showAction = true, showRole = true } = props;
+	const { onClose, userId, user, showAction = true, showRole = true, currentChannel } = props;
 	const bottomSheetRef = useRef(null);
 	const snapPoints = ['60%'];
 	useEffect(() => {
@@ -56,7 +58,14 @@ export const UserInformationBottomSheet = React.memo((props: IUserInformationBot
 			}}
 		>
 			<Block overflow="hidden" borderTopLeftRadius={size.s_14} borderTopRightRadius={size.s_14}>
-				<UserProfile userId={userId} user={user} onClose={onClose} showAction={showAction} showRole={showRole}></UserProfile>
+				<UserProfile
+					userId={userId}
+					user={user}
+					onClose={onClose}
+					showAction={showAction}
+					showRole={showRole}
+					currentChannel={currentChannel}
+				></UserProfile>
 			</Block>
 		</MezonBottomSheet>
 	);

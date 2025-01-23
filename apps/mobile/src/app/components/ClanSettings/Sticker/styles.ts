@@ -6,10 +6,11 @@ export const style = (colors: Attributes) =>
 		container: {
 			flex: 1,
 			backgroundColor: colors.primary,
-			padding: size.s_16
+			paddingVertical: size.s_16
 		},
 		text: {
-			color: colors.textStrong
+			color: colors.textStrong,
+			marginHorizontal: size.s_16
 		},
 		textTitle: {
 			fontSize: Fonts.size.h7,
@@ -17,10 +18,12 @@ export const style = (colors: Attributes) =>
 			color: colors.textStrong,
 			fontWeight: 'bold',
 			marginTop: size.s_6,
-			marginBottom: size.s_4
+			marginBottom: size.s_4,
+			marginHorizontal: size.s_16
 		},
 		btn: {
-			marginBottom: size.s_20
+			marginBottom: size.s_20,
+			marginHorizontal: size.s_16
 		},
 
 		btnTitle: {
