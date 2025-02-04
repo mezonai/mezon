@@ -133,8 +133,11 @@ function MessageWithUser({
 		// }
 	);
 
+	const [isReply, setIsReply] = useState(false);
+
 	const handleOpenShortUser = useCallback(
-		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string) => {
+		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isReply = false) => {
+			setIsReply(isReply);
 			if (checkAnonymous) {
 				return;
 			}
@@ -197,7 +200,13 @@ function MessageWithUser({
 					mode={mode}
 					positionType={''}
 					avatar={avatar}
-					name={message?.clan_nick || message?.display_name || message?.username}
+					name={
+						isReply && message.references && message?.references[0]
+							? message?.references[0].message_sender_clan_nick ||
+								message?.references[0].message_sender_display_name ||
+								message?.references[0].message_sender_username
+							: message?.clan_nick || message?.display_name || message?.username
+					}
 					isDM={isDM}
 				/>
 			</div>
@@ -223,7 +232,7 @@ function MessageWithUser({
 									<MessageReply
 										message={message}
 										mode={mode}
-										onClick={(e) => handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string)}
+										onClick={(e) => handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, true)}
 									/>
 								)}
 								<div
