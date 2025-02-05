@@ -1,8 +1,10 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useFriends } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
+	FriendsEntity,
 	appActions,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -37,6 +39,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [tokenCount, setTokenCount] = useState('0');
 	const [note, setNote] = useState('send token');
+	const { friends: allUser } = useFriends();
 	const userProfile = useSelector(selectAllAccount);
 	const usersClan = useSelector(selectAllUserClans);
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
@@ -45,6 +48,9 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const [selectedUser, setSelectedUser] = useState<Receiver>(null);
 	const [searchText, setSearchText] = useState<string>('');
 	const [plainTokenCount, setPlainTokenCount] = useState(0);
+	const friendList: FriendsEntity[] = useMemo(() => {
+		return allUser.filter((user) => user.state === 0);
+	}, [allUser]);
 
 	const tokenInWallet = useMemo(() => {
 		return userProfile?.wallet ? safeJSONParse(userProfile?.wallet || '{}')?.value : 0;
@@ -78,8 +84,19 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 			}
 		});
 
+		friendList.forEach((itemFriend: FriendsEntity) => {
+			const userId = itemFriend?.user?.id ?? '';
+			if (userId && !userMap.has(userId)) {
+				userMap.set(userId, {
+					id: userId,
+					username: itemFriend?.user?.display_name ?? itemFriend?.user?.username ?? '',
+					avatar_url: itemFriend?.user?.avatar_url ?? ''
+				});
+			}
+		});
+
 		return Array.from(userMap.values());
-	}, [listDM, usersClan]);
+	}, [friendList, listDM, userProfile?.user?.id, usersClan]);
 
 	const sendToken = async () => {
 		const store = await getStoreAsync();
