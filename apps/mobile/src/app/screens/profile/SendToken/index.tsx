@@ -54,16 +54,18 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const mergeUser = useMemo(() => {
 		const userMap = new Map<string, Receiver>();
 
-		usersClan.forEach((itemUserClan) => {
-			const userId = itemUserClan?.id ?? '';
-			if (userId && !userMap.has(userId)) {
-				userMap.set(userId, {
-					id: userId,
-					username: itemUserClan?.user?.username ?? '',
-					avatar_url: itemUserClan?.user?.avatar_url ?? ''
-				});
-			}
-		});
+		usersClan
+			?.filter((item) => item?.user?.id !== userProfile?.user?.id)
+			?.forEach((itemUserClan) => {
+				const userId = itemUserClan?.id ?? '';
+				if (userId && !userMap.has(userId)) {
+					userMap.set(userId, {
+						id: userId,
+						username: itemUserClan?.user?.username ?? '',
+						avatar_url: itemUserClan?.user?.avatar_url ?? ''
+					});
+				}
+			});
 
 		listDM.forEach((itemDM: DirectEntity) => {
 			const userId = itemDM?.user_id?.[0] ?? '';
