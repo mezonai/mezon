@@ -267,21 +267,35 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		async (message: ChannelMessage) => {
 			const contentOnMessage = (message.content as IMessageSendPayload)?.t;
 			const isMessageBlankContent = contentOnMessage?.trim() === '';
-			if (isMessageBlankContent) {
-				// get mk token
-				const mkOnMessage = (message?.content as IMessageSendPayload)?.mk;
+			const mkOnMessage = (message?.content as IMessageSendPayload)?.mk;
+			const hasMk = mkOnMessage && mkOnMessage.length > 0;
+			const isMe = message.sender_id === userId;
+			const hasAttachment = message.attachments && message.attachments.length > 0;
+			if (isMessageBlankContent && !isMe && hasMk && !hasAttachment) {
 				// add prefix into mk
 				const addPrefix = addMarkdownPrefix(mkOnMessage as IMarkdownOnMessage[], contentOnMessage);
 				// get content with prefix
 				const contentAddedPrefix = generateNewPlaintext(addPrefix as INewPosMarkdown[], contentOnMessage);
 				const prioritizedName = message?.clan_nick || message?.display_name || message?.username;
 				const prioritizedAvatar = message?.clan_avatar || message?.avatar;
-				const title = `${prioritizedName} send message for you`;
-				electronBridge.pushNotification(title, {
+				const titleMessageDmgr = `${prioritizedName} send message for you`;
+				const titleMessageChannel = `${prioritizedName} sent a new message on channel`;
+				const linkMessageChannel = `https://${process.env.NX_CHAT_APP_API_HOST}/chat/clans/${message.clan_id}/channels/${message.channel_id}`;
+				const modeMess = message.mode;
+				const isDmGr = modeMess === ChannelStreamMode.STREAM_MODE_GROUP || modeMess === ChannelStreamMode.STREAM_MODE_DM;
+				const typeDirect =
+					modeMess === ChannelStreamMode.STREAM_MODE_DM
+						? ChannelType.CHANNEL_TYPE_DM
+						: modeMess === ChannelStreamMode.STREAM_MODE_GROUP
+							? ChannelType.CHANNEL_TYPE_GROUP
+							: null;
+				const linkMessageDmGr = `https://${process.env.NX_CHAT_APP_API_HOST}/chat/direct/message/${message.channel_id}/${typeDirect}`;
+
+				electronBridge.pushNotification(isDmGr ? titleMessageDmgr : titleMessageChannel, {
 					body: contentAddedPrefix,
 					icon: prioritizedAvatar,
 					data: {
-						link: ''
+						link: isDmGr ? linkMessageDmGr : linkMessageChannel
 					}
 				});
 			}
