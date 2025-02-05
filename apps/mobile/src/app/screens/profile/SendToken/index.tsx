@@ -1,5 +1,4 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useFriends } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { Block, size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -10,6 +9,7 @@ import {
 	giveCoffeeActions,
 	selectAllAccount,
 	selectAllDirectMessages,
+	selectAllFriends,
 	selectAllUserClans,
 	selectUpdateToken
 } from '@mezon/store-mobile';
@@ -39,7 +39,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [tokenCount, setTokenCount] = useState('0');
 	const [note, setNote] = useState('send token');
-	const { friends: allUser } = useFriends();
+	const friends = useSelector(selectAllFriends);
 	const userProfile = useSelector(selectAllAccount);
 	const usersClan = useSelector(selectAllUserClans);
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
@@ -49,8 +49,8 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const [searchText, setSearchText] = useState<string>('');
 	const [plainTokenCount, setPlainTokenCount] = useState(0);
 	const friendList: FriendsEntity[] = useMemo(() => {
-		return allUser.filter((user) => user.state === 0);
-	}, [allUser]);
+		return friends?.filter((user) => user.state === 0) || [];
+	}, [friends]);
 
 	const tokenInWallet = useMemo(() => {
 		return userProfile?.wallet ? safeJSONParse(userProfile?.wallet || '{}')?.value : 0;
