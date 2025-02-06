@@ -72,19 +72,15 @@ import {
 	EEventStatus,
 	EOverriddenPermission,
 	ERepeatType,
-	IMarkdownOnMessage,
 	IMessageSendPayload,
 	IMessageTypeCallLog,
-	INewPosMarkdown,
 	ModeResponsive,
 	NotificationCode,
 	TIME_OFFSET,
 	TOKEN_TO_AMOUNT,
 	ThreadStatus,
 	TypeMessage,
-	addMarkdownPrefix,
-	electronBridge,
-	generateNewPlaintext
+	electronBridge
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import {
@@ -265,27 +261,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onchannelmessage = useCallback(
 		async (message: ChannelMessage) => {
-			const contentOnMessage = (message.content as IMessageSendPayload)?.t;
-			const isMessageBlankContent = contentOnMessage?.trim() === '';
-			if (isMessageBlankContent) {
-				// get mk token
-				const mkOnMessage = (message?.content as IMessageSendPayload)?.mk;
-				// add prefix into mk
-				const addPrefix = addMarkdownPrefix(mkOnMessage as IMarkdownOnMessage[], contentOnMessage);
-				// get content with prefix
-				const contentAddedPrefix = generateNewPlaintext(addPrefix as INewPosMarkdown[], contentOnMessage);
-				const prioritizedName = message?.clan_nick || message?.display_name || message?.username;
-				const prioritizedAvatar = message?.clan_avatar || message?.avatar;
-				const title = `${prioritizedName} send message for you`;
-				electronBridge.pushNotification(title, {
-					body: contentAddedPrefix,
-					icon: prioritizedAvatar,
-					data: {
-						link: ''
-					}
-				});
-			}
-
 			if (message.code === TypeMessage.MessageBuzz) {
 				handleBuzz(message.channel_id, message.sender_id, true, message.mode);
 			}
