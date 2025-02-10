@@ -1,6 +1,7 @@
 import { GifStickerEmojiPopup } from '@mezon/components';
 import { useApp, useGifsStickersEmoji } from '@mezon/core';
 import {
+	selectClickedOnTopicStatus,
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectIsShowCreateThread,
@@ -33,6 +34,7 @@ const ChannelLayout = () => {
 	const distanceToBottom = window.innerHeight - positionOfSmileButton.bottom;
 	const distanceToRight = window.innerWidth - positionOfSmileButton.right;
 	let topPositionEmojiPanel: string;
+	const isClickedOnTopic = useSelector(selectClickedOnTopicStatus);
 
 	if (distanceToBottom < HEIGHT_EMOJI_PANEL) {
 		topPositionEmojiPanel = 'auto';
@@ -43,7 +45,7 @@ const ChannelLayout = () => {
 	}
 
 	return (
-		<div className="z-0 flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible">
+		<div className="z-0 flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-hidden">
 			{isChannelVoice ? (
 				<ChannelLayoutVoice channelLabel={currentChannel.channel_label} meetingCode={currentChannel.meeting_code} />
 			) : (
@@ -53,19 +55,23 @@ const ChannelLayout = () => {
 					>
 						<Outlet />
 					</div>
-					{subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT && (
-						<div
-							id="emojiPicker"
-							className={`z-20 fixed size-[500px] max-sm:hidden right-1 ${closeMenu && !statusMenu && 'w-[370px]'} ${reactionTopState ? 'top-20' : 'bottom-20'} ${(isShowCreateThread || isShowCreateTopic) && 'ssm:right-[650px]'} ${isShowMemberList && 'ssm:right-[420px]'} ${!isShowCreateThread && !isShowMemberList && !isShowCreateTopic && 'ssm:right-44'}`}
-						>
-							<div className="mb-0 z-10 h-full">
-								<GifStickerEmojiPopup mode={ChannelStreamMode.STREAM_MODE_CHANNEL} emojiAction={EmojiPlaces.EMOJI_REACTION} />
+					{subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT ||
+						(subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM && isClickedOnTopic && (
+							<div
+								id="emojiPicker"
+								className={`z-20 fixed size-[500px] max-sm:hidden right-1 ${closeMenu && !statusMenu && 'w-[370px]'}
+							 ${reactionTopState ? 'top-20' : 'bottom-20'} ${(isShowCreateThread || isShowCreateTopic) && 'ssm:right-[650px]'}
+							  ${isShowMemberList && 'ssm:right-[420px]'}
+							   ${!isShowCreateThread && !isShowMemberList && !isShowCreateTopic && 'ssm:right-44'} ${isClickedOnTopic && 'ssm:right-[490px] '}`}
+							>
+								<div className="mb-0 z-10 h-full">
+									<GifStickerEmojiPopup mode={ChannelStreamMode.STREAM_MODE_CHANNEL} emojiAction={EmojiPlaces.EMOJI_REACTION} />
+								</div>
 							</div>
-						</div>
-					)}
-					{subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM && (
+						))}
+					{subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM && !isClickedOnTopic && (
 						<div
-							className={`fixed z-50 max-sm:hidden duration-300 ease-in-out animate-fly_in min-[960px]:!left-24 `}
+							className={`fixed z-50 max-sm:hidden duration-300 ease-in-out animate-fly_in min-[960px]:!left-24 ${isClickedOnTopic && 'right-[100px] '}`}
 							style={{
 								top: topPositionEmojiPanel,
 								bottom: distanceToBottom < HEIGHT_EMOJI_PANEL ? '0' : 'auto',
