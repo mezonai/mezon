@@ -84,7 +84,7 @@ const ChannelMessageOpt = ({
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const replyMenu = useMenuReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
-	const reactMenu = useReactMenuBuilder(message);
+	const reactMenu = useReactMenuBuilder(message, isTopic);
 	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const addToNote = useAddToNoteBuilder(message, defaultCanvas, currentChannel, mode);
@@ -178,9 +178,10 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 
 interface RecentEmojiProps {
 	message: IMessageWithUser;
+	isTopic?: boolean;
 }
 
-const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
+const RecentEmoji: React.FC<RecentEmojiProps> = ({ message, isTopic }) => {
 	const emojiConverted = useEmojiConverted();
 
 	const firstThreeElements = useMemo(() => {
@@ -427,12 +428,12 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 	});
 }
 
-function useReactMenuBuilder(message: IMessageWithUser) {
+function useReactMenuBuilder(message: IMessageWithUser, isTopic: boolean) {
 	const dispatch = useAppDispatch();
 	const { setClickedTrendingGif, setButtonArrowBack } = useGifs();
-
 	const handleItemClick = useCallback(
 		(event: React.MouseEvent<HTMLDivElement>) => {
+			dispatch(topicsActions.setClickedOnTopic(isTopic));
 			setClickedTrendingGif(false);
 			setButtonArrowBack(false);
 			dispatch(referencesActions.setIdReferenceMessageReaction(message.id));
@@ -447,7 +448,7 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 				dispatch(reactionActions.setReactionTopState(false));
 			}
 		},
-		[dispatch]
+		[dispatch, isTopic]
 	);
 
 	return useMenuBuilderPlugin((builder) => {

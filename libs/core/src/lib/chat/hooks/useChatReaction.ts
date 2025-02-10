@@ -5,7 +5,9 @@ import {
 	reactionActions,
 	selectAllChannelMembers,
 	selectClanView,
+	selectClickedOnTopicStatus,
 	selectCurrentChannel,
+	selectCurrentTopicId,
 	selectDirectById,
 	selectDmGroupCurrentId,
 	useAppDispatch,
@@ -33,6 +35,8 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 	const directId = useSelector(selectDmGroupCurrentId);
 	const direct = useAppSelector((state) => selectDirectById(state, directId));
 	const channel = useSelector(selectCurrentChannel);
+	const currentTopicId = useSelector(selectCurrentTopicId);
+	const isClickedOnTopic = useSelector(selectClickedOnTopicStatus);
 
 	const currentActive = useMemo(() => {
 		let clanIdActive = '';
@@ -147,11 +151,11 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 					actionDelete: action_delete,
 					isPublic: payload.is_public,
 					userId: userId as string,
-					topic_id
+					topic_id: isClickedOnTopic && currentTopicId ? currentTopicId : ''
 				})
 			).unwrap();
 		},
-		[dispatch, isMobile, isClanView, userId, currentActive, addMemberToThread]
+		[dispatch, isMobile, isClanView, userId, currentActive, addMemberToThread, currentTopicId, isClickedOnTopic]
 	);
 
 	return useMemo(

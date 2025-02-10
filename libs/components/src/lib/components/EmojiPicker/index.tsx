@@ -3,7 +3,9 @@ import {
 	emojiSuggestionActions,
 	referencesActions,
 	selectClanView,
+	selectClickedOnTopicStatus,
 	selectCurrentChannel,
+	selectCurrentTopicId,
 	selectMessageByMessageId,
 	selectModeResponsive,
 	selectTheme,
@@ -92,7 +94,13 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 
 	const isClanView = useSelector(selectClanView);
 	const channelID = isClanView ? currentChannel?.id : directId;
-	const messageEmoji = useAppSelector((state) => selectMessageByMessageId(state, channelID, props.messageEmojiId || ''));
+
+	const currentTopicId = useSelector(selectCurrentTopicId);
+	const isClickedOnTopic = useSelector(selectClickedOnTopicStatus);
+
+	const messageEmoji = useAppSelector((state) =>
+		selectMessageByMessageId(state, isClickedOnTopic ? currentTopicId : channelID, props.messageEmojiId || '')
+	);
 
 	const handleEmojiSelect = useCallback(
 		async (emojiId: string, emojiPicked: string) => {
@@ -106,8 +114,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					messageEmoji?.sender_id ?? '',
 					false,
 					isPublicChannel(currentChannel),
-					messageEmoji.content?.tp ?? ''
+					messageEmoji?.content?.tp ?? currentTopicId
 				);
+
 				setSubPanelActive(SubPanelName.NONE);
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
 			} else if (subPanelActive === SubPanelName.EMOJI) {
@@ -208,7 +217,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className={`outline-none flex max-h-full max-sm:h-32 max-sbm:h-full flex-row w-full md:w-[500px] max-sm:ml-1 ${props.isReaction && 'border border-black rounded overflow-hidden'}`}
+			className={`outline-none flex max-h-full max-sm:h-32 max-sbm:h-full flex-row w-full md:w-[500px] max-sm:ml-1 ${props.isReaction && 'border border-black rounded overflow-hidden border border-red-800'}`}
 		>
 			<div
 				className={`w-11 max-sm:gap-x-1

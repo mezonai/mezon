@@ -34,6 +34,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	openTopicMessageState: boolean;
 	currentTopicId?: string;
 	firstMessageOfCurrentTopic?: ApiSdTopic;
+	isClickedOnTopic: boolean;
 }
 
 export const topicsAdapter = createEntityAdapter({ selectId: (topic: TopicDiscussionsEntity) => topic.id || '' });
@@ -100,7 +101,8 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 	isShowCreateTopic: false,
 	isPrivate: 0,
 	currentTopicInitMessage: null,
-	openTopicMessageState: false
+	openTopicMessageState: false,
+	isClickedOnTopic: false
 });
 
 export const createTopic = createAsyncThunk('topics/createTopic', async (body: ApiSdTopicRequest, thunkAPI) => {
@@ -239,6 +241,9 @@ export const topicsSlice = createSlice({
 			const stringifiedMentions = JSON.stringify(mentions, null, 4);
 			state.firstMessageOfCurrentTopic.message.content = stringifiedContent;
 			state.firstMessageOfCurrentTopic.message.mentions = stringifiedMentions;
+		},
+		setClickedOnTopic(state, action) {
+			state.isClickedOnTopic = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -334,3 +339,5 @@ export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 		return timestampB - timestampA;
 	});
 });
+
+export const selectClickedOnTopicStatus = createSelector(getTopicsState, (state) => state.isClickedOnTopic);
