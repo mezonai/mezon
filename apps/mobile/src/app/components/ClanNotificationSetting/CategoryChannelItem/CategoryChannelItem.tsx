@@ -41,7 +41,7 @@ export const CategoryChannelItem = React.memo(
 
 		return (
 			<TouchableOpacity onPress={navigateToNotificationDetail} style={{ ...styles.categoryItem, ...stylesItem }}>
-				<Block flexDirection="row" gap={size.s_10} alignItems="center">
+				<Block flexDirection="row" gap={size.s_10} alignItems="center" maxWidth="80%">
 					{typePreviousIcon === ChannelType.CHANNEL_TYPE_CHANNEL && (
 						<Icons.TextIcon width={16} height={16} color={themeValue.channelNormal} />
 					)}

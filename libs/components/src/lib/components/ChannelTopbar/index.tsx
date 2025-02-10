@@ -37,7 +37,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum, IChannel, isMacDesktop, sleep } from '@mezon/utils';
+import { ChannelStatusEnum, IChannel, isMacDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -143,7 +143,6 @@ const TopBarChannelApps = ({ channel, mode }: ChannelTopbarProps) => {
 			} catch (err) {
 				console.error('Failed to join room:', err);
 			} finally {
-				sleep(2000);
 				setLoading(false);
 			}
 		};

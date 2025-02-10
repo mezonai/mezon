@@ -1,9 +1,10 @@
 import {
-	ChannelsEntity, DirectEntity,
+	ChannelsEntity,
+	DirectEntity,
 	messagesActions,
 	referencesActions,
-	selectChannelById, selectCurrentChannel, selectCurrentDM,
-	selectDirectById,
+	selectCurrentChannel,
+	selectCurrentDM,
 	selectIdMessageRefEdit,
 	selectOpenEditMessageState,
 	useAppSelector

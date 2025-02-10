@@ -233,10 +233,7 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			if (linkDirectMessageMatch) {
 				const messageId = linkDirectMessageMatch[1];
 				if (navigation) {
-					navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-						screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-						params: { directMessageId: messageId }
-					});
+					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: messageId });
 				}
 				store.dispatch(appActions.setLoadingMainMobile(false));
 				setTimeout(() => {

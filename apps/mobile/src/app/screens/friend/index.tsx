@@ -35,7 +35,11 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 	};
 
 	const filteredFriendList = useMemo(() => {
-		return friendList.filter((friend) => normalizeString(friend?.user?.username).includes(normalizeString(searchText)));
+		return friendList.filter(
+			(friend) =>
+				normalizeString(friend?.user?.display_name).includes(normalizeString(searchText)) ||
+				normalizeString(friend?.user?.username).includes(normalizeString(searchText))
+		);
 	}, [friendList, searchText]);
 
 	const friendRequestCount = useMemo(() => {
@@ -49,18 +53,14 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 		async (userId: string) => {
 			const directMessage = listDM.find((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === userId);
 			if (directMessage?.id) {
-				navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-					screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-					params: { directMessageId: directMessage?.id }
+				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
+					directMessageId: directMessage?.id
 				});
 				return;
 			}
 			const response = await createDirectMessageWithUser(userId);
 			if (response?.channel_id) {
-				navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-					screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-					params: { directMessageId: response?.channel_id }
-				});
+				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 			}
 		},
 		[createDirectMessageWithUser, listDM, navigation]

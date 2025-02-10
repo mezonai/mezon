@@ -65,7 +65,7 @@ interface IAudioAttachmentProps {
 	isFileList?: boolean;
 }
 
-const AudioAttachment = ({ attachment, size, isFileList }: IAudioAttachmentProps) => {
+export const AudioAttachment = ({ attachment, size, isFileList }: IAudioAttachmentProps) => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState<number>(0);

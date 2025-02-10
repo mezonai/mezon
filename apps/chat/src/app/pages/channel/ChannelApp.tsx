@@ -1,8 +1,10 @@
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, VideoConference } from '@livekit/components-react';
-import { selectEnableMic, selectEnableVideo, selectLiveToken } from '@mezon/store';
+import { useAuth } from '@mezon/core';
+import { handleParticipantMeetState, selectEnableMic, selectEnableVideo, selectLiveToken, useAppDispatch } from '@mezon/store';
 import { Loading } from '@mezon/ui';
+import { ParticipantMeetState } from '@mezon/utils';
 import { ApiChannelAppResponse } from 'mezon-js/api.gen';
-import { RefObject, useEffect } from 'react';
+import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export function VideoRoom({ token, serverUrl }: { token: string; serverUrl: string | undefined }) {
@@ -52,9 +54,46 @@ export function ChannelApps({
 	miniAppDataHash: string;
 }) {
 	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
+	const dispatch = useAppDispatch();
+	const { userProfile } = useAuth();
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const token = useSelector(selectLiveToken);
+	const participantMeetState = useCallback(
+		async (state: ParticipantMeetState, channelId: string) => {
+			try {
+				await dispatch(
+					handleParticipantMeetState({
+						clan_id: appChannel.clan_id,
+						channel_id: channelId,
+						user_id: userProfile?.user?.id,
+						display_name: userProfile?.user?.display_name,
+						state
+					})
+				);
+			} catch (err) {
+				console.error('Failed to update participant state:', err);
+			}
+		},
+		[dispatch, appChannel, userProfile]
+	);
 
+	useEffect(() => {
+		if (!appChannel.url) return;
+		setLoading(true);
+
+		const joinRoom = async () => {
+			try {
+				await participantMeetState(ParticipantMeetState.JOIN, appChannel.channel_id as string);
+			} catch (err) {
+				console.error('Failed to join room:', err);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		joinRoom();
+	}, [appChannel, participantMeetState]);
 	return appChannel?.url ? (
 		<>
 			<div className="w-full h-full">

@@ -26,7 +26,7 @@ export const ChatMessageWrapper = memo(({ directMessageId, isModeDM, currentClan
 	}, []);
 
 	return (
-		<KeyboardAvoidingView style={styles.content} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 54 : 0}>
+		<KeyboardAvoidingView style={styles.content} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
 			<ChannelMessagesWrapper
 				channelId={directMessageId}
 				clanId={'0'}

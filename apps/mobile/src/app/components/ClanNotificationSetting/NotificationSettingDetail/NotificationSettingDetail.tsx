@@ -5,6 +5,7 @@ import {
 	notificationSettingActions,
 	selectCurrentChannelId,
 	selectCurrentClanId,
+	selectNotifiSettingsEntitiesById,
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { useEffect, useMemo, useState } from 'react';
@@ -35,7 +36,7 @@ const NotificationSettingDetail = ({ route }: { route: any }) => {
 
 	const isUnmute = useMemo(() => {
 		return (
-			getNotificationChannelSelected?.active === ENotificationActive.ON || getNotificationChannelSelected.id === ENotificationChannelId.Default
+			getNotificationChannelSelected?.active === ENotificationActive.ON || getNotificationChannelSelected?.id === ENotificationChannelId.Default
 		);
 	}, [getNotificationChannelSelected]);
 

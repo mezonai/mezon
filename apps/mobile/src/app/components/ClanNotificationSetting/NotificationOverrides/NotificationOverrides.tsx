@@ -1,7 +1,7 @@
 import { useCategorizedAllChannels } from '@mezon/core';
 import { EOptionOverridesType, Icons } from '@mezon/mobile-components';
 import { Block, size, useTheme } from '@mezon/mobile-ui';
-import { ICategoryChannel, IChannel } from '@mezon/utils';
+import { IChannel } from '@mezon/utils';
 import { useMemo, useState } from 'react';
 import { SafeAreaView, ScrollView, TextInput } from 'react-native';
 import { CategoryChannelItem } from '../CategoryChannelItem';
@@ -17,19 +17,11 @@ const NotificationOverrides = () => {
 		if (!categorizedChannels?.length) return [];
 		return categorizedChannels?.flatMap((category) => [
 			{
-				id: category.id,
-				label: category.category_name,
-				title: 'category',
-				type: EOptionOverridesType.Category
-			},
-			...(category as ICategoryChannel).channels
-				.filter((channel) => (channel as IChannel).type !== 4)
-				.map((channel) => ({
-					id: (channel as IChannel).id,
-					label: (channel as IChannel).channel_label,
-					title: 'channel',
-					type: EOptionOverridesType.Channel
-				}))
+				id: (category as IChannel)?.channel_id || category.id,
+				label: (category as IChannel)?.channel_label || category.category_name,
+				title: (category as IChannel)?.channel_id ? 'channel' : 'category',
+				type: (category as IChannel)?.channel_id ? EOptionOverridesType.Channel : EOptionOverridesType.Category
+			}
 		]);
 	}, [categorizedChannels]);
 

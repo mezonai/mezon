@@ -15,6 +15,7 @@ type MarkdownContentOpt = {
 	isBacktick?: boolean;
 	typeOfBacktick?: EBacktickType;
 	isReply?: boolean;
+	isSearchMessage?: boolean;
 };
 
 export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
@@ -25,7 +26,8 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	isLink,
 	isBacktick,
 	typeOfBacktick,
-	isReply
+	isReply,
+	isSearchMessage
 }) => {
 	const appearanceTheme = useSelector(selectTheme);
 	const navigate = useNavigate();
@@ -70,7 +72,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 					{content}
 				</a>
 			)}
-			{!isReply && isLink && content && isYouTubeLink(content) && <YouTubeEmbed url={content} />}
+			{!isReply && isLink && content && isYouTubeLink(content) && <YouTubeEmbed url={content} isSearchMessage={isSearchMessage} />}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
@@ -152,9 +154,9 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 	);
 };
 
-const YouTubeEmbed: React.FC<{ url: string }> = ({ url }) => {
+const YouTubeEmbed: React.FC<{ url: string; isSearchMessage?: boolean }> = ({ url, isSearchMessage }) => {
 	const embedUrl = getYouTubeEmbedUrl(url);
-	const { width, height } = getYouTubeEmbedSize(url);
+	const { width, height } = getYouTubeEmbedSize(url, isSearchMessage);
 
 	return (
 		<div className="flex">

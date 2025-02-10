@@ -1101,9 +1101,12 @@ export function isYouTubeShorts(url: string) {
 	return /youtube\.com\/shorts\//.test(url);
 }
 
-export function getYouTubeEmbedSize(url: string) {
+export function getYouTubeEmbedSize(url: string, isSearchMessage?: boolean) {
 	if (isYouTubeShorts(url)) {
 		return { width: '169px', height: '300px' };
+	}
+	if (isSearchMessage) {
+		return { width: `${400 * 0.65}px`, height: `${225 * 0.65}px` };
 	}
 	return { width: '400px', height: '225px' };
 }

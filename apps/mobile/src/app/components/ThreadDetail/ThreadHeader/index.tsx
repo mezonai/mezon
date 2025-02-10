@@ -52,10 +52,7 @@ export const ThreadHeader = memo(() => {
 
 	const handlebackMessageDetail = () => {
 		if (isDMThread && !isTabletLandscape) {
-			navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-				screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-				params: { directMessageId: currentChannel?.id }
-			});
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: currentChannel?.id });
 		} else {
 			navigation.goBack();
 		}

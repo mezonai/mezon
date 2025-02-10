@@ -1,4 +1,3 @@
-import { useMemberStatus } from '@mezon/core';
 import { CallIcon, CheckIcon, CloseIcon, MessageIcon } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
@@ -33,7 +32,7 @@ export const FriendItem = React.memo(
 	({ friend, handleFriendAction, onSelectChange, isChecked, disabled = false, showAction = true, selectMode = false }: IFriendItem) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const userStatus = useMemberStatus(friend.id || '');
+		const userStatus = { status: friend?.user?.online, isMobile: friend?.user?.is_mobile };
 
 		const isFriend = friend.state === 0;
 		const isSentRequestFriend = friend.state === 1;
@@ -88,7 +87,7 @@ export const FriendItem = React.memo(
 							</Text>
 						</View>
 					)}
-					{!isPendingFriendRequest ? <UserStatus status={userStatus} /> : null}
+					{!isPendingFriendRequest ? <UserStatus status={userStatus} customStatus={friend?.user?.metadata?.user_status} /> : null}
 				</View>
 				<View style={styles.fill}>
 					<View style={styles.friendItemContent}>

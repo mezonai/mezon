@@ -107,3 +107,4 @@ export { WebRTCStreamProvider, useWebRTCStream } from './components/StreamContex
 export * from './components/HtmlCanvas';
 
 export { MentionFloatButton } from './components/MentionFloatButton';
+export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';

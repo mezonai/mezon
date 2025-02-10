@@ -190,7 +190,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			attachments?: ApiMessageAttachment[],
 			hide_editted?: boolean,
 			topic_id?: string,
-			isTopic?: boolean,
+			isTopic?: boolean
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;

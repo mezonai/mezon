@@ -196,7 +196,7 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 	}, [from, navigation]);
 
 	return (
-		<SwipeBackContainer handleBack={handleBack}>
+		<SwipeBackContainer>
 			<HeaderDirectMessage
 				handleBack={handleBack}
 				navigateToThreadDetail={navigateToThreadDetail}

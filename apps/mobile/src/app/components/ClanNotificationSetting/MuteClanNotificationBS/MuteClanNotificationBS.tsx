@@ -76,9 +76,20 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 		[]
 	);
 
-	const onPresentBS = () => {
-		bottomSheetDetail.current?.present();
+	const handleMuteOrUnmute = () => {
+		if (!isUnmute) {
+			const body = {
+				channel_id: currentChannel?.id || '',
+				notification_type: notificationChannelSelected?.notification_setting_type || 0,
+				clan_id: currentClanId || '',
+				active: ENotificationActive.ON
+			};
+			dispatch(notificationSettingActions.setMuteNotificationSetting(body));
+		} else {
+			bottomSheetDetail.current?.present();
+		}
 	};
+
 	const onDismissBS = () => {
 		bottomSheetDetail.current?.dismiss();
 	};
@@ -138,15 +149,14 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 	return (
 		<Block>
 			<Block style={styles.optionsBox}>
-				<TouchableOpacity onPress={onPresentBS} style={styles.wrapperUnmuteBox}>
+				<TouchableOpacity onPress={handleMuteOrUnmute} style={styles.wrapperUnmuteBox}>
 					<Text style={styles.option}>
-						{`${isUnmute ? t('bottomSheet.mute') : t('bottomSheet.unMute')}
-            #${
-				(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
-				(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
-				(currentChannel as ICategoryChannelOption)?.label ||
-				''
-			}`}
+						{`${isUnmute ? t('bottomSheet.mute') : t('bottomSheet.unMute')} #${
+							(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
+							(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
+							(currentChannel as ICategoryChannelOption)?.label ||
+							''
+						}`}
 					</Text>
 				</TouchableOpacity>
 			</Block>

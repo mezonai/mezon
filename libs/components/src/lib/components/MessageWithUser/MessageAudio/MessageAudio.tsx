@@ -4,9 +4,10 @@ import { MessageAudioUI } from './MessageAudioUI';
 
 type MessageAudioProps = {
 	audioUrl: string;
+	posInPopUp?: boolean;
 };
 
-export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl }) => {
+export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl, posInPopUp = false }) => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState<number>(0);
@@ -36,6 +37,7 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl 
 				isPlaying={isPlaying}
 			/>
 			<MessageAudioUI
+				posInPopUp={posInPopUp}
 				isPlaying={isPlaying}
 				currentTime={currentTime}
 				duration={duration}

@@ -118,10 +118,7 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 			);
 		}
 		if (isDmOrGroup) {
-			navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-				screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-				params: { directMessageId: message?.channel_id }
-			});
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: message?.channel_id });
 		} else {
 			navigation.navigate(APP_SCREEN.HOME_DEFAULT);
 		}

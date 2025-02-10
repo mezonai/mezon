@@ -6,7 +6,8 @@ import { ApiChannelDescription } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import EmojiPickerComp from '../EmojiPicker';
-import ImageSquare from './StickerSquare';
+import SoundSquare from './SoundSquare';
+import StickerSquare from './StickerSquare';
 import TenorGifCategories from './gifs/TenorGifCategories';
 import { InputSearch } from './inputSearch';
 
@@ -121,7 +122,10 @@ const TabBar = React.memo(({ subPanelActive, onTabClick }: { subPanelActive: Sub
 				Stickers
 			</button>
 			<button className={getTabClassName(subPanelActive === SubPanelName.EMOJI)} onClick={() => onTabClick(SubPanelName.EMOJI)}>
-				Emoji
+				Emojis
+			</button>
+			<button className={getTabClassName(subPanelActive === SubPanelName.SOUNDS)} onClick={() => onTabClick(SubPanelName.SOUNDS)}>
+				Sounds
 			</button>
 		</div>
 	);
@@ -163,7 +167,7 @@ const ContentPanel = React.memo(
 		if (subPanelActive === SubPanelName.STICKERS) {
 			return (
 				<div className={`flex h-full pr-2 w-full ${contentWidthClass}`}>
-					<ImageSquare channel={channelOrDirect} mode={channelMode as number} onClose={onClose} />
+					<StickerSquare channel={channelOrDirect} mode={channelMode as number} onClose={onClose} />
 				</div>
 			);
 		}
@@ -175,7 +179,13 @@ const ContentPanel = React.memo(
 				</div>
 			);
 		}
-
+		if (subPanelActive === SubPanelName.SOUNDS) {
+			return (
+				<div className={`flex h-full pr-2 w-full sbm:w-[312px] ${contentWidthClass}`}>
+					<SoundSquare channel={channelOrDirect} mode={channelMode as number} onClose={onClose} />
+				</div>
+			);
+		}
 		return null;
 	}
 );

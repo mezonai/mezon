@@ -124,7 +124,7 @@ const designLayout = (
 		};
 		return listImageSize;
 	}
-	
+
 	const aspectRatio = images[0].width / images[0].height;
 	let heightAlonePic = images[0].height;
 	let widthAlonePic = images[0].width;
@@ -182,9 +182,7 @@ const ImageAlbum = ({
 
 export default memo(MessageAttachment);
 
-
-
-const designAlbumLayout = (images: (ApiMessageAttachment & { create_time?: string; })[]): { width: number; height: number }[] => {
+const designAlbumLayout = (images: (ApiMessageAttachment & { create_time?: string })[]): { width: number; height: number }[] => {
 	const listImageSize: { width: number; height: number }[] = [];
 
 	for (let i = 0; i < images.length; i += 2) {
@@ -194,8 +192,8 @@ const designAlbumLayout = (images: (ApiMessageAttachment & { create_time?: strin
 
 			const sameHeight = Math.max(heightPicOne, heightPicTwo);
 
-			const widthPicOneNew = (images[i].width || 0) * sameHeight / (images[i].height || 1);
-			const widthPicTwoNew = (images[i + 1].width || 0) * sameHeight / (images[i + 1].height || 1);
+			const widthPicOneNew = ((images[i].width || 0) * sameHeight) / (images[i].height || 1);
+			const widthPicTwoNew = ((images[i + 1].width || 0) * sameHeight) / (images[i + 1].height || 1);
 
 			const percent = (widthPicOneNew + widthPicTwoNew) / WIDTH_ALBUM_WITH_SPACE;
 

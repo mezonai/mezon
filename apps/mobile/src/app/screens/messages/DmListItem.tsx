@@ -32,9 +32,8 @@ export const DmListItem = React.memo((props: { id: string; navigation: any; onLo
 		if (isTabletLandscape) {
 			onPress && onPress(directMessage?.id);
 		} else {
-			navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-				screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-				params: { directMessageId: directMessage?.id }
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
+				directMessageId: directMessage?.id
 			});
 		}
 	};

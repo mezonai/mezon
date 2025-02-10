@@ -8,6 +8,7 @@ import {
 	appActions,
 	giveCoffeeActions,
 	messagesActions,
+	selectAllAccount,
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectCurrentClanId,
@@ -75,6 +76,12 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const listDM = useSelector(selectDirectsOpenlist);
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
+	const userProfile = useSelector(selectAllAccount);
+
+	const tokenInWallet = useMemo(() => {
+		return userProfile?.wallet ? safeJSONParse(userProfile?.wallet || '{}')?.value : 0;
+	}, [userProfile?.wallet]);
+
 	const userId = useMemo(() => {
 		return load(STORAGE_MY_USER_ID);
 	}, []);
@@ -127,6 +134,13 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	const handleActionGiveACoffee = async () => {
 		onClose();
 		try {
+			if (TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10 > tokenInWallet) {
+				Toast.show({
+					type: 'error',
+					text1: 'Token amount exceeds wallet balance'
+				});
+				return;
+			}
 			if (userId !== message.sender_id) {
 				const coffeeEvent = {
 					channel_id: message.channel_id,
@@ -483,7 +497,11 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		const isHideThread = currentChannel?.parrent_id !== '0';
 		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage);
 		const isHideTopicDiscussion =
-			message?.topic_id || message?.code === TypeMessage.Topic || isDM || !canSendMessage || currentChannelId !== message?.channel_id;
+			(message?.topic_id && message?.topic_id !== '0') ||
+			message?.code === TypeMessage.Topic ||
+			isDM ||
+			!canSendMessage ||
+			currentChannelId !== message?.channel_id;
 		const listOfActionOnlyMyMessage = [EMessageActionType.EditMessage];
 		const listOfActionOnlyOtherMessage = [EMessageActionType.Report];
 

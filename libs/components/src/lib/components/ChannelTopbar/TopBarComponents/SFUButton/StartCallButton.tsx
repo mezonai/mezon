@@ -17,8 +17,6 @@ export function StartCallButton({ loading, isJoinVoice, onClick }: IStartCallBut
 			>
 				{isJoinVoice ? (
 					<Icons.StartCall className="size-6 dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
-				) : loading ? (
-					<Icons.LoadingSpinner className="size-6 text-red-600" />
 				) : (
 					<Icons.StopCall className="size-6 text-red-600" />
 				)}

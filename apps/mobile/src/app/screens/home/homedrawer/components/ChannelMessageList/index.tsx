@@ -3,8 +3,9 @@ import { isEqual } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity } from '@mezon/store-mobile';
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
+import { FlatList } from 'react-native-gesture-handler';
 import { style } from './styles';
 
 interface IChannelListMessageProps {

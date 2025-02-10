@@ -915,7 +915,7 @@ export const messagesSlice = createSlice({
 			}
 			const messageChannelId = topic_id !== '0' && topic_id && !content?.tp ? topic_id : channelId;
 			const channelEntity = state.channelMessages[messageChannelId];
-			
+
 			switch (code) {
 				case TypeMessage.Welcome:
 				case TypeMessage.CreateThread:

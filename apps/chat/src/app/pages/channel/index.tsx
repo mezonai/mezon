@@ -21,6 +21,7 @@ import {
 	directMetaActions,
 	gifsStickerEmojiActions,
 	giveCoffeeActions,
+	handleParticipantMeetState,
 	listChannelRenderAction,
 	listChannelsByUserActions,
 	onboardingActions,
@@ -28,6 +29,8 @@ import {
 	selectAllRolesClan,
 	selectAnyUnreadChannels,
 	selectAppChannelById,
+	selectChannelAppChannelId,
+	selectChannelAppClanId,
 	selectChannelById,
 	selectCloseMenu,
 	selectCurrentChannel,
@@ -60,6 +63,7 @@ import {
 	DONE_ONBOARDING_STATUS,
 	EOverriddenPermission,
 	IChannel,
+	ParticipantMeetState,
 	SubPanelName,
 	TIME_OFFSET,
 	isLinuxDesktop,
@@ -258,7 +262,9 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const allRolesInClan = useSelector(selectAllRolesClan);
 	const sendTokenEvent = useSelector(selectSendTokenEvent);
 	const infoSendToken = useSelector(selectInfoSendToken);
-
+	const { userProfile } = useAuth();
+	const currentChannelAppClanId = useSelector(selectChannelAppClanId);
+	const currentChannelAppId = useSelector(selectChannelAppChannelId);
 	const closeAgeRestricted = () => {
 		setIsShowAgeRestricted(false);
 	};
@@ -395,7 +401,27 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const isChannelMezonVoice = currentChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const isChannelApp = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 	const isChannelStream = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
-
+	useEffect(() => {
+		if (currentChannelAppId && currentChannelAppClanId) {
+			dispatch(
+				handleParticipantMeetState({
+					clan_id: currentChannelAppClanId,
+					channel_id: currentChannelAppId,
+					user_id: userProfile?.user?.id,
+					display_name: userProfile?.user?.display_name,
+					state: ParticipantMeetState.LEAVE
+				})
+			);
+		}
+		dispatch(channelAppActions.setRoomId(null));
+		if (isChannelApp) {
+			dispatch(channelAppActions.setChannelId(channelId));
+			dispatch(channelAppActions.setClanId(currentChannel?.clan_id || null));
+		} else {
+			dispatch(channelAppActions.setChannelId(null));
+			dispatch(channelAppActions.setClanId(null));
+		}
+	}, [appChannel]);
 	return (
 		<>
 			<div className={`w-full ${!isChannelMezonVoice ? 'hidden' : ''}`}>

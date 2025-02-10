@@ -58,10 +58,7 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 	};
 
 	const navigateToDirectMessageMDetail = () => {
-		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
-			screen: APP_SCREEN.MESSAGES.MESSAGE_DETAIL,
-			params: { directMessageId: dm?.channel_id, from: APP_SCREEN.HOME }
-		});
+		navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: dm?.channel_id, from: APP_SCREEN.HOME });
 	};
 
 	return (

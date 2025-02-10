@@ -206,6 +206,7 @@ const RenderContent = ({
 						isJumMessageEnabled={isJumMessageEnabled}
 						content={contentInElement}
 						isReply={isReply}
+						isSearchMessage={isSearchMessage}
 					/>
 				);
 			} else if (element.kindOf === ETokenMessage.VOICE_LINKS) {
@@ -231,6 +232,7 @@ const RenderContent = ({
 							isJumMessageEnabled={isJumMessageEnabled}
 							content={contentInElement}
 							isReply={isReply}
+							isSearchMessage={isSearchMessage}
 						/>
 					);
 				} else if (element.type === EBacktickType.BOLD) {

@@ -27,6 +27,27 @@ const GifStickerEmojiButtons = memo(
 			}
 		};
 
+		const handleOpenSounds = useCallback(
+			(e: React.MouseEvent<HTMLDivElement>) => {
+				e.stopPropagation();
+				handleFocusOnTargetInput();
+				setSubPanelActive(SubPanelName.SOUNDS);
+				setShowCategories(true);
+				setValueInputSearch('');
+				setClickedTrendingGif(false);
+				setButtonArrowBack(false);
+				dispatch(reactionActions.setReactionRightState(false));
+				dispatch(reactionActions.setReactionBottomState(false));
+				if (subPanelActive === SubPanelName.SOUNDS) {
+					setSubPanelActive(SubPanelName.NONE);
+				} else {
+					setSubPanelActive(SubPanelName.SOUNDS);
+				}
+				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+			},
+			[subPanelActive, setSubPanelActive]
+		);
+
 		const handleOpenGifs = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
 				e.stopPropagation();
@@ -91,7 +112,7 @@ const GifStickerEmojiButtons = memo(
 
 		return (
 			<div className="flex flex-row absolute h-11 items-center gap-1 mr-3 top-0 right-0">
-				<div {...voiceLongPress} className={`w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
+				<div {...voiceLongPress} onClick={handleOpenSounds} className={`w-6 h-6 ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}>
 					<Icons.MicEnable
 						className={`w-6 h-6 ${isRecording ? 'text-red-600' : 'dark:text-[#AEAEAE] text-colorTextLightMode dark:hover:text-white hover:text-black'}`}
 					/>

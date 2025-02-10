@@ -1,11 +1,18 @@
-import { useChatSending, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
-import { selectAllStickerSuggestion, selectCurrentClan, selectCurrentTopicId, useAppSelector } from '@mezon/store';
+import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
+import {
+	referencesActions,
+	selectAllStickerSuggestion,
+	selectCurrentClan,
+	selectCurrentTopicId,
+	selectDataReferences,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageSendPayload, SubPanelName } from '@mezon/utils';
+import { IMessageSendPayload, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ClanSticker } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 type ChannelMessageBoxProps = {
 	channel: ApiChannelDescription | undefined;
@@ -43,6 +50,10 @@ function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 	const currentTopicId = useSelector(selectCurrentTopicId);
 	const { valueInputToCheckHandleSearch, subPanelActive } = useGifsStickersEmoji();
 	const [searchedStickers, setSearchStickers] = useState<ClanSticker[]>([]);
+	const currentId = useCurrentInbox()?.channel_id;
+	const dataReferences = useSelector(selectDataReferences(currentId ?? ''));
+	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		const result = searchStickers(clanStickers, valueInputToCheckHandleSearch ?? '');
@@ -85,7 +96,18 @@ function StickerSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const handleClickImage = (image: StickerPanel) => {
-		handleSend({ t: '' }, [], [{ url: image.url, height: 40, width: 40, filetype: 'image/gif', filename: image.id }], []);
+		if (isReplyAction) {
+			handleSend({ t: '' }, [], [{ url: image.url, height: 40, width: 40, filetype: 'image/gif', filename: image.id }], [dataReferences]);
+
+			dispatch(
+				referencesActions.setDataReferences({
+					channelId: currentId as string,
+					dataReferences: blankReferenceObj as ApiMessageRef
+				})
+			);
+		} else {
+			handleSend({ t: '' }, [], [{ url: image.url, height: 40, width: 40, filetype: 'image/gif', filename: image.id }], []);
+		}
 		setSubPanelActive(SubPanelName.NONE);
 	};
 	const scrollToCategory = (event: React.MouseEvent, categoryName: string) => {
