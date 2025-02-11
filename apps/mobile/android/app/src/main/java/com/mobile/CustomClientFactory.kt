@@ -18,7 +18,6 @@ class CustomClientFactory : OkHttpClientFactory {
 
     override fun createNewNetworkModuleClient(): OkHttpClient {
         return try {
-            // Tạo một trust manager không xác thực chuỗi chứng chỉ
             val trustAllCerts = arrayOf<TrustManager>(
                 object : X509TrustManager {
                     override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
