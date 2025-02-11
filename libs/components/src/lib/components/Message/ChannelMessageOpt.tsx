@@ -38,8 +38,8 @@ import {
 import { Snowflake } from '@theinternetfolks/snowflake';
 import clx from 'classnames';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import ReactionPart from '../ContextMenu/ReactionPart';
 
 type ChannelMessageOptProps = {
@@ -77,7 +77,6 @@ const ChannelMessageOpt = ({
 	hasPermission = true,
 	isTopic
 }: ChannelMessageOptProps) => {
-	const dispatch = useDispatch();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const refOpt = useRef<HTMLDivElement>(null);
 	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannel?.id ?? '');
@@ -96,10 +95,6 @@ const ChannelMessageOpt = ({
 	const createTopicMenu = useTopicMenuBuilder(message, doNotAllowCreateTopic);
 	const items = useMenuBuilder([createTopicMenu, reactMenu, replyMenu, editMenu, threadMenu, addToNote, giveACoffeeMenu, optionMenu]);
 	const { createDirectMessageWithUser } = useDirect();
-
-	useEffect(() => {
-		dispatch(topicsActions.setClickedOnTopic(isTopic));
-	}, [isTopic]);
 
 	return (
 		<div

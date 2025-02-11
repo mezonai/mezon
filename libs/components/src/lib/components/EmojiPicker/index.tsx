@@ -96,12 +96,11 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const channelID = isClanView ? currentChannel?.id : directId;
 
 	const currentTopicId = useSelector(selectCurrentTopicId);
-	const isClickedOnTopic = useSelector(selectClickedOnTopicStatus);
+	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 
 	const messageEmoji = useAppSelector((state) =>
-		selectMessageByMessageId(state, isClickedOnTopic ? currentTopicId : channelID, props.messageEmojiId || '')
+		selectMessageByMessageId(state, isFocusTopicBox ? currentTopicId : channelID, props.messageEmojiId || '')
 	);
-
 	const handleEmojiSelect = useCallback(
 		async (emojiId: string, emojiPicked: string) => {
 			if (subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT || subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM) {
@@ -114,7 +113,8 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					messageEmoji?.sender_id ?? '',
 					false,
 					isPublicChannel(currentChannel),
-					messageEmoji?.content?.tp ?? currentTopicId
+					messageEmoji?.topic_id,
+					messageEmoji?.channel_id
 				);
 
 				setSubPanelActive(SubPanelName.NONE);

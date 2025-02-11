@@ -34,7 +34,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	openTopicMessageState: boolean;
 	currentTopicId?: string;
 	firstMessageOfCurrentTopic?: ApiSdTopic;
-	isClickedOnTopic: boolean;
+	isFocusTopicBox: boolean;
 }
 
 export const topicsAdapter = createEntityAdapter({ selectId: (topic: TopicDiscussionsEntity) => topic.id || '' });
@@ -102,7 +102,7 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 	isPrivate: 0,
 	currentTopicInitMessage: null,
 	openTopicMessageState: false,
-	isClickedOnTopic: false
+	isFocusTopicBox: false
 });
 
 export const createTopic = createAsyncThunk('topics/createTopic', async (body: ApiSdTopicRequest, thunkAPI) => {
@@ -242,8 +242,8 @@ export const topicsSlice = createSlice({
 			state.firstMessageOfCurrentTopic.message.content = stringifiedContent;
 			state.firstMessageOfCurrentTopic.message.mentions = stringifiedMentions;
 		},
-		setClickedOnTopic(state, action) {
-			state.isClickedOnTopic = action.payload;
+		setFocusTopicBox(state, action) {
+			state.isFocusTopicBox = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -340,4 +340,4 @@ export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 	});
 });
 
-export const selectClickedOnTopicStatus = createSelector(getTopicsState, (state) => state.isClickedOnTopic);
+export const selectClickedOnTopicStatus = createSelector(getTopicsState, (state) => state.isFocusTopicBox);

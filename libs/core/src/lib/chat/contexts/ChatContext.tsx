@@ -830,10 +830,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onmessagereaction = useCallback(
 		(e: ApiMessageReaction) => {
-			if (e.topic_id && e.topic_id !== '0') {
+			if (e.topic_id && e.topic_id !== '0' && e.topic_id !== e.channel_id) {
 				e.channel_id = e.topic_id;
 			}
-
 			const reactionEntity = mapReactionToEntity(e);
 			dispatch(reactionActions.setReactionDataSocket(reactionEntity));
 			dispatch(messagesActions.updateMessageReactions(reactionEntity));

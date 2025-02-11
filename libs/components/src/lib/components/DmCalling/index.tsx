@@ -220,7 +220,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								? 'assets/images/avatar-group.png'
 								: (currentDmGroup?.channel_avatar?.at(0) ?? '')
 						}
-						name={currentDmGroup.channel_label ?? ''}
+						name={currentDmGroup?.channel_label ?? ''}
 						status={{ status: currentDmGroup?.is_online?.some(Boolean), isMobile: false }}
 						isHideStatus={true}
 						isHideIconStatus={Boolean(currentDmGroup?.user_id && currentDmGroup.user_id.length >= 2)}
