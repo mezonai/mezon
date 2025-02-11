@@ -6,6 +6,13 @@ import { ImageData, listThumnails, scriptThumnails } from './window_image';
 function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 	const activeIndex = imageData.channelImagesData.selectedImageIndex;
 	const time = escapeHtml(formatDateTime(imageData.create_time));
+	const uploaderData = imageData.channelImagesData.images.map((image, index) => {
+		return JSON.stringify({
+			name: image.uploaderData.name,
+			avatar: image.uploaderData.avatar,
+			create_item: escapeHtml(formatDateTime(image.create_time))
+		});
+	});
 	imageWindow.webContents.executeJavaScript(`
       document.getElementById('channel-label').innerHTML = '${escapeHtml(imageData.channelImagesData.channelLabel)}';
     	document.getElementById('thumbnails-content').innerHTML = '${listThumnails(imageData.channelImagesData.images, activeIndex)}';
@@ -26,6 +33,8 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 
 	imageWindow.webContents.executeJavaScript(`
       function handleKeydown(e){
+    uploaderData = [${uploaderData}];
+
 		switch (e.key) {
 			case 'ArrowUp':
         case 'ArrowLeft':
@@ -36,6 +45,9 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
             prevThumb.classList.add('active');
             prevThumb.scrollIntoView({ behavior: 'smooth', block: 'center' });
             selectedImage.src = sanitizeUrl(prevThumb.src);
+            document.getElementById('userAvatar').src = uploaderData[currentIndex].avatar;
+            document.getElementById('username').innerHTML  = uploaderData[currentIndex].name;
+            document.getElementById('timestamp').innerHTML  =  uploaderData[currentIndex].create_item;
           }
           break;
 
@@ -48,6 +60,9 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
             nextThumb.classList.add('active');
             nextThumb.scrollIntoView({ behavior: 'smooth', block: 'center' });
             selectedImage.src = sanitizeUrl(nextThumb.src);
+            document.getElementById('userAvatar').src = uploaderData[currentIndex].avatar;
+            document.getElementById('username').innerHTML  = uploaderData[currentIndex].name;
+            document.getElementById('timestamp').innerHTML  =  uploaderData[currentIndex].create_item;
           }
           break;
 		}

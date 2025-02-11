@@ -244,6 +244,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
         url : '${imageData.url}',
           realUrl : '${imageData.realUrl}'
       };
+      let uploaderData = [];
       document.getElementById('close-window').addEventListener('click', () => {
 		selectedImage.src = null;
     	window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::CLOSE_IMAGE_WINDOW');

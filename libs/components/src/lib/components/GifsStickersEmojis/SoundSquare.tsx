@@ -40,9 +40,9 @@ const searchSounds = (sounds: ExtendedApiMessageAttachment[], searchTerm: string
 
 const sounds = [
 	{
-		clan_name: 'KOMU-1',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039808',
+		clan_id: '1775731152322039809',
 		id: '1',
 		filename: 'giong_nghe_di_deo_chiu_dc.mp3',
 		size: 64503,
@@ -50,9 +50,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-1',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039808',
+		clan_id: '1775731152322039809',
 		id: '2',
 		filename: 'yeah_boiii_i_i_i.mp3',
 		size: 130430,
@@ -60,9 +60,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-1',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039808',
+		clan_id: '1775731152322039809',
 		id: '3',
 		filename: 'Danger_Alarm_Meme_Sound_Effect.mp3',
 		size: 101189,
@@ -70,9 +70,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-1',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039808',
+		clan_id: '1775731152322039809',
 		id: '4',
 		filename: 'galaxy_meme.mp3',
 		size: 303744,
@@ -80,9 +80,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-1',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039808',
+		clan_id: '1775731152322039809',
 		id: '5',
 		filename: 'oh_hello_there.mp3',
 		size: 49780,
@@ -90,19 +90,19 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-1',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039808',
+		clan_id: '1775731152322039809',
 		id: '6',
 		filename: 'thoi_toang_mimosa_chu_sound_effect-www_tiengdong_com.mp3',
 		size: 284194,
 		url: 'https://cdn.mezon.vn/1775732550744936448/1838798547944738816/1775730015049093000/1739012077086_0thoi_toang_mimosa_chu_sound_effect_www_tiengdong_com.mp3',
 		filetype: 'audio/mpeg'
 	},
-	// komu-2
+	// SYSTEM SOUNDS
 
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '7',
@@ -112,7 +112,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '8',
@@ -122,7 +122,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '9',
@@ -132,7 +132,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '10',
@@ -142,7 +142,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '11',
@@ -152,7 +152,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '12',
@@ -162,7 +162,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '13',
@@ -172,7 +172,7 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-2',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
 		clan_id: '1775731152322039809',
 		id: '14',
@@ -184,9 +184,9 @@ const sounds = [
 
 	// komu -3
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '15',
 		filename: 'tao_lay_may_pewpew-www_tiengdong_com.mp3',
 		size: 304211,
@@ -194,9 +194,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '16',
 		filename: 'may_coi_do_may_ra_mp3_ban_goc-www_tiengdong_com.mp3',
 		size: 151822,
@@ -204,9 +204,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '17',
 		filename: 'thoi_thoi_may_dung_co_boc_phet_kha_banh-www_tiengdong_com.mp3',
 		size: 132363,
@@ -214,9 +214,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '18',
 		filename: 'Am_thanh_meme_ban_noi_that_la_nuc_cuoi-www_tiengdong_com.mp3',
 		size: 361889,
@@ -224,9 +224,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '19',
 		filename: 'Am_thanh_meme_nhin_ne_nhin_di_nhin_ky_di-www_tiengdong_com.mp3',
 		size: 317167,
@@ -234,9 +234,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '20',
 		filename: 'anh_la_dai_bang_me_la_phuong_hoang_Duoc_cai_me_thuong-www_tiengdong_com.mp3',
 		size: 296374,
@@ -245,9 +245,9 @@ const sounds = [
 	},
 
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '21',
 		filename: 'ai_chui_minh_cung_bo_ngoai_tai_het_ma_danh_thi_minh_chay-www_tiengdong_com.mp3',
 		size: 288589,
@@ -255,9 +255,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '22',
 		filename: 'tieng_rao_ai_danh_tao_di_ai_danh_tao_nao_ban_goc-www_tiengdong_com.mp3',
 		size: 187663,
@@ -265,9 +265,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '23',
 		filename: 'troi_oi_bao_tap_mua_sa_tiktok_mp3-www_tiengdong_com.mp3',
 		size: 951995,
@@ -275,9 +275,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '24',
 		filename: 'ok_ok_tuan_tien_ti_sound_effect-www_tiengdong_com.mp3',
 		size: 137194,
@@ -285,9 +285,9 @@ const sounds = [
 		filetype: 'audio/mpeg'
 	},
 	{
-		clan_name: 'KOMU-3',
+		clan_name: 'SYSTEM SOUNDS',
 		logo: 'https://fastly.picsum.photos/id/391/536/354.jpg?hmac=29BA6wFw5oDS6512JTZGg8jXcA_-hnW9154Cqs9OZqw',
-		clan_id: '1775731152322039810',
+		clan_id: '1775731152322039809',
 		id: '25',
 		filename: 'Am_thanh_meme_khongDungdung-www_tiengdong_com.mp3',
 		size: 296437,
@@ -388,7 +388,11 @@ function SoundSquare({ channel, mode, onClose }: ChannelMessageBoxProps) {
 							onClick={(e) => scrollToClanSidebar(e, cat.type)}
 							className="flex justify-center items-center w-9 h-9 rounded-lg hover:bg-[#41434A]"
 						>
-							{cat.url !== '' ? (
+							{cat.type === 'SYSTEM SOUNDS' ? (
+								<div className="w-7 h-7 rounded-full dark:bg-bgLightModeSecond flex justify-center items-center">
+									<Icons.SoundIcon className="w-5 h-5" />
+								</div>
+							) : cat.url !== '' ? (
 								<img
 									src={cat.url}
 									alt={cat.type}
