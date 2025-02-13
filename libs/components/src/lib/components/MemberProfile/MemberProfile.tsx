@@ -301,6 +301,7 @@ export function MemberProfile({
 
 	const [openUserProfile, closeUserProfile] = useModal(() => {
 		modalState.current.userProfile = true;
+		console.log('user when click profile', user);
 		return (
 			<UserProfileModalInner
 				userId={user?.user?.id || user?.user_id?.[0]}

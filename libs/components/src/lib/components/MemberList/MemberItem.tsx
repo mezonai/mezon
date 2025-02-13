@@ -38,25 +38,27 @@ function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCrea
 	}, [user?.user?.id, userProfile?.user?.id]);
 
 	return (
-		<MemberProfile
-			numberCharacterCollapse={30}
-			avatar={user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '')}
-			name={name || ''}
-			usernameAva={user?.user?.username}
-			status={{ status: isMe ? true : !isOffline, isMobile }}
-			customStatus={displayCustomStatus}
-			isHideStatus={true}
-			isHideIconStatus={false}
-			textColor="[#AEAEAE]"
-			user={user}
-			listProfile={listProfile}
-			isOffline={isMe ? false : isOffline}
-			positionType={positionType}
-			dataMemberCreate={dataMemberCreate}
-			hideLongName={true}
-			isDM={isDM}
-			statusOnline={statusOnline}
-		/>
+		<div className="border">
+			<MemberProfile
+				numberCharacterCollapse={30}
+				avatar={user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '')}
+				name={name || ''}
+				usernameAva={user?.user?.username}
+				status={{ status: isMe ? true : !isOffline, isMobile }}
+				customStatus={displayCustomStatus}
+				isHideStatus={true}
+				isHideIconStatus={false}
+				textColor="[#AEAEAE]"
+				user={user}
+				listProfile={listProfile}
+				isOffline={isMe ? false : isOffline}
+				positionType={positionType}
+				dataMemberCreate={dataMemberCreate}
+				hideLongName={true}
+				isDM={isDM}
+				statusOnline={statusOnline}
+			/>
+		</div>
 	);
 }
 

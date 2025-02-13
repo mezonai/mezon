@@ -85,6 +85,7 @@ const ModalUserProfile = ({
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
 	const userCustomStatus = useMemberCustomStatus(userID || '', isDM);
+	console.log('userID: - ModalUserProfile', userID);
 	const userById = useUserById(userID);
 	const userStatus = useMemberStatus(userID || '');
 	const userMetaById = useUserMetaById(userID);

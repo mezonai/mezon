@@ -80,6 +80,7 @@ const PanelMember = ({
 	dataMemberCreate,
 	onOpenProfile
 }: PanelMemberProps) => {
+	console.log('member - PannelMember', member);
 	const dispatch = useAppDispatch();
 	const { userProfile } = useAuth();
 	const currentChannel = useSelector(selectCurrentChannel);

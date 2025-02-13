@@ -66,6 +66,7 @@ const UserProfileModalInner = ({
 	status,
 	customStatus
 }: UserProfileModalInnerProps) => {
+	console.log('userId', userId);
 	const dispatch = useAppDispatch();
 	const userProfileRef = useRef<HTMLDivElement | null>(null);
 	const modeResponsive = useAppSelector(selectModeResponsive);
