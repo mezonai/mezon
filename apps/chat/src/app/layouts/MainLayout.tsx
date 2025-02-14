@@ -18,6 +18,7 @@ import debounce from 'lodash.debounce';
 import { memo, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
+import ChannelVoice from '../pages/channel/ChannelVoice';
 
 const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
@@ -113,6 +114,7 @@ const MainLayout = memo(
 		const handleClickingOutside = () => {
 			dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 		};
+
 		return (
 			<div
 				id="main-layout"
@@ -122,6 +124,7 @@ const MainLayout = memo(
 					event.preventDefault();
 				}}
 			>
+				<ChannelVoice />
 				<Outlet />
 				<GlobalEventListener />
 			</div>

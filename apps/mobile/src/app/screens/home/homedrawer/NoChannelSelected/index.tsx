@@ -1,9 +1,9 @@
 import { STORAGE_IS_DISABLE_LOAD_BACKGROUND, load } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, InteractionManager, Text, TouchableOpacity } from 'react-native';
+import { Image, InteractionManager, Text, TouchableOpacity, View } from 'react-native';
 import Images from '../../../../../assets/Images';
 import { style } from './styles';
 
@@ -35,18 +35,22 @@ const NoChannelSelected = () => {
 		return null;
 	}
 	return (
-		<Block style={styles.wrapper}>
+		<View style={styles.wrapper}>
 			<Image style={styles.imageBg} source={Images.CHAT_PANA} />
-			<Block>
+			<View>
 				<Text style={styles.title}>NO TEXT CHANNEL</Text>
 				<Text style={styles.description}>{t('emptyClans.findChannel')}</Text>
-			</Block>
-			<Block marginTop={size.s_20}>
+			</View>
+			<View
+				style={{
+					marginTop: size.s_20
+				}}
+			>
 				<TouchableOpacity onPress={() => navigation.goBack()} style={styles.joinClan}>
 					<Text style={styles.textJoinClan}>{t('emptyClans.joinChannel')}</Text>
 				</TouchableOpacity>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 };
 

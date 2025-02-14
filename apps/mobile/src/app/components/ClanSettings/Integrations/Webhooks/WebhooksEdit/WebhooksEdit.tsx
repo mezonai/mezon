@@ -1,5 +1,5 @@
 import { Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	deleteWebhookById,
@@ -16,7 +16,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Keyboard, Pressable, Text, TouchableOpacity } from 'react-native';
+import { Image, Keyboard, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
@@ -238,8 +238,8 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	}, []);
 
 	return (
-		<Block backgroundColor={themeValue.primary} width={'100%'} height={'100%'} padding={size.s_10}>
-			<Block alignItems="center" justifyContent="center" width={'100%'} height={'20%'}>
+		<View style={{ backgroundColor: themeValue.primary, width: '100%', height: '100%', padding: size.s_10 }}>
+			<View style={{ alignItems: 'center', justifyContent: 'center', width: '100%', height: '20%' }}>
 				<TouchableOpacity onPress={handleChooseFiles} style={styles.upload}>
 					<Image
 						style={styles.image}
@@ -250,11 +250,11 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					<Icons.UploadPlusIcon style={styles.uploadIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
 				</TouchableOpacity>
 				<Text style={styles.textRecommend}>{t('webhooksEdit.recommendImage', { ns: 'clanIntegrationsSetting' })}</Text>
-			</Block>
+			</View>
 			<MezonInput label={'Name'} value={webhookName} onTextChange={handleChangeText} />
 
 			<MezonMenu menu={menu} />
-			<Block>
+			<View>
 				<Text style={styles.label}>{t('webhooksEdit.webhookURL', { ns: 'clanIntegrationsSetting' })}</Text>
 				<TouchableOpacity style={styles.btnLink} onPress={handleCopyToClipboard}>
 					<Text style={styles.textBtnLink}>{webhook?.url}</Text>
@@ -264,7 +264,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 							: t('webhooksEdit.copy', { ns: 'clanIntegrationsSetting' })}
 					</Text>
 				</TouchableOpacity>
-			</Block>
+			</View>
 
 			<TouchableOpacity onPress={() => setIsVisibleModal(true)} style={styles.btnDelete}>
 				<Text style={styles.textBtnDelete}>{t('webhooksEdit.delete', { ns: 'clanIntegrationsSetting' })}</Text>
@@ -293,6 +293,6 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				}
 				onConfirm={() => handleDeleteWebhook(webhook)}
 			/>
-		</Block>
+		</View>
 	);
 }

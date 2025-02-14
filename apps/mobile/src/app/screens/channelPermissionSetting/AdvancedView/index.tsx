@@ -1,10 +1,11 @@
-import { Block, size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, Text, useTheme } from '@mezon/mobile-ui';
 import { selectAllUserChannel } from '@mezon/store';
 import { selectRolesByChannelId } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { MemberItem } from '../components/MemberItem';
@@ -58,11 +59,11 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 			const { type, headerTitle, isShowHeader, role, member } = item;
 			if (!type && headerTitle && isShowHeader) {
 				return (
-					<Block paddingTop={size.s_12} paddingLeft={size.s_12}>
+					<View style={{ paddingTop: size.s_12, paddingLeft: size.s_12 }}>
 						<Text color={themeValue.white} h4>
 							{headerTitle}:
 						</Text>
-					</Block>
+					</View>
 				);
 			}
 			switch (type) {
@@ -71,14 +72,14 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 				case EOverridePermissionType.Role:
 					return <RoleItem role={role} channel={channel} isAdvancedSetting={true} onPress={navigateToPermissionOverridesDetail} />;
 				default:
-					return <Block />;
+					return <View />;
 			}
 		},
 		[channel, themeValue, navigateToPermissionOverridesDetail]
 	);
 
 	return (
-		<Block flex={1}>
+		<View style={{ flex: 1 }}>
 			{listOfRoleAndMemberInChannel.length ? (
 				<FlashList
 					data={listOfRoleAndMemberInChannel}
@@ -88,12 +89,12 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 					removeClippedSubviews={true}
 				/>
 			) : (
-				<Block alignItems="center" flex={1} justifyContent="center">
+				<View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
 					<Text color={themeValue.textDisabled}>{t('channelPermission.roleAndMemberEmpty')}</Text>
-				</Block>
+				</View>
 			)}
 
 			{/* <AdvancedSettingBS bottomSheetRef={bottomSheetRef} channel={channel} currentAdvancedPermissionType={currentAdvancedPermissionType} /> */}
-		</Block>
+		</View>
 	);
 });

@@ -7,8 +7,8 @@ import {
 	save,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
-import { baseColor, Block, size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentClanId, selectVoiceChannelId } from '@mezon/store';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { selectCurrentClanId } from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
 import { LocalParticipant, RemoteParticipant, Track } from 'livekit-client';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -37,7 +37,7 @@ const RoomView = ({
 	const isTabletLandscape = useTabletLandscape();
 	const { isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled, localParticipant } = useLocalParticipant();
 	const currentClanId = useSelector(selectCurrentClanId);
-	const voiceChannelId = useSelector(selectVoiceChannelId);
+	const voiceChannelId = null;
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
 
 	useEffect(() => {
@@ -76,7 +76,7 @@ const RoomView = ({
 		return (
 			<>
 				{screenTrackRef && (
-					<Block
+					<View
 						style={[
 							styles.userView,
 							!isGridLayout ? { width: '100%', height: size.s_150 + size.s_100 } : { width: '48%', height: size.s_150 },
@@ -84,7 +84,7 @@ const RoomView = ({
 						]}
 					>
 						<VideoTrack trackRef={screenTrackRef} style={styles.participantView} />
-						<Block style={styles.userName} display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+						<View style={[styles.userName, { display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 							<Icons.ShareScreenIcon height={size.s_14} />
 							<Text
 								numberOfLines={1}
@@ -93,41 +93,41 @@ const RoomView = ({
 							>
 								{participant.identity} {isFocusedScreen && `(Share Screen)`}
 							</Text>
-						</Block>
+						</View>
 						<TouchableOpacity style={styles.focusIcon} onPress={() => handleFocusScreen(screenTrackRef)}>
 							<Icons.ArrowSaltIcon height={size.s_14} />
 						</TouchableOpacity>
-					</Block>
+					</View>
 				)}
 
 				{videoTrackRef && (
-					<Block style={[styles.userView, isGridLayout && { width: '48%', height: 150 }, isTabletLandscape && { height: 250 }]}>
+					<View style={[styles.userView, isGridLayout && { width: '48%', height: 150 }, isTabletLandscape && { height: 250 }]}>
 						<VideoTrack trackRef={videoTrackRef} style={styles.participantView} />
-						<Block style={styles.userName} display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+						<View style={[styles.userName, { display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 							{participant.isMicrophoneEnabled ? (
 								<Icons.MicrophoneIcon height={size.s_14} />
 							) : (
 								<Icons.MicrophoneSlashIcon height={size.s_14} />
 							)}
 							<Text style={styles.subTitle}>{participant.identity || 'Unknown'}</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 				)}
 
 				{!videoTrackRef && (
-					<Block style={[styles.userView, isGridLayout && { width: '48%', height: 150 }, isTabletLandscape && { height: 250 }]}>
-						<Block display="flex" flexDirection="row" alignItems="center" justifyContent="center" marginBottom={10}>
+					<View style={[styles.userView, isGridLayout && { width: '48%', height: 150 }, isTabletLandscape && { height: 250 }]}>
+						<View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
 							<MezonAvatar width={size.s_50} height={size.s_50} username={participant.identity} avatarUrl={participant.metadata} />
-						</Block>
-						<Block style={styles.userName} display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+						</View>
+						<View style={[styles.userName, { display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 							{participant.isMicrophoneEnabled ? (
 								<Icons.MicrophoneIcon height={size.s_14} />
 							) : (
 								<Icons.MicrophoneSlashIcon height={size.s_14} />
 							)}
 							<Text style={styles.subTitle}>{participant.identity || 'Unknown'}</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 				)}
 			</>
 		);
@@ -172,14 +172,14 @@ const RoomView = ({
 
 	if (focusedScreenShare) {
 		return (
-			<Block style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-				<Block style={{ height: 3 * size.s_100, width: '100%', alignSelf: 'center' }}>
+			<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+				<View style={{ height: 3 * size.s_100, width: '100%', alignSelf: 'center' }}>
 					<VideoTrack trackRef={focusedScreenShare} style={{ height: 3 * size.s_100, width: '100%', alignSelf: 'center' }} />
-				</Block>
+				</View>
 				<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
 					<Icons.ArrowShrinkIcon height={size.s_16} />
 				</TouchableOpacity>
-			</Block>
+			</View>
 		);
 	}
 
@@ -193,11 +193,11 @@ const RoomView = ({
 			const screenTrackRef = tracks.find((t) => t.participant.identity === screenShareOther.identity && t.source === Track.Source.ScreenShare);
 			if (screenTrackRef) {
 				return (
-					<Block style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-						<Block style={{ height: size.s_100, width: '100%', alignSelf: 'center' }}>
+					<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+						<View style={{ height: size.s_100, width: '100%', alignSelf: 'center' }}>
 							<VideoTrack trackRef={screenTrackRef} style={{ height: size.s_100, width: '100%', alignSelf: 'center' }} />
-						</Block>
-					</Block>
+						</View>
+					</View>
 				);
 			}
 		}
@@ -208,11 +208,11 @@ const RoomView = ({
 			);
 			if (selfScreenTrackRef) {
 				return (
-					<Block style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-						<Block style={{ height: size.s_100, width: '100%', alignSelf: 'center' }}>
+					<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+						<View style={{ height: size.s_100, width: '100%', alignSelf: 'center' }}>
 							<VideoTrack trackRef={selfScreenTrackRef} style={{ height: size.s_100, width: '100%', alignSelf: 'center' }} />
-						</Block>
-					</Block>
+						</View>
+					</View>
 				);
 			}
 		}
@@ -222,11 +222,11 @@ const RoomView = ({
 			const videoTrackRef = tracks.find((t) => t.participant.identity === cameraOther.identity && t.source === Track.Source.Camera);
 			if (videoTrackRef) {
 				return (
-					<Block style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-						<Block style={{ height: 100, width: '100%', alignSelf: 'center' }}>
+					<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+						<View style={{ height: 100, width: '100%', alignSelf: 'center' }}>
 							<VideoTrack trackRef={videoTrackRef} style={{ height: 100, width: '100%', alignSelf: 'center' }} />
-						</Block>
-					</Block>
+						</View>
+					</View>
 				);
 			}
 		}
@@ -235,11 +235,11 @@ const RoomView = ({
 			const videoTrackRef = tracks.find((t) => t.participant.identity === selfParticipant.identity && t.source === Track.Source.Camera);
 			if (videoTrackRef) {
 				return (
-					<Block style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-						<Block style={{ height: 100, width: '100%', alignSelf: 'center' }}>
+					<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+						<View style={{ height: 100, width: '100%', alignSelf: 'center' }}>
 							<VideoTrack trackRef={videoTrackRef} style={{ height: 100, width: '100%', alignSelf: 'center' }} />
-						</Block>
-					</Block>
+						</View>
+					</View>
 				);
 			}
 		}
@@ -247,24 +247,24 @@ const RoomView = ({
 		const randomParticipant = sortedParticipants[0];
 		if (randomParticipant) {
 			return (
-				<Block style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<Block display="flex" flexDirection="row" alignItems="center" justifyContent="center" marginBottom={10}>
+				<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+					<View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
 						<MezonAvatar
 							width={size.s_50}
 							height={size.s_50}
 							username={randomParticipant.identity}
 							avatarUrl={randomParticipant.metadata}
 						/>
-					</Block>
-					<Block style={styles.userName} display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+					</View>
+					<View style={[styles.userName, { display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 						{randomParticipant.isMicrophoneEnabled ? (
 							<Icons.MicrophoneIcon height={size.s_14} />
 						) : (
 							<Icons.MicrophoneSlashIcon height={size.s_14} />
 						)}
 						<Text style={styles.subTitle}>{randomParticipant.identity || 'Unknown'}</Text>
-					</Block>
-				</Block>
+					</View>
+				</View>
 			);
 		}
 
@@ -276,7 +276,7 @@ const RoomView = ({
 			{!isAnimationComplete ? (
 				renderFocusedParticipant()
 			) : (
-				<Block marginBottom={isTabletLandscape ? '5%' : '30%'}>
+				<View style={{ marginBottom: isTabletLandscape ? '5%' : '30%' }}>
 					<ScrollView
 						style={{ marginHorizontal: size.s_10 }}
 						contentContainerStyle={
@@ -287,11 +287,11 @@ const RoomView = ({
 					>
 						{sortedParticipants.map((participant) => renderParticipant(participant))}
 					</ScrollView>
-				</Block>
+				</View>
 			)}
 			{isAnimationComplete && (
-				<Block style={[styles.menuFooter, { bottom: Platform.OS === 'ios' || isTabletLandscape ? size.s_100 : size.s_50 }]}>
-					<Block gap={size.s_16} flexDirection="row" alignItems="center" justifyContent="space-between" padding={size.s_6}>
+				<View style={[styles.menuFooter, { bottom: Platform.OS === 'ios' || isTabletLandscape ? size.s_100 : size.s_50 }]}>
+					<View style={{ gap: size.s_16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: size.s_6 }}>
 						<TouchableOpacity onPress={handleToggleCamera} style={styles.menuIcon}>
 							{isCameraEnabled ? <Icons.VideoIcon /> : <Icons.VideoSlashIcon />}
 						</TouchableOpacity>
@@ -307,8 +307,8 @@ const RoomView = ({
 						<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
 							<Icons.PhoneCallIcon />
 						</TouchableOpacity>
-					</Block>
-				</Block>
+					</View>
+				</View>
 			)}
 		</View>
 	);

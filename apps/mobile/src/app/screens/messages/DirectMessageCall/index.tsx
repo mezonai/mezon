@@ -1,6 +1,6 @@
 import { RTCView } from '@livekit/react-native-webrtc';
 import { Icons } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
 	selectAllAccount,
@@ -148,8 +148,8 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 		<View style={styles.container}>
 			<StatusBarHeight />
 			{isShowControl && (
-				<Block style={[styles.menuHeader]}>
-					<Block flexDirection="row" alignItems="center" gap={size.s_20}>
+				<View style={[styles.menuHeader]}>
+					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 						<TouchableOpacity
 							onPress={() => {
 								setShowModalConfirm(true);
@@ -158,42 +158,50 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 						>
 							<Icons.ChevronSmallLeftIcon />
 						</TouchableOpacity>
-					</Block>
+					</View>
 
-					<Block flexDirection="row" alignItems="center" gap={size.s_20}>
+					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 						<TouchableOpacity onPress={toggleSpeaker} style={styles.buttonCircle}>
 							{localMediaControl.speaker ? <Icons.VoiceNormalIcon /> : <Icons.VoiceLowIcon />}
 						</TouchableOpacity>
-					</Block>
-				</Block>
+					</View>
+				</View>
 			)}
 
 			<TouchableOpacity activeOpacity={1} style={[styles.main, !isShowControl && { marginBottom: size.s_20 }]} onPress={toggleControl}>
-				<Block flex={1}>
+				<View style={{ flex: 1 }}>
 					{callState.remoteStream && isRemoteVideo ? (
-						<Block style={styles.card}>
+						<View style={styles.card}>
 							<RTCView streamURL={callState.remoteStream.toURL()} style={{ flex: 1 }} mirror={true} objectFit={'cover'} />
-						</Block>
+						</View>
 					) : (
-						<Block style={[styles.card, styles.cardNoVideo]}>
+						<View style={[styles.card, styles.cardNoVideo]}>
 							<FastImage source={receiverAvatar ? { uri: receiverAvatar } : Images.ANONYMOUS_AVATAR} style={styles.avatar} />
-						</Block>
+						</View>
 					)}
 					{callState.localStream && localMediaControl?.camera ? (
-						<Block style={styles.card}>
+						<View style={styles.card}>
 							<RTCView streamURL={callState.localStream.toURL()} style={{ flex: 1 }} mirror={true} objectFit={'cover'} />
-						</Block>
+						</View>
 					) : (
-						<Block style={[styles.card, styles.cardNoVideo]}>
+						<View style={[styles.card, styles.cardNoVideo]}>
 							<FastImage source={{ uri: userProfile?.user?.avatar_url }} style={styles.avatar} />
-						</Block>
+						</View>
 					)}
-				</Block>
+				</View>
 			</TouchableOpacity>
 			{isShowControl && (
-				<Block style={[styles.menuFooter]}>
-					<Block borderRadius={size.s_40} backgroundColor={themeValue.primary}>
-						<Block gap={size.s_30} flexDirection="row" alignItems="center" justifyContent="space-between" padding={size.s_14}>
+				<View style={[styles.menuFooter]}>
+					<View style={{ borderRadius: size.s_40, backgroundColor: themeValue.primary }}>
+						<View
+							style={{
+								gap: size.s_30,
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								padding: size.s_14
+							}}
+						>
 							<TouchableOpacity onPress={toggleVideo} style={[styles.menuIcon, localMediaControl?.camera && styles.menuIconActive]}>
 								{localMediaControl?.camera ? (
 									<Icons.VideoIcon width={size.s_24} height={size.s_24} color={themeValue.black} />
@@ -215,9 +223,9 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 							<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
 								<Icons.PhoneCallIcon />
 							</TouchableOpacity>
-						</Block>
-					</Block>
-				</Block>
+						</View>
+					</View>
+				</View>
 			)}
 
 			<MezonConfirm

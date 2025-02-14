@@ -1,10 +1,11 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { Icons } from '@mezon/mobile-components';
-import { baseColor, Block, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
-import { forwardRef, Ref, useMemo } from 'react';
+import { Ref, forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonBottomSheet, MezonMenu } from '../../componentUI';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 
@@ -50,9 +51,9 @@ export const SendTokenUser = forwardRef((props, ref: Ref<BottomSheetModalMethods
 
 	return (
 		<MezonBottomSheet ref={ref} heightFitContent>
-			<Block paddingHorizontal={size.s_20}>
+			<View style={{ paddingHorizontal: size.s_20 }}>
 				<MezonMenu menu={menu} />
-			</Block>
+			</View>
 		</MezonBottomSheet>
 	);
 });

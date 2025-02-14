@@ -1,9 +1,9 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ETokenMessage, TypeMessage, convertTimeString } from '@mezon/utils';
 import React, { memo, useCallback, useMemo } from 'react';
-import { DeviceEventEmitter } from 'react-native';
+import { DeviceEventEmitter, View } from 'react-native';
 import { style } from './styles';
 
 export const MessageLineSystem = memo(({ message }: { message: MessagesEntity }) => {
@@ -150,19 +150,19 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	}, [elements, t, allUserIdsInChannel, styles, handleJumpToPinMessage, onMention]);
 
 	return (
-		<Block style={styles.wrapperMessageBox} marginVertical={size.s_10}>
-			<Block marginLeft={size.s_10}>
+		<View style={[styles.wrapperMessageBox, { marginVertical: size.s_10 }]}>
+			<View style={{ marginLeft: size.s_10 }}>
 				{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon />}
 				{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
 				{message?.code === TypeMessage.CreatePin && <Icons.PinIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
 				{message?.code === TypeMessage.AuditLog && <Icons.AuditLogIcon width={size.s_24} height={size.s_24} />}
-			</Block>
-			<Block style={styles.messageSystemBox}>
+			</View>
+			<View style={styles.messageSystemBox}>
 				<Text style={styles.messageText}>
 					{content}
 					<Text style={styles.messageTime}>{`   ${messageTime}`}</Text>
 				</Text>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 });

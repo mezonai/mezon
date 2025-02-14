@@ -22,7 +22,8 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			paddingVertical: size.s_8,
 			borderRadius: 5,
-			flex: 1
+			flex: 1,
+			paddingLeft: 20
 		},
 
 		dotIsNew: {

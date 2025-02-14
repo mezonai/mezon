@@ -1,5 +1,5 @@
 import { UserGroupIcon } from '@mezon/mobile-components';
-import { Block, Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
@@ -36,15 +36,17 @@ function ForwardMessageItem({
 					);
 				}
 				return (
-					<Block
-						height={size.s_34}
-						width={size.s_34}
-						justifyContent="center"
-						borderRadius={50}
-						backgroundColor={themeValue.colorAvatarDefault}
+					<View
+						style={{
+							height: size.s_34,
+							width: size.s_34,
+							justifyContent: 'center',
+							borderRadius: 50,
+							backgroundColor: themeValue.colorAvatarDefault
+						}}
 					>
 						<Text center>{item?.name?.charAt(0)?.toUpperCase()}</Text>
-					</Block>
+					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_GROUP:
 				return (
@@ -54,11 +56,11 @@ function ForwardMessageItem({
 				);
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return (
-					<Block width={size.s_16} height={size.s_34} justifyContent="center">
+					<View style={{ width: size.s_16, height: size.s_34, justifyContent: 'center' }}>
 						<Text center h3 color={themeValue.white}>
 							#
 						</Text>
-					</Block>
+					</View>
 				);
 			default:
 				break;
@@ -76,9 +78,9 @@ function ForwardMessageItem({
 				handleSelectChange(!isChecked);
 			}}
 		>
-			<Block flexDirection="row" padding={size.s_10} gap={size.s_6} justifyContent="center">
-				<Block>{renderAvatar(item)}</Block>
-				<Block flex={1} justifyContent="center">
+			<View style={{ flexDirection: 'row', padding: size.s_10, gap: size.s_6, justifyContent: 'center' }}>
+				<View>{renderAvatar(item)}</View>
+				<View style={{ flex: 1, justifyContent: 'center' }}>
 					{item.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
 						<Text color={themeValue.textStrong} numberOfLines={1}>{`${item.name} (${item.clanName})`}</Text>
 					) : (
@@ -86,8 +88,8 @@ function ForwardMessageItem({
 							{item.name}
 						</Text>
 					)}
-				</Block>
-				<Block justifyContent="center">
+				</View>
+				<View style={{ justifyContent: 'center' }}>
 					<BouncyCheckbox
 						size={20}
 						isChecked={isChecked}
@@ -104,8 +106,8 @@ function ForwardMessageItem({
 						}}
 						textStyle={{ fontFamily: 'JosefinSans-Regular' }}
 					/>
-				</Block>
-			</Block>
+				</View>
+			</View>
 		</TouchableOpacity>
 	);
 }

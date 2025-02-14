@@ -1,7 +1,7 @@
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { useAuth } from '@mezon/core';
 import { IS_TABLET } from '@mezon/mobile-components';
-import { baseColor, Block, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
 import { RootState } from '@mezon/store-mobile';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
@@ -9,7 +9,6 @@ import { Formik } from 'formik';
 import React, { useEffect } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
@@ -18,6 +17,7 @@ import { FooterAuth } from '../../../components/auth/FooterAuth';
 import { LoginSocial } from '../../../components/auth/LoginSocial';
 import { TextInputUser } from '../../../components/auth/TextInput';
 import LoadingModal from '../../../components/LoadingModal/LoadingModal';
+import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -79,7 +79,7 @@ const LoginScreen = () => {
 			const { idToken } = await GoogleSignin.signIn();
 			await loginByGoogle(idToken);
 		} catch (error) {
-			if (error.message !== 'Sign in action cancelled' && error.code != -5) {
+			if (error.message !== 'Sign in action cancelled' && error.code != -5 && error.code != 12501) {
 				Toast.show({
 					type: 'error',
 					text1: 'Login Failed',
@@ -110,7 +110,8 @@ const LoginScreen = () => {
 	}
 
 	return (
-		<SafeAreaView style={styles.supperContainer}>
+		<View style={styles.supperContainer}>
+			<StatusBarHeight />
 			<LinearGradient
 				start={{ x: 0, y: 1 }}
 				end={{ x: 1, y: 0 }}
@@ -126,17 +127,19 @@ const LoginScreen = () => {
 					{/* body */}
 					<View style={styles.googleButton}>
 						<LoginSocial onGoogleButtonPress={onGoogleButtonPress} onAppleButtonPress={onAppleButtonPress} />
-						<Block
-							marginTop={IS_TABLET ? size.s_20 : size.s_30}
-							flexDirection={'row'}
-							alignItems={'center'}
-							justifyContent={'space-between'}
-							alignSelf={'center'}
+						<View
+							style={{
+								marginTop: IS_TABLET ? size.s_20 : size.s_30,
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								alignSelf: 'center'
+							}}
 						>
-							<Block width={'35%'} height={1} backgroundColor={Colors.gray48} />
+							<View style={{ width: '35%', height: 1, backgroundColor: Colors.gray48 }} />
 							<Text style={styles.orText}>Or</Text>
-							<Block width={'35%'} height={1} backgroundColor={Colors.gray48} />
-						</Block>
+							<View style={{ width: '35%', height: 1, backgroundColor: Colors.gray48 }} />
+						</View>
 					</View>
 					<ScrollView style={{ flex: 1 }}>
 						<Formik
@@ -183,7 +186,7 @@ const LoginScreen = () => {
 					<LoadingModal isVisible={isLoading === 'loading'} />
 				</KeyboardAvoidingView>
 			</LinearGradient>
-		</SafeAreaView>
+		</View>
 	);
 };
 

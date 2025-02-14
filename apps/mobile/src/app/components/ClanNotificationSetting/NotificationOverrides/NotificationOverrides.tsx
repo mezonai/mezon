@@ -1,6 +1,6 @@
 import { useCategorizedAllChannels } from '@mezon/core';
 import { EOptionOverridesType, Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { IChannel } from '@mezon/utils';
 import { useMemo, useState } from 'react';
 import { ScrollView, TextInput, View } from 'react-native';
@@ -35,22 +35,26 @@ const NotificationOverrides = () => {
 
 	return (
 		<View style={{ flex: 1 }}>
-			<Block backgroundColor={themeValue.primary} width={'100%'} height={'100%'}>
-				<Block
-					paddingHorizontal={size.s_20}
-					paddingVertical={size.s_10}
-					borderTopColor={themeValue.border}
-					borderBottomColor={themeValue.border}
-					borderWidth={1}
+			<View style={{ backgroundColor: themeValue.primary, width: '100%', height: '100%' }}>
+				<View
+					style={{
+						paddingHorizontal: size.s_20,
+						paddingVertical: size.s_10,
+						borderTopColor: themeValue.border,
+						borderBottomColor: themeValue.border,
+						borderWidth: 1
+					}}
 				>
-					<Block
-						backgroundColor={themeValue.tertiary}
-						flexDirection="row"
-						alignItems="center"
-						justifyContent="space-between"
-						borderRadius={size.s_6}
-						paddingHorizontal={size.s_10}
-						paddingVertical={size.s_4}
+					<View
+						style={{
+							backgroundColor: themeValue.tertiary,
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'space-between',
+							borderRadius: size.s_6,
+							paddingHorizontal: size.s_10,
+							paddingVertical: size.s_4
+						}}
 					>
 						<TextInput
 							placeholderTextColor={themeValue.textDisabled}
@@ -60,8 +64,8 @@ const NotificationOverrides = () => {
 							onChangeText={onTextChange}
 						/>
 						<Icons.MagnifyingIcon width={20} height={20} color={themeValue.text} />
-					</Block>
-				</Block>
+					</View>
+				</View>
 				<ScrollView>
 					{filteredOptions?.length > 0
 						? filteredOptions?.map((item) => (
@@ -77,7 +81,7 @@ const NotificationOverrides = () => {
 							))
 						: null}
 				</ScrollView>
-			</Block>
+			</View>
 		</View>
 	);
 };

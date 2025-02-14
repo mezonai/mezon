@@ -1,8 +1,10 @@
 import { debounce } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
-import { UsersClanEntity, selectAllUserClans, useAppSelector } from '@mezon/store-mobile';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { selectAllUserClans, useAppSelector } from '@mezon/store-mobile';
+import { UsersClanEntity } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { MezonInput } from '../../../../componentUI';
 import { normalizeString } from '../../../../utils/helpers';
 import { SeparatorWithLine } from '../../../Common';
@@ -39,10 +41,10 @@ export const MemberList = memo((props: IMemberListProps) => {
 	);
 
 	return (
-		<Block backgroundColor={themeValue.secondary} flex={1}>
-			<Block paddingHorizontal={size.s_12}>
+		<View style={{ backgroundColor: themeValue.secondary, flex: 1 }}>
+			<View style={{ paddingHorizontal: size.s_12 }}>
 				<MezonInput onTextChange={debouncedSetSearchText} placeHolder={'Search Member'} />
-			</Block>
+			</View>
 			<FlashList
 				data={filteredMemberList}
 				keyExtractor={(item) => item.id}
@@ -52,6 +54,6 @@ export const MemberList = memo((props: IMemberListProps) => {
 				removeClippedSubviews={true}
 				keyboardShouldPersistTaps={'handled'}
 			/>
-		</Block>
+		</View>
 	);
 });

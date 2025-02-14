@@ -1,9 +1,16 @@
 import { Icons, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentStreamInfo, selectStreamMembersByChannelId, useAppDispatch, usersStreamActions, videoStreamActions } from '@mezon/store';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import {
+	selectCurrentStreamInfo,
+	selectStreamMembersByChannelId,
+	useAppDispatch,
+	useAppSelector,
+	usersStreamActions,
+	videoStreamActions
+} from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { Dimensions, TouchableOpacity } from 'react-native';
+import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
@@ -21,7 +28,7 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 	const styles = style(themeValue);
 	const bottomSheetInviteRef = useRef(null);
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
-	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
+	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const isTabletLandscape = useTabletLandscape();
 
 	const userId = useMemo(() => {
@@ -60,7 +67,7 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 	};
 
 	return (
-		<Block
+		<View
 			style={{
 				width: isAnimationComplete ? width : 200,
 				height: isAnimationComplete ? height : 100,
@@ -68,10 +75,10 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 			}}
 		>
 			{isAnimationComplete && <StatusBarHeight />}
-			<Block style={styles.container}>
+			<View style={styles.container}>
 				{isAnimationComplete && (
-					<Block style={[styles.menuHeader]}>
-						<Block flexDirection="row" alignItems="center" gap={size.s_20}>
+					<View style={[styles.menuHeader]}>
+						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 							<TouchableOpacity
 								onPress={() => {
 									onPressMinimizeRoom();
@@ -80,16 +87,16 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 							>
 								<Icons.ChevronSmallDownIcon />
 							</TouchableOpacity>
-						</Block>
-						<Block flexDirection="row" alignItems="center" gap={size.s_20}>
+						</View>
+						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 							<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.buttonCircle}>
 								<Icons.UserPlusIcon />
 							</TouchableOpacity>
-						</Block>
-					</Block>
+						</View>
+					</View>
 				)}
 
-				<Block
+				<View
 					style={{
 						...styles.userStreamingRoomContainer,
 						width: isAnimationComplete ? '100%' : '100%',
@@ -97,12 +104,20 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 					}}
 				>
 					<StreamingScreenComponent />
-				</Block>
+				</View>
 				{isAnimationComplete && <UserStreamingRoom streamChannelMember={streamChannelMember} />}
 				{isAnimationComplete && (
-					<Block style={[styles.menuFooter]}>
-						<Block borderRadius={size.s_40} backgroundColor={themeValue.secondary}>
-							<Block gap={size.s_40} flexDirection="row" alignItems="center" justifyContent="space-between" padding={size.s_14}>
+					<View style={[styles.menuFooter]}>
+						<View style={{ borderRadius: size.s_40, backgroundColor: themeValue.secondary }}>
+							<View
+								style={{
+									gap: size.s_40,
+									flexDirection: 'row',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+									padding: size.s_14
+								}}
+							>
 								<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
 									<Icons.ChatIcon />
 								</TouchableOpacity>
@@ -110,13 +125,13 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 								<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
 									<Icons.PhoneCallIcon />
 								</TouchableOpacity>
-							</Block>
-						</Block>
-					</Block>
+							</View>
+						</View>
+					</View>
 				)}
-			</Block>
+			</View>
 			<InviteToChannel isUnknownChannel={false} ref={bottomSheetInviteRef} />
-		</Block>
+		</View>
 	);
 }
 

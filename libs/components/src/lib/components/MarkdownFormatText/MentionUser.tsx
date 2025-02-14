@@ -178,16 +178,16 @@ const UserProfilePopup = ({ username, userID, channelId, mode, isDm, positionSho
 	const userGetByNameOrId = useMemo(() => {
 		return getUserByUserId || getUserByUsername;
 	}, [getUserByUserId, getUserByUsername]);
-	const userId = userGetByNameOrId.id;
+	const userId = userGetByNameOrId?.id;
 
 	const currentChannel = useSelector(selectCurrentChannel);
 	const positionStyle = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ? { right: `120px` } : { left: `${positionShortUser?.left}px` };
 	const prioritizeName = getNameForPrioritize(
-		userGetByNameOrId.clan_nick ?? '',
-		userGetByNameOrId.user?.display_name ?? '',
-		userGetByNameOrId.user?.username ?? ''
+		userGetByNameOrId?.clan_nick ?? '',
+		userGetByNameOrId?.user?.display_name ?? '',
+		userGetByNameOrId?.user?.username ?? ''
 	);
-	const prioritizeAvt = userGetByNameOrId.clan_avatar ? userGetByNameOrId.clan_avatar : userGetByNameOrId.user?.avatar_url;
+	const prioritizeAvt = userGetByNameOrId?.clan_avatar ? userGetByNameOrId?.clan_avatar : userGetByNameOrId?.user?.avatar_url;
 
 	const updatedUserByUserId = {
 		...userGetByNameOrId,
@@ -212,6 +212,7 @@ const UserProfilePopup = ({ username, userID, channelId, mode, isDm, positionSho
 				avatar={updatedUserByUserId.prioritizeAvt}
 				name={updatedUserByUserId.prioritizeName}
 				isDM={isDm}
+				isUserRemoved={!userId}
 			/>
 		</div>
 	);

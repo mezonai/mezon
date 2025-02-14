@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
 import { CheckIcon, Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	MessagesEntity,
@@ -19,7 +19,7 @@ import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -229,17 +229,17 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 	return (
 		<Modal isVisible={show} hasBackdrop={false} style={{ margin: 0, backgroundColor: themeValue.secondary, paddingHorizontal: size.s_16 }}>
 			<StatusBarHeight />
-			<Block flex={1} marginTop={size.s_34}>
-				<Block flexDirection="row" justifyContent="center" marginBottom={size.s_18}>
-					<Block position="absolute" left={0}>
+			<View style={{ flex: 1, marginTop: size.s_34 }}>
+				<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
+					<View style={{ position: 'absolute', left: 0 }}>
 						<TouchableOpacity onPress={() => onClose()}>
 							<Icons.CloseLargeIcon color={themeValue.textStrong} />
 						</TouchableOpacity>
-					</Block>
+					</View>
 					<Text h3 color={themeValue.white}>
 						{t('forwardTo')}
 					</Text>
-				</Block>
+				</View>
 
 				<MezonInput
 					placeHolder={t('search')}
@@ -249,7 +249,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 					inputWrapperStyle={{ backgroundColor: themeValue.primary, paddingHorizontal: size.s_6 }}
 				/>
 
-				<Block flex={1}>
+				<View style={{ flex: 1 }}>
 					<FlashList
 						keyboardShouldPersistTaps="handled"
 						data={filteredForwardObjects}
@@ -258,9 +258,9 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 						renderItem={renderForwardObject}
 						estimatedItemSize={size.s_60}
 					/>
-				</Block>
+				</View>
 
-				<Block paddingTop={size.s_10}>
+				<View style={{ paddingTop: size.s_10 }}>
 					<TouchableOpacity
 						style={[styles.btn, !selectedForwardObjectsRef.current?.length && { backgroundColor: themeValue.charcoal }]}
 						onPress={handleForward}
@@ -270,8 +270,8 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 							{count}
 						</Text>
 					</TouchableOpacity>
-				</Block>
-			</Block>
+				</View>
+			</View>
 		</Modal>
 	);
 };

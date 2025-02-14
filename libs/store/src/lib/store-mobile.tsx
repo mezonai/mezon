@@ -35,6 +35,7 @@ import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChanne
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
 import { hashtagDmReducer } from './channels/hashtagDm.slice';
+import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
 import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { clanMembersMetaReducer } from './clanMembers/clan.members.meta';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
@@ -341,6 +342,13 @@ const persistAccountReducer = persistReducer(
 	},
 	accountReducer
 );
+const persistListChannelRenderReducer = persistReducer(
+	{
+		key: CHANNEL_LIST_RENDER,
+		storage
+	},
+	listChannelRenderReducer
+);
 
 const reducer = {
 	app: persistedAppReducer,
@@ -412,7 +420,8 @@ const reducer = {
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
 	topicdiscussions: persistedTopicReducer,
-	walletLedger: walletLedgerReducer
+	walletLedger: walletLedgerReducer,
+	[CHANNEL_LIST_RENDER]: persistListChannelRenderReducer
 };
 
 let storeInstance = configureStore({

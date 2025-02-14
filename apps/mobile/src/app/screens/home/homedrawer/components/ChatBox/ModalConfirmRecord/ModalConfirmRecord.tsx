@@ -1,4 +1,4 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
@@ -18,15 +18,15 @@ const ModalConfirmRecord = ({ visible, onBack, onConfirm }: IModalConfirmRecordP
 			<View style={styles.modalContainer}>
 				<View style={[styles.modalContent, { backgroundColor: themeValue.white }]}>
 					<Text style={styles.modalText}>{t('confirmDeleteRecording')}</Text>
-					<Block width={'100%'} height={1} backgroundColor={themeValue.borderRadio}></Block>
-					<Block flexDirection="row" alignItems="center" justifyContent="flex-end" gap={size.s_20} width={'100%'}>
+					<View style={{ width: '100%', height: 1, backgroundColor: themeValue.borderRadio }}></View>
+					<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: size.s_20, width: '100%' }}>
 						<TouchableOpacity style={styles.btn} onPress={onBack}>
 							<Text style={styles.hideText}>{t('goBack')}</Text>
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.btn} onPress={onConfirm}>
 							<Text style={styles.yesText}>{t('deleteRecording')}</Text>
 						</TouchableOpacity>
-					</Block>
+					</View>
 				</View>
 			</View>
 		</Modal>

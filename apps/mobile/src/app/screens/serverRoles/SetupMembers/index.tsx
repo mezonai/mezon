@@ -1,12 +1,12 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
-import { UsersClanEntity, selectAllRolesClan, selectAllUserClans, selectRoleByRoleId } from '@mezon/store-mobile';
-import { EPermission } from '@mezon/utils';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { selectAllRolesClan, selectAllUserClans, selectRoleByRoleId } from '@mezon/store-mobile';
+import { EPermission, UsersClanEntity } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { FlatList, Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { MezonInput } from '../../../componentUI';
@@ -55,14 +55,14 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 			? t('setupMember.title')
 			: () => {
 					return (
-						<Block>
+						<View>
 							<Text center bold h3 color={themeValue?.white}>
 								{clanRole?.title}
 							</Text>
 							<Text center color={themeValue?.text}>
 								{t('roleDetail.role')}
 							</Text>
-						</Block>
+						</View>
 					);
 				},
 		headerLeft: () => {
@@ -158,42 +158,51 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 
 	return (
 		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<Block backgroundColor={themeValue.primary} flex={1} paddingHorizontal={size.s_14}>
-				<Block flex={1} paddingTop={size.s_10}>
+			<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14 }}>
+				<View style={{ flex: 1, paddingTop: size.s_10 }}>
 					{!isEditRoleMode && (
-						<Block paddingVertical={size.s_10} borderBottomWidth={1} borderBottomColor={themeValue.borderDim} marginBottom={size.s_20}>
+						<View
+							style={{
+								paddingVertical: size.s_10,
+								borderBottomWidth: 1,
+								borderBottomColor: themeValue.borderDim,
+								marginBottom: size.s_20
+							}}
+						>
 							<Text color={themeValue.white} h2 center bold>
 								{t('setupMember.addMember')}
 							</Text>
 							<Text center color={themeValue.text}>
 								{t('setupMember.description')}
 							</Text>
-						</Block>
+						</View>
 					)}
 
 					<MezonInput value={searchMemberText} onTextChange={setSearchMemberText} placeHolder={t('setupMember.searchMembers')} />
 
 					{isEditRoleMode && (
 						<TouchableOpacity onPress={openAddMemberBottomSheet}>
-							<Block
-								flexDirection="row"
-								backgroundColor={themeValue.secondary}
-								padding={size.s_10}
-								borderRadius={size.s_6}
-								gap={size.s_10}
-								justifyContent="center"
+							<View
+								style={{
+									flexDirection: 'row',
+									backgroundColor: themeValue.secondary,
+									padding: size.s_10,
+									borderRadius: size.s_6,
+									gap: size.s_10,
+									justifyContent: 'center'
+								}}
 							>
 								<Icons.CirclePlusPrimaryIcon />
-								<Block flex={1}>
+								<View style={{ flex: 1 }}>
 									<Text color={themeValue.text}>{t('setupMember.addMember')}</Text>
-								</Block>
+								</View>
 								<Icons.ChevronSmallRightIcon />
-							</Block>
+							</View>
 						</TouchableOpacity>
 					)}
-					<Block marginVertical={size.s_10} flex={1}>
+					<View style={{ marginVertical: size.s_10, flex: 1 }}>
 						{filteredMemberList.length ? (
-							<Block borderRadius={size.s_10} overflow="hidden">
+							<View style={{ borderRadius: size.s_10, overflow: 'hidden' }}>
 								<FlatList
 									data={filteredMemberList}
 									keyExtractor={(item) => item?.id}
@@ -211,39 +220,39 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 										);
 									}}
 								/>
-							</Block>
+							</View>
 						) : (
-							<Block>
+							<View>
 								<Text center color={themeValue.text}>
 									{t('setupMember.noMembersFound')}
 								</Text>
-							</Block>
+							</View>
 						)}
-					</Block>
-				</Block>
+					</View>
+				</View>
 
 				{!isEditRoleMode ? (
-					<Block marginBottom={size.s_16} gap={size.s_10}>
+					<View style={{ marginBottom: size.s_16, gap: size.s_10 }}>
 						<TouchableOpacity onPress={() => updateMemberToRole()}>
-							<Block backgroundColor={Colors.bgViolet} paddingVertical={size.s_14} borderRadius={size.s_8}>
+							<View style={{ backgroundColor: Colors.bgViolet, paddingVertical: size.s_14, borderRadius: size.s_8 }}>
 								<Text center color={Colors.white}>
 									{t('setupMember.finish')}
 								</Text>
-							</Block>
+							</View>
 						</TouchableOpacity>
 
 						<TouchableOpacity onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-							<Block paddingVertical={size.s_14} borderRadius={size.s_8}>
+							<View style={{ paddingVertical: size.s_14, borderRadius: size.s_8 }}>
 								<Text center color={themeValue.text}>
 									{t('skipStep')}
 								</Text>
-							</Block>
+							</View>
 						</TouchableOpacity>
-					</Block>
+					</View>
 				) : (
 					<AddMemberBS bottomSheetRef={bottomSheetRef} memberList={unAssignedMemberList} role={clanRole} onClose={onClose} />
 				)}
-			</Block>
+			</View>
 		</TouchableWithoutFeedback>
 	);
 };

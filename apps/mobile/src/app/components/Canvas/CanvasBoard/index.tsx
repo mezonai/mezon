@@ -1,4 +1,4 @@
-import { Block, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { getAuthState } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useState } from 'react';
@@ -45,18 +45,20 @@ export function CanvasScreen({ navigation, route }: MenuChannelScreenProps<Scree
 	return (
 		<View style={styles.container}>
 			{loading && (
-				<Block
-					alignItems={'center'}
-					justifyContent={'center'}
-					position={'absolute'}
-					height={'100%'}
-					zIndex={1}
-					width={'100%'}
-					backgroundColor={themeValue.charcoal}
-					flex={1}
+				<View
+					style={{
+						alignItems: 'center',
+						justifyContent: 'center',
+						position: 'absolute',
+						height: '100%',
+						zIndex: 1,
+						width: '100%',
+						backgroundColor: themeValue.charcoal,
+						flex: 1
+					}}
 				>
 					<Chase color={'#cdcdcd'} />
-				</Block>
+				</View>
 			)}
 			<StatusBar barStyle={theme === ThemeModeBase.LIGHT ? 'dark-content' : 'light-content'} backgroundColor={themeValue.charcoal} />
 			<WebView

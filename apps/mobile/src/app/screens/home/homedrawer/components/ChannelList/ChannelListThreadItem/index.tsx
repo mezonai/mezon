@@ -1,8 +1,8 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectIsUnreadChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { memo, useMemo } from 'react';
+import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import LongCornerIcon from '../../../../../../../assets/svg/long-corner.svg';
 import ShortCornerIcon from '../../../../../../../assets/svg/short-corner.svg';
@@ -17,15 +17,13 @@ interface IChannelListThreadItemProps {
 	isFirstThread?: boolean;
 }
 
-const ChannelListThreadItem = memo(({ onPress, onLongPress, thread, isActive, isFirstThread }: IChannelListThreadItemProps) => {
+const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirstThread }: IChannelListThreadItemProps) => {
 	const { themeValue, theme } = useTheme();
 	const styles = style(themeValue);
 
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread.id));
 
-	const numberNotification = useMemo(() => {
-		return thread?.count_mess_unread ? thread?.count_mess_unread : 0;
-	}, [thread?.count_mess_unread]);
+	const numberNotification = thread?.count_mess_unread ? thread?.count_mess_unread : 0;
 
 	const onPressThreadItem = () => {
 		onPress && onPress(thread);
@@ -39,20 +37,29 @@ const ChannelListThreadItem = memo(({ onPress, onLongPress, thread, isActive, is
 		<View key={thread.id} style={[styles.channelListLink]}>
 			<View style={[styles.threadItem]}>
 				{isFirstThread ? (
-					<Block top={-size.s_14}>
+					<View style={{ marginTop: -size.s_14 }}>
 						<ShortCornerIcon width={size.s_12} height={size.s_16} />
-					</Block>
+					</View>
 				) : (
-					<Block top={-size.s_20}>
+					<View style={{ marginTop: -size.s_20 }}>
 						<LongCornerIcon width={size.s_12} height={size.s_36} />
 						{/*hardcode virtual view to connect thread lines */}
-						<Block backgroundColor={'#535353'} width={1.2} height={size.s_10} position={'absolute'} top={-5} left={0.3} />
-					</Block>
+						<View
+							style={{
+								backgroundColor: '#535353',
+								width: 1.2,
+								height: size.s_10,
+								position: 'absolute',
+								top: -5,
+								left: 0.3
+							}}
+						/>
+					</View>
 				)}
 				<TouchableOpacity
 					style={[
 						styles.boxThread,
-						isActive && { backgroundColor: theme === 'light' ? themeValue.secondaryWeight : themeValue.secondaryLight }
+						isActive && { backgroundColor: theme === 'dark' ? themeValue.secondaryLight : themeValue.secondaryWeight }
 					]}
 					activeOpacity={1}
 					onPress={onPressThreadItem}
@@ -62,7 +69,7 @@ const ChannelListThreadItem = memo(({ onPress, onLongPress, thread, isActive, is
 						style={[
 							styles.titleThread,
 							(isUnReadChannel || Number(numberNotification || 0) > 0) && styles.channelListItemTitleActive,
-							isActive && { backgroundColor: theme === 'light' ? themeValue.secondaryWeight : themeValue.secondaryLight }
+							isActive && { backgroundColor: theme === 'dark' ? themeValue.secondaryLight : themeValue.secondaryWeight }
 						]}
 						numberOfLines={1}
 					>
@@ -84,5 +91,5 @@ const ChannelListThreadItem = memo(({ onPress, onLongPress, thread, isActive, is
 			)}
 		</View>
 	);
-});
+};
 export default ChannelListThreadItem;

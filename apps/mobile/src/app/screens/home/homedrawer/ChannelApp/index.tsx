@@ -1,5 +1,5 @@
 import { useAuth } from '@mezon/core';
-import { Block, Colors, useTheme } from '@mezon/mobile-ui';
+import { Colors, useTheme } from '@mezon/mobile-ui';
 import { giveCoffeeActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { selectAllChannelMembers, selectAppChannelById } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
@@ -77,18 +77,20 @@ const ChannelAppScreen = memo(({ channelId }: { channelId: string }) => {
 	return (
 		<View style={styles.container}>
 			{loading && (
-				<Block
-					alignItems={'center'}
-					justifyContent={'center'}
-					position={'absolute'}
-					height={'100%'}
-					zIndex={1}
-					width={'100%'}
-					backgroundColor={themeValue.primary}
-					flex={1}
+				<View
+					style={{
+						alignItems: 'center',
+						justifyContent: 'center',
+						position: 'absolute',
+						height: '100%',
+						zIndex: 1,
+						width: '100%',
+						backgroundColor: themeValue.primary,
+						flex: 1
+					}}
 				>
 					<Chase color={'#cdcdcd'} />
-				</Block>
+				</View>
 			)}
 			<StatusBar barStyle="light-content" backgroundColor={Colors.bgCharcoal} />
 			{!!appChannel?.url && (

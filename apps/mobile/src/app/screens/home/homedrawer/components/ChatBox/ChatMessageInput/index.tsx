@@ -1,4 +1,4 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { messagesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { IEmojiOnMessage, IHashtagOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -149,8 +149,8 @@ export const ChatMessageInput = memo(
 			}, [handleDirectMessageTypingDebounced, handleTypingDebounced, mode]);
 
 			return (
-				<Block flex={1} flexDirection="row" paddingHorizontal={size.s_6}>
-					<Block alignItems="center" flex={1} justifyContent="center">
+				<View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: size.s_6 }}>
+					<View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
 						<TextInput
 							ref={ref}
 							autoFocus={isFocus}
@@ -179,7 +179,7 @@ export const ChatMessageInput = memo(
 						<View style={styles.iconEmoji}>
 							<EmojiSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 						</View>
-					</Block>
+					</View>
 
 					<ChatMessageSending
 						isAvailableSending={isAvailableSending}
@@ -197,7 +197,7 @@ export const ChatMessageInput = memo(
 						messageAction={messageAction}
 						clearInputAfterSendMessage={clearInputAfterSendMessage}
 					/>
-				</Block>
+				</View>
 			);
 		}
 	)

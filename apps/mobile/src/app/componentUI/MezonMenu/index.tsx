@@ -1,4 +1,5 @@
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
+import { View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { IMezonMenuItemProps } from './MezonMenuItem';
 import MezonMenuSection, { IMezonMenuSectionProps } from './MezonMenuSection';
@@ -10,11 +11,11 @@ interface IMezonMenu {
 
 export default function MezonMenu({ menu, marginVertical = size.s_18 }: IMezonMenu) {
 	return (
-		<Block gap={size.s_12} paddingBottom={size.s_18} marginVertical={marginVertical}>
+		<View style={{ gap: size.s_12, paddingBottom: size.s_18, marginVertical }}>
 			{menu.map((item, index) => (
 				<MezonMenuSection key={index.toString()} {...item} />
 			))}
-		</Block>
+		</View>
 	);
 }
 

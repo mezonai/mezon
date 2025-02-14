@@ -1,5 +1,5 @@
 import { ETypeSearch, getUpdateOrAddClanChannelCache, GroupedMessages, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
-import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	ChannelUsersEntity,
@@ -135,21 +135,21 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 
 	const renderMessageItem = (message: MessagesEntity, index: number) => (
 		<TouchableOpacity onPress={() => handleJumpMessage(message)} key={`${message?.id}_${index}`} style={styles.messageItem}>
-			<MessageItem message={message} messageId={message.id} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} preventAction />
+			<MessageItem message={message} messageId={message.id} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} preventAction isSearchTab={true} />
 		</TouchableOpacity>
 	);
 
 	const renderGroupItem = ({ item }) => (
-		<Block>
+		<View>
 			{!!item?.label && <Text style={styles.groupMessageLabel}>{`# ${item?.label}`}</Text>}
 			{item?.messages?.map(renderMessageItem)}
-		</Block>
+		</View>
 	);
 
 	return (
-		<Block style={styles.container}>
+		<View style={styles.container}>
 			{searchMessagesData?.length ? (
-				<Block height={'100%'} width={'100%'} paddingBottom={size.s_100}>
+				<View style={{ height: '100%', width: '100%', paddingBottom: size.s_100 }}>
 					<FlashList
 						showsVerticalScrollIndicator={false}
 						data={searchMessagesData}
@@ -163,11 +163,11 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 						onEndReachedThreshold={0.5}
 						ListFooterComponent={isLoadingMore && <ViewLoadMore />}
 					/>
-				</Block>
+				</View>
 			) : (
 				<EmptySearchPage />
 			)}
-		</Block>
+		</View>
 	);
 });
 

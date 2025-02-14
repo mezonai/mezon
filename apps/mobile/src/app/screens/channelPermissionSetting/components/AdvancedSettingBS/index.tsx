@@ -1,6 +1,7 @@
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { Block, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { memo } from 'react';
+import { View } from 'react-native';
 import Backdrop from '../../../../componentUI/MezonBottomSheet/backdrop';
 import { EAdvancedPermissionSetting } from '../../types/channelPermission.enum';
 import { IAdvancedSettingBSProps } from '../../types/channelPermission.type';
@@ -19,15 +20,15 @@ export const AdvancedSettingBS = memo(({ bottomSheetRef, channel, currentAdvance
 			backdropComponent={Backdrop}
 			backgroundStyle={{ backgroundColor: themeValue.primary }}
 		>
-			<Block paddingHorizontal={size.s_14} flex={1}>
+			<View style={{ paddingHorizontal: size.s_14, flex: 1 }}>
 				<Text color={themeValue.white} h3>
 					{currentAdvancedPermissionType === EAdvancedPermissionSetting.AddMember ? 'Add Member' : 'Add role'}
 				</Text>
 				<Text color={themeValue.text}>{'Updating...'}</Text>
 				<BottomSheetScrollView>
-					<Block>{/* TODO */}</Block>
+					<View />
 				</BottomSheetScrollView>
-			</Block>
+			</View>
 		</BottomSheetModal>
 	);
 });

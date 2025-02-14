@@ -1,10 +1,11 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
-import { UsersClanEntity, auditLogFilterActions, selectAllUserClans, selectUserAuditLog, useAppDispatch } from '@mezon/store-mobile';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { auditLogFilterActions, selectAllUserClans, selectUserAuditLog, useAppDispatch } from '@mezon/store-mobile';
+import { UsersClanEntity } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonAvatar, MezonOption } from '../../../componentUI';
 import InputSearchAuditLog from '../InputSearchAuditLog/InputSearchAuditLog';
@@ -46,9 +47,11 @@ export default function FilterUserAuditLog() {
 	}, []);
 
 	return (
-		<Block width={'100%'} height={'100%'} backgroundColor={themeValue.primary} paddingHorizontal={size.s_10} paddingVertical={size.s_10}>
+		<View
+			style={{ width: '100%', height: '100%', backgroundColor: themeValue.primary, paddingHorizontal: size.s_10, paddingVertical: size.s_10 }}
+		>
 			<InputSearchAuditLog onChangeText={handleSearchTerm} placeHolder={t('filterUserAuditLog.placeholder')} />
-			<Block marginVertical={size.s_10}>
+			<View style={{ marginVertical: size.s_10 }}>
 				<ScrollView
 					showsVerticalScrollIndicator={false}
 					scrollEventThrottle={16}
@@ -58,7 +61,7 @@ export default function FilterUserAuditLog() {
 				>
 					<MezonOption data={userOptions} onChange={handleOptionChange} value={userOption} />
 				</ScrollView>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 }

@@ -1,12 +1,12 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ApiWebhook } from 'mezon-js/api.gen';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Text } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -33,15 +33,17 @@ export function WebhooksItem({ webhook }: { webhook: ApiWebhook }) {
 	};
 	return (
 		<TouchableOpacity onPress={handleEditWebhooks}>
-			<Block
-				flexDirection="row"
-				alignItems="center"
-				backgroundColor={themeValue.secondaryWeight}
-				paddingHorizontal={size.s_20}
-				paddingVertical={size.s_10}
-				gap={size.s_10}
-				borderRadius={size.s_10}
-				marginBottom={size.s_10}
+			<View
+				style={{
+					flexDirection: 'row',
+					alignItems: 'center',
+					backgroundColor: themeValue.secondaryWeight,
+					paddingHorizontal: size.s_20,
+					paddingVertical: size.s_10,
+					gap: size.s_10,
+					borderRadius: size.s_10,
+					marginBottom: size.s_10
+				}}
 			>
 				<Image
 					style={styles.image}
@@ -49,7 +51,7 @@ export function WebhooksItem({ webhook }: { webhook: ApiWebhook }) {
 						uri: webhook?.avatar
 					}}
 				/>
-				<Block flex={1}>
+				<View style={{ flex: 1 }}>
 					<Text style={styles.name}>{webhook?.webhook_name}</Text>
 					<Text style={styles.textTime}>
 						{t('webhooksItem.createdBy', {
@@ -57,9 +59,9 @@ export function WebhooksItem({ webhook }: { webhook: ApiWebhook }) {
 							webhookUserOwnerName: webhookOwner?.user?.username
 						})}
 					</Text>
-				</Block>
+				</View>
 				<Icons.ChevronSmallRightIcon />
-			</Block>
+			</View>
 		</TouchableOpacity>
 	);
 }

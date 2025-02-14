@@ -2,12 +2,11 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { categoriesActions, selectCategoryExpandStateByCategoryId, useAppDispatch } from '@mezon/store-mobile';
-import { ICategoryChannel, IChannel } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
+import { ICategoryChannel } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { ChannelsPositionRef } from '../../../ChannelList';
-import { ChannelListItem, IThreadActiveType } from '../ChannelListItem';
+import { IThreadActiveType } from '../ChannelListItem';
 import ChannelListSectionHeader from '../ChannelListSectionHeader';
 import { style } from './styles';
 
@@ -78,7 +77,7 @@ const ChannelListSection = memo(({ data, channelsPositionRef }: IChannelListSect
 				category={data}
 			/>
 
-			{(data?.channels as IChannel[])?.map((item: IChannel, index: number) => {
+			{/* {(data?.channels as IChannel[])?.map((item: IChannel, index: number) => {
 				return (
 					<View key={`${item.id}_channel_item` + index} onLayout={(event) => handlePositionChannel(item, event)}>
 						<ChannelListItem
@@ -90,7 +89,7 @@ const ChannelListSection = memo(({ data, channelsPositionRef }: IChannelListSect
 						/>
 					</View>
 				);
-			})}
+			})} */}
 		</View>
 	);
 });

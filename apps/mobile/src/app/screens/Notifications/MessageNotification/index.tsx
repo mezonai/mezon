@@ -1,10 +1,10 @@
 import { AttachmentImageIcon } from '@mezon/mobile-components';
-import { Block, Colors } from '@mezon/mobile-ui';
+import { Colors } from '@mezon/mobile-ui';
 import { IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { useMessageParser } from '../../../hooks/useMessageParser';
 import { RenderTextMarkdownContent } from '../../home/homedrawer/components';
 import { styles } from './MessageNotification.styles';
@@ -26,27 +26,25 @@ const MessageNotification = React.memo(({ message }: IMessageNotificationProps) 
 	}, [message?.update_time, message?.create_time]);
 
 	return (
-		<Block>
+		<View>
 			{attachments?.length ? (
-				<Block style={styles.attachmentBox}>
+				<View style={styles.attachmentBox}>
 					<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')}</Text>
 					<AttachmentImageIcon width={13} height={13} color={Colors.textGray} />
-				</Block>
+				</View>
 			) : null}
-			<Block>
-				<RenderTextMarkdownContent
-					content={{
-						...(typeof message.content === 'object' ? message.content : {}),
-						mentions: message?.mentions
-					}}
-					isEdited={isEdited}
-					isNumberOfLine
-					translate={t}
-					isMessageReply={false}
-					mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-				/>
-			</Block>
-		</Block>
+			<RenderTextMarkdownContent
+				content={{
+					...(typeof message.content === 'object' ? message.content : {}),
+					mentions: message?.mentions
+				}}
+				isEdited={isEdited}
+				isNumberOfLine
+				translate={t}
+				isMessageReply={false}
+				mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+			/>
+		</View>
 	);
 });
 

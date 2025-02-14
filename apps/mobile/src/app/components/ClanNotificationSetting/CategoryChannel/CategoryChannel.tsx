@@ -1,7 +1,8 @@
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { selectAllchannelCategorySetting } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { CategoryChannelItem } from '../CategoryChannelItem';
 
@@ -24,7 +25,7 @@ export const CategoryChannel = React.memo(() => {
 	}, [channelCategorySettings]);
 
 	return (
-		<Block borderRadius={size.s_14} overflow="hidden">
+		<View style={{ borderRadius: size.s_14, overflow: 'hidden' }}>
 			{sortedChannelCategorySettings?.length > 0
 				? sortedChannelCategorySettings?.map((item) => (
 						<CategoryChannelItem
@@ -39,6 +40,6 @@ export const CategoryChannel = React.memo(() => {
 						/>
 					))
 				: null}
-		</Block>
+		</View>
 	);
 });

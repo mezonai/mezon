@@ -1,9 +1,9 @@
-import { Text, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
+import { Text, useColorsRoleById } from '@mezon/mobile-ui';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { style } from './styles';
+import { styles } from './styles';
 
 interface IProps {
 	onPress: () => void;
@@ -13,15 +13,12 @@ interface IProps {
 	messageSenderId: string;
 	mode: number;
 }
-export const InfoUserMessage = React.memo(({ createTime, isShow, onPress, senderDisplayName, messageSenderId, mode }: IProps) => {
-	const { themeValue } = useTheme();
-	const styles = style(themeValue);
+export const InfoUserMessage = ({ createTime, isShow, onPress, senderDisplayName, messageSenderId, mode }: IProps) => {
 	const userRolesClan = useColorsRoleById(messageSenderId);
-	const colorSenderName = useMemo(() => {
-		return mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
+	const colorSenderName =
+		mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
 			? userRolesClan.highestPermissionRoleColor
 			: DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR;
-	}, [userRolesClan.highestPermissionRoleColor, mode]);
 
 	if (isShow) {
 		return (
@@ -35,4 +32,4 @@ export const InfoUserMessage = React.memo(({ createTime, isShow, onPress, sender
 	}
 
 	return <View style={styles.wrapperAvatarCombine} />;
-});
+};

@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { embedActions, useAppDispatch } from '@mezon/store-mobile';
 import { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
 import { memo, useEffect, useMemo, useState } from 'react';
@@ -113,7 +113,7 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 	};
 
 	return (
-		<Block>
+		<View>
 			<MessageSelect
 				data={select?.options?.map((item) => {
 					return { title: item?.label, value: item?.value };
@@ -127,6 +127,6 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 					{!!selectedOptions?.length && selectedOptions?.map((option) => <SelectOptionItem option={option} />)}
 				</View>
 			)}
-		</Block>
+		</View>
 	);
 });

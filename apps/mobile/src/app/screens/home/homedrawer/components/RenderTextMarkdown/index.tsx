@@ -418,225 +418,223 @@ export const formatBlockCode = (text: string, isMessageReply: boolean) => {
 	return text?.replace?.(codeBlockRegexGlobal, addNewlinesToCodeBlock);
 };
 
-export const RenderTextMarkdownContent = React.memo(
-	({
-		content,
-		isEdited,
-		translate,
-		onMention,
-		onChannelMention,
-		isNumberOfLine,
-		isMessageReply,
-		mode,
-		isHiddenHashtag,
-		currentChannelId,
-		isOpenLink = true,
-		isOnlyContainEmoji,
-		isUnReadChannel = false,
-		isLastMessage = false,
-		isBuzzMessage = false,
-		onLongPress
-	}: IMarkdownProps) => {
-		let customStyle = {};
-		const { themeValue } = useTheme();
-		const store = useStore();
+export const RenderTextMarkdownContent = ({
+	content,
+	isEdited,
+	translate,
+	onMention,
+	onChannelMention,
+	isNumberOfLine,
+	isMessageReply,
+	mode,
+	isHiddenHashtag,
+	currentChannelId,
+	isOpenLink = true,
+	isOnlyContainEmoji,
+	isUnReadChannel = false,
+	isLastMessage = false,
+	isBuzzMessage = false,
+	onLongPress
+}: IMarkdownProps) => {
+	let customStyle = {};
+	const { themeValue } = useTheme();
+	const store = useStore();
 
-		if (isMessageReply) {
-			customStyle = { ...styleMessageReply(themeValue) };
-		}
-		const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [] } = content || {};
-		const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
-		const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
-		const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
-		const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
-		const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
-		const elements: ElementToken[] = [
-			...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
-			...hgm,
-			...ejm,
-			...mkm,
-			...lkm,
-			...vkm
-		]?.sort?.((a, b) => (a.s ?? 0) - (b.s ?? 0));
+	if (isMessageReply) {
+		customStyle = { ...styleMessageReply(themeValue) };
+	}
+	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [] } = content || {};
+	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
+	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
+	const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
+	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
+	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
+	const elements: ElementToken[] = [
+		...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })),
+		...hgm,
+		...ejm,
+		...mkm,
+		...lkm,
+		...vkm
+	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
-		let lastIndex = 0;
+	let lastIndex = 0;
 
-		const contentRender = useMemo(() => {
-			let formattedContent = '';
+	const contentRender = useMemo(() => {
+		let formattedContent = '';
 
-			elements.forEach((element) => {
-				const s = element.s ?? 0;
-				const e = element.e ?? 0;
+		elements.forEach((element) => {
+			const s = element.s ?? 0;
+			const e = element.e ?? 0;
 
-				const contentInElement = t?.substring?.(s, e);
+			const contentInElement = t?.substring?.(s, e);
 
-				if (lastIndex < s) {
-					formattedContent += t?.slice?.(lastIndex, s)?.toString() ?? '';
-				}
-				if (element.kindOf === ETokenMessage.HASHTAGS) {
-					if (isHiddenHashtag) {
-						formattedContent = contentInElement;
-					} else {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-expect-error
-						const channelsEntities = selectChannelsEntities(store.getState() as RootState);
-						const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
-						formattedContent += ChannelHashtag({
-							channelHashtagId: element.channelid,
-							mode,
-							currentChannelId,
-							channelsEntities,
-							hashtagDmEntities
-						});
-					}
-				}
-				if (element.kindOf === ETokenMessage.MENTIONS) {
-					const usersClan = selectAllUserClans(store.getState() as RootState);
-					const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
-					formattedContent += MentionUser({
-						tagName: contentInElement,
-						roleId: element.role_id || '',
-						tagUserId: element.user_id,
-						mode,
-						usersClan,
-						usersInChannel
-					});
-				}
-				if (element.kindOf === ETokenMessage.EMOJIS) {
-					formattedContent += EmojiMarkup({ shortname: contentInElement, emojiid: element.emojiid, isMessageReply: isMessageReply });
-				}
-
-				if (element.kindOf === ETokenMessage.MARKDOWNS) {
-					if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
-						formattedContent += formatUrls(contentInElement);
-					} else if (element.type === EBacktickType.BOLD) {
-						formattedContent += `**${contentInElement}**` ?? '';
-					} else if (element.type === EBacktickType.VOICE_LINK) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-expect-error
-						const channelsEntities = selectChannelsEntities(store.getState() as RootState);
-						const meetingCode = contentInElement?.split('/').pop();
-						const allChannelVoice = Object.values(channelsEntities).flat();
-						const voiceChannelFound = allChannelVoice?.find((channel) => channel.meeting_code === meetingCode) || null;
-						if (!voiceChannelFound) {
-							formattedContent += formatUrls(contentInElement);
-						} else {
-							formattedContent += ChannelHashtag({
-								channelHashtagId: voiceChannelFound?.channel_id,
-								channelsEntities
-							});
-						}
-					} else {
-						let content = contentInElement ?? '';
-						if (element.type === EBacktickType.PRE) {
-							content = '```' + content + '```';
-						}
-						if (element.type === EBacktickType.CODE) {
-							content = '`' + content + '`';
-						}
-						formattedContent += formatBlockCode(content, isMessageReply);
-					}
-				}
-
-				if (element.kindOf === ETokenMessage.VOICE_LINKS) {
+			if (lastIndex < s) {
+				formattedContent += t?.slice?.(lastIndex, s)?.toString() ?? '';
+			}
+			if (element.kindOf === ETokenMessage.HASHTAGS) {
+				if (isHiddenHashtag) {
+					formattedContent = contentInElement;
+				} else {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-expect-error
 					const channelsEntities = selectChannelsEntities(store.getState() as RootState);
 					const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
+					formattedContent += ChannelHashtag({
+						channelHashtagId: element.channelid,
+						mode,
+						currentChannelId,
+						channelsEntities,
+						hashtagDmEntities
+					});
+				}
+			}
+			if (element.kindOf === ETokenMessage.MENTIONS) {
+				const usersClan = selectAllUserClans(store.getState() as RootState);
+				const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
+				formattedContent += MentionUser({
+					tagName: contentInElement,
+					roleId: element.role_id || '',
+					tagUserId: element.user_id,
+					mode,
+					usersClan,
+					usersInChannel
+				});
+			}
+			if (element.kindOf === ETokenMessage.EMOJIS) {
+				formattedContent += EmojiMarkup({ shortname: contentInElement, emojiid: element.emojiid, isMessageReply: isMessageReply });
+			}
+
+			if (element.kindOf === ETokenMessage.MARKDOWNS) {
+				if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
+					formattedContent += formatUrls(contentInElement);
+				} else if (element.type === EBacktickType.BOLD) {
+					formattedContent += `**${contentInElement}**` ?? '';
+				} else if (element.type === EBacktickType.VOICE_LINK) {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					const channelsEntities = selectChannelsEntities(store.getState() as RootState);
 					const meetingCode = contentInElement?.split('/').pop();
 					const allChannelVoice = Object.values(channelsEntities).flat();
 					const voiceChannelFound = allChannelVoice?.find((channel) => channel.meeting_code === meetingCode) || null;
-
 					if (!voiceChannelFound) {
 						formattedContent += formatUrls(contentInElement);
 					} else {
-						formattedContent += ChannelHashtag({ channelHashtagId: voiceChannelFound?.channel_id, channelsEntities, hashtagDmEntities });
+						formattedContent += ChannelHashtag({
+							channelHashtagId: voiceChannelFound?.channel_id,
+							channelsEntities
+						});
 					}
+				} else {
+					let content = contentInElement ?? '';
+					if (element.type === EBacktickType.PRE) {
+						content = '```' + content + '```';
+					}
+					if (element.type === EBacktickType.CODE) {
+						content = '`' + content + '`';
+					}
+					formattedContent += formatBlockCode(content, isMessageReply);
 				}
-				// eslint-disable-next-line react-hooks/exhaustive-deps
-				lastIndex = e;
-			});
-
-			if (lastIndex < t?.length) {
-				formattedContent += t?.slice?.(lastIndex)?.toString();
 			}
 
-			if (isEdited) {
-				formattedContent += ` [${translate('edited')}](${EDITED_FLAG})`;
+			if (element.kindOf === ETokenMessage.VOICE_LINKS) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				const channelsEntities = selectChannelsEntities(store.getState() as RootState);
+				const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
+				const meetingCode = contentInElement?.split('/').pop();
+				const allChannelVoice = Object.values(channelsEntities).flat();
+				const voiceChannelFound = allChannelVoice?.find((channel) => channel.meeting_code === meetingCode) || null;
+
+				if (!voiceChannelFound) {
+					formattedContent += formatUrls(contentInElement);
+				} else {
+					formattedContent += ChannelHashtag({ channelHashtagId: voiceChannelFound?.channel_id, channelsEntities, hashtagDmEntities });
+				}
 			}
-			return formattedContent;
-		}, [elements, t, mode]);
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+			lastIndex = e;
+		});
 
-		const escapeDashes = (text: string): string => {
-			return text.replace(/-{1,10}/g, (match) => `\\${match}`);
-		};
+		if (lastIndex < t?.length) {
+			formattedContent += t?.slice?.(lastIndex)?.toString();
+		}
 
-		const renderMarkdown = () => (
-			<Markdown
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				style={{
-					...(themeValue ? (markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage) as StyleSheet.NamedStyles<any>) : {}),
-					...customStyle
-				}}
-				rules={renderRulesCustom(isOnlyContainEmoji, onLongPress)}
-				onLinkPress={(url) => {
-					if (isOpenLink) {
-						if (url.startsWith(TYPE_MENTION.userRoleMention)) {
-							onMention && onMention(url.replace('@role', '@'));
-							return false;
-						}
-						if (url.startsWith(TYPE_MENTION.userMention)) {
-							onMention && onMention(url);
-							return false;
-						}
-						if (url.startsWith(TYPE_MENTION.hashtag)) {
-							const urlFormat = url.replace(/##voice%22|#%22|%22/g, '');
-							const dataChannel = urlFormat.split('_');
-							const payloadChannel = {
-								type: Number(dataChannel?.[0] || 1),
-								id: dataChannel?.[1],
-								channel_id: dataChannel?.[1],
-								clan_id: dataChannel?.[2],
-								status: Number(dataChannel?.[3] || 1),
-								meeting_code: dataChannel?.[4] || '',
-								category_id: dataChannel?.[5]
-							};
-							onChannelMention && onChannelMention(payloadChannel);
-							return false;
-						}
-						// Note: return false to prevent default
-						return true;
+		if (isEdited) {
+			formattedContent += ` [${translate('edited')}](${EDITED_FLAG})`;
+		}
+		return formattedContent;
+	}, [elements, t, mode]);
+
+	const escapeDashes = (text: string): string => {
+		return text.replace(/-{1,10}/g, (match) => `\\${match}`);
+	};
+
+	const renderMarkdown = () => (
+		<Markdown
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			style={{
+				...(themeValue ? (markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage) as StyleSheet.NamedStyles<any>) : {}),
+				...customStyle
+			}}
+			rules={renderRulesCustom(isOnlyContainEmoji, onLongPress)}
+			onLinkPress={(url) => {
+				if (isOpenLink) {
+					if (url.startsWith(TYPE_MENTION.userRoleMention)) {
+						onMention && onMention(url.replace('@role', '@'));
+						return false;
 					}
-				}}
-			>
-				{escapeDashes(formatBlockCode(contentRender?.trim(), isMessageReply))}
-			</Markdown>
-		);
+					if (url.startsWith(TYPE_MENTION.userMention)) {
+						onMention && onMention(url);
+						return false;
+					}
+					if (url.startsWith(TYPE_MENTION.hashtag)) {
+						const urlFormat = url.replace(/##voice%22|#%22|%22/g, '');
+						const dataChannel = urlFormat.split('_');
+						const payloadChannel = {
+							type: Number(dataChannel?.[0] || 1),
+							id: dataChannel?.[1],
+							channel_id: dataChannel?.[1],
+							clan_id: dataChannel?.[2],
+							status: Number(dataChannel?.[3] || 1),
+							meeting_code: dataChannel?.[4] || '',
+							category_id: dataChannel?.[5]
+						};
+						onChannelMention && onChannelMention(payloadChannel);
+						return false;
+					}
+					// Note: return false to prevent default
+					return true;
+				}
+			}}
+		>
+			{escapeDashes(formatBlockCode(contentRender?.trim(), isMessageReply))}
+		</Markdown>
+	);
 
-		return isNumberOfLine ? (
-			<View
-				style={{
-					flex: 1,
-					maxHeight: isMessageReply ? size.s_17 : size.s_20 * 10 - size.s_10,
-					overflow: 'hidden'
-				}}
-			>
-				{isMessageReply && (
-					<View
-						style={{
-							position: 'absolute',
-							top: 0,
-							left: 0,
-							right: 0,
-							bottom: 0,
-							zIndex: 1
-						}}
-					/>
-				)}
-				{renderMarkdown()}
-			</View>
-		) : (
-			renderMarkdown()
-		);
-	}
-);
+	return isNumberOfLine ? (
+		<View
+			style={{
+				flex: 1,
+				maxHeight: isMessageReply ? size.s_17 : size.s_20 * 10 - size.s_10,
+				overflow: 'hidden'
+			}}
+		>
+			{isMessageReply && (
+				<View
+					style={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: 0,
+						zIndex: 1
+					}}
+				/>
+			)}
+			{renderMarkdown()}
+		</View>
+	) : (
+		renderMarkdown()
+	);
+};

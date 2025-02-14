@@ -1,4 +1,4 @@
-import { Block, Colors, size } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -30,30 +30,37 @@ const UpdateGateScreen = ({ route }) => {
 			<GestureHandlerRootView style={{ flex: 1 }}>
 				<PanGestureHandler onGestureEvent={handleGestureEvent}>
 					<View style={styles.container}>
-						<Block />
-						<Block alignSelf={'center'} marginBottom={size.s_50}>
+						<View />
+						<View
+							style={{
+								alignSelf: 'center',
+								marginBottom: size.s_50
+							}}
+						>
 							<FastImage
 								source={require('../../../assets/images/bgRocket.png')}
 								style={{ width: 350, height: 350 }}
 								resizeMode={'cover'}
 							/>
-							<Block>
+							<View>
 								<Text style={styles.title}>Out of Date Version</Text>
 								<Text style={styles.subTitle}>Let's update to have the best experience!</Text>
-							</Block>
-						</Block>
+							</View>
+						</View>
 						<TouchableOpacity onPress={onPress}>
-							<Block
-								backgroundColor={Colors.white}
-								flexDirection={'row'}
-								justifyContent={'space-between'}
-								paddingHorizontal={size.s_10}
-								height={size.s_50}
-								borderRadius={size.s_50}
-								alignItems={'center'}
+							<View
+								style={{
+									backgroundColor: Colors.white,
+									flexDirection: 'row',
+									justifyContent: 'space-between',
+									paddingHorizontal: size.s_10,
+									height: size.s_50,
+									borderRadius: size.s_50,
+									alignItems: 'center'
+								}}
 							>
 								<Text style={styles.titleBtn}>Update Now</Text>
-							</Block>
+							</View>
 						</TouchableOpacity>
 					</View>
 				</PanGestureHandler>

@@ -1,23 +1,34 @@
-import { Attributes, Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
+const styles = StyleSheet.create({
+	wrapper: {
+		flexDirection: 'row',
+		gap: size.s_14,
+		marginBottom: size.s_20,
+		paddingHorizontal: size.s_10
+	},
+	avatar: { width: size.s_40, height: size.s_40, borderRadius: 50 },
+	bigText: { marginBottom: size.s_10, height: size.s_16, borderRadius: size.s_8 },
+	normalText: { height: size.s_16, borderRadius: size.s_6, marginBottom: size.s_10 }
+});
+
 const MessageItemSkeleton = ({ skeletonNumber }: { skeletonNumber: number }) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
 	return (
 		<>
 			{Array.from({ length: skeletonNumber }).map((_, index) => (
-				<Block style={styles.wrapper} key={index}>
+				<View style={styles.wrapper} key={index}>
 					<ShimmerPlaceHolder
 						shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 						shimmerStyle={styles.avatar}
 						LinearGradient={LinearGradient}
 					/>
 
-					<Block>
+					<View>
 						<ShimmerPlaceHolder
 							width={100}
 							shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
@@ -38,23 +49,10 @@ const MessageItemSkeleton = ({ skeletonNumber }: { skeletonNumber: number }) => 
 								LinearGradient={LinearGradient}
 							/>
 						) : null}
-					</Block>
-				</Block>
+					</View>
+				</View>
 			))}
 		</>
 	);
 };
 export default MessageItemSkeleton;
-
-const style = (colors: Attributes) =>
-	StyleSheet.create({
-		wrapper: {
-			flexDirection: 'row',
-			gap: size.s_14,
-			marginBottom: size.s_20,
-			paddingHorizontal: size.s_10
-		},
-		avatar: { width: size.s_40, height: size.s_40, borderRadius: 50 },
-		bigText: { marginBottom: size.s_10, height: size.s_16, borderRadius: size.s_8 },
-		normalText: { height: size.s_16, borderRadius: size.s_6, marginBottom: size.s_10 }
-	});

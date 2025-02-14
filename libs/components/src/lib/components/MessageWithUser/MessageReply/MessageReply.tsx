@@ -68,6 +68,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode }) =
 										? (message?.references?.[0]?.mesages_sender_avatar ?? '')
 										: messageSender?.clan_avatar || messageSender?.user?.avatar_url
 								}
+								isAnonymous={message?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID}
 							/>
 						</div>
 

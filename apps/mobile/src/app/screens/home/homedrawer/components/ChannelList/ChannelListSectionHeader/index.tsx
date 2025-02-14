@@ -1,7 +1,6 @@
 import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ICategoryChannel } from '@mezon/utils';
-import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
 
@@ -30,4 +29,4 @@ const ChannelListSectionHeader = ({ onPress, title, onLongPress, isCollapsed, ca
 		</TouchableOpacity>
 	);
 };
-export default memo(ChannelListSectionHeader);
+export default ChannelListSectionHeader;

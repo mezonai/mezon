@@ -1,8 +1,8 @@
-import { Block } from '@mezon/mobile-ui';
 import { IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { useMessageParser } from '../../../hooks/useMessageParser';
 import { RenderTextMarkdownContent } from '../../home/homedrawer/components';
 import { MessageAttachment } from '../../home/homedrawer/components/MessageAttachment';
@@ -23,11 +23,11 @@ const MessageWebhookClan = React.memo(({ message }: IMessageNotificationProps) =
 	}, [message?.update_time, message?.create_time]);
 
 	return (
-		<Block>
+		<View>
 			{attachments?.length ? (
 				<MessageAttachment attachments={message?.attachments || []} senderId={message?.sender_id} createTime={message?.create_time} />
 			) : null}
-			<Block>
+			<View>
 				<RenderTextMarkdownContent
 					content={{
 						...(typeof message.content === 'object' ? message.content : {}),
@@ -39,8 +39,8 @@ const MessageWebhookClan = React.memo(({ message }: IMessageNotificationProps) =
 					isMessageReply={false}
 					mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 				/>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 });
 

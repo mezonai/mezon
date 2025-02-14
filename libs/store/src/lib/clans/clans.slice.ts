@@ -488,6 +488,7 @@ const { selectAll, selectEntities } = clansAdapter.getSelectors();
 
 export const getClansState = (rootState: { [CLANS_FEATURE_KEY]: ClansState }): ClansState => rootState[CLANS_FEATURE_KEY];
 export const selectAllClans = createSelector(getClansState, selectAll);
+export const selectClanNumber = createSelector(getClansState, (state) => state?.ids?.length || 0);
 export const selectCurrentClanId = createSelector(getClansState, (state) => state.currentClanId);
 
 export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!(currentClanId && currentClanId !== '0'));

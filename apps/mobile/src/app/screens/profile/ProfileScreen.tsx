@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useFriends, useMemberStatus } from '@mezon/core';
 import { CheckIcon, DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
-import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
 	channelMembersActions,
@@ -167,29 +167,35 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							/>
 						)
 					) : (
-						<Block
-							backgroundColor={themeValue.colorAvatarDefault}
-							overflow={'hidden'}
-							width={'100%'}
-							height={'100%'}
-							borderRadius={isTabletLandscape ? size.s_70 : size.s_50}
-							alignItems={'center'}
-							justifyContent={'center'}
+						<View
+							style={{
+								backgroundColor: themeValue.colorAvatarDefault,
+								overflow: 'hidden',
+								width: '100%',
+								height: '100%',
+								borderRadius: isTabletLandscape ? size.s_70 : size.s_50,
+								alignItems: 'center',
+								justifyContent: 'center'
+							}}
 						>
 							<Text style={styles.textAvatar}>{user?.userProfile?.user?.username?.charAt?.(0)?.toUpperCase()}</Text>
-						</Block>
+						</View>
 					)}
 
-					<Block
-						position="absolute"
-						bottom={-size.s_2}
-						right={-size.s_4}
-						backgroundColor={themeValue.tertiary}
-						borderRadius={size.s_20}
-						style={styles.dotStatusUser}
+					<View
+						style={[
+							{
+								backgroundColor: themeValue.tertiary,
+								borderRadius: size.s_20,
+								position: 'absolute',
+								bottom: -size.s_2,
+								right: -size.s_4
+							},
+							styles.dotStatusUser
+						]}
 					>
 						{userStatusIcon}
-					</Block>
+					</View>
 				</TouchableOpacity>
 			</View>
 
@@ -214,14 +220,14 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						<Icons.ChevronSmallDownIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 					<Text style={styles.text}>{user?.userProfile?.user?.username}</Text>
-					<Block flexDirection="row" alignItems="center" gap={size.s_10} marginTop={size.s_10}>
+					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}>
 						<CheckIcon width={size.s_14} height={size.s_14} color={Colors.azureBlue} />
 						<TouchableOpacity style={styles.token} onPress={showSendTokenBottomSheet}>
 							<Text style={styles.text}>{`${t('token')} ${formatNumber(Number(tokenInWallet), 'vi-VN', 'VND')}`}</Text>
 						</TouchableOpacity>
-					</Block>
+					</View>
 					{userCustomStatus ? (
-						<Block flexDirection="row" alignItems="center" justifyContent="space-between">
+						<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 							<TouchableOpacity
 								onPress={() => setIsVisibleAddStatusUserModal(!isVisibleAddStatusUserModal)}
 								style={styles.customUserStatusBtn}
@@ -231,7 +237,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							<Pressable onPress={() => handleCustomUserStatus('', ETypeCustomUserStatus.Close)} style={styles.closeBtnUserStatus}>
 								<Icons.CircleXIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
 							</Pressable>
-						</Block>
+						</View>
 					) : null}
 					{!isTabletLandscape && (
 						<View style={styles.buttonList}>

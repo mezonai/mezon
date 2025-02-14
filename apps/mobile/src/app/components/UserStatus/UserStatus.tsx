@@ -1,7 +1,8 @@
 import { DisturbStatusIcon, Icons, IdleStatusIcon, IUserStatusProps, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { EUserStatus } from '@mezon/utils';
 import React, { useMemo } from 'react';
+import { View } from 'react-native';
 
 export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_12, customStatus }: IUserStatusProps) => {
 	const { themeValue } = useTheme();
@@ -28,16 +29,18 @@ export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_
 	}, []);
 
 	return (
-		<Block
-			position="absolute"
-			bottom={-size.s_2}
-			right={-size.s_4}
-			backgroundColor={themeValue.tertiary}
-			padding={size.s_2}
-			borderRadius={size.s_20}
-			{...(customStyles && customStyles)}
+		<View
+			style={{
+				position: 'absolute',
+				bottom: -size.s_2,
+				right: -size.s_4,
+				backgroundColor: themeValue.tertiary,
+				padding: size.s_2,
+				borderRadius: size.s_20,
+				...(customStyles && customStyles)
+			}}
 		>
 			{onlineStatus}
-		</Block>
+		</View>
 	);
 });

@@ -11,7 +11,7 @@ interface IProps {
 const ChannelListLoading = ({ isNonChannel }: IProps) => {
 	const isLoading = useSelector((state: RootState) => state?.channels?.loadingStatus);
 
-	if (isLoading === 'loading' && !isNonChannel) return <ChannelListSkeleton numberSkeleton={6} />;
+	if (isLoading === 'loading' && !isNonChannel) return <ChannelListSkeleton numberSkeleton={5} />;
 
 	return <View />;
 };

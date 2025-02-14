@@ -1,8 +1,8 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllWebhooks } from '@mezon/store-mobile';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { WebhooksEmpty } from './WebhooksEmpty';
 import { WebhooksItem } from './WebhooksItem';
@@ -15,7 +15,9 @@ export function Webhooks() {
 	const allWebhooks = useSelector(selectAllWebhooks);
 
 	return (
-		<Block paddingHorizontal={size.s_10} paddingVertical={size.s_16} backgroundColor={themeValue.primary} width={'100%'} height={'100%'}>
+		<View
+			style={{ paddingHorizontal: size.s_10, paddingVertical: size.s_16, backgroundColor: themeValue.primary, width: '100%', height: '100%' }}
+		>
 			<Text style={styles.description}>
 				{t('webhooks.description')}
 				<Text style={styles.textLink}>{t('webhooks.learnMore')}</Text>
@@ -27,6 +29,6 @@ export function Webhooks() {
 			) : (
 				<WebhooksEmpty />
 			)}
-		</Block>
+		</View>
 	);
 }

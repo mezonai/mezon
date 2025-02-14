@@ -1,8 +1,8 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TouchableOpacity } from 'react-native';
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
 
 export const RoleColorPicker = function RoleColorPicker({ onPickColor }: { onPickColor: (color: string) => void }) {
@@ -47,44 +47,48 @@ export const RoleColorPicker = function RoleColorPicker({ onPickColor }: { onPic
 		dismiss();
 	};
 	return (
-		<Block paddingHorizontal={size.s_20}>
-			<Block width={'100%'} flexDirection="row" marginBottom={size.s_20}>
-				<Block width={size.s_60}></Block>
+		<View style={{ paddingHorizontal: size.s_20 }}>
+			<View style={{ width: '100%', flexDirection: 'row', marginBottom: size.s_20 }}>
+				<View style={{ width: size.s_60 }} />
 				<Text style={styles.title}>{t('roleColorPicker.titleBS')}</Text>
 				<TouchableOpacity onPress={handleSaveColor} style={styles.headerRightBtn}>
 					<Text style={styles.textBtn}>{t('roleColorPicker.save')}</Text>
 				</TouchableOpacity>
-			</Block>
-			<Block
-				flexDirection="row"
-				flexWrap="wrap"
-				paddingVertical={size.s_10}
-				paddingHorizontal={size.s_20}
-				alignItems="center"
-				justifyContent="center"
-				gap={size.s_20}
+			</View>
+			<View
+				style={{
+					flexDirection: 'row',
+					flexWrap: 'wrap',
+					paddingVertical: size.s_10,
+					paddingHorizontal: size.s_20,
+					alignItems: 'center',
+					justifyContent: 'center',
+					gap: size.s_20
+				}}
 			>
 				{colorArray?.map((color) => (
 					<Pressable onPress={() => handlePickColor(color)}>
-						<Block
-							alignItems="center"
-							justifyContent="center"
-							height={size.s_40}
-							width={size.s_40}
-							backgroundColor={color}
-							borderRadius={size.s_20}
+						<View
+							style={{
+								alignItems: 'center',
+								justifyContent: 'center',
+								height: size.s_40,
+								width: size.s_40,
+								backgroundColor: color,
+								borderRadius: size.s_20
+							}}
 						>
 							{!!colorSelected && colorSelected === color && <Text style={styles.checkedIcon}>✓</Text>}
-						</Block>
+						</View>
 					</Pressable>
 				))}
-			</Block>
-			<Block width={'100%'} alignItems="center" marginVertical={size.s_20}>
+			</View>
+			<View style={{ width: '100%', alignItems: 'center', marginVertical: size.s_20 }}>
 				<TouchableOpacity onPress={handleResetColor} style={styles.footerBtn}>
 					<Text style={styles.textBtn}>{t('roleColorPicker.reset')}</Text>
 				</TouchableOpacity>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 };
 

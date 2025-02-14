@@ -1,8 +1,8 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonDateTimePicker from '../../componentUI/MezonDateTimePicker';
 import { style } from './styles';
@@ -34,18 +34,18 @@ const AgeRestrictedForm = ({ onClose }: { onClose: () => void }) => {
 		onClose();
 	};
 	return (
-		<Block backgroundColor={themeValue.secondary} borderRadius={size.s_10} padding={size.s_20}>
-			<Block>
+		<View style={{ backgroundColor: themeValue.secondary, borderRadius: size.s_10, padding: size.s_20 }}>
+			<View>
 				<Text style={styles.title}>{t('ageRestrictedForm.title')}</Text>
 				<Text style={styles.description}>{t('ageRestrictedForm.description')}</Text>
-			</Block>
+			</View>
 			<MezonDateTimePicker value={date} onChange={handleDatePicked} containerStyle={styles.datePicker} />
-			<Block>
+			<View>
 				<TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmit}>
 					<Text style={styles.btnText}>{t('ageRestrictedForm.submit')}</Text>
 				</TouchableOpacity>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 };
 

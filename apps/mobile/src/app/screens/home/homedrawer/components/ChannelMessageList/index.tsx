@@ -23,7 +23,7 @@ const ChannelListMessage = React.memo(
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 
-		const keyExtractor = useCallback((message) => `${message?.id}_${message?.channel_id}_item_msg`, []);
+		const keyExtractor = useCallback((message) => `${message?.id}_${message?.channel_id}`, []);
 
 		const ViewLoadMore = () => {
 			return (
@@ -44,28 +44,41 @@ const ChannelListMessage = React.memo(
 				onLoadMore(ELoadMoreDirection.top);
 			}
 		};
-
 		return (
 			<FlatList
+				data={messages}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				inverted={true}
+				showsVerticalScrollIndicator={true}
+				contentContainerStyle={styles.listChannels}
+				initialNumToRender={20}
+				maxToRenderPerBatch={10}
+				windowSize={5}
+				onEndReachedThreshold={0.5}
+				maintainVisibleContentPosition={{
+					minIndexForVisible: 0,
+					autoscrollToTopThreshold: 10
+				}}
 				ref={flatListRef}
-				inverted
+				// inverted
 				// overrideProps={{ isInvertedVirtualizedList: true }}
 				// showsVerticalScrollIndicator={false}
-				data={messages || []}
+				// data={messages || []}
 				onScroll={handleScroll}
-				keyboardShouldPersistTaps={'handled'}
-				contentContainerStyle={styles.listChannels}
-				renderItem={renderItem}
-				removeClippedSubviews={false}
-				decelerationRate={'fast'}
-				keyExtractor={keyExtractor}
-				maxToRenderPerBatch={5}
-				updateCellsBatchingPeriod={100}
-				initialNumToRender={10}
-				windowSize={21}
+				// keyboardShouldPersistTaps={'handled'}
+				// contentContainerStyle={styles.listChannels}
+				// renderItem={renderItem}
+				// removeClippedSubviews={false}
+				// decelerationRate={'fast'}
+				// keyExtractor={keyExtractor}
+				// maxToRenderPerBatch={5}
+				// updateCellsBatchingPeriod={100}
+				// initialNumToRender={10}
+				// windowSize={21}
 				onEndReached={handleEndReached}
-				onEndReachedThreshold={0.1}
-				scrollEventThrottle={16}
+				// onEndReachedThreshold={0.1}
+				// scrollEventThrottle={16}
 				// estimatedItemSize={220}
 				// viewabilityConfig={{
 				// 	minimumViewTime: 0,

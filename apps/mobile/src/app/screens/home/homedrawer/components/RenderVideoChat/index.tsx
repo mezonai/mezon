@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import { Block, Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Colors, Metrics, size } from '@mezon/mobile-ui';
 import { Audio, Video as ExpoVideo, InterruptionModeIOS, ResizeMode } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 
 const widthMedia = Metrics.screenWidth - 150;
 
@@ -41,7 +41,7 @@ export const RenderVideoChat = React.memo(
 		const isUploading = !videoURL?.includes('http');
 
 		return (
-			<Block marginTop={size.s_10} marginBottom={size.s_6} opacity={isUploading || videoDimensions?.isLoading ? 0.5 : 1}>
+			<View style={{ marginTop: size.s_10, marginBottom: size.s_6, opacity: isUploading || videoDimensions?.isLoading ? 0.5 : 1 }}>
 				<ExpoVideo
 					ref={videoRef}
 					onError={(err) => {
@@ -74,21 +74,23 @@ export const RenderVideoChat = React.memo(
 					}}
 				/>
 				{(isUploading || videoDimensions?.isLoading) && (
-					<Block
-						position="absolute"
-						top={0}
-						left={0}
-						right={0}
-						bottom={15}
-						width={Math.max(videoDimensions.width, Metrics.screenWidth - size.s_60 * 2)}
-						height={Math.max(videoDimensions.height, size.s_100 * 2.5)}
-						alignItems="center"
-						justifyContent="center"
+					<View
+						style={{
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 15,
+							width: Math.max(videoDimensions.width, Metrics.screenWidth - size.s_60 * 2),
+							height: Math.max(videoDimensions.height, size.s_100 * 2.5),
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
 					>
 						<ActivityIndicator />
-					</Block>
+					</View>
 				)}
-			</Block>
+			</View>
 		);
 	},
 	(prevProps, nextProps) => prevProps.videoURL === nextProps.videoURL

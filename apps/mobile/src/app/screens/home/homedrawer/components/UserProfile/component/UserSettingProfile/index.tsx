@@ -1,10 +1,10 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, Text, baseColor, useTheme } from '@mezon/mobile-ui';
+import { Text, baseColor, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan, selectCurrentClanId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { DeviceEventEmitter, TouchableOpacity } from 'react-native';
+import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonModal } from '../../../../../../../componentUI/MezonModal';
 import KickUserClanModal from '../KickUserClanModal';
@@ -128,21 +128,21 @@ const UserSettingProfile = ({
 	}
 
 	return (
-		<Block>
+		<View>
 			{showActionOutside && profileSetting.some((action) => action.isShow) && (
-				<Block style={styles.wrapper}>
+				<View style={styles.wrapper}>
 					{profileSetting?.map((item, index) => {
-						if (!item?.isShow) return <Block />;
+						if (!item?.isShow) return <View />;
 						return (
 							<TouchableOpacity onPress={() => item.action(item.value)} key={`${item?.value}_${index}`}>
-								<Block style={styles.option}>
+								<View style={styles.option}>
 									{item?.icon}
 									<Text style={styles.textOption}>{item?.label}</Text>
-								</Block>
+								</View>
 							</TouchableOpacity>
 						);
 					})}
-				</Block>
+				</View>
 			)}
 
 			<MezonModal
@@ -165,7 +165,7 @@ const UserSettingProfile = ({
 					profileSetting={profileSetting}
 				/>
 			)}
-		</Block>
+		</View>
 	);
 };
 

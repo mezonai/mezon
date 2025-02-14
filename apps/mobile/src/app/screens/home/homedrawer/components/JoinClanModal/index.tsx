@@ -9,11 +9,11 @@ import {
 	setDefaultChannelLoader,
 	validLinkInviteRegex
 } from '@mezon/mobile-components';
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { channelsActions, clansActions, getStoreAsync } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { MezonInput, MezonModal } from '../../../../../componentUI';
 import { ErrorInput } from '../../../../../components/ErrorInput';
 import { styles } from './JoinClanModal.styles';
@@ -62,12 +62,12 @@ const JoinClanModal = ({ visible, setVisible }: JoinClanModalProps) => {
 			headerStyles={styles.headerModal}
 		>
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-				<Block width={'100%'} height={'100%'} paddingHorizontal={size.s_20} paddingVertical={size.s_10} position={'relative'}>
-					<Block marginBottom={size.s_40}>
+				<View style={{ width: '100%', height: '100%', paddingHorizontal: size.s_20, paddingVertical: size.s_10, position: 'relative' }}>
+					<View style={{ marginBottom: size.s_40 }}>
 						<Text style={styles.title}>{t('joinClan.joinExistClan')}</Text>
 						<Text style={styles.description}>{t('joinClan.enterInvite')}</Text>
-					</Block>
-					<Block>
+					</View>
+					<View>
 						<MezonInput
 							label={t('joinClan.labelInput')}
 							onTextChange={setInviteLink}
@@ -76,11 +76,11 @@ const JoinClanModal = ({ visible, setVisible }: JoinClanModalProps) => {
 						/>
 						{!isValidInvite && <ErrorInput errorMessage={t('joinClan.errorMessage')} />}
 						<Text style={styles.textExample}>{t('joinClan.linkInviteEx')}</Text>
-					</Block>
+					</View>
 					<TouchableOpacity onPress={() => joinChannel()} style={styles.btnInvite}>
 						<Text style={styles.textInviteBtn}>{t('joinClan.joinInviteLink')}</Text>
 					</TouchableOpacity>
-				</Block>
+				</View>
 			</TouchableWithoutFeedback>
 		</MezonModal>
 	);

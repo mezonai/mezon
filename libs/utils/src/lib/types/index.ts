@@ -1433,3 +1433,10 @@ export enum ParticipantMeetState {
 	JOIN = 0,
 	LEAVE = 1
 }
+
+export type IvoiceInfo = {
+	clanId: string;
+	clanName: string;
+	channelId: string;
+	channelLabel: string;
+};

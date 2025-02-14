@@ -1,6 +1,6 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Icons, SpeakerIcon, ThreadIcon, ThreadIconLocker } from '@mezon/mobile-components';
-import { Block, Fonts, size, useTheme } from '@mezon/mobile-ui';
+import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectAllTextChannel, selectVoiceChannelAll } from '@mezon/store-mobile';
 import { ChannelStatusEnum, OptionEvent } from '@mezon/utils';
 import debounce from 'lodash.debounce';
@@ -227,17 +227,17 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 				backdropComponent={Backdrop}
 				backgroundStyle={{ backgroundColor: themeValue.primary }}
 			>
-				<Block paddingHorizontal={size.s_20} paddingVertical={size.s_10} flex={1} gap={size.s_10}>
+				<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10, flex: 1, gap: size.s_10 }}>
 					<MezonInput
 						inputWrapperStyle={styles.searchText}
 						placeHolder={'Select user to send token'}
 						onTextChange={handleSearchText}
 						prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
 					/>
-					<Block flex={1} borderRadius={size.s_8}>
+					<View style={{ flex: 1, borderRadius: size.s_8 }}>
 						<BottomSheetFlatList data={filteredOptionsChannels} renderItem={renderItem} />
-					</Block>
-				</Block>
+					</View>
+				</View>
 			</BottomSheetModal>
 		</View>
 	);

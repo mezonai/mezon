@@ -1,5 +1,5 @@
 import { ENotificationActive, ENotificationChannelId, EOptionOverridesType, optionNotification } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	defaultNotificationCategoryActions,
 	notificationSettingActions,
@@ -10,7 +10,7 @@ import {
 } from '@mezon/store-mobile';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonOption } from '../../../componentUI';
 import { MuteClanNotificationBS } from '../MuteClanNotificationBS';
@@ -88,16 +88,16 @@ const NotificationSettingDetail = ({ route }: { route: any }) => {
 	};
 
 	return (
-		<Block backgroundColor={themeValue.primary} flex={1} padding={size.s_10}>
+		<View style={{ backgroundColor: themeValue.primary, flex: 1, padding: size.s_10 }}>
 			{notifyChannelCategorySetting?.type !== EOptionOverridesType.Category && (
-				<Block>
+				<View>
 					<MuteClanNotificationBS
 						isUnmute={isUnmute}
 						notificationChannelSelected={getNotificationChannelSelected}
 						currentChannel={notifyChannelCategorySetting}
 						description={t('clanNotificationSettingDetail.muteChannelSubText')}
 					/>
-				</Block>
+				</View>
 			)}
 			<MezonOption
 				onChange={handleNotificationChange}
@@ -115,7 +115,7 @@ const NotificationSettingDetail = ({ route }: { route: any }) => {
 					<Text style={styles.textBtn}>{t('resetOverrides')}</Text>
 				</TouchableOpacity>
 			)}
-		</Block>
+		</View>
 	);
 };
 

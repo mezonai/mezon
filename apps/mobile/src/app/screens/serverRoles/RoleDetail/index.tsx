@@ -1,11 +1,11 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, Icons, isEqual } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { rolesClanActions, selectRoleByRoleId, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, FlatList, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Alert, FlatList, Keyboard, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { MezonConfirm, MezonInput } from '../../../componentUI';
@@ -53,33 +53,33 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 
 	navigation.setOptions({
 		headerTitle: () => (
-			<Block>
+			<View>
 				<Text center bold h3 color={themeValue?.white}>
 					{clanRole?.title}
 				</Text>
 				<Text center color={themeValue?.text}>
 					{t('roleDetail.role')}
 				</Text>
-			</Block>
+			</View>
 		),
 		headerRight: () => {
 			if (isNotChange) return null;
 			return (
 				<TouchableOpacity onPress={async () => handleSave()}>
-					<Block marginRight={size.s_20}>
+					<View style={{ marginRight: size.s_20 }}>
 						<Text h4 color={Colors.textViolet}>
 							{t('roleDetail.save')}
 						</Text>
-					</Block>
+					</View>
 				</TouchableOpacity>
 			);
 		},
 		headerLeft: () => {
 			return (
 				<TouchableOpacity onPress={handleBack}>
-					<Block marginLeft={size.s_16}>
+					<View style={{ marginLeft: size.s_16 }}>
 						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
-					</Block>
+					</View>
 				</TouchableOpacity>
 			);
 		}
@@ -197,8 +197,8 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	}, [t, isCanEditRole]);
 	return (
 		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<Block backgroundColor={themeValue.primary} flex={1} paddingHorizontal={size.s_14}>
-				<Block marginTop={size.s_14}>
+			<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14 }}>
+				<View style={{ marginTop: size.s_14 }}>
 					<MezonInput
 						value={currentRoleName}
 						onTextChange={setCurrentRoleName}
@@ -206,11 +206,11 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 						label={t('roleDetail.roleName')}
 						disabled={!isCanEditRole}
 					/>
-				</Block>
+				</View>
 
-				<Block marginVertical={size.s_10} flex={1}>
+				<View style={{ marginVertical: size.s_10, flex: 1 }}>
 					<RoleCoLourComponent roleId={roleId} />
-					<Block borderRadius={size.s_10} overflow="hidden">
+					<View style={{ borderRadius: size.s_10, overflow: 'hidden' }}>
 						<FlatList
 							data={actionList}
 							scrollEnabled
@@ -220,50 +220,54 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 							renderItem={({ item }) => {
 								return (
 									<TouchableOpacity onPress={() => handleAction(item.type)}>
-										<Block
-											flexDirection="row"
-											alignItems="center"
-											justifyContent="space-between"
-											backgroundColor={themeValue.secondary}
-											padding={size.s_12}
-											gap={size.s_10}
+										<View
+											style={{
+												flexDirection: 'row',
+												alignItems: 'center',
+												justifyContent: 'space-between',
+												backgroundColor: themeValue.secondary,
+												padding: size.s_12,
+												gap: size.s_10
+											}}
 										>
-											<Block flex={1} flexDirection="row" gap={size.s_6}>
+											<View style={{ flex: 1, flexDirection: 'row', gap: size.s_6 }}>
 												<Text color={themeValue.white}>{item.actionTitle}</Text>
 												{item?.isView && (
 													<Icons.LockIcon color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />
 												)}
-											</Block>
-											<Block>
+											</View>
+											<View>
 												<Icons.ChevronSmallRightIcon color={themeValue.text} />
-											</Block>
-										</Block>
+											</View>
+										</View>
 									</TouchableOpacity>
 								);
 							}}
 						/>
-					</Block>
+					</View>
 
 					{isCanEditRole && (
-						<Block marginVertical={size.s_10}>
+						<View style={{ marginVertical: size.s_10 }}>
 							<TouchableOpacity onPress={() => deleteRole()}>
-								<Block
-									flexDirection="row"
-									alignItems="center"
-									justifyContent="space-between"
-									backgroundColor={themeValue.secondary}
-									paddingVertical={size.s_14}
-									paddingHorizontal={size.s_12}
-									borderRadius={size.s_10}
+								<View
+									style={{
+										flexDirection: 'row',
+										alignItems: 'center',
+										justifyContent: 'space-between',
+										backgroundColor: themeValue.secondary,
+										paddingVertical: size.s_14,
+										paddingHorizontal: size.s_12,
+										borderRadius: size.s_10
+									}}
 								>
-									<Block flex={1}>
+									<View style={{ flex: 1 }}>
 										<Text color={Colors.textRed}>{t('roleDetail.deleteRole')}</Text>
-									</Block>
-								</Block>
+									</View>
+								</View>
 							</TouchableOpacity>
-						</Block>
+						</View>
 					)}
-				</Block>
+				</View>
 
 				<MezonConfirm
 					visible={showModalConfirmSave}
@@ -273,7 +277,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 					confirmText={t('roleDetail.yes')}
 					content={t('roleDetail.confirmSaveContent')}
 				/>
-			</Block>
+			</View>
 		</TouchableWithoutFeedback>
 	);
 };

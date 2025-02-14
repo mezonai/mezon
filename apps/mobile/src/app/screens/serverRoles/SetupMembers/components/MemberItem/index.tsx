@@ -1,10 +1,11 @@
 import { useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
-import { RolesClanEntity, UsersClanEntity } from '@mezon/store-mobile';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { RolesClanEntity } from '@mezon/store-mobile';
+import { UsersClanEntity } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import { MezonAvatar } from '../../../../../componentUI';
@@ -58,23 +59,25 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 
 	return (
 		<TouchableOpacity disabled={disabled || !isSelectMode} onPress={onPressMemberItem}>
-			<Block
-				flexDirection="row"
-				alignItems="center"
-				justifyContent="space-between"
-				backgroundColor={themeValue.secondary}
-				padding={size.s_12}
-				gap={size.s_10}
+			<View
+				style={{
+					flexDirection: 'row',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					backgroundColor: themeValue.secondary,
+					padding: size.s_12,
+					gap: size.s_10
+				}}
 			>
-				<Block flex={1} flexDirection="row" gap={size.s_10} alignItems="center">
+				<View style={{ flex: 1, flexDirection: 'row', gap: size.s_10, alignItems: 'center' }}>
 					<MezonAvatar avatarUrl={member?.user?.avatar_url} username={member?.user?.username} />
-					<Block>
+					<View>
 						{memberName ? <Text color={themeValue.white}>{memberName}</Text> : null}
 						<Text color={themeValue.text}>{member?.user?.username}</Text>
-					</Block>
-				</Block>
+					</View>
+				</View>
 
-				<Block height={size.s_20} width={size.s_20}>
+				<View style={{ height: size.s_20, width: size.s_20 }}>
 					{isSelectMode ? (
 						<BouncyCheckbox
 							size={20}
@@ -96,8 +99,8 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 							<Icons.CloseIcon color={disabled ? themeValue.textDisabled : themeValue.white} />
 						</TouchableOpacity>
 					)}
-				</Block>
-			</Block>
+				</View>
+			</View>
 		</TouchableOpacity>
 	);
 });

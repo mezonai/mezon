@@ -1,11 +1,11 @@
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { Icons, OwnerIcon } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { channelUsersActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
@@ -50,7 +50,7 @@ export const MemberItem = memo(
 		const getSuffixIcon = () => {
 			if (isCheckbox) {
 				return (
-					<Block height={size.s_20} width={size.s_20}>
+					<View style={{ height: size.s_20, width: size.s_20 }}>
 						<BouncyCheckbox
 							size={20}
 							isChecked={isChecked}
@@ -63,7 +63,7 @@ export const MemberItem = memo(
 								borderRadius: 5
 							}}
 						/>
-					</Block>
+					</View>
 				);
 			}
 			if (isAdvancedSetting) {
@@ -86,7 +86,7 @@ export const MemberItem = memo(
 
 		return (
 			<TouchableOpacity onPress={onPressMemberItem} disabled={disabled}>
-				<Block gap={size.s_10} flexDirection="row" padding={size.s_10} alignItems="center">
+				<View style={{ gap: size.s_10, flexDirection: 'row', padding: size.s_10, alignItems: 'center' }}>
 					<FastImage
 						source={{
 							uri: createImgproxyUrl(member?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
@@ -94,17 +94,17 @@ export const MemberItem = memo(
 						resizeMode="cover"
 						style={{ width: size.s_40, height: size.s_40, borderRadius: 50 }}
 					/>
-					<Block flex={1}>
-						<Block flexDirection="row" gap={size.s_4} alignItems="center">
+					<View style={{ flex: 1 }}>
+						<View style={{ flexDirection: 'row', gap: size.s_4, alignItems: 'center' }}>
 							<Text h4 color={themeValue.white}>
 								{member?.user?.display_name}
 							</Text>
 							{isClanOwner && <OwnerIcon width={16} height={16} />}
-						</Block>
+						</View>
 						{!isAdvancedSetting && <Text color={themeValue.textDisabled}>{member?.user?.username}</Text>}
-					</Block>
+					</View>
 					{getSuffixIcon()}
-				</Block>
+				</View>
 			</TouchableOpacity>
 		);
 	}

@@ -1,10 +1,10 @@
-import { Block, Colors, size, Text } from '@mezon/mobile-ui';
+import { Colors, size, Text } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectAllListAttachmentByChannel } from '@mezon/store-mobile';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'react-native';
+import { Modal, View } from 'react-native';
 import Gallery, { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -169,7 +169,7 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 
 	return (
 		<Modal visible={visible}>
-			<Block flex={1}>
+			<View style={{ flex: 1 }}>
 				{visibleToolbarConfig.showHeader && (
 					<RenderHeaderModal onClose={onClose} imageSelected={currentImage} onImageSaved={onImageSaved} onLoading={onLoading} />
 				)}
@@ -193,13 +193,13 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 					onImageThumbnailChange={onImageThumbnailChange}
 				/>
 				{showSavedImage && (
-					<Block position="absolute" top={'50%'} width={'100%'} alignItems="center">
-						<Block backgroundColor={Colors.bgDarkSlate} padding={size.s_10} borderRadius={size.s_10}>
-							<Text color={Colors.white}>{t('savedSuccessfully')}</Text>
-						</Block>
-					</Block>
+					<View style={{ position: 'absolute', top: '50%', width: '100%', alignItems: 'center' }}>
+						<View style={{ backgroundColor: Colors.bgDarkSlate, padding: size.s_10, borderRadius: size.s_10 }}>
+							<Text style={{ color: Colors.white }}>{t('savedSuccessfully')}</Text>
+						</View>
+					</View>
 				)}
-			</Block>
+			</View>
 			<LoadingModal isVisible={isLoadingSaveImage} />
 		</Modal>
 	);

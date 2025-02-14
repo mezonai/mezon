@@ -195,7 +195,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 					onChange={(e) => setContentSubmit((prev) => ({ ...prev, topic: e.target.value }))}
 					value={contentSubmit.topic}
 					className={`font-[400] rounded w-full dark:text-white text-black outline-none text-[15px]border dark:border-black p-2 focus:outline-none focus:border-white-500 dark:bg-black bg-bgModifierHoverLight ${appearanceTheme === 'light' ? 'lightEventInputAutoFill' : ''}`}
-					maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
+					maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED) * 2}
 				/>
 			</div>
 			<div className="mb-4 flex gap-x-4">

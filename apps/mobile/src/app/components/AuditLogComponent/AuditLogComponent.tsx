@@ -1,6 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { Icons } from '@mezon/mobile-components';
-import { Block, Fonts, size, useTheme } from '@mezon/mobile-ui';
+import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { auditLogList } from '@mezon/store';
 import { RootState, auditLogFilterActions, selectActionAuditLog, selectCurrentClanId, selectUserAuditLog, useAppDispatch } from '@mezon/store-mobile';
 import { ActionLog, UserAuditLog } from '@mezon/utils';
@@ -8,7 +8,7 @@ import { FlashList } from '@shopify/flash-list';
 import { MezonapiListAuditLog } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonMenuSectionProps, MezonBottomSheet, MezonDateTimePicker, MezonMenu } from '../../componentUI';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
@@ -137,23 +137,31 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 
 	const renderAditLogItem = ({ item }) => <AuditLogItem data={item} />;
 	return (
-		<Block paddingVertical={size.s_10} width={'100%'} height={'100%'} backgroundColor={themeValue.primary}>
+		<View style={{ paddingVertical: size.s_10, width: '100%', height: '100%', backgroundColor: themeValue.primary }}>
 			<TouchableOpacity onPress={handleOnPressFilter} activeOpacity={0.5} style={styles.filterBtn}>
-				<Block gap={size.s_10} alignItems="center" flexDirection="row" marginRight={size.s_10}>
-					<Block maxWidth={200} marginLeft={size.s_20} backgroundColor={themeValue.tertiary} padding={size.s_6} borderRadius={size.s_6}>
+				<View style={{ gap: size.s_10, alignItems: 'center', flexDirection: 'row', marginRight: size.s_10 }}>
+					<View
+						style={{
+							maxWidth: 200,
+							marginLeft: size.s_20,
+							backgroundColor: themeValue.tertiary,
+							padding: size.s_6,
+							borderRadius: size.s_6
+						}}
+					>
 						<Text style={styles.textFilterBtn} numberOfLines={1}>
 							{displayUserName}
 						</Text>
-					</Block>
-					<Block maxWidth={200} backgroundColor={themeValue.tertiary} padding={size.s_6} borderRadius={size.s_6}>
+					</View>
+					<View style={{ maxWidth: 200, backgroundColor: themeValue.tertiary, padding: size.s_6, borderRadius: size.s_6 }}>
 						<Text style={styles.textFilterBtn} numberOfLines={1}>
 							{displayActionLog}
 						</Text>
-					</Block>
+					</View>
 					<Icons.ChevronSmallRightIcon width={size.s_18} height={size.s_18} color={themeValue.text} />
-				</Block>
+				</View>
 			</TouchableOpacity>
-			<Block paddingHorizontal={size.s_10}>
+			<View style={{ paddingHorizontal: size.s_10 }}>
 				<MezonDateTimePicker
 					value={selectDate}
 					onChange={handleDatePicked}
@@ -161,9 +169,9 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 					maximumDate={today}
 					containerStyle={styles.stylesDatePicker}
 				/>
-			</Block>
+			</View>
 
-			<Block flex={1} paddingHorizontal={size.s_10} paddingVertical={size.s_10}>
+			<View style={{ flex: 1, paddingHorizontal: size.s_10, paddingVertical: size.s_10 }}>
 				{loadingStatus === 'loaded' && !auditLogData?.logs?.length ? (
 					<EmptyAuditLog />
 				) : (
@@ -176,12 +184,12 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 						estimatedItemSize={size.s_50}
 					/>
 				)}
-			</Block>
+			</View>
 			<MezonBottomSheet snapPoints={['20%']} ref={filterBSRef}>
-				<Block paddingHorizontal={size.s_20}>
+				<View style={{ paddingHorizontal: size.s_20 }}>
 					<MezonMenu menu={menu} />
-				</Block>
+				</View>
 			</MezonBottomSheet>
-		</Block>
+		</View>
 	);
 }

@@ -1,54 +1,10 @@
-import { selectTheme } from '@mezon/store';
-import { appActions, useAppDispatch } from '@mezon/store-mobile';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Appearance } from 'react-native';
-import { useSelector } from 'react-redux';
-import { themeColors } from '../themes/Constants';
-export enum ThemeModeBase {
-	LIGHT = 'light',
-	DARK = 'dark'
-	// DARKER = "darker",
-	// MIDNIGHT = "midnight",
-}
+import { useContext } from 'react';
+import { ThemeContext } from '../context/theme/theme-context';
 
-export enum ThemeModeAuto {
-	AUTO = 'system'
-}
-
-export type ThemeMode = ThemeModeBase | ThemeModeAuto;
-
-export function useTheme(themeMode?: ThemeMode) {
-	const systemTheme = Appearance.getColorScheme() == 'dark' ? ThemeModeBase.DARK : ThemeModeBase.LIGHT;
-	const dispatch = useAppDispatch();
-	const appearanceTheme = useSelector(selectTheme);
-
-	const setAppearanceTheme = useCallback(
-		(value: ThemeMode) => {
-			dispatch(appActions.setTheme(value));
-		},
-		[dispatch]
-	);
-
-	const [theme, setTheme] = useState<ThemeMode>(themeMode ? themeMode : (appearanceTheme as ThemeMode));
-
-	useEffect(() => {
-		setTheme(themeMode ? themeMode : (appearanceTheme as ThemeMode));
-	}, [appearanceTheme, themeMode]);
-
-	return useMemo(() => {
-		const themeBasicMode = themeMode
-			? themeMode === ThemeModeAuto.AUTO
-				? systemTheme
-				: themeMode
-			: appearanceTheme === 'system'
-				? systemTheme
-				: appearanceTheme;
-
-		return {
-			themeValue: themeColors[themeBasicMode],
-			themeBasic: themeBasicMode,
-			theme: theme,
-			setTheme: setAppearanceTheme
-		};
-	}, [setAppearanceTheme, theme]);
-}
+export const useTheme = () => {
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error('useTheme must be used within ThemeProvider');
+	}
+	return context;
+};

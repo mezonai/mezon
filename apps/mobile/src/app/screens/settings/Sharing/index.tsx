@@ -38,7 +38,6 @@ import { Image, Video } from 'react-native-compressor';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import { useDispatch, useSelector } from 'react-redux';
-import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { MezonAvatar } from '../../../componentUI';
 import { isImage, isVideo } from '../../../utils/helpers';
 import AttachmentFilePreview from '../../home/homedrawer/components/AttachmentFilePreview';
@@ -415,7 +414,6 @@ export const Sharing = ({ data, onClose }) => {
 
 	return (
 		<View style={styles.wrapper}>
-			<StatusBarHeight />
 			<View style={styles.header}>
 				<TouchableOpacity onPress={onClose}>
 					<CloseIcon width={size.s_28} height={size.s_28} />

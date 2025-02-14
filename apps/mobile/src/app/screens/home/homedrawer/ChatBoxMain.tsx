@@ -1,9 +1,9 @@
 import { ActionEmitEvent, load, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { resetCachedMessageActionNeedToResolve } from '../../../utils/helpers';
 import { ActionMessageSelected } from './components/ChatBox/ActionMessageSelected';
 import { ChatBoxBottomBar } from './components/ChatBox/ChatBoxBottomBar';
@@ -72,46 +72,58 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 	}, []);
 
 	return (
-		<Block>
-			<Block
-				backgroundColor={themeValue.primary}
-				borderTopWidth={1}
-				borderTopColor={themeValue.border}
-				flexDirection="column"
-				justifyContent="space-between"
-			>
-				<RecordAudioMessage channelId={props?.channelId} mode={props?.mode} />
-				{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
-					<ActionMessageSelected
-						messageActionNeedToResolve={messageActionNeedToResolve}
-						onClose={() => setMessageActionNeedToResolve(null)}
-					/>
-				)}
-				{!props?.canSendMessage && !isDM ? (
-					<Block zIndex={10} width={'95%'} marginVertical={size.s_6} alignSelf={'center'} marginBottom={size.s_20}>
-						<Block backgroundColor={themeValue.charcoal} padding={size.s_16} borderRadius={size.s_20} marginHorizontal={size.s_6}>
-							<Text
-								style={{
-									color: themeValue.textDisabled
-								}}
-							>
-								{t('noSendMessagePermission')}
-							</Text>
-						</Block>
-					</Block>
-				) : (
-					<ChatBoxBottomBar
-						messageActionNeedToResolve={messageActionNeedToResolve}
-						onDeleteMessageActionNeedToResolve={deleteMessageActionNeedToResolve}
-						channelId={props?.channelId}
-						mode={props?.mode}
-						hiddenIcon={props?.hiddenIcon}
-						messageAction={props?.messageAction}
-						onShowKeyboardBottomSheet={props?.onShowKeyboardBottomSheet}
-						isPublic={props?.isPublic}
-					/>
-				)}
-			</Block>
-		</Block>
+		<View
+			style={{
+				backgroundColor: themeValue.primary,
+				borderTopWidth: 1,
+				borderTopColor: themeValue.border,
+				flexDirection: 'column',
+				justifyContent: 'space-between'
+			}}
+		>
+			<RecordAudioMessage channelId={props?.channelId} mode={props?.mode} />
+			{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
+				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={() => setMessageActionNeedToResolve(null)} />
+			)}
+			{!props?.canSendMessage && !isDM ? (
+				<View
+					style={{
+						zIndex: 10,
+						width: '95%',
+						marginVertical: size.s_6,
+						alignSelf: 'center',
+						marginBottom: size.s_20
+					}}
+				>
+					<View
+						style={{
+							backgroundColor: themeValue.charcoal,
+							padding: size.s_16,
+							borderRadius: size.s_20,
+							marginHorizontal: size.s_6
+						}}
+					>
+						<Text
+							style={{
+								color: themeValue.textDisabled
+							}}
+						>
+							{t('noSendMessagePermission')}
+						</Text>
+					</View>
+				</View>
+			) : (
+				<ChatBoxBottomBar
+					messageActionNeedToResolve={messageActionNeedToResolve}
+					onDeleteMessageActionNeedToResolve={deleteMessageActionNeedToResolve}
+					channelId={props?.channelId}
+					mode={props?.mode}
+					hiddenIcon={props?.hiddenIcon}
+					messageAction={props?.messageAction}
+					onShowKeyboardBottomSheet={props?.onShowKeyboardBottomSheet}
+					isPublic={props?.isPublic}
+				/>
+			)}
+		</View>
 	);
 });

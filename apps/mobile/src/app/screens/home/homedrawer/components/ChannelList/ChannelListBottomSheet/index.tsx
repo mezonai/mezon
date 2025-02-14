@@ -114,4 +114,4 @@ const ChannelListBottomSheet = () => {
 	);
 };
 
-export default memo(ChannelListBottomSheet);
+export default memo(ChannelListBottomSheet, () => true);

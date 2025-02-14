@@ -1,11 +1,11 @@
 import { useRoles } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonBottomSheet } from '../../../componentUI';
 import RoleColorPicker from '../RoleColorPicker/RoleColorPicker';
@@ -32,20 +32,20 @@ function RoleCoLourComponent({ roleId }: { roleId: string }) {
 		}
 	}, []);
 	return (
-		<Block>
+		<View>
 			<TouchableOpacity onPress={onPresentBS} style={styles.roleButton}>
 				<Text style={styles.textBtn}>{t('roleColorPicker.textBtnRole')}</Text>
-				<Block flexDirection="row" alignItems="center" gap={size.s_10}>
-					<Block width={size.s_40} height={size.s_40} backgroundColor={roleColorSelected} borderRadius={size.s_6}></Block>
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+					<View style={{ width: size.s_40, height: size.s_40, backgroundColor: roleColorSelected, borderRadius: size.s_6 }}></View>
 					<Text style={styles.colorText}>{activeRole?.color ?? ''}</Text>
 					<Icons.ChevronSmallRightIcon color={themeValue.text} />
-				</Block>
+				</View>
 			</TouchableOpacity>
 
 			<MezonBottomSheet snapPoints={['50%']} ref={bottomSheetRef}>
 				<RoleColorPicker onPickColor={handleSaveRoleColor}></RoleColorPicker>
 			</MezonBottomSheet>
-		</Block>
+		</View>
 	);
 }
 export default React.memo(RoleCoLourComponent);

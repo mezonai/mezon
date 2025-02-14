@@ -20,7 +20,7 @@ export const MessagesStacks = ({}: any) => {
 			screenOptions={{
 				headerShown: true,
 				headerShadowVisible: true,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				gestureDirection: 'horizontal',
 				cardStyle: { backgroundColor: themeValue.secondary },
 				headerTitleAlign: 'center',

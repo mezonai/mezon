@@ -1,16 +1,16 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { APP_SCREEN } from 'apps/mobile/src/app/navigation/ScreenTypes';
 import { colors } from 'libs/mobile-ui/src/lib/themes/Colors';
 import { memo } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 const RenderCanvasItem = memo(({ channelId, clanId, canvasId }: { channelId: string; clanId: string; canvasId: string }) => {
 	const navigation = useNavigation<any>();
 
 	return (
-		<Block>
+		<View>
 			<TouchableOpacity
 				activeOpacity={0.8}
 				onPress={() => {
@@ -36,7 +36,7 @@ const RenderCanvasItem = memo(({ channelId, clanId, canvasId }: { channelId: str
 					Open Canvas
 				</Text>
 			</TouchableOpacity>
-		</Block>
+		</View>
 	);
 });
 

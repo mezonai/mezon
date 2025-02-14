@@ -1,11 +1,11 @@
 import { usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity, selectAllRolesClan, selectEveryoneRole } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, TouchableOpacity } from 'react-native';
+import { FlatList, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { SeparatorWithLine } from '../../components/Common';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
@@ -43,44 +43,46 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 		navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_DETAIL, { roleId: clanRole?.id });
 	};
 	return (
-		<Block backgroundColor={themeValue.primary} flex={1} paddingHorizontal={size.s_14}>
-			<Block paddingVertical={size.s_14}>
+		<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14 }}>
+			<View style={{ paddingVertical: size.s_14 }}>
 				<Text center color={themeValue.text}>
 					{t('roleDescription')}
 				</Text>
-			</Block>
+			</View>
 
 			<TouchableOpacity onPress={navigateToRoleEveryone}>
-				<Block
-					flexDirection="row"
-					alignItems="center"
-					justifyContent="space-between"
-					backgroundColor={themeValue.secondary}
-					padding={size.s_12}
-					borderRadius={size.s_12}
+				<View
+					style={{
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						backgroundColor: themeValue.secondary,
+						padding: size.s_12,
+						borderRadius: size.s_12
+					}}
 				>
-					<Block flexDirection="row" flex={1} gap={10}>
-						<Block backgroundColor={themeValue.tertiary} borderRadius={50} padding={size.s_8}>
+					<View style={{ flexDirection: 'row', flex: 1, gap: 10 }}>
+						<View style={{ backgroundColor: themeValue.tertiary, borderRadius: 50, padding: size.s_8 }}>
 							<Icons.GroupIcon color={themeValue.text} />
-						</Block>
-						<Block flex={1}>
+						</View>
+						<View style={{ flex: 1 }}>
 							<Text color={themeValue.white}>@everyone</Text>
 							<Text color={themeValue.text} numberOfLines={1}>
 								{t('defaultRole')}
 							</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 					<Icons.ChevronSmallRightIcon color={themeValue.text} />
-				</Block>
+				</View>
 			</TouchableOpacity>
 
-			<Block marginTop={size.s_10} flex={1}>
+			<View style={{ marginTop: size.s_10, flex: 1 }}>
 				<Text color={themeValue.text}>
 					{t('roles')} - {allClanRoles?.length - 1 || '0'}
 				</Text>
 				{allClanRoles.length ? (
-					<Block marginVertical={size.s_10} flex={1}>
-						<Block borderRadius={size.s_10} overflow="hidden">
+					<View style={{ marginVertical: size.s_10, flex: 1 }}>
+						<View style={{ borderRadius: size.s_10, overflow: 'hidden' }}>
 							<FlatList
 								data={allClanRoles}
 								scrollEnabled
@@ -90,45 +92,47 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 									if (item.slug === 'everyone') return null;
 									return (
 										<TouchableOpacity onPress={() => navigateToRoleDetail(item)}>
-											<Block
-												flexDirection="row"
-												alignItems="center"
-												justifyContent="space-between"
-												backgroundColor={themeValue.secondary}
-												padding={size.s_12}
-												gap={size.s_10}
+											<View
+												style={{
+													flexDirection: 'row',
+													alignItems: 'center',
+													justifyContent: 'space-between',
+													backgroundColor: themeValue.secondary,
+													padding: size.s_12,
+													gap: size.s_10
+												}}
 											>
 												<Icons.ShieldUserIcon color={'gray'} height={size.s_32} width={size.s_32} />
-												<Block flex={1}>
-													<Block flexDirection="row" gap={size.s_6}>
+												<View style={{ flex: 1 }}>
+													<View style={{ flexDirection: 'row', gap: size.s_6 }}>
 														<Text color={themeValue.white}>{item.title}</Text>
 														{item?.isView && (
 															<Icons.LockIcon color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />
 														)}
-													</Block>
+													</View>
 													<Text color={themeValue.text}>
 														{item?.role_user_list?.role_users?.length || '0'} - {t('members')}
 													</Text>
-												</Block>
-												<Block>
+												</View>
+												<View>
 													<Icons.ChevronSmallRightIcon color={themeValue.text} />
-												</Block>
-											</Block>
+												</View>
+											</View>
 											{index !== allClanRoles.length - 1 && <SeparatorWithLine />}
 										</TouchableOpacity>
 									);
 								}}
 							/>
-						</Block>
-					</Block>
+						</View>
+					</View>
 				) : (
-					<Block marginTop={size.s_20}>
+					<View style={{ marginTop: size.s_20 }}>
 						<Text color={themeValue.text} center>
 							{t('noRole')}
 						</Text>
-					</Block>
+					</View>
 				)}
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 };

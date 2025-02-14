@@ -1,9 +1,10 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useChannelMembersActions } from '@mezon/core';
-import { Block, Text, useTheme } from '@mezon/mobile-ui';
+import { Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, ChannelsEntity } from '@mezon/store-mobile';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../../../../../componentUI';
 import { style } from './UserInfoDm.styles';
 
@@ -44,16 +45,15 @@ export default function UserInfoDm({ user, currentChannel }: { user: ChannelMemb
 	];
 
 	return (
-		<Block>
-			<Block>
-				{/* <Text style={styles.title}>ABOUT ME</Text>
+		<View>
+			<View />
+			{/* <Text style={styles.title}>ABOUT ME</Text>
 				<Text style={styles.desc}>{user?.user?.about_me}</Text> */}
-			</Block>
-			<Block>
+			<View>
 				<Text style={styles.title}>{t('userInfoDM.mezonMemberSince')}</Text>
 				<Text style={styles.desc}>{formatDate(user?.user?.create_time)}</Text>
-			</Block>
+			</View>
 			<MezonMenu menu={menu} />
-		</Block>
+		</View>
 	);
 }

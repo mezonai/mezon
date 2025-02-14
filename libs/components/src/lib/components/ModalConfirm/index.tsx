@@ -56,7 +56,7 @@ const ModalConfirm = ({
 							<span>{customTitle}</span>
 						) : (
 							<span>
-								Are you sure you want to {title}
+								Are you sure you want to {title} {''}
 								<b className="font-semibold">{modalName}</b>? {message}
 							</span>
 						)}

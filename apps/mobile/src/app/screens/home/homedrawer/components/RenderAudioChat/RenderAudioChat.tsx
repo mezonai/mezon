@@ -1,9 +1,9 @@
 import { PauseIcon, PlayIcon } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { AVPlaybackStatusSuccess, Audio } from 'expo-av';
 import LottieView from 'lottie-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import { WAY_AUDIO } from '../../../../../../assets/lottie';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
@@ -86,24 +86,26 @@ const RenderAudioChat = React.memo(
 				activeOpacity={0.6}
 				style={{ ...styles.container, ...stylesContainerCustom }}
 			>
-				<Block flexDirection="row" alignItems="center" gap={size.s_10}>
-					<Block
-						backgroundColor={baseColor.white}
-						borderRadius={size.s_30}
-						padding={size.s_8}
-						alignItems="center"
-						gap={size.s_10}
-						justifyContent="center"
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+					<View
+						style={{
+							backgroundColor: baseColor.white,
+							borderRadius: size.s_30,
+							padding: size.s_8,
+							alignItems: 'center',
+							gap: size.s_10,
+							justifyContent: 'center'
+						}}
 					>
 						{isPlaying ? (
 							<PauseIcon width={size.s_20} height={size.s_20} color={baseColor.bgDeepLavender} />
 						) : (
 							<PlayIcon width={size.s_20} height={size.s_20} color={baseColor.bgDeepLavender} />
 						)}
-					</Block>
+					</View>
 					<LottieView source={WAY_AUDIO} ref={recordingWaveRef} resizeMode="cover" style={{ ...styles.soundLottie, ...styleLottie }} />
 					<Text style={styles.currentTime}>{`${formatTime(totalTime)}`}</Text>
-				</Block>
+				</View>
 			</TouchableOpacity>
 		);
 	}

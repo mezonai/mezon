@@ -2,7 +2,7 @@ import { TouchableOpacity, TouchableWithoutFeedback } from '@gorhom/bottom-sheet
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending, useGifsStickersEmoji } from '@mezon/core';
 import { Icons, debounce } from '@mezon/mobile-components';
-import { Block, Colors, Fonts, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Fonts, size, useTheme } from '@mezon/mobile-ui';
 import {
 	getStoreAsync,
 	gifsActions,
@@ -181,7 +181,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 				</View>
 
 				{mode !== 'emoji' && (
-					<Block flexDirection={'row'} gap={size.s_10} width={'100%'} alignItems={'center'}>
+					<View style={{ flexDirection: 'row', gap: size.s_10, width: '100%', alignItems: 'center' }}>
 						{mode === 'gif' && !!valueInputToCheckHandleSearch && (
 							<TouchableOpacity
 								style={{ paddingVertical: size.s_10 }}
@@ -204,7 +204,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 								onChangeText={debouncedSetSearchText}
 							/>
 						</View>
-					</Block>
+					</View>
 				)}
 
 				{mode === 'emoji' ? (

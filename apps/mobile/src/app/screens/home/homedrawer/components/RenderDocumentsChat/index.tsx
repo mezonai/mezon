@@ -1,5 +1,5 @@
 import { FileIcon } from '@mezon/mobile-components';
-import { Block, Colors, Text, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { Colors, Text, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { EMimeTypes, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import React from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
@@ -42,19 +42,21 @@ export const RenderDocumentsChat = React.memo(({ document, onLongPress, onPressI
 					</Text>
 				</View>
 				{isUploading && (
-					<Block
-						backgroundColor={'rgba(0,0,0,0.5)'}
-						position="absolute"
-						top={0}
-						left={0}
-						right={0}
-						bottom={0}
-						alignItems="flex-end"
-						justifyContent="center"
-						paddingRight={10}
+					<View
+						style={{
+							backgroundColor: 'rgba(0,0,0,0.5)',
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							alignItems: 'flex-end',
+							justifyContent: 'center',
+							paddingRight: 10
+						}}
 					>
 						<ActivityIndicator />
-					</Block>
+					</View>
 				)}
 			</View>
 		</TouchableOpacity>

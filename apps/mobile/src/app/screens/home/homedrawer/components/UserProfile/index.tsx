@@ -1,7 +1,7 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	RolesClanEntity,
@@ -44,7 +44,6 @@ export enum EFriendState {
 	Friend,
 	SentRequestFriend,
 	ReceivedRequestFriend,
-	Block
 }
 
 const UserProfile = React.memo(
@@ -271,9 +270,9 @@ const UserProfile = React.memo(
 							</View>
 						)}
 						{EFriendState.ReceivedRequestFriend === targetUser?.state && (
-							<Block marginTop={size.s_16}>
+							<View style={{ marginTop: size.s_16 }}>
 								<Text style={styles.receivedFriendRequestTitle}>{t('incomingFriendRequest')}</Text>
-								<Block flexDirection="row" gap={size.s_10} marginTop={size.s_10}>
+								<View style={{ flexDirection: 'row', gap: size.s_10, marginTop: size.s_10 }}>
 									<TouchableOpacity onPress={() => handleAcceptFriend()} style={[styles.button, { backgroundColor: Colors.green }]}>
 										<Text style={styles.defaultText}>{t('accept')}</Text>
 									</TouchableOpacity>
@@ -283,37 +282,39 @@ const UserProfile = React.memo(
 									>
 										<Text style={styles.defaultText}>{t('ignore')}</Text>
 									</TouchableOpacity>
-								</Block>
-							</Block>
+								</View>
+							</View>
 						)}
 					</View>
 
 					{isShowUserContent && (
 						<View style={[styles.roleGroup]}>
 							{!!userById?.user?.about_me && (
-								<Block padding={size.s_16}>
+								<View style={{ padding: size.s_16 }}>
 									<Text style={[styles.aboutMe]}>{t('aboutMe.headerTitle')}</Text>
 									<Text style={[styles.aboutMeText]}>{userById?.user?.about_me}</Text>
-								</Block>
+								</View>
 							)}
 							<ActivityAppComponent userId={userId || user?.id || ''} />
 							{userRolesClan?.length && showRole && !isDM ? (
-								<Block>
+								<View>
 									<Text style={[styles.title]}>{t('aboutMe.roles.headerTitle')}</Text>
 									<View style={[styles.roles]}>
 										{userRolesClan?.map((role, index) => (
 											<View style={[styles.roleItem]} key={`${role.id}_${index}`}>
-												<Block
-													width={size.s_15}
-													height={size.s_15}
-													borderRadius={size.s_50}
-													backgroundColor={role?.color || DEFAULT_ROLE_COLOR}
-												></Block>
+												<View
+													style={{
+														width: size.s_15,
+														height: size.s_15,
+														borderRadius: size.s_50,
+														backgroundColor: role?.color || DEFAULT_ROLE_COLOR
+													}}
+												></View>
 												<Text style={[styles.textRole]}>{role?.title}</Text>
 											</View>
 										))}
 									</View>
-								</Block>
+								</View>
 							) : null}
 							{isDMGroup && !isCheckOwner && isChannelOwner && <UserInfoDm currentChannel={currentChannel} user={userById} />}
 							{showAction && !isKicked && <UserSettingProfile user={userById || (user as any)} />}

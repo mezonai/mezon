@@ -1,16 +1,6 @@
-import { selectNumberMemberVoiceChannel } from '@mezon/store';
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
 
 export const useCheckVoiceStatus = (channelId: string) => {
-	const numberMembersVoice = useSelector(selectNumberMemberVoiceChannel(channelId));
-
-	const checkVoiceStatus = useMemo(() => {
-		if (!!channelId && !!numberMembersVoice) {
-			return numberMembersVoice >= 2;
-		}
-		return false;
-	}, [numberMembersVoice, channelId]);
-
-	return checkVoiceStatus;
+	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId));
+	return !!channelId && !!numberMembersVoice && numberMembersVoice >= 2;
 };

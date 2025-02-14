@@ -41,7 +41,7 @@ export const MenuClanStacks = ({}: any) => {
 				headerShown: true,
 				headerShadowVisible: false,
 				headerBackTitleVisible: false,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				gestureDirection: 'horizontal',
 				headerTitleAlign: 'center',
 				headerTintColor: themeValue.white,

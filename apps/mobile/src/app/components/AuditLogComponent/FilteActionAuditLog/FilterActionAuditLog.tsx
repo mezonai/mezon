@@ -1,10 +1,10 @@
-import { Block, size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, Text, useTheme } from '@mezon/mobile-ui';
 import { auditLogFilterActions, selectActionAuditLog, useAppDispatch } from '@mezon/store-mobile';
 import { ActionLog } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonOptionData, MezonOption } from '../../../componentUI';
 import InputSearchAuditLog from '../InputSearchAuditLog/InputSearchAuditLog';
@@ -87,13 +87,15 @@ export default function FilterActionAuditLog() {
 		navigation.goBack();
 	}, []);
 	return (
-		<Block width={'100%'} height={'100%'} backgroundColor={themeValue.primary} paddingHorizontal={size.s_10} paddingVertical={size.s_10}>
+		<View
+			style={{ width: '100%', height: '100%', backgroundColor: themeValue.primary, paddingHorizontal: size.s_10, paddingVertical: size.s_10 }}
+		>
 			<InputSearchAuditLog onChangeText={handleSearchTerm} placeHolder={t('filterActionAuditLog.placeholder')} />
-			<Block marginVertical={size.s_20}>
+			<View style={{ marginVertical: size.s_20 }}>
 				<ScrollView showsVerticalScrollIndicator={false}>
 					<MezonOption data={actionOptions} onChange={handleOptionChange} value={actionOption} />
 				</ScrollView>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 }

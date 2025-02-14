@@ -29,7 +29,7 @@ export const SettingStacks = ({}: any) => {
 				headerShown: true,
 				headerBackTitleVisible: false,
 				headerShadowVisible: false,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				gestureDirection: 'horizontal',
 				headerTitleAlign: 'center',
 				headerTintColor: themeValue.textStrong,
@@ -104,7 +104,7 @@ export const SettingStacks = ({}: any) => {
 				component={AppThemeSetting}
 				options={{
 					headerTitle: t('settingStack.appTheme'),
-					gestureEnabled: true
+					gestureEnabled: Platform.OS === 'ios'
 				}}
 			/>
 
@@ -129,7 +129,7 @@ export const SettingStacks = ({}: any) => {
 				component={SendCoffeeScreen}
 				options={{
 					headerTitle: 'Send token',
-					gestureEnabled: true,
+					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.secondary
 					}
@@ -140,7 +140,7 @@ export const SettingStacks = ({}: any) => {
 				component={MyQRCode}
 				options={{
 					headerTitle: '',
-					gestureEnabled: true,
+					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.secondary
 					}
@@ -151,7 +151,7 @@ export const SettingStacks = ({}: any) => {
 				component={SendTokenScreen}
 				options={{
 					headerTitle: '',
-					gestureEnabled: true,
+					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.secondary
 					}
@@ -162,7 +162,7 @@ export const SettingStacks = ({}: any) => {
 				component={HistoryTransactionScreen}
 				options={{
 					headerTitle: t('settingStack.historyTransaction'),
-					gestureEnabled: true,
+					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.secondary
 					}

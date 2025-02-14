@@ -16,7 +16,7 @@ export const MenuThreadDetailStacks = ({}: any) => {
 			screenOptions={{
 				headerShown: false,
 				headerShadowVisible: false,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				headerLeftLabelVisible: false,
 				headerBackTitleVisible: false,
 				headerTintColor: themeValue.text,

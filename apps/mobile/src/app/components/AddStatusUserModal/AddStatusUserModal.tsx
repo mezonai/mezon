@@ -1,6 +1,6 @@
-import { Block } from '@mezon/mobile-ui';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { IMezonOptionData, MezonInput, MezonModal, MezonOption } from '../../componentUI';
 import { ETypeCustomUserStatus } from '../../screens/profile/ProfileScreen';
 import { styles } from './AddStatusUserModal.styles';
@@ -76,11 +76,11 @@ export const AddStatusUserModal = ({ isVisible, setIsVisible, userCustomStatus, 
 			rightBtnText={lineStatus ? t('save') : ''}
 			onClickRightBtn={handleSaveCustomStatus}
 		>
-			<Block>
+			<View>
 				<MezonInput value={lineStatus} onTextChange={setLineStatus} placeHolder={t('placeholder')} textarea={true} maxCharacter={128} />
 
 				<MezonOption title={t('statusDuration.label')} value={statusDuration} data={timeOptions} onChange={handleTimeOptionChange} />
-			</Block>
+			</View>
 		</MezonModal>
 	);
 };

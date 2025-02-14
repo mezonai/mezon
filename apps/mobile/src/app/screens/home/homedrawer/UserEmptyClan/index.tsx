@@ -1,9 +1,9 @@
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { selectAllClans } from '@mezon/store';
 import { RootState } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Text, TouchableOpacity } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import Images from '../../../../../assets/Images';
 import CreateClanModal from '../components/CreateClanModal';
@@ -19,24 +19,28 @@ const UserEmptyClan = () => {
 
 	if (clansLoadingStatus === 'loaded' && !clans?.length) {
 		return (
-			<Block style={styles.wrapper}>
+			<View style={styles.wrapper}>
 				<Text style={styles.headerText}>{t('emptyClans.clans')}</Text>
 				<Image style={styles.imageBg} source={Images.CHAT_PANA} />
-				<Block>
+				<View>
 					<Text style={styles.title}>{t('emptyClans.readyChat')}</Text>
 					<Text style={styles.description}>{t('emptyClans.buildYourCommunity')}</Text>
-				</Block>
-				<Block marginTop={size.s_20}>
+				</View>
+				<View
+					style={{
+						marginTop: size.s_20
+					}}
+				>
 					<TouchableOpacity onPress={() => setIsVisibleJoinClanModal(!isVisibleJoinClanModal)} style={styles.joinClan}>
 						<Text style={styles.textJoinClan}>{t('emptyClans.joinClan')}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity onPress={() => setIsVisibleCreateClanModal(!isVisibleCreateClanModal)} style={styles.createClan}>
 						<Text style={styles.textCreateClan}>{t('emptyClans.createClan')}</Text>
 					</TouchableOpacity>
-				</Block>
+				</View>
 				<CreateClanModal visible={isVisibleCreateClanModal} setVisible={(value) => setIsVisibleCreateClanModal(value)} />
 				<JoinClanModal visible={isVisibleJoinClanModal} setVisible={(value) => setIsVisibleJoinClanModal(value)} />
-			</Block>
+			</View>
 		);
 	}
 

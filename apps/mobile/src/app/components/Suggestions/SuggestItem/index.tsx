@@ -1,6 +1,6 @@
 import { useCheckVoiceStatus } from '@mezon/core';
 import { Icons, ThreadIcon, ThreadIconLocker } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum, checkIsThread, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -50,15 +50,15 @@ const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaul
 	const isVoiceActive = useCheckVoiceStatus(channelId);
 
 	const renderRoleUser = () => (
-		<Block>
+		<View>
 			{isRoleUser && (
-				<Block flexDirection="row" alignItems="center" gap={size.s_10}>
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 					<Icons.RoleIcon width={size.s_20} height={size.s_20} />
 					<Text style={[styles.roleText, { color: color ?? themeValue.textRoleLink }]}>{`${name}`}</Text>
-				</Block>
+				</View>
 			)}
 			{name?.startsWith('here') && <Text style={[styles.roleText, styles.textHere]}>{`@${name}`}</Text>}
-		</Block>
+		</View>
 	);
 
 	const renderChannelBusy = () => (

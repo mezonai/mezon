@@ -90,7 +90,12 @@ const HomeDefaultHeader = React.memo(
 				<TouchableOpacity style={{ flex: 1 }} onPress={navigateMenuThreadDetail}>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						{!isTabletLandscape && (
-							<TouchableOpacity activeOpacity={0.8} style={styles.iconBar} onPress={onOpenDrawer}>
+							<TouchableOpacity
+								hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+								activeOpacity={0.8}
+								style={styles.iconBar}
+								onPress={onOpenDrawer}
+							>
 								<Icons.ArrowLargeLeftIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
 							</TouchableOpacity>
 						)}

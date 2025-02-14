@@ -1,18 +1,19 @@
-import { hasNonEmptyChannels } from '@mezon/mobile-components';
-import { Block, useTheme } from '@mezon/mobile-ui';
-import { appActions, useAppDispatch } from '@mezon/store-mobile';
+import { useTheme } from '@mezon/mobile-ui';
+import { selectIsShowEmptyCategory, selectListChannelRenderByClanId } from '@mezon/store';
+import { appActions, selectCurrentClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { ICategoryChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useRef } from 'react';
-import { InteractionManager, ScrollView, View } from 'react-native';
+import { ChannelType } from 'mezon-js';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { FlatList, InteractionManager, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { AppStackScreenProps } from '../../../../navigation/ScreenTypes';
-import { ChannelListContext } from '../Reusables';
 import ChannelListBackground from '../components/ChannelList/ChannelListBackground';
 import ChannelListBottomSheet from '../components/ChannelList/ChannelListBottomSheet';
-import { ChannelListFavorite } from '../components/ChannelList/ChannelListFavorite';
 import ChannelListHeader from '../components/ChannelList/ChannelListHeader';
+import { ChannelListItem } from '../components/ChannelList/ChannelListItem';
 import ChannelListLoading from '../components/ChannelList/ChannelListLoading';
-import ChannelListScroll from '../components/ChannelList/ChannelListScroll';
 import ChannelListSection from '../components/ChannelList/ChannelListSection';
 import ButtonNewUnread from './ButtonNewUnread';
 import { style } from './styles';
@@ -25,9 +26,30 @@ export type ChannelsPositionRef = {
 	};
 };
 
-const ChannelList = React.memo(({ categorizedChannels }: { categorizedChannels: any }) => {
+const ChannelList = () => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
+	const currentClan = useSelector(selectCurrentClan);
+	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
+	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClan?.clan_id));
+
+	const data = useMemo(
+		() => [
+			{ id: 'bannerAndEvents' },
+			{ id: 'listHeader' },
+			...(listChannelRender
+				? isShowEmptyCategory
+					? listChannelRender
+					: listChannelRender.filter(
+							(item) =>
+								((item as ICategoryChannel).channels && (item as ICategoryChannel).channels.length > 0) ||
+								(item as ICategoryChannel).channels === undefined
+						)
+				: [])
+		],
+		[listChannelRender, isShowEmptyCategory]
+	) as ICategoryChannel[];
+
 	const styles = style(themeValue, isTabletLandscape);
 
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
@@ -47,47 +69,51 @@ const ChannelList = React.memo(({ categorizedChannels }: { categorizedChannels: 
 		[dispatch]
 	);
 
-	const renderItemChannelList = useCallback(
-		({ item, index }) => {
+	const renderItem = useCallback(({ item, index }) => {
+		if (index === 0) {
+			return <ChannelListBackground />;
+		} else if (index === 1) {
+			return <ChannelListHeader />;
+		} else if (item.channels) {
 			return (
 				<View onLayout={(e) => handleLayout(e, item)} key={`${item?.category_id}_${index}_ItemChannelList}`}>
 					<ChannelListSection channelsPositionRef={channelsPositionRef} data={item} />
 				</View>
 			);
-		},
-		[handleLayout]
-	);
+		} else {
+			return (
+				<ChannelListItem
+					data={item}
+					isFirstThread={item?.type === ChannelType.CHANNEL_TYPE_THREAD && data[index - 1]?.type !== ChannelType.CHANNEL_TYPE_THREAD}
+				/>
+			);
+		}
+	}, []);
+
+	const keyExtractor = useCallback((item) => item.id + item.isFavor?.toString(), []);
 
 	return (
-		<ChannelListContext.Provider value={{ navigation: navigation }}>
+		<>
 			<View style={styles.mainList}>
-				<ScrollView
-					stickyHeaderIndices={[1]}
-					showsVerticalScrollIndicator={false}
-					ref={flashListRef}
-					scrollEventThrottle={16}
-					removeClippedSubviews={false}
-					nestedScrollEnabled={true}
-					bounces={false}
-				>
-					<ChannelListBackground />
-					<ChannelListHeader />
-					<ChannelListFavorite />
-					<ChannelListLoading isNonChannel={hasNonEmptyChannels(categorizedChannels || [])} />
-					<ChannelListScroll channelsPositionRef={channelsPositionRef} flashListRef={flashListRef} />
-					{!!categorizedChannels?.length &&
-						categorizedChannels?.map((item, index) => {
-							return renderItemChannelList({ item, index });
-						})}
-					<Block height={80} />
-				</ScrollView>
-
+				{/* <ChannelListScroll channelsPositionRef={channelsPositionRef} flashListRef={flashListRef} /> */}
+				<FlatList
+					data={data}
+					renderItem={renderItem}
+					keyExtractor={keyExtractor}
+					removeClippedSubviews={true}
+					maxToRenderPerBatch={10}
+					updateCellsBatchingPeriod={50}
+					initialNumToRender={20}
+					windowSize={5}
+				/>
+				<ChannelListLoading isNonChannel={!!listChannelRender?.length} />
+				<View style={{ height: 80 }} />
 				<ButtonNewUnread />
 			</View>
 
 			<ChannelListBottomSheet />
-		</ChannelListContext.Provider>
+		</>
 	);
-});
+};
 
 export default ChannelList;

@@ -1,8 +1,8 @@
-import { baseColor, Block, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, directActions, selectBuzzStateByChannelId, selectBuzzStateByDirectId, useAppSelector } from '@mezon/store-mobile';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Text, TextStyle } from 'react-native';
+import { Text, TextStyle, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { style } from './styles';
 
@@ -41,10 +41,15 @@ function BuzzBadge({ channelId, clanId, mode, customStyles }: BuzzBadgeProps) {
 	if (!isReset) return null;
 
 	return (
-		<Block style={customStyles} marginRight={size.s_10} backgroundColor={baseColor.buzzRed} paddingHorizontal={size.s_4} borderRadius={size.s_4}>
+		<View
+			style={[
+				customStyles,
+				{ marginRight: size.s_10, backgroundColor: baseColor.buzzRed, paddingHorizontal: size.s_4, borderRadius: size.s_4 }
+			]}
+		>
 			<Text style={styles.textBuzz}>Buzz!!</Text>
-		</Block>
+		</View>
 	);
 }
 
-export default React.memo(BuzzBadge);
+export default BuzzBadge;

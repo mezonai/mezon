@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import ChannelVoicePopup from '../../screens/home/homedrawer/components/ChannelVoicePopup';
@@ -31,7 +31,8 @@ export const Authentication = memo(() => {
 				initialRouteName={APP_SCREEN.BOTTOM_BAR}
 				screenOptions={{
 					headerShown: false,
-					gestureEnabled: true,
+					gestureEnabled: Platform.OS === 'ios',
+					gestureDirection: 'horizontal',
 					...TransitionPresets.ModalFadeTransition,
 					animationEnabled: false
 				}}
@@ -43,7 +44,7 @@ export const Authentication = memo(() => {
 					options={{
 						animationEnabled: false,
 						headerShown: false,
-						gestureEnabled: true,
+						gestureEnabled: Platform.OS === 'ios',
 						gestureDirection: 'horizontal',
 						gestureResponseDistance: Dimensions.get('window').width
 					}}
@@ -55,7 +56,7 @@ export const Authentication = memo(() => {
 						animationEnabled: false,
 						headerShown: false,
 						headerShadowVisible: false,
-						gestureEnabled: true,
+						gestureEnabled: Platform.OS === 'ios',
 						gestureDirection: 'horizontal',
 						gestureResponseDistance: Dimensions.get('window').width
 					}}

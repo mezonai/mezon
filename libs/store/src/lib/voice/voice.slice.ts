@@ -1,8 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
-import { IChannelMember, IVoice, LoadingStatus } from '@mezon/utils';
+import { IChannelMember, IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
+import { RootState } from '../store';
 
 export const VOICE_FEATURE_KEY = 'voice';
 
@@ -14,6 +15,7 @@ export interface VoiceEntity extends IVoice {
 }
 
 export interface VoiceState extends EntityState<VoiceEntity, string> {
+	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	voiceChannelMember: IChannelMember[];
@@ -22,9 +24,8 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	showScreen: boolean;
 	statusCall: boolean;
 	voiceConnectionState: boolean;
-	token?: string;
-	channelId?: string;
 	fullScreen?: boolean;
+	isJoined: boolean;
 }
 
 export const voiceAdapter = createEntityAdapter<VoiceEntity>();
@@ -78,9 +79,9 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	showScreen: false,
 	statusCall: false,
 	voiceConnectionState: false,
-	token: '',
-	channelId: '',
-	fullScreen: false
+	voiceInfo: null,
+	fullScreen: false,
+	isJoined: false
 });
 
 export const voiceSlice = createSlice({
@@ -97,11 +98,11 @@ export const voiceSlice = createSlice({
 				.map((member) => member?.id);
 			voiceAdapter.removeMany(state, idsToRemove);
 		},
-		setVoiceChannelId: (state, action: PayloadAction<string>) => {
-			state.channelId = action.payload;
+		setJoined: (state, action) => {
+			state.isJoined = action.payload;
 		},
-		setToken: (state, action: PayloadAction<string>) => {
-			state.token = action.payload;
+		setVoiceInfo: (state, action: PayloadAction<IvoiceInfo>) => {
+			state.voiceInfo = action.payload;
 		},
 		setShowMicrophone: (state, action: PayloadAction<boolean>) => {
 			state.showMicrophone = action.payload;
@@ -122,13 +123,13 @@ export const voiceSlice = createSlice({
 			state.fullScreen = action.payload;
 		},
 		resetVoiceSettings: (state) => {
-			state.token = '';
 			state.showMicrophone = false;
 			state.showCamera = false;
 			state.showScreen = false;
 			state.voiceConnectionState = false;
-			state.channelId = '';
+			state.voiceInfo = null;
 			state.fullScreen = false;
+			state.isJoined = false;
 		}
 		// ...
 	},
@@ -190,17 +191,15 @@ export const voiceActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = voiceAdapter.getSelectors();
+const { selectAll } = voiceAdapter.getSelectors();
 
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
 export const selectAllVoice = createSelector(getVoiceState, selectAll);
 
-export const selectVoiceEntities = createSelector(getVoiceState, selectEntities);
+export const selectVoiceJoined = createSelector(getVoiceState, (state) => state.isJoined);
 
-export const selectVoiceChannelId = createSelector(getVoiceState, (state) => state.channelId);
-
-export const selectToken = createSelector(getVoiceState, (state) => state.token);
+export const selectVoiceInfo = createSelector(getVoiceState, (state) => state.voiceInfo);
 
 export const selectShowMicrophone = createSelector(getVoiceState, (state) => state.showMicrophone);
 
@@ -212,20 +211,12 @@ export const selectStatusCall = createSelector(getVoiceState, (state) => state.s
 
 export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => state.fullScreen);
 
-export const selectVoiceChannelMembersByChannelId = (channelId: string) =>
-	createSelector(selectVoiceEntities, (entities) => {
-		const voiceMembers = Object.values(entities);
-		return voiceMembers.filter((member) => member && member.voice_channel_id === channelId);
-	});
+const selectChannelId = (_: RootState, channelId: string) => channelId;
 
-export const selectNumberMemberVoiceChannel = (channelId: string) =>
-	createSelector(selectVoiceChannelMembersByChannelId(channelId), (member) => {
-		return member.length;
-	});
+export const selectVoiceChannelMembersByChannelId = createSelector([selectAllVoice, selectChannelId], (entities, channelId) => {
+	return entities.filter((member) => member && member.voice_channel_id === channelId);
+});
 
-export const selectFriendVoiceChannel = (channelId: string, userId: string) =>
-	createSelector(selectVoiceChannelMembersByChannelId(channelId), (members) => {
-		return members.filter((member) => member.user_id !== userId);
-	});
+export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 
 export const selectVoiceConnectionState = createSelector(getVoiceState, (state) => state.voiceConnectionState);

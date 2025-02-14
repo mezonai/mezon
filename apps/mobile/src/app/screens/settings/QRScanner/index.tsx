@@ -1,6 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { baseColor, Block, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { appActions } from '@mezon/store';
 import { getStoreAsync } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -146,15 +146,17 @@ export const QRScanner = () => {
 		return (
 			<View style={styles.wrapper}>
 				<View style={styles.popupLogin}>
-					<Block
-						zIndex={100}
-						flexDirection={'row'}
-						position={'absolute'}
-						justifyContent={'space-between'}
-						top={size.s_40}
-						flex={1}
-						paddingHorizontal={size.s_10}
-						width={'100%'}
+					<View
+						style={{
+							zIndex: 100,
+							flexDirection: 'row',
+							position: 'absolute',
+							justifyContent: 'space-between',
+							top: size.s_40,
+							flex: 1,
+							paddingHorizontal: size.s_10,
+							width: '100%'
+						}}
 					>
 						<TouchableOpacity
 							style={styles.backHeader}
@@ -164,7 +166,7 @@ export const QRScanner = () => {
 						>
 							<Icons.CloseSmallBoldIcon width={size.s_28} height={size.s_28} color={baseColor.white} />
 						</TouchableOpacity>
-					</Block>
+					</View>
 					<TouchableOpacity
 						style={[styles.button, styles.buttonBorder, { backgroundColor: '#292929' }]}
 						onPress={() => {
@@ -182,16 +184,18 @@ export const QRScanner = () => {
 		<View style={styles.wrapper}>
 			<Camera codeScanner={codeScanner} style={StyleSheet.absoluteFill} device={device} isActive={!valueCode} />
 			{!valueCode ? (
-				<Block flex={1}>
-					<Block
-						zIndex={100}
-						flexDirection={'row'}
-						position={'absolute'}
-						justifyContent={'space-between'}
-						top={size.s_40}
-						flex={1}
-						paddingHorizontal={size.s_10}
-						width={'100%'}
+				<View style={{ flex: 1 }}>
+					<View
+						style={{
+							zIndex: 100,
+							flexDirection: 'row',
+							position: 'absolute',
+							justifyContent: 'space-between',
+							top: size.s_40,
+							flex: 1,
+							paddingHorizontal: size.s_10,
+							width: '100%'
+						}}
 					>
 						<TouchableOpacity
 							style={styles.backHeader}
@@ -199,25 +203,27 @@ export const QRScanner = () => {
 								navigation.goBack();
 							}}
 						>
-							<Icons.CloseSmallBoldIcon width={size.s_28} height={size.s_28} color={baseColor.white} />
+							<Icons.CloseSmallBoldIcon width={size.s_28} height={baseColor.white} />
 						</TouchableOpacity>
 						<TouchableOpacity onPress={onMyQRCode}>
-							<Block
-								paddingHorizontal={size.s_20}
-								borderRadius={size.s_30}
-								backgroundColor={'rgba(0,0,0,0.5)'}
-								flexDirection={'row'}
-								height={'100%'}
-								alignItems={'center'}
-								gap={size.s_10}
-								justifyContent={'center'}
+							<View
+								style={{
+									paddingHorizontal: size.s_20,
+									borderRadius: size.s_30,
+									backgroundColor: 'rgba(0,0,0,0.5)',
+									flexDirection: 'row',
+									height: '100%',
+									alignItems: 'center',
+									gap: size.s_10,
+									justifyContent: 'center'
+								}}
 							>
 								<Icons.UserIcon width={size.s_24} height={size.s_24} color={baseColor.white} />
 								<Text style={styles.textMyQRCode}>My QR code</Text>
-							</Block>
+							</View>
 						</TouchableOpacity>
-						<Block width={size.s_50} backgroundColor={'transparent'} />
-					</Block>
+						<View style={{ width: size.s_50, backgroundColor: 'transparent' }} />
+					</View>
 
 					<View style={styles.mainOverlay}></View>
 					<View style={styles.overlayCenter}>
@@ -229,7 +235,7 @@ export const QRScanner = () => {
 					<TouchableOpacity style={styles.iconLibrary} onPress={openLibrary}>
 						<Icons.ImageIcon width={size.s_34} height={size.s_34} />
 					</TouchableOpacity>
-				</Block>
+				</View>
 			) : (
 				<View style={styles.popupLogin}>
 					<View style={styles.popupLoginSub}>

@@ -1,10 +1,10 @@
 import { useClans } from '@mezon/core';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { APP_SCREEN } from '../../../../../../../navigation/ScreenTypes';
 import { EProfileTab } from '../../../../../../../screens/settings/ProfileSetting';
 import { style } from './EditUserProfileBtn.styles';
@@ -24,7 +24,7 @@ const EditUserProfileBtn = ({ user }: { user: ChannelMembersEntity }) => {
 	};
 
 	return (
-		<Block flexDirection="row" gap={size.s_10} alignItems="center" justifyContent="space-between" marginTop={size.s_20}>
+		<View style={{ flexDirection: 'row', gap: size.s_10, alignItems: 'center', justifyContent: 'space-between', marginTop: size.s_20 }}>
 			<TouchableOpacity onPress={() => navigateToUserProfileSetting(EProfileTab.UserProfile)} style={styles.btn}>
 				<Text style={styles.textBtn}>{t('editUser')}</Text>
 			</TouchableOpacity>
@@ -33,7 +33,7 @@ const EditUserProfileBtn = ({ user }: { user: ChannelMembersEntity }) => {
 					<Text style={styles.textBtn}>{t('editServer')}</Text>
 				</TouchableOpacity>
 			)}
-		</Block>
+		</View>
 	);
 };
 export default EditUserProfileBtn;

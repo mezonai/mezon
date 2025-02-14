@@ -1,13 +1,13 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { ENotificationActive, ICategoryChannelOption } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { NotiChannelCategorySettingEntity, notificationSettingActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { format } from 'date-fns';
 import { ApiNotificationUserChannel } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
 import MezonBottomSheet from '../../../componentUI/MezonBottomSheet';
@@ -147,8 +147,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 	}, [notificationChannelSelected, dispatch, currentChannel?.id, currentClanId]);
 
 	return (
-		<Block>
-			<Block style={styles.optionsBox}>
+		<View>
+			<View style={styles.optionsBox}>
 				<TouchableOpacity onPress={handleMuteOrUnmute} style={styles.wrapperUnmuteBox}>
 					<Text style={styles.option}>
 						{`${isUnmute ? t('bottomSheet.mute') : t('bottomSheet.unMute')} #${
@@ -159,7 +159,7 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 						}`}
 					</Text>
 				</TouchableOpacity>
-			</Block>
+			</View>
 			<Text style={styles.subTitle}>{description}</Text>
 			{timeMuted ? (
 				<Text style={styles.textUntil}>
@@ -168,11 +168,11 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 				</Text>
 			) : null}
 			<MezonBottomSheet snapPoints={['55%']} ref={bottomSheetDetail}>
-				<Block paddingHorizontal={size.s_20}>
+				<View style={{ paddingHorizontal: size.s_20 }}>
 					<Text style={styles.headerBS}>{t('clanNotificationBS.title', { ns: 'clanNotificationsSetting' })}</Text>
 					<MezonMenu menu={menu} />
-				</Block>
+				</View>
 			</MezonBottomSheet>
-		</Block>
+		</View>
 	);
 };

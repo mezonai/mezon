@@ -1,10 +1,11 @@
 import { IOption, ITypeOptionSearch, IUerMention } from '@mezon/mobile-components';
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { DirectEntity, selectCurrentChannel } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import UseMentionList from '../../../../hooks/useUserMentionList';
 import { EmptySearchPage } from '../../../EmptySearchPage';
@@ -49,11 +50,12 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 		return userListDataSearchByMention;
 	}, [searchText, userListDataSearchByMention]);
 	return (
-		<Block paddingHorizontal={size.s_20} marginVertical={size.s_20} width={'100%'} height={'100%'}>
+		<View style={{ paddingHorizontal: size.s_20, marginVertical: size.s_20, width: '100%', height: '100%' }}>
 			{[ITypeOptionSearch.MENTIONS, ITypeOptionSearch.FROM].includes(optionFilter?.title as ITypeOptionSearch) && (
-				<Block height={'100%'} width={'100%'} paddingBottom={size.s_100}>
+				<View style={{ height: '100%', width: '100%', paddingBottom: size.s_100 }}>
 					{searchUserListByMention?.length ? (
 						<FlashList
+							scrollEnabled={false}
 							showsVerticalScrollIndicator={false}
 							data={searchUserListByMention}
 							renderItem={({ item }) => <UserInfoSearch userData={item} onSelectUserInfo={onSelect} />}
@@ -63,9 +65,9 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 					) : (
 						<EmptySearchPage emptyDescription="Unfortunately, we could not find any suggestions" />
 					)}
-				</Block>
+				</View>
 			)}
-		</Block>
+		</View>
 	);
 }
 

@@ -1,10 +1,11 @@
 import { useSeenMessagePool } from '@mezon/core';
 import {
+	ChannelsEntity,
 	channelMembersActions,
 	channelMetaActions,
 	channelsActions,
-	ChannelsEntity,
 	clansActions,
+	listChannelRenderAction,
 	listChannelsByUserActions,
 	selectAnyUnreadChannels,
 	selectChannelById,
@@ -40,6 +41,12 @@ function useChannelSeen(channelId: string) {
 		if (!statusFetchChannel) return;
 		const numberNotification = currentChannel?.count_mess_unread ? currentChannel?.count_mess_unread : 0;
 		if (numberNotification && numberNotification > 0) {
+			dispatch(
+				listChannelRenderAction.removeBadgeFromChannel({
+					clanId: currentChannel.clan_id as string,
+					channelId: currentChannel.channel_id as string
+				})
+			);
 			dispatch(
 				channelsActions.updateChannelBadgeCount({ clanId: currentChannel?.clan_id ?? '', channelId: channelId, count: 0, isReset: true })
 			);

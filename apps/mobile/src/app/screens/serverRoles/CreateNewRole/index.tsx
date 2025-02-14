@@ -1,10 +1,10 @@
 import { useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentClanId } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { MezonInput } from '../../../componentUI';
@@ -55,44 +55,46 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 	};
 	return (
 		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<Block backgroundColor={themeValue.primary} flex={1} paddingHorizontal={size.s_14} justifyContent="space-between">
-				<Block>
-					<Block paddingVertical={size.s_10} borderBottomWidth={1} borderBottomColor={themeValue.borderDim}>
+			<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14, justifyContent: 'space-between' }}>
+				<View>
+					<View style={{ paddingVertical: size.s_10, borderBottomWidth: 1, borderBottomColor: themeValue.borderDim }}>
 						<Text color={themeValue.white} h2 center bold>
 							{t('createNewRole.createANewRole')}
 						</Text>
 						<Text color={themeValue.text} center>
 							{t('createNewRole.description')}
 						</Text>
-					</Block>
-					<Block marginTop={size.s_18}>
+					</View>
+					<View style={{ marginTop: size.s_18 }}>
 						<MezonInput
 							value={roleName}
 							onTextChange={onRoleNameChange}
 							placeHolder={t('createNewRole.newRole')}
 							label={t('createNewRole.roleName')}
 						/>
-					</Block>
-				</Block>
-				<Block marginBottom={size.s_16}>
+					</View>
+				</View>
+				<View style={{ marginBottom: size.s_16 }}>
 					<TouchableOpacity
 						onPress={() => {
 							if (roleName?.trim()?.length === 0) return;
 							createNewRole();
 						}}
 					>
-						<Block
-							backgroundColor={roleName?.trim()?.length === 0 ? Colors.bgGrayDark : Colors.bgViolet}
-							paddingVertical={size.s_14}
-							borderRadius={size.s_8}
+						<View
+							style={{
+								backgroundColor: roleName?.trim()?.length === 0 ? Colors.bgGrayDark : Colors.bgViolet,
+								paddingVertical: size.s_14,
+								borderRadius: size.s_8
+							}}
 						>
 							<Text center color={Colors.white}>
 								{t('createNewRole.create')}
 							</Text>
-						</Block>
+						</View>
 					</TouchableOpacity>
-				</Block>
-			</Block>
+				</View>
+			</View>
 		</TouchableWithoutFeedback>
 	);
 };

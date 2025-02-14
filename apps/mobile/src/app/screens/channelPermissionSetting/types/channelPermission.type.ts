@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ChannelMembersEntity, ChannelsEntity, PermissionUserEntity, RolesClanEntity, UsersClanEntity } from '@mezon/store-mobile';
-import { IChannel } from '@mezon/utils';
+import { ChannelMembersEntity, ChannelsEntity, PermissionUserEntity, RolesClanEntity } from '@mezon/store-mobile';
+import { IChannel, UsersClanEntity } from '@mezon/utils';
 import { RefObject } from 'react';
 import { EAdvancedPermissionSetting, EOverridePermissionType, EPermissionStatus } from './channelPermission.enum';
 

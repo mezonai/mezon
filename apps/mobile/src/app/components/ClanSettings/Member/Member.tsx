@@ -1,7 +1,7 @@
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { UsersClanEntity } from '@mezon/utils';
 import { useCallback, useState } from 'react';
-import { KeyboardAvoidingView } from 'react-native';
+import { KeyboardAvoidingView, View } from 'react-native';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import UserSettingProfile from '../../../screens/home/homedrawer/components/UserProfile/component/UserSettingProfile';
 import { MemberList } from './MemberList';
@@ -22,7 +22,7 @@ export function MemberSetting({ navigation }: MenuClanScreenProps<MemberClanScre
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }}>
-			<Block flex={1} backgroundColor={themeValue.secondary}>
+			<View style={{ flex: 1, backgroundColor: themeValue.secondary }}>
 				<MemberList onMemberSelect={onMemberSelect} />
 
 				<UserSettingProfile
@@ -31,7 +31,7 @@ export function MemberSetting({ navigation }: MenuClanScreenProps<MemberClanScre
 					showActionOutside={false}
 					onShowManagementUserModalChange={onShowManagementUserModalChange}
 				/>
-			</Block>
+			</View>
 		</KeyboardAvoidingView>
 	);
 }

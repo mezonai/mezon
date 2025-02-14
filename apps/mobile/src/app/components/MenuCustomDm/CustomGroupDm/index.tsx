@@ -1,10 +1,10 @@
 import { Icons } from '@mezon/mobile-components';
-import { baseColor, Block, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, useAppDispatch } from '@mezon/store-mobile';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { MezonInput } from '../../../componentUI';
 import style from '../MenuCustomDm.styles';
 
@@ -43,23 +43,25 @@ const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channel
 	};
 
 	return (
-		<Block paddingHorizontal={size.s_20} paddingVertical={size.s_10}>
+		<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10 }}>
 			<Text style={styles.headerCustomGroup}>{t('customiseGroup')}</Text>
-			<Block paddingVertical={size.s_20} alignItems="center">
-				<Block
-					width={size.s_60}
-					height={size.s_60}
-					borderRadius={size.s_50}
-					backgroundColor={Colors.orange}
-					alignItems="center"
-					justifyContent="center"
+			<View style={{ paddingVertical: size.s_20, alignItems: 'center' }}>
+				<View
+					style={{
+						width: size.s_60,
+						height: size.s_60,
+						borderRadius: size.s_50,
+						backgroundColor: Colors.orange,
+						alignItems: 'center',
+						justifyContent: 'center'
+					}}
 				>
 					<Icons.GroupIcon color={baseColor.white} />
-				</Block>
-			</Block>
+				</View>
+			</View>
 			<Text style={styles.labelInput}>{t('groupName')}</Text>
 			<MezonInput value={nameGroup} onTextChange={handelChangeText} />
-		</Block>
+		</View>
 	);
 };
 

@@ -1,5 +1,5 @@
 import { AppleIcon, GoogleIcon, IS_TABLET } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
@@ -9,7 +9,7 @@ export const LoginSocial = ({ onGoogleButtonPress, onAppleButtonPress }: any) =>
 	const buttonSize = IS_TABLET ? size.s_20 : size.s_18;
 
 	return (
-		<Block gap={size.s_20}>
+		<View style={{ gap: size.s_20 }}>
 			{Platform.OS === 'ios' && (
 				<TouchableOpacity style={styles.appleButton} onPress={onAppleButtonPress}>
 					<View style={styles.socialButtonsContainer}>
@@ -24,6 +24,6 @@ export const LoginSocial = ({ onGoogleButtonPress, onAppleButtonPress }: any) =>
 					<Text style={styles.socialSigninButtonText}>Continue with Google</Text>
 				</View>
 			</TouchableOpacity>
-		</Block>
+		</View>
 	);
 };

@@ -8,13 +8,13 @@ import {
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, ChannelsEntity, getStoreAsync, selectAllChannelsFavorite } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Linking, Text, TouchableOpacity } from 'react-native';
+import { DeviceEventEmitter, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonBottomSheet } from '../../../../../../componentUI';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
@@ -87,9 +87,9 @@ export const ChannelListFavorite = React.memo(() => {
 	);
 
 	return (
-		<Block>
+		<View>
 			{channelFavorites?.length ? (
-				<Block width={'100%'} paddingHorizontal={size.s_8} paddingVertical={size.s_10}>
+				<View style={{ width: '100%', paddingHorizontal: size.s_8, paddingVertical: size.s_10 }}>
 					<TouchableOpacity onPress={handleCollapse} style={styles.categoryItem}>
 						<Icons.ChevronSmallDownIcon
 							width={size.s_20}
@@ -99,10 +99,14 @@ export const ChannelListFavorite = React.memo(() => {
 						/>
 						<Text style={styles.categoryItemTitle}>{t('favoriteChannel')}</Text>
 					</TouchableOpacity>
-					<Block display={isCollapse ? 'none' : 'flex'}>
+					<View
+						style={{
+							display: isCollapse ? 'none' : 'flex'
+						}}
+					>
 						{channelFavorites?.length
 							? channelFavorites?.map((channelId: string, index: number) => (
-									<Block>
+									<View>
 										<ChannelFavoriteItem
 											onPress={handleScrollToChannelFavorite}
 											channelId={channelId}
@@ -115,12 +119,12 @@ export const ChannelListFavorite = React.memo(() => {
 												<JoinChannelVoiceBS channel={currentChannel} ref={bottomSheetChannelStreamingRef} />
 											)}
 										</MezonBottomSheet>
-									</Block>
+									</View>
 								))
 							: null}
-					</Block>
-				</Block>
+					</View>
+				</View>
 			) : null}
-		</Block>
+		</View>
 	);
 });

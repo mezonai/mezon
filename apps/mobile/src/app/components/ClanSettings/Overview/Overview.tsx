@@ -1,6 +1,6 @@
 import { useClans, usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { checkDuplicateNameClan, getStoreAsync } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
@@ -199,7 +199,12 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	];
 
 	return (
-		<Block flex={1} backgroundColor={themeValue.secondary}>
+		<View
+			style={{
+				flex: 1,
+				backgroundColor: themeValue.secondary
+			}}
+		>
 			<ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'handled'}>
 				<MezonImagePicker
 					disabled={disabled}
@@ -243,6 +248,6 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					}}
 				></DeleteClanModal>
 			)}
-		</Block>
+		</View>
 	);
 }

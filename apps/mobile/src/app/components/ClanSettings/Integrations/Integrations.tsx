@@ -1,11 +1,12 @@
 import { usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { fetchWebhooks, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -44,8 +45,8 @@ export function Integrations() {
 	];
 
 	return (
-		<Block paddingHorizontal={size.s_10} backgroundColor={themeValue.primary} width={'100%'} height={'100%'}>
+		<View style={{ paddingHorizontal: size.s_10, backgroundColor: themeValue.primary, width: '100%', height: '100%' }}>
 			<MezonMenu menu={menu} />
-		</Block>
+		</View>
 	);
 }

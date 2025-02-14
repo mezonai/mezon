@@ -2,7 +2,7 @@
 // @ts-ignore
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
 	messagesActions,
@@ -243,7 +243,11 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 			) : (
 				<View />
 			)}
-			<Block height={size.s_8} />
+			<View
+				style={{
+					height: size.s_8
+				}}
+			/>
 			{isHaveJumpToPresent && (
 				<TouchableOpacity style={styles.btnScrollDown} onPress={handleJumpToPresent} activeOpacity={0.8}>
 					{isLoadingScrollBottom ? (

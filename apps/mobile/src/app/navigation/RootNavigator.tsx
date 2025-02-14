@@ -6,7 +6,7 @@ import React, { memo, useEffect, useMemo } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContextProvider } from '@mezon/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
 import { Platform, StatusBar } from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import codePush from 'react-native-code-push';
@@ -16,7 +16,6 @@ import MezonUpdateVersionModal from '../componentUI/MezonUpdateVersionModal';
 import NetInfoComp from '../components/NetworkInfo';
 import { WebRTCStreamProvider } from '../components/StreamContext/StreamContext';
 import { toastConfig } from '../configs/toastConfig';
-import { AuthenticationLoader } from './Authentication/AuthenticationLoader';
 import RootListener from './RootListener';
 import RootStack from './RootStack';
 
@@ -66,7 +65,6 @@ const NavigationMain = memo(
 			>
 				<NetInfoComp />
 				<RootListener />
-				<AuthenticationLoader />
 				<MezonUpdateVersionModal visible={isShowUpdateModal} onClose={() => setIsShowUpdateModal(false)} />
 				<RootStack {...props} />
 			</NavigationContainer>
@@ -94,13 +92,15 @@ const RootNavigation = (props) => {
 
 	return (
 		<MezonStoreProvider store={store} loading={null} persistor={persistor}>
-			<CustomStatusBar />
-			<ChatContextProvider>
-				<WebRTCStreamProvider>
-					<NavigationMain {...props} />
-				</WebRTCStreamProvider>
-			</ChatContextProvider>
-			<Toast config={toastConfig} />
+			<ThemeProvider>
+				<CustomStatusBar />
+				<ChatContextProvider>
+					<WebRTCStreamProvider>
+						<NavigationMain {...props} />
+					</WebRTCStreamProvider>
+				</ChatContextProvider>
+				<Toast config={toastConfig} />
+			</ThemeProvider>
 		</MezonStoreProvider>
 	);
 };

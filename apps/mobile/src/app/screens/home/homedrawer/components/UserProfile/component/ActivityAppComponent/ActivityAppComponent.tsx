@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectActivityByUserId } from '@mezon/store-mobile';
 import { ActivitiesName, ActivitiesType } from '@mezon/utils';
 import React from 'react';
@@ -32,14 +32,14 @@ function ActivityAppComponent({ userId }: { userId: string }) {
 			<Text style={styles.activityAppLabel}>{t('activity')}</Text>
 			<View style={styles.activityAppContainer}>
 				{iconMap[activityByUserId?.activity_type]}
-				<Block flex={1}>
+				<View style={{ flex: 1 }}>
 					<Text style={styles.activityAppText} numberOfLines={1}>
 						{activityNames[activityByUserId?.activity_name as string]}
 					</Text>
 					<Text style={styles.activityAppText} numberOfLines={1}>
 						{activityByUserId?.activity_description}
 					</Text>
-				</Block>
+				</View>
 			</View>
 		</View>
 	);

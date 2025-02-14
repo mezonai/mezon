@@ -1,7 +1,7 @@
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import LottieView from 'lottie-react-native';
 import React, { forwardRef } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { WAY_AUDIO } from '../../../../../../../assets/lottie';
 import { style } from './styles';
 const formatTime = (millis: number) => {
@@ -14,9 +14,9 @@ export const RecordingAudioMessage = forwardRef(({ durationRecord }: { durationR
 	const styles = style(themeValue);
 
 	return (
-		<Block style={styles.container}>
+		<View style={styles.container}>
 			<LottieView source={WAY_AUDIO} ref={recordingWaveRef} resizeMode="cover" style={styles.soundLottie} />
 			<Text style={styles.currentTime}>{formatTime(durationRecord)}</Text>
-		</Block>
+		</View>
 	);
 });

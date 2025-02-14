@@ -8,7 +8,7 @@ import {
 	getUpdateOrAddClanChannelCache,
 	save
 } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
 	channelsActions,
@@ -237,7 +237,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 							isPublic={isPublicChannel(currentChannel)}
 						/>
 						<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
-						<Block height={Platform.OS === 'ios' ? size.s_40 : 0} />
+						<View style={{ height: Platform.OS === 'ios' ? size.s_40 : 0 }} />
 					</KeyboardAvoidingView>
 				)}
 			</Formik>

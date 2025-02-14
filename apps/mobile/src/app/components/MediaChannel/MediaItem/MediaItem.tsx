@@ -1,9 +1,8 @@
-import { Block } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { Video as ExpoVideo, ResizeMode } from 'expo-av';
 import React, { useCallback, useMemo } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { isImage, isVideo } from '../../../utils/helpers';
@@ -22,9 +21,9 @@ export const MediaItem = React.memo(({ data, onPress }: IMediaItemProps) => {
 	}, [onPress, data]);
 	return (
 		<TouchableOpacity onPress={handlePress} style={styles.containerItem}>
-			<Block style={styles.boxAvatar}>
+			<View style={styles.boxAvatar}>
 				<MezonAvatar height={25} width={25} username={uploader?.user?.username} avatarUrl={uploader?.user?.avatar_url}></MezonAvatar>
-			</Block>
+			</View>
 			{checkIsImage ? (
 				<FastImage
 					style={styles.image}

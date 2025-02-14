@@ -1,9 +1,9 @@
 import { UserMinus } from '@mezon/mobile-components';
-import { Block, Text, useTheme } from '@mezon/mobile-ui';
+import { Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonInput } from '../../../../../../../componentUI';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../../../../../componentUI/MezonButton2';
@@ -17,12 +17,12 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 	const currentClan = useSelector(selectCurrentClan);
 
 	return (
-		<Block height={'100%'} overflow="hidden">
+		<View style={{ height: '100%', overflow: 'hidden' }}>
 			<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'position'} style={{ flex: 1 }}>
-				<Block style={styles.container}>
-					<Block style={styles.userMinusIcon}>
+				<View style={styles.container}>
+					<View style={styles.userMinusIcon}>
 						<UserMinus width={60} height={60} />
-					</Block>
+					</View>
 					<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
 					<Text style={styles.textError}>
 						{t('kickUserClanModal.kickFromServer', { username: user?.user?.username || user?.['username'] })}
@@ -30,7 +30,7 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 					<Text style={styles.description}>
 						{t('kickUserClanModal.description', { username: user?.user?.username || user?.['username'] })}
 					</Text>
-					<Block style={styles.textAreaBox}>
+					<View style={styles.textAreaBox}>
 						<MezonInput
 							label={t('kickUserClanModal.reasonKick', { username: user?.user?.username || user?.['username'] })}
 							titleUppercase
@@ -39,8 +39,8 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 							value={reason}
 							showBorderOnFocus
 						/>
-					</Block>
-				</Block>
+					</View>
+				</View>
 
 				<MezonButton
 					onPress={onRemoveUserClan}
@@ -50,7 +50,7 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 					titleStyle={styles.textButton}
 				/>
 			</KeyboardAvoidingView>
-		</Block>
+		</View>
 	);
 };
 

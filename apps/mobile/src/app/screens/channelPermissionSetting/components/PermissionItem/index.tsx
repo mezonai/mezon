@@ -1,9 +1,9 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { EPermissionStatus } from '../../types/channelPermission.enum';
 import { IPermissionItemProps } from '../../types/channelPermission.type';
 
@@ -51,34 +51,36 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 	}, [t, slug]);
 
 	return (
-		<Block gap={size.s_6}>
-			<Block flexDirection="row" justifyContent="space-between" alignItems="center">
+		<View style={{ gap: size.s_6 }}>
+			<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<Text color={themeValue.textStrong} h4>
 					{title}
 				</Text>
-				<Block flexDirection="row" borderRadius={size.s_4} overflow="hidden">
+				<View style={{ flexDirection: 'row', borderRadius: size.s_4, overflow: 'hidden' }}>
 					{permissionOptionList?.map((option) => {
 						const { activeBackground, icon, type, color } = option;
 						const isActive = status === type;
 						return (
 							<TouchableOpacity key={type.toString()} onPress={() => onPermissionStatusChange(permission?.id, type)}>
-								<Block
-									backgroundColor={isActive ? activeBackground : themeValue.primary}
-									alignItems="center"
-									justifyContent="center"
-									width={size.s_34}
-									height={size.s_30}
+								<View
+									style={{
+										backgroundColor: isActive ? activeBackground : themeValue.primary,
+										alignItems: 'center',
+										justifyContent: 'center',
+										width: size.s_34,
+										height: size.s_30
+									}}
 								>
 									{icon(isActive ? Colors.white : color)}
-								</Block>
+								</View>
 							</TouchableOpacity>
 						);
 					})}
-				</Block>
-			</Block>
+				</View>
+			</View>
 			<Text color={themeValue.textDisabled} h6>
 				{getPermissionDescription()}
 			</Text>
-		</Block>
+		</View>
 	);
 });

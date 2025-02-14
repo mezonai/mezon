@@ -1,4 +1,4 @@
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { default as React, memo, useEffect } from 'react';
 import { style } from './styles';
 
@@ -21,14 +21,14 @@ export function StreamingScreen() {
 	return (
 		<View style={styles.container}>
 			{remoteStream && isStream ? (
-				<Block width={'100%'} height={'100%'} justifyContent="center" alignItems="center">
+				<View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
 					{!isRemoteVideoStream && <FastImage source={Images.RADIO_NCC8} style={{ width: '100%', height: 400 }} resizeMode={'contain'} />}
 					<RTCView streamURL={remoteStream?.toURL?.()} style={{ flex: 1 }} mirror={true} objectFit={'cover'} />
-				</Block>
+				</View>
 			) : (
-				<Block width={'100%'} height={'100%'} justifyContent="center" alignItems="center">
+				<View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
 					<Text style={styles.errorText}>{t('noDisplay')}</Text>
-				</Block>
+				</View>
 			)}
 		</View>
 	);

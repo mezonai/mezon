@@ -1,18 +1,16 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React from 'react';
 
-export const ChannelStatusIcon = React.memo(({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {
+export const ChannelStatusIcon = ({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {
 	const { themeValue } = useTheme();
 
-	const isAgeRestrictedChannel = useMemo(() => {
-		return channel?.age_restricted === 1;
-	}, [channel?.age_restricted]);
+	const isAgeRestrictedChannel = channel?.age_restricted === 1;
 	return (
-		<Block>
+		<>
 			{channel?.channel_private === ChannelStatusEnum.isPrivate &&
 				(channel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) &&
 				!isAgeRestrictedChannel && (
@@ -47,6 +45,6 @@ export const ChannelStatusIcon = React.memo(({ channel, isUnRead }: { channel: C
 			{channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 				<Icons.HashtagWarning width={size.s_18} height={size.s_18} color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal} />
 			)}
-		</Block>
+		</>
 	);
-});
+};

@@ -1,10 +1,10 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, Text, useTheme } from '@mezon/mobile-ui';
 import { CategoriesEntity, channelsActions, selectAllCategories, useAppDispatch } from '@mezon/store-mobile';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../componentUI';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
@@ -59,26 +59,26 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 
 	navigation.setOptions({
 		headerTitle: () => (
-			<Block>
+			<View>
 				<Text bold h3 color={themeValue?.white}>
 					{t('changeCategory.title')}
 				</Text>
-			</Block>
+			</View>
 		),
 		headerLeft: () => {
 			return (
 				<TouchableOpacity onPress={() => navigation.goBack()}>
-					<Block marginLeft={size.s_16}>
+					<View style={{ marginLeft: size.s_16 }}>
 						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
-					</Block>
+					</View>
 				</TouchableOpacity>
 			);
 		}
 	});
 
 	return (
-		<Block flex={1} backgroundColor={themeValue.primary} paddingHorizontal={size.s_12}>
+		<View style={{ flex: 1, backgroundColor: themeValue.primary, paddingHorizontal: size.s_12 }}>
 			<MezonMenu menu={menu} />
-		</Block>
+		</View>
 	);
 };

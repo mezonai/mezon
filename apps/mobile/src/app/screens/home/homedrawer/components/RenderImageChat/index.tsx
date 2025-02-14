@@ -1,4 +1,4 @@
-import { Block, Metrics, size, useTheme } from '@mezon/mobile-ui';
+import { Metrics, size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
@@ -123,9 +123,9 @@ const getPhotoSize = (imageSize: any, isMultiple: boolean, isUploading: boolean)
 };
 
 const UploadingIndicator = () => (
-	<Block backgroundColor={'rgba(0,0,0,0.5)'} flex={1} alignContent="center" justifyContent="center">
+	<View style={{ backgroundColor: 'rgba(0,0,0,0.5)', flex: 1, alignContent: 'center', justifyContent: 'center' }}>
 		<ActivityIndicator />
-	</Block>
+	</View>
 );
 
 const RemainingImagesOverlay = ({ remainingImagesCount, photoSize, styles, isTablet }: any) => (

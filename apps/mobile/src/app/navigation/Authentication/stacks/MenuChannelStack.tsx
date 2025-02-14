@@ -24,7 +24,7 @@ export function MenuChannelStacks({}: any) {
 			screenOptions={{
 				headerShown: true,
 				headerShadowVisible: false,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				gestureDirection: 'horizontal',
 				headerTitleAlign: 'center',
 				headerTintColor: themeValue.text,

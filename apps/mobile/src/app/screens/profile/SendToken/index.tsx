@@ -1,7 +1,7 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useDirect, useSendInviteMessage } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	FriendsEntity,
@@ -307,17 +307,17 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 				backdropComponent={Backdrop}
 				backgroundStyle={{ backgroundColor: themeValue.primary }}
 			>
-				<Block paddingHorizontal={size.s_20} paddingVertical={size.s_10} flex={1} gap={size.s_10}>
+				<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10, flex: 1, gap: size.s_10 }}>
 					<MezonInput
 						inputWrapperStyle={styles.searchText}
 						placeHolder={'Select user to send token'}
 						onTextChange={handleSearchText}
 						prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
 					/>
-					<Block flex={1} backgroundColor={themeValue.secondary} borderRadius={size.s_8}>
+					<View style={{ flex: 1, backgroundColor: themeValue.secondary, borderRadius: size.s_8 }}>
 						<BottomSheetFlatList data={filteredUsers} renderItem={renderItem} />
-					</Block>
-				</Block>
+					</View>
+				</View>
 			</BottomSheetModal>
 		</View>
 	);

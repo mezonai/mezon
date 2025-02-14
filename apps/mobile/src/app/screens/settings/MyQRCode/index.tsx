@@ -1,9 +1,9 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllAccount, selectUpdateToken } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { Grid } from 'react-native-animated-spinkit';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -45,13 +45,15 @@ export const MyQRCode = () => {
 
 	return (
 		<LinearGradient start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }} colors={[themeValue.primary, themeValue.secondaryLight]} style={styles.card}>
-			<Block
-				flexDirection={'row'}
-				alignItems={'center'}
-				paddingBottom={size.s_14}
-				gap={size.s_14}
-				borderBottomColor={themeValue.border}
-				borderBottomWidth={1}
+			<View
+				style={{
+					flexDirection: 'row',
+					alignItems: 'center',
+					paddingBottom: size.s_14,
+					gap: size.s_14,
+					borderBottomColor: themeValue.border,
+					borderBottomWidth: 1
+				}}
 			>
 				<FastImage
 					source={{
@@ -59,32 +61,38 @@ export const MyQRCode = () => {
 					}}
 					style={styles.avatar}
 				/>
-				<Block>
+				<View>
 					<Text style={styles.nameProfile}>{userProfile?.user?.display_name || userProfile?.user?.username}</Text>
 					<Text style={styles.tokenProfile}>Token: {Number(tokenInWallet) + Number(getTokenSocket)}</Text>
-				</Block>
-			</Block>
+				</View>
+			</View>
 			{urlQRCode ? (
 				isTabletLandscape ? (
-					<Block
-						height={size.s_100 * 3.6}
-						width={size.s_100 * 3.6}
-						backgroundColor={'white'}
-						alignSelf="center"
-						justifyContent="center"
-						marginVertical={size.s_40}
+					<View
+						style={{
+							height: size.s_100 * 3.6,
+							width: size.s_100 * 3.6,
+							backgroundColor: 'white',
+							alignSelf: 'center',
+							justifyContent: 'center',
+							marginVertical: size.s_40
+						}}
 					>
 						<FastImage source={{ uri: urlQRCode }} style={styles.imageQR} />
-					</Block>
+					</View>
 				) : (
 					<FastImage source={{ uri: urlQRCode }} style={styles.imageQR} />
 				)
 			) : (
-				<Block height={size.s_100 * 2.5} alignItems={'center'} justifyContent={'center'}>
+				<View style={{ height: size.s_100 * 2.5, alignItems: 'center', justifyContent: 'center' }}>
 					<Grid color={themeValue.text} size={size.s_50} />
-				</Block>
+				</View>
 			)}
-			<Block height={size.s_50} />
+			<View
+				style={{
+					height: size.s_50
+				}}
+			/>
 		</LinearGradient>
 	);
 };

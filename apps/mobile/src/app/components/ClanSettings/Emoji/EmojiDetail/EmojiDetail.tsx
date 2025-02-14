@@ -1,6 +1,6 @@
 import { usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, selectCurrentUserId, selectMemberClanByUserId2, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EPermission, createImgproxyUrl } from '@mezon/utils';
 import { ClanEmoji } from 'mezon-js';
@@ -128,17 +128,19 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 								style={styles.imgWrapper}
 							/>
 						) : (
-							<Block
-								backgroundColor={themeValue.colorAvatarDefault}
-								overflow={'hidden'}
-								width={size.s_30}
-								height={size.s_30}
-								borderRadius={size.s_30}
-								alignItems={'center'}
-								justifyContent={'center'}
+							<View
+								style={{
+									backgroundColor: themeValue.colorAvatarDefault,
+									overflow: 'hidden',
+									width: size.s_30,
+									height: size.s_30,
+									borderRadius: size.s_30,
+									alignItems: 'center',
+									justifyContent: 'center'
+								}}
 							>
 								<Text style={styles.textAvatar}>{dataAuthor?.user?.username?.charAt?.(0)?.toUpperCase()}</Text>
-							</Block>
+							</View>
 						)}
 					</View>
 				)}

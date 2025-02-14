@@ -1,5 +1,5 @@
 import { UserGroupIcon } from '@mezon/mobile-components';
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, selectDirectById, selectDirectsUnreadlist, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -79,7 +79,7 @@ export const UnreadDMBadgeList = React.memo(() => {
 				unReadDM?.map((dm: DirectEntity, index) => {
 					return <UnreadDMBadgeItem key={`${dm?.id}_${index}`} dmId={dm?.id} numUnread={dm?.count_mess_unread || 0} />;
 				})}
-			{!!unReadDM?.length && <Block style={styles.lineBottom} />}
+			{!!unReadDM?.length && <View style={styles.lineBottom} />}
 		</View>
 	);
 });

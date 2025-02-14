@@ -1,5 +1,5 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, size, useAnimatedState, useTheme } from '@mezon/mobile-ui';
+import { size, useAnimatedState, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { getMobileUploadedAttachments } from '@mezon/utils';
@@ -10,7 +10,7 @@ import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, Keyboard, Text, TouchableOpacity } from 'react-native';
+import { Alert, DeviceEventEmitter, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { SOUND_WAVES_CIRCLE } from '../../../../../../../assets/lottie';
 import { MezonBottomSheet } from '../../../../../../componentUI';
@@ -241,19 +241,27 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 	}, []);
 	if (!isDisplay) return null;
 	return (
-		<Block>
+		<View>
 			<ModalConfirmRecord visible={isConfirmRecordModalVisible} onBack={handleBackRecord} onConfirm={handleQuitRecord} />
 			<MezonBottomSheet snapPoints={['50%']} ref={recordingBsRef} onBackdropPress={handleBackdropBS} enablePanDownToClose={false}>
-				<Block alignItems="center" justifyContent="center" paddingHorizontal={size.s_40} paddingVertical={size.s_20}>
+				<View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: size.s_40, paddingVertical: size.s_20 }}>
 					{isPreviewRecord && recordUrl ? (
 						<RenderAudioChat audioURL={recordUrl} stylesContainerCustom={styles.containerAudioCustom} styleLottie={styles.customLottie} />
 					) : (
 						<RecordingAudioMessage durationRecord={durationRecord} ref={recordingWaveRef} />
 					)}
 
-					<Block marginTop={size.s_20}>
+					<View style={{ marginTop: size.s_20 }}>
 						<Text style={styles.title}>{t('handsFreeMode')}</Text>
-						<Block flexDirection="row" alignItems="center" justifyContent="space-between" marginVertical={size.s_20} width={'80%'}>
+						<View
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								marginVertical: size.s_20,
+								width: '80%'
+							}}
+						>
 							<TouchableOpacity onPress={handleRemoveRecord} style={styles.boxIcon}>
 								<Icons.TrashIcon color={themeValue.white} />
 							</TouchableOpacity>
@@ -271,10 +279,10 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 									<Icons.RecordIcon color={themeValue.white} />
 								</TouchableOpacity>
 							)}
-						</Block>
-					</Block>
-				</Block>
+						</View>
+					</View>
+				</View>
 			</MezonBottomSheet>
-		</Block>
+		</View>
 	);
 });

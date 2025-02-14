@@ -18,7 +18,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 	};
 
 	if ((!src && !username) || isAnonymous)
-		return <img className={computedClassName} src="./assets/images/anonymous-avatar.jpg" alt={'anonymous-avatar'} {...rest} />;
+		return <img className={computedClassName} src="./assets/images/anonymous-avatar.webp" alt={'anonymous-avatar'} {...rest} />;
 
 	if (srcImgProxy && src && isError) {
 		return <img loading="lazy" className={computedClassName} src={src} alt={alt} {...rest} />;

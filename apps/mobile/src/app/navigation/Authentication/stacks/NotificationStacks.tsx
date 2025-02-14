@@ -15,7 +15,7 @@ export const NotificationStacks = ({}: any) => {
 			screenOptions={{
 				headerShown: false,
 				headerShadowVisible: false,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				gestureDirection: 'horizontal',
 				transitionSpec: {
 					open: TransitionSpecs.TransitionIOSSpec,

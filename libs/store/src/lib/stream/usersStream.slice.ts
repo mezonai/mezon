@@ -146,17 +146,13 @@ export const usersStreamActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = userStreamAdapter.getSelectors();
+const { selectAll } = userStreamAdapter.getSelectors();
 
 export const getUsersStreamState = (rootState: { [USERS_STREAM_FEATURE_KEY]: UsersStreamState }): UsersStreamState =>
 	rootState[USERS_STREAM_FEATURE_KEY];
 
 export const selectAllUsersStream = createSelector(getUsersStreamState, selectAll);
 
-export const selectUsersStreamEntities = createSelector(getUsersStreamState, selectEntities);
-
-export const selectStreamMembersByChannelId = (channelId: string) =>
-	createSelector(selectUsersStreamEntities, (entities) => {
-		const streamMembers = Object.values(entities);
-		return streamMembers.filter((member) => member && member.streaming_channel_id === channelId);
-	});
+export const selectStreamMembersByChannelId = createSelector([selectAllUsersStream, (_, channelId: string) => channelId], (entities, channelId) => {
+	return entities.filter((member) => member && member.streaming_channel_id === channelId);
+});

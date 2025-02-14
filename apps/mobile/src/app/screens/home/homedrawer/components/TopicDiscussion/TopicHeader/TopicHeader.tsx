@@ -1,11 +1,11 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, Text, size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
+import { Text, size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectCurrentTopicInitMessage } from '@mezon/store-mobile';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable } from 'react-native';
+import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonAvatar } from '../../../../../../componentUI';
 import { MessageAttachment } from '../../MessageAttachment';
@@ -62,25 +62,25 @@ const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
 	}, [userRolesClan.highestPermissionRoleColor]);
 
 	return (
-		<Block paddingHorizontal={size.s_10} paddingBottom={size.s_14} borderBottomColor={themeValue.secondaryLight} borderBottomWidth={1}>
-			<Block flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+		<View style={{ paddingHorizontal: size.s_10, paddingBottom: size.s_14, borderBottomColor: themeValue.secondaryLight, borderBottomWidth: 1 }}>
+			<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<Pressable onPress={handleBack} style={styles.backButton}>
 					<Icons.ArrowLargeLeftIcon color={themeValue.text} height={size.s_20} width={size.s_20} />
 				</Pressable>
 				<Text style={styles.title}>Topic</Text>
-				<Block width={size.s_50} />
-			</Block>
+				<View style={{ width: size.s_50 }} />
+			</View>
 			{!valueTopic ? null : (
-				<Block>
-					<Block flexDirection="row" alignItems="center" gap={size.s_10} marginVertical={size.s_10}>
+				<View>
+					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginVertical: size.s_10 }}>
 						<MezonAvatar avatarUrl={messageAvatar} username={senderDisplayName} />
-						<Block>
+						<View>
 							<Text style={styles.name} color={colorSenderName}>
 								{senderDisplayName}
 							</Text>
 							<Text style={styles.dateText}>{convertTimeString(valueTopic?.create_time)}</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 					<RenderTextMarkdownContent
 						content={{
 							...(typeof valueTopic.content === 'object' ? valueTopic.content : {}),
@@ -98,9 +98,9 @@ const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
 							createTime={valueTopic?.create_time}
 						/>
 					)}
-				</Block>
+				</View>
 			)}
-		</Block>
+		</View>
 	);
 });
 

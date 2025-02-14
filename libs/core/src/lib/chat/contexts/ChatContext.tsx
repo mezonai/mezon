@@ -166,7 +166,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const navigate = useNavigate();
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
-	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
+	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 	const userCallId = useSelector(selectUserCallId);
 	const isClanView = useSelector(selectClanView);
@@ -608,7 +608,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					const channel = { ...channel_desc, id: channel_desc.channel_id as string };
 					dispatch(channelsActions.add({ clanId: channel_desc.clan_id as string, channel: { ...channel, active: 1 } }));
 					dispatch(listChannelsByUserActions.add(channel));
-					dispatch(listChannelRenderAction.addChannelToListRender({ type: channel_desc.type, ...channel }));
+
+					if (channel_desc.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+						dispatch(listChannelRenderAction.addChannelToListRender({ type: channel_desc.type, ...channel }));
+					}
+
 					if (channel_desc.parrent_id) {
 						dispatch(
 							threadsActions.updateActiveCodeThread({

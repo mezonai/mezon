@@ -11,10 +11,11 @@ import { MessageReferences } from '../MessageReferences';
 interface RenderMessageItemRefProps {
 	message: MessagesEntity;
 	preventAction: boolean;
+	isSearchTab?: boolean;
 }
 
 export const RenderMessageItemRef = React.memo(
-	({ message, preventAction }: RenderMessageItemRefProps) => {
+	({ message, preventAction, isSearchTab }: RenderMessageItemRefProps) => {
 		const { themeValue } = useTheme();
 		const { t } = useTranslation('message');
 
@@ -30,7 +31,7 @@ export const RenderMessageItemRef = React.memo(
 
 		return (
 			<>
-				{!!messageReferences && !!messageReferences?.message_ref_id && (
+				{!!messageReferences && !!messageReferences?.message_ref_id && !isSearchTab && (
 					<MessageReferences
 						messageReferences={messageReferences}
 						preventAction={preventAction}
@@ -39,7 +40,7 @@ export const RenderMessageItemRef = React.memo(
 						clanId={message.clan_id}
 					/>
 				)}
-				{isMessageReplyDeleted ? (
+				{isMessageReplyDeleted && !isSearchTab ? (
 					<View style={styles.aboveMessageDeleteReply}>
 						<View style={styles.iconReply}>
 							<ReplyIcon width={34} height={30} style={styles.deletedMessageReplyIcon} />

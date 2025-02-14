@@ -1,4 +1,4 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByGoogleId, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { IChannelMember, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import React from 'react';
@@ -28,26 +28,28 @@ const UserVoiceItem = React.memo(({ userVoice, isCategoryExpanded, index, totalM
 	if (!isCategoryExpanded) {
 		if (index === 5) {
 			return (
-				<Block
-					left={-size.s_4 * index}
-					width={size.s_20}
-					height={size.s_20}
-					borderRadius={size.s_20}
-					backgroundColor={themeValue.primary}
-					borderWidth={1}
-					borderColor={themeValue.text}
-					alignItems={'center'}
-					justifyContent={'center'}
+				<View
+					style={{
+						left: -size.s_4 * index,
+						width: size.s_20,
+						height: size.s_20,
+						borderRadius: size.s_20,
+						backgroundColor: themeValue.primary,
+						borderWidth: 1,
+						borderColor: themeValue.text,
+						alignItems: 'center',
+						justifyContent: 'center'
+					}}
 				>
 					<Text style={styles.titleNumberMem}>+{totalMembers - 5}</Text>
-				</Block>
+				</View>
 			);
 		}
 		if (index < 5) {
 			return (
-				<Block left={-size.s_4 * index}>
+				<View style={{ left: -size.s_4 * index }}>
 					<MezonAvatar width={size.s_20} height={size.s_20} username={name || userVoice?.participant} avatarUrl={avatar} />
-				</Block>
+				</View>
 			);
 		} else {
 			return null;

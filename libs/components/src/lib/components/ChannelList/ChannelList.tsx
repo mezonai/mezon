@@ -13,6 +13,7 @@ import {
 	selectListChannelRenderByClanId,
 	selectStatusStream,
 	selectTheme,
+	selectVoiceJoined,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -74,6 +75,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 	const currentClan = useSelector(selectCurrentClan);
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const streamPlay = useSelector(selectStatusStream);
+	const isVoiceJoined = useSelector(selectVoiceJoined);
 	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
 	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
@@ -129,7 +131,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 
 	useEffect(() => {
 		calculateHeight();
-	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable]);
+	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
 
 	const findScrollIndex = () => {
 		const channelId = firstChannelWithBadgeCount?.id;

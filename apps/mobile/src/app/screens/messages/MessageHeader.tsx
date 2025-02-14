@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllFriends } from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
 import React, { useMemo } from 'react';
@@ -35,19 +35,21 @@ function MessageHeader() {
 				<Icons.UserPlusIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 				<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 				{!!quantityPendingRequest && (
-					<Block
-						backgroundColor={baseColor.redStrong}
-						width={size.s_20}
-						height={size.s_20}
-						alignItems="center"
-						justifyContent="center"
-						borderRadius={size.s_20}
-						position="absolute"
-						right={-size.s_8}
-						top={-size.s_8}
+					<View
+						style={{
+							backgroundColor: baseColor.redStrong,
+							width: size.s_20,
+							height: size.s_20,
+							alignItems: 'center',
+							justifyContent: 'center',
+							borderRadius: size.s_20,
+							position: 'absolute',
+							right: -size.s_8,
+							top: -size.s_8
+						}}
 					>
 						<Text style={styles.textQuantityPending}>{quantityPendingRequest}</Text>
-					</Block>
+					</View>
 				)}
 			</Pressable>
 		</View>

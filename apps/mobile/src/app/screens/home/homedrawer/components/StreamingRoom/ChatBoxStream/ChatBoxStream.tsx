@@ -1,4 +1,4 @@
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannel } from '@mezon/store-mobile';
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -33,31 +33,29 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 	}, []);
 
 	return (
-		<Block height={'100%'} width={'100%'}>
-			<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}>
-				<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
-					<View style={{ flex: 1 }}>
-						<ChannelMessagesWrapper
-							channelId={currentChannel?.channel_id}
-							clanId={currentChannel?.clan_id}
-							isPublic={isPublicChannel(currentChannel)}
-							mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-						/>
-					</View>
-				</PanGestureHandler>
+		<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}>
+			<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
+				<View style={{ flex: 1 }}>
+					<ChannelMessagesWrapper
+						channelId={currentChannel?.channel_id}
+						clanId={currentChannel?.clan_id}
+						isPublic={isPublicChannel(currentChannel)}
+						mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
+					/>
+				</View>
+			</PanGestureHandler>
 
-				<ChatBox
-					hiddenIcon={{
-						threadIcon: true
-					}}
-					channelId={currentChannel?.channel_id}
-					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-					onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
-					isPublic={isPublicChannel(currentChannel)}
-				/>
-				<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
-			</KeyboardAvoidingView>
-		</Block>
+			<ChatBox
+				hiddenIcon={{
+					threadIcon: true
+				}}
+				channelId={currentChannel?.channel_id}
+				mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
+				onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
+				isPublic={isPublicChannel(currentChannel)}
+			/>
+			<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+		</KeyboardAvoidingView>
 	);
 };
 

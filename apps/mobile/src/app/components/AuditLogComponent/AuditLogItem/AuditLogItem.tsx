@@ -1,10 +1,10 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectMemberClanByUserId, selectRoleByRoleId, useAppSelector } from '@mezon/store-mobile';
 import { ActionLog, convertTimeString, getAvatarForPrioritize } from '@mezon/utils';
 import { ApiAuditLog } from 'mezon-js/api.gen';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonAvatar } from '../../../componentUI';
 import { style } from './styles';
@@ -40,20 +40,22 @@ export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
 			: clanRole?.title;
 
 	return (
-		<Block
-			flexDirection="row"
-			padding={size.s_10}
-			backgroundColor={themeValue.secondary}
-			borderRadius={size.s_10}
-			gap={size.s_10}
-			alignItems="center"
-			borderWidth={1}
-			borderColor={themeValue.tertiary}
-			marginVertical={size.s_6}
+		<View
+			style={{
+				flexDirection: 'row',
+				padding: size.s_10,
+				backgroundColor: themeValue.secondary,
+				borderRadius: size.s_10,
+				gap: size.s_10,
+				alignItems: 'center',
+				borderWidth: 1,
+				borderColor: themeValue.tertiary,
+				marginVertical: size.s_6
+			}}
 		>
 			<MezonAvatar avatarUrl={avatar} username={username} height={size.s_36} width={size.s_36} />
-			<Block flex={1}>
-				<Block>
+			<View style={{ flex: 1 }}>
+				<View>
 					{isChannelAction && data?.channel_id !== '0' ? (
 						<Text style={styles.actionText}>
 							<Text style={styles.username}>{username}</Text>{' '}
@@ -74,9 +76,9 @@ export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
 							</Text>
 						</Text>
 					)}
-				</Block>
+				</View>
 				<Text style={styles.textTime}>{auditLogTime}</Text>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 });

@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, FilterSearchIcon, Icons, IOption, IUerMention } from '@mezon/mobile-components';
-import { Block, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -77,21 +77,23 @@ const InputSearchMessageChannel = ({
 				<ArrowLeftIcon width={20} height={20} color={Colors.textGray} />
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
-				<Block marginRight={size.s_6}>
+				<View style={{ marginRight: size.s_6 }}>
 					<Icons.MagnifyingIcon width={20} height={20} color={Colors.textGray} />
-				</Block>
+				</View>
 				{optionFilter?.title || userMention?.display ? (
-					<Block
-						backgroundColor={themeValue.badgeHighlight}
-						borderRadius={size.s_18}
-						paddingHorizontal={size.s_10}
-						paddingVertical={size.s_2}
-						maxWidth={200}
+					<View
+						style={{
+							backgroundColor: themeValue.badgeHighlight,
+							borderRadius: size.s_18,
+							paddingHorizontal: size.s_10,
+							paddingVertical: size.s_2,
+							maxWidth: 200
+						}}
 					>
 						<Text numberOfLines={1} style={styles.textBadgeHighLight}>
 							{`${optionFilter?.title || ''} ${userMention?.display || ''}`}
 						</Text>
-					</Block>
+					</View>
 				) : null}
 				<TextInput
 					onKeyPress={onKeyPress}

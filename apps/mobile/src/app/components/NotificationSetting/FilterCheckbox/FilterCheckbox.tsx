@@ -1,5 +1,5 @@
 import { IOptionsNotification } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ENotificationTypes } from '@mezon/utils';
 import React from 'react';
 import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -24,14 +24,12 @@ const FilterCheckbox: React.FC<FilterCheckboxProps> = React.memo(({ item, defaul
 	return (
 		<TouchableOpacity activeOpacity={0.6} onPress={handleCheckboxPress} style={[styles.option, customStyles]}>
 			<View>
-				<Block style={[leftIcon ? styles.leftIcon : {}]}>
+				<View style={[leftIcon ? styles.leftIcon : {}]}>
 					{leftIcon && (
-						<Block width={20} height={20} marginRight={size.s_10} flexDirection="row" alignItems="center">
-							{leftIcon}
-						</Block>
+						<View style={{ width: 20, height: 20, marginRight: size.s_10, flexDirection: 'row', alignItems: 'center' }}>{leftIcon}</View>
 					)}
 					<Text style={styles.labelOption}>{item?.label}</Text>
-				</Block>
+				</View>
 				{[ENotificationTypes.DEFAULT].includes?.(item?.value) && <Text style={styles.defaultNotifyName}>{defaultNotifyName}</Text>}
 			</View>
 

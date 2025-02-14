@@ -1,4 +1,4 @@
-import { ChannelList, ChannelTopbar, ClanHeader, FooterProfile, StreamInfo, UpdateButton } from '@mezon/components';
+import { ChannelList, ChannelTopbar, ClanHeader, FooterProfile, StreamInfo, UpdateButton, VoiceInfo } from '@mezon/components';
 import { useApp } from '@mezon/core';
 import {
 	ChannelsEntity,
@@ -17,6 +17,7 @@ import {
 	selectIsShowCreateTopic,
 	selectStatusMenu,
 	selectVoiceFullScreen,
+	selectVoiceJoined,
 	topicsActions,
 	useAppDispatch,
 	voiceActions
@@ -100,6 +101,7 @@ const ClanLayout = () => {
 		dispatch(topicsActions.setFocusTopicBox(true));
 	};
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
+	const isVoiceJoined = useSelector(selectVoiceJoined);
 
 	return (
 		<>
@@ -111,6 +113,7 @@ const ClanLayout = () => {
 				<div id="clan-footer">
 					{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 					{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
+					{isVoiceJoined && <VoiceInfo />}
 					{(isElectronUpdateAvailable || IsElectronDownloading) && <UpdateButton isDownloading={!isElectronUpdateAvailable} />}
 					<div style={{ height: 56, width: '100%' }}>
 						<FooterProfile

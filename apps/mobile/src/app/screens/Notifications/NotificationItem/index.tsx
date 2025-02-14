@@ -1,7 +1,8 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useMemo } from 'react';
 
 import { NotificationCode } from '@mezon/utils';
+import { View } from 'react-native';
 import NotificationIndividualItem from '../NotificationIndividualItem';
 import NotificationMentionItem from '../NotificationMentionItem';
 import NotificationTopicItem from '../NotificationTopicItem';
@@ -29,7 +30,7 @@ const NotificationItem = React.memo(({ notify, onLongPressNotify, onPressNotify 
 
 	const isNotificationWebhookClan = useMemo(() => notify?.code === NotificationCode.NOTIFICATION_CLAN, [notify]);
 	return (
-		<Block borderBottomWidth={size.s_2} borderBottomColor={themeValue.secondaryLight} paddingTop={size.s_6}>
+		<View style={{ borderBottomWidth: size.s_2, borderBottomColor: themeValue.secondaryLight, paddingTop: size.s_6 }}>
 			{isNotificationIndividual ? (
 				<NotificationIndividualItem onPressNotify={onPressNotify} notify={notify} onLongPressNotify={onLongPressNotify} />
 			) : null}
@@ -38,7 +39,7 @@ const NotificationItem = React.memo(({ notify, onLongPressNotify, onPressNotify 
 			) : null}
 			{isNotificationTopicItem ? <NotificationTopicItem onPressNotify={onPressNotify} notify={notify} /> : null}
 			{isNotificationWebhookClan && <NotificationWebhookClan notify={notify}></NotificationWebhookClan>}
-		</Block>
+		</View>
 	);
 });
 

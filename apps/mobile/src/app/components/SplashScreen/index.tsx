@@ -1,10 +1,11 @@
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import React from 'react';
+import { View } from 'react-native';
 
 const SplashScreen = () => {
 	const { themeValue } = useTheme();
 
-	return <Block backgroundColor={themeValue.secondary} />;
+	return <View style={{ backgroundColor: themeValue.secondary }} />;
 };
 
 export default SplashScreen;

@@ -1,6 +1,6 @@
 import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	deleteChannel,
@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonBottomSheet, MezonConfirm, MezonMenu } from '../../componentUI';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import CustomGroupDm from './CustomGroupDm';
@@ -94,7 +95,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	};
 
 	return (
-		<Block paddingVertical={size.s_10} paddingHorizontal={size.s_20}>
+		<View style={{ paddingVertical: size.s_10, paddingHorizontal: size.s_20 }}>
 			{[ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel.type) ? <MezonMenu menu={generalMenu} /> : <MezonMenu menu={closeDm} />}
 			<MezonBottomSheet snapPoints={['70%']} ref={bottomSheetCustomGroup}>
 				<CustomGroupDm dmGroupId={currentChannel?.id} channelLabel={channelLabel} />
@@ -114,7 +115,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 				})}
 				confirmText={t('confirm.confirmText', { ns: 'dmMessage' })}
 			/>
-		</Block>
+		</View>
 	);
 };
 export default MenuCustomDm;

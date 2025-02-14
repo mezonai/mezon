@@ -1,4 +1,4 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, View } from 'react-native';
 import { IUserProfileValue } from '../../..';
@@ -39,7 +39,7 @@ export default function DetailInfo({ value, onChange }: IDetailInfoProps) {
 					label={t('fields.bio.label')}
 				/>
 			</View>
-			{Platform.OS === 'ios' && <Block height={size.s_50 * 2} />}
+			{Platform.OS === 'ios' && <View style={{ height: size.s_50 * 2 }} />}
 		</View>
 	);
 }

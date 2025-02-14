@@ -60,7 +60,7 @@ const SuggestItem = ({
 	const commonChannels = useSelector(selectAllHashtagDm);
 	const theme = useSelector(selectTheme);
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
-	const numberMembersVoice = useSelector(selectNumberMemberVoiceChannel(channelId as string));
+	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string));
 	const checkVoiceStatus = useMemo(() => {
 		if (channelId !== undefined && numberMembersVoice && specificChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
 			return numberMembersVoice >= 2;

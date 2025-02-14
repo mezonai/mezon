@@ -1,11 +1,12 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, debounce } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
-import { RolesClanEntity, UsersClanEntity } from '@mezon/store-mobile';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { RolesClanEntity } from '@mezon/store-mobile';
+import { UsersClanEntity } from '@mezon/utils';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { MezonInput } from '../../../../../componentUI';
 import { normalizeString } from '../../../../../utils/helpers';
@@ -72,8 +73,8 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 	}, [updateRole, role?.clan_id, role?.id, role?.title, role?.color, selectedMemberIdList, onClose, t]);
 
 	return (
-		<Block flex={1} paddingHorizontal={size.s_15}>
-			<Block marginBottom={size.s_14}>
+		<View style={{ flex: 1, paddingHorizontal: size.s_15 }}>
+			<View style={{ marginBottom: size.s_14 }}>
 				<Text center color={themeValue.white} h3>
 					{t('setupMember.addMember')}
 				</Text>
@@ -81,15 +82,15 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 					{role?.title}
 				</Text>
 				{selectedMemberIdList?.length ? (
-					<Block position="absolute" right={0}>
+					<View style={{ position: 'absolute', right: 0 }}>
 						<TouchableOpacity onPress={handleAddMemberToRole} style={{ padding: size.s_6 }}>
 							<Text color={Colors.textViolet} h5>
 								{t('setupMember.add')}
 							</Text>
 						</TouchableOpacity>
-					</Block>
+					</View>
 				) : null}
-			</Block>
+			</View>
 			<MezonInput onTextChange={debouncedSetSearchText} placeHolder={t('setupMember.searchMembers')} />
 			{filteredMemberList?.length ? (
 				<BottomSheetFlatList
@@ -108,12 +109,12 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 					}}
 				/>
 			) : (
-				<Block>
+				<View>
 					<Text center color={themeValue.text}>
 						{t('setupMember.noMembersFound')}
 					</Text>
-				</Block>
+				</View>
 			)}
-		</Block>
+		</View>
 	);
 });

@@ -1,8 +1,8 @@
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { AttachmentEntity } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useEffect, useRef } from 'react';
-import { Animated, TouchableOpacity } from 'react-native';
+import { Animated, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { getAspectRatioSize, useImageResolution } from 'react-native-zoom-toolkit';
 import { style } from './styles';
@@ -48,7 +48,7 @@ export const RenderFooterModal = memo((props: IRenderFooterModalProps) => {
 		const isSelected = item?.id === imageSelected?.id;
 		return (
 			<TouchableOpacity onPress={() => handlePress(item)}>
-				<Block style={[styles.imageWrapper, isSelected && [styles.imageSelected, { width: imageSize.width }]]}>
+				<View style={[styles.imageWrapper, isSelected && [styles.imageSelected, { width: imageSize.width }]]}>
 					<FastImage
 						source={{
 							uri: createImgproxyUrl(item?.url ?? '', { width: 50, height: 50, resizeType: 'fit' })
@@ -56,24 +56,26 @@ export const RenderFooterModal = memo((props: IRenderFooterModalProps) => {
 						style={[styles.image]}
 						resizeMode={imageSelected ? 'cover' : 'contain'}
 					/>
-				</Block>
+				</View>
 			</TouchableOpacity>
 		);
 	};
 	return (
-		<Block
-			position="absolute"
-			bottom={0}
-			left={0}
-			zIndex={1}
-			justifyContent="space-between"
-			flexDirection="row"
-			backgroundColor="rgba(0, 0, 0, 0.4)"
-			width="100%"
-			height={visible ? size.s_100 : 0}
-			alignItems="center"
+		<View
+			style={{
+				position: 'absolute',
+				bottom: 0,
+				left: 0,
+				zIndex: 1,
+				justifyContent: 'space-between',
+				flexDirection: 'row',
+				backgroundColor: 'rgba(0, 0, 0, 0.4)',
+				width: '100%',
+				height: visible ? size.s_100 : 0,
+				alignItems: 'center'
+			}}
 		>
-			<Block>
+			<View>
 				<Animated.FlatList
 					horizontal
 					ref={flatListRef}
@@ -83,7 +85,7 @@ export const RenderFooterModal = memo((props: IRenderFooterModalProps) => {
 					showsHorizontalScrollIndicator={false}
 					decelerationRate="fast"
 				/>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 });

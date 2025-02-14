@@ -2,14 +2,16 @@ import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT, remove
 import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { sleep } from '@mezon/utils';
 import notifee from '@notifee/react-native';
-import React, { useEffect } from 'react';
-import { Platform, StatusBar, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect } from 'react';
+import {Platform, StatusBar, View} from 'react-native';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import HomeDefault from './HomeDefault';
+import SwipeBackContainer from './SwipeBackContainer';
 
 const HomeDefaultWrapper = React.memo((props: any) => {
 	const { themeValue, themeBasic } = useTheme();
-
+	const navigation = useNavigation<any>();
 	useEffect(() => {
 		initLoader();
 	}, []);
@@ -39,11 +41,15 @@ const HomeDefaultWrapper = React.memo((props: any) => {
 		}
 	};
 
+	const handleBack = useCallback(() => {
+		navigation.goBack();
+	}, []);
+
 	return (
-		<View style={{ flex: 1 }}>
+		<SwipeBackContainer handleBack={handleBack}>
 			<StatusBarHeight />
 			<HomeDefault {...props} />
-		</View>
+		</SwipeBackContainer>
 	);
 });
 

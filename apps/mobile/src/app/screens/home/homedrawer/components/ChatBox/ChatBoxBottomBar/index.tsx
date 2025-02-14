@@ -9,14 +9,14 @@ import {
 	mentionRegexSplit,
 	save
 } from '@mezon/mobile-components';
-import { Block, Colors, size } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import { RootState, emojiSuggestionActions, selectAllChannels, selectAllHashtagDm, threadsActions, useAppDispatch } from '@mezon/store-mobile';
 import { IHashtagOnMessage, IMentionOnMessage, MIN_THRESHOLD_CHARS, MentionDataProps } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, TextInput } from 'react-native';
+import { DeviceEventEmitter, TextInput, View } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
 import { useStore } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
@@ -456,7 +456,11 @@ export const ChatBoxBottomBar = memo(
 		}, [handleEventAfterEmojiPicked]);
 
 		return (
-			<Block paddingHorizontal={size.s_2}>
+			<View
+				style={{
+					paddingHorizontal: size.s_2
+				}}
+			>
 				{triggers?.mention?.keyword !== undefined && (
 					<Suggestions
 						{...triggers.mention}
@@ -469,13 +473,15 @@ export const ChatBoxBottomBar = memo(
 				{triggers?.emoji?.keyword !== undefined && <EmojiSuggestion {...triggers.emoji} />}
 				<AttachmentPreview channelId={channelId} />
 				<ChatBoxListener mode={mode} />
-				<Block
-					flexDirection="row"
-					justifyContent="space-between"
-					alignItems="center"
-					paddingBottom={size.s_20}
-					paddingTop={size.s_10}
-					paddingLeft={size.s_4}
+				<View
+					style={{
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+						paddingBottom: size.s_20,
+						paddingTop: size.s_10,
+						paddingLeft: size.s_4
+					}}
 				>
 					<ChatMessageLeftArea
 						isShowAttachControl={isShowAttachControl}
@@ -512,8 +518,8 @@ export const ChatBoxBottomBar = memo(
 						isShowCreateThread={!hiddenIcon?.threadIcon}
 						isPublic={isPublic}
 					/>
-				</Block>
-			</Block>
+				</View>
+			</View>
 		);
 	}
 );

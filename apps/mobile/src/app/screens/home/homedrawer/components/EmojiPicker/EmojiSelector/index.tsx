@@ -1,4 +1,4 @@
-import { Block, Colors, size, useAnimatedState } from '@mezon/mobile-ui';
+import { Colors, size, useAnimatedState } from '@mezon/mobile-ui';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
@@ -41,9 +41,9 @@ export default function EmojiSelector({
 					isReactMessage={isReactMessage}
 				/>
 			) : (
-				<Block justifyContent={'center'} alignItems={'center'} paddingTop={size.s_40}>
+				<View style={{ justifyContent: 'center', alignItems: 'center', paddingTop: size.s_40 }}>
 					<Flow color={Colors.bgViolet} />
-				</Block>
+				</View>
 			)}
 		</View>
 	);

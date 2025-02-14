@@ -1,5 +1,6 @@
-import { Block, Metrics, size, useTheme } from '@mezon/mobile-ui';
+import { Metrics, size, useTheme } from '@mezon/mobile-ui';
 import React from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import { style } from './styles';
@@ -8,23 +9,23 @@ export default function SkeletonNotification({ numberSkeleton }: { numberSkeleto
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	return (
-		<Block paddingHorizontal={Metrics.size.m} flex={1}>
+		<View style={{ paddingHorizontal: Metrics.size.m, flex: 1 }}>
 			{Array.from({ length: numberSkeleton }).map((_, index) => (
-				<Block key={`ChannelListSkeleton_${index}`} flexDirection="row" justifyContent="space-between" gap={size.s_20}>
+				<View key={`ChannelListSkeleton_${index}`} style={{ flexDirection: 'row', justifyContent: 'space-between', gap: size.s_20 }}>
 					<ShimmerPlaceHolder
 						shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 						shimmerStyle={styles.avatar}
 						LinearGradient={LinearGradient}
 					/>
 
-					<Block flex={1}>
+					<View style={{ flex: 1 }}>
 						<ShimmerPlaceHolder
 							shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 							shimmerStyle={styles.normalText}
 							LinearGradient={LinearGradient}
 						/>
 						{index % 2 ? (
-							<Block>
+							<View>
 								<ShimmerPlaceHolder
 									shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 									shimmerStyle={styles.mediumText}
@@ -35,9 +36,9 @@ export default function SkeletonNotification({ numberSkeleton }: { numberSkeleto
 									shimmerStyle={styles.smallText}
 									LinearGradient={LinearGradient}
 								/>
-							</Block>
+							</View>
 						) : (
-							<Block>
+							<View>
 								<ShimmerPlaceHolder
 									shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 									shimmerStyle={styles.smallText}
@@ -53,16 +54,16 @@ export default function SkeletonNotification({ numberSkeleton }: { numberSkeleto
 									shimmerStyle={styles.mediumText}
 									LinearGradient={LinearGradient}
 								/>
-							</Block>
+							</View>
 						)}
-					</Block>
+					</View>
 					<ShimmerPlaceHolder
 						shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 						shimmerStyle={{ ...styles.avatar, width: size.s_30, height: size.s_30 }}
 						LinearGradient={LinearGradient}
 					/>
-				</Block>
+				</View>
 			))}
-		</Block>
+		</View>
 	);
 }

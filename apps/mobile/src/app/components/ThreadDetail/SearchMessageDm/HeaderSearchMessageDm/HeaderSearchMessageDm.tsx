@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Pressable, TextInput, TouchableOpacity, View } from 'react-native';
@@ -28,14 +28,14 @@ export default function HeaderSearchMessageDm({ onChangeText }: { onChangeText: 
 	};
 
 	return (
-		<Block paddingHorizontal={size.s_10} paddingVertical={size.s_20} flexDirection="row" alignItems="center" gap={size.s_20}>
+		<View style={{ paddingHorizontal: size.s_10, paddingVertical: size.s_20, flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 			<TouchableOpacity onPress={onGoBack}>
 				<ArrowLeftIcon width={20} height={20} color={themeValue.text} />
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
-				<Block marginRight={size.s_6}>
+				<View style={{ marginRight: size.s_6 }}>
 					<Icons.MagnifyingIcon width={20} height={20} color={themeValue.text} />
-				</Block>
+				</View>
 				<TextInput
 					value={textInput}
 					onChangeText={handleTextChange}
@@ -43,13 +43,13 @@ export default function HeaderSearchMessageDm({ onChangeText }: { onChangeText: 
 					placeholderTextColor={themeValue.text}
 					placeholder={'search'}
 					autoFocus
-				></TextInput>
+				/>
 				{textInput?.length ? (
 					<Pressable onPress={() => clearTextInput()}>
 						<Icons.CircleXIcon height={18} width={18} color={themeValue.text} />
 					</Pressable>
 				) : null}
 			</View>
-		</Block>
+		</View>
 	);
 }

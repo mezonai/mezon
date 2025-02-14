@@ -1,10 +1,10 @@
 import { usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, reserve } from '../../componentUI';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
@@ -180,11 +180,11 @@ export function ClanSetting({ navigation, route }: MenuClanScreenProps<ClanSetti
 	];
 
 	return (
-		<Block flex={1} backgroundColor={themeValue.secondary}>
+		<View style={{ flex: 1, backgroundColor: themeValue.secondary }}>
 			<ScrollView contentContainerStyle={styles.container} style={{ flex: 1, backgroundColor: themeValue.primary }}>
 				<LogoClanSelector />
 				<MezonMenu menu={menu} />
 			</ScrollView>
-		</Block>
+		</View>
 	);
 }

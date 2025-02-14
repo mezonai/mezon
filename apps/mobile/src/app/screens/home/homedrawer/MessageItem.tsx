@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, load, STORAGE_MY_USER_ID, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
-import { Block, Text, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, messagesActions, MessagesEntity, seenMessagePool, useAppDispatch } from '@mezon/store-mobile';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Text, useTheme } from '@mezon/mobile-ui';
+import { ChannelsEntity, MessagesEntity, useAppDispatch } from '@mezon/store-mobile';
+import React, { useCallback, useState } from 'react';
 import { Animated, DeviceEventEmitter, PanResponder, Pressable, View } from 'react-native';
 import { EmbedMessage, MessageAction, RenderTextMarkdownContent } from './components';
 import { EMessageActionType, EMessageBSToShow } from './enums';
@@ -41,13 +41,14 @@ export type MessageItemProps = {
 	currentClanId?: string;
 	showUserInformation?: boolean;
 	preventAction?: boolean;
+	isSearchTab?: boolean;
 };
 
 const MessageItem = React.memo(
 	(props: MessageItemProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const { mode, isNumberOfLine, showUserInformation = false, preventAction = false, channelId = '' } = props;
+		const { mode, isNumberOfLine, showUserInformation = false, preventAction = false, channelId = '', isSearchTab = false } = props;
 		const dispatch = useAppDispatch();
 		const { t } = useTranslation('message');
 		const message: MessagesEntity = props?.message;
@@ -55,33 +56,17 @@ const MessageItem = React.memo(
 		const [showHighlightReply, setShowHighlightReply] = useState(false);
 		const { t: contentMessage, lk = [] } = message?.content || {};
 
-		const isInviteLink = useMemo(() => {
-			if (!lk) return false;
-			return Array.isArray(lk) && validLinkInviteRegex.test(contentMessage);
-		}, [contentMessage, lk]);
-
-		const isMessageCallLog = useMemo(() => {
-			return !!message?.content?.callLog;
-		}, [message?.content?.callLog]);
-
-		const isGoogleMapsLink = useMemo(() => {
-			if (!lk) return false;
-			return Array.isArray(lk) && validLinkGoogleMapRegex.test(contentMessage);
-		}, [contentMessage, lk]);
+		const isInviteLink = Array.isArray(lk) && validLinkInviteRegex.test(contentMessage);
+		const isMessageCallLog = !!message?.content?.callLog;
+		const isGoogleMapsLink = Array.isArray(lk) && validLinkGoogleMapRegex.test(contentMessage);
 		const timeoutRef = useRef<NodeJS.Timeout>(null);
-		const checkAnonymous = useMemo(() => message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.sender_id]);
-		const checkSystem = useMemo(() => {
-			return message?.sender_id === '0' && message?.username?.toLowerCase() === 'system';
-		}, [message?.sender_id, message?.username]);
-
-		const isMessageSystem = useMemo(
-			() =>
-				message?.code === TypeMessage.Welcome ||
-				message?.code === TypeMessage.CreateThread ||
-				message?.code === TypeMessage.CreatePin ||
-				message?.code === TypeMessage.AuditLog,
-			[message?.code]
-		);
+		const checkAnonymous = message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+		const checkSystem = message?.sender_id === '0' && message?.username?.toLowerCase() === 'system';
+		const isMessageSystem =
+			message?.code === TypeMessage.Welcome ||
+			message?.code === TypeMessage.CreateThread ||
+			message?.code === TypeMessage.CreatePin ||
+			message?.code === TypeMessage.AuditLog;
 
 		const translateX = useRef(new Animated.Value(0)).current;
 		const onReplyMessage = useCallback(() => {
@@ -94,105 +79,72 @@ const MessageItem = React.memo(
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, payload);
 		}, []);
 
-		const hasIncludeMention = useMemo(() => {
-			const userId = load(STORAGE_MY_USER_ID);
+		const userId = load(STORAGE_MY_USER_ID);
+		const hasIncludeMention = userId
+			? message?.content?.t?.includes('@here') ||
+				message?.mentions?.some((mention) => mention?.user_id === userId) ||
+				message?.references?.[0]?.message_sender_id === userId
+			: false;
 
-			if (!userId) return false;
-			const hasHereMention = message?.content?.t?.includes('@here') ?? false;
-			const hasUserMention = message?.mentions?.some?.((mention) => mention?.user_id === userId);
-			const isReplyToUser = message?.references?.[0]?.message_sender_id === userId;
+		const isSameUser = message?.user?.id === previousMessage?.user?.id;
 
-			return hasHereMention || hasUserMention || isReplyToUser;
-		}, [message?.mentions, message?.content?.t, message?.references]);
+		const isTimeGreaterThan5Minutes =
+			message?.create_time && previousMessage?.create_time
+				? Date.parse(message.create_time) - Date.parse(previousMessage.create_time) < 2 * 60 * 1000
+				: false;
 
-		const isSameUser = useMemo(() => {
-			return message?.user?.id === previousMessage?.user?.id;
-		}, [message?.user?.id, previousMessage?.user?.id]);
-
-		const isTimeGreaterThan5Minutes = useMemo(() => {
-			if (message?.create_time && previousMessage?.create_time) {
-				return Date.parse(message.create_time) - Date.parse(previousMessage?.create_time) < 2 * 60 * 1000;
-			}
-			return false;
-		}, [message?.create_time, previousMessage?.create_time]);
-
-		const isBuzzMessage = useMemo(() => {
-			return message?.code === TypeMessage.MessageBuzz;
-		}, [message?.code]);
+		const isBuzzMessage = message?.code === TypeMessage.MessageBuzz;
 
 		const isCombine = isSameUser && isTimeGreaterThan5Minutes;
 		const backgroundColor = React.useRef(new Animated.Value(0)).current;
 
-		const isDM = useMemo(() => {
-			return [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
-		}, [mode]);
+		const isDM = [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
 
-		const messageAvatar = useMemo(() => {
-			if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) {
-				return message?.clan_avatar || message?.avatar;
-			}
-			return message?.avatar;
-		}, [message?.clan_avatar, message?.avatar, mode]);
+		const messageAvatar =
+			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
+				? message?.clan_avatar || message?.avatar
+				: message?.avatar;
 
-		const checkOneLinkImage = useMemo(() => {
-			return (
-				message?.attachments?.length === 1 &&
-				message?.attachments[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
-				message?.attachments[0].url === message?.content?.t?.trim()
-			);
-		}, [message?.attachments, message?.content?.t]);
+		const checkOneLinkImage =
+			message?.attachments?.length === 1 &&
+			message?.attachments[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
+			message?.attachments[0].url === message?.content?.t?.trim();
 
-		const isOnlyContainEmoji = useMemo(() => {
-			return isValidEmojiData(message.content);
-		}, [message.content]);
+		const isOnlyContainEmoji = isValidEmojiData(message.content);
 
-		const isEdited = useMemo(() => {
-			if (message?.update_time && !message.isError && !message.isErrorRetry) {
-				const updateDate = new Date(message?.update_time);
-				const createDate = new Date(message?.create_time);
-				return updateDate > createDate;
-			} else if (message.hide_editted === false && !!message?.content?.t) {
-				return true;
-			}
-			return false;
-		}, [message?.update_time, message.isError, message.isErrorRetry, message.hide_editted, message?.content?.t, message?.create_time]);
+		const isEdited =
+			message?.update_time && !message.isError && !message.isErrorRetry
+				? new Date(message?.update_time) > new Date(message?.create_time)
+				: message.hide_editted === false && !!message?.content?.t;
 
-		useEffect(() => {
-			const event = DeviceEventEmitter.addListener(ActionEmitEvent.MESSAGE_ID_TO_JUMP, (msgId: string) => {
-				if (msgId === message?.id) {
-					setShowHighlightReply(true);
-					timeoutRef.current = setTimeout(() => {
-						setShowHighlightReply(false);
-						dispatch(messagesActions.setIdMessageToJump(null));
-					}, 3000);
-				} else {
-					setShowHighlightReply(false);
-					timeoutRef.current && clearTimeout(timeoutRef.current);
-				}
-			});
+		const senderDisplayName = isDM
+			? message?.display_name || message?.username || ''
+			: message?.clan_nick || message?.display_name || message?.user?.username || (checkAnonymous ? 'Anonymous' : message?.username);
 
-			return () => {
-				event.remove();
-				timeoutRef.current && clearTimeout(timeoutRef.current);
-			};
-		}, [dispatch, message?.id]);
+		const usernameMessage = isDM ? message?.display_name || message?.user?.username : message?.user?.username;
 
-		useEffect(() => {
-			if (props?.messageId || message?.id) {
-				if (message.isSending || message.isError || message.isErrorRetry) {
-					return;
-				}
-				seenMessagePool.addSeenMessage({
-					clanId: message.clan_id || '',
-					channelId: message.channel_id || '',
-					channelLabel: message.channel_label,
-					messageId: message.id || '',
-					messageCreatedAt: message.create_time_seconds ? +message.create_time_seconds : 0,
-					messageSeenAt: +Date.now(),
-					mode: message.mode as number
-				});
-			}
-		}, [message, props.messageId]);
+		const isSendTokenLog = message?.code === TypeMessage.SendToken;
+
+		// move to parent
+		// useEffect(() => {
+		// 	const event = DeviceEventEmitter.addListener(ActionEmitEvent.MESSAGE_ID_TO_JUMP, (msgId: string) => {
+		// 		if (msgId === message?.id) {
+		// 			setShowHighlightReply(true);
+		// 			timeoutRef.current = setTimeout(() => {
+		// 				setShowHighlightReply(false);
+		// 				dispatch(messagesActions.setIdMessageToJump(null));
+		// 			}, 3000);
+		// 		} else {
+		// 			setShowHighlightReply(false);
+		// 			timeoutRef.current && clearTimeout(timeoutRef.current);
+		// 		}
+		// 	});
+
+		// 	return () => {
+		// 		event.remove();
+		// 		timeoutRef.current && clearTimeout(timeoutRef.current);
+		// 	};
+		// }, [dispatch, message?.id]);
 
 		const onLongPressImage = useCallback(() => {
 			if (preventAction) return;
@@ -224,21 +176,6 @@ const MessageItem = React.memo(
 		const onChannelMention = useCallback(async (channel: ChannelsEntity) => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, channel);
 		}, []);
-
-		const senderDisplayName = useMemo(() => {
-			if (isDM) {
-				return message?.display_name || message?.username || '';
-			}
-			return message?.clan_nick || message?.display_name || message?.user?.username || (checkAnonymous ? 'Anonymous' : message?.username);
-		}, [checkAnonymous, message?.clan_nick, message?.user?.username, message?.username, message?.display_name, isDM]);
-
-		const usernameMessage = useMemo(() => {
-			return isDM ? message?.display_name || message?.user?.username : message?.user?.username;
-		}, [isDM, message?.display_name, message?.user?.username]);
-
-		const isSendTokenLog = useMemo(() => {
-			return message?.code === TypeMessage.SendToken;
-		}, [message?.code]);
 
 		const handleLongPressMessage = useCallback(() => {
 			if (preventAction) return;
@@ -312,7 +249,7 @@ const MessageItem = React.memo(
 						showHighlightReply && styles.highlightMessageMention
 					]}
 				>
-					<RenderMessageItemRef message={message} preventAction={preventAction} />
+					<RenderMessageItemRef message={message} preventAction={preventAction} isSearchTab={isSearchTab} />
 					<View style={[styles.wrapperMessageBox, !isCombine && styles.wrapperMessageBoxCombine]}>
 						<AvatarMessage
 							onPress={onPressInfoUser}
@@ -339,14 +276,14 @@ const MessageItem = React.memo(
 								mode={mode}
 							/>
 
-							<Block {...(message?.content?.fwd && { display: 'flex' })}>
-								<Block {...(message?.content?.fwd && { borderLeftWidth: 2, borderColor: 'gray', paddingLeft: 10 })}>
+							<View style={message?.content?.fwd ? { display: 'flex' } : undefined}>
+								<View style={message?.content?.fwd ? { borderLeftWidth: 2, borderColor: 'gray', paddingLeft: 10 } : undefined}>
 									{!!message?.content?.fwd && (
 										<Text style={styles.forward}>
 											<Entypo name="forward" size={15} /> Forwarded
 										</Text>
 									)}
-									<Block opacity={message.isError || message?.isErrorRetry ? 0.6 : 1}>
+									<View style={{ opacity: message.isError || message?.isErrorRetry ? 0.6 : 1 }}>
 										{isInviteLink || isGoogleMapsLink ? (
 											<RenderMessageBlock
 												isGoogleMapsLink={isGoogleMapsLink}
@@ -396,7 +333,7 @@ const MessageItem = React.memo(
 													channelId={message?.channel_id || ''}
 												/>
 											))}
-									</Block>
+									</View>
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment
 											attachments={message?.attachments}
@@ -405,8 +342,8 @@ const MessageItem = React.memo(
 											onLongPressImage={onLongPressImage}
 										/>
 									)}
-								</Block>
-							</Block>
+								</View>
+							</View>
 							{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
 							{!preventAction ? (
 								<MessageAction

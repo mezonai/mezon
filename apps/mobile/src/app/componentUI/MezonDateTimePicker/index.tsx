@@ -1,6 +1,6 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { getNearTime } from '@mezon/mobile-components';
-import { Block, Colors, ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import DatePicker from 'react-native-date-picker';
@@ -116,10 +116,10 @@ export default memo(function MezonDateTimePicker({
 				}
 			>
 				{error && (
-					<Block backgroundColor={Colors.textRed} marginHorizontal={size.s_20} padding={size.s_10} borderRadius={size.s_8}>
+					<View style={{ backgroundColor: Colors.textRed, marginHorizontal: size.s_20, padding: size.s_10, borderRadius: size.s_8 }}>
 						<Text style={styles.textError}>{error}</Text>
-						{<Text style={styles.textError}>{formatDate(new Date())}</Text>}
-					</Block>
+						<Text style={styles.textError}>{formatDate(new Date())}</Text>
+					</View>
 				)}
 				<View style={styles.bsContainer}>
 					<DatePicker

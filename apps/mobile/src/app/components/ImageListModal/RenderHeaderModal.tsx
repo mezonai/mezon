@@ -1,9 +1,9 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectDmGroupCurrentId, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { convertTimeString } from '@mezon/utils';
 import React from 'react';
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonClanAvatar } from '../../componentUI';
 import { useImage } from '../../hooks/useImage';
@@ -42,30 +42,32 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 	};
 
 	return (
-		<Block
-			position="absolute"
-			paddingTop={Platform.OS === 'ios' ? size.s_40 : size.s_30}
-			left={0}
-			zIndex={1}
-			justifyContent="space-between"
-			flexDirection="row"
-			backgroundColor="rgba(0, 0, 0, 0.4)"
-			width="100%"
-			padding={size.s_10}
-			alignItems="center"
+		<View
+			style={{
+				position: 'absolute',
+				paddingTop: Platform.OS === 'ios' ? size.s_40 : size.s_30,
+				left: 0,
+				zIndex: 1,
+				justifyContent: 'space-between',
+				flexDirection: 'row',
+				backgroundColor: 'rgba(0, 0, 0, 0.4)',
+				width: '100%',
+				padding: size.s_10,
+				alignItems: 'center'
+			}}
 		>
-			<Block flexDirection="row" alignItems="center" gap={size.s_10}>
+			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 				<TouchableOpacity onPress={onClose}>
 					<Icons.ArrowLargeLeftIcon color={Colors.white} />
 				</TouchableOpacity>
 				{!!uploader && (
-					<Block flexDirection={'row'} alignItems={'center'} gap={size.s_6}>
-						<Block style={styles.wrapperAvatar}>
+					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6 }}>
+						<View style={styles.wrapperAvatar}>
 							<MezonClanAvatar
 								image={currentDirectId ? uploader?.user?.avatar_url : uploader?.clan_avatar || uploader?.user?.avatar_url}
 							/>
-						</Block>
-						<Block style={styles.messageBoxTop}>
+						</View>
+						<View style={styles.messageBoxTop}>
 							<Text style={styles.usernameMessageBox}>
 								{(currentDirectId
 									? uploader?.user?.display_name || uploader?.user?.username
@@ -74,13 +76,13 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 							<Text style={styles.dateMessageBox}>
 								{imageSelected?.create_time ? convertTimeString(imageSelected?.create_time) : ''}
 							</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 				)}
-			</Block>
+			</View>
 			<TouchableOpacity onPress={handleDownloadImage}>
 				<Icons.DownloadIcon color={Colors.white} />
 			</TouchableOpacity>
-		</Block>
+		</View>
 	);
 });

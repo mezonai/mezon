@@ -1,9 +1,9 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { channelUsersActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -49,22 +49,22 @@ export const RoleItem = memo(
 
 		return (
 			<TouchableOpacity onPress={onPressRoleItem} disabled={!isCheckbox && !isAdvancedSetting}>
-				<Block gap={size.s_10} flexDirection="row" padding={size.s_10} alignItems="center">
+				<View style={{ gap: size.s_10, flexDirection: 'row', padding: size.s_10, alignItems: 'center' }}>
 					{!isAdvancedSetting && <Icons.BravePermission color={themeValue.text} width={size.s_24} height={size.s_24} />}
-					<Block flex={1}>
-						<Block flexDirection="row" gap={size.s_4} alignItems="center">
+					<View style={{ flex: 1 }}>
+						<View style={{ flexDirection: 'row', gap: size.s_4, alignItems: 'center' }}>
 							<Text h4 color={themeValue.white}>
 								{role?.title}
 							</Text>
-						</Block>
+						</View>
 						{!isCheckbox && !isAdvancedSetting && <Text color={themeValue.textDisabled}>{'Role'}</Text>}
-					</Block>
+					</View>
 					{isAdvancedSetting ? (
 						<Icons.ChevronSmallRightIcon color={themeValue.white} />
 					) : (
-						<Block>
+						<View>
 							{isCheckbox ? (
-								<Block height={size.s_20} width={size.s_20}>
+								<View style={{ height: size.s_20, width: size.s_20 }}>
 									<BouncyCheckbox
 										size={20}
 										isChecked={isChecked}
@@ -77,15 +77,15 @@ export const RoleItem = memo(
 											borderRadius: 5
 										}}
 									/>
-								</Block>
+								</View>
 							) : (
 								<TouchableOpacity onPress={deleteRole} disabled={isEveryoneRole}>
 									<Icons.CircleXIcon color={isEveryoneRole ? themeValue.textDisabled : themeValue.white} />
 								</TouchableOpacity>
 							)}
-						</Block>
+						</View>
 					)}
-				</Block>
+				</View>
 			</TouchableOpacity>
 		);
 	}

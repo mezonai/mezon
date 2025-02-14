@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { AngleRight, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, notificationSettingActions, selectCurrentClanId, selectNotifiSettingsEntitiesById, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, IChannel } from '@mezon/utils';
 import { RouteProp, useNavigation } from '@react-navigation/native';
@@ -217,13 +217,13 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				</Text>
 			) : null}
 			{!isDMThread ? (
-				<Block>
+				<View>
 					<TouchableOpacity onPress={() => openBottomSheet()} style={styles.wrapperItemNotification}>
 						<Text style={styles.option}>{t('bottomSheet.title')}</Text>
 						<AngleRight width={20} height={20} color={themeValue.text} />
 					</TouchableOpacity>
 					<Text style={styles.InfoTitle}>{t('notifySettingThreadModal.description')}</Text>
-				</Block>
+				</View>
 			) : null}
 
 			<MezonBottomSheet heightFitContent ref={bottomSheetRef}>

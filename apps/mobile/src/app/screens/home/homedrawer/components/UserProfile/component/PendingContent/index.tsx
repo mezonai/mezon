@@ -1,12 +1,12 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useFriends } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { EFriendState } from '../..';
 import { SeparatorWithLine } from '../../../../../../../components/Common';
@@ -83,8 +83,8 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 	];
 
 	return (
-		<Block>
-			<Block flexDirection="row" marginTop={size.s_15} padding={size.s_20} alignItems="center">
+		<View>
+			<View style={{ flexDirection: 'row', marginTop: size.s_15, padding: size.s_20, alignItems: 'center' }}>
 				<MezonAvatar
 					width={size.s_34}
 					height={size.s_34}
@@ -93,17 +93,17 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 					isBorderBoxImage={false}
 				/>
 
-				<Block flex={1}>
+				<View style={{ flex: 1 }}>
 					<Text center color={themeValue.white} h4>
 						{targetUser?.user?.username}
 					</Text>
-				</Block>
+				</View>
 
 				<TouchableOpacity onPress={() => onClose()}>
 					<Icons.CloseIcon height={size.s_32} width={size.s_32} />
 				</TouchableOpacity>
-			</Block>
-			<Block marginHorizontal={size.s_10} backgroundColor={themeValue.secondary} borderRadius={size.s_10}>
+			</View>
+			<View style={{ marginHorizontal: size.s_10, backgroundColor: themeValue.secondary, borderRadius: size.s_10 }}>
 				<FlatList
 					data={actionList}
 					keyExtractor={(item) => item.id.toString()}
@@ -113,14 +113,14 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 						if (!isShow) return null;
 						return (
 							<TouchableOpacity onPress={() => action()}>
-								<Block padding={size.s_14}>
+								<View style={{ padding: size.s_14 }}>
 									<Text color={isWarning ? Colors.textRed : themeValue.text}>{text}</Text>
-								</Block>
+								</View>
 							</TouchableOpacity>
 						);
 					}}
 				/>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 });

@@ -1,8 +1,9 @@
 import { debounce, ETypeSearch } from '@mezon/mobile-components';
-import { Block, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { searchMessagesActions, selectTotalResultSearchMessage, useAppDispatch } from '@mezon/store-mobile';
 import { SearchFilter, SIZE_PAGE_SEARCH } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EmptySearchPage } from '../../EmptySearchPage';
 import MessagesSearchTab from '../../MessagesSearchTab';
@@ -85,11 +86,11 @@ export default function SearchMessageDm({ navigation, route }: any) {
 	return (
 		<SearchMessageChannelContext.Provider value={filtersSearch}>
 			<StatusBarHeight />
-			<Block width={'100%'} height={'100%'} backgroundColor={themeValue.primary}>
+			<View style={{ width: '100%', height: '100%', backgroundColor: themeValue.primary }}>
 				<HeaderSearchMessageDm onChangeText={handleTextChange} />
 				<HeaderTabSearch tabList={TabList} activeTab={activeTab} onPress={handelHeaderTabChange} />
 				{renderSearchPage()}
-			</Block>
+			</View>
 		</SearchMessageChannelContext.Provider>
 	);
 }

@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React, { ReactNode } from 'react';
 import { Keyboard, Modal, ModalBaseProps, Pressable, Text, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -89,13 +89,13 @@ export const MezonModal = (props: IMezonModalProps) => {
 								) : (
 									<View style={titleStyle}>{title}</View>
 								)}
-								<Block width={size.s_60}>
+								<View style={{ width: size.s_60 }}>
 									{rightBtnText ? (
 										<Pressable onPress={() => onClickRightBtn()}>
 											<Text style={styles.confirm}>{rightBtnText}</Text>
 										</Pressable>
 									) : null}
-								</Block>
+								</View>
 							</View>
 							{confirmText ? (
 								<Pressable onPress={() => pressConfirm()}>

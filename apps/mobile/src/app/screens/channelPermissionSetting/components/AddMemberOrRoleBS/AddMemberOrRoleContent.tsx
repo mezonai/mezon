@@ -1,6 +1,6 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { debounce, Icons } from '@mezon/mobile-components';
-import { Block, Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import {
 	channelUsersActions,
 	selectAllChannelMembers,
@@ -14,7 +14,7 @@ import {
 } from '@mezon/store-mobile';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { MezonInput } from '../../../../componentUI';
@@ -141,11 +141,11 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 			const { type, headerTitle, isShowHeaderTitle } = item;
 			if (!type && headerTitle && isShowHeaderTitle) {
 				return (
-					<Block paddingTop={size.s_12} paddingLeft={size.s_12}>
+					<View style={{ paddingTop: size.s_12, paddingLeft: size.s_12 }}>
 						<Text color={themeValue.text} h4>
 							{headerTitle}:
 						</Text>
-					</Block>
+					</View>
 				);
 			}
 			switch (type) {
@@ -154,7 +154,6 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 						<MemberItem
 							key={item?.id}
 							member={item}
-							channelId={channel?.channel_id}
 							isCheckbox={true}
 							isChecked={selectedMemberIdList?.includes(item?.user?.id)}
 							onSelectMemberChange={onSelectMemberChange}
@@ -172,21 +171,21 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 						/>
 					);
 				default:
-					return <Block />;
+					return <View />;
 			}
 		},
 		[onSelectMemberChange, channel, onSelectRoleChange, selectedMemberIdList, selectedRoleIdList, themeValue]
 	);
 
 	return (
-		<Block paddingHorizontal={size.s_14} flex={1}>
-			<Block flexDirection="row" justifyContent="center">
-				<Block alignItems="center">
+		<View style={{ paddingHorizontal: size.s_14, flex: 1 }}>
+			<View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+				<View style={{ alignItems: 'center' }}>
 					<Text h4 bold color={themeValue.white}>
 						{t('channelPermission.bottomSheet.addMembersOrRoles')}
 					</Text>
 					<Text color={themeValue.text}>#{channel?.channel_label}</Text>
-				</Block>
+				</View>
 				<TouchableOpacity
 					onPress={addMemberOrRole}
 					style={{
@@ -196,18 +195,18 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 					}}
 					disabled={disableAddButton}
 				>
-					<Block padding={size.s_10}>
+					<View style={{ padding: size.s_10 }}>
 						<Text bold h4 color={disableAddButton ? Colors.bgGrayLight : Colors.textViolet}>
 							{t('channelPermission.bottomSheet.add')}
 						</Text>
-					</Block>
+					</View>
 				</TouchableOpacity>
-			</Block>
+			</View>
 
-			<Block paddingVertical={size.s_16}>
+			<View style={{ paddingVertical: size.s_16 }}>
 				<MezonInput onTextChange={debouncedSetSearchText} placeHolder={'Search Roles & Members'} />
-			</Block>
-			<Block flex={1} paddingBottom={size.s_10}>
+			</View>
+			<View style={{ flex: 1, paddingBottom: size.s_10 }}>
 				<BottomSheetFlatList
 					data={filteredSearch}
 					keyboardShouldPersistTaps={'handled'}
@@ -215,7 +214,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 					keyExtractor={(item) => `${item?.id}_${item?.headerTitle}`}
 					removeClippedSubviews={true}
 				/>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 });

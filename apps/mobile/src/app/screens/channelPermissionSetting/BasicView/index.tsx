@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { MezonConfirm, MezonSwitch } from '../../../componentUI';
@@ -107,11 +107,11 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 			const { type, headerTitle, isShowHeader } = item;
 			if (!type && headerTitle && isShowHeader) {
 				return (
-					<Block paddingTop={size.s_12} paddingLeft={size.s_12}>
+					<View style={{ paddingTop: size.s_12, paddingLeft: size.s_12 }}>
 						<Text color={themeValue.white} h4>
 							{headerTitle}:
 						</Text>
-					</Block>
+					</View>
 				);
 			}
 			switch (type) {
@@ -120,7 +120,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				case EOverridePermissionType.Role:
 					return <RoleItem role={item} channel={channel} />;
 				default:
-					return <Block />;
+					return <View />;
 			}
 		},
 		[channel, themeValue]
@@ -132,51 +132,55 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 		}
 	}, [channel?.channel_private]);
 	return (
-		<Block flex={1}>
+		<View style={{ flex: 1 }}>
 			<TouchableOpacity onPress={() => onPrivateChannelChange(!isPrivateChannel)}>
-				<Block
-					flexDirection="row"
-					justifyContent="space-between"
-					padding={size.s_14}
-					alignItems="center"
-					borderRadius={size.s_14}
-					backgroundColor={themeValue.primary}
-					marginBottom={size.s_16}
+				<View
+					style={{
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						padding: size.s_14,
+						alignItems: 'center',
+						borderRadius: size.s_14,
+						backgroundColor: themeValue.primary,
+						marginBottom: size.s_16
+					}}
 				>
-					<Block alignItems="center">
+					<View style={{ alignItems: 'center' }}>
 						<Text color={themeValue.text}>{t('channelPermission.privateChannel')}</Text>
-					</Block>
+					</View>
 					<MezonSwitch value={isPrivateChannel} onValueChange={onPrivateChannelChange} />
-				</Block>
+				</View>
 			</TouchableOpacity>
 
 			{Boolean(channel?.channel_private) && (
-				<Block>
+				<View>
 					<Text color={themeValue.textDisabled}>{t('channelPermission.basicViewDescription')}</Text>
 
 					<TouchableOpacity onPress={() => openBottomSheet()}>
-						<Block
-							flexDirection="row"
-							justifyContent="space-between"
-							padding={size.s_14}
-							alignItems="center"
-							borderRadius={size.s_14}
-							backgroundColor={themeValue.primary}
-							marginVertical={size.s_16}
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								padding: size.s_14,
+								alignItems: 'center',
+								borderRadius: size.s_14,
+								backgroundColor: themeValue.primary,
+								marginVertical: size.s_16
+							}}
 						>
-							<Block flexDirection="row" gap={size.s_14} alignItems="center">
+							<View style={{ flexDirection: 'row', gap: size.s_14, alignItems: 'center' }}>
 								<Icons.CirclePlusPrimaryIcon color={themeValue.text} />
 								<Text color={themeValue.text}>{t('channelPermission.addMemberAndRoles')}</Text>
-							</Block>
+							</View>
 							<Icons.ChevronSmallRightIcon color={themeValue.text} />
-						</Block>
+						</View>
 					</TouchableOpacity>
-				</Block>
+				</View>
 			)}
 
-			<Block gap={size.s_10} marginBottom={size.s_10} flex={1}>
+			<View style={{ gap: size.s_10, marginBottom: size.s_10, flex: 1 }}>
 				<Text color={themeValue.textDisabled}>{t('channelPermission.whoCanAccess')}</Text>
-				<Block backgroundColor={themeValue.primary} borderRadius={size.s_14} flex={1}>
+				<View style={{ backgroundColor: themeValue.primary, borderRadius: size.s_14, flex: 1 }}>
 					<FlashList
 						data={combineWhoCanAccessList}
 						keyboardShouldPersistTaps={'handled'}
@@ -184,8 +188,8 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 						keyExtractor={(item) => `${item?.id}_${item?.headerTitle}`}
 						removeClippedSubviews={true}
 					/>
-				</Block>
-			</Block>
+				</View>
+			</View>
 
 			<MezonConfirm
 				visible={visibleModalConfirm}
@@ -206,6 +210,6 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				hasBackdrop={true}
 			/>
 			<AddMemberOrRoleBS bottomSheetRef={bottomSheetRef} channel={channel} />
-		</Block>
+		</View>
 	);
 });

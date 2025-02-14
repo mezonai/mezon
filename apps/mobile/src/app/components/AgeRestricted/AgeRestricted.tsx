@@ -1,10 +1,10 @@
 import { Icons, load, save, STORAGE_AGE_RESTRICTED_CHANNEL_IDS } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannelId } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { style } from './styles';
 
@@ -32,23 +32,23 @@ const AgeRestricted = ({ onClose }: { onClose: () => void }) => {
 	}, [navigation]);
 
 	return (
-		<Block backgroundColor={themeValue.secondary} borderRadius={size.s_10} padding={size.s_20}>
-			<Block flexDirection="row" alignItems="center" justifyContent="center">
+		<View style={{ backgroundColor: themeValue.secondary, borderRadius: size.s_10, padding: size.s_20 }}>
+			<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
 				<Icons.AgeRestrictedWarningIcon width={size.s_100} height={size.s_100} />
-			</Block>
-			<Block>
+			</View>
+			<View>
 				<Text style={styles.title}>{t('title')}</Text>
 				<Text style={styles.description}>{t('des')}</Text>
-			</Block>
-			<Block marginTop={size.s_20} flexDirection="row" justifyContent="center" gap={size.s_30}>
+			</View>
+			<View style={{ marginTop: size.s_20, flexDirection: 'row', justifyContent: 'center', gap: size.s_30 }}>
 				<TouchableOpacity style={styles.buttonNope} onPress={handleNode}>
 					<Text style={styles.btnText}>{t('nope')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.buttonContinue} onPress={handleSaveChannel}>
 					<Text style={styles.btnText}>{t('continue')}</Text>
 				</TouchableOpacity>
-			</Block>
-		</Block>
+			</View>
+		</View>
 	);
 };
 

@@ -1,9 +1,9 @@
 import { ACTIVE_TAB, ETypeSearch, IUerMention } from '@mezon/mobile-components';
-import { Block } from '@mezon/mobile-ui';
 import { DirectEntity, selectAllInfoChannels, selectAllUsersByUser, selectTotalResultSearchMessage } from '@mezon/store-mobile';
 import { IChannel, SearchItemProps, compareObjects, normalizeString } from '@mezon/utils';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { ChannelsSearchTab } from '../../../ChannelsSearchTab';
 import { EmptySearchPage } from '../../../EmptySearchPage';
@@ -89,10 +89,10 @@ function SearchMessagePage({ searchText, currentChannel, userMention, isSearchMe
 	};
 
 	return (
-		<Block height={'100%'} width={'100%'}>
+		<View style={{ height: '100%', width: '100%' }}>
 			<HeaderTabSearch tabList={TabList} activeTab={activeTab} onPress={handelHeaderTabChange} />
-			<Block>{renderContent()}</Block>
-		</Block>
+			<View>{renderContent()}</View>
+		</View>
 	);
 }
 

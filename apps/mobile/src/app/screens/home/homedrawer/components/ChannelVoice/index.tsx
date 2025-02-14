@@ -1,6 +1,6 @@
 import { AudioSession, LiveKitRoom } from '@livekit/react-native';
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById2 } from '@mezon/store';
 import React, { useEffect } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
@@ -42,7 +42,7 @@ function ChannelVoice({
 	return (
 		<View>
 			<StatusBarHeight />
-			<Block
+			<View
 				style={{
 					width: isAnimationComplete ? width : size.s_100 * 2,
 					height: isAnimationComplete ? height : size.s_150,
@@ -50,8 +50,8 @@ function ChannelVoice({
 				}}
 			>
 				{isAnimationComplete && (
-					<Block style={[styles.menuHeader]}>
-						<Block flexDirection="row" alignItems="center" gap={size.s_20} flexGrow={1} flexShrink={1}>
+					<View style={[styles.menuHeader]}>
+						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20, flexGrow: 1, flexShrink: 1 }}>
 							<TouchableOpacity
 								onPress={() => {
 									onPressMinimizeRoom();
@@ -63,13 +63,13 @@ function ChannelVoice({
 							<Text numberOfLines={1} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
 								{channel?.channel_label}
 							</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 				)}
 				<LiveKitRoom serverUrl={serverUrl} token={token} connect={true}>
 					<RoomView channelId={channelId} onPressMinimizeRoom={onPressMinimizeRoom} isAnimationComplete={isAnimationComplete} />
 				</LiveKitRoom>
-			</Block>
+			</View>
 		</View>
 	);
 }

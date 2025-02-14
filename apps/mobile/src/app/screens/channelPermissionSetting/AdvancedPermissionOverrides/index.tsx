@@ -1,10 +1,10 @@
 import { useMyRole } from '@mezon/core';
 import { Icons, isEqual } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { permissionRoleChannelActions, selectAllPermissionRoleChannel, selectPermissionChannel, useAppDispatch } from '@mezon/store-mobile';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { MezonConfirm } from '../../../componentUI';
@@ -78,30 +78,30 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 
 	navigation.setOptions({
 		headerTitle: () => (
-			<Block>
+			<View>
 				<Text bold h3 color={themeValue?.white}>
 					{t('channelPermission.permissionOverrides')}
 				</Text>
-			</Block>
+			</View>
 		),
 		headerRight: () => {
 			if (isSettingNotChange) return null;
 			return (
 				<TouchableOpacity onPress={saveChannelPermission}>
-					<Block marginRight={size.s_20} paddingVertical={size.s_10}>
+					<View style={{ marginRight: size.s_20, paddingVertical: size.s_10 }}>
 						<Text h4 color={Colors.textViolet}>
 							{t('channelPermission.save')}
 						</Text>
-					</Block>
+					</View>
 				</TouchableOpacity>
 			);
 		},
 		headerLeft: () => {
 			return (
 				<TouchableOpacity onPress={handleBack}>
-					<Block marginLeft={size.s_16}>
+					<View style={{ marginLeft: size.s_16 }}>
 						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
-					</Block>
+					</View>
 				</TouchableOpacity>
 			);
 		}
@@ -159,11 +159,11 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 	}, [channelId, dispatch, id, type, isOverrideRole]);
 
 	return (
-		<Block flex={1} backgroundColor={themeValue.secondary} paddingHorizontal={size.s_18} gap={size.s_18}>
+		<View style={{ flex: 1, backgroundColor: themeValue.secondary, paddingHorizontal: size.s_18, gap: size.s_18 }}>
 			<Text color={themeValue.textDisabled}>{t('channelPermission.generalChannelPermission')}</Text>
 
 			<ScrollView>
-				<Block gap={size.s_28}>
+				<View style={{ gap: size.s_28 }}>
 					{channelPermissionList?.map((permission) => {
 						return (
 							<PermissionItem
@@ -174,7 +174,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 							/>
 						);
 					})}
-				</Block>
+				</View>
 			</ScrollView>
 
 			<MezonConfirm
@@ -187,6 +187,6 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 				content={t('channelPermission.warningChangeSettingModal.content')}
 				hasBackdrop={true}
 			/>
-		</Block>
+		</View>
 	);
 };

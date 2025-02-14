@@ -125,6 +125,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 					handleConfirm={handleDeleteChannel}
 					title="delete"
 					modalName={`${channel.channel_label}`}
+					message="This cannot be undone"
 				/>
 			)}
 		</div>

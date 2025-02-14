@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Block, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { ChannelsEntity } from '@mezon/store';
 import { User } from 'mezon-js';
 import React, { useEffect, useRef } from 'react';
@@ -57,7 +57,13 @@ export const UserInformationBottomSheet = React.memo((props: IUserInformationBot
 				);
 			}}
 		>
-			<Block overflow="hidden" borderTopLeftRadius={size.s_14} borderTopRightRadius={size.s_14}>
+			<View
+				style={{
+					borderTopLeftRadius: size.s_14,
+					borderTopRightRadius: size.s_14,
+					overflow: 'hidden'
+				}}
+			>
 				<UserProfile
 					userId={userId}
 					user={user}
@@ -65,8 +71,8 @@ export const UserInformationBottomSheet = React.memo((props: IUserInformationBot
 					showAction={showAction}
 					showRole={showRole}
 					currentChannel={currentChannel}
-				></UserProfile>
-			</Block>
+				/>
+			</View>
 		</MezonBottomSheet>
 	);
 });

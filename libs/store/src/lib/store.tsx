@@ -293,7 +293,7 @@ const persistedVoiceReducer = persistReducer(
 	{
 		key: VOICE_FEATURE_KEY,
 		storage,
-		whitelist: ['voiceConnectionState', 'channelId']
+		whitelist: ['voiceInfo']
 	},
 	voiceReducer
 );

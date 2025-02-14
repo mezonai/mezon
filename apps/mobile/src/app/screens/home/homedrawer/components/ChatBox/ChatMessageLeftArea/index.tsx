@@ -1,8 +1,8 @@
 import { Icons } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { Dispatch, SetStateAction, memo } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import AttachmentSwitcher from '../../AttachmentPicker/AttachmentSwitcher';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
@@ -30,7 +30,11 @@ export const ChatMessageLeftArea = memo(
 		const styles = style(themeValue);
 		const navigation = useNavigation<any>();
 		return (
-			<Block flexDirection="row">
+			<View
+				style={{
+					flexDirection: 'row'
+				}}
+			>
 				{isAvailableSending && !isShowAttachControl ? (
 					<TouchableOpacity style={[styles.btnIcon]} onPress={() => setIsShowAttachControl(!isShowAttachControl)}>
 						<Icons.ChevronSmallLeftIcon width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
@@ -48,7 +52,7 @@ export const ChatMessageLeftArea = memo(
 						)}
 					</>
 				)}
-			</Block>
+			</View>
 		);
 	}
 );

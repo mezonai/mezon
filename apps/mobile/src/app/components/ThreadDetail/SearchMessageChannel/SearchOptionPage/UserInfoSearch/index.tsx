@@ -1,9 +1,9 @@
 import { useMemberStatus } from '@mezon/core';
 import { IUserMention } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { MezonAvatar } from '../../../../../componentUI';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from '../SearchOptionPage.styles';
@@ -29,10 +29,10 @@ export default function UserInfoSearch({ onSelectUserInfo, userData }: UserInfoS
 				username={userData?.display}
 				avatarUrl={userData?.avatarUrl}
 			/>
-			<Block>
+			<View>
 				<Text style={styles.username}>{userData?.display}</Text>
 				<Text style={styles.subUserName}>{userData?.subDisplay}</Text>
-			</Block>
+			</View>
 		</TouchableOpacity>
 	);
 }

@@ -1,8 +1,8 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Block, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable } from 'react-native';
+import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
@@ -32,15 +32,17 @@ export const ActionMessageSelected = memo(({ messageActionNeedToResolve, onClose
 	};
 
 	return (
-		<Block flexDirection="column" backgroundColor={themeValue.primary}>
+		<View style={{ flexDirection: 'column', backgroundColor: themeValue.primary }}>
 			{messageActionNeedToResolve?.replyTo ? (
-				<Block
-					flexDirection="row"
-					alignItems="center"
-					padding={size.tiny}
-					gap={10}
-					borderBottomWidth={1}
-					borderBottomColor={themeValue.border}
+				<View
+					style={{
+						flexDirection: 'row',
+						alignItems: 'center',
+						padding: size.tiny,
+						gap: 10,
+						borderBottomWidth: 1,
+						borderBottomColor: themeValue.border
+					}}
 				>
 					<Pressable onPress={() => handleCloseMessageAction(EMessageActionType.Reply)}>
 						<Icons.CircleXIcon height={20} width={20} color={themeValue.text} />
@@ -48,16 +50,18 @@ export const ActionMessageSelected = memo(({ messageActionNeedToResolve, onClose
 					<Text color={themeValue.text} h6>
 						{t('chatBox.replyingTo')} {messageActionNeedToResolve?.replyTo}
 					</Text>
-				</Block>
+				</View>
 			) : null}
 			{messageActionNeedToResolve?.type === EMessageActionType.EditMessage ? (
-				<Block
-					flexDirection="row"
-					alignItems="center"
-					padding={size.tiny}
-					gap={10}
-					borderBottomWidth={1}
-					borderBottomColor={themeValue.border}
+				<View
+					style={{
+						flexDirection: 'row',
+						alignItems: 'center',
+						padding: size.tiny,
+						gap: 10,
+						borderBottomWidth: 1,
+						borderBottomColor: themeValue.border
+					}}
 				>
 					<Pressable onPress={() => handleCloseMessageAction(EMessageActionType.EditMessage)}>
 						<Icons.CircleXIcon height={20} width={20} color={themeValue.text} />
@@ -65,8 +69,8 @@ export const ActionMessageSelected = memo(({ messageActionNeedToResolve, onClose
 					<Text color={themeValue.text} h6>
 						{t('chatBox.editingMessage')}
 					</Text>
-				</Block>
+				</View>
 			) : null}
-		</Block>
+		</View>
 	);
 });

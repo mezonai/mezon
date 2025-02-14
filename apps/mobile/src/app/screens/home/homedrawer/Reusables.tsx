@@ -9,7 +9,6 @@ import { MezonButton } from '../../../componentUI';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { style } from './styles';
 
-export const ChannelListContext = React.createContext({} as any);
 export interface IFriendListItemProps {
 	dmGroup?: DirectEntity;
 	user?: UsersClanEntity;

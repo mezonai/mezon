@@ -46,7 +46,7 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 			screenOptions={{
 				headerShown: true,
 				headerShadowVisible: false,
-				gestureEnabled: true,
+				gestureEnabled: Platform.OS === 'ios',
 				gestureDirection: 'horizontal',
 				headerTitleAlign: 'center',
 				headerStyle: {

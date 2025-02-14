@@ -35,7 +35,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const appearanceTheme = useSelector(selectTheme);
 	const closeMenu = useSelector(selectCloseMenu);
-	const streamChannelMember = useSelector(selectStreamMembersByChannelId(currentStreamInfo?.streamId || ''));
+	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const groupCallId = useSelector(selectGroupCallId);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(groupCallId ?? ''));
 	const dmUserId = currentDmGroup?.user_id?.[0] || '';

@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/mobile-components';
-import { baseColor, Block, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { selectChannelById, selectEventsByChannelId, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus } from '@mezon/utils';
 import { memo } from 'react';
@@ -24,11 +24,15 @@ export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 
 	if (events?.length && (events?.[0]?.event_status === EEventStatus.UPCOMING || events?.[0]?.event_status === EEventStatus.ONGOING)) {
 		return (
-			<Block marginLeft={size.s_8}>
+			<View
+				style={{
+					marginLeft: size.s_8
+				}}
+			>
 				<Pressable onPress={hanleEventChannel}>
 					<Icons.CalendarIcon height={size.s_16} width={size.s_16} color={colorStatusEvent} />
 				</Pressable>
-			</Block>
+			</View>
 		);
 	}
 	return <View />;

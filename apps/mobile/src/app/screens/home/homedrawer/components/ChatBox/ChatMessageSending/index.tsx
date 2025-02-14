@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useChannelMembers, useChatSending } from '@mezon/core';
 import { ActionEmitEvent, ID_MENTION_HERE, IRoleMention, Icons, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
-import { Block, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	emojiSuggestionActions,
@@ -37,7 +37,7 @@ import {
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
 import { MutableRefObject, memo, useCallback, useMemo } from 'react';
-import { DeviceEventEmitter, TouchableOpacity } from 'react-native';
+import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../../../types';
@@ -358,7 +358,12 @@ export const ChatMessageSending = memo(
 		};
 
 		return (
-			<Block alignItems="center" justifyContent="center">
+			<View
+				style={{
+					alignItems: 'center',
+					justifyContent: 'center'
+				}}
+			>
 				{isAvailableSending || !!attachmentDataRef?.length ? (
 					<TouchableOpacity activeOpacity={0.8} onPress={handleSendMessage} style={[styles.btnIcon, styles.iconSend]}>
 						<Icons.SendMessageIcon width={size.s_18} height={size.s_18} color={baseColor.white} />
@@ -368,7 +373,7 @@ export const ChatMessageSending = memo(
 						<Icons.MicrophoneIcon width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				)}
-			</Block>
+			</View>
 		);
 	}
 );

@@ -1,11 +1,11 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
-import { Block, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectUserStatus, useAppDispatch, userStatusActions } from '@mezon/store-mobile';
 import { Ref, forwardRef, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonMenuSectionProps, IMezonOptionData, MezonBottomSheet, MezonMenu, MezonOption } from '../../componentUI';
 import { ETypeCustomUserStatus } from '../../screens/profile/ProfileScreen';
@@ -115,11 +115,11 @@ export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICus
 
 	return (
 		<MezonBottomSheet ref={ref} title={t('changeOnlineStatus')} heightFitContent>
-			<Block paddingHorizontal={size.s_20} paddingVertical={size.s_10}>
+			<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10 }}>
 				<MezonOption title={t('onlineStatus')} data={statusOptions} value={userStatusOption} onChange={handleStatusChange} />
 
 				<MezonMenu menu={statusMenu} />
-			</Block>
+			</View>
 		</MezonBottomSheet>
 	);
 });

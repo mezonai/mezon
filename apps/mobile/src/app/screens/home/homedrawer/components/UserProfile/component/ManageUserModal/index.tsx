@@ -1,6 +1,6 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { Colors, Text, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	ChannelMembersEntity,
 	selectAllRolesClan,
@@ -171,9 +171,17 @@ export const ManageUserModal = memo(
 
 		return (
 			<Modal visible={visible} animationType={'slide'} statusBarTranslucent={true}>
-				<Block flex={1} backgroundColor={themeValue?.charcoal} paddingTop={size.s_40}>
-					<Block flexDirection="row" alignItems="center" justifyContent="space-between" height={size.s_40} paddingHorizontal={size.s_14}>
-						<Block>
+				<View style={{ flex: 1, backgroundColor: themeValue?.charcoal, paddingTop: size.s_40 }}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'space-between',
+							height: size.s_40,
+							paddingHorizontal: size.s_14
+						}}
+					>
+						<View>
 							{!isLoading && (
 								<TouchableOpacity
 									onPress={() => {
@@ -185,40 +193,42 @@ export const ManageUserModal = memo(
 									<Icons.CloseIcon height={size.s_30} width={size.s_30} color={themeValue.white} />
 								</TouchableOpacity>
 							)}
-						</Block>
-						<Block flex={1}>
+						</View>
+						<View style={{ flex: 1 }}>
 							<Text center color={themeValue.white} h3>
 								{t('manage.edit')} {user?.user?.username}
 							</Text>
-						</Block>
-					</Block>
+						</View>
+					</View>
 
 					<ScrollView>
-						<Block
-							flexDirection="row"
-							alignItems="center"
-							justifyContent="space-between"
-							backgroundColor={themeValue.secondary}
-							padding={size.s_12}
-							gap={size.s_10}
-							marginTop={size.s_18}
-							marginHorizontal={size.s_14}
-							borderRadius={size.s_14}
+						<View
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								backgroundColor: themeValue.secondary,
+								padding: size.s_12,
+								gap: size.s_10,
+								marginTop: size.s_18,
+								marginHorizontal: size.s_14,
+								borderRadius: size.s_14
+							}}
 						>
-							<Block flex={1} flexDirection="row" gap={size.s_10} alignItems="center">
+							<View style={{ flex: 1, flexDirection: 'row', gap: size.s_10, alignItems: 'center' }}>
 								<MezonAvatar avatarUrl={user?.user?.avatar_url} username={user?.user?.username} />
-								<Block>
+								<View>
 									{user?.user?.display_name ? <Text color={themeValue.white}>{user?.user?.display_name}</Text> : null}
 									<Text color={themeValue.text}>{user?.user?.username}</Text>
-								</Block>
-							</Block>
-						</Block>
+								</View>
+							</View>
+						</View>
 
-						<Block marginHorizontal={size.s_14} marginTop={size.s_20}>
+						<View style={{ marginHorizontal: size.s_14, marginTop: size.s_20 }}>
 							<Text color={themeValue.text} h5>
 								{t('manage.roles')}
 							</Text>
-							<Block borderRadius={size.s_10} overflow="hidden" marginTop={size.s_8}>
+							<View style={{ borderRadius: size.s_10, overflow: 'hidden', marginTop: size.s_8 }}>
 								{roleList.map((role) => {
 									const isDisable = isLoading || role?.disabled;
 									if (editMode) {
@@ -228,15 +238,17 @@ export const ManageUserModal = memo(
 												onPress={() => onSelectedRoleChange(!selectedRole?.includes(role?.id), role?.id, role?.color)}
 												disabled={isDisable}
 											>
-												<Block
-													backgroundColor={themeValue.secondary}
-													padding={size.s_14}
-													borderBottomWidth={1}
-													borderBottomColor={themeValue.tertiary}
-													flexDirection="row"
-													gap={size.s_10}
+												<View
+													style={{
+														backgroundColor: themeValue.secondary,
+														padding: size.s_14,
+														borderBottomWidth: 1,
+														borderBottomColor: themeValue.tertiary,
+														flexDirection: 'row',
+														gap: size.s_10
+													}}
 												>
-													<Block height={size.s_20} width={size.s_20}>
+													<View style={{ height: size.s_20, width: size.s_20 }}>
 														<BouncyCheckbox
 															disabled={isDisable}
 															size={20}
@@ -251,54 +263,56 @@ export const ManageUserModal = memo(
 															}}
 															textStyle={{ fontFamily: 'JosefinSans-Regular' }}
 														/>
-													</Block>
+													</View>
 													<Text color={isDisable ? themeValue.textDisabled : themeValue.white} h4>
 														{role?.title}
 													</Text>
-												</Block>
+												</View>
 											</TouchableOpacity>
 										);
 									}
 									return (
-										<Block
+										<View
 											key={role?.id}
-											backgroundColor={themeValue.secondary}
-											padding={size.s_14}
-											borderBottomWidth={1}
-											borderBottomColor={themeValue.tertiary}
+											style={{
+												backgroundColor: themeValue.secondary,
+												padding: size.s_14,
+												borderBottomWidth: 1,
+												borderBottomColor: themeValue.tertiary
+											}}
 										>
 											<Text color={themeValue.white} h4>
 												{role?.title}
 											</Text>
-										</Block>
+										</View>
 									);
 								})}
 
 								{!editMode ? (
 									<TouchableOpacity onPress={() => setEditMode(true)} disabled={isLoading}>
-										<Block backgroundColor={themeValue.secondary} padding={size.s_14}>
+										<View style={{ backgroundColor: themeValue.secondary, padding: size.s_14 }}>
 											<Text color={isLoading ? Colors.textGray : baseColor.blurple} h4>
 												{t('manage.editRoles')}
 											</Text>
-										</Block>
+										</View>
 									</TouchableOpacity>
 								) : (
 									<TouchableOpacity onPress={() => setEditMode(false)} disabled={isLoading}>
-										<Block backgroundColor={themeValue.secondary} padding={size.s_14}>
+										<View style={{ backgroundColor: themeValue.secondary, padding: size.s_14 }}>
 											<Text color={isLoading ? Colors.textGray : baseColor.blurple} h4>
 												{t('manage.cancel')}
 											</Text>
-										</Block>
+										</View>
 									</TouchableOpacity>
 								)}
-							</Block>
-						</Block>
+							</View>
+						</View>
 
 						<View style={{ padding: 15 }}>
 							<MezonMenu menu={menuActions} />
 						</View>
 					</ScrollView>
-				</Block>
+				</View>
 				<Toast config={toastConfig} />
 				<MezonModal
 					visible={visibleKickUserModal}

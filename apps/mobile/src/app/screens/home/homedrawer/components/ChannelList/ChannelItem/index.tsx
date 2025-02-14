@@ -1,7 +1,7 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { IChannel } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import { ChannelBadgeUnread } from '../ChannelBadgeUnread';
@@ -23,9 +23,7 @@ interface IChannelItemProps {
 function ChannelItem({ onLongPress, onPress, data, isUnRead, isActive, isFirstThread }: IChannelItemProps) {
 	const { themeValue, theme } = useTheme();
 	const styles = style(themeValue);
-	const numberNotification = useMemo(() => {
-		return data?.count_mess_unread ? data?.count_mess_unread : 0;
-	}, [data?.count_mess_unread]);
+	const numberNotification = data?.count_mess_unread ? data?.count_mess_unread : 0;
 
 	if (data.type === ChannelType.CHANNEL_TYPE_THREAD) {
 		return <ChannelListThreadItem thread={data} isActive={isActive} onPress={onPress} onLongPress={onLongPress} isFirstThread={isFirstThread} />;
