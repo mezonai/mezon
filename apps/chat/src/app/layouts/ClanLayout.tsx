@@ -32,6 +32,7 @@ import ChatStream from '../pages/chatStream';
 import Setting from '../pages/setting';
 import ThreadsMain from '../pages/thread';
 import TopicDiscussionMain from '../pages/topicDiscussion';
+import ReactionEmojiPanel from './ReactionEmojiPanel';
 
 const ClanEffects: React.FC<{
 	chatStreamRef: React.RefObject<HTMLDivElement>;
@@ -149,8 +150,11 @@ const ClanLayout = () => {
 			)}
 
 			{isShowCreateTopic && !isShowCreateThread && (
-				<div onMouseDown={onMouseDown} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
+				<div onMouseDown={onMouseDown} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg relative">
 					<TopicDiscussionMain />
+					<div className="top-[72px] right-[510px] absolute">
+						<ReactionEmojiPanel showInTopicDisscusion={true} closeMenu={true} currentChannelId={currentChannel?.channel_id ?? ''} />
+					</div>
 				</div>
 			)}
 			<Setting isDM={false} />

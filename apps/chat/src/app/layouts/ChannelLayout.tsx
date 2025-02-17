@@ -22,7 +22,7 @@ const ChannelLayout = () => {
 	const shouldRender = useIdleRender();
 
 	return (
-		<div onMouseDown={onMouseDown} className="flex flex-col z-1 flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible  relative">
+		<div onMouseDown={onMouseDown} className="flex flex-col z-0 flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible  relative">
 			{isChannelVoice ? (
 				<ChannelLayoutVoice channelLabel={currentChannel.channel_label} meetingCode={currentChannel.meeting_code} />
 			) : (
