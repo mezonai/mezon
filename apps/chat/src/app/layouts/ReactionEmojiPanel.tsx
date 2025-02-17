@@ -22,7 +22,7 @@ type ReactionEmojiPannelProps = {
 	showInTopicDisscusion?: boolean;
 };
 
-const ReactionEmojiPanel = memo(({ closeMenu, currentChannelId, showInTopicDisscusion }: ReactionEmojiPannelProps) => {
+const ReactionEmojiPanel = memo(({ closeMenu, currentChannelId, showInTopicDisscusion = false }: ReactionEmojiPannelProps) => {
 	const reactionTopState = useSelector(selectReactionTopState);
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 	const { subPanelActive } = useGifsStickersEmoji();
@@ -38,7 +38,7 @@ const ReactionEmojiPanel = memo(({ closeMenu, currentChannelId, showInTopicDissc
 	const openEmojiPanelOnTopic = (openEmojiRightPanel || openEmojiBottomPanel) && isFocusTopicBox && showInTopicDisscusion;
 
 	const distanceToBottom = window.innerHeight - positionOfSmileButton.bottom;
-	const distanceToRight = window.innerWidth - positionOfSmileButton.right - (isShowCreateTopic ? 510 : 0);
+	const distanceToRight = window.innerWidth - positionOfSmileButton.right;
 	const topPositionEmojiPanel = distanceToBottom < HEIGHT_EMOJI_PANEL ? 'auto' : `${positionOfSmileButton.top - 100}px`;
 
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannelId));
@@ -61,7 +61,7 @@ const ReactionEmojiPanel = memo(({ closeMenu, currentChannelId, showInTopicDissc
 						bottom: distanceToBottom < HEIGHT_EMOJI_PANEL ? '0' : 'auto',
 						left:
 							distanceToRight < WIDTH_EMOJI_PANEL
-								? `${positionOfSmileButton.left - WIDTH_EMOJI_PANEL}px`
+								? `${positionOfSmileButton.left - WIDTH_EMOJI_PANEL - (showInTopicDisscusion ? 500 : 0)}px`
 								: `${positionOfSmileButton.right}px`
 					}}
 				>
