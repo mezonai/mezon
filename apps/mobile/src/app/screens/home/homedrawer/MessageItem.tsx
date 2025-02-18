@@ -82,7 +82,7 @@ const MessageItem = React.memo(
 		const userId = load(STORAGE_MY_USER_ID);
 		const hasIncludeMention = userId
 			? message?.content?.t?.includes('@here') ||
-				message?.mentions?.some((mention) => mention?.user_id === userId) ||
+				message?.mentions?.some?.((mention) => mention?.user_id === userId) ||
 				message?.references?.[0]?.message_sender_id === userId
 			: false;
 

@@ -1,7 +1,5 @@
-package com.mobile.mezon
+package com.mezon.mobile
 import android.content.res.Configuration
-import expo.modules.ApplicationLifecycleDispatcher
-import expo.modules.ReactNativeHostWrapper
 import com.microsoft.codepush.react.CodePush
 
 import android.app.Application
@@ -21,19 +19,17 @@ import com.mezon.mobile.FullScreenNotificationIncomingCallPackage;
 
 class MainApplication : Application(), ReactApplication {
 
-  override val reactNativeHost: ReactNativeHost =
-      ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
+    override val reactNativeHost: ReactNativeHost =
+      object : DefaultReactNativeHost(this) {
         override fun getJSBundleFile(): String {
-          return CodePush.getJSBundleFile()
-        }
-        override fun getPackages(): List<ReactPackage> {
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
-          val packages = PackageList(this).packages.toMutableList()
-          packages.add(FullScreenNotificationIncomingCallPackage())
-          packages.add(SharedPreferencesPackage())
-          return packages;
-        }
+            return CodePush.getJSBundleFile()
+          }
+        override fun getPackages(): List<ReactPackage> =
+            PackageList(this).packages.apply {
+              // Packages that cannot be autolinked yet can be added manually here, for example:
+              add(FullScreenNotificationIncomingCallPackage())
+              add(SharedPreferencesPackage())
+            }
 
         override fun getJSMainModuleName(): String = "src/main"
 
@@ -41,10 +37,10 @@ class MainApplication : Application(), ReactApplication {
 
         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
-      })
+      }
 
   override val reactHost: ReactHost
-    get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+    get() = getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     super.onCreate()
@@ -54,13 +50,8 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    ApplicationLifecycleDispatcher.onApplicationCreate(this)
   }
 
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
-  }
   fun getReactNativeHostInstance(): ReactNativeHost {
     return reactNativeHost
   }

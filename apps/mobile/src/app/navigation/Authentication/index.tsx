@@ -33,7 +33,6 @@ export const Authentication = memo(() => {
 					headerShown: false,
 					gestureEnabled: Platform.OS === 'ios',
 					gestureDirection: 'horizontal',
-					...TransitionPresets.ModalFadeTransition,
 					animationEnabled: false
 				}}
 			>

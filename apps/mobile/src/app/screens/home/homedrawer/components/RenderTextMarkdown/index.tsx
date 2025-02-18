@@ -450,7 +450,7 @@ export const RenderTextMarkdownContent = ({
 	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
 	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
 	const elements: ElementToken[] = [
-		...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })),
+		...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
 		...hgm,
 		...ejm,
 		...mkm,

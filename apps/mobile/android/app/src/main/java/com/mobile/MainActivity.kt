@@ -1,15 +1,11 @@
-package com.mobile.mezon
-import expo.modules.ReactActivityDelegateWrapper
-import android.os.Bundle;
-
-import android.content.Intent;
+package com.mezon.mobile
+import android.os.Bundle
+import android.content.Intent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
-import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.mezon.mobile.CustomClientFactory;
-import com.zoontek.rnbootsplash.RNBootSplash;
+import com.zoontek.rnbootsplash.RNBootSplash
 
 class MainActivity : ReactActivity() {
 
@@ -33,6 +29,6 @@ class MainActivity : ReactActivity() {
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
-  override fun createReactActivityDelegate(): ReactActivityDelegate =
-      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
+   override fun createReactActivityDelegate(): ReactActivityDelegate =
+         DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 }

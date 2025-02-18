@@ -55,10 +55,7 @@ const RootListener = () => {
 	const hasInternet = useSelector(selectHasInternetMobile);
 
 	useEffect(() => {
-		if (Platform.OS === 'ios') {
-			setupCallKeep();
-		}
-		setupNotificationListeners(navigation);
+		startupRunning(navigation);
 	}, [navigation]);
 
 	useEffect(() => {
@@ -98,6 +95,13 @@ const RootListener = () => {
 	// 		// );
 	// 	}
 	// }, [currentChannelId, currentClanId, dispatch]);
+
+	const startupRunning = async (navigation: any) => {
+		if (Platform.OS === 'ios') {
+			await setupCallKeep();
+		}
+		await setupNotificationListeners(navigation);
+	};
 
 	const initAppLoading = async () => {
 		const isDisableLoad = await load(STORAGE_IS_DISABLE_LOAD_BACKGROUND);
