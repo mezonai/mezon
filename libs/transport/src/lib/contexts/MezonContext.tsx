@@ -51,7 +51,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		if (!clientRef.current) {
 			throw new Error('Mezon client not initialized');
 		}
-		const socket = clientRef.current.createSocket(clientRef.current.useSSL, false, new WebSocketAdapterPb());
+		const socket = clientRef.current.createSocket(clientRef.current.useSSL, true, new WebSocketAdapterPb());
 		socketRef.current = socket;
 		return socket;
 	}, [clientRef, socketRef]);

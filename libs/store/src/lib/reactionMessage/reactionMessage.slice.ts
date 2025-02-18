@@ -224,8 +224,10 @@ export const reactionSlice = createSlice({
 					(reaction) =>
 						reaction.message_id === reactionDataSocket.message_id &&
 						reaction.emoji === reactionDataSocket.emoji &&
-						reaction.sender_id === reactionDataSocket.sender_id
+						reaction.sender_id === reactionDataSocket.sender_id &&
+						reaction?.channel_id === reactionDataSocket.channel_id
 				);
+				console.log('reaction :', reaction);
 
 				if (reaction) {
 					reactionDataSocket.id = reaction.id;
@@ -233,6 +235,7 @@ export const reactionSlice = createSlice({
 			}
 
 			const existing = reactionAdapter.getSelectors().selectById(state, reactionDataSocket.id || '');
+			console.log('existing :', existing);
 			if (isAdd && !existing) {
 				reactionAdapter.addOne(state, mapReactionToEntity(reactionDataSocket));
 			} else if (isAdd && existing) {

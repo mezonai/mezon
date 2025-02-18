@@ -90,6 +90,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const messageEmoji = useAppSelector((state) =>
 		selectMessageByMessageId(state, props.isFocusTopicBox ? props.currenTopicId : channelID, props.messageEmojiId || '')
 	);
+	console.log('messageEmoji :', messageEmoji);
 	const { reactionMessageDispatch } = useChatReaction();
 	const { setSubPanelActive, setPlaceHolderInput } = useGifsStickersEmoji();
 	const [emojiId, setEmojiId] = useState<string>('');
