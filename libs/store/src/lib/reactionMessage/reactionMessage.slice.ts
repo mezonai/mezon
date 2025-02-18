@@ -215,24 +215,31 @@ export const reactionSlice = createSlice({
 				count: action.payload.count || 1
 			};
 
+			console.log('reactionDataSocket: ', reactionDataSocket);
 			const isAdd = !action.payload.action;
 			// Server not send id
 			// We have to find the id of the reaction by message_id and emoji and sender_id
-			if (reactionDataSocket.id !== '') {
-				const reactionEntities = reactionAdapter.getSelectors().selectAll(state);
-				const reaction = reactionEntities.find(
-					(reaction) =>
-						reaction.message_id === reactionDataSocket.message_id &&
-						reaction.emoji === reactionDataSocket.emoji &&
-						reaction.sender_id === reactionDataSocket.sender_id
-				);
+			// if (reactionDataSocket.id !== '') {
+			// 	const reactionEntities = reactionAdapter.getSelectors().selectAll(state);
+			// 	console.log('reactionEntities: ', reactionEntities);
+			// 	const reaction = reactionEntities.find(
+			// 		(reaction) =>
+			// 			reaction.message_id === reactionDataSocket.message_id &&
+			// 			reaction.emoji === reactionDataSocket.emoji &&
+			// 			reaction.sender_id === reactionDataSocket.sender_id &&
+			// 			reaction.channel_id === reactionDataSocket.channel_id
+			// 	);
 
-				if (reaction) {
-					reactionDataSocket.id = reaction.id;
-				}
-			}
+			// 	console.log('reaction', reaction);
+			// 	console.log('reactionDataSocket: ', reactionDataSocket);
+			// 	// if (reaction) {
+			// 	// 	reactionDataSocket.id = reaction.id;
+			// 	// }
+			// }
 
 			const existing = reactionAdapter.getSelectors().selectById(state, reactionDataSocket.id || '');
+			console.log('existing: ', existing);
+			console.log('map', mapReactionToEntity(reactionDataSocket));
 			if (isAdd && !existing) {
 				reactionAdapter.addOne(state, mapReactionToEntity(reactionDataSocket));
 			} else if (isAdd && existing) {
