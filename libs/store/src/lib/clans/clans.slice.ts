@@ -1,8 +1,8 @@
 import { captureSentryError } from '@mezon/logger';
 import { IClan, LIMIT_CLAN_ITEM, LoadingStatus, TypeCheck } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiUpdateClanDescRequest, ChannelType } from 'mezon-js';
-import { ApiClanDesc, ApiUpdateAccountRequest } from 'mezon-js/api.gen';
+import { ChannelType, ClanUpdatedEvent } from 'mezon-js';
+import { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
 import { accountActions } from '../account/account.slice';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
@@ -189,17 +189,9 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 
 export const updateClan = createAsyncThunk(
 	'clans/updateClans',
-	async ({ clan_id, banner, clan_name, creator_id, logo }: ApiUpdateClanDescRequest, thunkAPI) => {
+	async ({ clan_id, request }: { clan_id: string; request: MezonUpdateClanDescBody }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-			const request: ApiUpdateClanDescRequest = {
-				clan_id,
-				creator_id,
-				clan_name,
-				logo,
-				banner
-			};
 
 			const response = await mezon.client.updateClanDesc(mezon.session, clan_id, request);
 
@@ -391,6 +383,20 @@ export const clansSlice = createSlice({
 				id: clanId,
 				changes: {
 					is_onboarding: onboarding
+				}
+			});
+		},
+		update: (state, action: PayloadAction<{ dataUpdate: ClanUpdatedEvent }>) => {
+			const { dataUpdate } = action.payload;
+			clansAdapter.updateOne(state, {
+				id: dataUpdate.clan_id as string,
+				changes: {
+					clan_id: dataUpdate.clan_id,
+					clan_name: dataUpdate.clan_name,
+					logo: dataUpdate.logo,
+					banner: dataUpdate.banner,
+					is_onboarding: dataUpdate.is_onboarding,
+					welcome_channel_id: dataUpdate.welcome_channel_id
 				}
 			});
 		}

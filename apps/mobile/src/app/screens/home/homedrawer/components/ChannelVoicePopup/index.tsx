@@ -74,7 +74,7 @@ const ChannelVoicePopup = () => {
 		);
 	};
 
-	const handleLeaveRoom = async () => {
+	const handleLeaveRoom = async (clanId: string, channelId: string) => {
 		if (clanId && channelId) {
 			await participantMeetState(ParticipantMeetState.LEAVE, clanId, channelId);
 			dispatch(voiceActions.resetVoiceSettings());
@@ -86,8 +86,8 @@ const ChannelVoicePopup = () => {
 			setChannelId(data?.channelId);
 			setClanId(data?.clanId);
 			if (data?.isEndCall) {
+				handleLeaveRoom(data?.clanId, data?.channelId);
 				setVoicePlay(false);
-				handleLeaveRoom();
 			} else {
 				handleJoinChannelVoice(data?.roomName, data?.channelId, data?.clanId);
 			}

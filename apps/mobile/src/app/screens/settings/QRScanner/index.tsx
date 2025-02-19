@@ -203,7 +203,7 @@ export const QRScanner = () => {
 								navigation.goBack();
 							}}
 						>
-							<Icons.CloseSmallBoldIcon width={size.s_28} height={baseColor.white} />
+							<Icons.CloseSmallBoldIcon width={size.s_28} height={size.s_28} color={baseColor.white} />
 						</TouchableOpacity>
 						<TouchableOpacity onPress={onMyQRCode}>
 							<View

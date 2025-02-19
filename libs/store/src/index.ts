@@ -68,7 +68,7 @@ export * from './lib/settingSticker/settingSticker.slice';
 export * from './lib/store';
 export * from './lib/stream/usersStream.slice';
 export * from './lib/stream/videoStream.slice';
-export * from './lib/systemMessages/systemMessage.slide';
+export * from './lib/systemMessages/systemMessage.slice';
 export * from './lib/threads/threads.slice';
 export * from './lib/toasts';
 export * from './lib/toasts/toasts.slice';

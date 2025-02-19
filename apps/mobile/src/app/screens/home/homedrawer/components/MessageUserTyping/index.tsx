@@ -1,5 +1,5 @@
 import { useChatTypings } from '@mezon/core';
-import { size, Text, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { Text, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
@@ -32,19 +32,11 @@ export const MessageUserTyping = React.memo(({ channelId, isDM, mode, isPublic }
 		return null;
 	}
 	return (
-		<View
-			style={{
-				flexDirection: 'row',
-				width: '100%',
-				paddingVertical: size.s_4,
-				paddingHorizontal: size.s_10,
-				position: 'absolute',
-				bottom: 0,
-				backgroundColor: themeValue.primary
-			}}
-		>
+		<View style={styles.typingContainer}>
 			<LottieView source={theme === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE} autoPlay loop style={styles.threeDot} />
-			<Text style={styles.typingLabel}>{typingLabel}</Text>
+			<Text style={styles.typingLabel} numberOfLines={1}>
+				{typingLabel}
+			</Text>
 		</View>
 	);
 });

@@ -101,6 +101,7 @@ import {
 	ChannelUpdatedEvent,
 	ClanDeletedEvent,
 	ClanProfileUpdatedEvent,
+	ClanUpdatedEvent,
 	CustomStatusEvent,
 	EventEmoji,
 	LastPinMessageEvent,
@@ -379,6 +380,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						channelMetaActions.setChannelLastSentTimestamp({ channelId: message.channel_id, timestamp, senderId: message.sender_id })
 					);
 					dispatch(listChannelsByUserActions.updateLastSentTime({ channelId: message.channel_id }));
+					dispatch(threadsActions.updateLastSentInThread({ channelId: message.channel_id, lastSentTime: timestamp }));
 				}
 				// check
 			} catch (error) {
@@ -1388,6 +1390,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[dispatch]
 	);
 
+	const onclanupdated = useCallback(
+		async (clanUpdatedEvent: ClanUpdatedEvent) => {
+			if (!clanUpdatedEvent) return;
+			dispatch(clansSlice.actions.update({ dataUpdate: clanUpdatedEvent }));
+		},
+		[dispatch]
+	);
+
 	const setCallbackEventFn = React.useCallback(
 		(socket: Socket) => {
 			socket.onvoicejoined = onvoicejoined;
@@ -1479,6 +1489,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			socket.onmessagebuttonclicked = onmessagebuttonclicked;
 
 			socket.onwebrtcsignalingfwd = onwebrtcsignalingfwd;
+
+			socket.onclanupdated = onclanupdated;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -1523,7 +1535,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			oneventwebhook,
 			ontokensent,
 			onmessagebuttonclicked,
-			onwebrtcsignalingfwd
+			onwebrtcsignalingfwd,
+			onclanupdated
 		]
 	);
 

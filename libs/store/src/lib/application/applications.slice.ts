@@ -1,13 +1,18 @@
 import { captureSentryError } from '@mezon/logger';
 import { LoadingStatus } from '@mezon/utils';
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
-import { ApiAddAppRequest, ApiApp, ApiAppList, MezonUpdateAppBody } from 'mezon-js/api.gen';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
+import { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClientList, MezonUpdateAppBody } from 'mezon-js/api.gen';
+import { ensureSession, getMezonCtx, MezonValueContext } from '../helpers';
 
 export const ADMIN_APPLICATIONS = 'adminApplication';
 
-export interface IApplicationState {
+export interface IApplicationEntity extends ApiApp {
+	id: string;
+	OAuth2: ApiMezonOauthClientList;
+}
+
+export interface IApplicationState extends EntityState<IApplicationEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	appsData: ApiAppList;
@@ -17,7 +22,11 @@ export interface IApplicationState {
 	isElectronUpdateAvailable: boolean;
 }
 
-export const applicationInitialState: IApplicationState = {
+export const applicationAdapter = createEntityAdapter({
+	selectId: (item: IApplicationEntity) => item?.id || ''
+});
+
+export const applicationInitialState: IApplicationState = applicationAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
 	appsData: {
@@ -38,7 +47,7 @@ export const applicationInitialState: IApplicationState = {
 	currentAppId: undefined,
 	isElectronUpdateAvailable: false,
 	isElectronDownLoading: false
-};
+});
 
 const FETCH_CACHED_TIME = 3 * 60 * 1000;
 
@@ -132,6 +141,17 @@ export const deleteApplication = createAsyncThunk('adminApplication/deleteApplic
 	}
 });
 
+export const fetchMezonOauthClient = createAsyncThunk('adminApplication/fetchMezonOauthClient', async (_, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.listMezonOauthClient(mezon.session);
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'adminApplication/fetchMezonOauthClient');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const adminApplicationSlice = createSlice({
 	name: ADMIN_APPLICATIONS,
 	initialState: applicationInitialState,
@@ -151,8 +171,9 @@ export const adminApplicationSlice = createSlice({
 			state.loadingStatus = 'loading';
 		});
 		builder.addCase(fetchApplications.fulfilled, (state, action) => {
-			state.appsData = action.payload;
 			state.loadingStatus = 'loaded';
+			state.appsData = action.payload;
+			applicationAdapter.setAll(state, (action.payload.apps as IApplicationEntity[]) || []);
 		});
 		builder.addCase(fetchApplications.rejected, (state) => {
 			state.loadingStatus = 'not loaded';

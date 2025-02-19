@@ -111,8 +111,7 @@ export const editOnboarding = createAsyncThunk(
 			if (!response) {
 				return false;
 			}
-			thunkAPI.dispatch(fetchOnboarding({ clan_id: clan_id, noCache: true }));
-			return { content, clan_id };
+			return { content, clan_id, idOnboarding };
 		} catch (error) {
 			captureSentryError(error, 'onboarding/createOnboarding');
 			return thunkAPI.rejectWithValue(error);
@@ -452,6 +451,42 @@ export const onboardingSlice = createSlice({
 			.addCase(fetchProcessingOnboarding.fulfilled, (state, action) => {
 				if (action.payload) {
 					onboardingUserAdapter.setAll(state, action.payload);
+				}
+			})
+			.addCase(editOnboarding.fulfilled, (state, action) => {
+				if (!action.payload) {
+					return;
+				}
+				const { clan_id, content, idOnboarding } = action.payload;
+				if (state.listOnboarding[clan_id]) {
+					switch (content.guide_type) {
+						case EGuideType.RULE:
+							state.listOnboarding[action.payload.clan_id].rule = state.listOnboarding[action.payload.clan_id].rule.map((rule) => {
+								if (rule.id === idOnboarding) {
+									return {
+										...rule,
+										...content
+									};
+								}
+								return rule;
+							});
+							break;
+						case EGuideType.TASK:
+							state.listOnboarding[action.payload.clan_id].mission = state.listOnboarding[action.payload.clan_id].mission.map(
+								(task) => {
+									if (task.id === idOnboarding) {
+										return {
+											...task,
+											...content
+										};
+									}
+									return task;
+								}
+							);
+							break;
+						default:
+							break;
+					}
 				}
 			});
 	}

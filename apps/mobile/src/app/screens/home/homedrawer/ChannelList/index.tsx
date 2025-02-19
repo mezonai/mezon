@@ -1,11 +1,11 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { selectIsShowEmptyCategory, selectListChannelRenderByClanId } from '@mezon/store';
-import { appActions, selectCurrentClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { appActions, channelsActions, selectCurrentClan, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useMemo, useRef } from 'react';
-import { FlatList, InteractionManager, View } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { FlatList, InteractionManager, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { AppStackScreenProps } from '../../../../navigation/ScreenTypes';
@@ -32,6 +32,25 @@ const ChannelList = () => {
 	const currentClan = useSelector(selectCurrentClan);
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClan?.clan_id));
+	const [refreshing, setRefreshing] = useState(false);
+	const dispatch = useAppDispatch();
+
+	const handleRefresh = async () => {
+		setRefreshing(true);
+
+		const promise = [
+			dispatch(channelsActions.fetchChannels({ clanId: currentClan?.clan_id, noCache: true })),
+			dispatch(
+				voiceActions.fetchVoiceChannelMembers({
+					clanId: currentClan?.clan_id ?? '',
+					channelId: '',
+					channelType: ChannelType.CHANNEL_TYPE_GMEET_VOICE || ChannelType.CHANNEL_TYPE_MEZON_VOICE
+				})
+			)
+		];
+		await Promise.all(promise);
+		setRefreshing(false);
+	};
 
 	const data = useMemo(
 		() => [
@@ -55,7 +74,6 @@ const ChannelList = () => {
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
 	const flashListRef = useRef(null);
 	const channelsPositionRef = useRef<ChannelsPositionRef>();
-	const dispatch = useAppDispatch();
 
 	const handleLayout = useCallback(
 		(event, item) => {
@@ -90,7 +108,7 @@ const ChannelList = () => {
 		}
 	}, []);
 
-	const keyExtractor = useCallback((item) => item.id + item.isFavor?.toString(), []);
+	const keyExtractor = useCallback((item, index) => item.id + item.isFavor?.toString() + index, []);
 
 	return (
 		<>
@@ -105,6 +123,7 @@ const ChannelList = () => {
 					updateCellsBatchingPeriod={50}
 					initialNumToRender={20}
 					windowSize={5}
+					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 				/>
 				<ChannelListLoading isNonChannel={!!listChannelRender?.length} />
 				<View style={{ height: 80 }} />

@@ -9,7 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { KeyboardAvoidingView, Platform, StatusBar, View } from 'react-native';
@@ -91,13 +91,15 @@ export default function TopicDiscussion() {
 		[navigation]
 	);
 
-	useEffect(() => {
-		dispatch(appActions.setIsFocusOnChannelInput(false));
+	useFocusEffect(
+		useCallback(() => {
+			dispatch(appActions.setIsFocusOnChannelInput(false));
 
-		return () => {
-			dispatch(appActions.setIsFocusOnChannelInput(true));
-		};
-	}, [dispatch]);
+			return () => {
+				dispatch(appActions.setIsFocusOnChannelInput(true));
+			};
+		}, [dispatch])
+	);
 
 	const onGoBack = useCallback(() => {
 		navigation.goBack();

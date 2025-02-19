@@ -1,8 +1,7 @@
 import { useClans } from '@mezon/core';
 import { createSystemMessage, fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { ApiUpdateClanDescRequest } from 'mezon-js';
-import { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
+import { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ClanBannerBackground from './ClanBannerBackground';
@@ -14,12 +13,13 @@ const ClanSettingOverview = () => {
 	const { updateClan } = useClans();
 	const currentClan = useSelector(selectCurrentClan);
 	const [hasChanges, setHasChanges] = useState<boolean>(false);
-	const [clanRequest, setClanRequest] = useState<ApiUpdateClanDescRequest>({
+	const [clanRequest, setClanRequest] = useState<MezonUpdateClanDescBody>({
 		banner: currentClan?.banner ?? '',
-		clan_id: currentClan?.clan_id ?? '',
 		clan_name: currentClan?.clan_name ?? '',
 		creator_id: currentClan?.creator_id ?? '',
-		logo: currentClan?.logo ?? ''
+		logo: currentClan?.logo ?? '',
+		is_onboarding: currentClan?.is_onboarding,
+		welcome_channel_id: currentClan?.welcome_channel_id ?? ''
 	});
 
 	const [systemMessage, setSystemMessage] = useState<ApiSystemMessage | null>(null);
@@ -87,8 +87,13 @@ const ClanSettingOverview = () => {
 	};
 
 	const handleSave = async () => {
-		await updateClan(clanRequest);
-		await updateSystemMessages();
+		if (currentClan?.clan_id) {
+			await updateClan({
+				clan_id: currentClan?.clan_id as string,
+				request: clanRequest
+			});
+			await updateSystemMessages();
+		}
 	};
 
 	const updateSystemMessages = async () => {

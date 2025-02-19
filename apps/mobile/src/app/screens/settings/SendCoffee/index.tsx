@@ -1,16 +1,19 @@
 import { useDirect, useSendInviteMessage } from '@mezon/core';
+import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, getStoreAsync, giveCoffeeActions, selectAllAccount, selectDirectsOpenlist, selectUpdateToken } from '@mezon/store-mobile';
 import { TypeMessage, formatMoney } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
+import { captureRef } from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
+import { Sharing } from '../Sharing';
 import { style } from './styles';
 
 type ScreenSettingSendCoffee = typeof APP_SCREEN.SETTINGS.SEND_COFFEE;
@@ -21,9 +24,22 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 	const { formValue } = route.params;
 	const jsonObject: ApiTokenSentEvent = safeJSONParse(formValue || '{}');
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
-	const [tokenCount, setTokenCount] = useState(jsonObject?.amount?.toString() || '1');
+	const [fileShared, setFileShared] = useState<any>();
+	const viewToSnapshotRef = useRef();
+	const formatTokenAmount = (amount: any) => {
+		let sanitizedText = String(amount).replace(/[^0-9]/g, '');
+		if (sanitizedText === '') return '0';
+		sanitizedText = sanitizedText.replace(/^0+/, '');
+		const numericValue = parseInt(sanitizedText, 10) || 0;
+		return numericValue.toLocaleString();
+	};
+
+	const formattedAmount = formatTokenAmount(jsonObject?.amount || '1');
+	const [tokenCount, setTokenCount] = useState(formattedAmount);
 	const [note, setNote] = useState(jsonObject?.note || t('sendToken'));
-	const [plainTokenCount, setPlainTokenCount] = useState(1);
+	const [plainTokenCount, setPlainTokenCount] = useState(jsonObject?.amount || 1);
+	const [successTime, setSuccessTime] = useState('');
+	const [showSharingModal, setShowSharingModal] = useState(false);
 	const userProfile = useSelector(selectAllAccount);
 	const listDM = useSelector(selectDirectsOpenlist);
 	const { createDirectMessageWithUser } = useDirect();
@@ -98,6 +114,14 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 					text1: t('toast.error.anErrorOccurred')
 				});
 			} else {
+				const now = new Date();
+				const formattedTime = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1)
+					.toString()
+					.padStart(2, '0')}/${now.getFullYear()} ${now
+					.getHours()
+					.toString()
+					.padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+				setSuccessTime(formattedTime);
 				setShowConfirmModal(true);
 			}
 		} catch (err) {
@@ -125,6 +149,38 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 		setPlainTokenCount(numericValue);
 		setTokenCount(numericValue.toLocaleString());
 	};
+
+	const handleShare = async () => {
+		const dataUri = await captureRef(viewToSnapshotRef, { result: 'tmpfile' });
+		if (!dataUri) {
+			console.error('Failed to capture screenshot');
+			return;
+		}
+		const shareData = {
+			subject: null,
+			mimeType: 'image/jpeg',
+			fileName: `share` + Date.now(),
+			text: null,
+			weblink: null,
+			contentUri: dataUri,
+			filePath: dataUri
+		};
+		setShowConfirmModal(false);
+		setShowSharingModal(true);
+		setFileShared([shareData]);
+	};
+
+	const handleSendNewToken = () => {
+		setShowConfirmModal(false);
+		navigation.pop(2);
+		navigation.navigate(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.SEND_TOKEN });
+	};
+
+	const onCloseFileShare = useCallback(() => {
+		setFileShared(undefined);
+		setShowSharingModal(false);
+		navigation.goBack();
+	}, [navigation]);
 
 	return (
 		<View style={styles.container}>
@@ -178,23 +234,79 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 			</Pressable>
 			<Modal
 				isVisible={showConfirmModal}
-				animationIn={'bounceIn'}
-				animationOut={'bounceOut'}
+				animationIn="fadeIn"
+				animationOut="fadeOut"
 				hasBackdrop={true}
 				coverScreen={true}
-				avoidKeyboard={false}
-				backdropColor={'rgba(0,0,0, 0.7)'}
+				backdropColor="rgba(0,0,0, 0.9)"
 				deviceHeight={Dimensions.get('screen').height}
+				style={{ margin: 0, justifyContent: 'center', alignItems: 'center' }}
 			>
-				<View style={styles.modalContainer}>
-					<View style={styles.heading}>
-						<Text style={styles.heading}>{t('toast.success.sendSuccess')}</Text>
+				<View ref={viewToSnapshotRef} style={styles.fullscreenModal}>
+					<View style={styles.modalHeader}>
+						<View>
+							<Icons.TickIcon width={100} height={100} />
+						</View>
+						<Text style={styles.successText}>{t('toast.success.sendSuccess')}</Text>
+						<Text style={styles.amountText}>
+							{tokenCount} {plainTokenCount === 1 ? `token` : `tokens`}
+						</Text>
 					</View>
-					<TouchableOpacity style={styles.buttonConfirm} onPress={handleConfirmSuccessful}>
-						<Text style={styles.buttonTitle}>Ok</Text>
-					</TouchableOpacity>
+
+					<View style={styles.modalBody}>
+						<View style={styles.infoRow}>
+							<Text style={styles.label}>{t('receiver')}</Text>
+							<Text style={[styles.value, { fontSize: size.s_20 }]}>
+								{
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-expect-error
+									jsonObject?.receiver_name || 'KOMU'
+								}
+							</Text>
+						</View>
+
+						<View style={styles.infoRow}>
+							<Text style={styles.label}>{t('note')}</Text>
+							<Text style={styles.value}>{note || ''}</Text>
+						</View>
+
+						<View style={styles.infoRow}>
+							<Text style={styles.label}>{t('date')}</Text>
+							<Text style={styles.value}>{successTime}</Text>
+						</View>
+					</View>
+					<View style={styles.action}>
+						<View style={styles.actionMore}>
+							<TouchableOpacity activeOpacity={1} style={styles.buttonActionMore} onPress={handleShare}>
+								<Icons.ShareIcon width={24} height={24} />
+								<Text style={styles.textActionMore}>{t('share')}</Text>
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.buttonActionMore} onPress={handleSendNewToken}>
+								<Icons.ArrowLeftRightIcon />
+								<Text style={styles.textActionMore}>{t('sendNewToken')}</Text>
+							</TouchableOpacity>
+						</View>
+
+						<TouchableOpacity style={styles.confirmButton} onPress={handleConfirmSuccessful}>
+							<Text style={styles.confirmText}>{t('complete')}</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</Modal>
+			{!!fileShared && (
+				<Modal
+					isVisible={showSharingModal}
+					animationIn="fadeIn"
+					animationOut="fadeOut"
+					hasBackdrop={true}
+					coverScreen={true}
+					backdropColor="rgba(0,0,0, 0.9)"
+					deviceHeight={Dimensions.get('screen').height}
+					style={{ margin: 0, justifyContent: 'center', alignItems: 'center' }}
+				>
+					<Sharing data={fileShared} onClose={onCloseFileShare} />
+				</Modal>
+			)}
 		</View>
 	);
 };

@@ -109,4 +109,4 @@ export * from './components/HtmlCanvas';
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 
-export { default as VoiceInfo } from './components/VoiceInfo';
+export * from './components/VoiceChannel';

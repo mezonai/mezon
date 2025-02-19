@@ -79,13 +79,7 @@ export const MessageReactionWrapper = React.memo(
 		}, []);
 
 		return (
-			<View
-				style={[
-					styles.reactionWrapper,
-					styles.reactionSpace,
-					isMessageSystem && { paddingTop: 0, marginLeft: size.s_40 }
-				]}
-			>
+			<View style={[styles.reactionWrapper, styles.reactionSpace, isMessageSystem && { paddingTop: 0, marginLeft: size.s_40 }]}>
 				{messageReactions?.map((emojiItemData: EmojiDataOptionals, index) => {
 					const isMyReaction = emojiItemData?.senders?.find?.((sender: SenderInfoOptionals) => sender.sender_id === userId);
 

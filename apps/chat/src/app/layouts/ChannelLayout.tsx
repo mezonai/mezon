@@ -1,7 +1,7 @@
-import { useIdleRender } from '@mezon/core';
-import { selectCloseMenu, selectCurrentChannel, topicsActions } from '@mezon/store';
+import { useGifsStickersEmoji, useIdleRender } from '@mezon/core';
+import { selectClickedOnTopicStatus, selectCloseMenu, selectCurrentChannel, selectIsShowCreateTopic, topicsActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { SubPanelName, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,15 +14,26 @@ const ChannelLayout = () => {
 	const isChannelStream = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
 	const closeMenu = useSelector(selectCloseMenu);
 
+	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const { subPanelActive, setSubPanelActive } = useGifsStickersEmoji();
+	const openEmojiRightPanel = subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT;
+	const openEmojiBottomPanel = subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM;
+	const openEmojiPanelOnTopic = (openEmojiRightPanel || openEmojiBottomPanel) && isFocusTopicBox;
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
+
 	const dispatch = useDispatch();
 
 	const onMouseDown = () => {
+		setSubPanelActive(SubPanelName.NONE);
 		dispatch(topicsActions.setFocusTopicBox(false));
 	};
 	const shouldRender = useIdleRender();
 
 	return (
-		<div onMouseDown={onMouseDown} className="flex flex-col z-1 flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible  relative">
+		<div
+			onMouseDown={onMouseDown}
+			className={`flex flex-col ${openEmojiPanelOnTopic || subPanelActive !== SubPanelName.NONE ? 'z-20 relative' : 'z-0'} flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible  relative`}
+		>
 			{isChannelVoice ? (
 				<ChannelLayoutVoice channelLabel={currentChannel.channel_label} meetingCode={currentChannel.meeting_code} />
 			) : (
@@ -32,7 +43,17 @@ const ChannelLayout = () => {
 					>
 						<Outlet />
 					</div>
-					{shouldRender && <ReactionEmojiPanel closeMenu={closeMenu} currentChannelId={currentChannel?.channel_id ?? ''} />}
+					{shouldRender && (
+						<ReactionEmojiPanel
+							isFocusTopicBox={isFocusTopicBox}
+							openEmojiRightPanel={openEmojiRightPanel}
+							openEmojiBottomPanel={openEmojiBottomPanel}
+							openEmojiPanelOnTopic={openEmojiPanelOnTopic}
+							closeMenu={closeMenu}
+							currentChannelId={currentChannel?.channel_id ?? ''}
+							isShowCreateTopic={isShowCreateTopic}
+						/>
+					)}
 				</>
 			)}
 		</div>

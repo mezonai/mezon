@@ -23,11 +23,15 @@ const LogoClanSelector = () => {
 		async (url?: string) => {
 			if (url) {
 				await updateClan({
-					banner: currentClan?.banner ?? '',
 					clan_id: currentClan?.clan_id ?? '',
-					clan_name: currentClan?.clan_name ?? '',
-					creator_id: currentClan?.creator_id ?? '',
-					logo: url || (currentClan?.logo ?? '')
+					request: {
+						banner: currentClan?.banner ?? '',
+						clan_name: currentClan?.clan_name ?? '',
+						creator_id: currentClan?.creator_id ?? '',
+						is_onboarding: currentClan?.is_onboarding,
+						logo: url || (currentClan?.logo ?? ''),
+						welcome_channel_id: currentClan?.welcome_channel_id ?? ''
+					}
 				});
 			}
 		},

@@ -1,4 +1,4 @@
-import { EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
+import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
 import { ApiOnboardingItem } from 'mezon-js/api.gen';
 import { ChangeEvent, useState } from 'react';
 import ModalControlRule, { ControlInput } from '../ModalControlRule';
@@ -17,6 +17,22 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 		setRuleDescription(e.target.value);
 	};
 	const handleAddRules = () => {
+		if (!tempId && tempId !== 0) {
+			dispatch(
+				editOnboarding({
+					clan_id: ruleEdit?.clan_id as string,
+					idOnboarding: ruleEdit?.id as string,
+					content: {
+						title: ruleTitle,
+						content: ruleDescription,
+						guide_type: EGuideType.RULE
+					}
+				})
+			);
+			onClose();
+			return;
+		}
+
 		dispatch(
 			onboardingActions.addRules({
 				title: ruleTitle,

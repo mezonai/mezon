@@ -77,8 +77,8 @@ export const Events = memo(() => {
 		if (previewMode) {
 			return true;
 		}
-		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && onboardingByClan?.mission.length > 0;
-	}, [selectUserProcessing?.onboarding_step, onboardingByClan?.mission.length, previewMode]);
+		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && onboardingByClan?.mission.length > 0 && currentClan?.is_onboarding;
+	}, [selectUserProcessing?.onboarding_step, onboardingByClan?.mission.length, previewMode, currentClan?.is_onboarding]);
 
 	const eventLoading = useSelector(selectEventLoading);
 

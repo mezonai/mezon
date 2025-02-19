@@ -184,12 +184,30 @@ module.exports = {
             transform: "scale(1)"
           }
         },
+        scale_down: {
+          '0%': {
+            transform: "scale(1)",
+            opacity: 1
+          },
+          '100%': {
+            opacity: 0,
+            transform: 'scale(0,0)'
+          }
+        },
         height_logo:{
           from : {
             height:'0px'
           },
           to : {
-            height:'48px'
+            height:'60px'
+          }
+        },
+        move_out_logo : {
+          from : {
+            height:'60px'
+          },
+          to : {
+            height:'0px'
           }
         },
         fly_in: {
@@ -259,8 +277,10 @@ module.exports = {
       rotation: 'rotation 6s linear infinite',
       spin: 'spin 1s linear infinite',
       faded_input: 'faded_input 0.05s ease-in-out forwards',
-      scale_up: 'scale_up 0.5s ease-in-out forwards',
-      height_logo: 'height_logo 0.5s ease-in-out forwards',
+      scale_up: 'scale_up 0.2s ease-in-out forwards',
+      scale_down : 'scale_down 0.2s ease-in-out forwards',
+      height_logo: 'height_logo 0.2s ease-in-out forwards',
+      move_out_logo: 'move_out_logo 0.2s ease-in-out forwards',
       fly_in: 'fly_in 0.2s ease-in-out forwards',
       slide_in: 'slide_in 0.5s ease-in-out forwards',
       pulse: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',

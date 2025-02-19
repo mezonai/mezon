@@ -14,6 +14,7 @@ import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	getStoreAsync,
+	listChannelRenderAction,
 	notificationSettingActions,
 	selectAllChannelsFavorite,
 	selectCurrentClan,
@@ -133,10 +134,12 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 
 	const markFavoriteChannel = () => {
 		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel?.id, clan_id: currentClan?.id }));
+		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel?.id, clanId: currentClan?.id as string, mark: true }));
 	};
 
 	const removeFavoriteChannel = () => {
 		dispatch(channelsActions.removeFavoriteChannel({ channelId: channel?.id, clanId: currentClan?.id || '' }));
+		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel?.id, clanId: currentClan?.id as string, mark: false }));
 	};
 
 	const muteOrUnMuteChannel = (active: ENotificationActive) => {

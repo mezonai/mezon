@@ -350,6 +350,8 @@ const SidebarMenu = memo(
 			return 0;
 		});
 		const listUnreadDM = useSelector(selectDirectsUnreadlist);
+		const [listDmRender, setListDmRender] = useState(listUnreadDM);
+		const countUnreadRender = useRef(listDmRender.map((channel) => channel.id));
 		const isClanView = useSelector(selectClanView);
 		const currentClanId = useSelector(selectCurrentClanId);
 		const closeMenu = useSelector(selectCloseMenu);
@@ -404,8 +406,23 @@ const SidebarMenu = memo(
 			}
 		};
 
+		const timerRef = useRef<NodeJS.Timeout | null>(null);
 		const idsSelectedChannel = safeJSONParse(localStorage.getItem('remember_channel') || '{}');
-
+		useEffect(() => {
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+				timerRef.current = null;
+			}
+			if (listUnreadDM.length > countUnreadRender.current.length) {
+				setListDmRender(listUnreadDM);
+				countUnreadRender.current = listUnreadDM.map((channel) => channel.id);
+			} else {
+				countUnreadRender.current = listUnreadDM.map((channel) => channel.id);
+				timerRef.current = setTimeout(() => {
+					setListDmRender(listUnreadDM);
+				}, 1000);
+			}
+		}, [listUnreadDM]);
 		return (
 			<div
 				className={`fixed z-10 left-0 top-0 w-[72px] dark:bg-bgTertiary bg-bgLightTertiary duration-100 ${isWindowsDesktop || isLinuxDesktop ? 'mt-[21px]' : ''} ${isMacDesktop ? 'pt-[18px]' : ''} ${closeMenu ? (statusMenu ? '' : 'hidden') : ''}`}
@@ -415,13 +432,11 @@ const SidebarMenu = memo(
 				<div
 					className={`top-0 left-0 right-0 flex flex-col items-center py-4 px-3 overflow-y-auto hide-scrollbar ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : 'h-screen'} `}
 				>
-					<div className="flex flex-col gap-3 ">
+					<div className="flex flex-col ">
 						<SidebarLogoItem />
-						{!!listUnreadDM?.length &&
-							listUnreadDM.map((dmGroupChatUnread) => (
-
-								<DirectUnread directMessage={dmGroupChatUnread} />
-
+						{!!listDmRender?.length &&
+							listDmRender.map((dmGroupChatUnread) => (
+								<DirectUnread key={dmGroupChatUnread.id} directMessage={dmGroupChatUnread} checkMoveOut={countUnreadRender.current} />
 							))}
 					</div>
 					<div className="border-t-2 my-2 dark:border-t-borderDividerLight border-t-buttonLightTertiary"></div>
@@ -429,6 +444,7 @@ const SidebarMenu = memo(
 						{clans.map((clan: IClan) => {
 							return (
 								<SidebarClanItem
+									key={clan.id}
 									linkClan={`/chat/clans/${clan.id}${idsSelectedChannel[clan.id] ? `/channels/${idsSelectedChannel[clan.id]}` : ''}`}
 									option={clan}
 									active={isClanView && currentClanId === clan.clan_id}

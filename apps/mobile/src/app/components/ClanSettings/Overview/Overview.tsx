@@ -81,11 +81,15 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		}
 
 		await updateClan({
-			banner: banner,
-			clan_name: clanName?.trim() || (currentClan?.clan_name ?? ''),
 			clan_id: currentClan?.clan_id ?? '',
-			creator_id: currentClan?.creator_id ?? '',
-			logo: currentClan?.logo ?? ''
+			request: {
+				banner: banner,
+				clan_name: clanName?.trim() || (currentClan?.clan_name ?? ''),
+				creator_id: currentClan?.creator_id ?? '',
+				is_onboarding: currentClan?.is_onboarding,
+				logo: currentClan?.logo ?? '',
+				welcome_channel_id: currentClan?.welcome_channel_id ?? ''
+			}
 		});
 
 		setLoading(false);

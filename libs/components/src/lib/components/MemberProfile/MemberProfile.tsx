@@ -338,7 +338,7 @@ export function MemberProfile({
 		closeModal(ModalType.UserProfile);
 	};
 
-	const userStatus = useMemo(() => {
+	const userStatus: EUserStatus = useMemo(() => {
 		if (isFooter && userProfile?.user?.metadata) {
 			const metadata = safeJSONParse(userProfile?.user?.metadata) as any;
 			return metadata?.user_status;
@@ -389,7 +389,7 @@ export function MemberProfile({
 						/>
 					)}
 				</div>
-				<div className="flex flex-col items-start h-full ml-0.5">
+				<div className="flex flex-col items-start h-full ml-0.5 w-full">
 					<div
 						ref={subNameRef}
 						className={`absolute top-[22px] mr-5 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col items-start justify-start ${isFooter ? 'ml-[2px]' : ''} ${isHideAnimation ? '' : 'group-hover:-translate-y-4'}`}
@@ -406,7 +406,7 @@ export function MemberProfile({
 									<span
 										className={`text-[11px] dark:text-contentSecondary text-colorTextLightMode ${isFooter ? 'leading-[18px]' : ''}`}
 									>
-										{userStatus || !status ? 'Offline' : 'Online'}
+										{typeof userStatus === 'string' && userStatus ? userStatus : !status?.status ? 'Offline' : 'Online'}
 									</span>
 								)}
 
@@ -417,10 +417,11 @@ export function MemberProfile({
 						)}
 					</div>
 					{!isHideUserName && (
-						<div className={'h-full flex-col '}>
+						<div className={'h-full flex-col w-full'}>
 							<div className="flex flex-row items-center w-full overflow-x-hidden" style={{ minWidth: `${minWidthNameMain}px` }}>
 								<p
 									className={`text-base font-medium nameMemberProfile
+									${!isOwnerClanOrGroup && 'w-full'}
 												${isListFriend ? ' inline-flex justify-start' : ''}
 									${isMemberChannel || positionType === MemberProfileType.DM_MEMBER_GROUP ? ` ${isOwnerClanOrGroup ? 'max-w-[150px]' : 'max-w-[176px]'}  whitespace-nowrap overflow-x-hidden text-ellipsis` : ''}
 									${positionType === MemberProfileType.DM_LIST ? `${isOwnerClanOrGroup ? 'max-w-[150px]' : 'max-w-[176px]'} whitespace-nowrap overflow-x-hidden text-ellipsis group-hover/itemListDm:text-black dark:group-hover/itemListDm:text-white` : ''}
@@ -431,7 +432,7 @@ export function MemberProfile({
 									title={name}
 								>
 									<span
-										className={`one-line ${hideLongName && 'truncate !block'} ${isOwnerClanOrGroup && 'max-w-[140px]'} ${isListFriend ? 'dark:text-white text-black' : ''}`}
+										className={`one-line text-start ${hideLongName && 'truncate !block'} ${isOwnerClanOrGroup && 'max-w-[140px]'} ${isListFriend ? 'dark:text-white text-black' : ''}`}
 										style={isFooter || isDM ? undefined : { color: userRolesClan.highestPermissionRoleColor }}
 									>
 										{!isHiddenAvatarPanel && name}

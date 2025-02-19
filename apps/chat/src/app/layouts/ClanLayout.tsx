@@ -1,5 +1,5 @@
 import { ChannelList, ChannelTopbar, ClanHeader, FooterProfile, StreamInfo, UpdateButton, VoiceInfo } from '@mezon/components';
-import { useApp } from '@mezon/core';
+import { useApp, useGifsStickersEmoji } from '@mezon/core';
 import {
 	ChannelsEntity,
 	ClansEntity,
@@ -22,7 +22,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { ESummaryInfo, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { ESummaryInfo, SubPanelName, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
@@ -97,7 +97,9 @@ const ClanLayout = () => {
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);
 	const dispatch = useDispatch();
+	const { setSubPanelActive } = useGifsStickersEmoji();
 	const onMouseDown = () => {
+		setSubPanelActive(SubPanelName.NONE);
 		dispatch(topicsActions.setFocusTopicBox(true));
 	};
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);

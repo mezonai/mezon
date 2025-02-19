@@ -8,5 +8,14 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_14,
 			color: colors.text
 		},
-		threeDot: { width: 30, height: 20 }
+		threeDot: { width: 30, height: 20 },
+		typingContainer: {
+			flexDirection: 'row',
+			width: '100%',
+			paddingBottom: size.s_4,
+			paddingHorizontal: size.s_10,
+			position: 'absolute',
+			bottom: 0,
+			backgroundColor: colors.primary
+		}
 	});

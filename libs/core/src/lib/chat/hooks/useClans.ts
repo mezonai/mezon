@@ -7,7 +7,7 @@ import {
 	useAppDispatch,
 	userClanProfileActions
 } from '@mezon/store';
-import { ApiUpdateClanDescRequest } from 'mezon-js';
+import { MezonUpdateClanDescBody } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -66,8 +66,13 @@ export function useClans() {
 	);
 
 	const updateClan = React.useCallback(
-		async ({ clan_id, banner, clan_name, creator_id, logo }: ApiUpdateClanDescRequest) => {
-			await dispatch(clansActions.updateClan({ clan_id, banner, clan_name, creator_id, logo }));
+		async ({ clan_id, request }: { clan_id: string; request: MezonUpdateClanDescBody }) => {
+			await dispatch(
+				clansActions.updateClan({
+					clan_id,
+					request
+				})
+			);
 		},
 		[dispatch]
 	);

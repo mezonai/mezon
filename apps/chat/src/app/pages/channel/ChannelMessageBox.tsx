@@ -116,6 +116,9 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 					style={{
 						bottom: chatboxRef.current ? `${chatboxRef.current.offsetHeight}px` : ''
 					}}
+					onMouseDown={(e) => {
+						e.stopPropagation();
+					}}
 				>
 					<GifStickerEmojiPopup channelOrDirect={channel} emojiAction={EmojiPlaces.EMOJI_EDITOR} mode={mode} />
 				</div>
