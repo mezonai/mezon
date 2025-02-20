@@ -389,10 +389,11 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 	}
 });
 
-export const follower = createAsyncThunk('direct/follower', async (_, thunkAPI) => {
+export const follower = createAsyncThunk('direct/follower', async (payload: { clanId: string }, thunkAPI) => {
 	try {
+		const { clanId } = payload;
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.socketRef.current?.follower();
+		await mezon.socketRef.current?.follower(clanId);
 	} catch (error) {
 		return thunkAPI.rejectWithValue(error);
 	}

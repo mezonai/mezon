@@ -31,6 +31,7 @@ function getRedirectTo(initialPath?: string): string {
 }
 
 export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
+	dispatch(directActions.follower({ clanId: '0' }));
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
