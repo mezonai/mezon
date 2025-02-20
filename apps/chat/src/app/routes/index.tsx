@@ -30,6 +30,7 @@ import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
 import { inviteLoader, shouldRevalidateInvite } from '../loaders/inviteLoader';
 import AppDirectory from '../pages/AppDirectory';
 import MezonPage from '../pages/homepage/mezonpage';
+import SupportPage from '../pages/support';
 import ThreadsMain from '../pages/thread';
 import CanvasRoutes from './CanvasRoutes';
 import ErrorRoutes from './ErrorRoutes';
@@ -88,7 +89,8 @@ export const Routes = memo(() => {
 							// initial route to redirect to /chat
 							{
 								path: '/mezon',
-								element: <InitialRoutes />
+								// element: <InitialRoutes />
+								element: <SupportPage />
 							},
 							isElectron()
 								? {
