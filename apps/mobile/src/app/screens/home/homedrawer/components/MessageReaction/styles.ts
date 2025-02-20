@@ -12,7 +12,7 @@ export const style = (colors: Attributes) =>
 		},
 		reactionSpace: {
 			marginBottom: size.s_6,
-			height: size.s_30
+			height: 'auto'
 		},
 		myReaction: {
 			borderWidth: 1,
@@ -28,7 +28,7 @@ export const style = (colors: Attributes) =>
 			gap: size.s_2,
 			padding: size.s_2,
 			borderRadius: 5,
-			height: '100%'
+			height: size.s_30
 		},
 		reactCount: {
 			color: colors.text,
