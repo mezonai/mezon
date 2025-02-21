@@ -12,7 +12,7 @@ export const style = (colors: Attributes) =>
 		},
 		reactionSpace: {
 			marginBottom: size.s_6,
-			height: 'auto'
+			minHeight: size.s_30
 		},
 		myReaction: {
 			borderWidth: 1,

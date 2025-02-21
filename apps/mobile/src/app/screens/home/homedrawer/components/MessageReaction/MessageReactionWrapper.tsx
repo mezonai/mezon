@@ -4,7 +4,7 @@ import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { calculateTotalCount, EmojiDataOptionals, getSrcEmoji, SenderInfoOptionals, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
+import { DeviceEventEmitter, Dimensions, Keyboard, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { UserInformationBottomSheet } from '../../../../../../app/components/UserInformationBottomSheet';
 import { IMessageReactionProps } from '../../types';
@@ -78,8 +78,21 @@ export const MessageReactionWrapper = React.memo(
 			setSelectedUserId(null);
 		}, []);
 
+		const messageHeight = useMemo(() => {
+			const messageWidth = Dimensions.get('window').width - size.s_60;
+			const reactionRow = (size.s_40 * (messageReactions?.length + 1)) / messageWidth;
+			return reactionRow * size.s_30 + (reactionRow - 1 * size.s_2);
+		}, [messageReactions?.length]);
+
 		return (
-			<View style={[styles.reactionWrapper, styles.reactionSpace, isMessageSystem && { paddingTop: 0, marginLeft: size.s_40 }]}>
+			<View
+				style={[
+					styles.reactionWrapper,
+					styles.reactionSpace,
+					isMessageSystem && { paddingTop: 0, marginLeft: size.s_40 },
+					{ minHeight: messageHeight }
+				]}
+			>
 				{messageReactions?.map((emojiItemData: EmojiDataOptionals, index) => {
 					const isMyReaction = emojiItemData?.senders?.find?.((sender: SenderInfoOptionals) => sender.sender_id === userId);
 
