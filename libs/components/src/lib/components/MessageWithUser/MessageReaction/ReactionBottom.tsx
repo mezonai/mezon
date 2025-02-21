@@ -1,5 +1,5 @@
 import { useGifsStickersEmoji } from '@mezon/core';
-import { reactionActions, referencesActions } from '@mezon/store';
+import { MessagesEntity, reactionActions, referencesActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { SubPanelName } from '@mezon/utils';
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -7,10 +7,10 @@ import { useDispatch } from 'react-redux';
 
 type ReactionBottomProps = {
 	smileButtonRef: React.RefObject<HTMLDivElement>;
-	messageIdRefReaction: string;
+	messageReactionSelected: MessagesEntity;
 };
 
-const ReactionBottom = ({ smileButtonRef, messageIdRefReaction }: ReactionBottomProps) => {
+const ReactionBottom = ({ smileButtonRef, messageReactionSelected }: ReactionBottomProps) => {
 	const dispatch = useDispatch();
 	const [highlightColor, setHighLightColor] = useState('#AEAEAE');
 	const { setSubPanelActive, subPanelActive } = useGifsStickersEmoji();
@@ -18,7 +18,7 @@ const ReactionBottom = ({ smileButtonRef, messageIdRefReaction }: ReactionBottom
 		(event: React.MouseEvent<HTMLDivElement>) => {
 			setSubPanelActive(SubPanelName.EMOJI_REACTION_BOTTOM);
 			event.stopPropagation();
-			dispatch(referencesActions.setIdReferenceMessageReaction(messageIdRefReaction));
+			dispatch(referencesActions.setMessageReactionSelected(messageReactionSelected));
 		},
 		[setSubPanelActive]
 	);

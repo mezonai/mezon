@@ -1,6 +1,8 @@
 import { AttachmentTypeUpload, IMessage, PreSendAttachment } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageRef } from 'mezon-js/api.gen';
+import { MessagesEntity } from './messages.slice';
 
 export const REFERENCES_FEATURE_KEY = 'references';
 
@@ -23,7 +25,8 @@ export interface ReferencesState extends EntityState<ReferencesEntity, string> {
 	error?: string | null;
 	dataReferences: Record<string, ApiMessageRef>;
 	openEditMessageState: boolean;
-	idMessageRefReaction: string;
+	messageReactionSelected: MessagesEntity | null | undefined;
+	modeSelected: ChannelStreamMode | undefined;
 	idMessageRefEdit: string;
 	idMessageMention: string;
 	attachmentAfterUpload: Record<string, PreSendAttachment>;
@@ -41,11 +44,12 @@ export const initialReferencesState: ReferencesState = referencesAdapter.getInit
 	error: null,
 	dataReferences: {},
 	openEditMessageState: false,
-	idMessageRefReaction: '',
+	messageReactionSelected: null,
 	idMessageRefEdit: '',
 	idMessageMention: '',
 	attachmentAfterUpload: {},
-	geoLocation: undefined
+	geoLocation: undefined,
+	modeSelected: undefined
 });
 
 export const referencesSlice = createSlice({
@@ -151,8 +155,11 @@ export const referencesSlice = createSlice({
 			];
 		},
 
-		setIdReferenceMessageReaction(state, action) {
-			state.idMessageRefReaction = action.payload;
+		setMessageReactionSelected(state, action) {
+			state.messageReactionSelected = action.payload;
+		},
+		setModeSelected(state, action) {
+			state.modeSelected = action.payload;
 		},
 		setIdReferenceMessageEdit(state, action) {
 			state.idMessageRefEdit = action.payload;
@@ -198,7 +205,9 @@ export const selectDataReferences = (channelId: string) =>
 
 export const selectOpenEditMessageState = createSelector(getReferencesState, (state: ReferencesState) => state.openEditMessageState);
 
-export const selectIdMessageRefReaction = createSelector(getReferencesState, (state: ReferencesState) => state.idMessageRefReaction);
+export const selectMessageReaction = createSelector(getReferencesState, (state: ReferencesState) => state.messageReactionSelected);
+
+export const selectMode = createSelector(getReferencesState, (state: ReferencesState) => state.modeSelected);
 
 export const selectIdMessageRefEdit = createSelector(getReferencesState, (state: ReferencesState) => state.idMessageRefEdit);
 

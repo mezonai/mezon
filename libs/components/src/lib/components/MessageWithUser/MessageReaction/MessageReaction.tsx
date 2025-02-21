@@ -1,7 +1,7 @@
 import {
 	selectComputedReactionsByMessageId,
-	selectIdMessageRefReaction,
 	selectIsMessageHasReaction,
+	selectMessageReaction,
 	selectReactionBottomState,
 	selectReactionBottomStateResponsive
 } from '@mezon/store';
@@ -28,11 +28,11 @@ const MessageReaction: React.FC<MessageReactionProps> = ({ message, mode }) => {
 	const [showIconSmile, setShowIconSmile] = useState<boolean>(false);
 	const reactionBottomState = useSelector(selectReactionBottomState);
 	const reactionBottomStateResponsive = useSelector(selectReactionBottomStateResponsive);
-	const idMessageRefReaction = useSelector(selectIdMessageRefReaction);
+	const messageReactionSelected = useSelector(selectMessageReaction);
 	const messageReactions = useMessageReaction(message.channel_id, message.id);
 	const checkHasEmoji = useSelector(selectIsMessageHasReaction(message.channel_id, message.id));
 
-	const isMessageMatched = message.id === idMessageRefReaction;
+	const isMessageMatched = message.id === messageReactionSelected?.id;
 
 	return (
 		<div className="relative pl-3">
@@ -55,7 +55,7 @@ const MessageReaction: React.FC<MessageReactionProps> = ({ message, mode }) => {
 					))}
 					{checkHasEmoji && (
 						<div className="w-6 h-6 flex justify-center items-center cursor-pointer relative">
-							{showIconSmile && <ReactionBottom messageIdRefReaction={message.id} smileButtonRef={smileButtonRef} />}
+							{showIconSmile && <ReactionBottom messageReactionSelected={message} smileButtonRef={smileButtonRef} />}
 						</div>
 					)}
 				</div>

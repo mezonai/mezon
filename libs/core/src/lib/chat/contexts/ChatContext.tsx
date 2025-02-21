@@ -561,8 +561,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
 					dispatch(listChannelsByUserActions.remove(userID));
 					dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: user.channel_id, clanId: user.clan_id }));
-          dispatch(directMetaActions.remove(user.channel_id))
-
+					dispatch(directMetaActions.remove(user.channel_id));
 				} else {
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_GROUP) {
 						dispatch(directActions.removeByUserId({ userId: userID, currentUserId: userId as string, channelId: user.channel_id }));
@@ -861,6 +860,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onmessagereaction = useCallback(
 		(e: ApiMessageReaction) => {
+			console.log('e: ', e);
 			const reactionEntity = mapReactionToEntity(e);
 
 			if (reactionEntity.topic_id && reactionEntity.topic_id !== '0' && isFocusTopicBox && currenTopicId) {

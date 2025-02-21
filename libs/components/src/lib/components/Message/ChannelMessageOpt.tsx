@@ -85,7 +85,7 @@ const ChannelMessageOpt = ({
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const replyMenu = useMenuReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
-	const reactMenu = useReactMenuBuilder(message);
+	const reactMenu = useReactMenuBuilder(message, mode);
 	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const addToNote = useAddToNoteBuilder(message, defaultCanvas, currentChannel, mode);
@@ -94,6 +94,7 @@ const ChannelMessageOpt = ({
 	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topic_id ?? ''));
 	const doNotAllowCreateTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic) || !hasPermission;
 	const createTopicMenu = useTopicMenuBuilder(message, doNotAllowCreateTopic);
+	console.log('mode', mode);
 	const items = useMenuBuilder([createTopicMenu, reactMenu, replyMenu, editMenu, threadMenu, addToNote, giveACoffeeMenu, optionMenu]);
 	const { createDirectMessageWithUser } = useDirect();
 	return (
@@ -436,7 +437,7 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 	});
 }
 
-function useReactMenuBuilder(message: IMessageWithUser) {
+function useReactMenuBuilder(message: IMessageWithUser, mode: ChannelStreamMode) {
 	const dispatch = useAppDispatch();
 	const { setClickedTrendingGif, setButtonArrowBack } = useGifs();
 
@@ -444,7 +445,9 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 		(event: React.MouseEvent<HTMLDivElement>) => {
 			setClickedTrendingGif(false);
 			setButtonArrowBack(false);
-			dispatch(referencesActions.setIdReferenceMessageReaction(message.id));
+			dispatch(referencesActions.setMessageReactionSelected(message));
+			dispatch(referencesActions.setModeSelected(mode));
+
 			dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.EMOJI_REACTION_RIGHT));
 			event.stopPropagation();
 			const rect = (event.target as HTMLElement).getBoundingClientRect();

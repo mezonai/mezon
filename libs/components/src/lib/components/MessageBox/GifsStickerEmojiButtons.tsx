@@ -43,7 +43,7 @@ const GifStickerEmojiButtons = memo(
 				} else {
 					setSubPanelActive(SubPanelName.SOUNDS);
 				}
-				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+				dispatch(referencesActions.setMessageReactionSelected(null));
 			},
 			[subPanelActive, setSubPanelActive]
 		);
@@ -64,7 +64,7 @@ const GifStickerEmojiButtons = memo(
 				} else {
 					setSubPanelActive(SubPanelName.GIFS);
 				}
-				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+				dispatch(referencesActions.setMessageReactionSelected(null));
 			},
 			[subPanelActive, setSubPanelActive]
 		);
@@ -85,7 +85,7 @@ const GifStickerEmojiButtons = memo(
 				} else {
 					setSubPanelActive(SubPanelName.STICKERS);
 				}
-				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+				dispatch(referencesActions.setMessageReactionSelected(null));
 			},
 			[subPanelActive, setSubPanelActive]
 		);
@@ -105,7 +105,7 @@ const GifStickerEmojiButtons = memo(
 				} else {
 					setSubPanelActive(SubPanelName.EMOJI);
 				}
-				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+				dispatch(referencesActions.setMessageReactionSelected(null));
 			},
 			[setSubPanelActive, subPanelActive]
 		);

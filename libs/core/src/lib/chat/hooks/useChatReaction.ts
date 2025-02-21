@@ -140,7 +140,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 			const payloadDispatchReaction = {
 				id,
 				clanId: currentActive.clanIdActive,
-				channelId: currentActive.channelIdActive,
+				channelId: channelIdOnMessage ?? '',
 				mode: currentActive.modeActive,
 				messageId,
 				emoji_id,
@@ -153,6 +153,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				topic_id: isFocusTopicBox ? channelIdOnMessage : ''
 			};
 
+			console.log('payloadDispatchReaction: ', payloadDispatchReaction);
 			return dispatch(reactionActions.writeMessageReaction(payloadDispatchReaction)).unwrap();
 		},
 		[dispatch, isMobile, isClanView, userId, currentActive, addMemberToThread]

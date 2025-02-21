@@ -119,7 +119,7 @@ function MessageContextMenu({
 	const dispatch = useAppDispatch();
 
 	const handleItemClick = useCallback(() => {
-		dispatch(referencesActions.setIdReferenceMessageReaction(message.id));
+		dispatch(referencesActions.setMessageReactionSelected(message));
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.EMOJI_REACTION_RIGHT));
 	}, [dispatch]);
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));

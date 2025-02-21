@@ -1,5 +1,13 @@
 import { useAppParams, useGifsStickersEmoji } from '@mezon/core';
-import { selectClanView, selectClickedOnTopicStatus, selectCurrentChannel, selectCurrentTopicId, selectIdMessageRefReaction } from '@mezon/store';
+import {
+	MessagesEntity,
+	selectClanView,
+	selectClickedOnTopicStatus,
+	selectCurrentChannel,
+	selectCurrentTopicId,
+	selectMessageReaction,
+	selectMode
+} from '@mezon/store';
 import { EmojiPlaces, SubPanelName } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiChannelDescription } from 'mezon-js/api.gen';
@@ -18,8 +26,13 @@ export type GifStickerEmojiPopupOptions = {
 };
 
 export const GifStickerEmojiPopup = ({ emojiAction, mode, channelOrDirect }: GifStickerEmojiPopupOptions) => {
+	console.log('mode: ', mode);
+	const messageReaction = useSelector(selectMessageReaction);
+	const modeSelectedReaction = useSelector(selectMode);
+	console.log('modeSelectedReation: ', modeSelectedReation);
+
+	console.log('messageReaction: ', messageReaction);
 	const { subPanelActive, setSubPanelActive, setValueInputSearch } = useGifsStickersEmoji();
-	const idMessageRefReaction = useSelector(selectIdMessageRefReaction);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const emojiRefParentDiv = useRef<HTMLDivElement>(null);
 
@@ -35,6 +48,8 @@ export const GifStickerEmojiPopup = ({ emojiAction, mode, channelOrDirect }: Gif
 
 		return modeMap[channelOrDirect.type];
 	}, [channelOrDirect?.type]);
+
+	console.log('channelMode', channelMode);
 
 	const handleTabClick = useCallback(
 		(tab: SubPanelName) => {
@@ -84,7 +99,7 @@ export const GifStickerEmojiPopup = ({ emojiAction, mode, channelOrDirect }: Gif
 	return (
 		<div onClick={(e) => e.stopPropagation()} className={containerClassName}>
 			<div className="w-full">
-				{!idMessageRefReaction && <TabBar subPanelActive={subPanelActive} onTabClick={handleTabClick} />}
+				{!messageReaction?.id && <TabBar subPanelActive={subPanelActive} onTabClick={handleTabClick} />}
 				<InputSearch />
 			</div>
 
@@ -97,7 +112,7 @@ export const GifStickerEmojiPopup = ({ emojiAction, mode, channelOrDirect }: Gif
 					contentWidthClass={contentWidthClass}
 					onClose={closePannel}
 					isShowEmojiPicker={isShowEmojiPicker}
-					idMessageRefReaction={idMessageRefReaction}
+					messageReaction={messageReaction}
 				/>
 			</div>
 		</div>
@@ -140,7 +155,7 @@ const ContentPanel = React.memo(
 		contentWidthClass,
 		onClose,
 		isShowEmojiPicker,
-		idMessageRefReaction
+		messageReaction
 	}: {
 		subPanelActive: SubPanelName;
 		channelOrDirect?: ApiChannelDescription;
@@ -149,7 +164,7 @@ const ContentPanel = React.memo(
 		contentWidthClass: string;
 		onClose: () => void;
 		isShowEmojiPicker: boolean;
-		idMessageRefReaction?: string;
+		messageReaction?: MessagesEntity | null;
 	}) => {
 		const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 		const currenTopicId = useSelector(selectCurrentTopicId);
@@ -185,8 +200,8 @@ const ContentPanel = React.memo(
 						directId={directId}
 						isClanView={isClanView}
 						mode={mode}
-						messageEmojiId={idMessageRefReaction}
 						onClose={onClose}
+						messageReaction={messageReaction}
 					/>
 				</div>
 			);
