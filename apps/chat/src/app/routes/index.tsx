@@ -22,7 +22,7 @@ import ClansRoutes from './ClanRoutes';
 import DMRoutes from './DMRoutes';
 
 // Pages
-import { Canvas } from '@mezon/components';
+import { Canvas, GoogleButtonLogin } from '@mezon/components';
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
 import { memo, useCallback, useEffect, useMemo } from 'react';
@@ -94,7 +94,7 @@ export const Routes = memo(() => {
 							},
 							{
 								path: 'login/callback',
-								element: <LoginCallback />
+								element: <GoogleButtonLogin />
 							},
 							isElectron()
 								? {

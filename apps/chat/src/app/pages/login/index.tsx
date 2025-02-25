@@ -1,4 +1,4 @@
-import { QRSection } from '@mezon/components';
+import { GoogleButtonLogin, QRSection } from '@mezon/components';
 import { useAppNavigation, useAuth } from '@mezon/core';
 import { selectIsLogin } from '@mezon/store';
 import { useGoogleOneTapLogin } from '@react-oauth/google';
@@ -93,7 +93,7 @@ function Login() {
 				</div>
 
 				<div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
-					<QRSection loginId={loginId || ''} isExpired={hidden} reloadQR={reloadQR} />;
+					<QRSection loginId={loginId || ''} isExpired={hidden} reloadQR={reloadQR} />;<GoogleButtonLogin />
 					<p className="text-sm text-gray-500">Sign in by QR code</p>
 					<p className="text-xs text-gray-400">Use Mezon on mobile to scan QR</p>
 				</div>
