@@ -44,7 +44,7 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 	return (
 		<div className="flex flex-row items-center justify-between px-4 h-[58px] min-h-[60px] border-b-[1px] dark:border-bgTertiary border-bgLightTertiary z-10 dark:bg-bgPrimary bg-bgLightPrimary">
 			<div className="flex flex-row items-center gap-2 pointer-events-none">
-				{ threadCurrentChannel?.channel_private ? <Icons.ThreadIconLocker /> : <Icons.ThreadIcon />} 
+				{threadCurrentChannel?.channel_private ? <Icons.ThreadIconLocker /> : <Icons.ThreadIcon />}
 				<span className="text-base font-semibold dark:text-white text-colorTextLightMode">
 					{threadCurrentChannel ? threadCurrentChannel.channel_label : 'New Thread'}
 				</span>

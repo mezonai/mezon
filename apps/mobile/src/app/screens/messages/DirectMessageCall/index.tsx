@@ -146,7 +146,8 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 
 	return (
 		<View style={styles.container}>
-			<StatusBarHeight />
+			{!isFromNative && <StatusBarHeight />}
+
 			{isShowControl && (
 				<View style={[styles.menuHeader]}>
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>

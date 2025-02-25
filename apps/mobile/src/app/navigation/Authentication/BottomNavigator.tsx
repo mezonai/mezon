@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Notifications from '../../screens/Notifications';
-import HomeScreen from '../../screens/home/HomeScreen';
+import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
 import MessagesScreen from '../../screens/messages/MessagesScreen';
 import MessagesScreenTablet from '../../screens/messages/MessagesScreenTablet';
 import ProfileScreen from '../../screens/profile/ProfileScreen';
@@ -38,7 +38,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 		>
 			<TabStack.Screen
 				name={APP_SCREEN.HOME}
-				component={HomeScreen}
+				component={HomeScreenTablet}
 				options={{
 					headerShown: false,
 					title: 'Clans',

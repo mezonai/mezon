@@ -103,7 +103,7 @@ export const fetchChannelMembers = createAsyncThunk(
 			const response = await fetchChannelMembersCached(mezon, clanId, channelId, channelType);
 
 			if (Date.now() - response.time > 100) {
-				return [];
+				return response.channel_users || [];
 			}
 
 			if (!response.channel_users) {
@@ -294,7 +294,7 @@ export const channelMembers = createSlice({
 			const userIds = payload.user_ids;
 			const channelId = payload.channel_id;
 
-			if (!state.memberChannels[channelId]) {
+			if (!state?.memberChannels?.[channelId]) {
 				state.memberChannels[channelId] = {
 					...channelMembersAdapter.getInitialState(),
 					id: channelId

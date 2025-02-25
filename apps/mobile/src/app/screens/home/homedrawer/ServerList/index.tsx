@@ -15,7 +15,7 @@ import BadgeFriendRequest from './BadgeFriendRequest';
 import { style } from './styles';
 
 const ServerList = React.memo(() => {
-	const { themeValue, theme } = useTheme();
+	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const logoCustom = useSelector(selectLogoCustom);
@@ -29,7 +29,7 @@ const ServerList = React.memo(() => {
 			<TouchableOpacity style={styles.wrapperLogo} onPress={() => navigateToDM()}>
 				{logoCustom ? (
 					<MezonAvatar width={size.s_48} height={size.s_48} avatarUrl={logoCustom} username="" />
-				) : theme === 'light' ? (
+				) : themeBasic === 'light' ? (
 					<LogoMezonLight width={size.s_48} height={size.s_48} />
 				) : (
 					<LogoMezonDark width={size.s_48} height={size.s_48} />

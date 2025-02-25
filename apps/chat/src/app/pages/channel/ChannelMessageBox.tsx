@@ -116,7 +116,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 					style={{
 						bottom: chatboxRef.current ? `${chatboxRef.current.offsetHeight}px` : ''
 					}}
-          onMouseDown={(e) => {
+					onMouseDown={(e) => {
 						e.stopPropagation();
 					}}
 				>

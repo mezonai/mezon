@@ -23,7 +23,7 @@ import { style } from './styles';
 const { SharedPreferences } = NativeModules;
 
 const CallingModal = () => {
-	const { themeValue, theme } = useTheme();
+	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
@@ -224,7 +224,12 @@ const CallingModal = () => {
 					<Text numberOfLines={1} style={styles.headerTitle}>
 						Mezon audio
 					</Text>
-					<LottieView source={theme === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE} autoPlay loop style={styles.threeDot} />
+					<LottieView
+						source={themeBasic === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE}
+						autoPlay
+						loop
+						style={styles.threeDot}
+					/>
 				</View>
 
 				<Text numberOfLines={1} style={styles.username}>

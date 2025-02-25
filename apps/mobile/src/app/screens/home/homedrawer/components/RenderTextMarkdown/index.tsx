@@ -8,9 +8,9 @@ import {
 	selectChannelsEntities,
 	selectHashtagDmEntities
 } from '@mezon/store-mobile';
-import { EBacktickType, ETokenMessage, IExtendedMessage, getYouTubeEmbedUrl, isYouTubeLink } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, IExtendedMessage, getSrcEmoji, getYouTubeEmbedUrl, isYouTubeLink } from '@mezon/utils';
 import { TFunction } from 'i18next';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Dimensions, Linking, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Markdown from 'react-native-markdown-display';
@@ -222,6 +222,16 @@ export type IMarkdownProps = {
 	isBuzzMessage?: boolean;
 	onLongPress?: () => void;
 };
+
+function parseMarkdownLink(text: string) {
+	const bracketMatch = text.match(/\[(.*?)\]/);
+	const parenthesesMatch = text.match(/\((.*?)\)/);
+
+	return {
+		text: bracketMatch?.[1] || '',
+		link: parenthesesMatch?.[1] || ''
+	};
+}
 
 export function extractIds(url: string): { clanId: string | null; channelId: string | null; canvasId: string | null } {
 	const clanIdMatch = url.match(/\/clans\/(\d+)\//);
@@ -484,6 +494,152 @@ export const RenderTextMarkdownContent = ({
 		customStyle = { ...styleMessageReply(themeValue) };
 	}
 	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [] } = content || {};
+
+	const hasMarkdown = mk.length > 0 || isEdited;
+	if (!hasMarkdown) {
+		const elements = [
+			...hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })),
+			...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })),
+			...ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS }))
+		].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+
+		let lastIndex = 0;
+		const textParts: React.ReactNode[] = [];
+
+		elements.forEach((element, index) => {
+			const s = element.s ?? 0;
+			const e = element.e ?? 0;
+
+			if (lastIndex < s) {
+				textParts.push(
+					<Text
+						key={`text-${index}`}
+						style={themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}}
+					>
+						{t?.slice(lastIndex, s)}
+					</Text>
+				);
+			}
+
+			switch (element?.kindOf) {
+				case ETokenMessage.EMOJIS: {
+					const srcEmoji = getSrcEmoji(element.emojiid);
+					textParts.push(
+						<FastImage
+							key={`emoji-${index}`}
+							source={{ uri: srcEmoji }}
+							style={
+								isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage
+							}
+							resizeMode={'contain'}
+						/>
+					);
+					break;
+				}
+				case ETokenMessage.MENTIONS: {
+					const usersClan = selectAllUserClans(store.getState() as RootState);
+					const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
+					const contentInElement = t?.substring(s, e);
+
+					const mention = MentionUser({
+						tagName: contentInElement,
+						roleId: element.role_id || '',
+						tagUserId: element.user_id,
+						mode,
+						usersClan,
+						usersInChannel
+					});
+
+					const { text, link } = parseMarkdownLink(mention);
+
+					if (link.startsWith(TYPE_MENTION.userRoleMention)) {
+						textParts.push(
+							<Text
+								key={`mention-${index}`}
+								style={[
+									themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).mention : {},
+									{
+										color: themeValue.textRoleLink,
+										backgroundColor: themeValue.darkMossGreen
+									}
+								]}
+								onPress={() => onMention?.(link.replace('@role', '@'))}
+							>
+								{text}
+							</Text>
+						);
+					} else {
+						textParts.push(
+							<Text
+								key={`mention-${index}`}
+								style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).mention : {}]}
+								onPress={() => onMention?.(link)}
+							>
+								{text}
+							</Text>
+						);
+					}
+					break;
+				}
+				case ETokenMessage.HASHTAGS: {
+					const contentInElement = t?.substring(s, e);
+					if (!isHiddenHashtag) {
+						const channelsEntities = selectChannelsEntities(store.getState() as any);
+						const hashtagDmEntities = selectHashtagDmEntities(store.getState() as any);
+
+						const mention = ChannelHashtag({
+							channelHashtagId: element.channelid,
+							mode,
+							currentChannelId,
+							channelsEntities,
+							hashtagDmEntities
+						});
+
+						const { text, link } = parseMarkdownLink(mention);
+
+						textParts.push(
+							<Text
+								key={`hashtag-${index}`}
+								style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).link : {}]}
+								onPress={() => {
+									const urlFormat = link.replace(/##voice%22|#%22|%22|"|#/g, '');
+									const dataChannel = urlFormat.split('_');
+									const payloadChannel = {
+										type: Number(dataChannel?.[0] || 1),
+										id: dataChannel?.[1],
+										channel_id: dataChannel?.[1],
+										clan_id: dataChannel?.[2],
+										status: Number(dataChannel?.[3] || 1),
+										meeting_code: dataChannel?.[4] || '',
+										category_id: dataChannel?.[5]
+									};
+									onChannelMention?.(payloadChannel);
+								}}
+							>
+								{text}
+							</Text>
+						);
+					} else {
+						textParts.push(<Text key={`hashtag-${index}`}>{contentInElement}</Text>);
+					}
+					break;
+				}
+			}
+
+			lastIndex = e;
+		});
+
+		if (lastIndex < (t?.length ?? 0)) {
+			textParts.push(
+				<Text key="text-end" style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}]}>
+					{t?.slice(lastIndex)}
+				</Text>
+			);
+		}
+
+		return <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>{textParts}</View>;
+	}
+
 	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
 	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 	const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
@@ -500,7 +656,7 @@ export const RenderTextMarkdownContent = ({
 
 	let lastIndex = 0;
 
-	const contentRender = useMemo(() => {
+	const contentRender = (() => {
 		let formattedContent = '';
 
 		elements.forEach((element) => {
@@ -604,7 +760,7 @@ export const RenderTextMarkdownContent = ({
 			formattedContent += ` [${translate('edited')}](${EDITED_FLAG})`;
 		}
 		return formattedContent;
-	}, [elements, t, mode]);
+	})();
 
 	const escapeDashes = (text: string): string => {
 		return text.replace(/-{1,10}/g, (match) => `\\${match}`);

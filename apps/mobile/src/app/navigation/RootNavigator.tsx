@@ -18,7 +18,7 @@ import RootStack from './RootStack';
 
 const NavigationMain = memo(
 	(props) => {
-		const [isShowUpdateModal, setIsShowUpdateModal] = React.useState<boolean>(false);
+		// const [isShowUpdateModal, setIsShowUpdateModal] = React.useState<boolean>(false);
 		const { themeValue, themeBasic } = useTheme();
 
 		// comment logic check new version on code-push

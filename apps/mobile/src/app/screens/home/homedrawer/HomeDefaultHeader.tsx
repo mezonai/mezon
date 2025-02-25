@@ -1,29 +1,21 @@
 import { ENotificationActive, ETypeSearch, Icons } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
+import { selectChannelById, selectCurrentChannel, useAppSelector } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import useStatusMuteChannel from '../../../hooks/useStatusMuteChannel';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
 const HomeDefaultHeader = React.memo(
-	({
-		navigation,
-		currentChannel,
-		openBottomSheet,
-		onOpenDrawer
-	}: {
-		navigation: any;
-		currentChannel: ChannelsEntity;
-		openBottomSheet: () => void;
-		onOpenDrawer: () => void;
-	}) => {
+	({ navigation, openBottomSheet, onOpenDrawer }: { navigation: any; openBottomSheet: () => void; onOpenDrawer: () => void }) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
+		const currentChannel = useSelector(selectCurrentChannel);
 		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parrent_id || ''));
 
 		const parentChannelLabel = useMemo(() => parent?.channel_label || '', [parent?.channel_label]);

@@ -3,20 +3,27 @@ import React, { memo, useCallback, useEffect } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 
 interface IProps {
-	itemRefs: any;
 	flashListRef: any;
+	data: any;
 }
 
-const ChannelListScroll = ({ itemRefs, flashListRef }: IProps) => {
+const ChannelListScroll = ({ flashListRef, data }: IProps) => {
 	const handleScrollToChannel = useCallback(
-		(currentChannelId: string) => {
-			if (itemRefs?.current?.[currentChannelId?.toString()] && currentChannelId) {
-				itemRefs?.current?.[currentChannelId?.toString()]?.measure((x, y, width, height, pageX, pageY) => {
-					flashListRef?.current?.scrollToOffset?.({ offset: Math.round(pageY), animated: true });
+		(channelId) => {
+			if (!flashListRef.current || !data) return;
+
+			const targetIndex = data.findIndex((item) => item.id === channelId);
+			if (targetIndex !== -1) {
+				flashListRef.current.scrollToIndex({
+					index: targetIndex,
+					animated: true,
+					viewPosition: 0.5
 				});
+			} else {
+				console.warn('Channel ID not found in list:', channelId);
 			}
 		},
-		[flashListRef, itemRefs]
+		[flashListRef, data]
 	);
 	useEffect(() => {
 		const scrollChannel = DeviceEventEmitter.addListener(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, (channelId?: string) => {

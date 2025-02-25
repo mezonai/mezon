@@ -125,12 +125,16 @@ type WelcomeChannelThreadProps = {
 };
 
 const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
-	const { name = '', classNameSubtext, username = '', currentThread , isPrivate} = props;
+	const { name = '', classNameSubtext, username = '', currentThread, isPrivate } = props;
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentThread?.id as string));
 	return (
 		<>
 			<div className="h-[75px] w-[75px] rounded-full bg-bgLightModeButton dark:bg-zinc-700 flex items-center justify-center pl-2">
-				{isPrivate === ChannelStatusEnum.isPrivate ? <Icons.ThreadIconLocker className='text-white w-10 h-10'/> : <Icons.ThreadIcon defaultFill="#ffffff" defaultSize="w-10 h-10" />}
+				{isPrivate === ChannelStatusEnum.isPrivate ? (
+					<Icons.ThreadIconLocker className="text-white w-10 h-10" />
+				) : (
+					<Icons.ThreadIcon defaultFill="#ffffff" defaultSize="w-10 h-10" />
+				)}
 			</div>
 			<div>
 				<p className="text-xl md:text-3xl font-bold pt-1 dark:text-white text-black" style={{ wordBreak: 'break-word' }}>

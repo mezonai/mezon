@@ -134,7 +134,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			sender_id: myProfile.userId as string,
 			sender_name: myProfile?.userProfile?.user?.username as string,
 			receiver_id: infoSendToken?.receiver_id ?? userId,
-			amount: infoSendToken?.amount ?? token,
+			amount: token,
 			note: note,
 			extra_attribute: infoSendToken?.extra_attribute ?? extraAttribute
 		};
@@ -142,7 +142,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		try {
 			await dispatch(giveCoffeeActions.sendToken(tokenEvent)).unwrap();
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_SUCCESS_STATUS }));
-			await sendNotificationMessage(infoSendToken?.receiver_id ?? userId, infoSendToken?.amount ?? token, note ?? '');
+			await sendNotificationMessage(infoSendToken?.receiver_id ?? userId, token, note ?? '');
 		} catch (err) {
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_FAILED_STATUS }));
 		}

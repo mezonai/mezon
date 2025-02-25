@@ -2,11 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
-import HomeDefault from './homedrawer/HomeDefault';
+import HomeScreen from './homedrawer/HomeScreen';
 import ServerAndChannelList from './homedrawer/ServerAndChannelList';
 import { styles } from './styles';
 
-const HomeScreen = React.memo(() => {
+const HomeScreenTablet = React.memo(() => {
 	const isTabletLandscape = useTabletLandscape();
 	const navigation = useNavigation<any>();
 	if (isTabletLandscape) {
@@ -16,7 +16,7 @@ const HomeScreen = React.memo(() => {
 					<ServerAndChannelList isTablet={true} />
 				</View>
 				<View style={styles.containerHomeDefault}>
-					<HomeDefault navigation={navigation} />
+					<HomeScreen navigation={navigation} />
 				</View>
 			</View>
 		);
@@ -25,4 +25,4 @@ const HomeScreen = React.memo(() => {
 	return <ServerAndChannelList />;
 });
 
-export default HomeScreen;
+export default HomeScreenTablet;

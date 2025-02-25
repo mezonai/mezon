@@ -1,6 +1,5 @@
 import { useSeenMessagePool } from '@mezon/core';
 import {
-	ChannelsEntity,
 	channelMembersActions,
 	channelMetaActions,
 	channelsActions,
@@ -9,6 +8,7 @@ import {
 	listChannelsByUserActions,
 	selectAnyUnreadChannels,
 	selectChannelById,
+	selectCurrentChannel,
 	selectFetchChannelStatus,
 	selectLastMessageByChannelId,
 	useAppDispatch,
@@ -61,7 +61,8 @@ function useChannelSeen(channelId: string) {
 	}, [currentChannel?.id, statusFetchChannel, channelId, currentChannel, dispatch, resetBadgeCount]);
 }
 
-function DrawerListener({ currentChannel }: { currentChannel: ChannelsEntity }) {
+function DrawerListener() {
+	const currentChannel = useSelector(selectCurrentChannel);
 	const prevChannelIdRef = useRef<string>();
 	const dispatch = useAppDispatch();
 	useChannelSeen(currentChannel?.channel_id || '');

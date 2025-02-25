@@ -1,13 +1,11 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { STORAGE_IS_LAST_ACTIVE_TAB_DM, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectCurrentChannel, selectDmGroupCurrentId } from '@mezon/store-mobile';
-import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { setTimeout } from '@testing-library/react-native/build/helpers/timers';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import MezonBottomSheet from '../../../componentUI/MezonBottomSheet';
 import AgeRestrictedModal from '../../../components/AgeRestricted/AgeRestrictedModal';
 import NotificationSetting from '../../../components/NotificationSetting';
@@ -17,24 +15,26 @@ import ChannelMessagesWrapper from './ChannelMessagesWrapper';
 import { ChatBox } from './ChatBox';
 import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
-import NoChannelSelected from './NoChannelSelected';
 import PanelKeyboard from './PanelKeyboard';
 import { IModeKeyboardPicker } from './components';
 import LicenseAgreement from './components/LicenseAgreement';
 import { style } from './styles';
-
+// HomeDefault check
 const HomeDefault = React.memo((props: any) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const currentChannel = useSelector(selectCurrentChannel);
-	const currentDirectId = useSelector(selectDmGroupCurrentId);
+	const channelId = props?.channelId;
+	const clanId = props?.clanId;
+	const isPublicChannel = props?.isPublicChannel;
+	const isThread = props?.isThread;
+	const channelType = props?.channelType;
 	const timeoutRef = useRef<any>(null);
 	const navigation = useNavigation<any>();
 	const panelKeyboardRef = useRef(null);
 
 	const isChannelApp = useMemo(() => {
-		return currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
-	}, [currentChannel?.type]);
+		return channelType === ChannelType.CHANNEL_TYPE_APP;
+	}, [channelType]);
 
 	const onShowKeyboardBottomSheet = useCallback((isShow: boolean, type?: IModeKeyboardPicker) => {
 		if (panelKeyboardRef?.current) {
@@ -63,6 +63,7 @@ const HomeDefault = React.memo((props: any) => {
 	};
 
 	useEffect(() => {
+		save(STORAGE_IS_LAST_ACTIVE_TAB_DM, 'false');
 		return () => {
 			timeoutRef?.current && clearTimeout(timeoutRef.current);
 		};
@@ -72,45 +73,35 @@ const HomeDefault = React.memo((props: any) => {
 		<View style={[styles.homeDefault]}>
 			{Platform.OS === 'ios' && <LicenseAgreement />}
 
-			{currentChannel && <DrawerListener currentChannel={currentChannel} />}
-			<HomeDefaultHeader
-				openBottomSheet={openBottomSheet}
-				navigation={props.navigation}
-				currentChannel={currentChannel}
-				onOpenDrawer={onOpenDrawer}
-			/>
-			{isChannelApp && currentChannel ? (
-				<ChannelApp channelId={currentChannel?.channel_id} />
-			) : currentChannel && !currentDirectId ? (
+			<DrawerListener />
+			<HomeDefaultHeader openBottomSheet={openBottomSheet} navigation={props.navigation} onOpenDrawer={onOpenDrawer} />
+			{isChannelApp ? (
+				<ChannelApp channelId={channelId} />
+			) : (
 				<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 54 : 0}>
 					<ChannelMessagesWrapper
-						channelId={currentChannel?.channel_id}
-						clanId={currentChannel?.clan_id}
-						isPublic={isPublicChannel(currentChannel)}
-						mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
+						channelId={channelId}
+						clanId={clanId}
+						isPublic={isPublicChannel}
+						mode={isThread ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 					/>
 					<ChatBox
-						channelId={currentChannel?.channel_id}
-						mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
+						channelId={channelId}
+						mode={isThread ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 						onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
 						hiddenIcon={{
-							threadIcon: currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD
+							threadIcon: channelType === ChannelType.CHANNEL_TYPE_THREAD
 						}}
-						isPublic={isPublicChannel(currentChannel)}
+						isPublic={isPublicChannel}
 					/>
-					<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+					<PanelKeyboard ref={panelKeyboardRef} currentChannelId={channelId} currentClanId={clanId} />
 					<ShareLocationConfirmModal
-						channelId={currentChannel?.channel_id}
-						mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
+						channelId={channelId}
+						mode={isThread ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 					/>
 				</KeyboardAvoidingView>
-			) : !currentDirectId ? (
-				<NoChannelSelected />
-			) : (
-				<View />
 			)}
-			{currentChannel && <AgeRestrictedModal />}
-
+			<AgeRestrictedModal />
 			<MezonBottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
 				<NotificationSetting />
 			</MezonBottomSheet>

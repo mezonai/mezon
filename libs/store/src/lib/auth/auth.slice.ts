@@ -1,7 +1,6 @@
 import { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Session } from 'mezon-js';
-import { toast } from 'react-toastify';
 import { ensureClientAsync, getMezonCtx, restoreLocalStorage } from '../helpers';
 export const AUTH_FEATURE_KEY = 'auth';
 
@@ -57,11 +56,11 @@ export type AuthenticateEmailPayload = {
 	password: string;
 };
 
-export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', async ({ username, password }: AuthenticateEmailPayload, thunkAPI) => {
+export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', async (code: string, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	const session = await mezon?.authenticateEmail(username, password).catch(function (err: any) {
+	const session = await mezon?.authenticateMezon(code).catch(function (err: any) {
 		err.json().then((data: any) => {
-			toast.error(data.message);
+			console.error(data.message);
 		});
 	});
 
@@ -176,20 +175,6 @@ export const authSlice = createSlice({
 			});
 
 		builder
-			.addCase(authenticateEmail.pending, (state: AuthState) => {
-				state.loadingStatus = 'loading';
-			})
-			.addCase(authenticateEmail.fulfilled, (state: AuthState, action) => {
-				state.loadingStatus = 'loaded';
-				state.session = action.payload;
-				state.isLogin = true;
-			})
-			.addCase(authenticateEmail.rejected, (state: AuthState, action) => {
-				state.loadingStatus = 'error';
-				state.error = action.error.message;
-			});
-
-		builder
 			.addCase(refreshSession.pending, (state: AuthState) => {
 				state.loadingStatus = 'loading';
 			})
@@ -227,6 +212,19 @@ export const authSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
+		builder
+			.addCase(authenticateMezon.pending, (state: AuthState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(authenticateMezon.fulfilled, (state: AuthState, action) => {
+				state.loadingStatus = 'loaded';
+				state.session = action.payload;
+				state.isLogin = true;
+			})
+			.addCase(authenticateMezon.rejected, (state: AuthState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			});
 	}
 });
 
@@ -239,7 +237,7 @@ export const authActions = {
 	...authSlice.actions,
 	authenticateGoogle,
 	authenticateApple,
-	authenticateEmail,
+	authenticateMezon,
 	refreshSession,
 	createQRLogin,
 	checkLoginRequest,

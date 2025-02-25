@@ -37,6 +37,7 @@ export interface DataChannelAndCate {
 	listCategory: CategoriesEntity[];
 	clanId: string;
 	listChannelFavor: string[];
+	isMobile?: boolean;
 }
 
 export const FAVORITE_CATEGORY_ID = 'favorCate';
@@ -46,10 +47,10 @@ export const listChannelRenderSlice = createSlice({
 	initialState: initialListChannelRenderState,
 	reducers: {
 		mapListChannelRender: (state, action: PayloadAction<DataChannelAndCate>) => {
-			const { listChannel, listCategory, clanId, listChannelFavor } = action.payload;
+			const { listChannel, listCategory, clanId, listChannelFavor, isMobile } = action.payload;
 			// Prioritize moving channel forward thread
 			const listChannelPriority = prioritizeChannel(listChannel);
-			if (!state.listChannelRender[clanId]) {
+			if (!state.listChannelRender[clanId] || isMobile) {
 				const listChannelRender: (ICategoryChannel | IChannel)[] = [];
 				const listFavorChannel: IChannel[] = [];
 				listCategory.map((category) => {

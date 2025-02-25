@@ -16,21 +16,19 @@ export function useAuth() {
 		return action.payload;
 	}, [dispatch]);
 
-	const loginEmail = useCallback(
-		async (username: string, password: string, isMobile = false) => {
-			const action = await dispatch(authActions.authenticateEmail({ username, password }));
+	const loginByGoogle = useCallback(
+		async (token: string) => {
+			const action = await dispatch(authActions.authenticateGoogle(token));
 			const session = action.payload;
 			dispatch(accountActions.setAccount(session));
-			if (isMobile) {
-				return session;
-			}
+			return session;
 		},
 		[dispatch]
 	);
 
-	const loginByGoogle = useCallback(
+	const loginByEmail = useCallback(
 		async (token: string) => {
-			const action = await dispatch(authActions.authenticateGoogle(token));
+			const action = await dispatch(authActions.authenticateMezon(token));
 			const session = action.payload;
 			dispatch(accountActions.setAccount(session));
 			return session;
@@ -76,14 +74,14 @@ export function useAuth() {
 		() => ({
 			userProfile,
 			userId,
-			loginEmail,
 			loginByGoogle,
+			loginByEmail,
 			qRCode,
 			checkLoginRequest,
 			loginByApple,
 			fetchUserProfile,
 			confirmLoginRequest
 		}),
-		[userProfile, userId, loginEmail, loginByGoogle, qRCode, loginByApple, fetchUserProfile]
+		[userProfile, userId, loginByGoogle, qRCode, loginByApple, fetchUserProfile, loginByEmail]
 	);
 }

@@ -1,4 +1,4 @@
-import { GoogleButtonLogin, LoginForm, TitleSection } from '@mezon/components';
+import { GoogleButtonLogin, TitleSection } from '@mezon/components';
 import { useAppNavigation } from '@mezon/core';
 import { authActions, selectIsLogin, useAppDispatch } from '@mezon/store';
 import isElectron from 'is-electron';
@@ -38,7 +38,6 @@ function Login() {
 					<div className="flex-col justify-start items-center flex h-fit p-0 gap-2 pb-2 lg:pb-0 md:gap-4 w-9/10">
 						<TitleSection />
 						<GoogleButtonLogin mode="dev" />
-						<LoginForm />
 					</div>
 				</div>
 			</div>

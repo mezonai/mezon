@@ -2,6 +2,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import React from 'react';
 import { View } from 'react-native';
 // import BackNativeListener from './BackNativeListener';
+import { useIdleRender } from '@mezon/core';
 import ChannelList from './ChannelList';
 import ProfileBar from './ProfileBar';
 import ServerList from './ServerList';
@@ -23,14 +24,15 @@ const ChannelListWrapper = React.memo(
 const ServerAndChannelList = React.memo(({ isTablet }: { isTablet?: boolean }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const shouldRender = useIdleRender();
 
 	return (
 		<View style={[styles.containerDrawerContent, { backgroundColor: isTablet ? themeValue.tertiary : themeValue.primary }]}>
 			<View style={styles.container}>
 				<View style={styles.rowContainer}>
-					<ServerList />
+					{shouldRender && <ServerList />}
 					{/*{!isTablet && <BackNativeListener />}*/}
-					<ChannelListWrapper />
+					{shouldRender && <ChannelListWrapper />}
 				</View>
 				{isTablet && <ProfileBar />}
 			</View>

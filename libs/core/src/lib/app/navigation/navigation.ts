@@ -6,5 +6,5 @@ export const toChannelPage = (channelId: string, clanId: string) => {
 };
 
 export const toMembersPage = (clanId: string) => {
-    return `/chat/clans/${clanId}/member-safety`;
+	return `/chat/clans/${clanId}/member-safety`;
 };

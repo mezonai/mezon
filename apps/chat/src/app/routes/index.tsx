@@ -38,7 +38,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 import ThreadsRoutes from './ThreadsRoutes';
 
 const Login = loadable(() => import('../pages/login'));
-const LoginDesktop = loadable(() => import('../pages/loginDesktop'));
+// const LoginDesktop = loadable(() => import('../pages/loginDesktop'));
 const Main = loadable(() => import('../pages/main'));
 const DirectMain = loadable(() => import('../pages/directMessage'));
 const InvitePage = loadable(() => import('../pages/invite'));
@@ -54,6 +54,8 @@ const ChannelLayout = loadable(() => import('../layouts/ChannelLayout'));
 const ChannelSettingMain = loadable(() => import('../pages/setting/channelSetting'));
 const GuideMain = loadable(() => import('../pages/guide'));
 const CanvasLayout = loadable(() => import('../layouts/CanvasLayout'));
+const LoginCallback = loadable(() => import('../pages/loginCallback'));
+
 // Components
 export const Routes = memo(() => {
 	const dispatch = useAppDispatch();
@@ -90,6 +92,10 @@ export const Routes = memo(() => {
 								path: '/mezon',
 								element: <InitialRoutes />
 							},
+							{
+								path: 'login/callback',
+								element: <LoginCallback />
+							},
 							isElectron()
 								? {
 										path: '/',
@@ -108,16 +114,16 @@ export const Routes = memo(() => {
 								path: 'desktop',
 								element: <GuessLayout />,
 								children: [
-									{
-										path: 'login',
-										loader: loaderWithStore(loginLoader),
-										element: <Login />
-									},
-									{
-										path: 'login-desktop',
-										loader: loaderWithStore(loginLoader),
-										element: <LoginDesktop />
-									}
+									isElectron()
+										? {
+												path: 'login',
+												loader: loaderWithStore(loginLoader),
+												element: <Login />
+											}
+										: {
+												path: 'mezon',
+												element: <InitialRoutes />
+											}
 								]
 							},
 							{

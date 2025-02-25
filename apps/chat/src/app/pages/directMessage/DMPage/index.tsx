@@ -225,7 +225,7 @@ const DirectMessage = () => {
 									clanId="0"
 									isDM={true}
 									channelId={directId ?? ''}
-                  isPrivate={currentDmGroup?.channel_private}
+									isPrivate={currentDmGroup?.channel_private}
 									channelLabel={currentDmGroup?.channel_label}
 									username={isDmChannel ? currentDmGroup?.usernames?.toString() : undefined}
 									type={isDmChannel ? ChannelType.CHANNEL_TYPE_DM : ChannelType.CHANNEL_TYPE_GROUP}

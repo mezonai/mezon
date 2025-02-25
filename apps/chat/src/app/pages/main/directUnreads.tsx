@@ -1,4 +1,4 @@
-import { AvatarImage, NavLinkComponent } from '@mezon/components';
+import { AvatarImage } from '@mezon/components';
 import { DMMetaEntity, directActions, directMetaActions, selectDirectById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -28,12 +28,17 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: direct.id || '', timestamp }));
 	};
 
-	const isMoveOutAnimation = useMemo(()=>{
-		return !checkMoveOut.includes(directMessage.id)
-	},[checkMoveOut])
+	const isMoveOutAnimation = useMemo(() => {
+		return !checkMoveOut.includes(directMessage.id);
+	}, [checkMoveOut]);
 
 	return (
-		<NavLink to="#" onClick={handleClick} draggable="false" className={`flex items-end animate-height_logo ${isMoveOutAnimation ? 'animate-move_out_logo ' :''}`}>
+		<NavLink
+			to="#"
+			onClick={handleClick}
+			draggable="false"
+			className={`flex items-end animate-height_logo ${isMoveOutAnimation ? 'animate-move_out_logo ' : ''}`}
+		>
 			<div className={`relative animate-scale_up origin-center delay-200 ${isMoveOutAnimation ? '!animate-scale_down !delay-0' : ''}`}>
 				<AvatarImage
 					draggable="false"

@@ -1,12 +1,11 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { selectIsShowEmptyCategory, selectListChannelRenderByClanId } from '@mezon/store';
 import { channelsActions, selectCurrentClan, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { AppStackScreenProps } from '../../../../navigation/ScreenTypes';
@@ -37,12 +36,13 @@ const ChannelList = () => {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useAppDispatch();
 	const itemRefs = useRef({});
+	// const [parentIdList, setParentIdList] = useState<Set<string>>(new Set());
 
 	const handleRefresh = async () => {
 		setRefreshing(true);
 
 		const promise = [
-			dispatch(channelsActions.fetchChannels({ clanId: currentClan?.clan_id, noCache: true })),
+			dispatch(channelsActions.fetchChannels({ clanId: currentClan?.clan_id, noCache: true, isMobile: true })),
 			dispatch(
 				voiceActions.fetchVoiceChannelMembers({
 					clanId: currentClan?.clan_id ?? '',
@@ -71,6 +71,26 @@ const ChannelList = () => {
 		],
 		[listChannelRender, isShowEmptyCategory]
 	) as ICategoryChannel[];
+
+	// useEffect(() => {
+	// 	const newParentIds = new Set(
+	// 		data
+	// 			.filter(
+	// 				(item) =>
+	// 					(item as IChannel)?.type === ChannelType.CHANNEL_TYPE_THREAD &&
+	// 					(item as IChannel)?.last_sent_message.timestamp_seconds > (item as IChannel)?.last_seen_message.timestamp_seconds &&
+	// 					(item as IChannel)?.parrent_id
+	// 			)
+	// 			.map((item) => (item as IChannel).parrent_id)
+	// 	);
+
+	// 	setParentIdList((prev) => {
+	// 		if ([...prev].sort().toString() !== [...newParentIds].sort().toString()) {
+	// 			return newParentIds;
+	// 		}
+	// 		return prev;
+	// 	});
+	// }, [data]);
 
 	const styles = style(themeValue, isTabletLandscape);
 
@@ -108,6 +128,7 @@ const ChannelList = () => {
 							isFirstThread={
 								item?.type === ChannelType.CHANNEL_TYPE_THREAD && data[index - 1]?.type !== ChannelType.CHANNEL_TYPE_THREAD
 							}
+							// parentIdList={parentIdList}
 						/>
 					</View>
 				);
@@ -121,16 +142,19 @@ const ChannelList = () => {
 	return (
 		<>
 			<View style={styles.mainList}>
-				<ChannelListScroll itemRefs={itemRefs} flashListRef={flashListRef} />
-				<FlashList
+				<ChannelListScroll data={data} flashListRef={flashListRef} />
+				<FlatList
 					ref={flashListRef}
 					data={data}
 					renderItem={renderItem}
 					keyExtractor={keyExtractor}
 					removeClippedSubviews={true}
-					estimatedItemSize={size.s_40}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 					stickyHeaderIndices={[1]}
+					maxToRenderPerBatch={10}
+					updateCellsBatchingPeriod={50}
+					initialNumToRender={20}
+					windowSize={5}
 				/>
 				<ChannelListLoading isNonChannel={!!listChannelRender?.length} />
 				<View style={{ height: 80 }} />

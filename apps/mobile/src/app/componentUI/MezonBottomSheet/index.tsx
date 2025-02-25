@@ -21,6 +21,8 @@ export interface IMezonBottomSheetProps extends BottomSheetModalProps {
 }
 
 const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBottomSheetProps, ref: Ref<BottomSheetModalMethods>) {
+	//check later
+
 	const { children, title, headerLeft, headerRight, heightFitContent, snapPoints = ['90%'], titleSize = 'sm', footer } = props;
 	const isTabletLandscape = useTabletLandscape();
 	const themeValue = useTheme().themeValue;

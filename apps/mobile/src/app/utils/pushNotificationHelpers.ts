@@ -7,7 +7,7 @@ import {
 	load,
 	save
 } from '@mezon/mobile-components';
-import { appActions, channelsActions, clansActions, directActions, getStoreAsync, messagesActions, topicsActions } from '@mezon/store-mobile';
+import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
 import { AndroidVisibility } from '@notifee/react-native/src/types/NotificationAndroid';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
@@ -157,9 +157,6 @@ export const navigateToNotification = async (store: any, notification: any, navi
 		if (linkMatch) {
 			const clanId = linkMatch?.[1];
 			const channelId = linkMatch?.[2];
-			store.dispatch(
-				messagesActions.fetchMessages({ clanId: clanId, channelId, isFetchingLatestMessages: true, isClearMessage: true, noCache: true })
-			);
 			if (navigation) {
 				navigation.navigate(APP_SCREEN.HOME_DEFAULT as never);
 			}
@@ -202,15 +199,6 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			// IS message DM
 			if (linkDirectMessageMatch) {
 				const messageId = linkDirectMessageMatch[1];
-				store.dispatch(
-					messagesActions.fetchMessages({
-						clanId: '0',
-						channelId: messageId,
-						noCache: true,
-						isFetchingLatestMessages: true,
-						isClearMessage: true
-					})
-				);
 				if (navigation) {
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: messageId });
 				}

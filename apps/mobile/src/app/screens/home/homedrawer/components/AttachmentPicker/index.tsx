@@ -5,8 +5,9 @@ import { createUploadFilePath, useMezon } from '@mezon/transport';
 import Geolocation from '@react-native-community/geolocation';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
+import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { IFile } from '../../../../../componentUI';
 import Gallery from './Gallery';
@@ -98,14 +99,37 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 		);
 	}, []);
 
+	const checkLocationPermission = async () => {
+		try {
+			if (Platform.OS === 'android') {
+				return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+			}
+			return false;
+		} catch (error) {
+			console.warn('Permission check error:', error);
+			return false;
+		}
+	};
+
 	const requestLocationPermission = async () => {
 		if (Platform.OS === 'android') {
-			const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+			const granted = await checkLocationPermission();
 			if (granted) {
 				return true;
 			} else {
-				const requestResult = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
-				return requestResult === PermissionsAndroid.RESULTS.GRANTED;
+				try {
+					const requestResult = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+						title: 'Mezon App Location Permission',
+						message: 'Share location needs access to your location permission.',
+						buttonNeutral: 'Ask Me Later',
+						buttonNegative: 'Cancel',
+						buttonPositive: 'OK'
+					});
+					return requestResult === PermissionsAndroid.RESULTS.GRANTED;
+				} catch (error) {
+					console.warn('Permission request error:', error);
+				}
+				return false;
 			}
 		}
 		return true;
@@ -123,6 +147,32 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 		});
 	};
 
+	const openSettings = () => {
+		Alert.alert('Location permission', 'Mezon needs your permission to access location', [
+			{
+				text: 'Cancel',
+				style: 'cancel',
+				onPress: () => {
+					Toast.show({
+						type: 'error',
+						text1: 'Permission Denied',
+						text2: 'Mezon needs your permission to access location.'
+					});
+				}
+			},
+			{
+				text: 'OK',
+				onPress: () => {
+					if (Platform.OS === 'ios') {
+						Linking.openURL('app-settings:');
+					} else {
+						Linking.openSettings();
+					}
+				}
+			}
+		]);
+	};
+
 	const handleLinkGoogleMap = async () => {
 		const permissionGranted = await requestLocationPermission();
 		if (permissionGranted) {
@@ -134,6 +184,7 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 			}
 		} else {
 			console.error('Location permission denied');
+			openSettings();
 		}
 	};
 

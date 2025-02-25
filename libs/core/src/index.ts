@@ -28,6 +28,7 @@ export * from './lib/chat/hooks/useDMInvite';
 export * from './lib/chat/hooks/useIdleRender';
 export * from './lib/chat/hooks/useUserById';
 
+export * from './lib/app/navigation/navigation';
 export * from './lib/chat/hooks/useActivities';
 export * from './lib/chat/hooks/useBackgroundMode';
 export * from './lib/chat/hooks/useContainerHeight';
@@ -77,4 +78,3 @@ export * from './lib/chat/hooks/useWebRTCCall';
 export * from './lib/chat/hooks/useWindowFocusState';
 export * from './lib/chat/hooks/useWindowSize';
 export * from './lib/policy';
-export * from './lib/app/navigation/navigation'

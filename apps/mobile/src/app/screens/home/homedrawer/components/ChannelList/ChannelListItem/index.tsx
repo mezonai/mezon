@@ -25,6 +25,7 @@ import UserListVoiceChannel from '../ChannelListUserVoice';
 interface IChannelListItemProps {
 	data: any;
 	isFirstThread?: boolean;
+	// parentIdList?: Set<string>;
 }
 
 export enum StatusVoiceChannel {
@@ -124,8 +125,10 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_LONG_PRESS_CHANNEL, { channel: props?.data });
 		}
 	}, [props?.data]);
+	const shouldDisplay = isCategoryExpanded || isUnRead || isChannelVoice || isActive;
+	// || props.parentIdList?.has(props.data.id);
 
-	if (!isCategoryExpanded && !isUnRead && !isChannelVoice && !isActive) return;
+	if (!shouldDisplay) return null;
 	return (
 		<>
 			{!isChannelVoice && (

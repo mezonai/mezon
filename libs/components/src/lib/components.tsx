@@ -88,9 +88,11 @@ export { default as ListChannelSetting } from './components/ClanSettings/Setting
 export { default as LeaveGroupModal } from './components/LeaveGroupModal/index';
 
 export { default as ModalDeleteMess } from './components/DeleteMessageModal/ModalDeleteMess';
+export { default as FailLoginModal } from './components/FailLoginModal';
 export { default as ModalRemoveMemberClan } from './components/MemberProfile/ModalRemoveMemberClan';
 export { default as processMention } from './components/MessageBox/ReactionMentionInput/processMention';
 export { default as PanelMember } from './components/PanelMember';
+
 export * from './components/ThumbnailAttachmentRender';
 
 export { default as AgeRestricted } from './components/AgeRestricted';

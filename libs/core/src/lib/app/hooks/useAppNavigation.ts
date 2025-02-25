@@ -74,7 +74,7 @@ export function useAppNavigation() {
 			toDmGroupPageFromMainApp,
 			toMessageChannel,
 			toChannelSettingPage,
-			toGuidePage,
+			toGuidePage
 		}),
 		[
 			navigate,
@@ -90,7 +90,7 @@ export function useAppNavigation() {
 			toDmGroupPageFromMainApp,
 			toMessageChannel,
 			toChannelSettingPage,
-			toGuidePage,
+			toGuidePage
 		]
 	);
 }

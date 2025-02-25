@@ -1,5 +1,5 @@
 import { MentionReactInput, UserMentionList } from '@mezon/components';
-import { useAuth, useThreadMessage } from '@mezon/core';
+import { useThreadMessage } from '@mezon/core';
 import {
 	channelsActions,
 	checkDuplicateThread,
@@ -116,23 +116,23 @@ const ThreadBox = () => {
 
 	return (
 		<div className="flex flex-col flex-1 justify-end border-l dark:border-borderDivider border-bgLightTertiary">
-				{threadCurrentChannel && (
-					<div
-						className={`overflow-y-auto bg-[#1E1E1E] max-w-widthMessageViewChat overflow-x-hidden ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBarMessageViewChatThread h-heightTitleBarMessageViewChatThread' : 'max-h-heightMessageViewChatThread h-heightMessageViewChatThread'}`}
-					>
-						<ChannelMessages
-							isThreadBox={true}
-							userIdsFromThreadBox={mapToMemberIds}
-							key={threadCurrentChannel.channel_id}
-							clanId={currentClanId || ''}
-							channelId={threadCurrentChannel.channel_id as string}
-							channelLabel={threadCurrentChannel.channel_label}
-							type={ChannelType.CHANNEL_TYPE_THREAD}
-							mode={ChannelStreamMode.STREAM_MODE_THREAD}
-              isPrivate={threadCurrentChannel.channel_private}
-						/>
-					</div>
-				)}
+			{threadCurrentChannel && (
+				<div
+					className={`overflow-y-auto bg-[#1E1E1E] max-w-widthMessageViewChat overflow-x-hidden ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBarMessageViewChatThread h-heightTitleBarMessageViewChatThread' : 'max-h-heightMessageViewChatThread h-heightMessageViewChatThread'}`}
+				>
+					<ChannelMessages
+						isThreadBox={true}
+						userIdsFromThreadBox={mapToMemberIds}
+						key={threadCurrentChannel.channel_id}
+						clanId={currentClanId || ''}
+						channelId={threadCurrentChannel.channel_id as string}
+						channelLabel={threadCurrentChannel.channel_label}
+						type={ChannelType.CHANNEL_TYPE_THREAD}
+						mode={ChannelStreamMode.STREAM_MODE_THREAD}
+						isPrivate={threadCurrentChannel.channel_private}
+					/>
+				</div>
+			)}
 			<div
 				className={`flex-shrink-0 flex flex-col ${isElectron() ? 'pb-[46px]' : 'pb-[26px]'} px-4 dark:bg-bgPrimary bg-bgLightPrimary h-auto relative`}
 			>

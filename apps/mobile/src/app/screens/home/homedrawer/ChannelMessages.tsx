@@ -6,6 +6,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
 	messagesActions,
+	selectAllAccount,
 	selectHasMoreBottomByChannelId2,
 	selectHasMoreMessageByChannelId2,
 	selectIdMessageToJump,
@@ -60,6 +61,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const [isLoadingScrollBottom, setIsLoadingScrollBottom] = React.useState<boolean>(false);
 	const isLoadMore = useRef({});
 	const [, setTriggerRender] = useState<boolean | string>(false);
+	// check later
 	const isFetching = useSelector(selectMessageIsLoading);
 	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channelId ?? ''));
 	const idMessageToJump = useSelector(selectIdMessageToJump);
@@ -67,6 +69,8 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const flatListRef = useRef(null);
 	const timeOutRef = useRef(null);
 	const timeOutRef2 = useRef(null);
+
+	const userId = useSelector(selectAllAccount)?.user?.id;
 
 	useEffect(() => {
 		const event = DeviceEventEmitter.addListener(ActionEmitEvent.SCROLL_TO_BOTTOM_CHAT, () => {
@@ -187,7 +191,9 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const renderItem = useCallback(
 		({ item, index }) => {
 			const previousMessage = messages?.[index + 1];
-			return <MessageItem message={item} previousMessage={previousMessage} messageId={item.id} mode={mode} channelId={channelId} />;
+			return (
+				<MessageItem userId={userId} message={item} previousMessage={previousMessage} messageId={item.id} mode={mode} channelId={channelId} />
+			);
 		},
 		[messages, mode, channelId]
 	);

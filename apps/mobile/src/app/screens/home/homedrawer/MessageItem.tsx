@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ActionEmitEvent, load, STORAGE_MY_USER_ID, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
+import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
 import { Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, MessagesEntity, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useState } from 'react';
@@ -42,6 +42,7 @@ export type MessageItemProps = {
 	showUserInformation?: boolean;
 	preventAction?: boolean;
 	isSearchTab?: boolean;
+	userId?: string;
 };
 
 const MessageItem = React.memo(
@@ -55,6 +56,7 @@ const MessageItem = React.memo(
 		const previousMessage: MessagesEntity = props?.previousMessage;
 		const [showHighlightReply, setShowHighlightReply] = useState(false);
 		const { t: contentMessage, lk = [] } = message?.content || {};
+		const userId = props?.userId;
 
 		const isInviteLink = Array.isArray(lk) && validLinkInviteRegex.test(contentMessage);
 		const isMessageCallLog = !!message?.content?.callLog;
@@ -78,8 +80,8 @@ const MessageItem = React.memo(
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, payload);
 		}, []);
+		//check
 
-		const userId = load(STORAGE_MY_USER_ID);
 		const hasIncludeMention = userId
 			? message?.content?.t?.includes('@here') ||
 				message?.mentions?.some?.((mention) => mention?.user_id === userId) ||
@@ -393,5 +395,7 @@ const MessageItem = React.memo(
 		);
 	}
 );
+
+MessageItem.displayName = 'MessageItem';
 
 export default MessageItem;

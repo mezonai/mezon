@@ -11,9 +11,8 @@ import {
 	videoStreamActions
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { FlatList, Pressable, View } from 'react-native';
 import { useSelector, useStore } from 'react-redux';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
@@ -90,9 +89,9 @@ export const ListClanPopup = React.memo(() => {
 
 	return (
 		<View style={styles.clansBox}>
-			<FlashList
+			<FlatList
 				scrollEnabled={false}
-				estimatedItemSize={size.s_48}
+				// estimatedItemSize={size.s_48}
 				data={clans}
 				keyExtractor={(clan) => `${clan?.id}_clan_item`}
 				renderItem={({ item }) => <ClanIcon data={item} onPress={handleChangeClan} />}

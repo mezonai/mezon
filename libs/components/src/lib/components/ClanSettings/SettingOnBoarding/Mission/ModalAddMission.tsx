@@ -1,5 +1,5 @@
 import {
-  editOnboarding,
+	editOnboarding,
 	EGuideType,
 	ETypeMission,
 	onboardingActions,
@@ -60,20 +60,22 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 	};
 
 	const handleAddTask = () => {
-    if(!tempId && tempId !== 0){
-      dispatch(editOnboarding({
-        clan_id : currentClanId as string,
-        idOnboarding : missionEdit?.id as string,
-        content : {
-          title : title,
-          guide_type: EGuideType.TASK,
-				  task_type: mission || 0,
-				  channel_id: missionChannel
-        }
-      }))
-		  onClose();
-      return;
-    }
+		if (!tempId && tempId !== 0) {
+			dispatch(
+				editOnboarding({
+					clan_id: currentClanId as string,
+					idOnboarding: missionEdit?.id as string,
+					content: {
+						title: title,
+						guide_type: EGuideType.TASK,
+						task_type: mission || 0,
+						channel_id: missionChannel
+					}
+				})
+			);
+			onClose();
+			return;
+		}
 
 		dispatch(
 			onboardingActions.addMission({
