@@ -1,58 +1,63 @@
-import { FRIEND_PAGE_LINK, toChannelPage, toMembersPage } from '@mezon/core';
+import { FRIEND_PAGE_LINK, toChannelPage, useAppNavigation } from '@mezon/core';
 import { RootState, getStoreAsync, selectCurrentClanId, selectWelcomeChannelByClanId, toastActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 
 type ModalUnknowChannelProps = {
-	onClose: () => void;
+	onClose?: () => void;
 	isError?: boolean;
+	errMessage?: string;
+	idErr?: string;
 };
 
 function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 	const dispatch = useDispatch();
-	const { onClose, isError = false } = props;
-	const navigate = useNavigate();
-
-	const resetErrorToastStatus = () => {
-		dispatch(toastActions.setErrorToastStatus(false));
+	const { onClose, isError = false, errMessage, idErr } = props;
+	const { toClanPage, navigate } = useAppNavigation();
+	const removeToastError = () => {
+		if (idErr) {
+			dispatch(toastActions.removeToastError(idErr));
+		}
+	};
+	const clearAllToastError = () => {
+		dispatch(toastActions.clearAllToastErrors());
 	};
 
 	const directToWelcomeChannel = async () => {
-		resetErrorToastStatus();
-
+		clearAllToastError();
 		const store = await getStoreAsync();
 		const currentClanId = selectCurrentClanId(store.getState() as RootState);
-		if (!currentClanId) {
+		if (!currentClanId || currentClanId === '0') {
 			navigate(FRIEND_PAGE_LINK);
 			return;
 		}
 		const welcomeChannelId = selectWelcomeChannelByClanId(store.getState(), currentClanId);
 
 		if (welcomeChannelId) {
+			navigate(toClanPage(currentClanId));
 			navigate(toChannelPage(welcomeChannelId, currentClanId));
 			return;
 		}
-
-		navigate(toMembersPage(currentClanId));
 	};
 
 	const onCloseAndReset = () => {
-		onClose();
 		if (isError) {
-			resetErrorToastStatus();
+			removeToastError();
 		}
+		onClose?.();
 	};
 
 	return (
-		<div className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center">
+		<div className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black  flex flex-row justify-center items-center">
 			<div className="w-fit h-fit dark:bg-bgPrimary bg-bgLightModeSecond rounded-lg flex-col justify-start  items-start gap-3 inline-flex overflow-hidden">
-				<div className="dark:text-white text-black">
+				<div className={`dark:text-white text-black ${isError ? 'w-[400px]' : ''} `}>
 					<div className="p-4 relative">
 						<div className="flex flex-col items-center gap-y-3 ">
 							<Icons.IconClockChannel />
 							{isError ? (
-								<h3 className="font-bold text-2xl dark:text-white text-black">Oops! Something Went Wrong</h3>
+								<h5 className="font-bold text-2xl dark:text-white text-black w-full flex justify-center">
+									{errMessage ? errMessage : 'Oops! Something Went Wrong'}
+								</h5>
 							) : (
 								<>
 									<h3 className="font-bold text-2xl dark:text-white text-black">You don't have access to this link.</h3>

@@ -75,6 +75,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			throw new Error('Mezon client not initialized');
 		}
 		const session = await clientRef.current.checkLoginRequest(LoginRequest);
+		const socket = await createSocket();
+		socketRef.current = socket;
 		return session;
 	}, []);
 

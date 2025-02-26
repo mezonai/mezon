@@ -58,7 +58,13 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const [userSearchError, setUserSearchError] = useState<string | null>(null);
 	const [resetTimerStatus, setResetTimerStatus] = useState<number>(0);
 	const [noClearStatus, setNoClearStatus] = useState<boolean>(false);
-	const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
+	const [sendTokenInputsState, setSendTokenInputsState] = useState<{
+		isSendTokenInputDisabled: boolean;
+		isUserSelectionDisabled: boolean;
+	}>({
+		isSendTokenInputDisabled: false,
+		isUserSelectionDisabled: false
+	});
 
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
@@ -100,7 +106,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		setNote('send token');
 		setUserSearchError('');
 		setError('');
-		setIsInputDisabled(false);
+		setSendTokenInputsState({ isSendTokenInputDisabled: false, isUserSelectionDisabled: false });
 		dispatch(giveCoffeeActions.setShowModalSendToken(false));
 	};
 
@@ -133,7 +139,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		const tokenEvent: ApiTokenSentEvent = {
 			sender_id: myProfile.userId as string,
 			sender_name: myProfile?.userProfile?.user?.username as string,
-			receiver_id: infoSendToken?.receiver_id ?? userId,
+			receiver_id: userId,
 			amount: token,
 			note: note,
 			extra_attribute: infoSendToken?.extra_attribute ?? extraAttribute
@@ -142,7 +148,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		try {
 			await dispatch(giveCoffeeActions.sendToken(tokenEvent)).unwrap();
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_SUCCESS_STATUS }));
-			await sendNotificationMessage(infoSendToken?.receiver_id ?? userId, token, note ?? '');
+			await sendNotificationMessage(userId, token, note ?? '');
 		} catch (err) {
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_FAILED_STATUS }));
 		}
@@ -180,7 +186,10 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			setSelectedUserId(infoSendToken.receiver_id ?? '');
 			setNote(infoSendToken.note ?? 'send token');
 			setExtraAttribute(infoSendToken.extra_attribute ?? '');
-			setIsInputDisabled(infoSendToken.amount !== 0);
+			setSendTokenInputsState({
+				isSendTokenInputDisabled: infoSendToken.amount !== 0,
+				isUserSelectionDisabled: infoSendToken.receiver_id !== ''
+			});
 			const timer = setTimeout(() => {
 				handleClosePopup();
 			}, 10000);
@@ -260,7 +269,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 					userSearchError={userSearchError}
 					userId={myProfile.userId as string}
 					note={note}
-					isInputDisabled={isInputDisabled}
+					sendTokenInputsState={sendTokenInputsState}
 				/>
 			)}
 		</>

@@ -9,6 +9,7 @@ import {
 	handleParticipantMeetState,
 	selectCurrentChannel,
 	selectCurrentClan,
+	selectIsShowSettingFooter,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectVoiceFullScreen,
@@ -128,9 +129,11 @@ const ChannelVoice = memo(
 
 		const isShow = isJoined && voiceInfo?.clanId === currentChannel?.clan_id && voiceInfo?.channelId === currentChannel?.channel_id;
 
+		const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
+
 		return (
 			<div
-				className={`${!isChannelMezonVoice ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
+				className={`${!isChannelMezonVoice || isShowSettingFooter.status ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
 				style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
 			>
 				{tokenRef.current === '' || !serverUrl ? (

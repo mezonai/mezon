@@ -21,7 +21,10 @@ type ModalSendTokenProps = {
 	userId: string;
 	selectedUserId: string;
 	note: string;
-	isInputDisabled: boolean;
+	sendTokenInputsState: {
+		isSendTokenInputDisabled: boolean;
+		isUserSelectionDisabled: boolean;
+	};
 };
 
 const ModalSendToken = ({
@@ -37,7 +40,7 @@ const ModalSendToken = ({
 	userId,
 	selectedUserId,
 	note,
-	isInputDisabled
+	sendTokenInputsState
 }: ModalSendTokenProps) => {
 	const usersClan = useSelector(selectAllUserClans);
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
@@ -160,7 +163,7 @@ const ModalSendToken = ({
 								value={searchTerm}
 								onClick={() => setIsDropdownOpen(true)}
 								onChange={handleChangeSearchTerm}
-								disabled={isInputDisabled}
+								disabled={sendTokenInputsState.isUserSelectionDisabled}
 							/>
 							{isDropdownOpen && (
 								<div
@@ -230,7 +233,7 @@ const ModalSendToken = ({
 							className="dark:text-[#B5BAC1] text-textLightTheme outline-none w-full h-10 p-[10px] dark:bg-bgInputDark bg-bgLightModeThird text-base rounded placeholder:text-sm appearance-none"
 							placeholder="VND"
 							onChange={handleChangeSendToken}
-							disabled={isInputDisabled}
+							disabled={sendTokenInputsState.isSendTokenInputDisabled}
 						/>
 						{error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 					</div>

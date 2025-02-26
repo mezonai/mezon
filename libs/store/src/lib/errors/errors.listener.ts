@@ -124,7 +124,11 @@ errorListenerMiddleware.startListening({
 			return;
 		}
 		if (toast.type === 'error') {
-			listenerApi.dispatch(toastActions.setErrorToastStatus(true));
+			listenerApi.dispatch(
+				toastActions.addToastError({
+					message: toast.message as string
+				})
+			);
 		}
 	}
 });

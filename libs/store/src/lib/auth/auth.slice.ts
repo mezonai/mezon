@@ -2,6 +2,7 @@ import { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Session } from 'mezon-js';
 import { ensureClientAsync, getMezonCtx, restoreLocalStorage } from '../helpers';
+import { clearAllMemoizedFunctions } from '../memoize';
 export const AUTH_FEATURE_KEY = 'auth';
 
 export interface AuthState {
@@ -95,6 +96,7 @@ export const logOut = createAsyncThunk('auth/logOut', async (_, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	await mezon?.logOutMezon();
 	thunkAPI.dispatch(authActions.setLogout());
+	clearAllMemoizedFunctions();
 	restoreLocalStorage(['persist:auth', 'persist:apps', 'persist:categories']);
 });
 

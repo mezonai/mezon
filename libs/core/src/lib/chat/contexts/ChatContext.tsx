@@ -675,7 +675,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							dispatch(threadsActions.add(thread));
 							const store = await getStoreAsync();
 							const allThreads = selectAllThreads(store.getState());
-							const defaultThreadList: ApiChannelDescription[] = [thread as ApiChannelDescription, ...((allThreads || []) as ApiChannelDescription[])];
+							const defaultThreadList: ApiChannelDescription[] = [
+								thread as ApiChannelDescription,
+								...((allThreads || []) as ApiChannelDescription[])
+							];
 							dispatch(
 								threadsActions.updateCacheOnThreadCreation({
 									clanId: channel.clan_id || '',

@@ -9,7 +9,7 @@ const toastsAdapter = createEntityAdapter<Toast>();
 
 const initialState = {
 	...toastsAdapter.getInitialState(),
-	toastErrorStatus: false
+	toastErrors: [] as { id: string; message: string }[]
 };
 const addToast = createAsyncThunk(
 	'toasts/addToast',
@@ -62,27 +62,38 @@ export const toastsSlice = createSlice({
 		clearToasts: (state) => {
 			toastsAdapter.removeAll(state);
 		},
-		setErrorToastStatus: (state, action: PayloadAction<boolean>) => {
-			state.toastErrorStatus = action.payload;
+		addToastError: (state, action: PayloadAction<{ message?: string }>) => {
+			const message = action.payload.message;
+			if (!message || state.toastErrors.find((error) => error.message === message)) {
+				return;
+			}
+			const id = Date.now().toString();
+			state.toastErrors.push({ id, message });
+		},
+		removeToastError: (state, action: PayloadAction<string>) => {
+			state.toastErrors = state.toastErrors.filter((error) => error.id !== action.payload);
+		},
+		clearAllToastErrors: (state) => {
+			state.toastErrors = [];
 		}
 	}
 });
 
-export const { addOneToast, removeToast, clearToasts, setErrorToastStatus } = toastsSlice.actions;
+export const { addOneToast, removeToast, clearToasts, addToastError, removeToastError, clearAllToastErrors } = toastsSlice.actions;
 
 export const toastActions = {
 	addToast,
 	removeToast,
 	clearToasts,
-	setErrorToastStatus
+	addToastError,
+	removeToastError,
+	clearAllToastErrors
 };
 
 // Create selectors using the adapter's getSelectors method
 export const { selectAll: selectToasts, selectById: selectToastById } = toastsAdapter.getSelectors(
 	(state: { toasts: typeof initialState }) => state.toasts
 );
-export const selectToastErrorStatus = createSelector(
-	[(state: { toasts: typeof initialState }) => state.toasts],
-	(toastsState) => toastsState.toastErrorStatus
-);
+export const selectToastErrors = createSelector([(state: { toasts: typeof initialState }) => state.toasts], (toastsState) => toastsState.toastErrors);
+
 export const toastsReducer = toastsSlice.reducer;
