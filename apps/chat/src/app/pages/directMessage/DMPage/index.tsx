@@ -209,9 +209,9 @@ const DirectMessage = () => {
 				h-[100%] overflow-visible relative`}
 				onDragEnter={handleDragEnter}
 			>
-				<div className="h-heightTopBar">
+				{/* <div className="h-heightTopBar">
 					<DmTopbar dmGroupId={directId} isHaveCallInChannel={isHaveCallInChannel || isPlayDialTone} />
-				</div>
+				</div> */}
 				<div className={`flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : ''}`}>
 					<div
 						className={`flex-col flex-1 h-full pb-[10px] ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}

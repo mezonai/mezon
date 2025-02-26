@@ -471,7 +471,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 									>
 										<ChannelMedia currentChannel={currentChannel} />
 									</div>
-									<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+									{/* <ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} /> */}
 								</div>
 							)}
 							{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
