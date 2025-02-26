@@ -214,7 +214,7 @@ const DirectMessage = () => {
 				</div> */}
 				<div className={`flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : ''}`}>
 					<div
-						className={`flex-col flex-1 h-full pb-[10px] ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
+						className={`flex-col flex-1 h-full ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
 						<div
 							className={`overflow-y-auto  ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink`}
@@ -280,7 +280,7 @@ const DirectMessage = () => {
 							</div>
 						)}
 
-						<div className="flex-shrink-0 flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative">
+						{/* <div className="flex-shrink-0 flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative">
 							<DirectMessageBox
 								direct={currentDmGroup}
 								mode={
@@ -301,7 +301,7 @@ const DirectMessage = () => {
 									isDM={true}
 								/>
 							)}
-						</div>
+						</div> */}
 					</div>
 					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
 						<div

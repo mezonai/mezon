@@ -115,27 +115,6 @@ const ClanLayout = () => {
 	return (
 		<>
 			<div
-				className={`select-none flex-col flex max-w-[272px] dark:bg-bgSecondary bg-bgLightSecondary relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
-			>
-				<ClanHeader name={currentClan?.clan_name} type="CHANNEL" bannerImage={currentClan?.banner} />
-				<ChannelList />
-				<div id="clan-footer">
-					{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
-					{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
-					{isVoiceJoined && <VoiceInfo />}
-					{(isElectronUpdateAvailable || IsElectronDownloading) && <UpdateButton isDownloading={!isElectronUpdateAvailable} />}
-					<div style={{ height: 56, width: '100%' }}>
-						<FooterProfile
-							name={userProfile?.user?.display_name || userProfile?.user?.username || ''}
-							status={userProfile?.user?.online}
-							avatar={userProfile?.user?.avatar_url || ''}
-							userId={userProfile?.user?.id || ''}
-							isDM={false}
-						/>
-					</div>
-				</div>
-			</div>
-			<div
 				className={`flex flex-1 shrink min-w-0 gap-2 ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'dark:bg-bgTertiary bg-bgLightTertiary' : ''}`}
 			>
 				<div

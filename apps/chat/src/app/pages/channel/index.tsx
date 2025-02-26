@@ -453,17 +453,17 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					)}
 					{isOverUploading && <TooManyUpload togglePopup={() => setOverUploadingState(false)} />}
 					<div
-						className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] z-10"
+						className="flex flex-col flex-1 shrink min-w-0 bg-transparent z-10"
 						id="mainChat"
 						// eslint-disable-next-line @typescript-eslint/no-empty-function
 						onDragEnter={canSendMessage ? handleDragEnter : () => {}}
 					>
 						<div
-							className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'}`}`}
+							className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : ''}`}`}
 						>
 							{!isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && (
 								<div
-									className={`flex flex-col flex-1 min-w-60 pb-[10px] ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+									className={`flex flex-col flex-1 min-w-60 ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 								>
 									<div
 										className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}

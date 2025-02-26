@@ -41,7 +41,7 @@ import { ApiOnboardingItem } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { ChannelMessageBox } from '../pages/channel/ChannelMessageBox';
 import { ChannelTyping } from '../pages/channel/ChannelTyping';
 import ChatStream from '../pages/chatStream';
@@ -125,7 +125,6 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 const TestLayout = () => {
   const currentClan = useSelector(selectCurrentClan);
   const { directId, channelId, clanId } = useAppParams();
-  console.log(' directId, channelId, clanId: ', directId, channelId, clanId);
   const userProfile = useSelector(selectAllAccount);
   const closeMenu = useSelector(selectCloseMenu);
   const statusMenu = useSelector(selectStatusMenu);
@@ -156,8 +155,7 @@ const TestLayout = () => {
   const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
   const isVoiceJoined = useSelector(selectVoiceJoined);
   const [openCreateClanModal, closeCreateClanModal] = useModal(() => <ModalCreateClan open={true} onClose={closeCreateClanModal} />);
-  const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId as string);
-  console.log('canSendMessage: ', canSendMessage);
+  const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], directId || channelId as string);
 
   return (
     <div className={`flex h-screen min-[480px]:pl-[72px] ${closeMenu ? (statusMenu ? 'pl-[72px]' : '') : ''} overflow-hidden text-gray-100 relative dark:bg-bgPrimary bg-bgLightModeSecond`}>
@@ -198,7 +196,7 @@ const TestLayout = () => {
           className={`flex flex-1 shrink min-w-0 gap-2 ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'dark:bg-bgTertiary bg-bgLightTertiary' : ''}`}
         >
           <div
-            className={`flex flex-col flex-1 shrink justify-between ${isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent h-[100%] overflow-visible ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'group' : ''}`}
+            className={`flex flex-col flex-1 shrink justify-between ${isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent overflow-visible ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'group' : ''}`}
           >
             {
               clanId ?
@@ -207,7 +205,7 @@ const TestLayout = () => {
                 <DmTopbar dmGroupId={directId} isHaveCallInChannel={false} />
             }
 
-            {/* {(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />} */}
+            {(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
             <ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
 
           </div>
