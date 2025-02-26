@@ -4,9 +4,9 @@ import { Outlet } from 'react-router-dom';
 
 export const MainContent = memo(
 	() => (
-		<EmojiSuggestionProvider isMobile={false}>
+		// <EmojiSuggestionProvider isMobile={false}>
 			<Outlet />
-		</EmojiSuggestionProvider>
+		// </EmojiSuggestionProvider>
 	),
 	() => true
 );

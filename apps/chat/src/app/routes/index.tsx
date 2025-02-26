@@ -55,7 +55,7 @@ const ChannelSettingMain = loadable(() => import('../pages/setting/channelSettin
 const GuideMain = loadable(() => import('../pages/guide'));
 const CanvasLayout = loadable(() => import('../layouts/CanvasLayout'));
 const LoginCallback = loadable(() => import('../pages/loginCallback'));
-
+const TestLayout = loadable(()=> import('../layouts/TestLayout'))
 // Components
 export const Routes = memo(() => {
 	const dispatch = useAppDispatch();
@@ -140,7 +140,7 @@ export const Routes = memo(() => {
 										children: [
 											{
 												path: '',
-												element: <Main />,
+												element: <TestLayout />,
 												children: [
 													{
 														path: 'clans',
@@ -222,7 +222,7 @@ export const Routes = memo(() => {
 													},
 													{
 														path: 'direct',
-														element: <DirectMain />,
+														element: <Outlet />,
 														loader: loaderWithStore(directLoader),
 														children: [
 															{
