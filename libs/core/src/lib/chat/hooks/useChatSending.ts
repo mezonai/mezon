@@ -25,6 +25,7 @@ export type UseChatSendingOptions = {
 
 // TODO: separate this hook into 2 hooks for send and edit message
 export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions) {
+  
 	const dispatch = useAppDispatch();
 	const getClanId = channelOrDirect?.clan_id;
 	const isPublic = !channelOrDirect?.channel_private;
@@ -130,6 +131,7 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 				);
 				return;
 			}
+
 			await dispatch(
 				messagesActions.sendMessage({
 					channelId: channelIdOrDirectId ?? '',
@@ -170,9 +172,13 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 
 	const sendMessageTyping = React.useCallback(async () => {
 		if (!anonymousMode) {
+      console.log('mode: ', mode);
+      console.log(' channelOrDirect?.clan_id: ',  channelOrDirect?.clan_id);
+      console.log('channelOrDirect?.channel_id: ', channelOrDirect?.channel_id);
+
 			dispatch(
 				messagesActions.sendTypingUser({
-					clanId: getClanId || '',
+					clanId: getClanId || '0',
 					channelId: channelIdOrDirectId ?? '',
 					mode,
 					isPublic: isPublic
@@ -225,6 +231,6 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 			sendMessageTyping,
 			editSendMessage
 		}),
-		[sendMessage, sendMessageTyping, editSendMessage]
+		[sendMessage, sendMessageTyping, editSendMessage,channelOrDirect]
 	);
 }

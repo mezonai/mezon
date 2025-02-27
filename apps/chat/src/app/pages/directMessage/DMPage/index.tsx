@@ -204,9 +204,7 @@ const DirectMessage = () => {
 		<>
 			{draggingState && <FileUploadByDnD currentId={currentDmGroup?.channel_id ?? ''} />}
 			<div
-				className={` flex flex-col
-			 flex-1 shrink min-w-0 bg-transparent
-				h-[100%] overflow-visible relative`}
+				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent overflow-visible relative`}
 				onDragEnter={handleDragEnter}
 			>
 				{/* <div className="h-heightTopBar">
@@ -214,7 +212,7 @@ const DirectMessage = () => {
 				</div> */}
 				<div className={`flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : ''}`}>
 					<div
-						className={`flex-col flex-1 h-full ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
+						className={`flex-col flex-1 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : ''} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
 						<div
 							className={`overflow-y-auto  ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink`}
@@ -303,13 +301,13 @@ const DirectMessage = () => {
 							)}
 						</div> */}
 					</div>
-					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
+					{/* {Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
 						<div
 							className={`dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_60px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
 						>
 							<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
 						</div>
-					)}
+					)} */}
 					{Number(type) === ChannelType.CHANNEL_TYPE_DM && isUseProfileDM && (
 						<div
 							className={`dark:bg-bgTertiary bg-bgLightSecondary ${isUseProfileDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-widthDmProfile'}`}

@@ -73,6 +73,7 @@ module.exports = {
         widthHeader: `calc(100% - 344px)`,
         widthMemberList: memberWidth,
         widthNoMemberList: memberWidth,
+        widthChannelList: channelListWidth,
         widthThumnailAttachment: `calc(100vw - ${clanWidth} - ${channelListWidth})`,
         widthSearchMessage: `calc(100vw - ${clanWidth} - ${channelListWidth} - ${widthResultSearch})`,
         widthModalSearch: widthModalSearch,

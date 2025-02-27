@@ -28,6 +28,7 @@ import SearchModal from '../SearchModal';
 import Header from './Header';
 import ModalCreateCategory from './ModalCreateCategory';
 import ModalPanel from './ModalPanel';
+import { Icons } from '@mezon/ui';
 
 export type ClanHeaderProps = {
 	name?: string;
@@ -149,19 +150,20 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	}, []);
 
 	return (
-		<>
-			{type === 'direct' ? (
-				<div className="px-3 font-semibold text-white h-heightHeader flex items-center shadow border-b-[1px] dark:border-bgTertiary border-gray-200">
-					<input
-						ref={inputRef}
-						placeholder="Find or start a conversation"
-						className={`font-[400] px-[16px] rounded dark:text-white text-black outline-none text-[14px] w-full dark:bg-bgTertiary bg-[#E1E1E1] dark:border-borderDefault h-[36px]`}
-						type="text"
-						onFocus={handleInputFocus}
-					/>
-				</div>
-			) : (
-				<Header name={name} handleShowModalClan={handleShowModalClan} isShowModalPanelClan={isShowModalPanelClan} modalRef={modalRef}>
+		<div className={`!h-heightHeader flex items-center justify-center px-4 w-widthChannelList ${type !== 'direct' ? 'dark:hover:bg-[#35373C] hover:bg-[#E2E7F6]' : ''}`}>
+			<div className={`cursor-pointer w-full flex  justify-between items-center gap-2  `}>
+				{type !== 'direct' ?
+					<>
+						<p className="dark:text-white text-black text-base font-semibold select-none one-line">{name?.toLocaleUpperCase()}</p>
+						<Icons.ArrowDown size='mr-2' />
+					</>
+					:
+					<div onClick={handleInputFocus} className={`font-normal leading-9 px-4 rounded dark:text-white text-black outline-none text-sm w-full dark:bg-bgTertiary bg-[#E1E1E1] dark:border-borderDefault h-9`}>
+						Find or start a conversation
+					</div>
+				}
+			</div>
+      <Header name={name} handleShowModalClan={handleShowModalClan} isShowModalPanelClan={isShowModalPanelClan} modalRef={modalRef}>
 					<ModalPanel
 						handleShowCreateCategory={handleShowCreateCategory}
 						handleShowInviteClanModal={handleShowInviteClanModal}
@@ -175,9 +177,8 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 						rootRef={modalRef}
 					/>
 				</Header>
-			)}
 
-			{isShowLeaveClanPopup && (
+			{/* {isShowLeaveClanPopup && (
 				<ModalConfirm
 					handleCancel={toggleLeaveClanPopup}
 					handleConfirm={handleLeaveClan}
@@ -185,13 +186,13 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 					title="leave"
 					buttonName="Leave Clan"
 				/>
-			)}
+			)} */}
 
-			{openServerSettings && <ClanSetting onClose={closeModalClan} initialSetting={canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI} />}
+			{/* {openServerSettings && <ClanSetting onClose={closeModalClan} initialSetting={canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI} />}
 
 			<ModalCreateCategory openCreateCate={openCreateCate} onClose={onClose} onCreateCategory={handleCreateCate} />
-			<InviteClanModal />
-		</>
+			<InviteClanModal />  */}
+		</div>
 	);
 }
 

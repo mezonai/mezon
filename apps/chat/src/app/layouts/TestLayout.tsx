@@ -1,6 +1,22 @@
-import { ChannelList, ChannelTopbar, ClanHeader, DirectMessageList, DmTopbar, FooterProfile, ModalCreateClan, NavLinkComponent, SidebarClanItem, SidebarLogoItem, StreamInfo, UpdateButton, VoiceInfo } from '@mezon/components';
+import {
+  ChannelList,
+  ChannelTopbar,
+  ClanHeader,
+  DirectMessageList,
+  DmTopbar,
+  FooterProfile,
+  MemberListGroupChat,
+  ModalCreateClan,
+  NavLinkComponent,
+  SidebarClanItem,
+  SidebarLogoItem,
+  StreamInfo,
+  UpdateButton,
+  VoiceInfo
+} from '@mezon/components';
 import { EmojiSuggestionProvider, useAppNavigation, useAppParams, useGifsStickersEmoji, useMenu, usePermissionChecker } from '@mezon/core';
 import {
+  ChannelsEntity,
   ETypeMission,
   onboardingActions,
   selectAllAccount,
@@ -11,7 +27,10 @@ import {
   selectCurrentChannel,
   selectCurrentClan,
   selectCurrentClanId,
+  selectCurrentDM,
+  selectDirectById,
   selectDirectsUnreadlist,
+  selectDmGroupCurrent,
   selectIsElectronDownloading,
   selectIsElectronUpdateAvailable,
   selectIsInCall,
@@ -20,6 +39,7 @@ import {
   selectIsShowCreateThread,
   selectIsShowCreateTopic,
   selectIsShowMemberList,
+  selectIsShowMemberListDM,
   selectMissionDone,
   selectMissionSum,
   selectOnboardingByClan,
@@ -34,7 +54,17 @@ import {
   useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { DONE_ONBOARDING_STATUS, EOverriddenPermission, ESummaryInfo, IClan, SubPanelName, isLinuxDesktop, isMacDesktop, isWindowsDesktop, titleMission } from '@mezon/utils';
+import {
+  DONE_ONBOARDING_STATUS,
+  EOverriddenPermission,
+  ESummaryInfo,
+  IClan,
+  SubPanelName,
+  isLinuxDesktop,
+  isMacDesktop,
+  isWindowsDesktop,
+  titleMission
+} from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiOnboardingItem } from 'mezon-js/api.gen';
@@ -55,19 +85,32 @@ type ChannelMainContentTextProps = {
 };
 
 const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainContentTextProps) => {
-  const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
+  const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? ''));
+  const currentDm = useAppSelector((state) => selectDirectById(state, channelId ?? ''))
 
   const isShowMemberList = useSelector(selectIsShowMemberList);
-  const mode =
-    currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
-      ? ChannelStreamMode.STREAM_MODE_CHANNEL
-      : ChannelStreamMode.STREAM_MODE_THREAD;
+  const mode = useMemo(() => {
+    if (currentChannel) {
+      switch (currentChannel?.type || currentDm?.type) {
+        case ChannelType.CHANNEL_TYPE_THREAD:
+          return ChannelStreamMode.STREAM_MODE_THREAD;
+        default:
+          return ChannelStreamMode.STREAM_MODE_CHANNEL;
+      }
+    }
+    switch (currentDm?.type) {
+      case ChannelType.CHANNEL_TYPE_GROUP:
+        return ChannelStreamMode.STREAM_MODE_GROUP;
+      default:
+        return ChannelStreamMode.STREAM_MODE_DM;
+    }
+  }, [currentChannel, currentDm])
 
   const [canSendMessageDelayed, setCanSendMessageDelayed] = useState(true);
   const currentClan = useSelector(selectCurrentClan);
   const missionDone = useSelector(selectMissionDone);
   const missionSum = useSelector(selectMissionSum);
-  const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel.clan_id as string));
+  const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel?.clan_id as string));
   const currentMission = useMemo(() => {
     return onboardingClan.mission[missionDone];
   }, [missionDone, channelId]);
@@ -113,14 +156,13 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
   return (
     <div className={`flex-shrink flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative ${isShowMemberList ? 'w-full' : 'w-full'}`}>
       {showPreviewMode && <OnboardingGuide currentMission={currentMission} missionSum={missionSum} missionDone={missionDone} />}
-      {currentChannel && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />}
-      {currentChannel && (
+      {(currentChannel || currentDm) && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel || currentDm as ChannelsEntity} mode={mode} />}
+      {(currentChannel || currentDm) && (
         <ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
       )}
     </div>
   );
 };
-
 
 const TestLayout = () => {
   const currentClan = useSelector(selectCurrentClan);
@@ -128,54 +170,39 @@ const TestLayout = () => {
   const userProfile = useSelector(selectAllAccount);
   const closeMenu = useSelector(selectCloseMenu);
   const statusMenu = useSelector(selectStatusMenu);
-  const isShowChatStream = useSelector(selectIsShowChatStream);
   const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
   const IsElectronDownloading = useSelector(selectIsElectronDownloading);
   const location = useLocation();
   const currentURL = isElectron() ? location.hash : location.pathname;
   const memberPath = `/chat/clans/${currentClan?.clan_id}/member-safety`;
   const currentChannel = useSelector(selectCurrentChannel);
-  const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
-  const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
-  const chatStreamRef = useRef<HTMLDivElement | null>(null);
+
   const isInCall = useSelector(selectIsInCall);
   const isJoin = useSelector(selectIsJoin);
-  const dispatch = useDispatch();
-  const { setSubPanelActive } = useGifsStickersEmoji();
-  const onMouseDownTopicBox = () => {
-    setSubPanelActive(SubPanelName.NONE);
-    dispatch(topicsActions.setFocusTopicBox(true));
-    dispatch(threadsActions.setFocusThreadBox(false));
-  };
-  const onMouseDownThreadBox = () => {
-    setSubPanelActive(SubPanelName.NONE);
-    dispatch(topicsActions.setFocusTopicBox(false));
-    dispatch(threadsActions.setFocusThreadBox(true));
-  };
+
+
   const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
   const isVoiceJoined = useSelector(selectVoiceJoined);
   const [openCreateClanModal, closeCreateClanModal] = useModal(() => <ModalCreateClan open={true} onClose={closeCreateClanModal} />);
-  const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], directId || channelId as string);
+  const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], directId || (channelId as string));
+
 
   return (
-    <div className={`flex h-screen min-[480px]:pl-[72px] ${closeMenu ? (statusMenu ? 'pl-[72px]' : '') : ''} overflow-hidden text-gray-100 relative dark:bg-bgPrimary bg-bgLightModeSecond`}>
+    <div
+      className={`flex h-screen min-[480px]:pl-[72px] ${closeMenu ? (statusMenu ? 'pl-[72px]' : '') : ''} overflow-hidden text-gray-100 relative dark:bg-bgPrimary bg-bgLightModeSecond`}
+    >
       <SidebarMenu openCreateClanModal={openCreateClanModal} />
 
       <EmojiSuggestionProvider isMobile={false}>
         <div
           className={`select-none flex-col flex max-w-[272px] dark:bg-bgSecondary bg-bgLightSecondary relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
         >
-          {clanId ?
-            <>
-              <ClanHeader name={currentClan?.clan_name} type="CHANNEL" bannerImage={currentClan?.banner} />
-              <ChannelList />
-            </>
-            :
-            <>
-              <ClanHeader type={'direct'} />
-              <DirectMessageList />
-            </>
-          }
+          <ClanHeader name={currentClan?.clan_name} type={directId ? 'direct' : 'CHANNEL'} bannerImage={currentClan?.banner} />
+          {clanId ? (
+            <ChannelList />
+          ) : (
+            <DirectMessageList />
+          )}
           <div id="clan-footer">
             {isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
             {isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
@@ -195,39 +222,28 @@ const TestLayout = () => {
         <div
           className={`flex flex-1 shrink min-w-0 gap-2 ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'dark:bg-bgTertiary bg-bgLightTertiary' : ''}`}
         >
-          <div
-            className={`flex flex-col flex-1 shrink justify-between ${isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent overflow-visible ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'group' : ''}`}
-          >
-            {
-              clanId ?
-                <ChannelTopbar channel={currentChannel} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
-                :
-                <DmTopbar dmGroupId={directId} isHaveCallInChannel={false} />
-            }
+          <div className="flex flex-col w-full">
+            {clanId ? (
+              <ChannelTopbar channel={currentChannel} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
+            ) : (
+              <DmTopbar dmGroupId={directId} isHaveCallInChannel={false} />
+            )}
 
-            {(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
-            <ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
-
-          </div>
-
-          {isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
-            <div ref={chatStreamRef} className="flex flex-col flex-1 max-w-[480px] min-w-60 dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
-              <ChatStream currentChannel={currentChannel} />
-
+            <div className={`flex w-full`}>
+              <div
+                className={`flex flex-col flex-1 shrink justify-between ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent overflow-visible ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'group' : ''}`}
+              >
+                {(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
+                <ChannelMainContentText canSendMessage={canSendMessage} channelId={directId ? directId : channelId as string} />
+              </div>
+              <ListMemberChannel />
             </div>
-          )}
-        </div>
-        {isShowCreateThread && !isShowCreateTopic && (
-          <div onMouseDown={onMouseDownThreadBox} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
-            <ThreadsMain />
-          </div>
-        )}
 
-        {isShowCreateTopic && !isShowCreateThread && (
-          <div onMouseDown={onMouseDownTopicBox} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
-            <TopicDiscussionMain />
+
           </div>
-        )}
+
+        </div>
+
         <Setting isDM={false} />
       </EmojiSuggestionProvider>
     </div>
@@ -235,6 +251,28 @@ const TestLayout = () => {
 };
 
 export default TestLayout;
+
+const ListMemberChannel = () => {
+  const { directId } = useAppParams();
+  const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
+  const currentDmGroup = useSelector(selectDmGroupCurrent(directId ?? ''));
+  const currentChannel = useSelector(selectCurrentChannel);
+  const closeMenu = useSelector(selectCloseMenu);
+
+  return (
+    <>
+      {Number(currentChannel?.type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
+        <div
+          className={`dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_60px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
+        >
+          <MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
+        </div>
+      )}
+    </>
+  )
+}
+
+
 type ShowModal = () => void;
 
 const SidebarMenu = memo(
@@ -373,7 +411,6 @@ const SidebarMenu = memo(
   },
   () => true
 );
-
 
 const OnboardingGuide = ({
   currentMission,

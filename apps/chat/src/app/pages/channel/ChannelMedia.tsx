@@ -19,7 +19,7 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 	) {
 		return (
 			<>
-				<KeyPressListener currentChannel={currentChannel} mode={mode} />
+				{/* <KeyPressListener currentChannel={currentChannel} mode={mode} /> */}
 				<ChannelMessages
 					clanId={currentChannel?.clan_id || ''}
 					channelId={currentChannel?.id}

@@ -2,12 +2,15 @@ import { GifStickerEmojiPopup, MessageBox, ReplyMessageBox, UserMentionList } fr
 import { useChatSending, useEscapeKey, useGifsStickersEmoji } from '@mezon/core';
 import {
 	ETypeMission,
+	messagesActions,
 	onboardingActions,
 	referencesActions,
+	selectAllAccount,
 	selectAnonymousMode,
 	selectCurrentClan,
 	selectDataReferences,
 	selectIsViewingOlderMessagesByChannelId,
+	selectMemberClanByUserId2,
 	selectMissionDone,
 	selectOnboardingByClan,
 	useAppDispatch,
@@ -30,24 +33,43 @@ export type ChannelMessageBoxProps = {
 };
 
 export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMessageBoxProps>) {
+  console.log('channel: ', channel);
 	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channel?.channel_id ?? ''));
 	const currentMission = useSelector(selectMissionDone);
-	const channelId = useMemo(() => {
-		return channel?.channel_id;
-	}, [channel?.channel_id]);
 
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
-	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: channel, mode });
 	const { subPanelActive } = useGifsStickersEmoji();
 	const anonymousMode = useSelector(selectAnonymousMode);
-	const dataReferences = useSelector(selectDataReferences(channelId ?? ''));
+  const channelId = channel.channel_id ?? '';
+	const dataReferences = useSelector(selectDataReferences(channelId));
 	const [isEmojiOnChat, setIsEmojiOnChat] = useState<boolean>(false);
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
 	const currentClan = useSelector(selectCurrentClan);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));
+
+  const userProfile = useSelector(selectAllAccount);
+
+	const profileInTheClan = useAppSelector((state) => selectMemberClanByUserId2(state, userProfile?.user?.id ?? ''));
+	const priorityAvatar =
+		mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
+			? profileInTheClan?.clan_avatar
+				? profileInTheClan?.clan_avatar
+				: userProfile?.user?.avatar_url
+			: userProfile?.user?.avatar_url;
+
+	const priorityDisplayName = userProfile?.user?.display_name ? userProfile?.user?.display_name : userProfile?.user?.username;
+	const priorityNameToShow =
+		mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
+			? profileInTheClan?.clan_nick
+				? profileInTheClan?.clan_nick
+				: priorityDisplayName
+			: priorityDisplayName;
+
+  const currentUserId = userProfile?.user?.id || '';
+
 	const handleSend = useCallback(
-		(
+	async (
 			content: IMessageSendPayload,
 			mentions?: Array<ApiMessageMention>,
 			attachments?: Array<ApiMessageAttachment>,
@@ -56,10 +78,28 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			anonymous?: boolean,
 			mentionEveryone?: boolean
 		) => {
-			sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone);
+      await appDispatch(
+				messagesActions.sendMessage({
+					channelId: channel.channel_id ?? '',
+					clanId: clanId || '',
+					mode,
+					isPublic: !channel?.channel_private,
+					content: content,
+					mentions: mentions,
+					attachments,
+					references,
+					anonymous,
+					mentionEveryone,
+					senderId: currentUserId,
+					avatar: priorityAvatar,
+					username: priorityNameToShow,
+				})
+			);
+
+
 			handDoMessageMission();
 		},
-		[sendMessage, currentMission]
+		[channel,currentMission]
 	);
 
 	const handDoMessageMission = () => {
@@ -76,8 +116,19 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	};
 
 	const handleTyping = useCallback(() => {
-		sendMessageTyping();
-	}, [sendMessageTyping]);
+		if (!anonymousMode) {
+			appDispatch(
+				messagesActions.sendTypingUser({
+					clanId: clanId || '0',
+					channelId: channel.channel_id ?? '',
+					mode,
+					isPublic: !channel?.channel_private
+				})
+			);
+		}
+
+		// sendMessageTyping();
+	}, [channel]);
 	const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 
 	useEffect(() => {
