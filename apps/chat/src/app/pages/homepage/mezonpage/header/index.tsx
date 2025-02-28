@@ -1,7 +1,8 @@
+import { useAppNavigation } from '@mezon/core';
 import { selectIsLogin } from '@mezon/store';
 import { Icons, Image } from '@mezon/ui';
 import { throttle } from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -52,6 +53,22 @@ const HeaderMezon = memo((props: HeaderProps) => {
 		</a>
 	);
 
+	const STATE = React.useMemo(() => {
+		const randomState = Math.random().toString(36).substring(2, 15);
+		sessionStorage.setItem('oauth_state', randomState);
+		return randomState;
+	}, []);
+	const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
+	const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;
+	const REDIRECT_URI = encodeURIComponent(process.env.NX_CHAT_APP_OAUTH2_REDIRECT_URI as string);
+	const RESPONSE_TYPE = process.env.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE;
+	const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
+	const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
+
+	const { navigate } = useAppNavigation();
+
+	const developersUrl = `http://localhost:4200/developers`;
+
 	return (
 		<div
 			className={`layout fixed flex flex-col items-center w-full ${isScrolled ? 'bg-[#0B0E2D4D] z-50 shadow-[0px_4px_12px_0px_#0B0E2D26] backdrop-blur-[24px]' : ''} h-[80px] max-md:h-[72px]`}
@@ -73,6 +90,14 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							<NavLink href="#home" section="home" label="Home" />
 							<NavLink href="#overview" section="overview" label="Overview" />
 							<NavLink href="#feature" section="feature" label="Features" />
+							<a
+								href={developersUrl}
+								className="border-b-2 border-transparent shadow-none text-[16px] leading-[24px] text-[#7C92AF] font-semibold flex flex-row items-center px-[2px] hover:border-[#8FA7BF] hover:text-[#8FA7BF] focus:border-transparent focus:rounded-lg focus:shadow-[0px_0px_0px_4px_#678FFF]"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Developers
+							</a>{' '}
 						</div>
 					</div>
 					<div className="w-fit">
