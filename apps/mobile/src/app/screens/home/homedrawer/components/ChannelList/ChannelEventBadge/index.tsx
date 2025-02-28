@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, size } from '@mezon/mobile-ui';
 import { selectChannelById, selectEventsByChannelId, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus } from '@mezon/utils';
 import { memo } from 'react';
 import { Linking, Pressable, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
 
 type EventBadgeProps = {
@@ -30,7 +31,12 @@ export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 				}}
 			>
 				<Pressable onPress={hanleEventChannel}>
-					<Icons.CalendarIcon height={size.s_16} width={size.s_16} color={colorStatusEvent} />
+					<FastImage
+						source={{
+							uri: IconCDN.calendarIcon
+						}}
+						style={{ height: size.s_18, width: size.s_18 }}
+					/>
 				</Pressable>
 			</View>
 		);

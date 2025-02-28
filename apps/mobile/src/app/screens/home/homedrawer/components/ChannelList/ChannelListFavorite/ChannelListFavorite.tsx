@@ -2,7 +2,6 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import {
 	ActionEmitEvent,
 	getUpdateOrAddClanChannelCache,
-	Icons,
 	load,
 	save,
 	STORAGE_CHANNEL_CURRENT_CACHE,
@@ -15,8 +14,10 @@ import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Linking, Text, TouchableOpacity, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import { MezonBottomSheet } from '../../../../../../componentUI';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
 import JoinChannelVoiceBS from '../../ChannelVoice/JoinChannelVoiceBS';
@@ -91,11 +92,11 @@ export const ChannelListFavorite = React.memo(() => {
 			{channelFavorites?.length ? (
 				<View style={{ width: '100%', paddingHorizontal: size.s_8, paddingVertical: size.s_10 }}>
 					<TouchableOpacity onPress={handleCollapse} style={styles.categoryItem}>
-						<Icons.ChevronSmallDownIcon
-							width={size.s_20}
-							height={size.s_20}
-							color={themeValue.text}
-							style={[isCollapse && { transform: [{ rotate: '-90deg' }] }]}
+						<FastImage
+							source={{
+								uri: IconCDN.chevronDownSmallIcon
+							}}
+							style={{ height: size.s_18, width: size.s_18, transform: isCollapse ? [{ rotate: '-90deg' }] : [] }}
 						/>
 						<Text style={styles.categoryItemTitle}>{t('favoriteChannel')}</Text>
 					</TouchableOpacity>
