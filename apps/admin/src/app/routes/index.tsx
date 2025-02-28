@@ -27,6 +27,7 @@ const GeneralInformation = loadable(() => import('../pages/AppGeneralInformation
 const Installation = loadable(() => import('../pages/installation'));
 const Install = loadable(() => import('../pages/install'));
 const OAuth2 = loadable(() => import('../pages/OAuth2'));
+const LoginCallbackAdmin = loadable(() => import('../pages/login/LoginCallback'));
 
 export const Routes = () => {
 	const dispatch = useAppDispatch();
@@ -59,6 +60,10 @@ export const Routes = () => {
 						{
 							path: 'login',
 							element: <Login />
+						},
+						{
+							path: '/apps/callback',
+							element: <LoginCallbackAdmin />
 						},
 						{
 							path: '',

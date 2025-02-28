@@ -452,7 +452,6 @@ export const selectGrouplMembers = createSelector(
 		if (!group?.user_id) {
 			return [];
 		}
-		// const groupDisplayNames = group.usernames?.split(',');
 		const groupUsername = group.usernames;
 		const groupDisplayNames = group.display_names;
 

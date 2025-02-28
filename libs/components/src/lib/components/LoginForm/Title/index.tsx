@@ -1,9 +1,33 @@
-export const TitleSection = () => {
+import React from 'react';
+
+export const TitleSectionAdmin = () => {
 	return (
 		<div className="flex flex-col justify-start items-center w-fit h-fit">
 			<h1 className="text-4xl font-bold dark:text-[#ffffff] text-black leading-[120%] text-center">WELCOME BACK</h1>
-			<p className="text-base font-medium dark:text-[#cccccc] text-black leading-[150%] text-center">So glad to meet you again!</p>
+			<p className="text-base font-medium dark:text-[#cccccc] text-black leading-[150%] text-center">Login as Admin User</p>
 		</div>
+	);
+};
+
+export const LoginByEmail = () => {
+	const STATE = React.useMemo(() => {
+		const randomState = Math.random().toString(36).substring(2, 15);
+		sessionStorage.setItem('oauth_state', randomState);
+		return randomState;
+	}, []);
+	const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
+	const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;
+	const REDIRECT_URI = encodeURIComponent(process.env.NX_CHAT_APP_OAUTH2_REDIRECT_URI as string);
+	const RESPONSE_TYPE = process.env.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE;
+	const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
+	const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
+	return (
+		<button
+			onClick={() => (window.location.href = authUrl)}
+			className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"
+		>
+			Login by Email
+		</button>
 	);
 };
 
