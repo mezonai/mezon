@@ -4,9 +4,9 @@ import { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import LongCornerIcon from '../../../../../../../assets/svg/long-corner.svg';
-import ShortCornerIcon from '../../../../../../../assets/svg/short-corner.svg';
+import FastImage from 'react-native-fast-image';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IChannelListThreadItemProps {
@@ -38,11 +38,21 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirst
 			<View style={[styles.threadItem]}>
 				{isFirstThread ? (
 					<View style={{ top: -size.s_14 }}>
-						<ShortCornerIcon width={size.s_12} height={size.s_16} />
+						<FastImage
+							source={{
+								uri: IconCDN.shortCorner
+							}}
+							style={{ height: size.s_16, width: size.s_12 }}
+						/>
 					</View>
 				) : (
 					<View style={{ top: -size.s_20 }}>
-						<LongCornerIcon width={size.s_12} height={size.s_36} />
+						<FastImage
+							source={{
+								uri: IconCDN.shortCorner
+							}}
+							style={{ height: size.s_36, width: size.s_12 }}
+						/>
 						{/*hardcode virtual view to connect thread lines */}
 						<View
 							style={{
