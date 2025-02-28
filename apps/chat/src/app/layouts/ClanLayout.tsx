@@ -1,31 +1,23 @@
-import { ChannelList, ChannelTopbar, ClanHeader, FooterProfile, StreamInfo, UpdateButton, VoiceInfo } from '@mezon/components';
 import { useApp, useGifsStickersEmoji } from '@mezon/core';
 import {
 	ChannelsEntity,
 	ClansEntity,
 	appActions,
 	selectAllAccount,
-	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentClan,
-	selectIsElectronDownloading,
-	selectIsElectronUpdateAvailable,
-	selectIsInCall,
-	selectIsJoin,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
-	selectStatusMenu,
 	selectVoiceFullScreen,
-	selectVoiceJoined,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { ESummaryInfo, SubPanelName, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { SubPanelName } from '@mezon/utils';
 import isElectron from 'is-electron';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -83,11 +75,7 @@ const ClanEffects: React.FC<{
 const ClanLayout = () => {
 	const currentClan = useSelector(selectCurrentClan);
 	const userProfile = useSelector(selectAllAccount);
-	const closeMenu = useSelector(selectCloseMenu);
-	const statusMenu = useSelector(selectStatusMenu);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
-	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
-	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const location = useLocation();
 	const currentURL = isElectron() ? location.hash : location.pathname;
 	const memberPath = `/chat/clans/${currentClan?.clan_id}/member-safety`;
@@ -95,8 +83,6 @@ const ClanLayout = () => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
-	const isInCall = useSelector(selectIsInCall);
-	const isJoin = useSelector(selectIsJoin);
 	const dispatch = useDispatch();
 	const { setSubPanelActive } = useGifsStickersEmoji();
 	const onMouseDownTopicBox = () => {
@@ -110,7 +96,6 @@ const ClanLayout = () => {
 		dispatch(threadsActions.setFocusThreadBox(true));
 	};
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
-	const isVoiceJoined = useSelector(selectVoiceJoined);
 
 	return (
 		<>

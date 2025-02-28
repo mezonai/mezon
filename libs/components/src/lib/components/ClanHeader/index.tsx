@@ -1,10 +1,9 @@
-import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
+import { useAppParams, useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
 import {
 	categoriesActions,
 	clansActions,
 	hasGrandchildModal,
 	selectCurrentClan,
-	selectCurrentClanId,
 	selectCurrentVoiceChannelId,
 	selectInviteChannelId,
 	selectInviteClanId,
@@ -13,35 +12,29 @@ import {
 	settingClanStickerActions,
 	useAppDispatch
 } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ClanSetting from '../ClanSettings';
 import { ItemSetting } from '../ClanSettings/ItemObj';
 import ModalInvite from '../ListMemberInvite/modalInvite';
 import ModalConfirm from '../ModalConfirm';
 import ModalNotificationSetting from '../NotificationSetting';
 import SearchModal from '../SearchModal';
-import Header from './Header';
 import ModalCreateCategory from './ModalCreateCategory';
 import ModalPanel from './ModalPanel';
-import { Icons } from '@mezon/ui';
 
-export type ClanHeaderProps = {
-	name?: string;
-	type: string;
-	bannerImage?: string;
-};
+export type ClanHeaderProps = {};
 
-function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
+function ClanHeader({}: ClanHeaderProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const modalRef = useRef<HTMLDivElement | null>(null);
 	const dispatch = useAppDispatch();
-	const params = useParams();
-	const currentClanId = useSelector(selectCurrentClanId);
+	const { directId, clanId } = useAppParams();
 	const [isClanOwner, canManageClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
 	const { removeMemberClan } = useChannelMembersActions();
 	const { userProfile } = useAuth();
@@ -49,9 +42,6 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	const currentClan = useSelector(selectCurrentClan);
 	const navigate = useNavigate();
 	const [openSearchModal, closeSearchModal] = useModal(() => <SearchModal onClose={closeSearchModal} open={true} />);
-
-	const [openCreateCate, setOpenCreateCate] = useState(false);
-	const [openServerSettings, setOpenServerSettings] = useState(false);
 	const [isShowModalPanelClan, setIsShowModalPanelClan] = useState<boolean>(false);
 	const hasChildModal = useSelector(hasGrandchildModal);
 	const hasChildModalRef = useRef(false);
@@ -68,23 +58,36 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	};
 
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
-	const [isShowLeaveClanPopup, setIsShowLeaveClanPopup] = useState(false);
 	const toggleLeaveClanPopup = () => {
-		setIsShowLeaveClanPopup(!isShowLeaveClanPopup);
+		openConfirmLeaveClan();
 		setIsShowModalPanelClan(false);
 	};
 
-	const onClose = () => {
-		setOpenCreateCate(false);
-	};
+	const [openConfirmLeaveClan, closeLeaveClan] = useModal(
+		() => (
+			<ModalConfirm
+				handleCancel={closeLeaveClan}
+				handleConfirm={handleLeaveClan}
+				modalName={currentClan?.clan_name}
+				title="leave"
+				buttonName="Leave Clan"
+			/>
+		),
+		[]
+	);
+
+	const [openCreateCate, closeCreateCate] = useModal(
+		() => <ModalCreateCategory openCreateCate={true} onClose={closeCreateCate} onCreateCategory={handleCreateCate} />,
+		[]
+	);
 
 	const handleCreateCate = async (nameCate: string) => {
 		const body: ApiCreateCategoryDescRequest = {
-			clan_id: currentClanId?.toString(),
+			clan_id: currentClan?.id?.toString(),
 			category_name: nameCate
 		};
 		await dispatch(categoriesActions.createNewCategory(body));
-		onClose();
+		closeCreateCate();
 	};
 
 	const handleInputFocus = () => {
@@ -97,7 +100,7 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	}, [isShowModalPanelClan]);
 
 	const handleShowCreateCategory = () => {
-		setOpenCreateCate(true);
+		openCreateCate();
 		setIsShowModalPanelClan(false);
 	};
 
@@ -107,14 +110,14 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	};
 
 	const handleShowServerSettings = () => {
-		setOpenServerSettings(true);
+		openClanSetting();
 		setIsShowModalPanelClan(false);
 	};
 
 	const closeModalClan = useCallback(() => {
 		setIsShowModalPanelClan(false);
 		if (!hasChildModalRef.current) {
-			setOpenServerSettings(false);
+			closeClanSetting();
 		}
 	}, []);
 
@@ -126,77 +129,79 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 
 	const toggleShowEmptyCategory = () => {
 		if (isShowEmptyCategory) {
-			dispatch(categoriesActions.setHideEmptyCategory(currentClanId as string));
+			dispatch(categoriesActions.setHideEmptyCategory(currentClan?.id as string));
 		} else {
-			dispatch(categoriesActions.setShowEmptyCategory(currentClanId as string));
+			dispatch(categoriesActions.setShowEmptyCategory(currentClan?.id as string));
 		}
 	};
 
 	const closeAllModals = useCallback(() => {
-		setOpenServerSettings(false);
-		setOpenCreateCate(false);
+		closeClanSetting();
+		closeCreateCate();
 		closeNotiSettingModal();
 		dispatch(clansActions.toggleInvitePeople({ status: false }));
 	}, [closeNotiSettingModal]);
 
+	const [openClanSetting, closeClanSetting] = useModal(
+		() => <ClanSetting onClose={closeModalClan} initialSetting={canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI} />,
+		[]
+	);
+
 	useEffect(() => {
-		if (params?.clanId) {
+		if (clanId) {
 			closeAllModals();
 		}
-	}, [closeAllModals, params]);
+	}, [closeAllModals, clanId]);
 
 	useEffect(() => {
 		dispatch(settingClanStickerActions.closeModalInChild());
 	}, []);
 
 	return (
-		<div className={`!h-heightHeader flex items-center justify-center px-4 w-widthChannelList ${type !== 'direct' ? 'dark:hover:bg-[#35373C] hover:bg-[#E2E7F6]' : ''}`}>
+		<div
+			className={`!h-heightHeader flex items-center justify-center px-4 w-widthChannelList ${!directId ? 'dark:hover:bg-[#35373C] hover:bg-[#E2E7F6]' : ''}`}
+		>
 			<div className={`cursor-pointer w-full flex  justify-between items-center gap-2  `}>
-				{type !== 'direct' ?
-					<>
-						<p className="dark:text-white text-black text-base font-semibold select-none one-line">{name?.toLocaleUpperCase()}</p>
-						<Icons.ArrowDown size='mr-2' />
-					</>
-					:
-					<div onClick={handleInputFocus} className={`font-normal leading-9 px-4 rounded dark:text-white text-black outline-none text-sm w-full dark:bg-bgTertiary bg-[#E1E1E1] dark:border-borderDefault h-9`}>
+				{clanId ? (
+					<div onClick={handleShowModalClan} className="flex items-center justify-between flex-1" ref={modalRef}>
+						<p className="dark:text-white text-black text-base font-semibold select-none one-line">
+							{currentClan?.clan_name?.toLocaleUpperCase()}
+						</p>
+						<Icons.ArrowDown size="mr-2" />
+					</div>
+				) : (
+					<div
+						onClick={handleInputFocus}
+						className={`font-normal leading-9 px-4 rounded dark:text-white text-black outline-none text-sm w-full dark:bg-bgTertiary bg-[#E1E1E1] dark:border-borderDefault h-9`}
+					>
 						Find or start a conversation
 					</div>
-				}
+				)}
 			</div>
-      <Header name={name} handleShowModalClan={handleShowModalClan} isShowModalPanelClan={isShowModalPanelClan} modalRef={modalRef}>
-					<ModalPanel
-						handleShowCreateCategory={handleShowCreateCategory}
-						handleShowInviteClanModal={handleShowInviteClanModal}
-						handleShowServerSettings={handleShowServerSettings}
-						toggleShowEmptyCategory={toggleShowEmptyCategory}
-						toggleLeaveClanPopup={toggleLeaveClanPopup}
-						handleShowNotificationSetting={handleShowNotificationSetting}
-						isShowEmptyCategory={isShowEmptyCategory}
-						isClanOwner={isClanOwner}
-						setIsShowModalPanelClan={setIsShowModalPanelClan}
-						rootRef={modalRef}
-					/>
-				</Header>
 
-			{/* {isShowLeaveClanPopup && (
-				<ModalConfirm
-					handleCancel={toggleLeaveClanPopup}
-					handleConfirm={handleLeaveClan}
-					modalName={currentClan?.clan_name}
-					title="leave"
-					buttonName="Leave Clan"
+			{isShowModalPanelClan ? (
+				<ModalPanel
+					handleShowCreateCategory={handleShowCreateCategory}
+					handleShowInviteClanModal={handleShowInviteClanModal}
+					handleShowServerSettings={handleShowServerSettings}
+					toggleShowEmptyCategory={toggleShowEmptyCategory}
+					toggleLeaveClanPopup={toggleLeaveClanPopup}
+					handleShowNotificationSetting={handleShowNotificationSetting}
+					isShowEmptyCategory={isShowEmptyCategory}
+					isClanOwner={isClanOwner}
+					setIsShowModalPanelClan={setIsShowModalPanelClan}
+					rootRef={modalRef}
 				/>
-			)} */}
+			) : (
+				<></>
+			)}
 
-			{/* {openServerSettings && <ClanSetting onClose={closeModalClan} initialSetting={canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI} />}
-
-			<ModalCreateCategory openCreateCate={openCreateCate} onClose={onClose} onCreateCategory={handleCreateCate} />
-			<InviteClanModal />  */}
+			<InviteClanModal />
 		</div>
 	);
 }
 
-export default ClanHeader;
+export default memo(ClanHeader);
 
 const InviteClanModal: React.FC = () => {
 	const dispatch = useDispatch();

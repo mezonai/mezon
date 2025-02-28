@@ -1,5 +1,5 @@
 import { GifStickerEmojiPopup, MessageBox, ReplyMessageBox, UserMentionList } from '@mezon/components';
-import { useChatSending, useEscapeKey, useGifsStickersEmoji } from '@mezon/core';
+import { useEscapeKey, useGifsStickersEmoji } from '@mezon/core';
 import {
 	ETypeMission,
 	messagesActions,
@@ -21,7 +21,7 @@ import { EmojiPlaces, IMessageSendPayload, SubPanelName, ThreadValue, blankRefer
 import classNames from 'classnames';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import { ChannelJumpToPresent } from './ChannelJumpToPresent';
@@ -33,7 +33,6 @@ export type ChannelMessageBoxProps = {
 };
 
 export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMessageBoxProps>) {
-  console.log('channel: ', channel);
 	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channel?.channel_id ?? ''));
 	const currentMission = useSelector(selectMissionDone);
 
@@ -41,14 +40,14 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const appDispatch = useAppDispatch();
 	const { subPanelActive } = useGifsStickersEmoji();
 	const anonymousMode = useSelector(selectAnonymousMode);
-  const channelId = channel.channel_id ?? '';
+	const channelId = channel.channel_id ?? '';
 	const dataReferences = useSelector(selectDataReferences(channelId));
 	const [isEmojiOnChat, setIsEmojiOnChat] = useState<boolean>(false);
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
 	const currentClan = useSelector(selectCurrentClan);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));
 
-  const userProfile = useSelector(selectAllAccount);
+	const userProfile = useSelector(selectAllAccount);
 
 	const profileInTheClan = useAppSelector((state) => selectMemberClanByUserId2(state, userProfile?.user?.id ?? ''));
 	const priorityAvatar =
@@ -66,10 +65,10 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 				: priorityDisplayName
 			: priorityDisplayName;
 
-  const currentUserId = userProfile?.user?.id || '';
+	const currentUserId = userProfile?.user?.id || '';
 
 	const handleSend = useCallback(
-	async (
+		async (
 			content: IMessageSendPayload,
 			mentions?: Array<ApiMessageMention>,
 			attachments?: Array<ApiMessageAttachment>,
@@ -78,7 +77,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			anonymous?: boolean,
 			mentionEveryone?: boolean
 		) => {
-      await appDispatch(
+			await appDispatch(
 				messagesActions.sendMessage({
 					channelId: channel.channel_id ?? '',
 					clanId: clanId || '',
@@ -92,14 +91,13 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 					mentionEveryone,
 					senderId: currentUserId,
 					avatar: priorityAvatar,
-					username: priorityNameToShow,
+					username: priorityNameToShow
 				})
 			);
 
-
 			handDoMessageMission();
 		},
-		[channel,currentMission]
+		[channel, currentMission]
 	);
 
 	const handDoMessageMission = () => {

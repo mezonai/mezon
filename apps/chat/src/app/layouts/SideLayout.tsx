@@ -34,16 +34,16 @@ const SideLayout = () => {
   };
 
   return (
-    <div>
+    <div className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
 
       {isShowCreateThread && !isShowCreateTopic && (
-        <div onMouseDown={onMouseDownThreadBox} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
+        <div onMouseDown={onMouseDownThreadBox} >
           <ThreadsMain />
         </div>
       )}
 
       {isShowCreateTopic && !isShowCreateThread && (
-        <div onMouseDown={onMouseDownTopicBox} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
+        <div onMouseDown={onMouseDownTopicBox}>
           <TopicDiscussionMain />
         </div>
       )}
@@ -51,7 +51,7 @@ const SideLayout = () => {
       {isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
         <div
           ref={chatStreamRef}
-          className="flex flex-col flex-1 max-w-[480px] min-w-60 dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg"
+          className="flex flex-col flex-1"
         >
           <ChatStream currentChannel={currentChannel} />
         </div>

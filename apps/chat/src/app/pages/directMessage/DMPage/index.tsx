@@ -1,12 +1,4 @@
-import {
-	DirectMessageBox,
-	DmTopbar,
-	FileUploadByDnD,
-	GifStickerEmojiPopup,
-	MemberListGroupChat,
-	ModalUserProfile,
-	SearchMessageChannelRender
-} from '@mezon/components';
+import { FileUploadByDnD, GifStickerEmojiPopup, ModalUserProfile, SearchMessageChannelRender } from '@mezon/components';
 import {
 	useApp,
 	useAppParams,
@@ -51,7 +43,6 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { DragEvent, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ChannelMessages from '../../channel/ChannelMessages';
-import { ChannelTyping } from '../../channel/ChannelTyping';
 
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
@@ -203,13 +194,7 @@ const DirectMessage = () => {
 	return (
 		<>
 			{draggingState && <FileUploadByDnD currentId={currentDmGroup?.channel_id ?? ''} />}
-			<div
-				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent overflow-visible relative`}
-				onDragEnter={handleDragEnter}
-			>
-				{/* <div className="h-heightTopBar">
-					<DmTopbar dmGroupId={directId} isHaveCallInChannel={isHaveCallInChannel || isPlayDialTone} />
-				</div> */}
+			<div className={` flex flex-col flex-1 shrink min-w-0 bg-transparent overflow-visible relative`} onDragEnter={handleDragEnter}>
 				<div className={`flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : ''}`}>
 					<div
 						className={`flex-col flex-1 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : ''} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
