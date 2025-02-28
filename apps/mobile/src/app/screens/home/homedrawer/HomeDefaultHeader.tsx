@@ -1,14 +1,16 @@
-import { ENotificationActive, ETypeSearch, Icons } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { ENotificationActive, ETypeSearch } from '@mezon/mobile-components';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectCurrentChannel, useAppSelector } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { IconCDN } from '../../../constants/icon_cdn';
 import useStatusMuteChannel from '../../../hooks/useStatusMuteChannel';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import { IconCDNItem } from './IconItem';
 import { style } from './styles';
 
 const HomeDefaultHeader = React.memo(
@@ -47,11 +49,11 @@ const HomeDefaultHeader = React.memo(
 
 		const renderChannelIcon = () => {
 			if (currentChannel?.channel_private === ChannelStatusEnum.isPrivate && !!Number(currentChannel?.parrent_id)) {
-				return <Icons.ThreadLockIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+				return <IconCDNItem iconUrl={IconCDN.threadLockIcon} width={size.s_20} height={size.s_20} />;
 			}
 
 			if (!!currentChannel?.channel_label && !!Number(currentChannel?.parrent_id)) {
-				return <Icons.ThreadIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+				return <IconCDNItem iconUrl={IconCDN.threadIcon} width={size.s_20} height={size.s_20} />;
 			}
 
 			if (
@@ -59,22 +61,22 @@ const HomeDefaultHeader = React.memo(
 				currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 				!isAgeRestrictedChannel
 			) {
-				return <Icons.TextLockIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+				return <IconCDNItem iconUrl={IconCDN.channelText} width={size.s_20} height={size.s_20} />;
 			}
 
 			if (currentChannel?.channel_private !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
-				return <Icons.StreamIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+				return <IconCDNItem iconUrl={IconCDN.channelStream} width={size.s_20} height={size.s_20} />;
 			}
 
 			if (currentChannel?.channel_private !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_APP) {
-				return <Icons.AppChannelIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+				return <IconCDNItem iconUrl={IconCDN.channelApp} width={size.s_20} height={size.s_20} />;
 			}
 
 			if (currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel) {
-				return <Icons.HashtagWarning width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+				return <IconCDNItem iconUrl={IconCDN.channelTextWarning} width={size.s_20} height={size.s_20} />;
 			}
 
-			return <Icons.TextIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />;
+			return <IconCDNItem iconUrl={IconCDN.channelText} width={size.s_20} height={size.s_20} />;
 		};
 
 		return (
@@ -88,7 +90,7 @@ const HomeDefaultHeader = React.memo(
 								style={styles.iconBar}
 								onPress={onOpenDrawer}
 							>
-								<Icons.ArrowLargeLeftIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
+								<IconCDNItem iconUrl={IconCDN.backArrowLarge} width={size.s_20} height={size.s_20} />
 							</TouchableOpacity>
 						)}
 						{!!currentChannel?.channel_label && (
@@ -112,20 +114,20 @@ const HomeDefaultHeader = React.memo(
 				</TouchableOpacity>
 				{isTabletLandscape && (
 					<TouchableOpacity style={styles.iconBell} onPress={navigateToNotifications}>
-						<Icons.Inbox width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
+						<IconCDNItem iconUrl={IconCDN.inbox} width={size.s_20} height={size.s_20} />
 					</TouchableOpacity>
 				)}
 				{!!currentChannel?.channel_label && !!Number(currentChannel?.parrent_id) ? (
 					<TouchableOpacity style={styles.iconBell} onPress={() => openBottomSheet()}>
 						{statusMute === ENotificationActive.OFF ? (
-							<Icons.BellSlashIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
+							<IconCDNItem iconUrl={IconCDN.bellSlashIcon} width={size.s_20} height={size.s_20} />
 						) : (
-							<Icons.BellIcon width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
+							<IconCDNItem iconUrl={IconCDN.bellIcon} width={size.s_20} height={size.s_20} />
 						)}
 					</TouchableOpacity>
 				) : currentChannel ? (
 					<TouchableOpacity style={styles.iconBell} onPress={() => navigateToSearchPage()}>
-						<Icons.MagnifyingIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+						<IconCDNItem iconUrl={IconCDN.magnifyingIcon} width={size.s_20} height={size.s_20} />
 					</TouchableOpacity>
 				) : (
 					<View />
