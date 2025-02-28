@@ -832,7 +832,7 @@ export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => 
 	});
 };
 export const checkIsThread = (channel?: IChannel) => {
-	return channel?.parrent_id !== '0' && channel?.parrent_id !== '';
+	return channel?.parent_id !== '0' && channel?.parent_id !== '';
 };
 
 export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();

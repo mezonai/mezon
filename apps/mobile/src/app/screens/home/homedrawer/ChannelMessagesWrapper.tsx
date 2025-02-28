@@ -19,12 +19,12 @@ type ChannelMessagesProps = {
 	mode: ChannelStreamMode;
 	isPublic?: boolean;
 	isDM?: boolean;
-	isDisableLoadMore?: boolean;
 	isDisableActionListener?: boolean;
+	topicChannelId?: string;
 };
 
 const ChannelMessagesWrapper = React.memo(
-	({ channelId, topicId, clanId, mode, isPublic, isDM, isDisableLoadMore, isDisableActionListener = false }: ChannelMessagesProps) => {
+	({ channelId, topicId, clanId, mode, isPublic, isDM, isDisableActionListener = false, topicChannelId }: ChannelMessagesProps) => {
 		const [isReadyShowChannelMsg, setIsReadyShowChannelMsg] = React.useState<boolean>(false);
 		const { themeValue } = useTheme();
 
@@ -32,7 +32,7 @@ const ChannelMessagesWrapper = React.memo(
 			if (!isReadyShowChannelMsg) {
 				setTimeout(() => {
 					setIsReadyShowChannelMsg(() => true);
-				}, 300);
+				}, 50);
 			}
 		});
 
@@ -67,7 +67,7 @@ const ChannelMessagesWrapper = React.memo(
 					mode={mode}
 					isDM={isDM}
 					isPublic={isPublic}
-					isDisableLoadMore={isDisableLoadMore}
+					topicChannelId={topicChannelId}
 				/>
 				<ChannelMessageListener />
 				{!isDisableActionListener && <ChannelMessageReactionListener />}

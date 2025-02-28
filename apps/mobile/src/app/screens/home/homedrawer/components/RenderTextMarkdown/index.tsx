@@ -1,8 +1,8 @@
-import { codeBlockRegex, codeBlockRegexGlobal, markdownDefaultUrlRegex, splitBlockCodeRegex, urlRegex } from '@mezon/mobile-components';
 import { Attributes, Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	RootState,
+	getStore,
 	selectAllChannelMembers,
 	selectAllUserClans,
 	selectChannelsEntities,
@@ -11,16 +11,9 @@ import {
 import { EBacktickType, ETokenMessage, IExtendedMessage, getSrcEmoji, getYouTubeEmbedUrl, isYouTubeLink } from '@mezon/utils';
 import { TFunction } from 'i18next';
 import React from 'react';
-import { Dimensions, Linking, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import Markdown from 'react-native-markdown-display';
-import Toast from 'react-native-toast-message';
-import Feather from 'react-native-vector-icons/Feather';
+import { Dimensions, Image, Linking, StyleSheet, Text, View } from 'react-native';
 import WebView from 'react-native-webview';
-import { useStore } from 'react-redux';
-import CustomIcon from '../../../../../../assets/CustomIcon';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
-import { EmojiMarkup } from '../MarkdownFormatText/EmojiMarkup';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
 interface ElementToken {
@@ -252,229 +245,6 @@ export function extractIds(url: string): { clanId: string | null; channelId: str
 	};
 }
 
-/**
- * custom render if you need
- * react-native-markdown-display/src/lib/renderRules.js to see more
- */
-export const renderRulesCustom = (isOnlyContainEmoji, onLongPress) => ({
-	heading1: (node, children, parent, styles) => {
-		return (
-			<View key={node.key} style={styles._VIEW_SAFE_heading1}>
-				{children}
-			</View>
-		);
-	},
-	code_inline: (node, children, parent, styles, inheritedStyles = {}) => (
-		<Text key={node.key} style={[inheritedStyles, styles.code_inline, { bottom: -5 }]}>
-			{node.content}
-		</Text>
-	),
-	link: (node, children, parent, styles, onLinkPress) => {
-		const payload = node?.attributes?.href;
-		const content = node?.children[0]?.content;
-		const widthScreen = Dimensions.get('screen').width;
-
-		if (payload === EDITED_FLAG) {
-			return (
-				<Text key={node.key} style={[styles.editedText]}>
-					{content}
-				</Text>
-			);
-		}
-
-		if (isYouTubeLink(payload)) {
-			const videoUrl = getYouTubeEmbedUrl(payload);
-			return (
-				<View style={{ width: widthScreen - size.s_70, display: 'flex', gap: size.s_4 }}>
-					<Text
-						key={node.key}
-						style={[styles.link]}
-						onPress={() => openUrl(node.attributes.href, onLinkPress)}
-						onLongPress={onLongPress && onLongPress}
-					>
-						{children}
-					</Text>
-					<View style={{ display: 'flex', flexDirection: 'row' }}>
-						<View style={styles.borderLeftView} />
-						<View style={styles.viewYoutube}>
-							<WebView source={{ uri: videoUrl }} allowsFullscreenVideo={true} javaScriptEnabled={true} domStorageEnabled={true} />
-						</View>
-					</View>
-				</View>
-			);
-		}
-
-		if (payload.includes('canvas')) {
-			const { clanId, channelId, canvasId } = extractIds(payload);
-			if (!canvasId || !clanId || !channelId) return;
-			return <RenderCanvasItem clanId={clanId} channelId={channelId} canvasId={canvasId} />;
-		}
-
-		if (content?.includes?.('unknown')) {
-			return (
-				<Text
-					key={node.key}
-					onPress={() => {
-						Toast.show({
-							type: 'error',
-							text1: 'You don`t have access to this link.',
-							text2: 'This link is to a clan or channel you don`t have access to.'
-						});
-						return;
-					}}
-				>
-					<Text style={styles.privateChannel}>
-						<Feather name="lock" size={15} /> private-channel
-					</Text>
-				</Text>
-			);
-		}
-
-		if (content?.startsWith(':')) {
-			return (
-				<View key={`${content}`} style={!isOnlyContainEmoji && styles.emojiInMessageContain}>
-					<FastImage
-						source={{ uri: payload }}
-						style={isOnlyContainEmoji ? styles.onlyIconEmojiInMessage : [styles.iconEmojiInMessage]}
-						resizeMode={'contain'}
-					/>
-				</View>
-			);
-		}
-		if (payload.startsWith(TYPE_MENTION.userMention) || payload.startsWith(TYPE_MENTION.hashtag)) {
-			if (payload.includes(TYPE_MENTION.voiceChannel)) {
-				return (
-					<Text key={node.key} style={styles.voiceChannel} onPress={() => openUrl(node.attributes.href, onLinkPress)}>
-						<Text>
-							<CustomIcon name="volume-up" size={size.s_14} color={Colors.textLink} style={{ marginTop: 10 }} />{' '}
-						</Text>
-						<Text style={styles.textVoiceChannel}>{`${content}`}</Text>
-					</Text>
-				);
-			}
-			if (payload.includes(TYPE_MENTION.stream)) {
-				return (
-					<Text key={node.key} style={styles.voiceChannel} onPress={() => openUrl(`#${payload?.slice?.(7)}`, onLinkPress)}>
-						<Text>
-							<CustomIcon name="stream" size={size.s_14} color={Colors.textLink} />{' '}
-						</Text>
-						<Text style={styles.textVoiceChannel}>{`${content}`}</Text>
-					</Text>
-				);
-			}
-			if (payload.includes(TYPE_MENTION.thread)) {
-				return (
-					<Text key={node.key} style={styles.voiceChannel} onPress={() => openUrl(`#${payload?.slice?.(7)}`, onLinkPress)}>
-						<Text>
-							<CustomIcon name="thread-icon" size={size.s_16} color={Colors.textLink} />{' '}
-						</Text>
-						<Text style={styles.textVoiceChannel}>{`${content}`}</Text>
-					</Text>
-				);
-			}
-			return (
-				<Text
-					key={node.key}
-					style={[styles.mention, payload?.startsWith(TYPE_MENTION.userRoleMention) && styles.roleMention]}
-					onPress={() => openUrl(node.attributes.href, onLinkPress)}
-				>
-					{content}
-				</Text>
-			);
-		}
-		return (
-			<Text
-				key={node.key}
-				style={[styles.link]}
-				onPress={() => openUrl(node.attributes.href, onLinkPress)}
-				onLongPress={onLongPress && onLongPress}
-			>
-				{children}
-			</Text>
-		);
-	},
-	image: (node, children, parent, styles, allowedImageHandlers, defaultImageHandler) => {
-		const { src } = node.attributes;
-		return (
-			<View key={node.key} style={{ padding: 1 }}>
-				<FastImage source={{ uri: src }} style={styles.iconEmojiInMessage} resizeMode={'contain'} />
-			</View>
-		);
-	},
-	fence: (node, children, parent, styles, inheritedStyles = {}) => {
-		// we trim new lines off the end of code blocks because the parser sends an extra one.
-		let { content } = node;
-		if (typeof content === 'string' && content.endsWith('\n')) {
-			content = content.slice(0, -1);
-		}
-		const sourceInfo = node?.sourceInfo;
-		let displayContent = content;
-
-		if (sourceInfo) {
-			const textContent = sourceInfo.split?.(' ');
-			if (textContent[textContent.length - 1].includes(EDITED_FLAG)) {
-				textContent.pop();
-			}
-			displayContent = '```' + textContent.join(' ') + '\n' + content;
-		}
-
-		return (
-			<Text key={node.key} style={[inheritedStyles, styles.fence]}>
-				{displayContent}
-			</Text>
-		);
-	}
-});
-
-/**
- * helper for markdown
- */
-export const formatUrls = (text: string) => {
-	const modifiedString = text.replace(splitBlockCodeRegex, (match) => `\0${match}\0`);
-	const parts = modifiedString?.split?.('\0')?.filter?.(Boolean);
-
-	return parts
-		?.map((part) => {
-			if (codeBlockRegex.test(part)) {
-				return part;
-			} else {
-				if (urlRegex.test(part)) {
-					if (markdownDefaultUrlRegex.test(part)) {
-						return part;
-					} else {
-						return `[${part}](${part})`;
-					}
-				}
-				return part;
-			}
-		})
-		.join('');
-};
-
-export const formatBlockCode = (text: string, isMessageReply: boolean) => {
-	const matchesUrls = text?.match?.(urlRegex);
-
-	if (matchesUrls) {
-		return formatUrls(text);
-	}
-
-	const addNewlinesToCodeBlock = (block) => {
-		if (isMessageReply) {
-			block = block.replace(/```|\n/g, '').trim();
-			block = '`' + block + '`';
-		} else {
-			if (!block.startsWith('```\n')) {
-				block = block.replace(/^```/, '```\n');
-			}
-			if (!block.endsWith('\n```')) {
-				block = block.replace(/```$/, '\n```');
-			}
-		}
-		return '\n' + block + '\n';
-	};
-	return text?.replace?.(codeBlockRegexGlobal, addNewlinesToCodeBlock);
-};
-
 export const RenderTextMarkdownContent = ({
 	content,
 	isEdited,
@@ -493,209 +263,52 @@ export const RenderTextMarkdownContent = ({
 	isBuzzMessage = false,
 	onLongPress
 }: IMarkdownProps) => {
-	let customStyle = {};
 	const { themeValue } = useTheme();
-	const store = useStore();
 
-	if (isMessageReply) {
-		customStyle = { ...styleMessageReply(themeValue) };
-	}
-	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [] } = content || {};
+	const { t, mentions = [], hg = [], ej = [], mk = [] } = content || {};
+	let lastIndex = 0;
+	const textParts: React.ReactNode[] = [];
 
-	const hasMarkdown = mk?.length > 0 || lk?.length > 0 || isEdited;
-	if (!hasMarkdown) {
-		const elements = [
-			...hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })),
-			...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
-			...ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS }))
-		].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+	const elements = [
+		...hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })),
+		...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
+		...ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })),
+		...(mk?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) || [])
+	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
-		let lastIndex = 0;
-		const textParts: React.ReactNode[] = [];
+	const store = elements?.length > 0 ? getStore() : null;
 
-		elements.forEach((element, index) => {
-			const s = element.s ?? 0;
-			const e = element.e ?? 0;
+	elements.forEach((element, index) => {
+		const s = element.s ?? 0;
+		const e = element.e ?? 0;
+		const contentInElement = t?.substring(s, e);
 
-			if (lastIndex < s) {
-				textParts.push(
-					<Text
-						key={`text-${index}`}
-						style={themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}}
-					>
-						{t?.slice(lastIndex, s)}
-					</Text>
-				);
-			}
-
-			switch (element?.kindOf) {
-				case ETokenMessage.EMOJIS: {
-					const srcEmoji = getSrcEmoji(element.emojiid);
-					textParts.push(
-						<FastImage
-							key={`emoji-${index}`}
-							source={{ uri: srcEmoji }}
-							style={
-								isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage
-							}
-							resizeMode={'contain'}
-						/>
-					);
-					break;
-				}
-				case ETokenMessage.MENTIONS: {
-					const usersClan = selectAllUserClans(store.getState() as RootState);
-					const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
-					const contentInElement = t?.substring(s, e);
-
-					const mention = MentionUser({
-						tagName: contentInElement,
-						roleId: element.role_id || '',
-						tagUserId: element.user_id,
-						mode,
-						usersClan,
-						usersInChannel
-					});
-
-					const { text, link } = parseMarkdownLink(mention);
-
-					if (link.startsWith(TYPE_MENTION.userRoleMention)) {
-						textParts.push(
-							<Text
-								key={`mention-${index}`}
-								style={[
-									themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).mention : {},
-									{
-										color: themeValue.textRoleLink,
-										backgroundColor: themeValue.darkMossGreen
-									}
-								]}
-								onPress={() => onMention?.(link.replace('@role', '@'))}
-							>
-								{text}
-							</Text>
-						);
-					} else {
-						textParts.push(
-							<Text
-								key={`mention-${index}`}
-								style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).mention : {}]}
-								onPress={() => onMention?.(link)}
-							>
-								{text}
-							</Text>
-						);
-					}
-					break;
-				}
-				case ETokenMessage.HASHTAGS: {
-					const contentInElement = t?.substring(s, e);
-					if (!isHiddenHashtag) {
-						const channelsEntities = selectChannelsEntities(store.getState() as any);
-						const hashtagDmEntities = selectHashtagDmEntities(store.getState() as any);
-
-						const mention = ChannelHashtag({
-							channelHashtagId: element.channelid,
-							mode,
-							currentChannelId,
-							channelsEntities,
-							hashtagDmEntities
-						});
-
-						const { text, link } = parseMarkdownLink(mention);
-
-						textParts.push(
-							<Text
-								key={`hashtag-${index}`}
-								style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).hashtag : {}]}
-								onPress={() => {
-									const urlFormat = link.replace(/##voice%22|#%22|%22|"|#/g, '');
-									const dataChannel = urlFormat.split('_');
-									const payloadChannel = {
-										type: Number(dataChannel?.[0] || 1),
-										id: dataChannel?.[1],
-										channel_id: dataChannel?.[1],
-										clan_id: dataChannel?.[2],
-										status: Number(dataChannel?.[3] || 1),
-										meeting_code: dataChannel?.[4] || '',
-										category_id: dataChannel?.[5]
-									};
-									onChannelMention?.(payloadChannel);
-								}}
-							>
-								{text}
-							</Text>
-						);
-					} else {
-						textParts.push(<Text key={`hashtag-${index}`}>{contentInElement}</Text>);
-					}
-					break;
-				}
-			}
-
-			lastIndex = e;
-		});
-
-		if (lastIndex < (t?.length ?? 0)) {
+		if (lastIndex < s) {
 			textParts.push(
-				<Text key="text-end" style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}]}>
-					{t?.slice(lastIndex)}
+				<Text key={`text-${index}`} style={themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}}>
+					{t?.slice(lastIndex, s)}
 				</Text>
 			);
 		}
 
-		return <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>{textParts}</View>;
-	}
-
-	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
-	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
-	const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
-	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
-	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
-	const elements: ElementToken[] = [
-		...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
-		...hgm,
-		...ejm,
-		...mkm,
-		...lkm,
-		...vkm
-	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-
-	let lastIndex = 0;
-
-	const contentRender = (() => {
-		let formattedContent = '';
-
-		elements.forEach((element) => {
-			const s = element.s ?? 0;
-			const e = element.e ?? 0;
-
-			const contentInElement = t?.substring?.(s, e);
-
-			if (lastIndex < s) {
-				formattedContent += t?.slice?.(lastIndex, s)?.toString() ?? '';
+		switch (element?.kindOf) {
+			case ETokenMessage.EMOJIS: {
+				const srcEmoji = getSrcEmoji(element.emojiid);
+				textParts.push(
+					<Image
+						key={`emoji-${index}`}
+						source={{ uri: srcEmoji }}
+						style={isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage}
+						resizeMode={'contain'}
+					/>
+				);
+				break;
 			}
-			if (element.kindOf === ETokenMessage.HASHTAGS) {
-				if (isHiddenHashtag) {
-					formattedContent = contentInElement;
-				} else {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-expect-error
-					const channelsEntities = selectChannelsEntities(store.getState() as RootState);
-					const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
-					formattedContent += ChannelHashtag({
-						channelHashtagId: element.channelid,
-						mode,
-						currentChannelId,
-						channelsEntities,
-						hashtagDmEntities
-					});
-				}
-			}
-			if (element.kindOf === ETokenMessage.MENTIONS) {
+
+			case ETokenMessage.MENTIONS: {
 				const usersClan = selectAllUserClans(store.getState() as RootState);
 				const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
-				formattedContent += MentionUser({
+				const mention = MentionUser({
 					tagName: contentInElement,
 					roleId: element.role_id || '',
 					tagUserId: element.user_id,
@@ -703,124 +316,198 @@ export const RenderTextMarkdownContent = ({
 					usersClan,
 					usersInChannel
 				});
-			}
-			if (element.kindOf === ETokenMessage.EMOJIS) {
-				formattedContent += EmojiMarkup({ shortname: contentInElement, emojiid: element.emojiid, isMessageReply: isMessageReply });
+
+				const { text, link } = parseMarkdownLink(mention);
+				const isRoleMention = link.startsWith(TYPE_MENTION.userRoleMention);
+
+				textParts.push(
+					<Text
+						key={`mention-${index}`}
+						style={[
+							themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).mention : {},
+							isRoleMention && {
+								color: themeValue.textRoleLink,
+								backgroundColor: themeValue.darkMossGreen
+							}
+						]}
+						onPress={() => onMention?.(isRoleMention ? link.replace('@role', '@') : link)}
+					>
+						{text}
+					</Text>
+				);
+				break;
 			}
 
-			if (element.kindOf === ETokenMessage.MARKDOWNS || element.kindOf === ETokenMessage.LINKS) {
-				if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
-					formattedContent += formatUrls(contentInElement);
-				} else if (element.type === EBacktickType.BOLD) {
-					formattedContent += `**${contentInElement}**` ?? '';
-				} else if (element.type === EBacktickType.VOICE_LINK) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-expect-error
-					const channelsEntities = selectChannelsEntities(store.getState() as RootState);
-					const meetingCode = contentInElement?.split('/').pop();
-					const allChannelVoice = Object.values(channelsEntities).flat();
-					const voiceChannelFound = allChannelVoice?.find((channel) => channel.meeting_code === meetingCode) || null;
-					if (!voiceChannelFound) {
-						formattedContent += formatUrls(contentInElement);
-					} else {
-						formattedContent += ChannelHashtag({
-							channelHashtagId: voiceChannelFound?.channel_id,
-							channelsEntities
-						});
-					}
+			case ETokenMessage.HASHTAGS: {
+				if (!isHiddenHashtag) {
+					const channelsEntities = selectChannelsEntities(store.getState() as any);
+					const hashtagDmEntities = selectHashtagDmEntities(store.getState() as any);
+					const mention = ChannelHashtag({
+						channelHashtagId: element.channelid,
+						mode,
+						currentChannelId,
+						channelsEntities,
+						hashtagDmEntities
+					});
+
+					const { text, link } = parseMarkdownLink(mention);
+					textParts.push(
+						<Text
+							key={`hashtag-${index}`}
+							style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).hashtag : {}]}
+							onPress={() => {
+								const urlFormat = link.replace(/##voice%22|#%22|%22|"|#/g, '');
+								const dataChannel = urlFormat.split('_');
+								const payloadChannel = {
+									type: Number(dataChannel?.[0] || 1),
+									id: dataChannel?.[1],
+									channel_id: dataChannel?.[1],
+									clan_id: dataChannel?.[2],
+									status: Number(dataChannel?.[3] || 1),
+									meeting_code: dataChannel?.[4] || '',
+									category_id: dataChannel?.[5]
+								};
+								onChannelMention?.(payloadChannel);
+							}}
+						>
+							{text}
+						</Text>
+					);
 				} else {
-					let content = contentInElement ?? '';
-					if (element.type === EBacktickType.PRE) {
-						content = '```' + content + '```';
-					}
-					if (element.type === EBacktickType.CODE) {
-						content = '`' + content + '`';
-					}
-					formattedContent += formatBlockCode(content, isMessageReply);
+					textParts.push(<Text key={`hashtag-${index}`}>{contentInElement}</Text>);
 				}
+				break;
 			}
 
-			if (element.kindOf === ETokenMessage.VOICE_LINKS) {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-expect-error
-				const channelsEntities = selectChannelsEntities(store.getState() as RootState);
-				const hashtagDmEntities = selectHashtagDmEntities(store.getState() as RootState);
-				const meetingCode = contentInElement?.split('/').pop();
-				const allChannelVoice = Object.values(channelsEntities).flat();
-				const voiceChannelFound = allChannelVoice?.find((channel) => channel.meeting_code === meetingCode) || null;
+			case ETokenMessage.MARKDOWNS: {
+				switch (element.type) {
+					case EBacktickType.CODE:
+						textParts.push(
+							<Text key={`code-${index}`} style={themeValue ? markdownStyles(themeValue).code_inline : {}}>
+								{contentInElement}
+							</Text>
+						);
+						break;
 
-				if (!voiceChannelFound) {
-					formattedContent += formatUrls(contentInElement);
-				} else {
-					formattedContent += ChannelHashtag({ channelHashtagId: voiceChannelFound?.channel_id, channelsEntities, hashtagDmEntities });
+					case EBacktickType.PRE:
+						textParts.push(
+							<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
+								<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>{contentInElement}</Text>
+							</View>
+						);
+						break;
+
+					case EBacktickType.BOLD:
+						textParts.push(
+							<Text key={`bold-${index}`} style={{ fontWeight: 'bold' }}>
+								{contentInElement}
+							</Text>
+						);
+						break;
+
+					case EBacktickType.LINK: {
+						const { clanId, channelId, canvasId } = extractIds(contentInElement);
+
+						if (contentInElement.includes('canvas') && canvasId && clanId && channelId) {
+							textParts.push(<RenderCanvasItem key={`canvas-${index}`} clanId={clanId} channelId={channelId} canvasId={canvasId} />);
+						} else if (contentInElement.includes('unknown')) {
+							textParts.push(
+								<Text key={`private-${index}`}>
+									<Text style={themeValue ? markdownStyles(themeValue).privateChannel : {}}>private-channel</Text>
+								</Text>
+							);
+						} else if (isOpenLink) {
+							textParts.push(
+								<Text
+									key={`link-${index}`}
+									style={themeValue ? markdownStyles(themeValue).link : {}}
+									onPress={() => openUrl(contentInElement, null)}
+									onLongPress={onLongPress}
+								>
+									{contentInElement}
+								</Text>
+							);
+						}
+						break;
+					}
+
+					case EBacktickType.LINKYOUTUBE:
+						if (isYouTubeLink(contentInElement)) {
+							const videoUrl = getYouTubeEmbedUrl(contentInElement);
+							const widthScreen = Dimensions.get('screen').width;
+							textParts.push(
+								<View key={`youtube-${index}`} style={{ width: widthScreen - size.s_70, display: 'flex', gap: size.s_4 }}>
+									<Text
+										style={[themeValue ? markdownStyles(themeValue).link : {}]}
+										onPress={() => openUrl(contentInElement, null)}
+										onLongPress={onLongPress}
+									>
+										{contentInElement}
+									</Text>
+									<View style={{ display: 'flex', flexDirection: 'row' }}>
+										<View style={themeValue ? markdownStyles(themeValue).borderLeftView : {}} />
+										<View style={themeValue ? markdownStyles(themeValue).viewYoutube : {}}>
+											<WebView
+												source={{ uri: videoUrl }}
+												allowsFullscreenVideo={true}
+												javaScriptEnabled={true}
+												domStorageEnabled={true}
+											/>
+										</View>
+									</View>
+								</View>
+							);
+						} else {
+							textParts.push(
+								<Text
+									key={`link-${index}`}
+									style={themeValue ? markdownStyles(themeValue).link : {}}
+									onPress={() => openUrl(contentInElement, null)}
+									onLongPress={onLongPress}
+								>
+									{contentInElement}
+								</Text>
+							);
+						}
+						break;
+
+					default:
+						textParts.push(<Text key={`text-${index}`}>{contentInElement}</Text>);
 				}
+				break;
 			}
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-			lastIndex = e;
-		});
-
-		if (lastIndex < t?.length) {
-			formattedContent += t?.slice?.(lastIndex)?.toString();
 		}
 
-		if (isEdited) {
-			formattedContent += ` [${translate('edited')}](${EDITED_FLAG})`;
-		}
-		return formattedContent;
-	})();
+		lastIndex = e;
+	});
 
-	const escapeDashes = (text: string): string => {
-		return text.replace(/-{1,10}/g, (match) => `\\${match}`);
-	};
+	if (lastIndex < (t?.length ?? 0)) {
+		textParts.push(
+			<Text key="text-end" style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}]}>
+				{t?.slice(lastIndex)}
+			</Text>
+		);
+	}
 
-	const renderMarkdown = () => (
-		<Markdown
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			style={{
-				...(themeValue ? (markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage) as StyleSheet.NamedStyles<any>) : {}),
-				...customStyle
-			}}
-			rules={renderRulesCustom(isOnlyContainEmoji, onLongPress)}
-			onLinkPress={(url) => {
-				if (isOpenLink) {
-					if (url.startsWith(TYPE_MENTION.userRoleMention)) {
-						onMention && onMention(url.replace('@role', '@'));
-						return false;
-					}
-					if (url.startsWith(TYPE_MENTION.userMention)) {
-						onMention && onMention(url);
-						return false;
-					}
-					if (url.startsWith(TYPE_MENTION.hashtag)) {
-						const urlFormat = url.replace(/##voice%22|#%22|%22/g, '');
-						const dataChannel = urlFormat.split('_');
-						const payloadChannel = {
-							type: Number(dataChannel?.[0] || 1),
-							id: dataChannel?.[1],
-							channel_id: dataChannel?.[1],
-							clan_id: dataChannel?.[2],
-							status: Number(dataChannel?.[3] || 1),
-							meeting_code: dataChannel?.[4] || '',
-							category_id: dataChannel?.[5]
-						};
-						onChannelMention && onChannelMention(payloadChannel);
-						return false;
-					}
-					// Note: return false to prevent default
-					return true;
-				}
-			}}
-		>
-			{escapeDashes(formatBlockCode(contentRender?.trim(), isMessageReply))}
-		</Markdown>
-	);
+	if (isEdited) {
+		textParts.push(
+			<Text key="edited" style={themeValue ? markdownStyles(themeValue).editedText : {}}>
+				{` ${translate('edited')}`}
+			</Text>
+		);
+	}
 
-	return isNumberOfLine ? (
+	return (
 		<View
 			style={{
-				flex: 1,
-				maxHeight: isMessageReply ? size.s_17 : size.s_20 * 10 - size.s_10,
-				overflow: 'hidden'
+				flexDirection: 'row',
+				flexWrap: 'wrap',
+				alignItems: 'center',
+				...(isNumberOfLine && {
+					flex: 1,
+					maxHeight: isMessageReply ? size.s_17 : size.s_20 * 10 - size.s_10,
+					overflow: 'hidden'
+				})
 			}}
 		>
 			{isMessageReply && (
@@ -835,9 +522,7 @@ export const RenderTextMarkdownContent = ({
 					}}
 				/>
 			)}
-			{renderMarkdown()}
+			{textParts}
 		</View>
-	) : (
-		renderMarkdown()
 	);
 };

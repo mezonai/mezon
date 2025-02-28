@@ -1,5 +1,4 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -12,10 +11,9 @@ import {
 } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, FlatList, Pressable, Text, TextInput, View } from 'react-native';
+import { AppState, DeviceEventEmitter, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
-import { MezonBottomSheet } from '../../componentUI';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { FriendsTablet } from '../friend/FriendsTablet';
@@ -35,7 +33,6 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
 	const { t } = useTranslation(['dmMessage', 'common']);
 	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
-	const bottomSheetDMMessageRef = useRef<BottomSheetModal>(null);
 	const searchInputRef = useRef(null);
 	const dispatch = useAppDispatch();
 	const currentDmGroupId = useSelector(selectDmGroupCurrentId);
@@ -69,10 +66,12 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 
 	const typingSearchDebounce = useThrottledCallback((text) => setSearchText(text), 500);
 
-	const [directMessageSelected, setDirectMessageSelected] = useState<DirectEntity>(null);
 	const handleLongPress = useCallback((directMessage: DirectEntity) => {
-		bottomSheetDMMessageRef.current?.present();
-		setDirectMessageSelected(directMessage);
+		const data = {
+			snapPoints: ['40%', '70%'],
+			children: <MessageMenu messageInfo={directMessage} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}, []);
 
 	const clearTextInput = () => {
@@ -145,10 +144,6 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 						<Pressable style={styles.addMessage} onPress={() => navigateToNewMessageScreen()}>
 							<Icons.MessagePlusIcon width={size.s_22} height={size.s_22} />
 						</Pressable>
-
-						<MezonBottomSheet ref={bottomSheetDMMessageRef} snapPoints={['40%', '60%']}>
-							<MessageMenu messageInfo={directMessageSelected} />
-						</MezonBottomSheet>
 					</View>
 				</View>
 				{isTabletLandscape && <ProfileBar />}

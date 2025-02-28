@@ -42,8 +42,8 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 	}, [currenChannel?.usernames]);
 
 	const isChannel = useMemo(() => {
-		return currenChannel?.parrent_id === '0';
-	}, [currenChannel?.parrent_id]);
+		return currenChannel?.parent_id === '0';
+	}, [currenChannel?.parent_id]);
 
 	const isDM = useMemo(() => {
 		return currenChannel?.clan_id === '0';

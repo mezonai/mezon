@@ -1,6 +1,12 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNotification } from '@mezon/core';
-import { getUpdateOrAddClanChannelCache, Icons, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import {
+	ActionEmitEvent,
+	getUpdateOrAddClanChannelCache,
+	Icons,
+	save,
+	STORAGE_CLAN_ID,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE
+} from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -24,9 +30,8 @@ import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonBottomSheet } from '../../componentUI';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import EmptyNotification from './EmptyNotification';
@@ -50,8 +55,6 @@ const Notifications = () => {
 	const isTabletLandscape = useTabletLandscape();
 	const { t } = useTranslation(['notification']);
 	const navigation = useNavigation();
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
-	const bottomSheetOptionsRef = useRef<BottomSheetModal>(null);
 	const timeoutRef = useRef(null);
 	const [isLoadMore, setIsLoadMore] = useState(true);
 	const [firstLoading, setFirstLoading] = useState(true);
@@ -156,14 +159,14 @@ const Notifications = () => {
 	const openBottomSheet = useCallback((type: ENotifyBsToShow, notify?: INotification) => {
 		switch (type) {
 			case ENotifyBsToShow.notification:
-				bottomSheetRef.current?.present();
+				triggerBottomSheetOption();
 				break;
 			case ENotifyBsToShow.removeNotification:
-				bottomSheetOptionsRef.current?.present();
+				triggerRemoveBottomSheet();
 				setNotify(notify);
 				break;
 			default:
-				bottomSheetRef.current?.present();
+				triggerBottomSheetOption();
 				break;
 		}
 	}, []);
@@ -236,8 +239,7 @@ const Notifications = () => {
 	);
 
 	const closeBottomSheet = () => {
-		bottomSheetRef.current?.dismiss();
-		bottomSheetOptionsRef.current?.dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
 	const handleGoback = () => {
@@ -263,6 +265,24 @@ const Notifications = () => {
 				<ActivityIndicator size="large" color={Colors.tertiary} />
 			</View>
 		);
+	};
+
+	const triggerBottomSheetOption = () => {
+		const data = {
+			heightFitContent: true,
+			title: t('headerTitle'),
+			titleSize: 'md',
+			children: <NotificationOption onChangeTab={handleTabChange} selectedTabs={selectedTabs} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
+
+	const triggerRemoveBottomSheet = () => {
+		const data = {
+			heightFitContent: true,
+			children: <NotificationItemOption onDelete={() => handleDeleteNotify(notify)} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	return (
@@ -303,14 +323,6 @@ const Notifications = () => {
 			) : (
 				<EmptyNotification />
 			)}
-
-			<MezonBottomSheet ref={bottomSheetRef} heightFitContent title={t('headerTitle')} titleSize="md">
-				<NotificationOption onChangeTab={handleTabChange} selectedTabs={selectedTabs} />
-			</MezonBottomSheet>
-
-			<MezonBottomSheet ref={bottomSheetOptionsRef} heightFitContent>
-				<NotificationItemOption onDelete={() => handleDeleteNotify(notify)} />
-			</MezonBottomSheet>
 		</View>
 	);
 };

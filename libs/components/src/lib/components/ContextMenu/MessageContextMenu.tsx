@@ -38,6 +38,7 @@ import { Icons } from '@mezon/ui';
 import {
 	AMOUNT_TOKEN,
 	ContextMenuItem,
+	EEventAction,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	EPermission,
@@ -174,7 +175,8 @@ function MessageContextMenu({
 			content,
 			is_default: true,
 			...(id && { id }),
-			title: defaultCanvas?.title || 'Note'
+			title: defaultCanvas?.title || 'Note',
+			status: defaultCanvas ? 0 : EEventAction.CREATED
 		});
 
 		const insertImageToJson = (jsonObject: JsonObject, imageUrl?: string) => {

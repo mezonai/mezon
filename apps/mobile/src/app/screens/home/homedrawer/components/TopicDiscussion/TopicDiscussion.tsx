@@ -119,10 +119,10 @@ export default function TopicDiscussion() {
 							channelId={currentTopicId}
 							topicId={currentTopicId}
 							clanId={currentClanId}
-							isDisableLoadMore={true}
 							isPublic={isPublicChannel(currentChannel)}
 							mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 							isDisableActionListener={true}
+							topicChannelId={currentChannel?.channel_id}
 						/>
 					</View>
 				</PanGestureHandler>

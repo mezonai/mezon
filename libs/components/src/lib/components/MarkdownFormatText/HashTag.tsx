@@ -39,7 +39,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 			window.open(urlVoice, '_blank', 'noreferrer');
 		} else {
 			const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
-			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 			navigate(channelUrl);
 		}
 	}, [channel, dispatch, navigate, toChannelPage]);

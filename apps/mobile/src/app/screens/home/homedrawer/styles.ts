@@ -341,7 +341,9 @@ export const style = (colors: Attributes) =>
 		messageWrapper: {
 			flexDirection: 'column',
 			marginTop: size.s_10,
-			marginBottom: size.s_4
+			// paddingTop: 50,
+			// paddingBottom: 50
+			marginBottom: size.s_6
 		},
 		highlightMessageMention: {
 			backgroundColor: colors.reactionBg
@@ -775,10 +777,10 @@ export const style = (colors: Attributes) =>
 			width: '90%'
 		},
 		albumTitleBar: {
-			height: size.s_40,
+			height: size.s_60,
 			backgroundColor: colors.primary,
 			position: 'absolute',
-			top: -size.s_40,
+			top: -size.s_60,
 			left: 0,
 			right: 0,
 			zIndex: 1,
@@ -787,6 +789,11 @@ export const style = (colors: Attributes) =>
 		},
 		albumButton: {
 			alignSelf: 'center',
+			justifyContent: 'center',
+			alignItems: 'center',
+			flex: 1,
+			paddingTop: size.s_10,
+			width: '100%',
 			padding: size.s_8
 		},
 		albumButtonGroup: {

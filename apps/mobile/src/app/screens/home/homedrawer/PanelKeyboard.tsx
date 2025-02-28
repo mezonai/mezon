@@ -97,9 +97,9 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 		};
 	}, []);
 
-	const handleShow = (value) => {
+	const handleShow = useCallback((value) => {
 		setIsShowAlbum(value);
-	};
+	}, []);
 
 	const handleChangeAlbum = (value) => {
 		setCurrentAlbum(value);

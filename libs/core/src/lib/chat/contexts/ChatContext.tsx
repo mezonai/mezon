@@ -12,6 +12,7 @@ import {
 	appActions,
 	attachmentActions,
 	audioCallActions,
+	canvasAPIActions,
 	channelAppSlice,
 	channelMembers,
 	channelMembersActions,
@@ -137,7 +138,7 @@ import {
 } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction } from 'mezon-js/api.gen';
 import { ApiChannelMessageHeader, ApiNotificationUserChannel, ApiPermissionUpdate, ApiTokenSentEvent, ApiWebhook } from 'mezon-js/dist/api.gen';
-import { RemoveFriend } from 'mezon-js/socket';
+import { ChannelCanvas, RemoveFriend } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -439,6 +440,23 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		},
 		[dispatch]
 	);
+
+	const oncanvasevent = useCallback(
+		(canvasEvent: ChannelCanvas) => {
+			if (canvasEvent.status === EEventAction.CREATED) {
+				dispatch(
+					canvasAPIActions.upsertOne({
+						channel_id: canvasEvent.channel_id || '',
+						canvas: { ...canvasEvent, creator_id: canvasEvent.editor_id }
+					})
+				);
+			} else {
+				dispatch(canvasAPIActions.removeOneCanvas({ channelId: canvasEvent.channel_id || '', canvasId: canvasEvent.id || '' }));
+			}
+		},
+		[dispatch]
+	);
+
 	const onnotification = useCallback(
 		async (notification: NotificationInfo) => {
 			const path = isElectron() ? window.location.hash : window.location.pathname;
@@ -661,14 +679,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							])
 						);
 
-						if (channel.parrent_id === channelId) {
+						if (channel.parent_id === channelId) {
 							const thread: ThreadsEntity = {
 								id: channel.id,
 								channel_id: channel_desc.channel_id,
 								active: 1,
 								channel_label: channel_desc.channel_label,
 								clan_id: channel_desc.clan_id || (clanId as string),
-								parrent_id: channel_desc.parrent_id,
+								parent_id: channel_desc.parent_id,
 								last_sent_message: channel_desc.last_sent_message,
 								type: channel_desc.type
 							};
@@ -682,14 +700,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							dispatch(
 								threadsActions.updateCacheOnThreadCreation({
 									clanId: channel.clan_id || '',
-									channelId: channel.parrent_id || '',
+									channelId: channel.parent_id || '',
 									defaultThreadList: defaultThreadList.length > LIMIT ? defaultThreadList.slice(0, -1) : defaultThreadList
 								})
 							);
 						}
 					}
 
-					if (channel_desc.parrent_id) {
+					if (channel_desc.parent_id) {
 						dispatch(
 							threadsActions.updateActiveCodeThread({
 								channelId: channel_desc.channel_id || '',
@@ -949,7 +967,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	}, []);
 
 	const onchannelcreated = useCallback(async (channelCreated: ChannelCreatedEvent) => {
-		if (channelCreated.parrent_id) {
+		if (channelCreated.parent_id) {
 			const store = await getStoreAsync();
 			const allThreads = selectAllThreads(store.getState());
 
@@ -968,20 +986,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			dispatch(
 				threadsActions.updateCacheOnThreadCreation({
 					clanId: channelCreated.clan_id,
-					channelId: channelCreated.parrent_id,
+					channelId: channelCreated.parent_id,
 					defaultThreadList: defaultThreadList.length > LIMIT ? defaultThreadList.slice(0, -1) : defaultThreadList
 				})
 			);
 		}
 
 		if (channelCreated.creator_id === userId) {
-			if (channelCreated.parrent_id) {
+			if (channelCreated.parent_id) {
 				const thread: ChannelsEntity = {
 					id: channelCreated.channel_id as string,
 					active: 1,
 					category_id: channelCreated.category_id,
 					creator_id: channelCreated.creator_id,
-					parrent_id: channelCreated.parrent_id,
+					parent_id: channelCreated.parent_id,
 					channel_id: channelCreated.channel_id,
 					channel_label: channelCreated.channel_label,
 					channel_private: channelCreated.channel_private,
@@ -993,11 +1011,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				dispatch(listChannelRenderAction.addThreadToListRender({ clanId: channelCreated?.clan_id as string, channel: thread }));
 			}
 
-			if (channelCreated.channel_private === 1 && !channelCreated.parrent_id) {
+			if (channelCreated.channel_private === 1 && !channelCreated.parent_id) {
 				dispatch(listChannelRenderAction.addChannelToListRender({ type: channelCreated.channel_type, ...channelCreated }));
 			}
 		}
-		if (channelCreated && channelCreated.channel_private === 0 && (channelCreated.parrent_id === '' || channelCreated.parrent_id === '0')) {
+		if (channelCreated && channelCreated.channel_private === 0 && (channelCreated.parent_id === '' || channelCreated.parent_id === '0')) {
 			dispatch(channelsActions.createChannelSocket(channelCreated));
 			dispatch(
 				listChannelsByUserActions.addOneChannel({ id: channelCreated.channel_id, type: channelCreated.channel_type, ...channelCreated })
@@ -1012,7 +1030,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					last_sent_message: { timestamp_seconds: now }
 				};
 
-				const isPublic = channelCreated.parrent_id !== '' && channelCreated.parrent_id !== '0' ? false : !channelCreated.channel_private;
+				const isPublic = channelCreated.parent_id !== '' && channelCreated.parent_id !== '0' ? false : !channelCreated.channel_private;
 				dispatch(
 					channelsActions.joinChat({
 						clanId: channelCreated.clan_id,
@@ -1168,7 +1186,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							}
 
 							if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
-								if (channel.parrent_id) {
+								if (channel.parent_id) {
 									dispatch(
 										threadsActions.updateActiveCodeThread({
 											channelId: channel.channel_id || '',
@@ -1608,6 +1626,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			socket.onstatuspresence = onstatuspresence;
 
+			socket.oncanvasevent = oncanvasevent;
+
 			socket.onchannelcreated = onchannelcreated;
 
 			socket.onchanneldeleted = onchanneldeleted;
@@ -1675,6 +1695,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			onclanprofileupdated,
 			oncustomstatus,
 			onstatuspresence,
+			oncanvasevent,
 			onvoiceended,
 			onvoicejoined,
 			onvoiceleaved,
@@ -1756,6 +1777,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onstatuspresence = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.oncanvasevent = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.ondisconnect = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onuserchannelremoved = () => {};
@@ -1815,6 +1838,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		onclanprofileupdated,
 		oncustomstatus,
 		onstatuspresence,
+		oncanvasevent,
 		socketRef,
 		onvoiceended,
 		onvoicejoined,

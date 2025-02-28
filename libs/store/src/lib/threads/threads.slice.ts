@@ -6,6 +6,7 @@ import { ApiChannelDescList, ApiChannelDescription } from 'mezon-js/api.gen';
 import { channelsActions } from '../channels/channels.slice';
 import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import { ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
+import { RootState } from '../store';
 
 const LIST_THREADS_CACHED_TIME = 1000 * 60 * 60;
 
@@ -32,6 +33,8 @@ export interface ThreadsState extends EntityState<ThreadsEntity, string> {
 	currentThread?: ApiChannelDescription;
 	isThreadModalVisible?: boolean;
 	isFocusThreadBox?: boolean;
+	loadingStatusSearchedThread?: LoadingStatus;
+	threadSearchedResult?: ThreadsEntity[] | null;
 }
 
 export const threadsAdapter = createEntityAdapter({
@@ -143,6 +146,34 @@ export const fetchThreads = createAsyncThunk('threads/fetchThreads', async ({ ch
 	}
 });
 
+export interface SearchThreadsArgs {
+	label: string;
+}
+export const searchedThreads = createAsyncThunk('threads/searchThreads', async ({ label }: SearchThreadsArgs, thunkAPI) => {
+	try {
+		if (!label) {
+			return null;
+		}
+
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const state = thunkAPI.getState() as RootState;
+		const clanId = state?.clans?.currentClanId;
+		const channelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
+
+		if (clanId && clanId !== '0' && channelId) {
+			const response = await mezon.client.searchThread(mezon.session, clanId, channelId, label);
+			if (!response.channeldesc) {
+				return [];
+			}
+			const threads = mapToThreadEntity(response.channeldesc);
+			return threads;
+		}
+	} catch (error) {
+		captureSentryError(error, 'threads/searchThreads');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const fetchThread = createAsyncThunk('threads/fetchThreads', async ({ channelId, clanId, threadId, noCache }: FetchThreadsArgs, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
@@ -170,7 +201,9 @@ export const initialThreadsState: ThreadsState = threadsAdapter.getInitialState(
 	nameValueThread: {},
 	valueThread: null,
 	openThreadMessageState: false,
-	isThreadModalVisible: false
+	isThreadModalVisible: false,
+	loadingStatusSearchedThread: 'not loaded',
+	threadSearchedResult: null
 });
 
 export const checkDuplicateThread = createAsyncThunk(
@@ -326,6 +359,18 @@ export const threadsSlice = createSlice({
 				threadsAdapter.setAll(state, action.payload);
 				state.loadingStatus = 'loaded';
 			});
+		builder
+			.addCase(searchedThreads.pending, (state: ThreadsState) => {
+				state.loadingStatusSearchedThread = 'loading';
+			})
+			.addCase(searchedThreads.fulfilled, (state: ThreadsState, action) => {
+				state.threadSearchedResult = action.payload;
+				state.loadingStatusSearchedThread = 'loaded';
+			})
+			.addCase(searchedThreads.rejected, (state: ThreadsState, action) => {
+				state.loadingStatusSearchedThread = 'error';
+				state.error = action.error.message;
+			});
 	}
 });
 
@@ -352,7 +397,7 @@ export const threadsReducer = threadsSlice.reducer;
  *
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
-export const threadsActions = { ...threadsSlice.actions, fetchThreads, fetchThread, leaveThread, updateCacheOnThreadCreation };
+export const threadsActions = { ...threadsSlice.actions, fetchThreads, fetchThread, leaveThread, updateCacheOnThreadCreation, searchedThreads };
 
 /*
  * Export selectors to query state. For use with the `useSelector` hook.
@@ -404,24 +449,20 @@ export const selectIsShowCreateThread = createSelector([getThreadsState, (_, cha
 export const selectIsThreadModalVisible = createSelector(getThreadsState, (state: ThreadsState) => state.isThreadModalVisible);
 // new update
 // is thread public and last message within 30days
-export const selectActiveThreads = (keywordSearch: string) =>
+export const selectActiveThreads = () =>
 	createSelector([selectAllThreads], (threads) => {
 		const thirtyDaysInSeconds = 30 * 24 * 60 * 60;
 		const currentTime = Math.floor(Date.now() / 1000);
 		const result = threads.filter((thread) => {
 			const lastMessageTimestamp = thread?.last_sent_message?.timestamp_seconds;
 			const isWithin30Days = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) < thirtyDaysInSeconds;
-			return (
-				thread.active === ThreadStatus.activePublic &&
-				isWithin30Days &&
-				thread.channel_label?.toLocaleLowerCase().includes(keywordSearch.toLocaleLowerCase())
-			);
+			return thread.active === ThreadStatus.activePublic && isWithin30Days;
 		});
 		const sortByLsentMess = sortChannelsByLastActivity(result as any);
 		return sortByLsentMess;
 	});
 // is thread joined and last message within 30days
-export const selectJoinedThreadsWithinLast30Days = (keywordSearch: string) =>
+export const selectJoinedThreadsWithinLast30Days = () =>
 	createSelector([selectAllThreads], (threads) => {
 		const thirtyDaysInSeconds = 30 * 24 * 60 * 60;
 		const currentTime = Math.floor(Date.now() / 1000);
@@ -429,8 +470,7 @@ export const selectJoinedThreadsWithinLast30Days = (keywordSearch: string) =>
 			if (
 				thread.active === ThreadStatus.joined &&
 				thread.last_sent_message?.timestamp_seconds &&
-				currentTime - Number(thread.last_sent_message.timestamp_seconds) < thirtyDaysInSeconds &&
-				thread.channel_label?.toLocaleLowerCase().includes(keywordSearch.toLocaleLowerCase())
+				currentTime - Number(thread.last_sent_message.timestamp_seconds) < thirtyDaysInSeconds
 			) {
 				accumulator.push(thread);
 			}
@@ -439,15 +479,14 @@ export const selectJoinedThreadsWithinLast30Days = (keywordSearch: string) =>
 		return result;
 	});
 // is thread joined/public and last message over 30days
-export const selectThreadsOlderThan30Days = (keywordSearch: string) =>
+export const selectThreadsOlderThan30Days = () =>
 	createSelector([selectAllThreads], (threads) => {
 		const thirtyDaysInSeconds = 30 * 24 * 60 * 60;
 		const currentTime = Math.floor(Date.now() / 1000);
 		const result = threads.reduce((accumulator, thread) => {
 			if (
 				thread.last_sent_message?.timestamp_seconds &&
-				currentTime - Number(thread.last_sent_message?.timestamp_seconds) > thirtyDaysInSeconds &&
-				thread.channel_label?.toLocaleLowerCase().includes(keywordSearch.toLocaleLowerCase())
+				currentTime - Number(thread.last_sent_message?.timestamp_seconds) > thirtyDaysInSeconds
 			) {
 				accumulator.push(thread);
 			}
@@ -463,3 +502,7 @@ export const selectShowEmptyStatus = () =>
 		return threads.length === 0;
 	});
 export const selectClickedOnThreadBoxStatus = createSelector(getThreadsState, (state) => state.isFocusThreadBox);
+
+export const selectSearchedThreadLoadingStatus = createSelector(getThreadsState, (state) => state.loadingStatusSearchedThread);
+
+export const selectSearchedThreadResult = createSelector(getThreadsState, (state) => state.threadSearchedResult);

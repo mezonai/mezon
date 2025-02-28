@@ -66,7 +66,7 @@ export const setDefaultChannelLoader = async (dataChannel: any, clanId: string, 
 			return 0;
 		});
 		const firstChannelText = dataChannelSort?.find?.(
-			(channel: { type: ChannelType; parrent_id: string }) => channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && channel?.parrent_id === '0'
+			(channel: { type: ChannelType; parent_id: string }) => channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && channel?.parent_id === '0'
 		);
 		if (firstChannelText) {
 			const firstChannelId = firstChannelText?.channel_id;

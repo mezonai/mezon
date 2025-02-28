@@ -180,7 +180,7 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 				setIsShowSearchMessageModal(false);
 				dispatch(searchMessagesActions.setIsSearchMessage({ channelId, isSearchMessage: true }));
 				// TODO: check logic below code
-				setIsShowCreateThread(false, currentChannel?.parrent_id !== '0' ? currentChannel?.parrent_id : currentChannel.channel_id);
+				setIsShowCreateThread(false, currentChannel?.parent_id !== '0' ? currentChannel?.parent_id : currentChannel.channel_id);
 				if (isActive) dispatch(appActions.setIsShowMemberList(!isActive));
 				if (isShowMemberListDM) dispatch(appActions.setIsShowMemberListDM(!isShowMemberListDM));
 				if (isUseProfileDM) dispatch(appActions.setIsUseProfileDM(!isUseProfileDM));

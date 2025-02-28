@@ -83,7 +83,10 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		try {
 			if (Platform.OS === 'android') {
 				if (Platform.Version >= 33) {
-					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasImagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasVideoPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO);
+
+					return hasImagePermission && hasVideoPermission;
 				} else {
 					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 				}
@@ -106,21 +109,24 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			try {
 				// For Android 13+ (API 33+)
 				if (Platform.Version >= 33) {
-					const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, {
-						title: 'Photo Library Access',
-						message: 'This app needs access to your photo library.',
-						buttonNeutral: 'Ask Me Later',
-						buttonNegative: 'Cancel',
-						buttonPositive: 'OK'
-					});
+					const granted = await PermissionsAndroid.requestMultiple([
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO
+					]);
 
 					timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
 
-					if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+					if (
+						granted['android.permission.READ_MEDIA_IMAGES'] !== PermissionsAndroid.RESULTS.GRANTED ||
+						granted['android.permission.READ_MEDIA_VIDEO'] !== PermissionsAndroid.RESULTS.GRANTED
+					) {
 						alertOpenSettings();
 					}
 
-					return granted === PermissionsAndroid.RESULTS.GRANTED;
+					return (
+						granted['android.permission.READ_MEDIA_IMAGES'] === PermissionsAndroid.RESULTS.GRANTED &&
+						granted['android.permission.READ_MEDIA_VIDEO'] === PermissionsAndroid.RESULTS.GRANTED
+					);
 				}
 				// For Android 12 and below
 				else {
@@ -181,7 +187,8 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				assetType: 'All',
 				...(!!pageInfo && !!after && { after: after }),
 				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
-				groupName: currentAlbums === 'All' ? null : currentAlbums
+				groupTypes: album === 'All' ? 'All' : 'Album',
+				groupName: album === 'All' ? null : album
 			});
 			setPhotos(after ? [...photos, ...res.edges] : res.edges);
 			setPageInfo(res.page_info);

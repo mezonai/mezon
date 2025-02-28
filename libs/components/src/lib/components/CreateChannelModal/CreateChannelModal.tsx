@@ -2,8 +2,9 @@ import { useAppNavigation, useEscapeKeyClose } from '@mezon/core';
 import {
 	channelsActions,
 	createNewChannel,
+	selectChannelById,
 	selectCurrentCategory,
-	selectCurrentClanId,
+	selectCurrentClan,
 	selectIsOpenCreateNewChannel,
 	selectLoadingStatus,
 	selectTheme,
@@ -31,7 +32,7 @@ export const CreateNewChannelModal = () => {
 	const InputRef = useRef<ChannelNameModalRef>(null);
 	const appUrlInputRef = useRef<ChannelAppUrlModalRef>(null);
 	const [isInputError, setIsInputError] = useState<boolean>(true);
-	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClan = useSelector(selectCurrentClan);
 	const currentCategory = useAppSelector((state) => selectCurrentCategory(state));
 	const isOpenModal = useAppSelector((state) => selectIsOpenCreateNewChannel(state));
 	const isLoading = useSelector(selectLoadingStatus);
@@ -48,10 +49,11 @@ export const CreateNewChannelModal = () => {
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
+	const channelWelcome = useAppSelector((state) => selectChannelById(state, currentClan?.welcome_channel_id as string)) || {};
 
 	useEffect(() => {
 		if (isLoading === 'loaded') {
-			dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
+			dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
 		}
 	}, [dispatch, isLoading]);
 
@@ -81,13 +83,13 @@ export const CreateNewChannelModal = () => {
 		}
 
 		const body: ApiCreateChannelDescRequest = {
-			clan_id: currentClanId?.toString(),
+			clan_id: currentClan?.clan_id,
 			type: channelType,
 			channel_label: channelName,
 			channel_private: isPrivate,
-			category_id: currentCategory?.category_id,
+			category_id: currentCategory?.category_id || channelWelcome?.category_id,
 			...(isAppChannel && { app_url: appUrl }),
-			parrent_id: '0'
+			parent_id: '0'
 		};
 
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
@@ -101,7 +103,7 @@ export const CreateNewChannelModal = () => {
 			typeChannel !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
 			typeChannel !== ChannelType.CHANNEL_TYPE_STREAMING
 		) {
-			const channelPath = toChannelPage(channelID ?? '', currentClanId ?? '');
+			const channelPath = toChannelPage(channelID ?? '', currentClan?.clan_id ?? '');
 			navigate(channelPath);
 		}
 		clearDataAfterCreateNew();
@@ -112,7 +114,7 @@ export const CreateNewChannelModal = () => {
 		setIsErrorName('');
 		setIsErrorAppUrl('');
 		clearDataAfterCreateNew();
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
 	};
 
 	const handleChannelNameChange = (value: string) => {
@@ -169,7 +171,7 @@ export const CreateNewChannelModal = () => {
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	const handleClose = useCallback(() => {
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
 	}, [isOpenModal]);
 	useEscapeKeyClose(modalRef, handleClose);
 
@@ -190,7 +192,7 @@ export const CreateNewChannelModal = () => {
 									<ChannelLableModal labelProp="CREATE A NEW CHANNEL IN" />
 									<span>
 										<p className="self-stretch  text-sm font-bold leading-normal uppercase text-cyan-500">
-											{currentCategory?.category_name}
+											{currentCategory?.category_name || channelWelcome?.category_name}
 										</p>
 									</span>
 									<div className="absolute right-1 top-[-10px]">
@@ -247,7 +249,7 @@ export const CreateNewChannelModal = () => {
 									onHandleChangeValue={handleChangeValue}
 									placeholder={"Enter the channel's name"}
 									shouldValidate={true}
-									categoryId={currentCategory?.category_id}
+									categoryId={currentCategory?.category_id || channelWelcome?.category_id}
 								/>
 								{channelType === ChannelType.CHANNEL_TYPE_APP && (
 									<div className={'mt-2 w-full'}>

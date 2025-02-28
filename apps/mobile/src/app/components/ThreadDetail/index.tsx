@@ -54,7 +54,7 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 	const fetchThreads = useCallback(
 		async (currentPage: number) => {
 			const body = {
-				channelId: isThread ? (currentChannel?.parrent_id ?? '') : (currentChannel?.channel_id ?? ''),
+				channelId: isThread ? (currentChannel?.parent_id ?? '') : (currentChannel?.channel_id ?? ''),
 				clanId: currentChannel?.clan_id ?? '',
 				page: currentPage,
 				noCache: true
@@ -72,7 +72,7 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 				setIsPaginationVisible(true);
 			}
 		},
-		[currentChannel?.channel_id, currentChannel?.clan_id, currentChannel?.parrent_id, dispatch, isThread]
+		[currentChannel?.channel_id, currentChannel?.clan_id, currentChannel?.parent_id, dispatch, isThread]
 	);
 
 	useEffect(() => {

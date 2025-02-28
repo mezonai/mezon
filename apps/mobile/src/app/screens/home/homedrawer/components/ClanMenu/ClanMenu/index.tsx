@@ -1,13 +1,13 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { appActions, categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonMenu, MezonSwitch, reserve } from '../../../../../../componentUI';
@@ -18,9 +18,6 @@ import { EProfileTab } from '../../../../../settings/ProfileSetting';
 import ClanMenuInfo from '../ClanMenuInfo';
 import { style } from './styles';
 
-interface IServerMenuProps {
-	inviteRef: MutableRefObject<any>;
-}
 enum StatusMarkAsReadClan {
 	Error = 'error',
 	Success = 'success',
@@ -28,7 +25,7 @@ enum StatusMarkAsReadClan {
 	Pending = 'pending'
 }
 
-export default function ClanMenu({ inviteRef }: IServerMenuProps) {
+export default function ClanMenu() {
 	const currentClan = useSelector(selectCurrentClan);
 	const { t } = useTranslation(['clanMenu']);
 	const { themeValue } = useTheme();
@@ -52,12 +49,12 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 		return hasAdminPermission || isClanOwner || hasManageClanPermission;
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 	const handleOpenInvite = () => {
-		inviteRef?.current.present();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL);
 		dismiss();
 	};
 
 	const handleOpenSettings = () => {
-		navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, { screen: APP_SCREEN.MENU_CLAN.SETTINGS, params: { inviteRef: inviteRef } });
+		navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, { screen: APP_SCREEN.MENU_CLAN.SETTINGS });
 		dismiss();
 	};
 

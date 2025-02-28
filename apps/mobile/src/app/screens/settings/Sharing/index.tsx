@@ -126,7 +126,7 @@ export const Sharing = ({ data, onClose }) => {
 		);
 		if (matchChannels.length > 0) {
 			const matchIdList = new Set(matchChannels.map((item) => item.channel_id));
-			const resultList = [...DMList, ...data].filter((item) => matchIdList.has(item.parrent_id));
+			const resultList = [...DMList, ...data].filter((item) => matchIdList.has(item.parent_id));
 
 			return [...matchChannels, ...resultList];
 		}

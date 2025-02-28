@@ -298,7 +298,7 @@ const WebhookItemChannelDropdown = ({
 	const allChannel = useSelector(selectAllChannels);
 	const [parentChannelsInClan, setParentChannelsInClan] = useState<ChannelsEntity[]>([]);
 	useEffect(() => {
-		const normalChannels = allChannel.filter((channel) => channel.parrent_id === ChannelIsNotThread.TRUE);
+		const normalChannels = allChannel.filter((channel) => channel.parent_id === ChannelIsNotThread.TRUE);
 		setParentChannelsInClan(normalChannels);
 	}, [allChannel]);
 

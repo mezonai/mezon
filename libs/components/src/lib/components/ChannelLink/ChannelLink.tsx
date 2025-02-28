@@ -136,7 +136,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 		const currentMission = useSelector((state) => selectCurrentMission(state, clanId as string));
 		const handleClick = () => {
 			if (channel.category_id === FAVORITE_CATEGORY_ID) {
-				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 			}
 
 			setTurnOffThreadMessage();

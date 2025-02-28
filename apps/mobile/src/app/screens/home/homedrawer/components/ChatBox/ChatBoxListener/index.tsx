@@ -17,8 +17,8 @@ export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
 	const listMentions = UseMentionList({
 		channelID: currentDirectId
 			? currentDirectId
-			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parrent_id
-				? currentChannel?.parrent_id
+			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parent_id
+				? currentChannel?.parent_id
 				: currentChannel?.channel_id || '',
 		channelMode: mode
 	});

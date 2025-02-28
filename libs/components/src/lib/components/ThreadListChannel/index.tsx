@@ -39,8 +39,8 @@ export const ThreadLinkWrapper: React.FC<ThreadLinkWrapperProps> = ({ thread, is
 
 	const handleClickLink = (thread: IChannel) => {
 		dispatch(referencesActions.setOpenEditMessageState(false));
-		if (currentChannelId === thread.parrent_id) {
-			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parrent_id as string, isShowCreateThread: false }));
+		if (currentChannelId === thread.parent_id) {
+			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parent_id as string, isShowCreateThread: false }));
 		}
 		if (closeMenu) {
 			setStatusMenu(false);

@@ -22,6 +22,7 @@ import {
 import { Icons } from '@mezon/ui';
 import {
 	AMOUNT_TOKEN,
+	EEventAction,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	IMessageWithUser,
@@ -80,7 +81,7 @@ const ChannelMessageOpt = ({
 	const currentChannel = useSelector(selectCurrentChannel);
 	const refOpt = useRef<HTMLDivElement>(null);
 	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannel?.id ?? '');
-	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parrent_id ?? '') && canManageThread);
+	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parent_id ?? '') && canManageThread);
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const replyMenu = useMenuReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
@@ -282,7 +283,8 @@ function useAddToNoteBuilder(message: IMessageWithUser, defaultCanvas: CanvasAPI
 				content,
 				is_default: true,
 				...(id && { id }),
-				title: defaultCanvas?.title || 'Note'
+				title: defaultCanvas?.title || 'Note',
+				status: defaultCanvas ? 0 : EEventAction.CREATED
 			});
 
 			const insertImageToJson = (jsonObject: JsonObject, imageUrl?: string) => {

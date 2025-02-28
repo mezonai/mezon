@@ -107,7 +107,7 @@ export const Routes = memo(() => {
 										element: <MezonPage />
 									},
 							{
-								path: '/application-directory',
+								path: '/apps',
 								element: <AppDirectory />
 							},
 							{

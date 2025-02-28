@@ -299,7 +299,7 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 	return {
 		id: message.channel_id,
 		clan_id: '0',
-		parrent_id: '0',
+		parent_id: '0',
 		channel_id: message.channel_id,
 		category_id: '0',
 		type: ChannelType.CHANNEL_TYPE_DM,

@@ -126,6 +126,15 @@ export const directMetaSlice = createSlice({
 				const meta = channels.map((ch) => extractDMMeta(ch));
 				dmMetaAdapter.upsertMany(state, meta);
 			}
+		},
+		updateMuteDM: (state, action: PayloadAction<{ channelId: string; isMute: boolean }>) => {
+			const payload = action.payload;
+			directMetaAdapter.updateOne(state, {
+				id: payload.channelId,
+				changes: {
+					is_mute: payload.isMute
+				}
+			});
 		}
 	}
 });
@@ -145,7 +154,7 @@ export const selectAllDMMeta = createSelector(getDirectMetaState, (state) => sel
 
 export const selectDirectsUnreadlist = createSelector(selectAllDMMeta, (state) => {
 	return state.filter((item) => {
-		return item?.count_mess_unread;
+		return item?.count_mess_unread && item?.is_mute !== true;
 	});
 });
 

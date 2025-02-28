@@ -87,7 +87,7 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const updatedUserIds = Array.from(new Set([...(existingChannel.user_ids || []), ...userAdds]));
+				const updatedUserIds = Array.from(new Set([...(existingChannel?.user_ids || []), ...userAdds]));
 
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
@@ -109,7 +109,7 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const updatedUserIds = (existingChannel.user_ids || []).filter((userId) => !userRemoves.includes(userId));
+				const updatedUserIds = (existingChannel?.user_ids || []).filter((userId) => !userRemoves.includes(userId));
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
@@ -132,7 +132,7 @@ export const userChannelsSlice = createSlice({
 					if (action.payload?.user_ids) {
 						const userIdsEntity = {
 							id: action.payload.channelId,
-							...action.payload.user_ids
+							...action.payload?.user_ids
 						};
 						UserChannelAdapter.upsertOne(state, userIdsEntity);
 					} else {
@@ -169,7 +169,7 @@ export const selectAllUserChannel = (channelId: string) =>
 
 		if (!usersClanState?.ids?.length) return membersOfChannel;
 
-		const members = { ids: channelMembers[channelId].user_ids };
+		const members = { ids: channelMembers?.[channelId]?.user_ids };
 
 		if (!members?.ids) return membersOfChannel;
 		const ids = members.ids || [];

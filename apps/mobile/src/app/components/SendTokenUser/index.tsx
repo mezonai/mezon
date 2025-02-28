@@ -1,15 +1,14 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { Icons } from '@mezon/mobile-components';
 import { baseColor, size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
-import { Ref, forwardRef, useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonBottomSheet, MezonMenu } from '../../componentUI';
+import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../componentUI';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 
-export const SendTokenUser = forwardRef((props, ref: Ref<BottomSheetModalMethods>) => {
+export const SendTokenUser = forwardRef(() => {
 	const { t } = useTranslation(['screenStack']);
 	const { dismiss } = useBottomSheetModal();
 	const navigation = useNavigation<any>();
@@ -50,10 +49,8 @@ export const SendTokenUser = forwardRef((props, ref: Ref<BottomSheetModalMethods
 	];
 
 	return (
-		<MezonBottomSheet ref={ref} heightFitContent>
-			<View style={{ paddingHorizontal: size.s_20 }}>
-				<MezonMenu menu={menu} />
-			</View>
-		</MezonBottomSheet>
+		<View style={{ paddingHorizontal: size.s_20 }}>
+			<MezonMenu menu={menu} />
+		</View>
 	);
 });

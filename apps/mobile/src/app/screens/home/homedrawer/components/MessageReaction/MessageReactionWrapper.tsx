@@ -1,9 +1,9 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent, FaceIcon, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
+import { ActionEmitEvent, FaceIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
-import { calculateTotalCount, EmojiDataOptionals, getSrcEmoji, SenderInfoOptionals, TypeMessage } from '@mezon/utils';
+import { EmojiDataOptionals, SenderInfoOptionals, TypeMessage, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { UserInformationBottomSheet } from '../../../../../../app/components/UserInformationBottomSheet';
@@ -38,9 +38,7 @@ export const MessageReactionWrapper = React.memo(
 			message?.code === TypeMessage.CreatePin ||
 			message?.code === TypeMessage.AuditLog;
 
-		const userId = useMemo(() => {
-			return load(STORAGE_MY_USER_ID);
-		}, []);
+		const userId = props?.userId;
 
 		const removeEmoji = useCallback(
 			async (emojiData: EmojiDataOptionals) => {

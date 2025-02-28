@@ -27,4 +27,6 @@ const HomeScreen = React.memo((props: any) => {
 	);
 });
 
+HomeScreen.displayName = 'HomeScreen';
+
 export default HomeScreen;

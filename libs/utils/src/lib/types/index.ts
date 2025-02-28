@@ -180,7 +180,7 @@ export type IThread = {
 	id?: string | undefined;
 	/// new update
 	clan_id?: string | undefined;
-	parrent_id?: string | undefined;
+	parent_id?: string | undefined;
 	channel_id?: string | undefined;
 	category_id?: string | undefined;
 	type?: number;
@@ -920,7 +920,7 @@ export type SearchItemProps = {
 	icon?: string;
 	channelId?: string;
 	channel_private?: number;
-	parrent_id?: string;
+	parent_id?: string;
 	clanId?: string;
 	meeting_code?: string;
 };

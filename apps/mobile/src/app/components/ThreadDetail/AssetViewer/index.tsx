@@ -39,7 +39,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 
 	const headerTablist = useMemo(() => {
 		if (
-			currentChannel?.parrent_id === '0' &&
+			currentChannel?.parent_id === '0' &&
 			currentChannel?.type !== ChannelType.CHANNEL_TYPE_DM &&
 			currentChannel?.type !== ChannelType.CHANNEL_TYPE_GROUP
 		) {
@@ -66,7 +66,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 						<MemberListStatus />
 					) : tabActive === 1 ? (
 						<MediaChannel channelId={channelId} />
-					) : tabActive === 4 && currentChannel.parrent_id === '0' ? (
+					) : tabActive === 4 && currentChannel.parent_id === '0' ? (
 						<Canvas
 							channelId={
 								[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)

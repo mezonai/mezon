@@ -168,7 +168,7 @@ const SuggestItem = ({
 			</div>
 			<span className={`text-[10px] font-semibold text-[#A1A1AA] one-line ${subTextStyle}`}>
 				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channel_id={getChannel?.parrent_id as string} />
+					<RenderChannelLabelForThread channel_id={getChannel?.parent_id as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}

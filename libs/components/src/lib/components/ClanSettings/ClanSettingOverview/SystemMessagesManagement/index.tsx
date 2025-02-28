@@ -47,7 +47,7 @@ const SystemMessagesManagement = ({
 	useEffect(() => {
 		if (systemMessage && channelsList.length > 0) {
 			const channelsListWithoutVoiceChannel = channelsList.filter(
-				(channel) => channel.clan_id === currentClanId && channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.parrent_id === '0'
+				(channel) => channel.clan_id === currentClanId && channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.parent_id === '0'
 			);
 
 			if (Object.keys(systemMessage).length == 0 && currentClanId && channelsListWithoutVoiceChannel) {
@@ -195,7 +195,7 @@ const SystemMessagesManagement = ({
 				{channelsList
 					.filter(
 						(channel) =>
-							channel.clan_id === currentClanId && channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.parrent_id === '0'
+							channel.clan_id === currentClanId && channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.parent_id === '0'
 					)
 					.map((channel) =>
 						channel.channel_id !== selectedChannel?.channel_id ? (

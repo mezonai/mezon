@@ -114,7 +114,7 @@ export const listChannelRenderSlice = createSlice({
 				return;
 			}
 			state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
-				(channel) => channel.id !== channelId && (channel as IChannel).parrent_id !== channelId
+				(channel) => channel.id !== channelId && (channel as IChannel).parent_id !== channelId
 			);
 		},
 		updateChannelInListRender: (state, action: PayloadAction<{ channelId: string; clanId: string; dataUpdate: IUpdateChannelRequest }>) => {
@@ -147,7 +147,7 @@ export const listChannelRenderSlice = createSlice({
 			}
 
 			const newChannelWithThreads = state.listChannelRender[clanId].filter((item) => {
-				if ((item as IChannel).id === channelId || (item as IChannel).parrent_id === channelId) {
+				if ((item as IChannel).id === channelId || (item as IChannel).parent_id === channelId) {
 					return {
 						...item,
 						category_id: categoryId
@@ -194,7 +194,7 @@ export const listChannelRenderSlice = createSlice({
 			const isExistChannel = state.listChannelRender[clanId]?.findIndex((channel) => (channel as IChannel)?.channel_id === channelData.id);
 			if (isExistChannel === -1 && clanId) {
 				const indexInsert = state.listChannelRender[clanId]?.findIndex(
-					(channel) => (channel as IChannel)?.channel_id === channelData.parrent_id && !(channel as IChannel).isFavor
+					(channel) => (channel as IChannel)?.channel_id === channelData.parent_id && !(channel as IChannel).isFavor
 				);
 
 				if (indexInsert === -1) {
@@ -261,7 +261,7 @@ export const listChannelRenderSlice = createSlice({
 						return;
 					}
 					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-						if (channel.id === channelId || (channel as IChannel).parrent_id === channelId) {
+						if (channel.id === channelId || (channel as IChannel).parent_id === channelId) {
 							return {
 								...channel,
 								count_mess_unread: 0
@@ -367,8 +367,8 @@ export const selectListChannelRenderByClanId = createSelector([getListChannelRen
 
 function prioritizeChannel(channels: IChannel[]): IChannel[] {
 	return channels.sort((a, b) => {
-		const aParrentId = a.parrent_id ?? '';
-		const bParrentId = b.parrent_id ?? '';
+		const aParrentId = a.parent_id ?? '';
+		const bParrentId = b.parent_id ?? '';
 
 		if ((aParrentId === '0' || aParrentId === '') && bParrentId !== '0') {
 			return -1;
@@ -390,7 +390,7 @@ function sortChannels(channels: IChannel[], categoryId: string): IChannel[] {
 	let indexThread = channels.length;
 	const numOfChannel = channels.length;
 	for (let i = 0; i < numOfChannel; i++)
-		if (channels[i].parrent_id !== '0' && channels[i].parrent_id !== undefined) {
+		if (channels[i].parent_id !== '0' && channels[i].parent_id !== undefined) {
 			indexThread = i;
 			break;
 		}
@@ -402,15 +402,15 @@ function sortChannels(channels: IChannel[], categoryId: string): IChannel[] {
 			sortedChannels.push(channel);
 			for (; indexThread < numOfChannel; indexThread++) {
 				const thread = channels[indexThread];
-				const parrentId = thread.parrent_id || '';
-				if (thread.parrent_id === channel.id) {
+				const parentId = thread.parent_id || '';
+				if (thread.parent_id === channel.id) {
 					sortedChannels.push(thread);
 					if (channel.threadIds) {
 						channel.threadIds.push(thread.id);
 					} else {
 						channel.threadIds = [thread.id];
 					}
-				} else if (channel.id < parrentId) {
+				} else if (channel.id < parentId) {
 					indexThread--;
 					break;
 				}
