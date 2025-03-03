@@ -43,15 +43,17 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirst
 								uri: IconCDN.shortCorner
 							}}
 							style={{ height: size.s_16, width: size.s_12 }}
+							resizeMode="contain"
 						/>
 					</View>
 				) : (
 					<View style={{ top: -size.s_20 }}>
 						<FastImage
 							source={{
-								uri: IconCDN.shortCorner
+								uri: IconCDN.longCorner
 							}}
 							style={{ height: size.s_36, width: size.s_12 }}
+							resizeMode="contain"
 						/>
 						{/*hardcode virtual view to connect thread lines */}
 						<View
