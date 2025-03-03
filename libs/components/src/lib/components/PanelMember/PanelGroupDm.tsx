@@ -159,12 +159,15 @@ const PanelGroupDM = ({ isDmGroupOwner, dmGroupId, lastOne }: PanelGroupDMPProps
 			<div className="border-b dark:border-[#2e2f34]">
 				<ItemPanelMember onClick={() => handleMarkAsRead(dmGroupId ?? '')} children="Mark as read" />
 			</div>
-			<div className="border-b dark:border-[#2e2f34]">
-				<ItemPanelMember
-					children={!channel?.e2ee ? 'Enable E2EE' : 'Disable E2EE'}
-					onClick={() => handleEnableE2ee(channel?.id, channel?.e2ee)}
-				/>
-			</div>
+			{channel?.type === ChannelType.CHANNEL_TYPE_DM && (
+				<div className="border-b dark:border-[#2e2f34]">
+					<ItemPanelMember
+						children={!channel?.e2ee ? 'Enable E2EE' : 'Disable E2EE'}
+						onClick={() => handleEnableE2ee(channel?.id, channel?.e2ee)}
+					/>
+				</div>
+			)}
+
 			<div className="border-b dark:border-[#2e2f34]">
 				{isDmGroupOwner && <ItemPanelMember children="Invites" />}
 				<ItemPanelMember children="Change icon" />
