@@ -21,10 +21,7 @@ import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
-import ChatStream from '../pages/chatStream';
 import Setting from '../pages/setting';
-import ThreadsMain from '../pages/thread';
-import TopicDiscussionMain from '../pages/topicDiscussion';
 
 const ClanEffects: React.FC<{
 	chatStreamRef: React.RefObject<HTMLDivElement>;
@@ -108,24 +105,8 @@ const ClanLayout = () => {
 					{/* <ChannelTopbar channel={currentChannel} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} /> */}
 					{(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
 				</div>
-
-				{isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
-					<div ref={chatStreamRef} className="flex flex-col flex-1 max-w-[480px] min-w-60 dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
-						<ChatStream currentChannel={currentChannel} />
-					</div>
-				)}
 			</div>
-			{isShowCreateThread && !isShowCreateTopic && (
-				<div onMouseDown={onMouseDownThreadBox} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
-					<ThreadsMain />
-				</div>
-			)}
 
-			{isShowCreateTopic && !isShowCreateThread && (
-				<div onMouseDown={onMouseDownTopicBox} className="w-[510px] dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
-					<TopicDiscussionMain />
-				</div>
-			)}
 			<Setting isDM={false} />
 
 			<ClanEffects

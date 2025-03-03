@@ -69,6 +69,7 @@ import { ChannelMessageBox } from '../pages/channel/ChannelMessageBox';
 import { ChannelTyping } from '../pages/channel/ChannelTyping';
 import DirectUnread from '../pages/main/directUnreads';
 import Setting from '../pages/setting';
+import SideLayout from './SideLayout';
 type ChannelMainContentTextProps = {
 	channelId: string;
 	canSendMessage: boolean;
@@ -142,7 +143,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 			</div>
 		);
 	}
-	console.log('Here');
+
 	return (
 		<div className={`flex-shrink flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative ${isShowMemberList ? 'w-full' : 'w-full'}`}>
 			{showPreviewMode && <OnboardingGuide currentMission={currentMission} missionSum={missionSum} missionDone={missionDone} />}
@@ -207,7 +208,7 @@ const TestLayout = () => {
 				<div
 					className={`flex flex-1 shrink min-w-0 gap-2 ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'dark:bg-bgTertiary bg-bgLightTertiary' : ''}`}
 				>
-					<div className="flex flex-col w-full">
+					<div className="flex flex-col flex-1">
 						{clanId ? (
 							<ChannelTopbar channel={currentChannel} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 						) : (
@@ -228,6 +229,7 @@ const TestLayout = () => {
 							<ListMemberChannel />
 						</div>
 					</div>
+					{clanId ? <SideLayout /> : null}
 				</div>
 
 				<Setting isDM={false} />
@@ -445,7 +447,7 @@ const OnboardingGuide = ({
 		<>
 			{missionDone < missionSum && currentMission ? (
 				<div
-					className="relative rounded-t-md w-[calc(100%_-_32px)] h-14 left-4 bg-bgTertiary top-2 flex pt-2 px-4 pb-4 items-center gap-3"
+					className="absolute rounded-t-md w-[calc(100%_-_32px)] h-14 left-4 bg-bgTertiary -top-12 flex pt-2 px-4 pb-4 items-center gap-3"
 					onClick={handleDoNextMission}
 				>
 					<Icons.Hashtag />

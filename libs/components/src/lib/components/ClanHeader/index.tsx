@@ -160,10 +160,11 @@ function ClanHeader({}: ClanHeaderProps) {
 	return (
 		<div
 			className={`!h-heightHeader flex items-center justify-center px-4 w-widthChannelList ${!directId ? 'dark:hover:bg-[#35373C] hover:bg-[#E2E7F6]' : ''}`}
+			ref={modalRef}
 		>
 			<div className={`cursor-pointer w-full flex  justify-between items-center gap-2  `}>
 				{clanId ? (
-					<div onClick={handleShowModalClan} className="flex items-center justify-between flex-1" ref={modalRef}>
+					<div onClick={handleShowModalClan} className="flex items-center justify-between flex-1">
 						<p className="dark:text-white text-black text-base font-semibold select-none one-line">
 							{currentClan?.clan_name?.toLocaleUpperCase()}
 						</p>
