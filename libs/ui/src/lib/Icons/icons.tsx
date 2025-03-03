@@ -5893,8 +5893,8 @@ export function MicrosoftWinPortable(props: React.HTMLAttributes<SVGElement>) {
 export function Microsoft(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" className="" {...props}>
-			<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-			<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
 			<g id="SVGRepo_iconCarrier">
 				<path fill="#F25022" d="M1 1h6.5v6.5H1V1z"></path>
 				<path fill="#7FBA00" d="M8.5 1H15v6.5H8.5V1z"></path>
@@ -6884,10 +6884,10 @@ export function VoiceSoundControlIcon(props: React.HTMLAttributes<SVGElement>) {
 	);
 }
 
-export function VoiceMicIcon(props: React.HTMLAttributes<SVGElement>) {
+export function VoiceMicIcon({ scale = 1, ...props }: { scale?: number } & React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" {...props}>
-			<g transform="scale(1.3)">
+			<g transform={`scale(${scale})`}>
 				<path
 					fillRule="evenodd"
 					d="M2.975 8.002a.5.5 0 0 1 .547.449 4.5 4.5 0 0 0 8.956 0 .5.5 0 1 1 .995.098A5.502 5.502 0 0 1 8.5 13.478V15h2a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1h2v-1.522a5.502 5.502 0 0 1-4.973-4.929.5.5 0 0 1 .448-.547z"
@@ -6899,10 +6899,10 @@ export function VoiceMicIcon(props: React.HTMLAttributes<SVGElement>) {
 	);
 }
 
-export function VoiceMicDisabledIcon(props: React.HTMLAttributes<SVGElement>) {
+export function VoiceMicDisabledIcon({ scale = 1, ...props }: { scale?: number } & React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" {...props}>
-			<g transform="scale(1.3)">
+			<g transform={`scale(${scale})`}>
 				<path d="M12.227 11.52a5.477 5.477 0 0 0 1.246-2.97.5.5 0 0 0-.995-.1 4.478 4.478 0 0 1-.962 2.359l-1.07-1.07C10.794 9.247 11 8.647 11 8V3a3 3 0 0 0-6 0v1.293L1.354.646a.5.5 0 1 0-.708.708l14 14a.5.5 0 0 0 .708-.708zM8 12.5c.683 0 1.33-.152 1.911-.425l.743.743c-.649.359-1.378.59-2.154.66V15h2a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1h2v-1.522a5.502 5.502 0 0 1-4.973-4.929.5.5 0 0 1 .995-.098A4.5 4.5 0 0 0 8 12.5z" />
 				<path d="M8.743 10.907 5 7.164V8a3 3 0 0 0 3.743 2.907z" />
 			</g>
@@ -6910,20 +6910,20 @@ export function VoiceMicDisabledIcon(props: React.HTMLAttributes<SVGElement>) {
 	);
 }
 
-export function VoiceCameraIcon(props: React.HTMLAttributes<SVGElement>) {
+export function VoiceCameraIcon({ scale = 1, ...props }: { scale?: number } & React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" {...props}>
-			<g transform="scale(1.5)">
+			<g transform={`scale(${scale})`}>
 				<path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h8A1.5 1.5 0 0 1 11 4.5v7A1.5 1.5 0 0 1 9.5 13h-8A1.5 1.5 0 0 1 0 11.5zM15.2 3.6l-2.8 2.1a1 1 0 0 0-.4.8v3a1 1 0 0 0 .4.8l2.8 2.1a.5.5 0 0 0 .8-.4V4a.5.5 0 0 0-.8-.4z" />
 			</g>
 		</svg>
 	);
 }
 
-export function VoiceCameraDisabledIcon(props: React.HTMLAttributes<SVGElement>) {
+export function VoiceCameraDisabledIcon({ scale = 1, ...props }: { scale?: number } & React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" {...props}>
-			<g transform="scale(1.5)">
+			<g transform={`scale(${scale})`}>
 				<path d="M1.354.646a.5.5 0 1 0-.708.708l14 14a.5.5 0 0 0 .708-.708L11 10.293V4.5A1.5 1.5 0 0 0 9.5 3H3.707zM0 4.5a1.5 1.5 0 0 1 .943-1.393l9.532 9.533c-.262.224-.603.36-.975.36h-8A1.5 1.5 0 0 1 0 11.5z" />
 				<path d="m15.2 3.6-2.8 2.1a1 1 0 0 0-.4.8v3a1 1 0 0 0 .4.8l2.8 2.1a.5.5 0 0 0 .8-.4V4a.5.5 0 0 0-.8-.4z" />
 			</g>

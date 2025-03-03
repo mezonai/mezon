@@ -340,7 +340,10 @@ export const style = (colors: Attributes) =>
 		},
 		messageWrapper: {
 			flexDirection: 'column',
-			marginTop: size.s_10
+			marginTop: size.s_10,
+			// paddingTop: 50,
+			// paddingBottom: 50
+			marginBottom: size.s_6
 		},
 		highlightMessageMention: {
 			backgroundColor: colors.reactionBg
@@ -772,5 +775,75 @@ export const style = (colors: Attributes) =>
 			marginLeft: size.s_20,
 			justifyContent: 'space-between',
 			width: '90%'
+		},
+		albumTitleBar: {
+			height: size.s_60,
+			backgroundColor: colors.primary,
+			position: 'absolute',
+			top: -size.s_60,
+			left: 0,
+			right: 0,
+			zIndex: 1,
+			borderBottomWidth: 1,
+			borderColor: colors.tertiary
+		},
+		albumButton: {
+			alignSelf: 'center',
+			justifyContent: 'center',
+			alignItems: 'center',
+			flex: 1,
+			paddingTop: size.s_10,
+			width: '100%',
+			padding: size.s_8
+		},
+		albumButtonGroup: {
+			flexDirection: 'row',
+			gap: size.s_4,
+			alignItems: 'center'
+		},
+		albumTitle: {
+			color: colors.textStrong,
+			fontWeight: 'bold'
+		},
+		albumPanel: {
+			position: 'absolute',
+			backgroundColor: colors.primary,
+			top: size.s_40,
+			left: 0,
+			right: 0,
+			zIndex: 2,
+			overflow: 'hidden',
+			maxHeight: Dimensions.get('window').height - size.s_40,
+			paddingVertical: size.s_4
+		},
+		albumItem: {
+			padding: size.s_4,
+			flexDirection: 'row',
+			paddingHorizontal: size.s_10
+		},
+		albumCoverImage: {
+			height: size.s_80,
+			width: size.s_80
+		},
+		albumTitleAndCount: {
+			gap: size.s_10,
+			justifyContent: 'flex-start',
+			marginLeft: size.s_10
+		},
+		albumImageCount: {
+			fontSize: size.s_12,
+			color: colors.text,
+			fontWeight: '600'
+		},
+		albumSeperatedItem: {
+			height: 1,
+			backgroundColor: colors.border
+		},
+		albumSelectedIcon: {
+			position: 'absolute',
+			right: size.s_20,
+			height: '100%',
+			justifyContent: 'center',
+			bottom: size.s_6
 		}
 	});

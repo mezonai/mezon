@@ -9,7 +9,7 @@ const Flows = () => {
 	const navigate = useNavigate();
 	const { flowState } = useContext(FlowContext);
 	const handleGoToAddFlowPage = () => {
-		navigate(`/applications/${applicationId}/add-flow`);
+		navigate(`/developers/applications/${applicationId}/add-flow`);
 	};
 	return (
 		<div className="relative">

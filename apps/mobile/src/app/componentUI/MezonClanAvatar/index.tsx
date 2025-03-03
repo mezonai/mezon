@@ -2,7 +2,6 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import React from 'react';
 import { Image, StyleProp, TextStyle, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Images from '../../../assets/Images';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { style } from './styles';
@@ -38,7 +37,7 @@ export default function MezonClanAvatar({ image, alt = '', defaultColor, textSty
 			);
 		}
 		return (
-			<FastImage
+			<Image
 				source={{
 					uri: isLoadFailProxy ? image : createImgproxyUrl(image ?? '', { width: 100, height: 100, resizeType: 'fit' })
 				}}
@@ -52,7 +51,7 @@ export default function MezonClanAvatar({ image, alt = '', defaultColor, textSty
 	return (
 		<View style={[styles.fakeBox, { backgroundColor: defaultColor || themeValue.colorAvatarDefault }]}>
 			{!noDefaultText ? (
-				<FastImage
+				<Image
 					source={alt === 'Anonymous' ? Images.ANONYMOUS_MESSAGE_AVATAR : Images.ANONYMOUS_AVATAR}
 					style={{ width: '100%', height: '100%', borderRadius: size.s_100 }}
 				/>

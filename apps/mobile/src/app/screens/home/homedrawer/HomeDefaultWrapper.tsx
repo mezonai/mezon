@@ -4,7 +4,6 @@ import React, { useCallback, useEffect } from 'react';
 import { Platform, StatusBar } from 'react-native';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import HomeScreen from './HomeScreen';
-import SwipeBackContainer from './SwipeBackContainer';
 
 const HomeDefaultWrapper = React.memo((props: any) => {
 	const { themeValue, themeBasic } = useTheme();
@@ -29,10 +28,10 @@ const HomeDefaultWrapper = React.memo((props: any) => {
 	}, []);
 
 	return (
-		<SwipeBackContainer handleBack={handleBack}>
+		<>
 			<StatusBarHeight />
 			<HomeScreen {...props} />
-		</SwipeBackContainer>
+		</>
 	);
 });
 

@@ -3,7 +3,7 @@ import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '
 import { Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, MessagesEntity, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useState } from 'react';
-import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, View } from 'react-native';
+import { Animated, DeviceEventEmitter, Platform, Pressable, View } from 'react-native';
 import { EmbedMessage, MessageAction, RenderTextMarkdownContent } from './components';
 import { EMessageActionType, EMessageBSToShow } from './enums';
 import { style } from './styles';
@@ -210,174 +210,166 @@ const MessageItem = React.memo(
 			}).start();
 		};
 
-		const bgColor = backgroundColor.interpolate({
-			inputRange: [0, 1],
-			outputRange: ['transparent', themeValue.secondaryWeight]
-		});
+		// const bgColor = backgroundColor.interpolate({
+		// 	inputRange: [0, 1],
+		// 	outputRange: ['transparent', themeValue.secondaryWeight]
+		// });
 
-		const panResponder = PanResponder.create({
-			onMoveShouldSetPanResponder: (_, gestureState) => {
-				if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2 && gestureState.dx < -8) {
-					Animated.sequence([
-						Animated.timing(translateX, {
-							toValue: -100,
-							duration: 200,
-							useNativeDriver: true
-						}),
-						Animated.spring(translateX, {
-							toValue: 0,
-							useNativeDriver: true
-						})
-					]).start();
-					onReplyMessage && onReplyMessage();
-					return true;
-				}
+		// const panResponder = PanResponder.create({
+		// 	onMoveShouldSetPanResponder: (_, gestureState) => {
+		// 		if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2 && gestureState.dx < -8) {
+		// 			Animated.sequence([
+		// 				Animated.timing(translateX, {
+		// 					toValue: -100,
+		// 					duration: 200,
+		// 					useNativeDriver: true
+		// 				}),
+		// 				Animated.spring(translateX, {
+		// 					toValue: 0,
+		// 					useNativeDriver: true
+		// 				})
+		// 			]).start();
+		// 			onReplyMessage && onReplyMessage();
+		// 			return true;
+		// 		}
 
-				return false;
-			}
-		});
+		// 		return false;
+		// 	}
+		// });
 
 		return (
-			<Animated.View {...panResponder?.panHandlers} style={[{ backgroundColor: bgColor }, { transform: [{ translateX }] }]}>
-				<Pressable
-					android_ripple={{
-						color: themeValue.secondaryLight
-					}}
-					disabled={isMessageCallLog || isGoogleMapsLink}
-					delayLongPress={300}
-					onPressIn={Platform.OS === 'ios' ? handlePressIn : undefined}
-					onPressOut={Platform.OS === 'ios' ? handlePressOut : undefined}
-					onLongPress={handleLongPressMessage}
-					style={[
-						styles.messageWrapper,
-						(isCombine || preventAction) && { marginTop: 0 },
-						hasIncludeMention && styles.highlightMessageReply,
-						showHighlightReply && styles.highlightMessageMention
-					]}
-				>
-					<RenderMessageItemRef message={message} preventAction={preventAction} isSearchTab={isSearchTab} />
-					<View style={[styles.wrapperMessageBox, !isCombine && styles.wrapperMessageBoxCombine]}>
+			<Pressable
+				android_ripple={{
+					color: themeValue.secondaryLight
+				}}
+				disabled={isMessageCallLog || isGoogleMapsLink}
+				delayLongPress={300}
+				onPressIn={Platform.OS === 'ios' ? handlePressIn : undefined}
+				onPressOut={Platform.OS === 'ios' ? handlePressOut : undefined}
+				onLongPress={handleLongPressMessage}
+				style={[
+					styles.messageWrapper,
+					(isCombine || preventAction) && { marginTop: 0 },
+					hasIncludeMention && styles.highlightMessageReply,
+					showHighlightReply && styles.highlightMessageMention
+				]}
+			>
+				<RenderMessageItemRef message={message} preventAction={preventAction} isSearchTab={isSearchTab} />
+				<View style={[styles.wrapperMessageBox, !isCombine && styles.wrapperMessageBoxCombine]}>
+					{!isMessageSystem && (
+						<AvatarMessage
+							onPress={onPressInfoUser}
+							id={message?.user?.id}
+							avatar={messageAvatar}
+							username={usernameMessage}
+							isShow={!isCombine || !!message?.references?.length || showUserInformation}
+						/>
+					)}
+
+					<View style={[styles.rowMessageBox, isMessageSystem && { width: '100%' }]}>
 						{!isMessageSystem && (
-							<AvatarMessage
+							<InfoUserMessage
 								onPress={onPressInfoUser}
-								id={message?.user?.id}
-								avatar={messageAvatar}
-								username={usernameMessage}
+								senderDisplayName={senderDisplayName}
 								isShow={!isCombine || !!message?.references?.length || showUserInformation}
+								createTime={message?.create_time}
+								messageSenderId={message?.sender_id}
+								mode={mode}
 							/>
 						)}
 
-						<View style={[styles.rowMessageBox, isMessageSystem && { width: '100%' }]}>
-							{!isMessageSystem && (
-								<InfoUserMessage
-									onPress={onPressInfoUser}
-									senderDisplayName={senderDisplayName}
-									isShow={!isCombine || !!message?.references?.length || showUserInformation}
-									createTime={message?.create_time}
-									messageSenderId={message?.sender_id}
-									mode={mode}
-								/>
-							)}
-
-							<View style={message?.content?.fwd ? { display: 'flex' } : undefined}>
-								<View style={message?.content?.fwd ? { borderLeftWidth: 2, borderColor: 'gray', paddingLeft: 10 } : undefined}>
-									{!!message?.content?.fwd && (
-										<Text style={styles.forward}>
-											<Entypo name="forward" size={15} /> Forwarded
-										</Text>
-									)}
-									<View style={{ opacity: message.isError || message?.isErrorRetry ? 0.6 : 1 }}>
-										{isMessageSystem ? (
-											<MessageLineSystem message={message} />
-										) : isInviteLink || isGoogleMapsLink ? (
-											<RenderMessageBlock
-												isGoogleMapsLink={isGoogleMapsLink}
-												isInviteLink={isInviteLink}
-												contentMessage={contentMessage}
-											/>
-										) : isMessageCallLog ? (
-											<MessageCallLog
-												contentMsg={message?.content?.t}
-												channelId={message?.channel_id}
-												senderId={message?.sender_id}
-												callLog={message?.content?.callLog}
-											/>
-										) : isSendTokenLog ? (
-											<MessageSendTokenLog messageContent={message?.content?.t} />
-										) : (
-											<RenderTextMarkdownContent
-												content={{
-													...(typeof message.content === 'object' ? message.content : {}),
-													mentions: message.mentions,
-													...(checkOneLinkImage ? { t: '' } : {})
-												}}
-												isEdited={isEdited}
-												translate={t}
-												onMention={onMention}
-												onChannelMention={onChannelMention}
-												isNumberOfLine={isNumberOfLine}
-												isMessageReply={false}
-												isBuzzMessage={isBuzzMessage}
-												mode={mode}
-												currentChannelId={channelId}
-												isOnlyContainEmoji={isOnlyContainEmoji}
-												onLongPress={handleLongPressMessage}
-											/>
-										)}
-										{!!message?.content?.embed?.length &&
-											message?.content?.embed?.map((embed, index) => (
-												<EmbedMessage message_id={message?.id} embed={embed} key={`message_embed_${message?.id}_${index}`} />
-											))}
-										{!!message?.content?.components?.length &&
-											message?.content.components?.map((component, index) => (
-												<EmbedComponentsPanel
-													key={`message_embed_component_${message?.id}_${index}`}
-													actionRow={component}
-													messageId={message?.id}
-													senderId={message?.sender_id}
-													channelId={message?.channel_id || ''}
-												/>
-											))}
-									</View>
-									{message?.attachments?.length > 0 && (
-										<MessageAttachment
-											attachments={message?.attachments}
+						<View style={message?.content?.fwd ? { display: 'flex' } : undefined}>
+							<View style={message?.content?.fwd ? { borderLeftWidth: 2, borderColor: 'gray', paddingLeft: 10 } : undefined}>
+								{!!message?.content?.fwd && (
+									<Text style={styles.forward}>
+										<Entypo name="forward" size={15} /> Forwarded
+									</Text>
+								)}
+								<View style={{ opacity: message.isError || message?.isErrorRetry ? 0.6 : 1 }}>
+									{isMessageSystem ? (
+										<MessageLineSystem message={message} />
+									) : isInviteLink || isGoogleMapsLink ? (
+										<RenderMessageBlock
+											isGoogleMapsLink={isGoogleMapsLink}
+											isInviteLink={isInviteLink}
+											contentMessage={contentMessage}
+										/>
+									) : isMessageCallLog ? (
+										<MessageCallLog
+											contentMsg={message?.content?.t}
+											channelId={message?.channel_id}
 											senderId={message?.sender_id}
-											createTime={message?.create_time}
-											onLongPressImage={onLongPressImage}
+											callLog={message?.content?.callLog}
+										/>
+									) : isSendTokenLog ? (
+										<MessageSendTokenLog messageContent={message?.content?.t} />
+									) : (
+										<RenderTextMarkdownContent
+											content={{
+												...(typeof message.content === 'object' ? message.content : {}),
+												mentions: message.mentions,
+												...(checkOneLinkImage ? { t: '' } : {})
+											}}
+											isEdited={isEdited}
+											translate={t}
+											onMention={onMention}
+											onChannelMention={onChannelMention}
+											isNumberOfLine={isNumberOfLine}
+											isMessageReply={false}
+											isBuzzMessage={isBuzzMessage}
+											mode={mode}
+											currentChannelId={channelId}
+											isOnlyContainEmoji={isOnlyContainEmoji}
+											onLongPress={handleLongPressMessage}
 										/>
 									)}
+									{!!message?.content?.embed?.length &&
+										message?.content?.embed?.map((embed, index) => (
+											<EmbedMessage message_id={message?.id} embed={embed} key={`message_embed_${message?.id}_${index}`} />
+										))}
+									{!!message?.content?.components?.length &&
+										message?.content.components?.map((component, index) => (
+											<EmbedComponentsPanel
+												key={`message_embed_component_${message?.id}_${index}`}
+												actionRow={component}
+												messageId={message?.id}
+												senderId={message?.sender_id}
+												channelId={message?.channel_id || ''}
+											/>
+										))}
 								</View>
+								{/* check  */}
+								{message?.attachments?.length > 0 && (
+									<MessageAttachment
+										attachments={message?.attachments}
+										senderId={message?.sender_id}
+										createTime={message?.create_time}
+										onLongPressImage={onLongPressImage}
+									/>
+								)}
 							</View>
-							{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
-							{!preventAction && !!message?.reactions?.length ? (
-								<MessageAction
-									message={message}
-									mode={mode}
-									preventAction={preventAction}
-									openEmojiPicker={() => {
-										DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
-											type: EMessageBSToShow.MessageAction,
-											senderDisplayName,
-											message,
-											isOnlyEmoji: true
-										});
-									}}
-								/>
-							) : null}
-							{message?.code === TypeMessage.Topic && <MessageTopic message={message} avatar={messageAvatar} />}
 						</View>
+						{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
+						{!preventAction && !!message?.reactions?.length ? (
+							<MessageAction
+								userId={userId}
+								message={message}
+								mode={mode}
+								preventAction={preventAction}
+								openEmojiPicker={() => {
+									DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
+										type: EMessageBSToShow.MessageAction,
+										senderDisplayName,
+										message,
+										isOnlyEmoji: true
+									});
+								}}
+							/>
+						) : null}
+						{message?.code === TypeMessage.Topic && <MessageTopic message={message} avatar={messageAvatar} />}
 					</View>
-				</Pressable>
-
-				{/*<NewMessageRedLine*/}
-				{/*	channelId={props?.channelId}*/}
-				{/*	messageId={props?.messageId}*/}
-				{/*	isEdited={message?.hide_editted}*/}
-				{/*	isSending={message?.isSending}*/}
-				{/*	isMe={message.sender_id === userProfile?.user?.id}*/}
-				{/*/>*/}
-			</Animated.View>
+				</View>
+			</Pressable>
 		);
 	},
 	(prevProps, nextProps) => {

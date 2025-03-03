@@ -3,10 +3,13 @@ import React, { memo, useContext, useEffect } from 'react';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ChatContext } from '@mezon/core';
 import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT, remove } from '@mezon/mobile-components';
+import { ColorRoleProvider } from '@mezon/mobile-ui';
 import notifee from '@notifee/react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ChannelMessage, safeJSONParse } from 'mezon-js';
+import moment from 'moment';
 import { Dimensions, NativeModules, Platform } from 'react-native';
+import BottomSheetRootListener from '../../components/BottomSheetRootListener';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -57,7 +60,21 @@ export const Authentication = memo(() => {
 						if (extraMessage) {
 							const message = safeJSONParse(extraMessage);
 							if (message?.channel_id) {
-								onchannelmessage(message as ChannelMessage);
+								const createTime = moment.unix(message?.create_time_seconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+								const updateTime = moment.unix(message?.update_time_seconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+								const messageData = {
+									...message,
+									code: message?.code?.value || 0,
+									id: message.message_id,
+									content: safeJSONParse(message.content),
+									attachments: safeJSONParse(message.attachments),
+									mentions: safeJSONParse(message.mentions),
+									references: safeJSONParse(message.references),
+									reactions: safeJSONParse(message.reactions),
+									create_time: createTime,
+									update_time: updateTime
+								};
+								onchannelmessage(messageData as ChannelMessage);
 							}
 						}
 					}
@@ -71,55 +88,58 @@ export const Authentication = memo(() => {
 
 	return (
 		<BottomSheetModalProvider>
-			<RootStack.Navigator
-				initialRouteName={APP_SCREEN.BOTTOM_BAR}
-				screenOptions={{
-					headerShown: false,
-					gestureEnabled: Platform.OS === 'ios',
-					gestureDirection: 'horizontal',
-					animationEnabled: false
-				}}
-			>
-				<RootStack.Screen name={APP_SCREEN.BOTTOM_BAR} component={BottomNavigatorWrapper} />
-				<RootStack.Screen
-					name={APP_SCREEN.HOME_DEFAULT}
-					component={isTabletLandscape ? HomeScreenTablet : HomeDefaultWrapper}
-					options={{
-						animationEnabled: false,
+			<ColorRoleProvider>
+				<RootStack.Navigator
+					initialRouteName={APP_SCREEN.BOTTOM_BAR}
+					screenOptions={{
 						headerShown: false,
 						gestureEnabled: Platform.OS === 'ios',
 						gestureDirection: 'horizontal',
-						gestureResponseDistance: Dimensions.get('window').width
+						animationEnabled: false
 					}}
-				/>
-				<RootStack.Screen
-					name={APP_SCREEN.MESSAGES.MESSAGE_DETAIL}
-					component={DirectMessageDetailScreen}
-					options={{
-						animationEnabled: false,
-						headerShown: false,
-						headerShadowVisible: false,
-						gestureEnabled: Platform.OS === 'ios',
-						gestureDirection: 'horizontal',
-						gestureResponseDistance: Dimensions.get('window').width
-					}}
-				/>
-				<RootStack.Screen name={APP_SCREEN.SERVERS.STACK} children={(props) => <ServersStacks {...props} />} />
-				<RootStack.Screen name={APP_SCREEN.MESSAGES.STACK} children={(props) => <MessagesStacks {...props} />} />
-				<RootStack.Screen name={APP_SCREEN.NOTIFICATION.STACK} children={(props) => <NotificationStacks {...props} />} />
-				<RootStack.Screen name={APP_SCREEN.MENU_CHANNEL.STACK} children={(props) => <MenuChannelStacks {...props} />} />
+				>
+					<RootStack.Screen name={APP_SCREEN.BOTTOM_BAR} component={BottomNavigatorWrapper} />
+					<RootStack.Screen
+						name={APP_SCREEN.HOME_DEFAULT}
+						component={isTabletLandscape ? HomeScreenTablet : HomeDefaultWrapper}
+						options={{
+							animationEnabled: false,
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							gestureResponseDistance: Dimensions.get('window').width
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.MESSAGES.MESSAGE_DETAIL}
+						component={DirectMessageDetailScreen}
+						options={{
+							animationEnabled: false,
+							headerShown: false,
+							headerShadowVisible: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							gestureResponseDistance: Dimensions.get('window').width
+						}}
+					/>
+					<RootStack.Screen name={APP_SCREEN.SERVERS.STACK} children={(props) => <ServersStacks {...props} />} />
+					<RootStack.Screen name={APP_SCREEN.MESSAGES.STACK} children={(props) => <MessagesStacks {...props} />} />
+					<RootStack.Screen name={APP_SCREEN.NOTIFICATION.STACK} children={(props) => <NotificationStacks {...props} />} />
+					<RootStack.Screen name={APP_SCREEN.MENU_CHANNEL.STACK} children={(props) => <MenuChannelStacks {...props} />} />
 
-				<RootStack.Screen name={APP_SCREEN.MENU_THREAD.STACK} children={(props) => <MenuThreadDetailStacks {...props} />} />
+					<RootStack.Screen name={APP_SCREEN.MENU_THREAD.STACK} children={(props) => <MenuThreadDetailStacks {...props} />} />
 
-				<RootStack.Screen name={APP_SCREEN.MENU_CLAN.STACK} children={(props) => <MenuClanStacks {...props} />} />
+					<RootStack.Screen name={APP_SCREEN.MENU_CLAN.STACK} children={(props) => <MenuClanStacks {...props} />} />
 
-				<RootStack.Screen name={APP_SCREEN.SETTINGS.STACK} children={(props) => <SettingStacks {...props} />} />
+					<RootStack.Screen name={APP_SCREEN.SETTINGS.STACK} children={(props) => <SettingStacks {...props} />} />
 
-				<RootStack.Screen name={APP_SCREEN.FRIENDS.STACK} children={(props) => <FriendStacks {...props} />} />
-			</RootStack.Navigator>
-			<CallingModalWrapper />
-			<StreamingWrapper />
-			<ChannelVoicePopup />
+					<RootStack.Screen name={APP_SCREEN.FRIENDS.STACK} children={(props) => <FriendStacks {...props} />} />
+				</RootStack.Navigator>
+				<CallingModalWrapper />
+				<StreamingWrapper />
+				<ChannelVoicePopup />
+				<BottomSheetRootListener />
+			</ColorRoleProvider>
 		</BottomSheetModalProvider>
 	);
 });

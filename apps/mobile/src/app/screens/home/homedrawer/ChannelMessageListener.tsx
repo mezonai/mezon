@@ -99,7 +99,7 @@ const ChannelMessageListener = React.memo(() => {
 									clanName: channel?.clan_name || '',
 									streamId: channel?.channel_id || '',
 									streamName: channel?.channel_label || '',
-									parentId: channel?.parrent_id || ''
+									parentId: channel?.parent_id || ''
 								})
 							);
 						}

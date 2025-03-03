@@ -354,11 +354,11 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			})
 		);
 		navigation.navigate(APP_SCREEN.HOME);
-		if (channel?.parrent_id !== '0') {
+		if (channel?.parent_id !== '0') {
 			await dispatch(
 				channelsActions.joinChannel({
 					clanId: channel?.clan_id,
-					channelId: channel?.parrent_id,
+					channelId: channel?.parent_id,
 					noFetchMembers: false
 				})
 			);
@@ -366,7 +366,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	}, []);
 
 	const handleJoinChannel = async () => {
-		const channelId = channel?.parrent_id || '';
+		const channelId = channel?.parent_id || '';
 		const clanId = channel?.clan_id || '';
 		const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 		const store = await getStoreAsync();
@@ -380,7 +380,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		await dispatch(
 			threadsActions.leaveThread({
 				clanId: channel?.clan_id || '',
-				channelId: channel?.parrent_id || '',
+				channelId: channel?.parent_id || '',
 				threadId: channel?.id || '',
 				isPrivate: channel.channel_private || 0
 			})

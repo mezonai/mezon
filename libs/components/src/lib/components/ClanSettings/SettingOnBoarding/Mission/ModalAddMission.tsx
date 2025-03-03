@@ -60,7 +60,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 	};
 
 	const handleAddTask = () => {
-		if (!tempId && tempId !== 0) {
+		if (missionEdit?.id) {
 			dispatch(
 				editOnboarding({
 					clan_id: currentClanId as string,
@@ -79,10 +79,13 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 
 		dispatch(
 			onboardingActions.addMission({
-				title: title,
-				guide_type: EGuideType.TASK,
-				task_type: mission || 0,
-				channel_id: missionChannel
+				data: {
+					title: title,
+					guide_type: EGuideType.TASK,
+					task_type: mission || 0,
+					channel_id: missionChannel
+				},
+				update: tempId
 			})
 		);
 		onClose();

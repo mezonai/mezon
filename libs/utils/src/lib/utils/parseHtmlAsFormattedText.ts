@@ -169,13 +169,13 @@ function parseMarkdown(html: string) {
 	return parsedHtml;
 }
 
-const LINK_TEMPLATE = /(?<!<a\s+href="[^"]*">)(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z]{2,}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=]*))/gi;
+const LINK_TEMPLATE =
+	/(ftp|http|https):\/\/(((www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][-a-zA-Z0-9]{1,62})|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?([-a-zA-Z0-9()@:%_+.,~#?&\/=]*)/gi;
 
 function parseMarkdownLinks(html: string) {
 	const parts = html.split(/(`{1,3})/);
 	let isInCode = false;
 	let result = '';
-
 	for (let i = 0; i < parts.length; i++) {
 		const part = parts[i];
 		if (part.match(/^`{1,3}$/)) {
@@ -187,9 +187,7 @@ function parseMarkdownLinks(html: string) {
 		if (isInCode) {
 			result += part;
 		} else {
-			result += part.replace(LINK_TEMPLATE, (url) => {
-				return `<a href="${url}" target="_blank">${url}</a>`;
-			});
+			result += part.replace(LINK_TEMPLATE, '<a href="$&" target="_blank">$&</a>');
 		}
 	}
 

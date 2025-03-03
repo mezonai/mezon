@@ -64,6 +64,7 @@ import {
 	IHashtagOnMessage,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
+	MEZON_MENTIONS_COPY_KEY,
 	MIN_THRESHOLD_CHARS,
 	MentionDataProps,
 	MentionReactInputProps,
@@ -82,6 +83,7 @@ import {
 	formatMentionsToString,
 	generateMentionItems,
 	getDisplayMention,
+	getMarkupInsertIndex,
 	insertStringAt,
 	parseHtmlAsFormattedText,
 	parsePastedMentionData,
@@ -93,7 +95,7 @@ import {
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
-import { KeyboardEvent, ReactElement, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { KeyboardEvent, ReactElement, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Mention, MentionItem, MentionsInput, OnChangeHandlerFunc } from 'react-mentions';
 import { useSelector, useStore } from 'react-redux';
 import textFieldEdit from 'text-field-edit';
@@ -770,7 +772,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 	const onPasteMentions = useCallback(
 		(event: React.ClipboardEvent<HTMLTextAreaElement>) => {
-			const pastedData = event.clipboardData.getData('text/mezon-mentions');
+			const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
 
 			if (!pastedData) return;
 
@@ -786,7 +788,12 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 			const transformedText =
 				pastedContent?.content?.t && pastedContent?.mentions
-					? transformTextWithMentions(pastedContent.content.t, pastedContent.mentions, currentChatUsersEntities, clanRolesEntities)
+					? transformTextWithMentions(
+							pastedContent.content.t?.slice(startIndex, endIndex),
+							pastedContent.mentions,
+							currentChatUsersEntities,
+							clanRolesEntities
+						)
 					: pastedContent?.content?.t || '';
 
 			const mentionRaw = generateMentionItems(
@@ -796,10 +803,19 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 				currentInputValueLength
 			);
 
+			const { mentionList } = processMention(
+				[...(request?.mentionRaw || []), ...mentionRaw],
+				rolesClan,
+				membersOfChild as ChannelMembersEntity[],
+				membersOfParent as ChannelMembersEntity[]
+			);
+
+			const transformedTextInsertIndex = getMarkupInsertIndex(currentFocusIndex, mentionList, currentChatUsersEntities, clanRolesEntities);
+
 			setRequestInput(
 				{
 					...request,
-					valueTextInput: insertStringAt(request?.valueTextInput || '', transformedText || '', currentFocusIndex),
+					valueTextInput: insertStringAt(request?.valueTextInput || '', transformedText || '', transformedTextInsertIndex),
 					content: insertStringAt(request?.content || '', pastedContent?.content?.t?.slice(startIndex, endIndex) || '', currentFocusIndex),
 					mentionRaw: [...(request?.mentionRaw || []), ...mentionRaw]
 				},
@@ -866,7 +882,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			<MentionsInput
 				onFocus={handleFocusInput}
 				onPaste={(event) => {
-					const pastedData = event.clipboardData.getData('text/mezon-mentions');
+					const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
 					if (pastedData) {
 						onPasteMentions(event);
 						event.preventDefault();
@@ -876,12 +892,12 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 						setPastedContent(pastedText);
 					}
 				}}
-				onPasteCapture={(event) => {
-					if (event.clipboardData.getData('text/mezon-mentions')) {
+				onPasteCapture={async (event) => {
+					if (event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY)) {
 						event.preventDefault();
 					} else {
 						if (props.handlePaste) {
-							props.handlePaste(event);
+							await props.handlePaste(event);
 						}
 					}
 				}}

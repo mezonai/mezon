@@ -10,6 +10,7 @@ import {
 	selectTheme,
 	selectTitle
 } from '@mezon/store';
+import { EEventAction } from '@mezon/utils';
 import 'quill/dist/quill.snow.css';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,7 +37,7 @@ const Canvas = () => {
 		}
 	}, [title]);
 
-	const callCreateEditCanvas = async () => {
+	const callCreateEditCanvas = async (isCreate: number) => {
 		if (currentChannelId && currentClanId) {
 			const body = {
 				channel_id: currentChannelId,
@@ -44,7 +45,8 @@ const Canvas = () => {
 				content: content,
 				...(idCanvas && { id: idCanvas }),
 				...(canvasById?.is_default && { is_default: true }),
-				title: title
+				title: title,
+				status: isCreate
 			};
 			const response = await dispatch(createEditCanvas(body) as any);
 			if (response) {
@@ -58,9 +60,14 @@ const Canvas = () => {
 			if (debounceTimer) {
 				clearTimeout(debounceTimer);
 			}
+			let isCreate: number;
+
+			if (!idCanvas || (title && title !== canvasById?.title)) {
+				isCreate = EEventAction.CREATED;
+			}
 
 			const timer = setTimeout(() => {
-				callCreateEditCanvas();
+				callCreateEditCanvas(isCreate);
 			}, 1000);
 
 			setDebounceTimer(timer);

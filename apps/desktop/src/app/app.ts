@@ -104,7 +104,7 @@ export default class App {
 				backgroundThrottling: false,
 				preload: join(__dirname, 'main.preload.js')
 			},
-			icon: join(__dirname, 'assets', 'desktop-taskbar-256x256.ico')
+			icon: join(__dirname, 'assets', 'desktop-taskbar.ico')
 		});
 		App.mainWindow.setMinimumSize(950, 500);
 		App.mainWindow.setMenuBarVisibility(false);
@@ -331,7 +331,7 @@ export default class App {
 								if (!data?.updateInfo) return;
 								const appVersion = app.getVersion();
 								new Notification({
-									icon: 'apps/desktop/src/assets/desktop-taskbar-256x256.ico',
+									icon: 'apps/desktop/src/assets/desktop-taskbar.ico',
 									title: 'No update',
 									body: `The current version (${appVersion}) is the latest.`
 								}).show();

@@ -102,7 +102,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 			channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
 			channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 			channel.type !== ChannelType.CHANNEL_TYPE_APP &&
-			(isCategoryExpanded || isUnreadChannel || hasUnread || currentChannel?.id === channel.id || currentChannel?.parrent_id === channel.id)
+			(isCategoryExpanded || isUnreadChannel || hasUnread || currentChannel?.id === channel.id || currentChannel?.parent_id === channel.id)
 		) {
 			return (
 				<div className={'pt-1'}>

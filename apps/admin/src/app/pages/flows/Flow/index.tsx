@@ -214,7 +214,7 @@ const Flow = () => {
 				const response = await flowService.createNewFlow(flowDataSave);
 				toast.success('Save flow success');
 				// navigate to flow detail after create flow
-				navigate(`/applications/${applicationId}/flow/${response.id}`);
+				navigate(`developers/applications/${applicationId}/flow/${response.id}`);
 			}
 		} catch (error) {
 			toast.error('Save flow failed');

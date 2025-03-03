@@ -10,8 +10,8 @@ import { APP_SCREEN, MenuChannelScreenProps } from '../../../navigation/ScreenTy
 import { style } from './styles';
 
 type ScreenChannelCanvas = typeof APP_SCREEN.MENU_CHANNEL.CANVAS;
-export function CanvasScreen({ navigation, route }: MenuChannelScreenProps<ScreenChannelCanvas>) {
-	const { themeValue, theme } = useTheme();
+export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanvas>) {
+	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const { clanId, channelId, canvasId } = route.params;
 	const authState = useSelector(getAuthState);
@@ -34,8 +34,8 @@ export function CanvasScreen({ navigation, route }: MenuChannelScreenProps<Scree
 	(function() {
 		const persistApp = JSON.parse(localStorage.getItem('persist:apps'));
 		if (persistApp) {
-			persistApp.theme = JSON.stringify("${theme}");
-			persistApp.themeApp = JSON.stringify("${theme}");
+			persistApp.theme = JSON.stringify("${themeBasic}");
+			persistApp.themeApp = JSON.stringify("${themeBasic}");
 			localStorage.setItem('persist:apps', JSON.stringify(persistApp));
 		}
 	})();
@@ -60,7 +60,7 @@ export function CanvasScreen({ navigation, route }: MenuChannelScreenProps<Scree
 					<Chase color={'#cdcdcd'} />
 				</View>
 			)}
-			<StatusBar barStyle={theme === ThemeModeBase.LIGHT ? 'dark-content' : 'light-content'} backgroundColor={themeValue.charcoal} />
+			<StatusBar barStyle={themeBasic === ThemeModeBase.LIGHT ? 'dark-content' : 'light-content'} backgroundColor={themeValue.charcoal} />
 			<WebView
 				source={{
 					uri: uri

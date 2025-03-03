@@ -35,7 +35,7 @@ export const ActionRow = React.memo(() => {
 	}, [currentChannel]);
 
 	useEffect(() => {
-		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parrent_id));
+		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parent_id));
 	}, [currentChannel]);
 	const actionList = [
 		{

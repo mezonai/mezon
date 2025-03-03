@@ -1,22 +1,21 @@
 import { useAuth } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { baseColor, size } from '@mezon/mobile-ui';
+import { baseColor, Colors, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { appActions } from '@mezon/store';
 import { getStoreAsync } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import React, { useEffect, useState } from 'react';
 import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { launchImageLibrary } from 'react-native-image-picker';
+import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 import RNQRGenerator from 'rn-qr-generator';
+import LogoMezonDark from '../../../../assets/svg/logoMezonDark.svg';
+import LogoMezonLight from '../../../../assets/svg/logoMezonLight.svg';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
-import { styles } from './styles';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import ICON_LOGIN from './iconLogin.png';
+import { style } from './styles';
 
 export const QRScanner = () => {
 	const [hasPermission, setHasPermission] = useState(false);
@@ -25,6 +24,8 @@ export const QRScanner = () => {
 	const [valueCode, setValueCode] = useState<string>('');
 	const [isSuccess, setIsSuccess] = useState<boolean>(false);
 	const { confirmLoginRequest } = useAuth();
+	const { themeValue, themeBasic } = useTheme();
+	const styles = style(themeValue);
 
 	const codeScanner = useCodeScanner({
 		codeTypes: ['qr'],
@@ -237,25 +238,34 @@ export const QRScanner = () => {
 					</TouchableOpacity>
 				</View>
 			) : (
-				<View style={styles.popupLogin}>
+				<LinearGradient
+					start={{ x: 0, y: 1.2 }}
+					end={{ x: 1, y: 0 }}
+					colors={[baseColor.white, Colors.bgViolet, Colors.textLink]}
+					style={styles.popupLogin}
+				>
 					<View style={styles.popupLoginSub}>
-						<FastImage source={ICON_LOGIN} style={styles.iconLogin} />
+						{themeBasic === ThemeModeBase.DARK ? (
+							<LogoMezonDark width={size.s_100} height={size.s_80} />
+						) : (
+							<LogoMezonLight width={size.s_100} height={size.s_80} />
+						)}
 						<Text style={styles.title}>{isSuccess ? `You're in!` : `Log in on a new device?`}</Text>
 						{isSuccess ? (
 							<Text style={styles.subTitleSuccess}>You're now logged in on desktop</Text>
 						) : (
-							<Text style={styles.subTitle}>Newer scan a lgin QR code from another user.</Text>
+							<Text style={styles.subTitle}>Never scan a login QR code from another user.</Text>
 						)}
 						<TouchableOpacity style={styles.button} onPress={isSuccess ? onGoback : onConfirmLogin}>
-							<Text style={styles.buttonText}>{isSuccess ? 'Start talking' : 'Log in'}</Text>
+							<Text style={styles.buttonTextOutline}>{isSuccess ? 'Start talking' : 'Log in'}</Text>
 						</TouchableOpacity>
 						{!isSuccess && (
 							<TouchableOpacity style={[styles.button, { backgroundColor: 'transparent', marginTop: size.s_10 }]} onPress={onGoback}>
-								<Text style={styles.buttonText}>Cancel</Text>
+								<Text style={styles.buttonTextOutline}>Cancel</Text>
 							</TouchableOpacity>
 						)}
 					</View>
-				</View>
+				</LinearGradient>
 			)}
 		</View>
 	);

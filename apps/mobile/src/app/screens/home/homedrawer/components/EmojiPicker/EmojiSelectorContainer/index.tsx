@@ -82,7 +82,7 @@ export default function EmojiSelectorContainer({
 }: EmojiSelectorContainerProps) {
 	const currentClan = useAppSelector(selectCurrentClan);
 	const { categoriesEmoji, categoryEmoji, emojis } = useGetEmojis(currentClan?.clan_id || '0');
-	const { themeValue, theme } = useTheme();
+	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const [selectedCategory, setSelectedCategory] = useState<string>('');
 	const [emojisSearch, setEmojiSearch] = useState<IEmoji[]>();
@@ -188,7 +188,7 @@ export default function EmojiSelectorContainer({
 			style={{ height: Metrics.screenHeight / (Platform.OS === 'ios' ? 1.4 : 1.3) }}
 			contentContainerStyle={{ paddingBottom: size.s_50 }}
 		>
-			<View style={{ backgroundColor: theme === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>
+			<View style={{ backgroundColor: themeBasic === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>
 				<View style={styles.textInputWrapper}>
 					<Icons.MagnifyingIcon height={18} width={18} color={themeValue.text} />
 					<TextInput

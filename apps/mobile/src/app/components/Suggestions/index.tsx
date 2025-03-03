@@ -4,7 +4,8 @@ import { emojiSuggestionActions, selectAllChannels, selectAllEmojiSuggestion, se
 import { MentionDataProps, compareObjects, normalizeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { FC, memo, useEffect, useMemo, useState } from 'react';
-import { FlatList, LayoutAnimation, Pressable, View } from 'react-native';
+import { LayoutAnimation, Pressable, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { EMessageActionType } from '../../screens/home/homedrawer/enums';
 import { IMessageActionNeedToResolve } from '../../screens/home/homedrawer/types';
@@ -82,7 +83,12 @@ const Suggestions: FC<MentionSuggestionsProps> = memo(
 				keyExtractor={(_, index) => `${index}_mention_suggestion`}
 				onEndReachedThreshold={0.1}
 				keyboardShouldPersistTaps="handled"
-				windowSize={10}
+				windowSize={5}
+				initialNumToRender={5}
+				maxToRenderPerBatch={10}
+				updateCellsBatchingPeriod={10}
+				decelerationRate={'fast'}
+				disableVirtualization={true}
 				removeClippedSubviews={true}
 				getItemLayout={(_, index) => ({
 					length: size.s_50,

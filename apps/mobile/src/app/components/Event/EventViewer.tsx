@@ -1,13 +1,12 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectAllTextChannel, selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
-import React, { useMemo, useRef, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonBottomSheet, MezonTab } from '../../componentUI';
+import { MezonTab } from '../../componentUI';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { EventDetail } from './EventDetail';
 import { EventItem } from './EventItem';
@@ -33,8 +32,6 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 		);
 	}, [allEventManagement, allThreadChannelPrivateIds]);
 
-	const [currentEvent, setCurrentEvent] = useState<EventManagementEntity>();
-	const bottomSheetDetail = useRef<BottomSheetModal>(null);
 	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
 		EPermission.administrator,
 		EPermission.manageClan,
@@ -46,8 +43,17 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
 	function handlePress(event: EventManagementEntity) {
-		setCurrentEvent(event);
-		bottomSheetDetail?.current.present();
+		const data = {
+			heightFitContent: true,
+			children: (
+				<MezonTab
+					views={[<EventDetail event={event} />, <EventMember event={event} />]}
+					titles={['Event Info', 'Interested']}
+					isBottomSheet={isTabletLandscape}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}
 
 	return (
@@ -80,14 +86,6 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 					</Text>
 				</View>
 			)}
-
-			<MezonBottomSheet ref={bottomSheetDetail}>
-				<MezonTab
-					views={[<EventDetail event={currentEvent} eventDetailRef={bottomSheetDetail} />, <EventMember event={currentEvent} />]}
-					titles={['Event Info', 'Interested']}
-					isBottomSheet={isTabletLandscape}
-				/>
-			</MezonBottomSheet>
 		</View>
 	);
 }

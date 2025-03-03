@@ -55,7 +55,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 			return <Icons.Hashtag defaultSize="w-5 h-5 -mt-1 min-w-5" />;
 		}
 
-		if (channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
+		if (channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			if (isPrivate) {
 				return <Icons.SpeakerLocked defaultSize="w-5 h-5 min-w-5" />;
 			}

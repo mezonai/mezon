@@ -1,5 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, UsersClanEntity } from '@mezon/store-mobile';
+import { DirectEntity } from '@mezon/store-mobile';
+import { UsersClanEntity } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';

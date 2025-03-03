@@ -14,6 +14,7 @@ import {
 	ETypeLinkMedia,
 	IExtendedMessage,
 	IMessageWithUser,
+	MEZON_MENTIONS_COPY_KEY,
 	TypeMessage,
 	addMention,
 	convertTimeString,
@@ -21,7 +22,7 @@ import {
 	isValidEmojiData
 } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import { memo, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { MessageLine } from './MessageLine';
 import { MessageLineSystem } from './MessageLineSystem';
@@ -65,9 +66,23 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 	const handleCopyMessage = useCallback(
 		(event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => {
 			if (message?.content && message?.mentions) {
-				const key = 'text/mezon-mentions';
+				const key = MEZON_MENTIONS_COPY_KEY;
 				const copyData = {
-					message: message,
+					message: {
+						...message,
+						mentions:
+							message?.mentions
+								?.map((mention) => {
+									if ((mention?.s || 0) >= startIndex && mention?.e && mention?.e <= endIndex) {
+										return {
+											...mention,
+											s: (mention?.s || 0) - startIndex,
+											e: mention?.e - startIndex
+										};
+									}
+								})
+								?.filter(Boolean) || []
+					},
 					startIndex: startIndex,
 					endIndex: endIndex
 				};

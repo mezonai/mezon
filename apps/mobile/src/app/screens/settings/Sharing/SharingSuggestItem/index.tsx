@@ -11,7 +11,7 @@ type SharingSuggestItemProps = {
 	onChooseItem: (item: any) => void;
 };
 const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestItemProps) => {
-	const parentChannel = useAppSelector((state) => selectChannelById(state, item?.parrent_id || ''));
+	const parentChannel = useAppSelector((state) => selectChannelById(state, item?.parent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 
 	const handleChooseItem = () => {

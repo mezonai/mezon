@@ -39,7 +39,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		} as IAuthLoaderData;
 	} catch (error) {
 		const redirectTo = getRedirectTo(initialPath);
-		const redirect = redirectTo ? `/login?redirect=${redirectTo}` : '/login';
+		const redirect = redirectTo ? `/login?redirect=${redirectTo}` : '';
 		return {
 			isLogin: false,
 			redirect: redirect

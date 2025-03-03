@@ -25,10 +25,10 @@ export const size = {
 	h9: verticalScale(9),
 	input: verticalScale(18),
 	regular: verticalScale(17),
-	medium: verticalScale(14.5),
+	medium: verticalScale(15.5),
 	small: verticalScale(12),
 	tiny: verticalScale(9),
-	label: verticalScale(16),
+	label: verticalScale(17),
 
 	s_2: verticalScale(2),
 	s_8: verticalScale(8),

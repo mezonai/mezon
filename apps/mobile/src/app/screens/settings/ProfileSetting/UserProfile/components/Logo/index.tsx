@@ -10,7 +10,7 @@ import { MezonImagePicker } from '../../../../../../componentUI';
 import { style } from './styles';
 
 export const DirectMessageLogo = memo(() => {
-	const { themeValue, theme } = useTheme();
+	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const logoCustom = useSelector(selectLogoCustom);
 	const dispatch = useAppDispatch();
@@ -38,7 +38,7 @@ export const DirectMessageLogo = memo(() => {
 				defaultValue={logoCustom}
 				height={size.s_50}
 				width={size.s_50}
-				localValue={!logoCustom && (theme === 'dark' ? <LogoMezonDark /> : <LogoMezonLight />)}
+				localValue={!logoCustom && (themeBasic === 'dark' ? <LogoMezonDark /> : <LogoMezonLight />)}
 				onLoad={handleOnLoad}
 				autoUpload
 			/>

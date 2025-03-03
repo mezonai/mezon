@@ -51,7 +51,6 @@ const SidebarLogoItem = () => {
 		openRightClickModal();
 	};
 	const handleClickToJoinClan = () => {
-		console.log('handleClickToJoinClan');
 		dispatch(clansActions.joinClan({ clanId: '0' }));
 	};
 	const { quantityPendingRequest } = useFriends();

@@ -8,8 +8,7 @@ import { style } from './styles';
 
 type AppThemeScreen = typeof APP_SCREEN.SETTINGS.APP_THEME;
 export default function AppThemeSetting({ navigation }: SettingScreenProps<AppThemeScreen>) {
-	const systemTheme = Appearance.getColorScheme();
-	const { themeValue, setTheme, theme } = useTheme();
+	const { themeValue, setTheme, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['appThemeSetting']);
 
@@ -53,7 +52,7 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 
 	return (
 		<View style={styles.container}>
-			<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeOptions.findIndex((t) => t.value === theme)} />
+			<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeOptions.findIndex((t) => t.value === themeBasic)} />
 		</View>
 	);
 }

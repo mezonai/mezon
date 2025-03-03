@@ -1,78 +1,45 @@
-import { useAuth } from '@mezon/core';
-import { Colors, useTheme } from '@mezon/mobile-ui';
-import { giveCoffeeActions, useAppDispatch, useAppSelector } from '@mezon/store';
-import { selectAllChannelMembers, selectAppChannelById } from '@mezon/store-mobile';
+import { useClans } from '@mezon/core';
+import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { getAuthState } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
-import { safeJSONParse } from 'mezon-js';
-import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { Chase } from 'react-native-animated-spinkit';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import { WebView } from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import { style } from './styles';
-const compareHost = (url1: string, url2: string) => {
-	try {
-		const parsedURL1 = new URL(url1);
-		const parsedURL2 = new URL(url2);
-		return parsedURL1.hostname === parsedURL2.hostname;
-	} catch (error) {
-		return false;
-	}
-};
 
 const ChannelAppScreen = memo(({ channelId }: { channelId: string }) => {
-	const { themeValue } = useTheme();
+	const { themeValue, theme } = useTheme();
 	const styles = style(themeValue);
+	const authState = useSelector(getAuthState);
+	const session = JSON.stringify(authState.session);
 	const [loading, setLoading] = useState(true);
-	const appChannel = useSelector(selectAppChannelById(channelId));
-	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, channelId));
-	const webViewRef = useRef<WebView>();
-	const currentUser = useAuth();
-	const dispatch = useAppDispatch();
+	const { currentClanId } = useClans();
 
-	const miniAppDataHash = useMemo(() => {
-		return `userChannels=${JSON.stringify(userChannels)}`;
-	}, [userChannels]);
+	const uri = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${currentClanId}/channels/${channelId}`;
 
-	const onMessage = useCallback(
-		(event: WebViewMessageEvent) => {
-			const { data } = event.nativeEvent;
-			const eventData = safeJSONParse(data ?? '{}');
-			const origin = eventData.origin;
-
-			if (appChannel?.url && compareHost(origin, appChannel?.url ?? '')) {
-				console.log('[MEZON] < ', eventData);
-
-				if (eventData?.eventType === 'PING') {
-					webViewRef.current?.postMessage(JSON.stringify({ eventType: 'PONG', eventData: { message: 'PONG' } }));
-					webViewRef.current?.postMessage(JSON.stringify({ eventType: 'CURRENT_USER_INFO', eventData: currentUser?.userProfile }));
-				}
-
-				if (eventData?.eventType === 'SEND_TOKEN') {
-					const { amount, note, receiver_id, extra_attribute } = (eventData.eventData || {}) as any;
-					const tokenEvent: ApiTokenSentEvent = {
-						sender_id: currentUser.userId as string,
-						sender_name: currentUser?.userProfile?.user?.username as string,
-						receiver_id,
-						amount,
-						note,
-						extra_attribute
-					};
-					dispatch(giveCoffeeActions.sendToken(tokenEvent))
-						.unwrap()
-						.then((response) => {
-							webViewRef.current?.postMessage(JSON.stringify({ eventType: 'SEND_TOKEN_RESPONSE', eventData: response }));
-						})
-						.catch((err) => {
-							console.error(err);
-							webViewRef.current?.postMessage(JSON.stringify({ eventType: 'SEND_TOKEN_RESPONSE', eventData: err }));
-						});
-				}
-			}
-		},
-		[appChannel?.url, currentUser, dispatch, webViewRef]
-	);
+	const injectedJS = `
+    (function() {
+	const authData = {
+		"loadingStatus":JSON.stringify("loaded"),
+		"session": JSON.stringify(${session}),
+		"isLogin": "true",
+		"_persist": JSON.stringify({"version":-1,"rehydrated":true})
+	};
+    localStorage.setItem('persist:auth', JSON.stringify(authData));
+    })();
+	true;
+	(function() {
+		const persistApp = JSON.parse(localStorage.getItem('persist:apps'));
+		if (persistApp) {
+			persistApp.theme = JSON.stringify("${theme}");
+			persistApp.themeApp = JSON.stringify("${theme}");
+			localStorage.setItem('persist:apps', JSON.stringify(persistApp));
+		}
+	})();
+	true;
+  `;
 
 	return (
 		<View style={styles.container}>
@@ -92,28 +59,20 @@ const ChannelAppScreen = memo(({ channelId }: { channelId: string }) => {
 					<Chase color={'#cdcdcd'} />
 				</View>
 			)}
-			<StatusBar barStyle="light-content" backgroundColor={Colors.bgCharcoal} />
-			{!!appChannel?.url && (
-				<WebView
-					ref={webViewRef}
-					originWhitelist={['*']}
-					source={{
-						uri: appChannel?.url + `#${miniAppDataHash}`
-					}}
-					style={styles.container}
-					mixedContentMode={'always'}
-					onShouldStartLoadWithRequest={() => true}
-					javaScriptEnabled={true}
-					startInLoadingState={true}
-					bounces={false}
-					onMessage={onMessage}
-					removeClippedSubviews={true}
-					onLoadEnd={async () => {
-						await sleep(500);
-						setLoading(false);
-					}}
-				/>
-			)}
+			<StatusBar barStyle={theme === ThemeModeBase.LIGHT ? 'dark-content' : 'light-content'} backgroundColor={themeValue.charcoal} />
+			<WebView
+				source={{
+					uri: uri
+				}}
+				style={styles.container}
+				injectedJavaScriptBeforeContentLoaded={injectedJS}
+				javaScriptEnabled={true}
+				nestedScrollEnabled={true}
+				onLoadEnd={async () => {
+					await sleep(500);
+					setLoading(false);
+				}}
+			/>
 		</View>
 	);
 });

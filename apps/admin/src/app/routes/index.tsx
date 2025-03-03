@@ -48,18 +48,10 @@ export const Routes = () => {
 		() =>
 			createBrowserRouter([
 				{
-					path: '',
+					path: '/developers',
 					loader: loaderWithStore(appLoader),
 					element: <AppLayout />,
 					children: [
-						{
-							path: '',
-							element: <InitialRoutes />
-						},
-						{
-							path: 'login',
-							element: <Login />
-						},
 						{
 							path: '',
 							loader: loaderWithStore(authLoader),

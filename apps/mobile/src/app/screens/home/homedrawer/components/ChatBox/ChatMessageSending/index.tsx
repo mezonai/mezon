@@ -165,7 +165,7 @@ export const ChatMessageSending = memo(
 				await addMemberToThread(currentChannel, usersNotExistingInThread);
 			}
 
-			if (currentChannel?.parrent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
+			if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
 				await dispatch(
 					threadsActions.updateActiveCodeThread({ channelId: currentChannel.channel_id ?? '', activeCode: ThreadStatus.joined })
 				);

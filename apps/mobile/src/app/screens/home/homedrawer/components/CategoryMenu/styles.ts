@@ -26,6 +26,7 @@ export const style = ({ textStrong }: Attributes) =>
 		},
 
 		container: {
+			flex: 1,
 			padding: Metrics.size.xl,
 			paddingTop: 0
 		}

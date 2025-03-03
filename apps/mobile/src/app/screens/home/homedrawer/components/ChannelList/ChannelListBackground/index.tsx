@@ -5,6 +5,7 @@ import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { DeviceEventEmitter, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
+import ClanMenu from '../../ClanMenu/ClanMenu';
 import { style } from './styles';
 
 const ChannelListBackground = () => {
@@ -18,7 +19,10 @@ const ChannelListBackground = () => {
 	const bannerToShow = !currentClan?.id || currentClan?.id === '0' ? previousBanner.current : currentClan?.banner;
 
 	const handlePress = useCallback(() => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_MENU_CLAN_CHANNEL);
+		const data = {
+			children: <ClanMenu />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}, []);
 
 	if (!bannerToShow) return null;

@@ -243,6 +243,7 @@ export const RecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMessage
 	return (
 		<View>
 			<ModalConfirmRecord visible={isConfirmRecordModalVisible} onBack={handleBackRecord} onConfirm={handleQuitRecord} />
+			{/*TODO: Refactor this component*/}
 			<MezonBottomSheet snapPoints={['50%']} ref={recordingBsRef} onBackdropPress={handleBackdropBS} enablePanDownToClose={false}>
 				<View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: size.s_40, paddingVertical: size.s_20 }}>
 					{isPreviewRecord && recordUrl ? (

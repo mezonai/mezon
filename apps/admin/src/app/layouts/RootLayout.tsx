@@ -1,7 +1,7 @@
 import { selectIsLogin } from '@mezon/store';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Navigate, Outlet, useLoaderData, useParams } from 'react-router-dom';
+import { Outlet, useLoaderData, useParams } from 'react-router-dom';
 import { appDetailTabs } from '../common/constants/appDetailTabs';
 import { tabs } from '../common/constants/tabSideBar';
 import AppDetailLeftMenu from '../components/AppDetailLeftMenu';
@@ -29,9 +29,19 @@ const RootLayout: React.FC = () => {
 		}
 		return tabs;
 	}, [param]);
-
+	const STATE = React.useMemo(() => {
+		const randomState = Math.random().toString(36).substring(2, 15);
+		sessionStorage.setItem('oauth_state', randomState);
+		return randomState;
+	}, []);
 	if (!isLogin) {
-		return <Navigate to={redirect || '/login'} replace />;
+		const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
+		const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;
+		const REDIRECT_URI = encodeURIComponent(process.env.NX_CHAT_APP_OAUTH2_REDIRECT_URI as string);
+		const RESPONSE_TYPE = process.env.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE;
+		const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
+		const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
+		return (window.location.href = authUrl);
 	}
 
 	return (

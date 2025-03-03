@@ -3,7 +3,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { generateMeetToken, handleParticipantMeetState, selectChannelById2, voiceActions } from '@mezon/store';
 import { selectClanById, useAppDispatch } from '@mezon/store-mobile';
 import { ParticipantMeetState } from '@mezon/utils';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, DeviceEventEmitter, PanResponder } from 'react-native';
 import { useSelector } from 'react-redux';
 import ChannelVoice from '../ChannelVoice';
@@ -183,4 +183,4 @@ const ChannelVoicePopup = () => {
 	);
 };
 
-export default ChannelVoicePopup;
+export default memo(ChannelVoicePopup, () => true);

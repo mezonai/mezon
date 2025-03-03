@@ -51,7 +51,7 @@
         }
       },
       "win": {
-        "icon": "apps/desktop/src/assets/desktop-taskbar-256x256.ico",
+        "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
         "target": [
           "nsis",
           "portable",
@@ -195,7 +195,7 @@
           }
         },
         "win": {
-          "icon": "apps/desktop/src/assets/desktop-taskbar-256x256.ico",
+          "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
           "target": [
             "nsis",
             "portable",
@@ -294,7 +294,7 @@
           }
         },
         "win": {
-          "icon": "apps/desktop/src/assets/desktop-taskbar-256x256.ico",
+          "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
           "target": [
             "nsis",
             "portable",

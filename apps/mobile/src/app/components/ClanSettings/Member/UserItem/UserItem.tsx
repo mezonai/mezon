@@ -1,6 +1,7 @@
 import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectAllRolesClan, selectMemberClanByUserId2, useAppSelector, UsersClanEntity } from '@mezon/store-mobile';
+import { selectAllRolesClan, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
+import { UsersClanEntity } from '@mezon/utils';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { MezonAvatar } from '../../../../componentUI';

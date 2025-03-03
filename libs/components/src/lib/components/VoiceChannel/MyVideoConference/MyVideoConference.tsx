@@ -25,10 +25,9 @@ interface MyVideoConferenceProps {
 	channel?: ChannelsEntity;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
-	onScreenShare: (enabled: boolean) => void;
 }
 
-export function MyVideoConference({ channel, onLeaveRoom, onFullScreen, onScreenShare }: MyVideoConferenceProps) {
+export function MyVideoConference({ channel, onLeaveRoom, onFullScreen }: MyVideoConferenceProps) {
 	const lastAutoFocusedScreenShareTrack = useRef<TrackReferenceOrPlaceholder | null>(null);
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -228,7 +227,7 @@ export function MyVideoConference({ channel, onLeaveRoom, onFullScreen, onScreen
 							isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
 						}`}
 					>
-						<ControlBar onLeaveRoom={onLeaveRoom} onFullScreen={onFullScreen} onScreenShare={onScreenShare} />
+						<ControlBar onLeaveRoom={onLeaveRoom} onFullScreen={onFullScreen} />
 					</div>
 				</div>
 			</LayoutContextProvider>

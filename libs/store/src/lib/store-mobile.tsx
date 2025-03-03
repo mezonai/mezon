@@ -33,6 +33,7 @@ import { canvasReducer } from './canvas/canvas.slice';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
+import { channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
 import { hashtagDmReducer } from './channels/hashtagDm.slice';
 import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
@@ -40,6 +41,7 @@ import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { clanMembersMetaReducer } from './clanMembers/clan.members.meta';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
+import { directMembersMetaReducer } from './direct/direct.members.meta';
 import { directMetaReducer } from './direct/directmeta.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
@@ -48,6 +50,7 @@ import { E2EE_FEATURE_KEY, e2eeReducer } from './e2ee/e2ee.slice';
 import { errorListenerMiddleware } from './errors/errors.listener';
 import { ERRORS_FEATURE_KEY, errorsReducer } from './errors/errors.slice';
 import { eventManagementReducer } from './eventManagement/eventManagement.slice';
+import { fcmReducer } from './fcm/fcm.slice';
 import { popupForwardReducer } from './forwardMessage/forwardMessage.slice';
 import { giveCoffeeReducer } from './giveCoffee/giveCoffee.slice';
 import { walletLedgerReducer } from './giveCoffee/historyTransaction.slice';
@@ -56,7 +59,6 @@ import { notifiReactMessageReducer } from './notificationSetting/notificationRea
 import { channelCategorySettingReducer, defaultNotificationCategoryReducer } from './notificationSetting/notificationSettingCategory.slice';
 import { notificationSettingReducer } from './notificationSetting/notificationSettingChannel.slice';
 import { defaultNotificationClanReducer } from './notificationSetting/notificationSettingClan.slice';
-import { ONBOARDING_FEATURE_KEY, onboardingReducer } from './onboarding/onboarding.slice';
 import { permissionRoleChannelReducer } from './permissionChannel/permissionRoleChannel.slice';
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
@@ -71,7 +73,7 @@ import { toastListenerMiddleware } from './toasts/toasts.listener';
 import { TOASTS_FEATURE_KEY, toastsReducer } from './toasts/toasts.slice';
 import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { USER_STATUS_API_FEATURE_KEY, userStatusAPIReducer } from './userstatus/userstatusAPI.slice';
-import { voiceReducer } from './voice/voice.slice';
+import { VOICE_FEATURE_KEY, voiceReducer } from './voice/voice.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
 const persistedReducer = persistReducer(
 	{
@@ -350,6 +352,15 @@ const persistListChannelRenderReducer = persistReducer(
 	listChannelRenderReducer
 );
 
+const persistedVoiceReducer = persistReducer(
+	{
+		key: VOICE_FEATURE_KEY,
+		storage,
+		whitelist: ['voiceInfo']
+	},
+	voiceReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	account: persistAccountReducer,
@@ -365,6 +376,7 @@ const reducer = {
 	channelMembers: persistedChannelMembersReducer,
 	listusersbyuserid: persistedListUsersByUserReducer,
 	threads: persistedThreadReducer,
+	topicdiscussions: persistedTopicReducer,
 	[SEARCH_MESSAGES_FEATURE_KEY]: searchMessageReducer,
 	messages: persistedMessageReducer,
 	categories: persistedCatReducer,
@@ -390,14 +402,16 @@ const reducer = {
 	isshow: IsShowReducer,
 	forwardmessage: popupForwardReducer,
 	notification: notificationReducer,
-	voice: voiceReducer,
+	voice: persistedVoiceReducer,
 	usersstream: usersStreamReducer,
 	videostream: videoStreamReducer,
+	channelApp: channelAppReducer,
 	canvas: canvasReducer,
 	canvasapi: canvasAPIReducer,
 	activitiesapi: activitiesAPIReducer,
 	auditlog: auditLogReducer,
 	audiocall: audioCallReducer,
+	fcm: fcmReducer,
 	auditlogfilter: auditLogFilterReducer,
 	references: referencesReducer,
 	reaction: reactionReducer,
@@ -414,12 +428,11 @@ const reducer = {
 	giveCoffee: giveCoffeeReducer,
 	settingClanChannel: settingChannelReducer,
 	clanMembersMeta: clanMembersMetaReducer,
-	[ONBOARDING_FEATURE_KEY]: onboardingReducer,
+	directmembersmeta: directMembersMetaReducer,
 	dmcall: DMCallReducer,
 	[USER_STATUS_API_FEATURE_KEY]: userStatusAPIReducer,
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
-	topicdiscussions: persistedTopicReducer,
 	walletLedger: walletLedgerReducer,
 	[CHANNEL_LIST_RENDER]: persistListChannelRenderReducer
 };

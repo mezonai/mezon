@@ -18,7 +18,7 @@ export default function setupAutoUpdates() {
 
 	ipcMain.handle(INSTALL_UPDATE, () => {
 		new Notification({
-			icon: 'apps/desktop/src/assets/desktop-taskbar-256x256.ico',
+			icon: 'apps/desktop/src/assets/desktop-taskbar.ico',
 			title: 'Mezon Installation',
 			body: `Please wait while Mezon is installing. The app will open automatically.`
 		}).show();

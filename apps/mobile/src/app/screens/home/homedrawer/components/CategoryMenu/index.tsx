@@ -1,14 +1,13 @@
-import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannelId, selectCurrentClan } from '@mezon/store-mobile';
 import { EPermission, ICategoryChannel } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
-import React, { MutableRefObject } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
@@ -16,16 +15,14 @@ import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonMenu
 import { style } from './styles';
 
 interface ICategoryMenuProps {
-	inviteRef: MutableRefObject<any>;
 	category: ICategoryChannel;
 }
 
 type StackMenuClanScreen = typeof APP_SCREEN.MENU_CLAN.STACK;
-export default function CategoryMenu({ category, inviteRef }: ICategoryMenuProps) {
+export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	const { t } = useTranslation(['categoryMenu']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { dismiss } = useBottomSheetModal();
 	const currentClan = useSelector(selectCurrentClan);
 	const currentChanelId = useSelector(selectCurrentChannelId);
 	const [isCanManageChannel] = usePermissionChecker([EPermission.manageChannel], currentChanelId ?? '');
@@ -43,8 +40,8 @@ export default function CategoryMenu({ category, inviteRef }: ICategoryMenuProps
 		{
 			title: t('menu.inviteMenu.invite'),
 			onPress: () => {
-				inviteRef?.current?.present?.();
-				dismiss();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL);
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
 			icon: <Icons.GroupPlusIcon color={themeValue.textStrong} />
 		}
@@ -67,7 +64,7 @@ export default function CategoryMenu({ category, inviteRef }: ICategoryMenuProps
 		{
 			title: t('menu.organizationMenu.edit'),
 			onPress: () => {
-				dismiss();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
 					screen: APP_SCREEN.MENU_CLAN.CATEGORY_SETTING,
 					params: {
@@ -81,7 +78,7 @@ export default function CategoryMenu({ category, inviteRef }: ICategoryMenuProps
 		{
 			title: t('menu.organizationMenu.createChannel'),
 			onPress: () => {
-				dismiss();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
 					screen: APP_SCREEN.MENU_CLAN.CREATE_CHANNEL,
 					params: {

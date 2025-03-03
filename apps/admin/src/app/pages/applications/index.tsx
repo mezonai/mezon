@@ -1,5 +1,4 @@
-import { useAppNavigation } from '@mezon/core';
-import { authActions, fetchApplications, getApplicationDetail, selectAllApps, selectIsLogin, selectTheme, useAppDispatch } from '@mezon/store';
+import { authActions, fetchApplications, getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { Dropdown } from 'flowbite-react';
 import isElectron from 'is-electron';
@@ -11,9 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateAppPopup from './CreateAppPopup';
 
 function ApplicationsPage() {
-	const { navigate } = useAppNavigation();
 	const dispatch = useAppDispatch();
-	const isLogin = useSelector(selectIsLogin);
 	const deepLinkUrl = safeJSONParse(localStorage.getItem('deepLinkUrl') as string);
 
 	const [isShowCreatePopup, setIsShowCreatePopup] = useState(false);
@@ -28,12 +25,6 @@ function ApplicationsPage() {
 			localStorage.removeItem('deepLinkUrl');
 		}
 	}, [deepLinkUrl, dispatch]);
-
-	useEffect(() => {
-		if (isLogin) {
-			navigate('/applications');
-		}
-	}, [isLogin, navigate]);
 
 	useEffect(() => {
 		dispatch(fetchApplications({}));

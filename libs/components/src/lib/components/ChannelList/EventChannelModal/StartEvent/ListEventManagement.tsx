@@ -8,10 +8,11 @@ type ListEventManagementProps = {
 	onOpenDetailItem: (status: boolean) => void;
 	openModelUpdate: () => void;
 	onUpdateEventId: (id: string) => void;
+	onClose: () => void;
 };
 
 const ListEventManagement = (props: ListEventManagementProps) => {
-	const { allEventManagement, onOpenDetailItem, openModelUpdate, onUpdateEventId } = props;
+	const { allEventManagement, onOpenDetailItem, openModelUpdate, onUpdateEventId, onClose } = props;
 	const allThreadChannelPrivate = useSelector(selectAllTextChannel);
 	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
 
@@ -35,6 +36,7 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 						openModelUpdate={openModelUpdate}
 						onEventUpdateId={onUpdateEventId}
 						textChannelId={event.channel_id}
+						onClose={onClose}
 					/>
 				</div>
 			);

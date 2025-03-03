@@ -273,8 +273,14 @@ export const onboardingSlice = createSlice({
 		addGreeting: (state, action: PayloadAction<ApiOnboardingContent>) => {
 			state.formOnboarding.greeting = action.payload;
 		},
-		addRules: (state, action: PayloadAction<RuleType>) => {
-			state.formOnboarding.rules.push(action.payload);
+		addRules: (state, action: PayloadAction<{ rule: RuleType; update?: number }>) => {
+			const { rule, update } = action.payload;
+
+			if (update !== undefined) {
+				state.formOnboarding.rules[update] = rule;
+				return;
+			}
+			state.formOnboarding.rules.push(rule);
 		},
 		addQuestion: (state, action: PayloadAction<{ data: ApiOnboardingContent; update?: number }>) => {
 			const { data, update } = action.payload;
@@ -284,8 +290,14 @@ export const onboardingSlice = createSlice({
 			}
 			state.formOnboarding.questions.push(data);
 		},
-		addMission: (state, action: PayloadAction<ApiOnboardingContent>) => {
-			state.formOnboarding.task.push(action.payload);
+		addMission: (state, action: PayloadAction<{ data: ApiOnboardingContent; update?: number }>) => {
+			const { data, update } = action.payload;
+
+			if (update !== undefined) {
+				state.formOnboarding.task[update] = data;
+				return;
+			}
+			state.formOnboarding.task.push(data);
 		},
 		removeTempTask: (state, action: PayloadAction<{ idTask: number; type: EGuideType }>) => {
 			const removeIndex = action.payload.idTask;
@@ -396,23 +408,29 @@ export const onboardingSlice = createSlice({
 				};
 				const { content, clan_id } = action.payload;
 				if (clan_id) {
+					const onboardingClan: OnboardingClanType = {
+						greeting: state.listOnboarding[clan_id].greeting,
+						mission: state.listOnboarding[clan_id].mission,
+						question: state.listOnboarding[clan_id].question,
+						rule: state.listOnboarding[clan_id].rule
+					};
 					content.map((onboardingItem) => {
 						switch (onboardingItem.guide_type) {
 							case EGuideType.GREETING:
-								state.listOnboarding[clan_id].greeting = onboardingItem;
+								onboardingClan.greeting = onboardingItem;
 								break;
 							case EGuideType.RULE:
-								state.listOnboarding[clan_id].rule.push({
+								onboardingClan.rule.push({
 									...onboardingItem
 								});
 								break;
 							case EGuideType.QUESTION:
-								state.listOnboarding[clan_id].question.push({
+								onboardingClan.question.push({
 									...onboardingItem
 								});
 								break;
 							case EGuideType.TASK:
-								state.listOnboarding[clan_id].mission.push({
+								onboardingClan.mission.push({
 									...onboardingItem
 								});
 								break;
@@ -420,6 +438,7 @@ export const onboardingSlice = createSlice({
 								break;
 						}
 					});
+					state.listOnboarding[clan_id] = onboardingClan;
 				}
 			})
 			.addCase(removeOnboardingTask.fulfilled, (state, action) => {

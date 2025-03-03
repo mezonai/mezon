@@ -1,11 +1,22 @@
 import { useReference } from '@mezon/core';
-import { CameraIcon, CheckIcon, PlayIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, CameraIcon, CheckIcon, PlayIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import { CameraRoll, PhotoIdentifier, iosRefreshGallerySelection, iosRequestReadWriteGalleryPermission } from '@react-native-camera-roll/camera-roll';
 import { iosReadGalleryPermission } from '@react-native-camera-roll/camera-roll/src/CameraRollIOSPermission';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Dimensions, Image, Linking, PermissionsAndroid, Platform, TouchableOpacity, View } from 'react-native';
+import {
+	ActivityIndicator,
+	Alert,
+	DeviceEventEmitter,
+	Dimensions,
+	Image,
+	Linking,
+	PermissionsAndroid,
+	Platform,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import RNFS from 'react-native-fs';
 import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
@@ -23,6 +34,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
+	const [currentAlbums, setCurrentAlbums] = useState<string>('All');
 	const [pageInfo, setPageInfo] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const dispatch = useAppDispatch();
@@ -41,12 +53,12 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		return () => {
 			timerRef?.current && clearTimeout(timerRef.current);
 		};
-	}, []);
+	}, [currentAlbums]);
 
 	const checkAndRequestPermissions = async () => {
 		const hasPermission = await requestPermission();
 		if (hasPermission) {
-			loadPhotos();
+			loadPhotos(currentAlbums);
 		} else {
 			await requestPermission();
 		}
@@ -71,7 +83,10 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		try {
 			if (Platform.OS === 'android') {
 				if (Platform.Version >= 33) {
-					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasImagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasVideoPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO);
+
+					return hasImagePermission && hasVideoPermission;
 				} else {
 					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 				}
@@ -94,21 +109,24 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			try {
 				// For Android 13+ (API 33+)
 				if (Platform.Version >= 33) {
-					const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, {
-						title: 'Photo Library Access',
-						message: 'This app needs access to your photo library.',
-						buttonNeutral: 'Ask Me Later',
-						buttonNegative: 'Cancel',
-						buttonPositive: 'OK'
-					});
+					const granted = await PermissionsAndroid.requestMultiple([
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO
+					]);
 
 					timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
 
-					if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+					if (
+						granted['android.permission.READ_MEDIA_IMAGES'] !== PermissionsAndroid.RESULTS.GRANTED ||
+						granted['android.permission.READ_MEDIA_VIDEO'] !== PermissionsAndroid.RESULTS.GRANTED
+					) {
 						alertOpenSettings();
 					}
 
-					return granted === PermissionsAndroid.RESULTS.GRANTED;
+					return (
+						granted['android.permission.READ_MEDIA_IMAGES'] === PermissionsAndroid.RESULTS.GRANTED &&
+						granted['android.permission.READ_MEDIA_VIDEO'] === PermissionsAndroid.RESULTS.GRANTED
+					);
 				}
 				// For Android 12 and below
 				else {
@@ -159,7 +177,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		}
 	};
 
-	const loadPhotos = async (after = null) => {
+	const loadPhotos = async (album, after = null) => {
 		if (loading) return;
 
 		setLoading(true);
@@ -168,7 +186,9 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				first: 30,
 				assetType: 'All',
 				...(!!pageInfo && !!after && { after: after }),
-				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation']
+				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
+				groupTypes: album === 'All' ? 'All' : 'Album',
+				groupName: album === 'All' ? null : album
 			});
 			setPhotos(after ? [...photos, ...res.edges] : res.edges);
 			setPageInfo(res.page_info);
@@ -178,6 +198,15 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			setLoading(false);
 		}
 	};
+
+	useEffect(() => {
+		const showKeyboard = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SELECT_ALBUM, (value) => {
+			setCurrentAlbums(value);
+		});
+		return () => {
+			showKeyboard.remove();
+		};
+	}, []);
 
 	const renderItem = ({ item }) => {
 		if (item?.isUseCamera) {
@@ -298,7 +327,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 
 	const handleLoadMore = async () => {
 		if (pageInfo?.has_next_page) {
-			await loadPhotos(pageInfo.end_cursor);
+			await loadPhotos(currentAlbums, pageInfo.end_cursor);
 		}
 	};
 

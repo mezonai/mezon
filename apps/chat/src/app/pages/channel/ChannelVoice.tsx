@@ -2,7 +2,7 @@ import { LiveKitRoom } from '@livekit/components-react';
 
 import '@livekit/components-styles';
 import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
-import { useAuth } from '@mezon/core';
+import { useAppParams, useAuth } from '@mezon/core';
 import {
 	generateMeetToken,
 	getStoreAsync,
@@ -12,6 +12,7 @@ import {
 	selectIsShowSettingFooter,
 	selectShowCamera,
 	selectShowMicrophone,
+	selectTokenJoinVoice,
 	selectVoiceFullScreen,
 	selectVoiceInfo,
 	selectVoiceJoined,
@@ -26,8 +27,8 @@ import { useSelector } from 'react-redux';
 
 const ChannelVoice = memo(
 	() => {
-		const tokenRef = useRef('');
 		const isJoined = useSelector(selectVoiceJoined);
+		const token = useSelector(selectTokenJoinVoice);
 		const voiceInfo = useSelector(selectVoiceInfo);
 		const [loading, setLoading] = useState<boolean>(false);
 		const dispatch = useAppDispatch();
@@ -74,7 +75,7 @@ const ChannelVoice = memo(
 					}
 					await participantMeetState(ParticipantMeetState.JOIN, currentChannel?.clan_id as string, currentChannel?.channel_id as string);
 					dispatch(voiceActions.setJoined(true));
-					tokenRef.current = result;
+					dispatch(voiceActions.setToken(result));
 					dispatch(
 						voiceActions.setVoiceInfo({
 							clanId: currentClan?.clan_id as string,
@@ -84,11 +85,11 @@ const ChannelVoice = memo(
 						})
 					);
 				} else {
-					tokenRef.current = '';
+					dispatch(voiceActions.setToken(''));
 				}
 			} catch (err) {
 				console.error('Failed to generate token room:', err);
-				tokenRef.current = '';
+				dispatch(voiceActions.setToken(''));
 			} finally {
 				setLoading(false);
 			}
@@ -96,8 +97,6 @@ const ChannelVoice = memo(
 
 		const handleLeaveRoom = useCallback(async () => {
 			if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
-
-			tokenRef.current = '';
 			dispatch(voiceActions.resetVoiceSettings());
 			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
 		}, [dispatch, voiceInfo]);
@@ -117,26 +116,17 @@ const ChannelVoice = memo(
 			}
 		}, [dispatch]);
 
-		const handleScreenShare = useCallback(
-			(enabled: boolean) => {
-				if (enabled) {
-					dispatch(voiceActions.setFullScreen(false));
-				}
-				dispatch(voiceActions.setShowScreen(enabled));
-			},
-			[dispatch]
-		);
-
 		const isShow = isJoined && voiceInfo?.clanId === currentChannel?.clan_id && voiceInfo?.channelId === currentChannel?.channel_id;
 
 		const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
+		const { channelId } = useAppParams();
 
 		return (
 			<div
-				className={`${!isChannelMezonVoice || isShowSettingFooter.status ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
+				className={`${!isChannelMezonVoice || isShowSettingFooter.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
 				style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
 			>
-				{tokenRef.current === '' || !serverUrl ? (
+				{token === '' || !serverUrl ? (
 					<PreJoinVoiceChannel
 						channel={currentChannel || undefined}
 						roomName={currentChannel?.meeting_code}
@@ -155,20 +145,15 @@ const ChannelVoice = memo(
 						<LiveKitRoom
 							ref={containerRef}
 							id="livekitRoom"
-							key={tokenRef.current}
+							key={token}
 							className={`${!isShow ? 'hidden' : ''} ${isVoiceFullScreen ? '!fixed !inset-0 !z-50 !w-screen !h-screen' : ''}`}
 							audio={showMicrophone}
 							video={showCamera}
-							token={tokenRef.current}
+							token={token}
 							serverUrl={serverUrl}
 							data-lk-theme="default"
 						>
-							<MyVideoConference
-								channel={currentChannel || undefined}
-								onLeaveRoom={handleLeaveRoom}
-								onFullScreen={handleFullScreen}
-								onScreenShare={handleScreenShare}
-							/>
+							<MyVideoConference channel={currentChannel || undefined} onLeaveRoom={handleLeaveRoom} onFullScreen={handleFullScreen} />
 						</LiveKitRoom>
 					</>
 				)}

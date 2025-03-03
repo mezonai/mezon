@@ -183,7 +183,11 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		if (currentClanProfileValue?.imgUrl || currentClanProfileValue?.displayName) {
 			try {
 				dispatch(appActions.setLoadingMainMobile(true));
-				const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName?.trim() || username, imgUrl || '');
+				const response = await updateUserClanProfile(
+					selectedClan?.clan_id ?? '',
+					displayName?.trim() || username,
+					imgUrl || userProfile?.user?.avatar_url || ''
+				);
 				dispatch(appActions.setLoadingMainMobile(false));
 				if (response) {
 					Toast.show({

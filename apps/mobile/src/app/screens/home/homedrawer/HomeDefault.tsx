@@ -1,19 +1,16 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { STORAGE_IS_LAST_ACTIVE_TAB_DM, save } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_IS_LAST_ACTIVE_TAB_DM, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { setTimeout } from '@testing-library/react-native/build/helpers/timers';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, View } from 'react-native';
-import MezonBottomSheet from '../../../componentUI/MezonBottomSheet';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { DeviceEventEmitter, Keyboard, KeyboardAvoidingView, Platform, View } from 'react-native';
 import AgeRestrictedModal from '../../../components/AgeRestricted/AgeRestrictedModal';
 import NotificationSetting from '../../../components/NotificationSetting';
 import ShareLocationConfirmModal from '../../../components/ShareLocationConfirmModal';
 import ChannelApp from './ChannelApp';
 import ChannelMessagesWrapper from './ChannelMessagesWrapper';
 import { ChatBox } from './ChatBox';
-import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
 import PanelKeyboard from './PanelKeyboard';
 import { IModeKeyboardPicker } from './components';
@@ -32,9 +29,7 @@ const HomeDefault = React.memo((props: any) => {
 	const navigation = useNavigation<any>();
 	const panelKeyboardRef = useRef(null);
 
-	const isChannelApp = useMemo(() => {
-		return channelType === ChannelType.CHANNEL_TYPE_APP;
-	}, [channelType]);
+	const isChannelApp = channelType === ChannelType.CHANNEL_TYPE_APP;
 
 	const onShowKeyboardBottomSheet = useCallback((isShow: boolean, type?: IModeKeyboardPicker) => {
 		if (panelKeyboardRef?.current) {
@@ -50,17 +45,19 @@ const HomeDefault = React.memo((props: any) => {
 		});
 	}, [navigation, onShowKeyboardBottomSheet]);
 
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
-	const snapPoints = useMemo(() => ['50%'], []);
 	const [isShowSettingNotifyBottomSheet, setIsShowSettingNotifyBottomSheet] = useState<boolean>(false);
 
-	const openBottomSheet = () => {
+	const openBottomSheet = useCallback(() => {
 		Keyboard.dismiss();
 		setIsShowSettingNotifyBottomSheet(!isShowSettingNotifyBottomSheet);
 		timeoutRef.current = setTimeout(() => {
-			bottomSheetRef.current?.present();
+			const data = {
+				heightFitContent: true,
+				children: <NotificationSetting />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		}, 200);
-	};
+	}, []);
 
 	useEffect(() => {
 		save(STORAGE_IS_LAST_ACTIVE_TAB_DM, 'false');
@@ -73,7 +70,6 @@ const HomeDefault = React.memo((props: any) => {
 		<View style={[styles.homeDefault]}>
 			{Platform.OS === 'ios' && <LicenseAgreement />}
 
-			<DrawerListener />
 			<HomeDefaultHeader openBottomSheet={openBottomSheet} navigation={props.navigation} onOpenDrawer={onOpenDrawer} />
 			{isChannelApp ? (
 				<ChannelApp channelId={channelId} />
@@ -102,11 +98,10 @@ const HomeDefault = React.memo((props: any) => {
 				</KeyboardAvoidingView>
 			)}
 			<AgeRestrictedModal />
-			<MezonBottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
-				<NotificationSetting />
-			</MezonBottomSheet>
 		</View>
 	);
 });
+
+HomeDefault.displayName = 'HomeDefault';
 
 export default HomeDefault;

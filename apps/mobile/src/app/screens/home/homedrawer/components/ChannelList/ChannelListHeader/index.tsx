@@ -2,11 +2,13 @@ import { ActionEmitEvent, ETypeSearch, Icons, VerifyIcon } from '@mezon/mobile-c
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { getStoreAsync, selectCurrentChannel, selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { EventViewer } from '../../../../../../components/Event';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
+import ClanMenu from '../../ClanMenu/ClanMenu';
 import { style } from './styles';
 
 const ChannelListHeader = () => {
@@ -40,12 +42,31 @@ const ChannelListHeader = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL);
 	};
 
+	const handlePressEventCreate = useCallback(() => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
+			screen: APP_SCREEN.MENU_CLAN.CREATE_EVENT,
+			params: {
+				onGoBack: () => {
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				}
+			}
+		});
+	}, [navigation]);
+
 	const onOpenEvent = () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_EVENT_CHANNEL);
+		const data = {
+			heightFitContent: true,
+			children: <EventViewer handlePressEventCreate={handlePressEventCreate} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	const handlePress = () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_MENU_CLAN_CHANNEL);
+		const data = {
+			children: <ClanMenu />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	return (

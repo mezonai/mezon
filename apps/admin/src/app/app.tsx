@@ -11,10 +11,8 @@ import RootLayout from './layouts/RootLayout';
 import ApplicationsPage from './pages/applications';
 import DocsPage from './pages/docs';
 import EmbedsPage from './pages/embeds';
-import Login from './pages/login';
 import TeamsPage from './pages/teams';
 import { Routes } from './routes';
-import InitialRoutes from './routes/InititalRoutes';
 
 const mezon: CreateMezonClientOptions = {
 	host: process.env.NX_CHAT_APP_API_HOST as string,
@@ -30,27 +28,15 @@ const AppInitializer = () => {
 export function App() {
 	createBrowserRouter([
 		{
-			path: '',
+			path: '/developers',
 			element: <AppLayout />,
 			children: [
 				{
 					path: '',
-					element: <InitialRoutes />
-				},
-				{
-					path: 'login',
-					element: <Login />
-				},
-				{
-					path: 'admin',
 					element: <RootLayout />,
 					children: [
 						{
 							path: '',
-							element: <InitialRoutes />
-						},
-						{
-							path: 'applications',
 							element: <ApplicationsPage />
 						},
 						{

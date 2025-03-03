@@ -508,8 +508,8 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		const isMyMessage = userId === message?.user?.id;
 		const isMessageError = message?.isError;
 		const isUnPinMessage = listPinMessages.some((pinMessage) => pinMessage?.message_id === message?.id);
-		const isHideCreateThread = isDM || !isCanManageThread || !isCanManageChannel || currentChannel?.parrent_id !== '0';
-		const isHideThread = currentChannel?.parrent_id !== '0';
+		const isHideCreateThread = isDM || !isCanManageThread || !isCanManageChannel || currentChannel?.parent_id !== '0';
+		const isHideThread = currentChannel?.parent_id !== '0';
 		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage);
 		const isHideTopicDiscussion =
 			(message?.topic_id && message?.topic_id !== '0') ||
@@ -577,7 +577,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		isDM,
 		isCanManageThread,
 		isCanManageChannel,
-		currentChannel?.parrent_id,
+		currentChannel?.parent_id,
 		isAllowDelMessage,
 		canSendMessage,
 		isShowForwardAll,
@@ -599,7 +599,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	};
 
 	const handleReact = async (mode, messageId, emoji_id: string, emoji: string, senderId) => {
-		if (currentChannel?.parrent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
+		if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
 			await dispatch(threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channel_id ?? '', activeCode: ThreadStatus.joined }));
 			joinningToThread(currentChannel, [userId ?? '']);
 		}

@@ -1,9 +1,9 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useRef, useState } from 'react';
-import { Keyboard, Text, TouchableOpacity, View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonBottomSheet, MezonMenu } from '../../../../../../../componentUI';
+import { DeviceEventEmitter, Keyboard, Text, TouchableOpacity, View } from 'react-native';
+import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../../../../../componentUI';
 import { IMezonFakeBoxProps } from '../../../../../../../componentUI/MezonFakeBox';
 import { style } from './styles';
 
@@ -22,20 +22,13 @@ type IMezonSelectProps = Omit<IMezonFakeBoxProps, 'onPress' | 'postfixIcon' | 'v
 export default function MessageSelect({ data, placeholder, defaultValue, onChange, ...props }: IMezonSelectProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [currentValue, setCurrentValue] = useState(defaultValue);
 	const [currentContent, setCurrentContent] = useState(defaultValue?.title || placeholder);
 	const bottomSheetRef = useRef<BottomSheetModalMethods>();
 
 	function handleChange(item: ISelectItem) {
-		setCurrentValue(item);
 		setCurrentContent(item?.title || placeholder);
 		bottomSheetRef?.current?.dismiss();
 		onChange && onChange(item);
-	}
-
-	function handlePress() {
-		Keyboard.dismiss();
-		bottomSheetRef?.current?.present();
 	}
 
 	const menuOptions: IMezonMenuItemProps[] = data?.length
@@ -53,6 +46,20 @@ export default function MessageSelect({ data, placeholder, defaultValue, onChang
 		}
 	];
 
+	function handlePress() {
+		Keyboard.dismiss();
+		const data = {
+			heightFitContent: true,
+			title: props.title,
+			children: (
+				<View style={styles.bsContainer}>
+					<MezonMenu menu={menu} />
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}
+
 	return (
 		<View>
 			<View style={styles.input}>
@@ -63,11 +70,6 @@ export default function MessageSelect({ data, placeholder, defaultValue, onChang
 					</View>
 				</TouchableOpacity>
 			</View>
-			<MezonBottomSheet ref={bottomSheetRef} heightFitContent title={props.title}>
-				<View style={styles.bsContainer}>
-					<MezonMenu menu={menu} />
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 }

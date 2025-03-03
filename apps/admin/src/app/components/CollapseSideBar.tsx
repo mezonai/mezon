@@ -39,7 +39,7 @@ const CollapseSideBar = ({ isShow, toggleSideBar, tabs, currentAppId }: ICollaps
 						{tabs.map((tab, index) => (
 							<NavLink
 								key={index}
-								to={currentAppId ? `/applications/${currentAppId}/${tab.routerLink}` : tab.routerLink}
+								to={currentAppId ? `/developers/applications/${currentAppId}/${tab.routerLink}` : tab.routerLink}
 								className={({ isActive }) =>
 									isActive
 										? 'sidebar-tab flex gap-1 items-center py-2 px-4 dark:bg-[#3C4370] bg-bgLightModeButton text-[#5865F3] dark:text-[#C9CDFB] rounded-[4px]'

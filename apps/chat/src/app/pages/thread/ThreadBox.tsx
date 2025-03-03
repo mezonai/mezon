@@ -33,7 +33,7 @@ const ThreadBox = () => {
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 
 	const membersOfParent = useAppSelector((state) =>
-		threadCurrentChannel?.parrent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parrent_id as string) : null
+		threadCurrentChannel?.parent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parent_id as string) : null
 	);
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
 		channelId: threadCurrentChannel?.id as string,
@@ -56,7 +56,7 @@ const ThreadBox = () => {
 				clan_id: currentClanId?.toString(),
 				channel_label: value.nameValueThread,
 				channel_private: value.isPrivate,
-				parrent_id: currentChannelId as string,
+				parent_id: currentChannelId as string,
 				category_id: currentChannel?.category_id,
 				type: ChannelType.CHANNEL_TYPE_THREAD,
 				lastSeenTimestamp: timestamp,

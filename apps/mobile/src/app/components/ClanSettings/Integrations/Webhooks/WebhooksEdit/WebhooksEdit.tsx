@@ -1,4 +1,4 @@
-import { Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -14,23 +14,14 @@ import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { ChannelIsNotThread } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Keyboard, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, Keyboard, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
-import {
-	IFile,
-	IMezonMenuItemProps,
-	IMezonMenuSectionProps,
-	MezonBottomSheet,
-	MezonConfirm,
-	MezonInput,
-	MezonMenu,
-	MezonOption
-} from '../../../../../componentUI';
+import { IFile, IMezonMenuItemProps, IMezonMenuSectionProps, MezonConfirm, MezonInput, MezonMenu, MezonOption } from '../../../../../componentUI';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -38,7 +29,6 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { webhook } = route.params || {};
-	const bottomSheetSelectChannelRef = useRef(null);
 	const { sessionRef, clientRef } = useMezon();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const [urlImageWebhook, setUrlImageWebhook] = useState<string>('');
@@ -50,7 +40,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const [isCopied, setIsCopied] = useState(false);
 	const [isVisibleModal, setIsVisibleModal] = useState(false);
 	const { t } = useTranslation(['screenStack', 'clanIntegrationsSetting']);
-	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parrent_id === ChannelIsNotThread.TRUE), [allChannel]);
+	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
 	const dispatch = useAppDispatch();
 
 	const channel = useMemo(() => {
@@ -152,7 +142,11 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			{
 				title: webhookChannel?.channel_label,
 				onPress: () => {
-					bottomSheetSelectChannelRef?.current?.present();
+					const data = {
+						snapPoints: ['50%'],
+						children: <MezonOption data={channel} value={webhookChannel?.channel_id} onChange={handleChangeOption} />
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					Keyboard.dismiss();
 				},
 				expandable: true,
@@ -214,7 +208,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const handleChangeOption = useCallback(
 		(value) => {
 			setHasChange(true);
-			bottomSheetSelectChannelRef.current.dismiss();
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			const channelSelect = getChannelSelect(value);
 			setWebhookChannel(channelSelect);
 		},
@@ -269,14 +263,6 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			<TouchableOpacity onPress={() => setIsVisibleModal(true)} style={styles.btnDelete}>
 				<Text style={styles.textBtnDelete}>{t('webhooksEdit.delete', { ns: 'clanIntegrationsSetting' })}</Text>
 			</TouchableOpacity>
-
-			<MezonBottomSheet
-				title={t('webhooksEdit.selectAChannel', { ns: 'clanIntegrationsSetting' })}
-				snapPoints={['50%']}
-				ref={bottomSheetSelectChannelRef}
-			>
-				<MezonOption data={channel} value={webhookChannel?.channel_id} onChange={handleChangeOption} />
-			</MezonBottomSheet>
 
 			<MezonConfirm
 				visible={isVisibleModal}

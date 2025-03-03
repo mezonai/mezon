@@ -28,9 +28,9 @@ export const TrackToggle: <T extends ToggleSource>(props: TrackToggleProps<T> & 
 export function getSourceIcon(source: Track.Source, enabled: boolean) {
 	switch (source) {
 		case Track.Source.Microphone:
-			return enabled ? <Icons.VoiceMicIcon /> : <Icons.VoiceMicDisabledIcon />;
+			return enabled ? <Icons.VoiceMicIcon scale={1.3} /> : <Icons.VoiceMicDisabledIcon scale={1.3} />;
 		case Track.Source.Camera:
-			return enabled ? <Icons.VoiceCameraIcon /> : <Icons.VoiceCameraDisabledIcon />;
+			return enabled ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />;
 		case Track.Source.ScreenShare:
 			return enabled ? <Icons.VoiceScreenShareStopIcon /> : <Icons.VoiceScreenShareIcon />;
 		default:

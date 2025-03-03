@@ -136,7 +136,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 		const currentMission = useSelector((state) => selectCurrentMission(state, clanId as string));
 		const handleClick = () => {
 			if (channel.category_id === FAVORITE_CATEGORY_ID) {
-				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 			}
 
 			setTurnOffThreadMessage();
@@ -254,7 +254,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 					<Link to={channelPath} onClick={handleClick} className="channel-link" draggable="false">
 						<span ref={channelLinkRef} className={`${classes[state]} ${isActive ? 'dark:bg-bgModifierHover bg-bgLightModeButton' : ''}`}>
 							{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
-							{events[0] && <EventSchedule event={events[0]} className="mr-1 mt-0.5" />}
+
 							<div className={`relative  ${channel.type !== ChannelType.CHANNEL_TYPE_STREAMING ? 'mt-[-5px]' : ''}`}>
 								{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && (
 									<Icons.SpeakerLocked defaultSize="w-5 h-5 dark:text-channelTextLabel" />
@@ -279,6 +279,7 @@ const ChannelLinkComponent = React.forwardRef<ChannelLinkRef, ChannelLinkProps>(
 								)}
 								{channel.type === ChannelType.CHANNEL_TYPE_APP && <Icons.AppChannelIcon className={'w-5 h-5'} fill={theme} />}
 							</div>
+							{events[0] && <EventSchedule event={events[0]} className="ml-0.2 mt-0.5" />}
 							<p
 								className={`ml-2 w-full dark:group-hover:text-white group-hover:text-black text-base focus:bg-bgModifierHover ${hightLightTextChannel ? 'dark:text-white text-black dark:font-medium font-semibold' : 'font-medium dark:text-channelTextLabel text-colorTextLightMode'}`}
 								title={channel.channel_label && channel?.channel_label.length > 20 ? channel?.channel_label : undefined}

@@ -169,7 +169,7 @@ const TopBarChannelApps = ({ channel, mode }: ChannelTopbarProps) => {
 
 				<div className="items-center h-full ml-auto flex">
 					<div className="justify-end items-center gap-2 flex">
-						<div className="hidden sbm:flex">
+						<div className="flex">
 							<div className="relative justify-start items-center gap-[15px] flex mr-4">
 								<StartCallButton
 									loading={loading}
@@ -178,13 +178,8 @@ const TopBarChannelApps = ({ channel, mode }: ChannelTopbarProps) => {
 								/>
 
 								<MicButton onClick={() => dispatch(channelAppActions.setEnableVoice(!enableMic))} isTalking={enableMic} />
-
 								{/* <VideoButoon onClick={() => dispatch(channelAppActions.setEnableVideo(!enableVideo))} isEnable={enableVideo} /> */}
 							</div>
-						</div>
-
-						<div className="sbm:hidden mr-5">
-							<ChannelListButton />
 						</div>
 					</div>
 				</div>
@@ -213,8 +208,7 @@ const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }:
 	const appearanceTheme = useSelector(selectTheme);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 
-	const channelParent =
-		useAppSelector((state) => selectChannelById(state, (channel?.parrent_id ? (channel.parrent_id as string) : '') ?? '')) || {};
+	const channelParent = useAppSelector((state) => selectChannelById(state, (channel?.parent_id ? (channel.parent_id as string) : '') ?? '')) || {};
 
 	return (
 		<>
