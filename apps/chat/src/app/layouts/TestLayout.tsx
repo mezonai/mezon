@@ -184,11 +184,11 @@ const TestLayout = () => {
 
 			<EmojiSuggestionProvider isMobile={false}>
 				<div
-					className={`select-none flex-col justify-between flex max-w-[272px] dark:bg-bgSecondary bg-bgLightSecondary relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
+					className={`select-none h-screen flex-col justify-between flex max-w-[272px] dark:bg-bgSecondary bg-bgLightSecondary relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
 				>
 					<ClanHeader />
 					{clanId ? <ChannelList /> : <DirectMessageList />}
-					<div id="clan-footer">
+					<div id="clan-footer" className="h-14">
 						{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 						{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
 						{isVoiceJoined && <VoiceInfo />}
