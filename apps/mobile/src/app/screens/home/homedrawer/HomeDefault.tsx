@@ -11,6 +11,7 @@ import ShareLocationConfirmModal from '../../../components/ShareLocationConfirmM
 import ChannelApp from './ChannelApp';
 import ChannelMessagesWrapper from './ChannelMessagesWrapper';
 import { ChatBox } from './ChatBox';
+import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
 import PanelKeyboard from './PanelKeyboard';
 import { IModeKeyboardPicker } from './components';
@@ -69,7 +70,7 @@ const HomeDefault = React.memo((props: any) => {
 	return (
 		<View style={[styles.homeDefault]}>
 			{Platform.OS === 'ios' && <LicenseAgreement />}
-
+			<DrawerListener />
 			<HomeDefaultHeader openBottomSheet={openBottomSheet} navigation={props.navigation} onOpenDrawer={onOpenDrawer} />
 			{isChannelApp ? (
 				<ChannelApp channelId={channelId} />

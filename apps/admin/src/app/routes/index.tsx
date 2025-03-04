@@ -8,11 +8,10 @@ import { createBrowserRouter, LoaderFunctionArgs, Navigate, Outlet, RouterProvid
 import AppLayout from '../layouts/AppLayout';
 import RootLayout from '../layouts/RootLayout';
 //loader
-import { appLoader, CustomLoaderFunction } from '../loader/appLoader';
-import { authLoader } from '../loader/authLoader';
+import { appLoader, CustomLoaderFunction, shouldRevalidateApp } from '../loader/appLoader';
+import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 // Pages
-import { applicationLoader } from '../loader/applicationLoader';
-import { oAuth2Loader } from '../loader/oauthLoader';
+import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
 import FlowExamples from '../pages/flowExamples';
 import Flows from '../pages/flows';
 import Flow from '../pages/flows/Flow';
@@ -31,7 +30,6 @@ const OAuth2 = loadable(() => import('../pages/OAuth2'));
 export const Routes = () => {
 	const dispatch = useAppDispatch();
 	const initialPath = useSelector(selectInitialPath);
-
 	const loaderWithStore = useCallback(
 		(loaderFunction: CustomLoaderFunction) => {
 			return async (props: LoaderFunctionArgs) =>
@@ -48,15 +46,25 @@ export const Routes = () => {
 		() =>
 			createBrowserRouter([
 				{
+					path: '',
+					element: <Navigate to="/developers" />
+				},
+				{
 					path: '/developers',
 					loader: loaderWithStore(appLoader),
+					shouldRevalidate: shouldRevalidateApp,
 					element: <AppLayout />,
 					children: [
 						{
 							path: '',
 							loader: loaderWithStore(authLoader),
+							shouldRevalidate: shouldRevalidateAuth,
 							element: <RootLayout />,
 							children: [
+								{
+									path: '*',
+									element: <Navigate to="/developers/applications" />
+								},
 								{
 									path: '',
 									element: <InitialRoutes />
@@ -73,10 +81,11 @@ export const Routes = () => {
 										</div>
 									),
 									loader: loaderWithStore(applicationLoader),
+									shouldRevalidate: shouldRevalidateApplication,
 									children: [
 										{
 											path: '*',
-											element: <Navigate to="information" />
+											element: <Navigate to="/developers/applications" />
 										},
 										{
 											path: '',
@@ -92,7 +101,6 @@ export const Routes = () => {
 										},
 										{
 											path: 'oauth2',
-											loader: loaderWithStore(oAuth2Loader),
 											element: <OAuth2 />
 										},
 										{

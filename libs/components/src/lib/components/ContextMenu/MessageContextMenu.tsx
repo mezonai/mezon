@@ -99,6 +99,7 @@ function MessageContextMenu({
 	openPinMessageModal,
 	openDeleteMessageModal
 }: MessageContextMenuProps) {
+	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -499,7 +500,7 @@ function MessageContextMenu({
 			);
 		});
 
-		builder.when(checkPos, (builder) => {
+		builder.when(checkPos && message.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID, (builder) => {
 			builder.addMenuItem(
 				'giveAcoffee', // id
 				'Give A Coffee', // label

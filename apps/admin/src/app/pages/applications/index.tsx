@@ -1,4 +1,4 @@
-import { authActions, fetchApplications, getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
+import { authActions, getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { Dropdown } from 'flowbite-react';
 import isElectron from 'is-electron';
@@ -25,10 +25,6 @@ function ApplicationsPage() {
 			localStorage.removeItem('deepLinkUrl');
 		}
 	}, [deepLinkUrl, dispatch]);
-
-	useEffect(() => {
-		dispatch(fetchApplications({}));
-	}, [dispatch]);
 
 	return (
 		<>

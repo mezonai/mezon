@@ -3,8 +3,8 @@ import { size } from '@mezon/mobile-ui';
 import { selectCurrentClan } from '@mezon/store-mobile';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { DeviceEventEmitter, TouchableOpacity } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
+import ImageNative from '../../../../../../components/ImageNative';
 import ClanMenu from '../../ClanMenu/ClanMenu';
 import { style } from './styles';
 
@@ -29,7 +29,7 @@ const ChannelListBackground = () => {
 
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={handlePress} style={[style.container, { height: size.s_70 * 2 }]}>
-			<FastImage source={{ uri: bannerToShow }} style={{ flex: 1 }} resizeMode="cover" />
+			<ImageNative url={bannerToShow} style={{ flex: 1 }} resizeMode="cover" />
 		</TouchableOpacity>
 	);
 };

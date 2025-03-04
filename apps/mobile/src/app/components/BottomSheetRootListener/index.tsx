@@ -1,7 +1,7 @@
 import { BottomSheetScrollView, BottomSheetModal as OriginalBottomSheet } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import Backdrop from '../../componentUI/MezonBottomSheet/backdrop';
 import { style } from '../../componentUI/MezonBottomSheet/styles';
@@ -130,4 +130,4 @@ const BottomSheetRootListener = () => {
 	);
 };
 
-export default BottomSheetRootListener;
+export default memo(BottomSheetRootListener, () => true);

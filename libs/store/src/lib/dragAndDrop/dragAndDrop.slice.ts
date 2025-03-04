@@ -1,3 +1,4 @@
+import { UploadLimitReason } from '@mezon/utils';
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 export const DRAG_AND_DROP_FEATURE_KEY = 'dragAndDrop';
@@ -7,13 +8,15 @@ export interface DragAndDropState {
 	error?: string | null;
 	draggingState: boolean;
 	isOverLimitUpload: boolean;
+	overLimitReason: UploadLimitReason;
 }
 
 export const initialDragAndDropState: DragAndDropState = {
 	loadingStatus: 'not loaded',
 	error: null,
 	draggingState: false,
-	isOverLimitUpload: false
+	isOverLimitUpload: false,
+	overLimitReason: UploadLimitReason.COUNT
 };
 
 export const dragAndDropSlice = createSlice({
@@ -25,6 +28,9 @@ export const dragAndDropSlice = createSlice({
 		},
 		setOverLimitUploadState: (state, action) => {
 			state.isOverLimitUpload = action.payload;
+		},
+		setOverLimitReasonState: (state, action) => {
+			state.overLimitReason = action.payload;
 		}
 	}
 });
@@ -38,3 +44,4 @@ export const getDragAndDropState = (rootState: { [DRAG_AND_DROP_FEATURE_KEY]: Dr
 
 export const selectDragAndDropState = createSelector(getDragAndDropState, (state) => state.draggingState);
 export const selectOverLimitUploadState = createSelector(getDragAndDropState, (state) => state.isOverLimitUpload);
+export const selectOverLimitReasonState = createSelector(getDragAndDropState, (state) => state.overLimitReason);

@@ -256,7 +256,9 @@ const ForwardMessageModal = ({ openModal }: ModalParam) => {
 	}, [accountId, listDM, listGroup, membersInClan, usersClan]);
 
 	const listChannelSearch = useMemo(() => {
-		const listChannelForward = listChannels.filter((channel) => channel.type === ChannelType.CHANNEL_TYPE_CHANNEL);
+		const listChannelForward = listChannels.filter(
+			(channel) => channel.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel.type === ChannelType.CHANNEL_TYPE_THREAD
+		);
 		const list = listChannelForward.map((item: ChannelThreads) => {
 			return {
 				id: item?.id ?? '',

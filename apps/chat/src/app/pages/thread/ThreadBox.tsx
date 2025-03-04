@@ -46,11 +46,16 @@ const ThreadBox = () => {
 
 	const createThread = useCallback(
 		async (value: ThreadValue) => {
+			if (value.nameValueThread.length <= 3) {
+				toast('Thread name must be longer than 3 characters');
+				return;
+			}
 			const isDuplicate = await dispatch(checkDuplicateThread({ thread_name: value.nameValueThread, channel_id: currentChannelId as string }));
 			if (isDuplicate?.payload) {
 				toast('Thread name already exists');
 				return;
 			}
+
 			const timestamp = Date.now() / 1000;
 			const body: any = {
 				clan_id: currentClanId?.toString(),

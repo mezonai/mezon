@@ -1,9 +1,9 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import React from 'react';
-import { Image, StyleProp, TextStyle, View } from 'react-native';
+import { StyleProp, TextStyle, View } from 'react-native';
 import Images from '../../../assets/Images';
-import useTabletLandscape from '../../hooks/useTabletLandscape';
+import ImageNative from '../../components/ImageNative';
 import { style } from './styles';
 
 interface IMezonClanAvatarProps {
@@ -17,43 +17,25 @@ interface IMezonClanAvatarProps {
 
 export default function MezonClanAvatar({ image, alt = '', defaultColor, textStyle, noDefaultText = false, lightMode }: IMezonClanAvatarProps) {
 	const { themeValue } = useTheme();
-	const [isLoadFailProxy, setIsLoadFailProxy] = React.useState<boolean>(false);
-	const isTabletLandscape = useTabletLandscape();
 
 	const styles = style(themeValue);
 
 	if (image) {
-		if (isTabletLandscape) {
-			return (
-				<Image
-					source={{
-						uri: isLoadFailProxy ? image : createImgproxyUrl(image ?? '', { width: 100, height: 100, resizeType: 'fit' })
-					}}
-					style={styles.image}
-					onError={() => {
-						setIsLoadFailProxy(true);
-					}}
-				/>
-			);
-		}
 		return (
-			<Image
-				source={{
-					uri: isLoadFailProxy ? image : createImgproxyUrl(image ?? '', { width: 100, height: 100, resizeType: 'fit' })
-				}}
+			<ImageNative
+				url={createImgproxyUrl(image ?? '', { width: 100, height: 100, resizeType: 'fit' })}
 				style={styles.image}
-				onError={() => {
-					setIsLoadFailProxy(true);
-				}}
+				resizeMode={'cover'}
 			/>
 		);
 	}
 	return (
 		<View style={[styles.fakeBox, { backgroundColor: defaultColor || themeValue.colorAvatarDefault }]}>
 			{!noDefaultText ? (
-				<Image
-					source={alt === 'Anonymous' ? Images.ANONYMOUS_MESSAGE_AVATAR : Images.ANONYMOUS_AVATAR}
+				<ImageNative
+					url={alt === 'Anonymous' ? Images.ANONYMOUS_MESSAGE_AVATAR : Images.ANONYMOUS_AVATAR}
 					style={{ width: '100%', height: '100%', borderRadius: size.s_100 }}
+					resizeMode={'cover'}
 				/>
 			) : null}
 		</View>

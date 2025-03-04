@@ -30,7 +30,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		}
 
 		const profileResponse = await dispatch(accountActions.getUserProfile());
-		dispatch(fetchApplications({}));
+		await dispatch(fetchApplications({}));
 		if ((profileResponse as unknown as IWithError).error) {
 			throw new Error('Session expired');
 		}

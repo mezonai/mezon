@@ -9,6 +9,7 @@
 #import "RNVoipPushNotificationManager.h"
 #import <AVFoundation/AVFoundation.h>
 #import "RNFBMessagingModule.h"
+#import <React/RCTRootView.h>
 
 @implementation AppDelegate
 

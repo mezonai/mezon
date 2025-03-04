@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
+import androidx.core.app.NotificationCompat;
 
 public class IncomingCallService extends Service {
   private static Runnable handleTimeout;
@@ -171,40 +172,34 @@ public class IncomingCallService extends Service {
   }
 
   private Notification buildNotification(Context context, Intent intent, Bitmap avatarBitmap) throws MalformedURLException {
-    Bundle bundle = intent.getExtras();
-    if (bundle == null) {
-      throw new IllegalArgumentException("Intent extras cannot be null");
-    }
-    bundleData = bundle;
+      Bundle bundle = intent.getExtras();
+      if (bundle == null) {
+          throw new IllegalArgumentException("Intent extras cannot be null");
+      }
+      bundleData = bundle;
 
-    PendingIntent emptyPendingIntent = createEmptyPendingIntent(context, bundle);
-    // Get the custom sound URI
-    Uri soundUri = getCustomSoundUri(context, bundle);
+      PendingIntent emptyPendingIntent = createEmptyPendingIntent(context, bundle);
+      Uri soundUri = getCustomSoundUri(context, bundle);
+      String channelId = bundle.getString("channelId");
+      createNotificationChannel(context, channelId, bundle.getString("channelName"), soundUri);
 
-    // Create the notification channel if necessary
-    String channelId = bundle.getString("channelId");
-    createNotificationChannel(context, channelId, bundle.getString("channelName"), soundUri);
+      NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId);
+      buildNotificationBase(notificationBuilder, bundle, emptyPendingIntent, soundUri);
 
-    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId);
-    buildNotificationBase(notificationBuilder, bundle, emptyPendingIntent, soundUri);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          boolean isVideo = bundle.getBoolean("isVideo");
+          Person caller = buildCaller(bundle, avatarBitmap);
+          notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText("Call from " + bundle.getString("name")))
+              .addPerson(caller);
+      } else {
+          addActionButtons(context, notificationBuilder, bundle);
+      }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      boolean isVideo=bundle.getBoolean("isVideo");
-      Person caller = buildCaller(bundle, avatarBitmap);
-      notificationBuilder.setStyle(NotificationCompat.CallStyle.forIncomingCall(caller,
-          onButtonNotificationClick(0, Constants.ACTION_PRESS_DECLINE_CALL, Constants.RNNotificationEndCallAction),
-          onButtonNotificationClick(1, Constants.ACTION_PRESS_ANSWER_CALL, Constants.RNNotificationAnswerAction)
-        ).setIsVideo(isVideo))
-        .addPerson(caller);
-    } else {
-      addActionButtons(context, notificationBuilder, bundle);
-    }
+      applyOptionalSettings(context, notificationBuilder, bundle);
 
-    applyOptionalSettings(context, notificationBuilder, bundle);
-
-    Notification notification = notificationBuilder.build();
-    notification.flags |= Notification.FLAG_INSISTENT;
-    return notification;
+      Notification notification = notificationBuilder.build();
+      notification.flags |= Notification.FLAG_INSISTENT;
+      return notification;
   }
 
   private void buildNotificationBase(NotificationCompat.Builder notificationBuilder, Bundle bundle, PendingIntent emptyPendingIntent, Uri soundUri) {

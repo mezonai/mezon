@@ -23,6 +23,7 @@ import { UserStatus } from '../../../components/UserStatus';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
+import ImageNative from "../../../components/ImageNative";
 
 interface HeaderProps {
 	from?: string;
@@ -146,21 +147,12 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				) : (
 					<View style={styles.avatarWrapper}>
 						{dmAvatar ? (
-							isTabletLandscape ? (
-								<Image
-									source={{
-										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-									}}
-									style={styles.friendAvatar}
+							<View style={styles.friendAvatar}>
+								<ImageNative
+									url={createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })}
+									style={{ width: '100%', height: '100%' }}
 								/>
-							) : (
-								<FastImage
-									source={{
-										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-									}}
-									style={styles.friendAvatar}
-								/>
-							)
+							</View>
 						) : (
 							<View style={styles.wrapperTextAvatar}>
 								<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>

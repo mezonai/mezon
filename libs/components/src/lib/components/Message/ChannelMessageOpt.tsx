@@ -205,6 +205,7 @@ const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
 };
 
 function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
+	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
 	const { reactionMessageDispatch } = useChatReaction();
@@ -262,7 +263,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	}, [isFocusTopicBox, channel]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(userId !== message.sender_id, (builder) => {
+		builder.when(userId !== message.sender_id && message.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID, (builder) => {
 			builder.addMenuItem('giveacoffee', 'Give a coffee', handleItemClick, <Icons.DollarIcon defaultSize="w-5 h-5" />);
 		});
 	});

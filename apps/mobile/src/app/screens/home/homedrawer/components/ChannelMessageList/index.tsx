@@ -1,5 +1,4 @@
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
-import { isEqual } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity } from '@mezon/store-mobile';
 import React, { useCallback, useMemo } from 'react';
@@ -98,9 +97,6 @@ const ChannelListMessage = React.memo(
 				disableVirtualization
 			/>
 		);
-	},
-	(prev, curr) => {
-		return prev.isLoadMoreTop === curr.isLoadMoreTop && isEqual(prev.messages, curr.messages) && prev.isLoadMoreBottom === curr.isLoadMoreBottom;
 	}
 );
 export default ChannelListMessage;

@@ -1,4 +1,4 @@
-import { attachmentActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
+import { attachmentActions, channelMembersActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -52,9 +52,14 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 	const handelHeaderTabChange = useCallback(
 		(index: number) => {
 			setTabActive(index);
+			if (index === 0) {
+				dispatch(
+					channelMembersActions.fetchChannelMembers({ clanId: currentClanId, channelId: channelId, channelType: currentChannel?.type })
+				);
+			}
 			if (index === 1 || index === 2) dispatch(attachmentActions.fetchChannelAttachments({ clanId: currentClanId, channelId: channelId }));
 		},
-		[channelId, currentClanId, dispatch]
+		[channelId, currentChannel?.type, currentClanId, dispatch]
 	);
 
 	return (

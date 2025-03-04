@@ -61,7 +61,9 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const isLoadMore = useRef({});
 	const [, setTriggerRender] = useState<boolean | string>(false);
 	// check later
-	const isViewingOldMessage = useAppSelector((state) => selectIsViewingOlderMessagesByChannelId(state, channelId ?? ''));
+	const isViewingOldMessage = useAppSelector((state) =>
+		selectIsViewingOlderMessagesByChannelId(state, topicChannelId ? (topicChannelId ?? '') : (channelId ?? ''))
+	);
 	const idMessageToJump = useSelector(selectIdMessageToJump);
 	const isMessageExist = useAppSelector((state) => selectIsMessageIdExist(state, channelId, idMessageToJump?.id));
 	const isLoadingJumpMessage = useSelector(selectIsLoadingJumpMessage);
@@ -175,7 +177,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 
 			return true;
 		},
-		[clanId, topicChannelId, channelId, topicId]
+		[dispatch, clanId, topicChannelId, channelId, topicId, scrollChannelMessageToIndex]
 	);
 
 	const renderItem = useCallback(
@@ -195,7 +197,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 		await dispatch(
 			messagesActions.fetchMessages({
 				clanId,
-				channelId,
+				channelId: topicChannelId ? topicChannelId : channelId,
 				isFetchingLatestMessages: true,
 				noCache: true,
 				isClearMessage: true
@@ -209,7 +211,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 		timeOutRef2.current = setTimeout(() => {
 			isLoadMore.current[ELoadMoreDirection.top] = false;
 		}, 800);
-	}, [clanId, channelId, dispatch]);
+	}, [clanId, channelId, dispatch, topicChannelId]);
 
 	const handleScroll = useCallback(
 		async ({ nativeEvent }) => {

@@ -1,7 +1,7 @@
 import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
-import { Dispatch, SetStateAction, memo } from 'react';
+import { Dispatch, Fragment, SetStateAction, memo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import AttachmentSwitcher from '../../AttachmentPicker/AttachmentSwitcher';
@@ -40,7 +40,7 @@ export const ChatMessageLeftArea = memo(
 						<Icons.ChevronSmallLeftIcon width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				) : (
-					<>
+					<Fragment>
 						<AttachmentSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 						{isShowCreateThread && (
 							<TouchableOpacity
@@ -50,7 +50,7 @@ export const ChatMessageLeftArea = memo(
 								<Icons.ThreadPlusIcon width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
 							</TouchableOpacity>
 						)}
-					</>
+					</Fragment>
 				)}
 			</View>
 		);

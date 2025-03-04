@@ -151,7 +151,7 @@ export interface SearchThreadsArgs {
 }
 export const searchedThreads = createAsyncThunk('threads/searchThreads', async ({ label }: SearchThreadsArgs, thunkAPI) => {
 	try {
-		if (!label) {
+		if (!label || label.length < 3) {
 			return null;
 		}
 

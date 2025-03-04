@@ -9,8 +9,8 @@ const SearchThread = () => {
 	const statusSearching = useSelector(selectSearchedThreadLoadingStatus);
 	const isLoading = statusSearching === 'loading';
 	const handleTypingDebounced = useThrottledCallback((value: string) => {
-		dispatch(threadsActions.searchedThreads({ label: value }));
-	}, 300);
+		dispatch(threadsActions.searchedThreads({ label: value.trim() }));
+	}, 500);
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		handleTypingDebounced(event.target.value);

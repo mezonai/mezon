@@ -3,9 +3,8 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, directActions, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { DeviceEventEmitter, Pressable, RefreshControl, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, Pressable, RefreshControl, View } from 'react-native';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DmListItem } from './DmListItem';
@@ -48,17 +47,19 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			{!dmGroupChatList?.length ? (
 				<MessagesScreenEmpty />
 			) : (
-				<FlashList
+				<FlatList
 					data={dmGroupChatList}
 					contentContainerStyle={{
 						paddingBottom: size.s_100
 					}}
-					removeClippedSubviews={true}
+					maxToRenderPerBatch={10}
+					updateCellsBatchingPeriod={50}
+					disableVirtualization={true}
+					initialNumToRender={20}
+					windowSize={10}
 					decelerationRate={'fast'}
-					showsVerticalScrollIndicator={false}
 					keyExtractor={(dm) => dm + 'DM_MSG_ITEM'}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-					estimatedItemSize={size.s_60}
 					renderItem={({ item }) => <DmListItem id={item} navigation={navigation} key={item} onLongPress={handleLongPress} />}
 				/>
 			)}

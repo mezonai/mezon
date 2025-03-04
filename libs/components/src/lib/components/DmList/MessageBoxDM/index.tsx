@@ -97,7 +97,7 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 				isClearMessage: true
 			})
 		);
-		dispatch(messagesActions.setIdMessageToJump(null));
+		dispatch(messagesActions.setIsJumpingToPresent({ channelId: directParamId, status: true }));
 	}, [directParamId]);
 
 	return (

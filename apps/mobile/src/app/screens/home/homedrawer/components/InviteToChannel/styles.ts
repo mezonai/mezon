@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 
 const marginWidth = Dimensions.get('screen').width * 0.3;
 
-export const style = (colors: Attributes, isTabletLandscape: boolean) =>
+export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 	StyleSheet.create({
 		radioContainer: {
 			flexDirection: 'row',
