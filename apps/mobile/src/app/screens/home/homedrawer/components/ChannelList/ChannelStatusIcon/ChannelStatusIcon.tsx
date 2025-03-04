@@ -3,7 +3,7 @@ import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
+import { MezonIconCDN } from '../../../../../../../app/componentUI';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 
 export const ChannelStatusIcon = ({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {
@@ -14,64 +14,25 @@ export const ChannelStatusIcon = ({ channel, isUnRead }: { channel: ChannelsEnti
 		<>
 			{channel?.channel_private === ChannelStatusEnum.isPrivate &&
 				(channel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) &&
-				!isAgeRestrictedChannel && (
-					<FastImage
-						source={{
-							uri: IconCDN.channelVoiceLock
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
-				)}
+				!isAgeRestrictedChannel && <MezonIconCDN icon={IconCDN.channelVoiceLock} height={size.s_18} width={size.s_18} />}
 			{channel?.channel_private === ChannelStatusEnum.isPrivate &&
 				channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
-				!isAgeRestrictedChannel && (
-					<FastImage
-						source={{
-							uri: IconCDN.channelTextLock
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
-				)}
+				!isAgeRestrictedChannel && <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_18} width={size.s_18} />}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate &&
 				(channel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
-					<FastImage
-						source={{
-							uri: IconCDN.channelVoice
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
+					<MezonIconCDN icon={IconCDN.channelVoice} height={size.s_18} width={size.s_18} />
 				)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-				<FastImage
-					source={{
-						uri: IconCDN.channelText
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
-				/>
+				<MezonIconCDN icon={IconCDN.channelText} height={size.s_18} width={size.s_18} />
 			)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_STREAMING && (
-				<FastImage
-					source={{
-						uri: IconCDN.channelStream
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
-				/>
+				<MezonIconCDN icon={IconCDN.channelStream} height={size.s_18} width={size.s_18} />
 			)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_APP && (
-				<FastImage
-					source={{
-						uri: IconCDN.channelApp
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
-				/>
+				<MezonIconCDN icon={IconCDN.channelApp} height={size.s_18} width={size.s_18} />
 			)}
 			{channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
-				<FastImage
-					source={{
-						uri: IconCDN.channelTextWarning
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
-				/>
+				<MezonIconCDN icon={IconCDN.channelTextWarning} height={size.s_18} width={size.s_18} />
 			)}
 		</>
 	);

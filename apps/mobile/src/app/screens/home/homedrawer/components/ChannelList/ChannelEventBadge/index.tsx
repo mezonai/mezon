@@ -3,7 +3,7 @@ import { selectChannelById, selectEventsByChannelId, useAppSelector } from '@mez
 import { EEventStatus } from '@mezon/utils';
 import { memo } from 'react';
 import { Linking, Pressable, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { MezonIconCDN } from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
 
@@ -31,12 +31,7 @@ export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 				}}
 			>
 				<Pressable onPress={hanleEventChannel}>
-					<FastImage
-						source={{
-							uri: IconCDN.calendarIcon
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
+					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} />
 				</Pressable>
 			</View>
 		);

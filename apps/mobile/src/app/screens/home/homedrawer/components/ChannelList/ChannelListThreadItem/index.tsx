@@ -4,7 +4,7 @@ import { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { MezonIconCDN } from '../../../../../../../app/componentUI';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';
@@ -38,23 +38,11 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirst
 			<View style={[styles.threadItem]}>
 				{isFirstThread ? (
 					<View style={{ top: -size.s_14 }}>
-						<FastImage
-							source={{
-								uri: IconCDN.shortCorner
-							}}
-							style={{ height: size.s_16, width: size.s_12 }}
-							resizeMode="contain"
-						/>
+						<MezonIconCDN icon={IconCDN.shortCorner} height={size.s_16} width={size.s_12} />
 					</View>
 				) : (
 					<View style={{ top: -size.s_20 }}>
-						<FastImage
-							source={{
-								uri: IconCDN.longCorner
-							}}
-							style={{ height: size.s_36, width: size.s_12 }}
-							resizeMode="contain"
-						/>
+						<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} />
 						{/*hardcode virtual view to connect thread lines */}
 						<View
 							style={{

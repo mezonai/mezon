@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
+import { MezonIconCDN } from '../../../../../../../app/componentUI';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -79,29 +79,14 @@ const ChannelListHeader = () => {
 			</TouchableOpacity>
 			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
 				<TouchableOpacity activeOpacity={0.8} onPress={navigateToSearchPage} style={styles.wrapperSearch}>
-					<FastImage
-						source={{
-							uri: IconCDN.magnifyingIcon
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
+					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} />
 					<Text style={styles.placeholderSearchBox}>{t('search')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} onPress={onOpenInvite} style={styles.iconWrapper}>
-					<FastImage
-						source={{
-							uri: IconCDN.userPlusIcon
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
+					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_18} width={size.s_18} />
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} onPress={onOpenEvent} style={styles.iconWrapper}>
-					<FastImage
-						source={{
-							uri: IconCDN.calendarIcon
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
-					/>
+					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} />
 				</TouchableOpacity>
 			</View>
 		</View>

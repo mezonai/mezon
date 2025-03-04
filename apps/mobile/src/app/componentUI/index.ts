@@ -9,6 +9,7 @@ export * from './MezonBottomSheet';
 export * from './MezonClanAvatar';
 export * from './MezonConfirm';
 export * from './MezonDateTimePicker';
+export * from './MezonIconCDN';
 export * from './MezonImagePicker';
 export * from './MezonInput';
 export * from './MezonMenu';
