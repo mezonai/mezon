@@ -124,8 +124,6 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 				})
 			);
 		}
-
-		// sendMessageTyping();
 	}, [channel]);
 	const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 

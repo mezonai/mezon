@@ -1,10 +1,11 @@
 import { useAppNavigation, useAuth, useEscapeKeyClose, useMenu, useOnClickOutside } from '@mezon/core';
 import {
+	ChannelsEntity,
+	DirectEntity,
 	appActions,
 	selectCanvasEntityById,
 	selectChannelById,
 	selectCloseMenu,
-	selectCurrentChannel,
 	selectCurrentClanId,
 	selectIdCanvas,
 	selectIsShowCanvas,
@@ -15,30 +16,24 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum, IChannel, MouseButton, ThreadNameProps } from '@mezon/utils';
+import { IChannel, MouseButton, ThreadNameProps } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Coords } from '../../ChannelLink';
 import PanelCanvas from '../../PanelCanvas';
 
-export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined }) => {
-	const type = Number(channel?.type);
+export const ChannelLabel = ({ currentChannel }: { currentChannel: DirectEntity | ChannelsEntity }) => {
 	const { setStatusMenu } = useMenu();
+
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
-	const currentChannel = useSelector(selectCurrentChannel);
-	const isChannelVoice = type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
-	const isChannelText = type === ChannelType.CHANNEL_TYPE_CHANNEL || type === ChannelType.CHANNEL_TYPE_THREAD;
-	const isChannelStream = type === ChannelType.CHANNEL_TYPE_STREAMING;
-	const isAppChannel = type === ChannelType.CHANNEL_TYPE_APP;
 
-	const channelParent = useAppSelector((state) => selectChannelById(state, channel?.parent_id as string));
+	const channelParent = useAppSelector((state) => selectChannelById(state, currentChannel?.parent_id as string));
 
-	const isPrivate = channelParent?.id ? channelParent?.channel_private : channel?.channel_private;
-	const isActive = currentChannel?.channel_id === channel?.channel_id && !channelParent;
-	const theme = useSelector(selectTheme);
+	const isPrivate = channelParent?.id ? channelParent?.channel_private : currentChannel?.channel_private;
+	const isActive = currentChannel?.channel_id === currentChannel?.channel_id && !channelParent;
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentCanvasId = useSelector(selectIdCanvas);
 	const canvasById = useSelector((state) => selectCanvasEntityById(state, currentChannel?.channel_id, currentCanvasId));
@@ -74,10 +69,6 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 	useEscapeKeyClose(panelRef, handClosePannel);
 	useOnClickOutside(panelRef, handClosePannel);
 
-	const isAgeRestrictedChannel = useMemo(() => {
-		return channel?.age_restricted === 1;
-	}, [channel?.age_restricted]);
-
 	return (
 		<div
 			onMouseDown={handleMouseClick}
@@ -91,25 +82,20 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 					</div>
 				)}
 
-				{isPrivate === ChannelStatusEnum.isPrivate && isChannelVoice && <Icons.SpeakerLocked defaultSize="w-6 h-6" />}
-				{isAgeRestrictedChannel && isChannelText && (
-					<Icons.HashtagWarning className="w-6 h-6 dark:text-channelTextLabel text-colorTextLightMode" />
-				)}
-				{!isAgeRestrictedChannel && isPrivate === ChannelStatusEnum.isPrivate && isChannelText && (
-					<Icons.HashtagLocked defaultSize="w-6 h-6 " />
-				)}
-				{isPrivate === undefined && isChannelVoice && <Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />}
-				{isPrivate === undefined && isChannelStream && <Icons.Stream defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />}
-				{!isAgeRestrictedChannel && isPrivate !== 1 && isChannelText && <Icons.Hashtag defaultSize="w-6 h-6" />}
-				{isAppChannel && <Icons.AppChannelIcon className={'w-6 h-6'} fill={theme} />}
+				<ChannelIcon
+					type={channelParent?.type || currentChannel?.type}
+					isPrivate={!!isPrivate}
+					isRestric={!!currentChannel?.age_restricted}
+					img={currentChannel.channel_avatar?.[0]}
+					name={currentChannel.creator_name?.charAt(0)}
+				/>
 			</div>
 
 			<ChannelLabelContent
-				channel={channel}
 				currentChannel={currentChannel}
 				channelParent={channelParent}
 				isActive={isActive}
-				isChannelVoice={isChannelVoice}
+				isChannelVoice={false}
 				isShowCanvas={isShowCanvas}
 				closeMenu={closeMenu}
 				statusMenu={statusMenu}
@@ -120,7 +106,7 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 						<Icons.ArrowRight />
 						<Icons.CanvasIcon defaultSize="w-6 h-6 min-w-6" />
 						<p
-							className={`mt-[2px] text-base font-semibold cursor-default one-line ${currentChannel?.channel_id === channel?.channel_id ? 'dark:text-white text-colorTextLightMode' : 'dark:colorTextLightMode text-colorTextLightMode'}`}
+							className={`mt-[2px] text-base font-semibold cursor-default one-line ${currentChannel?.channel_id ? 'dark:text-white text-colorTextLightMode' : 'dark:colorTextLightMode text-colorTextLightMode'}`}
 						>
 							{title ? title : 'Untitled'}
 						</p>
@@ -140,7 +126,6 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 };
 
 interface ChannelLabelContentProps {
-	channel: IChannel | null | undefined;
 	currentChannel: IChannel | null | undefined;
 	channelParent: IChannel | null | undefined;
 	isActive: boolean;
@@ -151,7 +136,6 @@ interface ChannelLabelContentProps {
 }
 
 const ChannelLabelContent: React.FC<ChannelLabelContentProps> = ({
-	channel,
 	channelParent,
 	isActive,
 	isChannelVoice,
@@ -167,7 +151,7 @@ const ChannelLabelContent: React.FC<ChannelLabelContentProps> = ({
 			navigate(toChannelPage(channelParent.id, channelParent?.clan_id ?? ''));
 		}
 		if (isShowCanvas) {
-			navigate(toChannelPage(channel?.id ?? '', channel?.clan_id ?? ''));
+			navigate(toChannelPage(currentChannel?.id ?? '', currentChannel?.clan_id ?? ''));
 			dispatch(appActions.setIsShowCanvas(false));
 		}
 	};
@@ -177,25 +161,79 @@ const ChannelLabelContent: React.FC<ChannelLabelContentProps> = ({
 				className={`mr-2 text-base font-semibold mt-[2px] max-w-[200px] overflow-x-hidden text-ellipsis one-line ${closeMenu && !statusMenu ? 'ml-[56px]' : 'ml-7 '} ${isActive ? 'dark:text-white text-colorTextLightMode cursor-default' : 'dark:text-textSecondary text-colorTextLightMode cursor-pointer'} ${isChannelVoice && 'text-white'}`}
 				onClick={handleRedirect}
 			>
-				{channelParent?.channel_label ? channelParent?.channel_label : channel?.channel_label}
+				{channelParent?.channel_label ? channelParent?.channel_label : currentChannel?.channel_label}
 			</p>
-			{channelParent?.channel_label && channel && !isShowCanvas && (
+			{channelParent?.channel_label && currentChannel && !isShowCanvas && (
 				<div className="flex flex-row items-center gap-2">
 					<Icons.ArrowRight />
-					{channelParent?.channel_label && channel.channel_private === ChannelStatusEnum.isPrivate ? (
-						<Icons.ThreadIconLocker className="dark:text-[#B5BAC1] text-colorTextLightMode min-w-6" />
-					) : (
-						<Icons.ThreadIcon defaultSize="w-6 h-6 min-w-6" />
-					)}
+					<ChannelIcon
+						isPrivate={!!currentChannel?.channel_private}
+						type={currentChannel?.type}
+						isRestric={!!currentChannel?.age_restricted}
+					/>
 					<p
-						className={`mt-[2px] text-base font-semibold cursor-default one-line ${currentChannel?.channel_id === channel?.channel_id ? 'dark:text-white text-colorTextLightMode' : 'dark:colorTextLightMode text-colorTextLightMode'}`}
+						className={`mt-[2px] text-base font-semibold cursor-default one-line ${currentChannel?.channel_id ? 'dark:text-white text-colorTextLightMode' : 'dark:colorTextLightMode text-colorTextLightMode'}`}
 					>
-						{channel.channel_label}
+						{currentChannel.channel_label}
 					</p>
 				</div>
 			)}
 		</>
 	);
+};
+
+export const ChannelIcon = ({
+	type,
+	isPrivate,
+	isRestric,
+	img,
+	name
+}: {
+	type?: ChannelType;
+	isPrivate?: boolean;
+	isRestric?: boolean;
+	img?: string;
+	name?: string;
+}) => {
+	const theme = useSelector(selectTheme);
+
+	switch (type) {
+		case ChannelType.CHANNEL_TYPE_THREAD:
+			return isPrivate ? (
+				<Icons.ThreadIconLocker className="dark:text-[#B5BAC1] text-colorTextLightMode min-w-6" />
+			) : (
+				<Icons.ThreadIcon defaultSize="w-6 h-6 min-w-6" />
+			);
+		case ChannelType.CHANNEL_TYPE_CHANNEL:
+			if (isRestric) {
+				return <Icons.HashtagWarning className="w-6 h-6 dark:text-channelTextLabel text-colorTextLightMode" />;
+			}
+			return isPrivate ? <Icons.HashtagLocked defaultSize="w-6 h-6 " /> : <Icons.Hashtag defaultSize="w-6 h-6" />;
+		case ChannelType.CHANNEL_TYPE_GMEET_VOICE:
+			return isPrivate ? (
+				<Icons.SpeakerLocked defaultSize="w-6 h-6" />
+			) : (
+				<Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />
+			);
+		case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
+			return isPrivate ? (
+				<Icons.SpeakerLocked defaultSize="w-6 h-6" />
+			) : (
+				<Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />
+			);
+		case ChannelType.CHANNEL_TYPE_STREAMING:
+			return <Icons.Stream defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />;
+		case ChannelType.CHANNEL_TYPE_APP:
+			return <Icons.AppChannelIcon className={'w-6 h-6'} fill={theme} />;
+
+		case ChannelType.CHANNEL_TYPE_DM:
+			return <AvatarDM img={img} word={name || ''} />;
+		case ChannelType.CHANNEL_TYPE_GROUP:
+			return <AvatarDM img={'assets/images/avatar-group.png'} word={name || ''} />;
+
+		default:
+			return <></>;
+	}
 };
 
 ChannelLabel.displayName = 'ChannelLabel';
@@ -208,4 +246,8 @@ export const ThreadLable: React.FC<ThreadNameProps> = ({ name }) => {
 			<p className="text-white mb-0.5 font-thin"> {name}</p>
 		</div>
 	);
+};
+
+const AvatarDM = ({ img, word }: { img?: string; word: string }) => {
+	return <img src={img} alt="log_DM" className="h-6 w-6 rounded-full overflow-hidden object-cover" />;
 };

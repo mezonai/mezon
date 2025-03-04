@@ -10,18 +10,23 @@ import {
 import { ModeResponsive, RequestInput } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useAppParams } from '../../app/hooks/useAppParams';
 
 export function useMessageValue(channelId?: string) {
 	const dispatch = useAppDispatch();
 	const mode = useSelector(selectModeResponsive);
+	const { directId } = useAppParams();
 	const currentChannel = useAppSelector((state) => selectCurrentChannel(state));
 	const currentDmGroupId = useSelector(selectDmGroupCurrentId);
 	const request = useAppSelector((state) =>
-		selectRequestByChannelId(state, mode === ModeResponsive.MODE_CLAN ? channelId || '' : currentDmGroupId || '')
+		selectRequestByChannelId(state, {
+			clanId: directId ? '0' : (currentChannel?.clan_id as string),
+			channelId: directId || (channelId as string)
+		})
 	);
 	const setRequestInput = useCallback(
 		(request: RequestInput, isThread?: boolean) => {
-			if (mode === ModeResponsive.MODE_CLAN) {
+			if (!directId) {
 				dispatch(
 					channelsActions.setRequestInput({
 						clanId: mode === ModeResponsive.MODE_CLAN ? (currentChannel?.clan_id as string) : '0',
@@ -39,7 +44,7 @@ export function useMessageValue(channelId?: string) {
 				);
 			}
 		},
-		[currentChannel, currentDmGroupId, mode, dispatch]
+		[currentChannel, currentDmGroupId, dispatch, directId]
 	);
 
 	return useMemo(

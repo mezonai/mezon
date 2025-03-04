@@ -31,44 +31,12 @@ import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js
 import { useCallback, useMemo, useRef, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useSelector } from 'react-redux';
-import { HelpButton } from '../../ChannelTopbar';
 import PinnedMessages from '../../ChannelTopbar/TopBarComponents/PinnedMessages';
-import { MemberProfile } from '../../MemberProfile';
-import SearchMessageChannel from '../../SearchMessageChannel';
 import CreateMessageGroup from '../CreateMessageGroup';
-import LabelDm from './labelDm';
 
 export type ChannelTopbarProps = {
 	readonly dmGroupId?: Readonly<string>;
 	isHaveCallInChannel?: boolean;
-};
-
-// Todo: move to utils
-export const compress = async (str: string, encoding = 'gzip' as CompressionFormat) => {
-	const byteArray = new TextEncoder().encode(str);
-	const cs = new CompressionStream(encoding);
-	const writer = cs.writable.getWriter();
-	writer.write(byteArray);
-	writer.close();
-	const arrayBuffer = await new Response(cs.readable).arrayBuffer();
-	return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-};
-
-// Todo: move to utils
-export const decompress = async (compressedStr: string, encoding = 'gzip' as CompressionFormat) => {
-	const binaryString = atob(compressedStr);
-	const byteArray = new Uint8Array(binaryString.length);
-	for (let i = 0; i < binaryString.length; i++) {
-		byteArray[i] = binaryString.charCodeAt(i);
-	}
-
-	const cs = new DecompressionStream(encoding);
-	const writer = cs.writable.getWriter();
-	writer.write(byteArray);
-	writer.close();
-
-	const arrayBuffer = await new Response(cs.readable).arrayBuffer();
-	return new TextDecoder().decode(arrayBuffer);
 };
 
 function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps) {
@@ -144,83 +112,44 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 
 	return (
 		<>
-			{/* {!isHaveCallInChannel && ( */}
 			<div
 				className={`flex h-heightTopBar p-3 min-w-0 items-center dark:bg-bgPrimary bg-bgLightPrimary shadow border-b-[1px] dark:border-bgTertiary border-bgLightTertiary flex-shrink ${isMacDesktop ? 'draggable-area' : ''}`}
 			>
 				<div className="sbm:justify-start justify-between items-center gap-1 flex w-full">
-					<div className={`flex flex-row gap-1 items-center flex-1 ${isMacDesktop ? 'app-region-drag' : ''}`}>
-						<div onClick={() => setStatusMenu(true)} className={`mx-6 ${closeMenu && !statusMenu ? '' : 'hidden'}`} role="button">
-							<Icons.OpenMenu defaultSize={`w-5 h-5`} />
-						</div>
-						<MemberProfile
-							numberCharacterCollapse={22}
-							avatar={
-								Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP
-									? 'assets/images/avatar-group.png'
-									: (currentDmGroup?.channel_avatar?.at(0) ?? '')
-							}
-							name={currentDmGroup?.channel_label ?? ''}
-							status={{ status: currentDmGroup?.is_online?.some(Boolean), isMobile: false }}
-							isHideStatus={true}
-							isHideIconStatus={Boolean(currentDmGroup?.user_id && currentDmGroup.user_id.length >= 2)}
-							key={currentDmGroup?.channel_id}
-							isHiddenAvatarPanel={true}
-							metaDataDM={metadata}
-						/>
-						<LabelDm dmGroupId={dmGroupId || ''} currentDmGroup={currentDmGroup} />
-					</div>
-
 					<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">
-						<div className=" items-center gap-2 flex">
-							<div className="justify-start items-center gap-[15px] flex">
-								<button title="Start voice call" onClick={() => handleStartCall()}>
+						<div className="justify-start items-center gap-[15px] flex">
+							<button title="Start voice call" onClick={() => handleStartCall()}>
+								<span>
+									<Icons.IconPhoneDM
+										className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
+									/>
+								</span>
+							</button>
+							<button title="Start Video Call" onClick={() => handleStartCall(true)}>
+								<span>
+									<Icons.IconMeetDM
+										className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
+									/>
+								</span>
+							</button>
+							<div>
+								<PinButton mode={mode} isLightMode={isLightMode} />
+							</div>
+							<AddMemberToGroupDm currentDmGroup={currentDmGroup} appearanceTheme={appearanceTheme} />
+							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
+								<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}>
 									<span>
-										<Icons.IconPhoneDM
-											className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
-										/>
+										<Icons.MemberList isWhite={isShowMemberListDM} />
 									</span>
 								</button>
-								<button title="Start Video Call" onClick={() => handleStartCall(true)}>
+							)}
+							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
+								<button title="Show User Profile" onClick={() => setIsUseProfileDM(!isUseProfileDM)}>
 									<span>
-										<Icons.IconMeetDM
-											className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
-										/>
+										<Icons.IconUserProfileDM isWhite={isUseProfileDM} />
 									</span>
 								</button>
-								<div>
-									<PinButton mode={mode} isLightMode={isLightMode} />
-								</div>
-								<AddMemberToGroupDm currentDmGroup={currentDmGroup} appearanceTheme={appearanceTheme} />
-								{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-									<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}>
-										<span>
-											<Icons.MemberList isWhite={isShowMemberListDM} />
-										</span>
-									</button>
-								)}
-								{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
-									<button title="Show User Profile" onClick={() => setIsUseProfileDM(!isUseProfileDM)}>
-										<span>
-											<Icons.IconUserProfileDM isWhite={isUseProfileDM} />
-										</span>
-									</button>
-								)}
-							</div>
-							<SearchMessageChannel
-								mode={
-									currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-										? ChannelStreamMode.STREAM_MODE_DM
-										: ChannelStreamMode.STREAM_MODE_GROUP
-								}
-							/>
-							<div
-								className={`gap-4 relative flex  w-fit h-8 justify-center items-center left-[345px] ssm:left-auto ssm:right-0`}
-								id="inBox"
-							>
-								{/* <InboxButton /> */}
-								<HelpButton />
-							</div>
+							)}
 						</div>
 					</div>
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
@@ -239,9 +168,6 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 					)}
 				</div>
 			</div>
-			{/* )
-			} */}
-			{/* <DmCalling ref={dmCallingRef} dmGroupId={dmGroupId} /> */}
 		</>
 	);
 }
@@ -279,7 +205,7 @@ function PinButton({ isLightMode, mode }: { isLightMode: boolean; mode?: number 
 	);
 }
 
-const AddMemberToGroupDm = ({ currentDmGroup, appearanceTheme }: { currentDmGroup: DirectEntity; appearanceTheme: string }) => {
+export const AddMemberToGroupDm = ({ currentDmGroup, appearanceTheme }: { currentDmGroup: DirectEntity; appearanceTheme: string }) => {
 	const [openAddToGroup, setOpenAddToGroup] = useState<boolean>(false);
 	const handleOpenAddToGroupModal = () => {
 		setOpenAddToGroup(!openAddToGroup);

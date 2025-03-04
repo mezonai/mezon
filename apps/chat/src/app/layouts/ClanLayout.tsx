@@ -1,4 +1,4 @@
-import { useApp, useGifsStickersEmoji } from '@mezon/core';
+import { useApp } from '@mezon/core';
 import {
 	ChannelsEntity,
 	ClansEntity,
@@ -10,16 +10,13 @@ import {
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectVoiceFullScreen,
-	threadsActions,
-	topicsActions,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { SubPanelName } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 import Setting from '../pages/setting';
 
@@ -80,18 +77,6 @@ const ClanLayout = () => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
-	const dispatch = useDispatch();
-	const { setSubPanelActive } = useGifsStickersEmoji();
-	const onMouseDownTopicBox = () => {
-		setSubPanelActive(SubPanelName.NONE);
-		dispatch(topicsActions.setFocusTopicBox(true));
-		dispatch(threadsActions.setFocusThreadBox(false));
-	};
-	const onMouseDownThreadBox = () => {
-		setSubPanelActive(SubPanelName.NONE);
-		dispatch(topicsActions.setFocusTopicBox(false));
-		dispatch(threadsActions.setFocusThreadBox(true));
-	};
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 
 	return (

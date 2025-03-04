@@ -3,7 +3,6 @@ import {
 	ChannelTopbar,
 	ClanHeader,
 	DirectMessageList,
-	DmTopbar,
 	FooterProfile,
 	MemberListGroupChat,
 	ModalCreateClan,
@@ -67,6 +66,7 @@ import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 import { ChannelMessageBox } from '../pages/channel/ChannelMessageBox';
 import { ChannelTyping } from '../pages/channel/ChannelTyping';
+import MyApp from '../pages/main';
 import DirectUnread from '../pages/main/directUnreads';
 import Setting from '../pages/setting';
 import SideLayout from './SideLayout';
@@ -208,26 +208,21 @@ const TestLayout = () => {
 				<div
 					className={`flex flex-1 shrink min-w-0 gap-2 ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'dark:bg-bgTertiary bg-bgLightTertiary' : ''}`}
 				>
-					<div className="flex flex-col flex-1">
-						{clanId ? (
-							<ChannelTopbar channel={currentChannel} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
-						) : (
-							<DmTopbar dmGroupId={directId} isHaveCallInChannel={false} />
-						)}
+					<div className="flex flex-col flex-1 h-screen justify-between  min-w-0">
+						{(channelId || directId) && <ChannelTopbar />}
 
 						<div className={`flex w-full flex-1`}>
 							<div
 								className={`flex flex-col flex-1 shrink justify-between ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent overflow-visible ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'group' : ''}`}
 							>
-								{(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && (
-									<div className="flex-1 h-heightMessageViewChat">
-										<Outlet />
-									</div>
-								)}
+								<div className="flex-1 h-heightMessageViewChat">
+									{(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
+								</div>
 								<ChannelMainContentText canSendMessage={canSendMessage} channelId={directId ? directId : (channelId as string)} />
 							</div>
 							<ListMemberChannel />
 						</div>
+						<MyApp />
 					</div>
 					{clanId ? <SideLayout /> : null}
 				</div>

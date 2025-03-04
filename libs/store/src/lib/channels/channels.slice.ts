@@ -1,34 +1,34 @@
 import { captureSentryError } from '@mezon/logger';
 import {
-    ApiChannelMessageHeaderWithChannel,
-    BuzzArgs,
-    ChannelThreads,
-    checkIsThread,
-    ICategory,
-    IChannel,
-    LoadingStatus,
-    ModeResponsive,
-    RequestInput,
-    TypeCheck
+	ApiChannelMessageHeaderWithChannel,
+	BuzzArgs,
+	ChannelThreads,
+	checkIsThread,
+	ICategory,
+	IChannel,
+	LoadingStatus,
+	ModeResponsive,
+	RequestInput,
+	TypeCheck
 } from '@mezon/utils';
 import {
-    createAsyncThunk,
-    createEntityAdapter,
-    createSelector,
-    createSlice,
-    EntityState,
-    GetThunkAPI,
-    PayloadAction,
-    Update
+	createAsyncThunk,
+	createEntityAdapter,
+	createSelector,
+	createSlice,
+	EntityState,
+	GetThunkAPI,
+	PayloadAction,
+	Update
 } from '@reduxjs/toolkit';
 import isEqual from 'lodash.isequal';
 import { ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
 import {
-    ApiAddFavoriteChannelRequest,
-    ApiChangeChannelPrivateRequest,
-    ApiChannelDescription,
-    ApiCreateChannelDescRequest,
-    ApiMarkAsReadRequest
+	ApiAddFavoriteChannelRequest,
+	ApiChangeChannelPrivateRequest,
+	ApiChannelDescription,
+	ApiCreateChannelDescRequest,
+	ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
 import { ApiChannelAppResponse } from 'mezon-js/dist/api.gen';
 import { categoriesActions, FetchCategoriesPayload } from '../categories/categories.slice';
@@ -49,10 +49,10 @@ import { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import { channelMetaActions, ChannelMetaEntity, enableMute } from './channelmeta.slice';
 import {
-    LIST_CHANNELS_USER_FEATURE_KEY,
-    listChannelsByUserActions,
-    ListChannelsByUserState,
-    selectEntitiesChannelsByUser
+	LIST_CHANNELS_USER_FEATURE_KEY,
+	listChannelsByUserActions,
+	ListChannelsByUserState,
+	selectEntitiesChannelsByUser
 } from './channelUser.slice';
 import { listChannelRenderAction } from './listChannelRender.slice';
 
@@ -998,6 +998,11 @@ export const channelsSlice = createSlice({
 
 		setRequestInput: (state, action: PayloadAction<{ clanId: string; channelId: string; request: RequestInput }>) => {
 			const { clanId, channelId, request } = action.payload;
+			console.log('clanId: ', clanId);
+			console.log('channelId: ', channelId);
+			console.log('request: ', request);
+			console.log('!state.byClans[clanId]: ', !state.byClans[clanId]);
+
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
@@ -1383,8 +1388,11 @@ export const selectDefaultChannelIdByClanId = createSelector(
 );
 
 export const selectRequestByChannelId = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string, (state, channelId: string) => channelId],
-	(state, clanId, channelId) => state.byClans[clanId]?.request[channelId] ?? null
+	[getChannelsState, (state: RootState, idRequest: { clanId: string; channelId: string }) => idRequest],
+	(state, idRequest) => {
+		const { clanId, channelId } = idRequest;
+		return state.byClans[clanId]?.request[channelId] ?? null;
+	}
 );
 
 export const selectAllIdChannelSelected = createSelector(
