@@ -273,9 +273,20 @@ function MyApp() {
 
 	const { streamVideoRef, handleChannelClick, disconnect, isStream } = useWebRTCStream();
 
+	useEffect(() => {
+		console.log('openModalE2ee && !hasKeyE2ee: ', openModalE2ee && !hasKeyE2ee);
+		if (!hasKeyE2ee) {
+			openModalSetupE2EE();
+		}
+	}, [openModalE2ee, hasKeyE2ee]);
+
 	const handleClose = () => {
 		dispatch(e2eeActions.setOpenModalE2ee(false));
 	};
+
+	const [openModalSetupE2EE] = useModal(() => {
+		return <MultiStepModalE2ee onClose={handleClose} />;
+	}, []);
 
 	const toastError = useSelector(selectToastErrors);
 
@@ -316,7 +327,6 @@ function MyApp() {
 					)}
 
 				<DmCalling ref={dmCallingRef} dmGroupId={groupCallId} directId={directId || ''} />
-				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} onclose={() => setIsShowFirstJoinPopup(false)} />}
 				{isShowPopupQuickMess && <PopupQuickMess />}

@@ -17,9 +17,7 @@ import {
 	SetMuteNotificationPayload,
 	SetNotificationPayload,
 	channelUsersActions,
-	channelsActions,
 	directMetaActions,
-	e2eeActions,
 	notificationSettingActions,
 	removeChannelUsersPayload,
 	selectCurrentChannel,
@@ -33,7 +31,7 @@ import {
 import { ChannelMembersEntity, EPermission, EUserSettings, FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { format } from 'date-fns';
 import { Dropdown } from 'flowbite-react';
-import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MentionItem } from 'react-mentions';
 import { useSelector } from 'react-redux';
@@ -215,22 +213,22 @@ const PanelMember = ({
 		[dispatch]
 	);
 
-	const handleEnableE2ee = useCallback(async (directId?: string, e2ee?: number) => {
-		if (!hasKeyE2ee && !e2ee) {
-			dispatch(e2eeActions.setDirectMesIdE2ee(directId));
-			dispatch(e2eeActions.setOpenModalE2ee(true));
-			return;
-		}
-		if (!directId) return;
-		const updateChannel: ApiUpdateChannelDescRequest = {
-			channel_id: directId,
-			channel_label: '',
-			category_id: currentDmGroup.category_id,
-			app_url: currentDmGroup.app_url,
-			e2ee: !currentDmGroup.e2ee ? 1 : 0
-		};
-		await dispatch(channelsActions.updateChannel(updateChannel));
-	}, []);
+	// const handleEnableE2ee = useCallback(async (directId?: string, e2ee?: number) => {
+	// 	if (!hasKeyE2ee && !e2ee) {
+	// 		dispatch(e2eeActions.setDirectMesIdE2ee(directId));
+	// 		dispatch(e2eeActions.setOpenModalE2ee(true));
+	// 		return;
+	// 	}
+	// 	if (!directId) return;
+	// 	const updateChannel: ApiUpdateChannelDescRequest = {
+	// 		channel_id: directId,
+	// 		channel_label: '',
+	// 		category_id: currentDmGroup.category_id,
+	// 		app_url: currentDmGroup.app_url,
+	// 		e2ee: !currentDmGroup.e2ee ? 1 : 0
+	// 	};
+	// 	await dispatch(channelsActions.updateChannel(updateChannel));
+	// }, []);
 
 	useEffect(() => {
 		if (getNotificationChannelSelected?.active === 1 || getNotificationChannelSelected?.id === '0') {
@@ -341,10 +339,11 @@ const PanelMember = ({
 				<>
 					<GroupPanelMember>
 						<ItemPanelMember children="Mark As Read" onClick={() => handleMarkAsRead(directMessageValue?.dmID ?? '')} />
-						<ItemPanelMember
+
+						{/* <ItemPanelMember
 							children={!directMessageValue?.e2ee ? 'Enable E2EE' : 'Disable E2EE'}
 							onClick={() => handleEnableE2ee(directMessageValue?.dmID, directMessageValue?.e2ee)}
-						/>
+						/> */}
 						<ItemPanelMember children="Profile" onClick={handleOpenProfile} />
 						{directMessageValue ? (
 							checkDm && <ItemPanelMember children="Call" />

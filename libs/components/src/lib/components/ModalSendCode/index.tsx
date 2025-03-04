@@ -380,22 +380,16 @@ const MultiStepModalE2ee = ({ onClose }: ModalSendCodeProps) => {
 	};
 
 	useEffect(() => {
-		if (userProfile?.encrypt_private_key) {
-			setStep(3);
-		} else {
-			if (!hasKeyE2ee) {
-				MessageCrypt.initializeKeys(userProfile?.user?.id as string)
-					.then((pubkey) => {
-						if (!pubkey) return;
-						dispatch(e2eeActions.setPubkey(pubkey));
-					})
-					.catch((error) => {
-						console.error(error);
-					});
-			}
-		}
+		MessageCrypt.initializeKeys(userProfile?.user?.id as string)
+			.then((pubkey) => {
+				if (!pubkey) return;
+				dispatch(e2eeActions.setPubkey(pubkey));
+				dispatch(e2eeActions.pushPubKey(pubkey as ApiPubKey));
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}, [dispatch, hasKeyE2ee, userProfile]);
-
 	return (
 		<>
 			{step === 1 && !userProfile?.encrypt_private_key && <ModalIntro onNext={handleNext} onClose={handleClose} />}

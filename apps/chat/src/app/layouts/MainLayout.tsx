@@ -93,6 +93,7 @@ const GlobalEventListener = () => {
 
 	useEffect(() => {
 		if (!user?.encrypt_private_key) {
+			dispatch(e2eeActions.setHasKey(false));
 			MessageCrypt.checkExistingKeys(user?.user?.id as string)
 				.then((found) => {
 					if (found) {
@@ -103,7 +104,7 @@ const GlobalEventListener = () => {
 					console.error(error);
 				});
 		}
-	}, []);
+	}, [dispatch, user?.encrypt_private_key, user?.user?.id]);
 
 	return null;
 };
