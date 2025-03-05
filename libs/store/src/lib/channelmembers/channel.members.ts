@@ -550,11 +550,15 @@ export const selectAllChannelMembers = createSelector(
 		if (!members?.ids) return membersOfChannel;
 		const ids = members.ids || [];
 
-		membersOfChannel = ids.map((id) => ({
-			...usersClanState.entities[id],
-			channelId,
-			userChannelId: channelId
-		}));
+		ids.map((id) => {
+			if (usersClanState.entities[id].id) {
+				membersOfChannel.push({
+					...usersClanState.entities[id],
+					channelId,
+					userChannelId: channelId
+				});
+			}
+		});
 
 		return membersOfChannel;
 	}
