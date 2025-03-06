@@ -1,7 +1,6 @@
 import React from 'react';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	EStateFriend,
@@ -17,7 +16,8 @@ import { ChannelStatusEnum, IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MezonAvatar } from '../../../componentUI';
+import { MezonAvatar, MezonIconCDN } from '../../../componentUI';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IWelcomeMessage {
@@ -110,12 +110,12 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 				<View style={styles.iconWelcomeMessage}>
 					{isChannel ? (
 						currenChannel?.channel_private === ChannelStatusEnum.isPrivate ? (
-							<Icons.TextLockIcon width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_50} height={size.s_50} />
 						) : (
-							<Icons.TextIcon width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.channelText} width={size.s_50} height={size.s_50} />
 						)
 					) : (
-						<Icons.ThreadIcon width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_50} height={size.s_50} />
 					)}
 				</View>
 			)}

@@ -663,7 +663,6 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'row',
 			justifyContent: 'center',
 			alignItems: 'center',
-			paddingRight: size.s_6,
 			borderRadius: size.s_50,
 			marginLeft: size.s_6
 		},

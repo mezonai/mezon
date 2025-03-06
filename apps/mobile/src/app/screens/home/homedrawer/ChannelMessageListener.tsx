@@ -77,7 +77,8 @@ const ChannelMessageListener = React.memo(() => {
 						ChannelType.CHANNEL_TYPE_CHANNEL,
 						ChannelType.CHANNEL_TYPE_THREAD,
 						ChannelType.CHANNEL_TYPE_STREAMING,
-						ChannelType.CHANNEL_TYPE_MEZON_VOICE
+						ChannelType.CHANNEL_TYPE_MEZON_VOICE,
+						ChannelType.CHANNEL_TYPE_APP
 					].includes(type)
 				) {
 					const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);

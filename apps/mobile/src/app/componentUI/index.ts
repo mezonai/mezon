@@ -28,6 +28,7 @@ export { default as MezonBottomSheet } from './MezonBottomSheet';
 export { default as MezonClanAvatar } from './MezonClanAvatar';
 export { default as MezonConfirm } from './MezonConfirm';
 export { default as MezonDateTimePicker } from './MezonDateTimePicker';
+export { default as MezonIconCDN } from './MezonIconCDN';
 export { default as MezonImagePicker } from './MezonImagePicker';
 export { default as MezonInput } from './MezonInput';
 export { default as MezonMenu } from './MezonMenu';

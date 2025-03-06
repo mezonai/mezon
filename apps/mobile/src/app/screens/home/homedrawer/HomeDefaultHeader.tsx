@@ -45,11 +45,11 @@ const HomeDefaultHeader = React.memo(
 		};
 
 		const renderChannelIcon = () => {
-			if (currentChannel?.channel_private === ChannelStatusEnum.isPrivate && !!Number(currentChannel?.parrent_id)) {
+			if (currentChannel?.channel_private === ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
 				return <MezonIconCDN icon={IconCDN.threadLockIcon} height={size.s_20} width={size.s_20} />;
 			}
 
-			if (!!currentChannel?.channel_label && !!Number(currentChannel?.parrent_id)) {
+			if (!!currentChannel?.channel_label && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
 				return <MezonIconCDN icon={IconCDN.threadIcon} height={size.s_20} width={size.s_20} />;
 			}
 
@@ -58,7 +58,7 @@ const HomeDefaultHeader = React.memo(
 				currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 				!isAgeRestrictedChannel
 			) {
-				return <MezonIconCDN icon={IconCDN.channelText} height={size.s_20} width={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_20} width={size.s_20} />;
 			}
 
 			if (currentChannel?.channel_private !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
