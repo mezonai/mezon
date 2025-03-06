@@ -1,11 +1,10 @@
 import { AttachmentEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
-import { Video as ExpoVideo, ResizeMode } from 'expo-av';
 import React, { useCallback, useMemo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
-import { isImage, isVideo } from '../../../utils/helpers';
+import { isImage } from '../../../utils/helpers';
+import ImageNative from '../../ImageNative';
 import styles from './MediaItem.styles';
 
 interface IMediaItemProps {
@@ -13,7 +12,6 @@ interface IMediaItemProps {
 	onPress: (item: AttachmentEntity) => void;
 }
 export const MediaItem = React.memo(({ data, onPress }: IMediaItemProps) => {
-	const checkIsVideo = useMemo(() => isVideo(data?.url), [data?.url]);
 	const checkIsImage = useMemo(() => isImage(data?.url), [data?.url]);
 	const uploader = useAppSelector((state) => selectMemberClanByUserId2(state, data?.uploader || ''));
 	const handlePress = useCallback(() => {
@@ -25,24 +23,10 @@ export const MediaItem = React.memo(({ data, onPress }: IMediaItemProps) => {
 				<MezonAvatar height={25} width={25} username={uploader?.user?.username} avatarUrl={uploader?.user?.avatar_url}></MezonAvatar>
 			</View>
 			{checkIsImage ? (
-				<FastImage
+				<ImageNative
 					style={styles.image}
-					source={{ uri: createImgproxyUrl(data?.url ?? '', { width: 300, height: 300, resizeType: 'fit' }) }}
+					url={createImgproxyUrl(data?.url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 					resizeMode="cover"
-				/>
-			) : null}
-			{checkIsVideo ? (
-				<ExpoVideo
-					onError={(err) => {
-						console.error('load error', err);
-					}}
-					source={{
-						uri: data?.url
-					}}
-					useNativeControls={false}
-					resizeMode={ResizeMode.CONTAIN}
-					rate={1.0}
-					style={styles.video}
 				/>
 			) : null}
 		</TouchableOpacity>

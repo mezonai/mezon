@@ -97,6 +97,13 @@ const SuggestItem = ({
 			return <Icons.SpeakerLocked defaultSize="w-5 h-5" />;
 		}
 
+		if (type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+			if (!channel_private || channel_private === 0) {
+				return <Icons.Speaker defaultSize="w-5 5-5" />;
+			}
+			return <Icons.SpeakerLocked defaultSize="w-5 h-5" />;
+		}
+
 		if (type === ChannelType.CHANNEL_TYPE_STREAMING && (!channel_private || channel_private === 0)) {
 			return <Icons.Stream defaultSize="w-5 5-5" />;
 		}
@@ -168,7 +175,7 @@ const SuggestItem = ({
 			</div>
 			<span className={`text-[10px] font-semibold text-[#A1A1AA] one-line ${subTextStyle}`}>
 				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channel_id={getChannel?.parrent_id as string} />
+					<RenderChannelLabelForThread channel_id={getChannel?.parent_id as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}

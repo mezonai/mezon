@@ -200,14 +200,14 @@ export const selectAllChannelsByUser = createSelector(getChannelsByUserState, se
 export const selectEntitiesChannelsByUser = createSelector(getChannelsByUserState, selectEntities);
 
 export const selectAllInfoChannels = createSelector(selectAllChannelsByUser, (channels = []) =>
-	channels?.map(({ channel_id, channel_label, channel_private, clan_name, clan_id, type, parrent_id, meeting_code, id }) => ({
+	channels?.map(({ channel_id, channel_label, channel_private, clan_name, clan_id, type, parent_id, meeting_code, id }) => ({
 		channel_id,
 		channel_label,
 		channel_private,
 		clan_name,
 		clan_id,
 		type,
-		parrent_id,
+		parent_id,
 		meeting_code,
 		id
 	}))

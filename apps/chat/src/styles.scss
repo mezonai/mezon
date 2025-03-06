@@ -69,6 +69,26 @@
 	font-display: swap;
 }
 
+.contain-layout {
+	contain: layout;
+}
+
+.contain-paint {
+	contain: paint;
+}
+
+.contain-size {
+	contain: size;
+}
+
+.contain-content {
+	contain: content;
+}
+
+.contain-strict {
+	contain: strict;
+}
+
 /* You can add global styles to this file, and also import other style files */
 :root {
 	--white-500: #ffffff;
@@ -404,6 +424,9 @@ input:-webkit-autofill:active {
 	align-items: center;
 	justify-content: flex-end;
 	height: 100%;
+	contain: content;
+	content-visibility: auto;
+	contain-intrinsic-size: auto 500px;
 	.force-messages-scroll & {
 		margin-top: 100vh !important;
 	}
@@ -1226,6 +1249,6 @@ input:-webkit-autofill:active {
 	padding: 0;
 }
 
-.rc-tooltip-placement-top{
+.rc-tooltip-placement-top {
 	padding-bottom: 4.5px;
 }

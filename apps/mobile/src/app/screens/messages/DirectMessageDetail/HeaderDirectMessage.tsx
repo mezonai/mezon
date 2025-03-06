@@ -16,9 +16,9 @@ import { TIME_OFFSET, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import ImageNative from '../../../components/ImageNative';
 import { UserStatus } from '../../../components/UserStatus';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -146,21 +146,13 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				) : (
 					<View style={styles.avatarWrapper}>
 						{dmAvatar ? (
-							isTabletLandscape ? (
-								<Image
-									source={{
-										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-									}}
-									style={styles.friendAvatar}
+							<View style={styles.friendAvatar}>
+								<ImageNative
+									url={createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })}
+									style={{ width: '100%', height: '100%' }}
+									resizeMode={'cover'}
 								/>
-							) : (
-								<FastImage
-									source={{
-										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-									}}
-									style={styles.friendAvatar}
-								/>
-							)
+							</View>
 						) : (
 							<View style={styles.wrapperTextAvatar}>
 								<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>

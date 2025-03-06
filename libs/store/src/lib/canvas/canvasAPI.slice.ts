@@ -176,6 +176,15 @@ export const canvasAPISlice = createSlice({
 			if (state.channelCanvas[channelId]) {
 				canvasAPIAdapter.removeOne(state.channelCanvas[channelId], canvasId);
 			}
+		},
+		upsertOne: (state, action: PayloadAction<{ channel_id: string; canvas: any }>) => {
+			const { channel_id, canvas } = action.payload;
+			if (!state.channelCanvas[channel_id]) {
+				state.channelCanvas[channel_id] = canvasAPIAdapter.getInitialState({
+					id: canvas.id
+				});
+			}
+			canvasAPIAdapter.upsertOne(state.channelCanvas[channel_id], canvas);
 		}
 	},
 	extraReducers: (builder) => {
@@ -187,12 +196,6 @@ export const canvasAPISlice = createSlice({
 				state.loadingStatus = 'loaded';
 				const { channel_id } = action.payload;
 				if (!channel_id) return;
-				if (!state.channelCanvas[channel_id]) {
-					state.channelCanvas[channel_id] = canvasAPIAdapter.getInitialState({
-						id: channel_id
-					});
-				}
-				canvasAPIAdapter.upsertOne(state.channelCanvas[channel_id], action.payload);
 			})
 			.addCase(createEditCanvas.rejected, (state: CanvasAPIState, action) => {
 				state.loadingStatus = 'error';

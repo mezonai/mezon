@@ -2,7 +2,7 @@ import { LiveKitRoom } from '@livekit/components-react';
 
 import '@livekit/components-styles';
 import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
-import { useAuth } from '@mezon/core';
+import { useAppParams, useAuth } from '@mezon/core';
 import {
 	generateMeetToken,
 	getStoreAsync,
@@ -119,10 +119,11 @@ const ChannelVoice = memo(
 		const isShow = isJoined && voiceInfo?.clanId === currentChannel?.clan_id && voiceInfo?.channelId === currentChannel?.channel_id;
 
 		const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
+		const { channelId } = useAppParams();
 
 		return (
 			<div
-				className={`${!isChannelMezonVoice || isShowSettingFooter.status ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
+				className={`${!isChannelMezonVoice || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
 				style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
 			>
 				{token === '' || !serverUrl ? (

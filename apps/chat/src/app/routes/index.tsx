@@ -1,4 +1,3 @@
-import loadable from '@loadable/component';
 import isElectron from 'is-electron';
 import { LoaderFunctionArgs, Outlet, RouterProvider, createBrowserRouter, createHashRouter } from 'react-router-dom';
 
@@ -26,35 +25,33 @@ import { Canvas } from '@mezon/components';
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
 import { memo, useCallback, useEffect, useMemo } from 'react';
+import CanvasLayout from '../layouts/CanvasLayout';
+import ChannelLayout from '../layouts/ChannelLayout';
+import ClanLayout from '../layouts/ClanLayout';
 import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
 import { inviteLoader, shouldRevalidateInvite } from '../loaders/inviteLoader';
 import AppDirectory from '../pages/AppDirectory';
+import ChannelMain from '../pages/channel';
+import ChannelIndex from '../pages/channel/ChannelIndex';
+import ClanIndex from '../pages/clan/ClanIndex';
+import Direct from '../pages/directMessage';
+import DirectMessage from '../pages/directMessage/DMPage';
+import DirectMessageIndex from '../pages/directMessage/DMPage/DirectMessageIndex';
+import FriendsPage from '../pages/directMessage/FriendsPage';
+import GuideMain from '../pages/guide';
 import MezonPage from '../pages/homepage/mezonpage';
+import InvitePage from '../pages/invite';
+import Login from '../pages/login';
+import LoginCallback from '../pages/loginCallback';
+import Main from '../pages/main';
+import MemberMain from '../pages/member';
+import ChannelSettingMain from '../pages/setting/channelSetting';
 import ThreadsMain from '../pages/thread';
 import CanvasRoutes from './CanvasRoutes';
 import ErrorRoutes from './ErrorRoutes';
 import InitialRoutes from './InititalRoutes';
 import ProtectedRoutes from './ProtectedRoutes';
 import ThreadsRoutes from './ThreadsRoutes';
-
-const Login = loadable(() => import('../pages/login'));
-// const LoginDesktop = loadable(() => import('../pages/loginDesktop'));
-const Main = loadable(() => import('../pages/main'));
-const DirectMain = loadable(() => import('../pages/directMessage'));
-const InvitePage = loadable(() => import('../pages/invite'));
-const ChannelMain = loadable(() => import('../pages/channel'));
-const MemberMain = loadable(() => import('../pages/member'));
-const ChannelIndex = loadable(() => import('../pages/channel/ChannelIndex'));
-const ClanIndex = loadable(() => import('../pages/clan/ClanIndex'));
-const DirectMessage = loadable(() => import('../pages/directMessage/DMPage'));
-const DirectMessageIndex = loadable(() => import('../pages/directMessage/DMPage/DirectMessageIndex'));
-const FriendsPage = loadable(() => import('../pages/directMessage/FriendsPage'));
-const ClanLayout = loadable(() => import('../layouts/ClanLayout'));
-const ChannelLayout = loadable(() => import('../layouts/ChannelLayout'));
-const ChannelSettingMain = loadable(() => import('../pages/setting/channelSetting'));
-const GuideMain = loadable(() => import('../pages/guide'));
-const CanvasLayout = loadable(() => import('../layouts/CanvasLayout'));
-const LoginCallback = loadable(() => import('../pages/loginCallback'));
 
 // Components
 export const Routes = memo(() => {
@@ -107,7 +104,7 @@ export const Routes = memo(() => {
 										element: <MezonPage />
 									},
 							{
-								path: '/application-directory',
+								path: '/apps',
 								element: <AppDirectory />
 							},
 							{
@@ -222,7 +219,7 @@ export const Routes = memo(() => {
 													},
 													{
 														path: 'direct',
-														element: <DirectMain />,
+														element: <Direct />,
 														loader: loaderWithStore(directLoader),
 														children: [
 															{

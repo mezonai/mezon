@@ -6,7 +6,8 @@ export const style = (colors: Attributes) =>
 			borderRadius: verticalScale(5),
 			borderWidth: 0.5,
 			borderColor: Colors.borderPrimary,
-			marginBottom: size.s_6
+			marginBottom: size.s_6,
+			overflow: 'hidden'
 		},
 		wrapperTypingLabel: {
 			position: 'absolute',

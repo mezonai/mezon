@@ -2137,15 +2137,15 @@ export const Transaction = ({ width = 24, height = 24, color = '#AEAEAE', ...pro
 export const Buzz = ({ width = 24, height = 24, color = '#AEAEAE', ...props }) => {
 	return (
 		<Svg width={width} height={height} fill={color} viewBox="0 0 24 24" {...props}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<Path
 					d="M2 6L3.06051 7.11942C3.58133 7.66918 3.56352 8.53546 3.02055 9.06335L3 9.08333C2.45233 9.61579 2.45233 10.4953 3 11.0278V11.0278C3.54767 11.5602 3.54767 12.4398 3 12.9722V12.9722C2.45233 13.5047 2.45233 14.3842 3 14.9167L3.02055 14.9366C3.56351 15.4645 3.58132 16.3308 3.0605 16.8806L2 18M22 6L20.9395 7.11942C20.4187 7.66918 20.4365 8.53546 20.9794 9.06335L21 9.08333C21.5477 9.61579 21.5477 10.4953 21 11.0278V11.0278C20.4523 11.5602 20.4523 12.4398 21 12.9722V12.9722C21.5477 13.5047 21.5477 14.3842 21 14.9167L20.9795 14.9366C20.4365 15.4645 20.4187 16.3308 20.9395 16.8806L22 18M7 5L7 19C7 20.1046 7.89543 21 9 21H15C16.1046 21 17 20.1046 17 19V5C17 3.89543 16.1046 3 15 3L9 3C7.89543 3 7 3.89543 7 5Z"
 					stroke={color}
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				></Path>
 			</G>
 		</Svg>
@@ -2155,10 +2155,10 @@ export const Buzz = ({ width = 24, height = 24, color = '#AEAEAE', ...props }) =
 export const ShareScreenIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg width={width} height={height} fill={color} viewBox="0 0 28 24" {...props}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
-				<G id="🔍-System-Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+				<G id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
 					<G id="ic_fluent_share_screen_28_filled" fill={color} fill-rule="nonzero">
 						<Path
 							d="M23.75,4.99939 C24.9926,4.99939 26,6.00675 26,7.24939 L26,7.24939 L26,20.75 C26,21.9926 24.9926,23 23.75,23 L23.75,23 L4.25,23 C3.00736,23 2,21.9926 2,20.75 L2,20.75 L2,7.24939 C2,6.00675 3.00736,4.99939 4.25,4.99939 L4.25,4.99939 Z M13.9975,8.62108995 C13.7985,8.62108995 13.6077,8.70032 13.467,8.84113 L10.217,12.0956 C9.92435,12.3887 9.92468,12.8636 10.2178,13.1563 C10.5109,13.449 10.9858,13.4487 11.2784,13.1556 L13.2477,11.1835 L13.2477,18.6285 C13.2477,19.0427 13.5835,19.3785 13.9977,19.3785 C14.4119,19.3785 14.7477,19.0427 14.7477,18.6285 L14.7477,11.1818 L16.7219,13.1559 C17.0148,13.4488 17.4897,13.4488 17.7826,13.1559 C18.0755,12.863 18.0755,12.3882 17.7826,12.0953 L14.5281,8.84076 C14.3873,8.70005 14.1965,8.62108995 13.9975,8.62108995 Z"
@@ -2181,8 +2181,8 @@ export const ShareScreenSlashIcon = ({ width = 24, height = 24, color = 'white',
 export const ArrowSaltIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg viewBox="0 0 20 20" fill={color} width={width} height={height}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<Path
 					fill={color}
@@ -2196,8 +2196,8 @@ export const ArrowSaltIcon = ({ width = 24, height = 24, color = 'white', ...pro
 export const ArrowShrinkIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg viewBox="0 0 20 20" fill={color} width={width} height={height}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<Path
 					fill={color}
@@ -2231,8 +2231,8 @@ export const ArrowLeftRightIcon = ({ width = 24, height = 24, color = 'white', .
 export const LoadingIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg width={width} height={height} fill={color} viewBox="0 0 512 511">
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<G>
 					<G>

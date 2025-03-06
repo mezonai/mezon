@@ -1,4 +1,4 @@
-import { useAppNavigation, useGifsStickersEmoji, useIdleRender, usePathMatch } from '@mezon/core';
+import { useAppNavigation, useGifsStickersEmoji, usePathMatch } from '@mezon/core';
 import {
 	AppDispatch,
 	RootState,
@@ -70,7 +70,6 @@ const ChannelTopbar = memo(({ channel, mode }: ChannelTopbarProps) => {
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const { isMemberPath } = usePathMatch({ isMemberPath: memberPath });
 
-	const shouldRender = useIdleRender();
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
 	const dispatch = useDispatch();
@@ -82,16 +81,15 @@ const ChannelTopbar = memo(({ channel, mode }: ChannelTopbarProps) => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`${isMacDesktop ? 'draggable-area' : ''} max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center border border-red-400 flex-shrink ${isChannelVoice ? 'bg-black' : 'dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary'} ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`${isMacDesktop ? 'draggable-area' : ''} max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center  flex-shrink ${isChannelVoice ? 'bg-black' : 'dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary'} ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
-			{shouldRender &&
-				(isChannelApps ? (
-					<TopBarChannelApps channel={channel} />
-				) : isChannelVoice ? (
-					<TopBarChannelVoice channel={channel} />
-				) : (
-					<TopBarChannelText channel={channel} mode={mode} isMemberPath={isMemberPath} />
-				))}
+			{isChannelApps ? (
+				<TopBarChannelApps channel={channel} />
+			) : isChannelVoice ? (
+				<TopBarChannelVoice channel={channel} />
+			) : (
+				<TopBarChannelText channel={channel} mode={mode} isMemberPath={isMemberPath} />
+			)}
 		</div>
 	);
 });
@@ -208,8 +206,7 @@ const TopBarChannelText = memo(({ channel, isChannelVoice, mode, isMemberPath }:
 	const appearanceTheme = useSelector(selectTheme);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 
-	const channelParent =
-		useAppSelector((state) => selectChannelById(state, (channel?.parrent_id ? (channel.parrent_id as string) : '') ?? '')) || {};
+	const channelParent = useAppSelector((state) => selectChannelById(state, (channel?.parent_id ? (channel.parent_id as string) : '') ?? '')) || {};
 
 	return (
 		<>

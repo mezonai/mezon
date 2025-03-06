@@ -11,10 +11,9 @@ import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { appActions, channelsActions, clansActions, directActions, messagesActions, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
-import { AppState, DeviceEventEmitter, Platform, StatusBar } from 'react-native';
+import { AppState, DeviceEventEmitter, Platform, StatusBar, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
-import SwipeBackContainer from '../../home/homedrawer/SwipeBackContainer';
 import { ChatMessageWrapper } from '../ChatMessageWrapper';
 import HeaderDirectMessage from './HeaderDirectMessage';
 import { style } from './styles';
@@ -120,7 +119,6 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 		async (state: string) => {
 			if (state === 'active') {
 				try {
-					DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: false });
 					handleReconnect('DM detail reconnect attempt');
 					save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
 					dispatch(
@@ -141,11 +139,9 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 						})
 					);
 					save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
-					DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });
 				} catch (error) {
 					dispatch(appActions.setIsFromFCMMobile(false));
 					save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
-					DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });
 				}
 			}
 		},
@@ -165,12 +161,12 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 	}, [navigation]);
 
 	return (
-		<SwipeBackContainer handleBack={handleBack}>
+		<View style={{ flex: 1 }}>
 			<StatusBarHeight />
 			<HeaderDirectMessage from={from} styles={styles} themeValue={themeValue} directMessageId={directMessageId} />
 			{directMessageId && (
 				<ChatMessageWrapper directMessageId={directMessageId} isModeDM={Number(dmType) === ChannelType.CHANNEL_TYPE_DM} currentClanId={'0'} />
 			)}
-		</SwipeBackContainer>
+		</View>
 	);
 };

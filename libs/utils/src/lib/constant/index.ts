@@ -8,6 +8,7 @@ export const SIZE_PAGE_SEARCH = 25;
 export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
 export const MAX_FILE_NAME_EMOJI = 62;
 export const MAX_FILE_ATTACHMENTS = 100;
+export const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
 export const DEBOUNCE_TYPING_TIME = 700;
 export const TIME_OF_SHOWING_FIRST_POPUP = 1000 * 60 * 5;
 export const KEY_KEYBOARD = { BACKSPACE: 8, TAB: 9, ENTER: 13, ESC: 27, UP: 38, DOWN: 40, RIGHT: 39, LEFT: 27 };
@@ -102,3 +103,7 @@ export const KOMU_CLAN_ID = '1779484504377790464';
 export const WELCOME_CHANNEL_ID = '1827883133219901440';
 
 export const MEZON_MENTIONS_COPY_KEY = 'text/mezon-mentions';
+export enum UploadLimitReason {
+	SIZE = 'size',
+	COUNT = 'count'
+}

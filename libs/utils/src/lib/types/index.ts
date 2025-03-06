@@ -1,58 +1,58 @@
 import {
-	ChannelDescription,
-	ChannelMessage,
-	ChannelStreamMode,
-	ChannelType,
-	HashtagDm,
-	Notification,
-	NotificationType,
-	SFUSignalingFwd,
-	WebrtcSignalingFwd
+    ChannelDescription,
+    ChannelMessage,
+    ChannelStreamMode,
+    ChannelType,
+    HashtagDm,
+    Notification,
+    NotificationType,
+    SFUSignalingFwd,
+    WebrtcSignalingFwd
 } from 'mezon-js';
 import {
-	ApiAccount,
-	ApiCategoryDesc,
-	ApiChannelAttachment,
-	ApiChannelDescription,
-	ApiChannelMessageHeader,
-	ApiClanDesc,
-	ApiClanProfile,
-	ApiEventManagement,
-	ApiInviteUserRes,
-	ApiMessageAttachment,
-	ApiMessageMention,
-	ApiMessageReaction,
-	ApiMessageRef,
-	ApiNotificationSetting,
-	ApiNotificationUserChannel,
-	ApiPermission,
-	ApiPinMessage,
-	ApiRole,
-	ApiSearchMessageDocument,
-	ApiSystemMessage,
-	ApiUser,
-	ClanUserListClanUser,
-	RoleUserListRoleUser
+    ApiAccount,
+    ApiCategoryDesc,
+    ApiChannelAttachment,
+    ApiChannelDescription,
+    ApiChannelMessageHeader,
+    ApiClanDesc,
+    ApiClanProfile,
+    ApiEventManagement,
+    ApiInviteUserRes,
+    ApiMessageAttachment,
+    ApiMessageMention,
+    ApiMessageReaction,
+    ApiMessageRef,
+    ApiNotificationSetting,
+    ApiNotificationUserChannel,
+    ApiPermission,
+    ApiPinMessage,
+    ApiRole,
+    ApiSearchMessageDocument,
+    ApiSystemMessage,
+    ApiUser,
+    ClanUserListClanUser,
+    RoleUserListRoleUser
 } from 'mezon-js/api.gen';
 import {
-	ApiAllUsersAddChannelResponse,
-	ApiNotifiReactMessage,
-	ApiNotificationChannelCategorySetting,
-	ApiPermissionRoleChannel
+    ApiAllUsersAddChannelResponse,
+    ApiNotifiReactMessage,
+    ApiNotificationChannelCategorySetting,
+    ApiPermissionRoleChannel
 } from 'mezon-js/dist/api.gen';
 import { HTMLInputTypeAttribute } from 'react';
 import { MentionItem } from 'react-mentions';
 import { ILongPressType } from '../hooks';
 import { CanvasDataResponse } from './htmlCanvas';
 import {
-	IBoldMessage,
-	IEmojiOnMessage,
-	IHashtagOnMessage,
-	ILinkOnMessage,
-	ILinkVoiceRoomOnMessage,
-	ILinkYoutubeOnMessage,
-	IMarkdownOnMessage,
-	IPreMessage
+    IBoldMessage,
+    IEmojiOnMessage,
+    IHashtagOnMessage,
+    ILinkOnMessage,
+    ILinkVoiceRoomOnMessage,
+    ILinkYoutubeOnMessage,
+    IMarkdownOnMessage,
+    IPreMessage
 } from './messageLine';
 
 export * from './base';
@@ -180,7 +180,7 @@ export type IThread = {
 	id?: string | undefined;
 	/// new update
 	clan_id?: string | undefined;
-	parrent_id?: string | undefined;
+	parent_id?: string | undefined;
 	channel_id?: string | undefined;
 	category_id?: string | undefined;
 	type?: number;
@@ -920,7 +920,7 @@ export type SearchItemProps = {
 	icon?: string;
 	channelId?: string;
 	channel_private?: number;
-	parrent_id?: string;
+	parent_id?: string;
 	clanId?: string;
 	meeting_code?: string;
 };

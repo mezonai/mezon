@@ -177,7 +177,7 @@ const FriendsPage = () => {
 					</button>
 				</div>
 			</div>
-			<div className={`flex-1 flex w-full h-full ${isElectron() ? 'pb-8' : ''}`}>
+			<div className={`contain-strict flex-1 flex w-full h-full ${isElectron() ? 'pb-8' : ''}`}>
 				<div className=" flex-1 dark:bg-bgPrimary bg-[#F0F0F0] flex flex-col">
 					{!openModalAddFriend && (
 						<>
@@ -246,7 +246,7 @@ const FriendsPage = () => {
 						</div>
 					)}
 				</div>
-				<div className="w-[416px] max-w-2/5 dark:bg-bgTertiary bg-bgLightMode lg:flex hidden">
+				<div className="contain-strict w-[416px] max-w-2/5 dark:bg-bgTertiary bg-bgLightMode lg:flex hidden">
 					<ActivityList listFriend={friends} />
 				</div>
 			</div>

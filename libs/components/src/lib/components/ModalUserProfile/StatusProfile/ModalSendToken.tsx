@@ -148,12 +148,12 @@ const ModalSendToken = ({
 		<Modal className="bg-bgModalDark" theme={{ content: { base: 'w-[440px]' } }} show={openModal} dismissible={true} onClose={onClose}>
 			<div className="dark:bg-bgPrimary bg-bgLightMode pt-4 rounded">
 				<div>
-					<h1 className="dark:text-textDarkTheme text-xl font-semibold text-center">Send Token</h1>
+					<h1 className="dark:text-textDarkTheme text-xl font-semibold text-center">Transfer To</h1>
 				</div>
 				<div className="flex w-full flex-col gap-5 pt-4">
 					<div className="px-4">
 						<div className="mb-2 block">
-							<Label value={`Send token to ?`} className="dark:text-[#B5BAC1] text-textLightTheme text-xs uppercase font-semibold" />
+							<Label value={`Transfer to?`} className="dark:text-[#B5BAC1] text-textLightTheme text-xs uppercase font-semibold" />
 						</div>
 						<div className="relative">
 							<input
@@ -223,7 +223,7 @@ const ModalSendToken = ({
 						<div className="mb-2 block">
 							<Label
 								htmlFor="clearAfter"
-								value="Token"
+								value="Amount"
 								className="dark:text-[#B5BAC1] text-textLightTheme text-xs uppercase font-semibold"
 							/>
 						</div>
@@ -249,7 +249,7 @@ const ModalSendToken = ({
 							type="text"
 							defaultValue={noteSendToken}
 							className="dark:text-[#B5BAC1] text-textLightTheme outline-none w-full h-10 p-[10px] dark:bg-bgInputDark bg-bgLightModeThird text-base rounded placeholder:text-sm appearance-none"
-							placeholder="send token"
+							placeholder="Transfer"
 							onChange={handleChangeNote}
 						/>
 					</div>

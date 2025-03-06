@@ -1,13 +1,13 @@
 import {
-	channelMembersActions,
-	channelMetaActions,
-	ChannelsEntity,
-	channelUsersActions,
-	selectAllChannelMembers,
-	selectChannelById,
-	ThreadsEntity,
-	useAppDispatch,
-	useAppSelector
+    channelMembersActions,
+    channelMetaActions,
+    ChannelsEntity,
+    channelUsersActions,
+    selectAllChannelMembers,
+    selectChannelById,
+    ThreadsEntity,
+    useAppDispatch,
+    useAppSelector
 } from '@mezon/store';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
@@ -21,7 +21,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 	const channel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
 	const membersOfChild = useAppSelector((state) => (channelId ? selectAllChannelMembers(state, channelId as string) : null));
-	const membersOfParent = useAppSelector((state) => (channel?.parrent_id ? selectAllChannelMembers(state, channel.parrent_id as string) : null));
+	const membersOfParent = useAppSelector((state) => (channel?.parent_id ? selectAllChannelMembers(state, channel.parent_id as string) : null));
 
 	const dispatch = useAppDispatch();
 
@@ -72,13 +72,13 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 	return useMemo(
 		() => ({
 			membersOfParent:
-				(mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) && channel?.parrent_id !== '0'
+				(mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) && channel?.parent_id !== '0'
 					? membersOfParent
 					: membersOfChild,
 			membersOfChild,
 			addMemberToThread,
 			joinningToThread
 		}),
-		[membersOfChild, membersOfParent, mode, channel?.parrent_id, addMemberToThread, joinningToThread]
+		[membersOfChild, membersOfParent, mode, channel?.parent_id, addMemberToThread, joinningToThread]
 	);
 }

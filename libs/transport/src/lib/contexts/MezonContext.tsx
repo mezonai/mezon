@@ -35,7 +35,7 @@ export type MezonContextValue = {
 	checkLoginRequest: (LoginRequest: ApiConfirmLoginRequest) => Promise<Session | null>;
 	confirmLoginRequest: (ConfirmRequest: ApiConfirmLoginRequest) => Promise<Session | null>;
 	authenticateApple: (token: string) => Promise<Session>;
-	logOutMezon: () => Promise<void>;
+	logOutMezon: (device_id?: string, platform?: string) => Promise<void>;
 	refreshSession: (session: Sessionlike) => Promise<Session>;
 	reconnectWithTimeout: (clanId: string) => Promise<unknown>;
 };
@@ -160,21 +160,30 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		[createSocket, isFromMobile]
 	);
 
-	const logOutMezon = useCallback(async () => {
-		if (socketRef.current) {
-			socketRef.current.ondisconnect = () => {
-				//console.log('loged out');
-			};
-			await socketRef.current.disconnect(false);
-			socketRef.current = null;
-		}
+	const logOutMezon = useCallback(
+		async (device_id?: string, platform?: string) => {
+			if (socketRef.current) {
+				socketRef.current.ondisconnect = () => {
+					//console.log('loged out');
+				};
+				await socketRef.current.disconnect(false);
+				socketRef.current = null;
+			}
 
-		if (clientRef.current && sessionRef.current) {
-			await clientRef.current.sessionLogout(sessionRef.current, sessionRef.current?.token, sessionRef.current?.refresh_token);
-		}
+			if (clientRef.current && sessionRef.current) {
+				await clientRef.current.sessionLogout(
+					sessionRef.current,
+					sessionRef.current?.token,
+					sessionRef.current?.refresh_token,
+					device_id || '',
+					platform || ''
+				);
+			}
 
-		sessionRef.current = null;
-	}, [socketRef]);
+			sessionRef.current = null;
+		},
+		[socketRef]
+	);
 
 	const authenticateDevice = useCallback(
 		async (username: string) => {
@@ -268,7 +277,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						await socket.joinClanChat(clanId);
 						socketRef.current = socket;
 						sessionRef.current = recsession;
-						return resolve(socket);
+						return resolve({ socket: socket, token: recsession });
 					} catch (error) {
 						failCount++;
 						const retryTime = isFromMobile

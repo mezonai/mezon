@@ -1,5 +1,3 @@
-import { safeJSONParse } from 'mezon-js';
-
 export function isEqual(value: any, other: any): boolean {
 	if (value === other) {
 		return true;
@@ -67,13 +65,4 @@ export function isEmpty(value: any) {
 		return Object.keys(value).length === 0;
 	}
 	return false;
-}
-
-export function cloneDeep<T>(value: T): T {
-	// Check if the value is null or not an object (primitive value)
-	if (value === null || typeof value !== 'object') {
-		return value;
-	}
-
-	return safeJSONParse(JSON.stringify(value)) as T;
 }

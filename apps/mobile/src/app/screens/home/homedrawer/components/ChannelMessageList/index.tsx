@@ -1,10 +1,10 @@
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
-import { isEqual } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity } from '@mezon/store-mobile';
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
+import { FlatList } from 'react-native-gesture-handler';
 import { style } from './styles';
 
 interface IChannelListMessageProps {
@@ -51,10 +51,10 @@ const ChannelListMessage = React.memo(
 				inverted={true}
 				showsVerticalScrollIndicator={true}
 				contentContainerStyle={styles.listChannels}
-				initialNumToRender={20}
+				initialNumToRender={10}
 				maxToRenderPerBatch={10}
-				windowSize={5}
-				onEndReachedThreshold={0.5}
+				windowSize={10}
+				onEndReachedThreshold={0.7}
 				maintainVisibleContentPosition={{
 					minIndexForVisible: 0,
 					autoscrollToTopThreshold: 10
@@ -64,7 +64,7 @@ const ChannelListMessage = React.memo(
 				// overrideProps={{ isInvertedVirtualizedList: true }}
 				// showsVerticalScrollIndicator={false}
 				// data={messages || []}
-				onScroll={handleScroll}
+				onMomentumScrollEnd={handleScroll}
 				keyboardShouldPersistTaps={'handled'}
 				// contentContainerStyle={styles.listChannels}
 				// renderItem={renderItem}
@@ -94,11 +94,9 @@ const ChannelListMessage = React.memo(
 						flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
 					});
 				}}
+				disableVirtualization
 			/>
 		);
-	},
-	(prev, curr) => {
-		return prev.isLoadMoreTop === curr.isLoadMoreTop && isEqual(prev.messages, curr.messages) && prev.isLoadMoreBottom === curr.isLoadMoreBottom;
 	}
 );
 export default ChannelListMessage;

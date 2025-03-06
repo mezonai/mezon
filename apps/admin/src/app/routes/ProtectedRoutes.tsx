@@ -9,7 +9,7 @@ const ProtectedRoutes = () => {
 	const isLogin = isLoginLoader && isLoginStore;
 
 	if (!isLogin) {
-		return <Navigate to={redirect || '/login'} replace />;
+		return <Navigate to={redirect || ''} replace />;
 	}
 	return <Outlet />;
 };

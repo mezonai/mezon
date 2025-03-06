@@ -92,9 +92,9 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 	return normalizeSession(session);
 });
 
-export const logOut = createAsyncThunk('auth/logOut', async (_, thunkAPI) => {
+export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platform }: { device_id?: string; platform?: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	await mezon?.logOutMezon();
+	await mezon?.logOutMezon(device_id, platform);
 	thunkAPI.dispatch(authActions.setLogout());
 	clearAllMemoizedFunctions();
 	restoreLocalStorage(['persist:auth', 'persist:apps', 'persist:categories']);

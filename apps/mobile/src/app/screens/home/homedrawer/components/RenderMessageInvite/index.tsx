@@ -18,10 +18,10 @@ function RenderMessageInvite({ content }: IRenderMessageInviteProps) {
 		<View>
 			{parts?.map((part, index) => {
 				if (urlRegex?.test(part)) {
-					return <LinkInvite content={content} part={part} />;
+					return <LinkInvite content={content} part={part} key={index + part} />;
 				}
 				return part ? (
-					<Text style={styles.textContent} key={index}>
+					<Text style={styles.textContent} key={index + part}>
 						{part}
 					</Text>
 				) : null;

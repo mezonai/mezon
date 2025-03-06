@@ -126,7 +126,7 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 				prioritizeName: item?.channel_label ?? '',
 				channel_private: item.channel_private,
 				type: item.type,
-				parrent_id: item.parrent_id,
+				parent_id: item.parent_id,
 				meeting_code: item.meeting_code,
 				count_messsage_unread: item?.count_mess_unread,
 				lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
@@ -286,7 +286,7 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 
 			dispatch(categoriesActions.setCtrlKSelectedChannelId(channel?.id ?? ''));
 			const channelUrl = toChannelPage(channel?.id ?? '', channel?.clanId ?? '');
-			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 			navigate(channelUrl);
 		},
 		[dispatch, navigate, toChannelPage]

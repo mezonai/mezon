@@ -69,6 +69,10 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 	const localVideoRef = useRef<HTMLVideoElement>(null);
 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
 	const callTimeout = useRef<NodeJS.Timeout | null>(null);
+	const [audioInputDevicesList, setAudioInputDevicesList] = useState<MediaDeviceInfo[]>([]);
+	const [audioOutputDevicesList, setAudioOutputDevicesList] = useState<MediaDeviceInfo[]>([]);
+	const [currentInputDevice, setCurrentInputDevice] = useState<MediaDeviceInfo | null>(null);
+	const [currentOutputDevice, setCurrentOutputDevice] = useState<MediaDeviceInfo | null>(null);
 
 	useEffect(() => {
 		return () => {
@@ -194,6 +198,14 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 				);
 			} else {
 				permissionMicroGranted = true;
+				const devices = await navigator.mediaDevices.enumerateDevices();
+				const outputDevices = devices.filter((device) => device.kind === 'audiooutput');
+				const inputDevices = devices.filter((device) => device.kind === 'audioinput');
+
+				setAudioInputDevicesList(inputDevices);
+				setAudioOutputDevicesList(outputDevices);
+				setCurrentInputDevice(inputDevices[0] || null);
+				setCurrentOutputDevice(outputDevices[0] || null);
 			}
 			if (isVideoCall) {
 				const cameraGranted = await requestMediaPermission('video');
@@ -549,6 +561,56 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		dispatch(DMCallActions.setIsShowMeetDM(!isShowMeetDM));
 	};
 
+	const changeAudioInputDevice = async (deviceId: string) => {
+		try {
+			if (!callState.peerConnection) return;
+
+			const constraints: MediaStreamConstraints = {
+				audio: { deviceId: { exact: deviceId } },
+				video: false
+			};
+
+			const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+			const newAudioTrack = newStream.getAudioTracks()[0];
+
+			if (!newAudioTrack) {
+				console.error('cannot find new audio track');
+				return;
+			}
+
+			const selectedInputDevice = audioInputDevicesList.find((device) => device.deviceId === deviceId);
+
+			if (!selectedInputDevice) return;
+			setCurrentInputDevice(selectedInputDevice);
+
+			const senders = callState.peerConnection.getSenders();
+
+			const audioSender = senders.find((sender) => sender.track?.kind === 'audio');
+
+			if (audioSender) {
+				await audioSender.replaceTrack(newAudioTrack);
+			} else {
+				console.warn('cannot find audioSender');
+			}
+		} catch (error) {
+			console.error('error when change audio input device', error);
+		}
+	};
+
+	const changeAudioOutputDevice = async (deviceId: string) => {
+		try {
+			if (remoteVideoRef.current) {
+				await remoteVideoRef.current.setSinkId(deviceId);
+				const selectedOutputDevice = audioOutputDevicesList.find((device) => device.deviceId === deviceId);
+
+				if (!selectedOutputDevice) return;
+				setCurrentOutputDevice(selectedOutputDevice);
+			}
+		} catch (e) {
+			console.error('error change audio input device', e);
+		}
+	};
+
 	return {
 		callState,
 		timeStartConnected,
@@ -559,6 +621,12 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		handleSignalingMessage,
 		handleOtherCall,
 		localVideoRef,
-		remoteVideoRef
+		remoteVideoRef,
+		changeAudioInputDevice,
+		changeAudioOutputDevice,
+		currentInputDevice,
+		currentOutputDevice,
+		audioInputDevicesList,
+		audioOutputDevicesList
 	};
 }

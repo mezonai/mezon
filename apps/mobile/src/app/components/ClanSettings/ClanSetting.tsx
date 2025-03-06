@@ -1,10 +1,10 @@
 import { usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, ScrollView, View } from 'react-native';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, reserve } from '../../componentUI';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
@@ -13,10 +13,9 @@ import { style } from './styles';
 
 type ClanSettingsScreen = typeof APP_SCREEN.MENU_CLAN.SETTINGS;
 
-export function ClanSetting({ navigation, route }: MenuClanScreenProps<ClanSettingsScreen>) {
+export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScreen>) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { inviteRef } = route?.params || {};
 	const { t } = useTranslation(['clanSetting']);
 	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
 		EPermission.administrator,
@@ -148,7 +147,7 @@ export function ClanSetting({ navigation, route }: MenuClanScreenProps<ClanSetti
 		},
 		{
 			title: t('menu.userManagement.invite'),
-			onPress: () => inviteRef?.current?.present(),
+			onPress: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL),
 			expandable: true,
 			icon: <Icons.LinkIcon color={themeValue.text} />
 		},

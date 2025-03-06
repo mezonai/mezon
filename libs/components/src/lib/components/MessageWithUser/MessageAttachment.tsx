@@ -102,7 +102,7 @@ const MessageAttachment = ({ message, onContextMenu, mode }: MessageAttachmentPr
 	return <Attachments mode={mode} message={message} attachments={validateAttachment} onContextMenu={onContextMenu} />;
 };
 
-const MAX_WIDTH_ALBUM_IMAGE = 520;
+const MAX_WIDTH_ALBUM_IMAGE = 550;
 const NUMBER_IMAGE_ON_ROW = 2;
 const WIDTH_ALBUM_WITH_SPACE = MAX_WIDTH_ALBUM_IMAGE - 8 * (NUMBER_IMAGE_ON_ROW - 1);
 

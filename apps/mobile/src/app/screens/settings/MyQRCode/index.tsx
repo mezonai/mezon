@@ -63,7 +63,7 @@ export const MyQRCode = () => {
 				/>
 				<View>
 					<Text style={styles.nameProfile}>{userProfile?.user?.display_name || userProfile?.user?.username}</Text>
-					<Text style={styles.tokenProfile}>Token: {Number(tokenInWallet) + Number(getTokenSocket)}</Text>
+					<Text style={styles.tokenProfile}>Balance: {Number(tokenInWallet) + Number(getTokenSocket)}</Text>
 				</View>
 			</View>
 			{urlQRCode ? (

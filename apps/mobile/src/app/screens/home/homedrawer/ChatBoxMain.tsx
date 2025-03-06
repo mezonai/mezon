@@ -7,7 +7,6 @@ import { DeviceEventEmitter, Text, View } from 'react-native';
 import { resetCachedMessageActionNeedToResolve } from '../../../utils/helpers';
 import { ActionMessageSelected } from './components/ChatBox/ActionMessageSelected';
 import { ChatBoxBottomBar } from './components/ChatBox/ChatBoxBottomBar';
-import { RecordAudioMessage } from './components/ChatBox/RecordAudioMessage';
 import { EMessageActionType } from './enums';
 import { IMessageActionNeedToResolve } from './types';
 
@@ -81,7 +80,6 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 				justifyContent: 'space-between'
 			}}
 		>
-			<RecordAudioMessage channelId={props?.channelId} mode={props?.mode} />
 			{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
 				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={() => setMessageActionNeedToResolve(null)} />
 			)}

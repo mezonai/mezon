@@ -1,5 +1,5 @@
 import { selectStatusStream } from '@mezon/store-mobile';
-import React from 'react';
+import React, { memo } from 'react';
 import { useSelector } from 'react-redux';
 import StreamingPopup from '../StreamingPopup/StreamingPopup';
 
@@ -10,4 +10,4 @@ const StreamingWrapper = () => {
 	return <StreamingPopup />;
 };
 
-export default StreamingWrapper;
+export default memo(StreamingWrapper, () => true);

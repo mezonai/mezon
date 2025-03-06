@@ -1,6 +1,5 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useFriends, useMemberStatus } from '@mezon/core';
-import { CheckIcon, DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon, DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
@@ -13,9 +12,9 @@ import {
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import moment from 'moment';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import { MezonAvatar, MezonButton } from '../../componentUI';
@@ -40,9 +39,8 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const { friends: allUser } = useFriends();
 	const { color } = useMixImageColor(user?.userProfile?.user?.avatar_url);
 	const { t } = useTranslation('profile');
+	const { t: tUser } = useTranslation('customUserStatus');
 	const [isVisibleAddStatusUserModal, setIsVisibleAddStatusUserModal] = useState<boolean>(false);
-	const userStatusBottomSheetRef = useRef<BottomSheetModal>(null);
-	const userSendTokenBottomSheetRef = useRef<BottomSheetModal>(null);
 	const userCustomStatus = useSelector(selectAccountCustomStatus);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
@@ -115,7 +113,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	};
 
 	const handleCustomUserStatus = (customStatus = '', type: ETypeCustomUserStatus, duration?: number, noClearStatus?: boolean) => {
-		userStatusBottomSheetRef?.current?.dismiss();
 		setIsVisibleAddStatusUserModal(false);
 		dispatch(
 			channelMembersActions.updateCustomStatus({
@@ -128,11 +125,26 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	};
 
 	const showUserStatusBottomSheet = () => {
-		userStatusBottomSheetRef?.current?.present();
+		const data = {
+			heightFitContent: true,
+			title: tUser('changeOnlineStatus'),
+			children: (
+				<CustomStatusUser
+					userCustomStatus={userCustomStatus}
+					onPressSetCustomStatus={handlePressSetCustomStatus}
+					handleCustomUserStatus={handleCustomUserStatus}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	const showSendTokenBottomSheet = () => {
-		userSendTokenBottomSheetRef?.current?.present();
+		const data = {
+			heightFitContent: true,
+			children: <SendTokenUser />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	return (
@@ -293,13 +305,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				}}
 				handleCustomUserStatus={handleCustomUserStatus}
 			/>
-			<CustomStatusUser
-				userCustomStatus={userCustomStatus}
-				onPressSetCustomStatus={handlePressSetCustomStatus}
-				ref={userStatusBottomSheetRef}
-				handleCustomUserStatus={handleCustomUserStatus}
-			/>
-			<SendTokenUser ref={userSendTokenBottomSheetRef} />
 		</View>
 	);
 };

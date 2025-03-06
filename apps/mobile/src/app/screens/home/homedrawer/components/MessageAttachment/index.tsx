@@ -82,7 +82,7 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, se
 			const checkIsVideo = isVideo(document?.url?.toLowerCase());
 
 			if (checkIsVideo) {
-				return <RenderVideoChat key={`${document?.url}_${index}`} videoURL={document.url} />;
+				return <RenderVideoChat key={`${document?.url}_${index}`} videoURL={document.url} onLongPress={onLongPressImage} />;
 			}
 
 			return (
@@ -98,7 +98,8 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, se
 
 	return (
 		<View>
-			{videos?.length > 0 && videos.map((video, index) => <RenderVideoChat key={`${video?.url}_${index}`} videoURL={video?.url} />)}
+			{videos?.length > 0 &&
+				videos.map((video, index) => <RenderVideoChat key={`${video?.url}_${index}`} videoURL={video?.url} onLongPress={onLongPressImage} />)}
 			<View style={styles.gridContainer}>
 				{visibleImages?.length > 0 &&
 					visibleImages?.map((image, index) => {

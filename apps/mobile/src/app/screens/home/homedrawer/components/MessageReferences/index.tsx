@@ -19,7 +19,7 @@ interface IProps {
 	clanId?: string;
 }
 
-export const MessageReferences = React.memo(({ messageReferences, preventAction, channelId, clanId }: IProps) => {
+export const MessageReferences = ({ messageReferences, preventAction, channelId, clanId }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
@@ -80,4 +80,4 @@ export const MessageReferences = React.memo(({ messageReferences, preventAction,
 			</View>
 		</Pressable>
 	);
-});
+};

@@ -16,7 +16,7 @@ type ChannelItemProps = {
 export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
-	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parrent_id || ''));
+	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 	const styles = style(themeValue);
 	const handleOnPress = () => {

@@ -33,7 +33,7 @@ const ThreadBox = () => {
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 
 	const membersOfParent = useAppSelector((state) =>
-		threadCurrentChannel?.parrent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parrent_id as string) : null
+		threadCurrentChannel?.parent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parent_id as string) : null
 	);
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
 		channelId: threadCurrentChannel?.id as string,
@@ -46,17 +46,22 @@ const ThreadBox = () => {
 
 	const createThread = useCallback(
 		async (value: ThreadValue) => {
+			if (value.nameValueThread.length <= 3) {
+				toast('Thread name must be longer than 3 characters');
+				return;
+			}
 			const isDuplicate = await dispatch(checkDuplicateThread({ thread_name: value.nameValueThread, channel_id: currentChannelId as string }));
 			if (isDuplicate?.payload) {
 				toast('Thread name already exists');
 				return;
 			}
+
 			const timestamp = Date.now() / 1000;
 			const body: any = {
 				clan_id: currentClanId?.toString(),
 				channel_label: value.nameValueThread,
 				channel_private: value.isPrivate,
-				parrent_id: currentChannelId as string,
+				parent_id: currentChannelId as string,
 				category_id: currentChannel?.category_id,
 				type: ChannelType.CHANNEL_TYPE_THREAD,
 				lastSeenTimestamp: timestamp,

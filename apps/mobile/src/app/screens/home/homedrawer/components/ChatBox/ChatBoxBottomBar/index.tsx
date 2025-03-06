@@ -9,16 +9,23 @@ import {
 	mentionRegexSplit,
 	save
 } from '@mezon/mobile-components';
-import { Colors, size } from '@mezon/mobile-ui';
-import { RootState, emojiSuggestionActions, selectAllChannels, selectAllHashtagDm, threadsActions, useAppDispatch } from '@mezon/store-mobile';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import {
+	RootState,
+	emojiSuggestionActions,
+	getStore,
+	selectAllChannels,
+	selectAllHashtagDm,
+	threadsActions,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { IHashtagOnMessage, IMentionOnMessage, MIN_THRESHOLD_CHARS, MentionDataProps } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, Platform, TextInput, View } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
-import { useStore } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
@@ -26,6 +33,7 @@ import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
+import { style } from '../ChatBoxBottomBar/style';
 import { ChatBoxListener } from '../ChatBoxListener';
 import { ChatMessageInput } from '../ChatMessageInput';
 import { ChatMessageLeftArea } from '../ChatMessageLeftArea';
@@ -66,6 +74,20 @@ interface IChatInputProps {
 	isPublic: boolean;
 }
 
+function useIdleRender() {
+	const [shouldRender, setShouldRender] = useState(false);
+
+	useEffect(() => {
+		const handle = requestIdleCallback(() => {
+			setShouldRender(true);
+		});
+
+		return () => cancelIdleCallback(handle);
+	}, []);
+
+	return shouldRender;
+}
+
 export const ChatBoxBottomBar = memo(
 	({
 		mode = 2,
@@ -77,7 +99,6 @@ export const ChatBoxBottomBar = memo(
 		onShowKeyboardBottomSheet,
 		isPublic = false
 	}: IChatInputProps) => {
-		const store = useStore();
 		const dispatch = useAppDispatch();
 		const [text, setText] = useState<string>('');
 		const [mentionTextValue, setMentionTextValue] = useState('');
@@ -204,6 +225,7 @@ export const ChatBoxBottomBar = memo(
 			[onShowKeyboardBottomSheet]
 		);
 		const handleTextInputChange = async (text: string) => {
+			const store = getStore();
 			setTextChange(text);
 			setText(text);
 			if (messageAction !== EMessageActionType.CreateThread) {
@@ -455,6 +477,8 @@ export const ChatBoxBottomBar = memo(
 			};
 		}, [handleEventAfterEmojiPicked]);
 
+		const shouldRender = useIdleRender();
+
 		return (
 			<View
 				style={{
@@ -491,35 +515,55 @@ export const ChatBoxBottomBar = memo(
 						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
 						handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
 					/>
-
-					<ChatMessageInput
-						channelId={channelId}
-						mode={mode}
-						isFocus={isFocus}
-						isShowAttachControl={isShowAttachControl}
-						text={text}
-						textInputProps={textInputProps}
-						ref={inputRef}
-						messageAction={messageAction}
-						messageActionNeedToResolve={messageActionNeedToResolve}
-						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
-						onSendSuccess={onSendSuccess}
-						handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
-						setIsShowAttachControl={setIsShowAttachControl}
-						onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
-						setModeKeyBoardBottomSheet={setModeKeyBoardBottomSheet}
-						mentionsOnMessage={mentionsOnMessage}
-						hashtagsOnMessage={hashtagsOnMessage}
-						emojisOnMessage={emojiList}
-						linksOnMessage={linkList}
-						boldsOnMessage={boldList}
-						markdownsOnMessage={markdownList}
-						voiceLinkRoomOnMessage={voiceLinkRoomList}
-						isShowCreateThread={!hiddenIcon?.threadIcon}
-						isPublic={isPublic}
-					/>
+					{!shouldRender ? (
+						<TempInputComponent />
+					) : (
+						<ChatMessageInput
+							channelId={channelId}
+							mode={mode}
+							isFocus={isFocus}
+							isShowAttachControl={isShowAttachControl}
+							text={text}
+							textInputProps={textInputProps}
+							ref={inputRef}
+							messageAction={messageAction}
+							messageActionNeedToResolve={messageActionNeedToResolve}
+							modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
+							onSendSuccess={onSendSuccess}
+							handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
+							setIsShowAttachControl={setIsShowAttachControl}
+							onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
+							setModeKeyBoardBottomSheet={setModeKeyBoardBottomSheet}
+							mentionsOnMessage={mentionsOnMessage}
+							hashtagsOnMessage={hashtagsOnMessage}
+							emojisOnMessage={emojiList}
+							linksOnMessage={linkList}
+							boldsOnMessage={boldList}
+							markdownsOnMessage={markdownList}
+							voiceLinkRoomOnMessage={voiceLinkRoomList}
+							isShowCreateThread={!hiddenIcon?.threadIcon}
+							isPublic={isPublic}
+						/>
+					)}
 				</View>
 			</View>
 		);
 	}
 );
+
+const TempInputComponent = memo(() => {
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
+
+	return (
+		<View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: size.s_6 }}>
+			<View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+				<TextInput
+					style={[styles.inputStyle, { height: Platform.OS === 'ios' ? 'auto' : size.s_40 }]}
+					placeholderTextColor={Colors.textGray}
+					multiline
+				/>
+			</View>
+		</View>
+	);
+});

@@ -20,10 +20,10 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Linking } from 'react-native';
-import { MezonBottomSheet } from '../../../../../../componentUI';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
+import ChannelMenu from '../../ChannelMenu';
 import JoinChannelVoiceBS from '../../ChannelVoice/JoinChannelVoiceBS';
 import JoinStreamingRoomBS from '../../StreamingRoom/JoinStreamingRoomBS';
 import ChannelItem from '../ChannelItem';
@@ -76,10 +76,31 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 		};
 	}, [props?.data?.id, isActive]);
 
+	const openBottomSheetJoinVoice = useCallback(() => {
+		const data = {
+			snapPoints: ['45%'],
+			children:
+				props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
+					<JoinStreamingRoomBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
+				) : (
+					<JoinChannelVoiceBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
+				)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, [props?.data]);
+
+	const openBottomSheetChannelMenu = useCallback((channel, isThread = false) => {
+		const data = {
+			heightFitContent: true,
+			children: <ChannelMenu channel={channel} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, []);
+
 	const handleRouteData = useCallback(
 		async (thread?: IChannel) => {
 			if (props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING || props?.data?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-				bottomSheetChannelStreamingRef.current?.present();
+				openBottomSheetJoinVoice();
 				return;
 			}
 
@@ -128,12 +149,9 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 	);
 
 	const handleLongPressChannel = useCallback(() => {
-		if (props?.data?.type === ChannelType.CHANNEL_TYPE_THREAD) {
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_LONG_PRESS_CHANNEL, { channel: props?.data, isThread: true });
-		} else {
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_LONG_PRESS_CHANNEL, { channel: props?.data });
-		}
-	}, [props?.data]);
+		openBottomSheetChannelMenu(props?.data, props?.data?.type === ChannelType.CHANNEL_TYPE_THREAD);
+	}, [openBottomSheetChannelMenu, props?.data]);
+
 	const shouldDisplay = isCategoryExpanded || isUnRead || isChannelVoice || isActive;
 	// || props.parentIdList?.has(props.data.id);
 
@@ -161,13 +179,6 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 					isActive={isActive}
 				/>
 			)}
-			<MezonBottomSheet ref={bottomSheetChannelStreamingRef} snapPoints={['45%']}>
-				{props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
-					<JoinStreamingRoomBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
-				) : (
-					<JoinChannelVoiceBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
-				)}
-			</MezonBottomSheet>
 		</>
 	);
 });

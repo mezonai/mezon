@@ -69,10 +69,28 @@ function MezonPage() {
 	};
 
 	useEffect(() => {
+		const externalScript = document.createElement('script');
+		externalScript.async = true;
+		externalScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-9SD8R7Z8TJ';
+		document.body.appendChild(externalScript);
+
+		const inlineScript = document.createElement('script');
+		inlineScript.innerHTML = `
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', 'G-9SD8R7Z8TJ');
+		`;
+		document.body.appendChild(inlineScript);
+
 		updateBackgroundImage();
 		window.addEventListener('resize', updateBackgroundImage);
 
-		return () => window.removeEventListener('resize', updateBackgroundImage);
+		return () => {
+			window.removeEventListener('resize', updateBackgroundImage);
+			document.body.removeChild(externalScript);
+			document.body.removeChild(inlineScript);
+		};
 	}, []);
 
 	return (

@@ -1,9 +1,8 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useRef, useState } from 'react';
-import { View } from 'react-native';
-import MezonBottomSheet from '../MezonBottomSheet';
+import { DeviceEventEmitter, View } from 'react-native';
 import MezonFakeInputBox, { IMezonFakeBoxProps } from '../MezonFakeBox';
 import MezonOption, { IMezonOptionData } from '../MezonOption';
 import { style } from './styles';
@@ -29,6 +28,16 @@ export default function MezonSelect({ data, onChange, ...props }: IMezonSelectPr
 
 	function handlePress() {
 		bottomSheetRef?.current?.present();
+		const dataBottomSheet = {
+			heightFitContent: true,
+			title: props.title,
+			children: (
+				<View style={styles.bsContainer}>
+					<MezonOption data={data} onChange={handleChange} value={currentValue} />
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data: dataBottomSheet });
 	}
 
 	return (
@@ -39,12 +48,6 @@ export default function MezonSelect({ data, onChange, ...props }: IMezonSelectPr
 				value={currentContent}
 				onPress={handlePress}
 			/>
-
-			<MezonBottomSheet ref={bottomSheetRef} heightFitContent title={props.title}>
-				<View style={styles.bsContainer}>
-					<MezonOption data={data} onChange={handleChange} value={currentValue} />
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 }

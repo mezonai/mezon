@@ -1,13 +1,12 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectUserStatus, useAppDispatch, userStatusActions } from '@mezon/store-mobile';
-import { Ref, forwardRef, useEffect, useMemo, useState } from 'react';
+import { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, IMezonOptionData, MezonBottomSheet, MezonMenu, MezonOption } from '../../componentUI';
+import { IMezonMenuSectionProps, IMezonOptionData, MezonMenu, MezonOption } from '../../componentUI';
 import { ETypeCustomUserStatus } from '../../screens/profile/ProfileScreen';
 
 interface ICustomStatusUserProps {
@@ -22,7 +21,7 @@ export enum EUserStatus {
 	DO_NOT_DISTURB = 'Do Not Disturb',
 	INVISIBLE = 'Invisible'
 }
-export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICustomStatusUserProps, ref: Ref<BottomSheetModalMethods>) {
+export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICustomStatusUserProps) {
 	const { onPressSetCustomStatus, userCustomStatus, handleCustomUserStatus } = props;
 	const { t } = useTranslation(['customUserStatus']);
 	const userStatus = useSelector(selectUserStatus);
@@ -114,12 +113,10 @@ export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICus
 	);
 
 	return (
-		<MezonBottomSheet ref={ref} title={t('changeOnlineStatus')} heightFitContent>
-			<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10 }}>
-				<MezonOption title={t('onlineStatus')} data={statusOptions} value={userStatusOption} onChange={handleStatusChange} />
+		<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10 }}>
+			<MezonOption title={t('onlineStatus')} data={statusOptions} value={userStatusOption} onChange={handleStatusChange} />
 
-				<MezonMenu menu={statusMenu} />
-			</View>
-		</MezonBottomSheet>
+			<MezonMenu menu={statusMenu} />
+		</View>
 	);
 });

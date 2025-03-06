@@ -106,7 +106,7 @@ export const inviteSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(getLinkInvite.fulfilled, (state: InviteState, action: PayloadAction<IInvite>) => {
-				inviteAdapter.addOne(state, action.payload);
+				inviteAdapter.upsertOne(state, action.payload);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(getLinkInvite.rejected, (state: InviteState, action) => {

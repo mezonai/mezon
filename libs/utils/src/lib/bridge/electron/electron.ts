@@ -8,6 +8,7 @@ import {
 	UPDATE_AVAILABLE,
 	UPDATE_ERROR
 } from './constants';
+import { NotificationData } from './notification';
 import { ElectronBridgeHandler, IElectronBridge, MezonDownloadFile, MezonElectronAPI, MezonNotificationOptions } from './types';
 
 export class ElectronBridge implements IElectronBridge {
@@ -68,7 +69,7 @@ export class ElectronBridge implements IElectronBridge {
 		this.bridge.on(ACTIVE_WINDOW, this.listenerHandlers[ACTIVE_WINDOW]);
 	}
 
-	public pushNotification(title: string, options: MezonNotificationOptions) {
+	public pushNotification(title: string, options: MezonNotificationOptions, msg?: NotificationData) {
 		const notification = new Notification(title, options);
 		notification.onclick = () => {
 			const link = options.data?.link;
@@ -81,7 +82,7 @@ export class ElectronBridge implements IElectronBridge {
 			const isSubPath = currentPath.endsWith(path);
 
 			if (path) {
-				this.bridge?.send(NAVIGATE_TO_URL, path, isSubPath);
+				this.bridge?.send(NAVIGATE_TO_URL, { path: path, msg: msg }, isSubPath);
 			}
 		};
 	}

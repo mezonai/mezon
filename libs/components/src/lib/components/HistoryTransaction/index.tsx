@@ -78,7 +78,7 @@ const HistoryTransaction = ({ onClose }: IProps) => {
 									<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">Time</span>
 								</div>
 								<div className="flex-[2] p-1 text-center">
-									<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">Token</span>
+									<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">Amount</span>
 								</div>
 							</div>
 							<div className="flex flex-col overflow-y-auto px-4 py-2 shadow border-b-[1px] dark:border-bgTertiary border-t-[textSecondary]">

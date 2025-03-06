@@ -27,9 +27,9 @@ const FlowHeaderBar = ({ isExampleFlow, onSaveFlow, flowData, changeOpenModalSav
 		flowDispatch(setEdgesContext([]));
 		const checkIsExampleFlow = ExampleFlow.find((item) => item.id === flowId);
 		if (checkIsExampleFlow) {
-			navigate(`/applications/${applicationId}/flow-examples`);
+			navigate(`/developers/applications/${applicationId}/flow-examples`);
 		} else {
-			navigate(`/applications/${applicationId}/flow`);
+			navigate(`/developers/applications/${applicationId}/flow`);
 		}
 	};
 	const handleClickDeleteButton = React.useCallback(async () => {
@@ -41,7 +41,7 @@ const FlowHeaderBar = ({ isExampleFlow, onSaveFlow, flowData, changeOpenModalSav
 		try {
 			await flowService.deleteFlow(flowId);
 			toast.success('Delete flow success');
-			navigate(`/applications/${applicationId}/flow`);
+			navigate(`developers/applications/${applicationId}/flow`);
 		} catch {
 			toast.error('Delete flow failed');
 		} finally {
@@ -54,7 +54,7 @@ const FlowHeaderBar = ({ isExampleFlow, onSaveFlow, flowData, changeOpenModalSav
 			toast.info('Flow has not been created yet');
 			return;
 		}
-		navigate(`/applications/${applicationId}/use-flow-example/${flowId}`);
+		navigate(`/developers/applications/${applicationId}/use-flow-example/${flowId}`);
 	}, [applicationId, flowId, navigate]);
 
 	return (

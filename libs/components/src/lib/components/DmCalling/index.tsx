@@ -27,10 +27,12 @@ import { Icons } from '@mezon/ui';
 import { AvatarImage } from '@mezon/components';
 import { useWebRTCCall } from '@mezon/core';
 import { IMessageTypeCallLog, createImgproxyUrl, isMacDesktop, sleep } from '@mezon/utils';
+import { Dropdown } from 'flowbite-react';
 import { ChannelType, WebrtcSignalingType } from 'mezon-js';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
+import DeviceSelector from './DeviceSelector';
 import LabelDm from './labelDm';
 
 type DmCallingProps = {
@@ -70,7 +72,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		handleSignalingMessage,
 		handleOtherCall,
 		localVideoRef,
-		remoteVideoRef
+		remoteVideoRef,
+		changeAudioInputDevice,
+		changeAudioOutputDevice,
+		currentInputDevice,
+		currentOutputDevice,
+		audioInputDevicesList,
+		audioOutputDevicesList
 	} = useWebRTCCall(
 		dmUserId,
 		dmGroupId as string,
@@ -400,6 +408,34 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 									isShowLine={true}
 								/>
 							</div>
+
+							<Dropdown
+								label={''}
+								renderTrigger={() => (
+									<div className="h-[56px] w-[56px] relative rounded-full flex items-center justify-center cursor-pointer dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary">
+										<Icons.ThreeDot className="text-white dark:text-bgTertiary" />
+									</div>
+								)}
+								className={'rounded-3xl'}
+							>
+								<div className="flex text-white px-1 w-[400px] min-w-max gap-2 h-full">
+									{/* Output */}
+									<DeviceSelector
+										deviceList={audioOutputDevicesList}
+										currentDevice={currentOutputDevice}
+										icon={<Icons.Speaker defaultFill={'text-white ml-2'} />}
+										onSelectDevice={changeAudioOutputDevice}
+									/>
+
+									{/* Input */}
+									<DeviceSelector
+										deviceList={audioInputDevicesList}
+										currentDevice={currentInputDevice}
+										icon={<Icons.MicEnable className={'h-5 w-5 text-white ml-2'} />}
+										onSelectDevice={changeAudioInputDevice}
+									/>
+								</div>
+							</Dropdown>
 							<div
 								className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 								onClick={handleCloseCall}

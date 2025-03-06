@@ -1,5 +1,5 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { AngleRight, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, notificationSettingActions, selectCurrentClanId, selectNotifiSettingsEntitiesById, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, IChannel } from '@mezon/utils';
@@ -8,10 +8,10 @@ import { format } from 'date-fns';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, MezonBottomSheet, MezonMenu } from '../../componentUI';
+import { IMezonMenuSectionProps, MezonMenu } from '../../componentUI';
 import NotificationSetting from '../NotificationSetting';
 import { style } from './MuteThreadDetailModal.styles';
 
@@ -89,7 +89,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	}, [currentChannel]);
 
 	useEffect(() => {
-		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parrent_id));
+		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parent_id));
 	}, [currentChannel]);
 
 	navigation.setOptions({
@@ -118,7 +118,11 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const dispatch = useAppDispatch();
 
 	const openBottomSheet = () => {
-		bottomSheetRef.current?.present();
+		const data = {
+			heightFitContent: true,
+			children: <NotificationSetting />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	useEffect(() => {
@@ -225,10 +229,6 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 					<Text style={styles.InfoTitle}>{t('notifySettingThreadModal.description')}</Text>
 				</View>
 			) : null}
-
-			<MezonBottomSheet heightFitContent ref={bottomSheetRef}>
-				<NotificationSetting />
-			</MezonBottomSheet>
 		</View>
 	);
 };

@@ -42,7 +42,7 @@ export type CategoriesState = Record<string, boolean>;
 function ChannelList() {
 	const appearanceTheme = useSelector(selectTheme);
 	return (
-		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="h-full">
+		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="contain-strict h-full">
 			<CreateNewChannelModal />
 			<hr className="h-[0.08px] w-full dark:border-borderDivider border-white mx-2" />
 			<div className={`flex-1 space-y-[21px] text-gray-300`}>
@@ -244,7 +244,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 								</div>
 							);
 						} else {
-							if (!(item as IChannel)?.parrent_id || (item as IChannel).parrent_id === '0') {
+							if (!(item as IChannel)?.parent_id || (item as IChannel).parent_id === '0') {
 								return (
 									<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>
 										<ChannelListItem
@@ -262,7 +262,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 											key={item.id}
 											isActive={currentChannelId === item.id}
 											thread={item}
-											isFirstThread={(data[virtualRow.index - 1] as IChannel).parrent_id === '0'}
+											isFirstThread={(data[virtualRow.index - 1] as IChannel).parent_id === '0'}
 										/>
 									</div>
 								);

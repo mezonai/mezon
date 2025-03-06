@@ -103,7 +103,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const handleCloseModalSendToken = () => {
 		setToken(0);
 		setSelectedUserId('');
-		setNote('send token');
+		setNote('move money');
 		setUserSearchError('');
 		setError('');
 		setSendTokenInputsState({ isSendTokenInputDisabled: false, isUserSelectionDisabled: false });
@@ -128,12 +128,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			return;
 		}
 		if (token <= 0) {
-			setError('Token amount must be greater than zero');
+			setError('Your amount must be greater than zero');
 			return;
 		}
 
 		if (token > Number(tokenInWallet) + Number(getTokenSocket)) {
-			setError('Token amount exceeds wallet balance');
+			setError('Your amount exceeds wallet balance');
 			return;
 		}
 		const tokenEvent: ApiTokenSentEvent = {

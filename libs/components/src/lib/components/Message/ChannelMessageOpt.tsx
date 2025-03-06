@@ -22,6 +22,7 @@ import {
 import { Icons } from '@mezon/ui';
 import {
 	AMOUNT_TOKEN,
+	EEventAction,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	IMessageWithUser,
@@ -80,7 +81,7 @@ const ChannelMessageOpt = ({
 	const currentChannel = useSelector(selectCurrentChannel);
 	const refOpt = useRef<HTMLDivElement>(null);
 	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannel?.id ?? '');
-	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parrent_id ?? '') && canManageThread);
+	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parent_id ?? '') && canManageThread);
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const replyMenu = useMenuReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
@@ -204,6 +205,7 @@ const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
 };
 
 function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
+	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
 	const { reactionMessageDispatch } = useChatReaction();
@@ -261,7 +263,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	}, [isFocusTopicBox, channel]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(userId !== message.sender_id, (builder) => {
+		builder.when(userId !== message?.sender_id && message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID, (builder) => {
 			builder.addMenuItem('giveacoffee', 'Give a coffee', handleItemClick, <Icons.DollarIcon defaultSize="w-5 h-5" />);
 		});
 	});
@@ -282,7 +284,8 @@ function useAddToNoteBuilder(message: IMessageWithUser, defaultCanvas: CanvasAPI
 				content,
 				is_default: true,
 				...(id && { id }),
-				title: defaultCanvas?.title || 'Note'
+				title: defaultCanvas?.title || 'Note',
+				status: defaultCanvas ? 0 : EEventAction.CREATED
 			});
 
 			const insertImageToJson = (jsonObject: JsonObject, imageUrl?: string) => {
@@ -521,6 +524,11 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 	);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.addMenuItem('option', 'option', useHandleClickOption, <Icons.ThreeDot />);
+		builder.addMenuItem(
+			'option',
+			'option',
+			useHandleClickOption,
+			<Icons.ThreeDot defaultSize={'w-5 h-5 dark:hover:text-white hover:text-black'} />
+		);
 	});
 }

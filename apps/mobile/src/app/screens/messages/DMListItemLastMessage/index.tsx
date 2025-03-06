@@ -17,32 +17,32 @@ type IEmojiMarkup = {
 	emojiid: string;
 };
 
+const contentTitle = (t, styles, styleText) => {
+	const [title] = (t ?? '').split(' | ');
+	return <Text style={[styles.message, styleText && styleText]}>{title}</Text>;
+};
+
+const pattern = /^Tokens sent:.*\|.*/;
+const checkTokenMessage = (text: string) => {
+	return pattern.test(text);
+};
+
+const EmojiMarkup = ({ shortname, emojiid }: IEmojiMarkup) => {
+	const srcEmoji = getSrcEmoji(emojiid);
+
+	if (!srcEmoji) {
+		return shortname;
+	}
+	return `${EMOJI_KEY}${srcEmoji}${EMOJI_KEY}`;
+};
+
 const EMOJI_KEY = '[ICON_EMOJI]';
-export const DmListItemLastMessage = React.memo((props: { content: IExtendedMessage; styleText?: any }) => {
+export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleText?: any }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t, ej = [] } = props.content || {};
 	const emojis = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 	const elements: ElementToken[] = [...emojis].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-
-	const contentTitle = () => {
-		const [title] = (t ?? '').split(' | ');
-		return <Text style={[styles.message, props?.styleText && props?.styleText]}>{title}</Text>;
-	};
-
-	const checkTokenMessage = (text: string) => {
-		const pattern = /^Tokens sent:.*\|.*/;
-		return pattern.test(text);
-	};
-
-	const EmojiMarkup = ({ shortname, emojiid }: IEmojiMarkup) => {
-		const srcEmoji = getSrcEmoji(emojiid);
-
-		if (!srcEmoji) {
-			return shortname;
-		}
-		return `${EMOJI_KEY}${srcEmoji}${EMOJI_KEY}`;
-	};
 
 	const formatEmojiInText = useMemo(() => {
 		let formattedContent = '';
@@ -104,7 +104,7 @@ export const DmListItemLastMessage = React.memo((props: { content: IExtendedMess
 
 	return (
 		<Text style={[styles.dmMessageContainer, props?.styleText && props?.styleText]} numberOfLines={1}>
-			{checkTokenMessage(t) ? contentTitle() : convertTextToEmoji()}
+			{checkTokenMessage(t) ? contentTitle(t, styles, props?.styleText) : convertTextToEmoji()}
 		</Text>
 	);
-});
+};

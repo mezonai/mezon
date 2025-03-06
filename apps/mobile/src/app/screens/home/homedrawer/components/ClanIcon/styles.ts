@@ -28,7 +28,7 @@ export const style = (colors: Attributes) =>
 			height: size.s_48,
 			width: size.s_48,
 			borderRadius: size.s_48,
-			resizeMode: 'cover'
+			overflow: 'hidden'
 		},
 
 		logoClanActive: {

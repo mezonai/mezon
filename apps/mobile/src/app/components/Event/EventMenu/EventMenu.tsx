@@ -10,10 +10,9 @@ import styles from './styles';
 
 interface IEventMenuProps {
 	event: EventManagementEntity;
-	eventDetailRef?: any;
 }
 
-export function EventMenu({ event, eventDetailRef }: IEventMenuProps) {
+export function EventMenu({ event }: IEventMenuProps) {
 	const { t } = useTranslation(['eventMenu']);
 	const { deleteEventManagement } = useEventManagement();
 	const { dismiss } = useBottomSheetModal();
@@ -63,8 +62,7 @@ export function EventMenu({ event, eventDetailRef }: IEventMenuProps) {
 	];
 
 	const handleCancelEventConfirm = async () => {
-		await deleteEventManagement(event?.clan_id || '', event?.id || '');
-		eventDetailRef?.current.dismiss();
+		await deleteEventManagement(event?.clan_id || '', event?.id || '', event?.creator_id || '', event?.title || '');
 		dismiss();
 		setIsVisibleCancelEventModal(false);
 	};

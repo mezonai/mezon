@@ -39,7 +39,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 			window.open(urlVoice, '_blank', 'noreferrer');
 		} else {
 			const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
-			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parrent_id ?? '' }));
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 			navigate(channelUrl);
 		}
 	}, [channel, dispatch, navigate, toChannelPage]);
@@ -68,6 +68,11 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 				className={`font-medium px-0.1 rounded-sm  inline whitespace-nowrap !text-[#3297ff] dark:bg-[#3C4270] bg-[#D1E0FF] ${!isJumMessageEnabled ? ' hover:bg-[#5865F2] hover:!text-white cursor-pointer ' : `hover:none cursor-text`} `}
 			>
 				{channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? (
+					<Icons.Speaker
+						defaultSize={`inline mt-[-0.2rem] w-4 h-4  ${isJumMessageEnabled ? 'mx-[-0.4rem]' : 'mr-0.5'} `}
+						defaultFill="#3297FF"
+					/>
+				) : channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
 					<Icons.Speaker
 						defaultSize={`inline mt-[-0.2rem] w-4 h-4  ${isJumMessageEnabled ? 'mx-[-0.4rem]' : 'mr-0.5'} `}
 						defaultFill="#3297FF"

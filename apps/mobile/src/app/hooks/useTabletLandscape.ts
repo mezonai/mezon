@@ -3,6 +3,7 @@ import { Dimensions } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 const useTabletLandscape = () => {
+	return false;
 	const [isTabletLandscape, setIsTabletLandscape] = useState<boolean>(false);
 	const checkOrientation = useCallback(() => {
 		const { width, height } = Dimensions.get('window');

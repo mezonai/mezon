@@ -24,6 +24,7 @@ interface IInviteToChannelProp {
 	isKeyboardVisible?: boolean;
 	expiredTimeSelected?: string;
 	openEditLinkModal?: () => void;
+	channelId?: string;
 }
 
 interface IInviteToChannelIconProp {
@@ -35,7 +36,7 @@ interface IInviteToChannelIconProp {
 export const FriendList = React.memo(
 	React.forwardRef(
 		(
-			{ isUnknownChannel, expiredTimeSelected, isDMThread = false, isKeyboardVisible, openEditLinkModal }: IInviteToChannelProp,
+			{ isUnknownChannel, expiredTimeSelected, isDMThread = false, isKeyboardVisible, openEditLinkModal, channelId }: IInviteToChannelProp,
 			refRBSheet: React.Ref<BottomSheetModal>
 		) => {
 			const currentChannelId = useSelector(selectCurrentChannelId);
@@ -49,7 +50,7 @@ export const FriendList = React.memo(
 			const { createLinkInviteUser } = useInvite();
 			const { t } = useTranslation(['inviteToChannel']);
 			//TODO: get from API
-			const { listDMInvite, listUserInvite } = useDMInvite(isDMThread ? currentChannel?.channel_id : currentChannelId);
+			const { listDMInvite, listUserInvite } = useDMInvite(currentChannelId);
 			const { createDirectMessageWithUser } = useDirect();
 			const { sendInviteMessage } = useSendInviteMessage();
 			const [sentIdList, setSentIdList] = useState<string[]>([]);

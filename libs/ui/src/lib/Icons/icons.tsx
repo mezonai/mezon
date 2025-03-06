@@ -1078,6 +1078,7 @@ interface IconProps {
 	defaultSize?: string;
 	isWhite?: boolean;
 	size?: string;
+	className?: string;
 }
 
 export const ThreadIcon: React.FC<IconProps> = ({ isWhite, defaultSize = 'w-5 h-5' }) => {
@@ -1340,19 +1341,13 @@ export const MemberList: React.FC<IconProps> = ({ defaultSize = 'w-6 h-6', defau
 	);
 };
 
-export const ThreeDot: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSize = 'w-5 h-5' }) => {
-	const [isWhite, setIsWhite] = useState<boolean>(false);
-
-	const handleClick = () => {
-		setIsWhite(!isWhite);
-	};
+export const ThreeDot: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSize = 'w-5 h-5', className }) => {
 	return (
 		<svg
 			viewBox="0 0 20 20"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
-			className={`${defaultSize} ${isWhite ? 'dark:text-white text-black' : 'dark:text-[#B5BAC1] text-colorTextLightMode'} dark:hover:text-white hover:text-black`}
-			onClick={handleClick}
+			className={` dark:text-[#B5BAC1] text-colorTextLightMode ${className}  ${defaultSize}`}
 		>
 			<g id="Live area">
 				<g id="Vector">
@@ -2791,7 +2786,7 @@ export function CreateCategoryIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function CheckIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check2" viewBox="0 0 16 16">
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check2" viewBox="0 0 16 16" {...props}>
 			<path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0" />
 		</svg>
 	);
@@ -5893,8 +5888,8 @@ export function MicrosoftWinPortable(props: React.HTMLAttributes<SVGElement>) {
 export function Microsoft(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" className="" {...props}>
-			<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-			<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
 			<g id="SVGRepo_iconCarrier">
 				<path fill="#F25022" d="M1 1h6.5v6.5H1V1z"></path>
 				<path fill="#7FBA00" d="M8.5 1H15v6.5H8.5V1z"></path>

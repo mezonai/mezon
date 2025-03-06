@@ -4,7 +4,6 @@ import { ChannelsEntity } from '@mezon/store';
 import { User } from 'mezon-js';
 import React, { useEffect, useRef } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
-import { MezonBottomSheet } from '../../componentUI';
 import UserProfile from '../../screens/home/homedrawer/components/UserProfile';
 import { styles } from './styles';
 
@@ -20,7 +19,6 @@ interface IUserInformationBottomSheetProps {
 export const UserInformationBottomSheet = React.memo((props: IUserInformationBottomSheetProps) => {
 	const { onClose, userId, user, showAction = true, showRole = true, currentChannel } = props;
 	const bottomSheetRef = useRef(null);
-	const snapPoints = ['60%'];
 	useEffect(() => {
 		const showUserInfoBottomSheetListener = DeviceEventEmitter.addListener(
 			ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET,
@@ -36,43 +34,41 @@ export const UserInformationBottomSheet = React.memo((props: IUserInformationBot
 	useEffect(() => {
 		if (bottomSheetRef) {
 			if (userId || user) {
+				const data = {
+					snapPoints: ['60%'],
+					heightFitContent: true,
+					handleComponent: () => {
+						return (
+							<View style={styles.bottomSheetBarWrapper}>
+								<View style={styles.bottomSheetBar} />
+							</View>
+						);
+					},
+					children: (
+						<View
+							style={{
+								borderTopLeftRadius: size.s_14,
+								borderTopRightRadius: size.s_14,
+								overflow: 'hidden'
+							}}
+						>
+							<UserProfile
+								userId={userId}
+								user={user}
+								onClose={onClose}
+								showAction={showAction}
+								showRole={showRole}
+								currentChannel={currentChannel}
+							/>
+						</View>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 				bottomSheetRef.current?.present();
 			} else {
 				bottomSheetRef.current?.close();
 			}
 		}
 	}, [userId, user]);
-	return (
-		<MezonBottomSheet
-			ref={bottomSheetRef}
-			snapPoints={snapPoints}
-			heightFitContent={true}
-			onDismiss={onClose}
-			style={styles.bottomSheet}
-			handleComponent={() => {
-				return (
-					<View style={styles.bottomSheetBarWrapper}>
-						<View style={styles.bottomSheetBar} />
-					</View>
-				);
-			}}
-		>
-			<View
-				style={{
-					borderTopLeftRadius: size.s_14,
-					borderTopRightRadius: size.s_14,
-					overflow: 'hidden'
-				}}
-			>
-				<UserProfile
-					userId={userId}
-					user={user}
-					onClose={onClose}
-					showAction={showAction}
-					showRole={showRole}
-					currentChannel={currentChannel}
-				/>
-			</View>
-		</MezonBottomSheet>
-	);
+	return <View />;
 });

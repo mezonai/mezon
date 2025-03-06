@@ -1,12 +1,10 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity } from '@mezon/store-mobile';
+import { DirectEntity, directActions, useAppDispatch } from '@mezon/store-mobile';
+import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
-import { MezonBottomSheet } from '../../componentUI';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { DeviceEventEmitter, FlatList, Pressable, RefreshControl, View } from 'react-native';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DmListItem } from './DmListItem';
@@ -17,20 +15,30 @@ import { style } from './styles';
 
 const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	const dmGroupChatList: string[] = useMemo(() => JSON.parse(chatList || '[]'), [chatList]);
+	const [refreshing, setRefreshing] = useState(false);
 	const navigation = useNavigation<any>();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetDMMessageRef = useRef<BottomSheetModal>(null);
-	const [directMessageSelected, setDirectMessageSelected] = useState<DirectEntity>(null);
+	const dispatch = useAppDispatch();
 
 	const navigateToNewMessageScreen = () => {
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, { screen: APP_SCREEN.MESSAGES.NEW_MESSAGE });
 	};
 
 	const handleLongPress = useCallback((directMessage: DirectEntity) => {
-		bottomSheetDMMessageRef.current?.present();
-		setDirectMessageSelected(directMessage);
+		const data = {
+			snapPoints: ['40%', '70%'],
+			children: <MessageMenu messageInfo={directMessage} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}, []);
+
+	const handleRefresh = async () => {
+		setRefreshing(true);
+		dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		await sleep(500);
+		setRefreshing(false);
+	};
 
 	return (
 		<View style={styles.container}>
@@ -39,14 +47,19 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			{!dmGroupChatList?.length ? (
 				<MessagesScreenEmpty />
 			) : (
-				<FlashList
+				<FlatList
 					data={dmGroupChatList}
 					contentContainerStyle={{
 						paddingBottom: size.s_100
 					}}
-					showsVerticalScrollIndicator={false}
+					maxToRenderPerBatch={10}
+					updateCellsBatchingPeriod={50}
+					disableVirtualization={true}
+					initialNumToRender={20}
+					windowSize={10}
+					decelerationRate={'fast'}
 					keyExtractor={(dm) => dm + 'DM_MSG_ITEM'}
-					estimatedItemSize={size.s_60}
+					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 					renderItem={({ item }) => <DmListItem id={item} navigation={navigation} key={item} onLongPress={handleLongPress} />}
 				/>
 			)}
@@ -54,10 +67,6 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			<Pressable style={styles.addMessage} onPress={() => navigateToNewMessageScreen()}>
 				<Icons.MessagePlusIcon width={size.s_22} height={size.s_22} />
 			</Pressable>
-
-			<MezonBottomSheet ref={bottomSheetDMMessageRef} snapPoints={['40%', '60%']}>
-				<MessageMenu messageInfo={directMessageSelected} />
-			</MezonBottomSheet>
 		</View>
 	);
 });

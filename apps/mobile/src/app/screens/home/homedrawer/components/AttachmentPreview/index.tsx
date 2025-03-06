@@ -1,7 +1,7 @@
 import { Icons, PlayIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch } from '@mezon/store-mobile';
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import AttachmentFilePreview from '../AttachmentFilePreview';
@@ -18,9 +18,7 @@ const AttachmentPreview = memo(({ channelId }: IProps) => {
 
 	const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(channelId ?? ''));
 
-	const checkAttachment = useMemo(() => {
-		return attachmentFilteredByChannelId?.files?.length > 0;
-	}, [attachmentFilteredByChannelId?.files?.length]);
+	const checkAttachment = attachmentFilteredByChannelId?.files?.length > 0;
 
 	const handleRemoveAttachment = (index: number) => {
 		dispatch(

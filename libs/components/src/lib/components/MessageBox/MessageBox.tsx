@@ -9,6 +9,7 @@ import {
 	MAX_FILE_ATTACHMENTS,
 	MentionDataProps,
 	ThreadValue,
+	UploadLimitReason,
 	processFile,
 	useLongPress
 } from '@mezon/utils';
@@ -54,8 +55,8 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 			const filename = now + '.txt';
 			const file = new File([fileContent], filename, { type: 'text/plain' });
 
-			if (attachmentFilteredByChannelId?.files?.length + 1 > 10) {
-				setOverUploadingState(true);
+			if (attachmentFilteredByChannelId?.files?.length + 1 > MAX_FILE_ATTACHMENTS) {
+				setOverUploadingState(true, UploadLimitReason.COUNT);
 				return;
 			}
 
@@ -92,7 +93,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 				if (files.length > 0) {
 					if (files.length + attachmentFilteredByChannelId?.files?.length > MAX_FILE_ATTACHMENTS) {
-						setOverUploadingState(true);
+						setOverUploadingState(true, UploadLimitReason.COUNT);
 						return;
 					}
 					const updatedFiles = await Promise.all(files.map(processFile<ApiMessageAttachment>));

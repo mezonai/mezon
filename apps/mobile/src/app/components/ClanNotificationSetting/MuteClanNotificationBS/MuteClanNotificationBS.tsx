@@ -1,16 +1,14 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ENotificationActive, ICategoryChannelOption } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ICategoryChannelOption } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { NotiChannelCategorySettingEntity, notificationSettingActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { format } from 'date-fns';
 import { ApiNotificationUserChannel } from 'mezon-js/api.gen';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
-import MezonBottomSheet from '../../../componentUI/MezonBottomSheet';
 import { style } from './MuteClanNotificationBS.styles';
 
 type MuteClanNotificationBSProps = {
@@ -23,7 +21,6 @@ type MuteClanNotificationBSProps = {
 export const MuteClanNotificationBS = ({ currentChannel, description = '', notificationChannelSelected, isUnmute }: MuteClanNotificationBSProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetDetail = useRef<BottomSheetModal>(null);
 	const { t } = useTranslation(['notificationSetting', 'clanNotificationsSetting']);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
@@ -86,12 +83,21 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 			};
 			dispatch(notificationSettingActions.setMuteNotificationSetting(body));
 		} else {
-			bottomSheetDetail.current?.present();
+			const data = {
+				snapPoints: ['55%'],
+				children: (
+					<View style={{ paddingHorizontal: size.s_20 }}>
+						<Text style={styles.headerBS}>{t('clanNotificationBS.title', { ns: 'clanNotificationsSetting' })}</Text>
+						<MezonMenu menu={menu} />
+					</View>
+				)
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		}
 	};
 
 	const onDismissBS = () => {
-		bottomSheetDetail.current?.dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
 	const handleScheduleMute = (duration: number) => {
@@ -167,12 +173,6 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 					<Text style={styles.duration}> {timeMuted}</Text>
 				</Text>
 			) : null}
-			<MezonBottomSheet snapPoints={['55%']} ref={bottomSheetDetail}>
-				<View style={{ paddingHorizontal: size.s_20 }}>
-					<Text style={styles.headerBS}>{t('clanNotificationBS.title', { ns: 'clanNotificationsSetting' })}</Text>
-					<MezonMenu menu={menu} />
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 };

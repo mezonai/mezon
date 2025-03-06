@@ -1,4 +1,5 @@
-import { dragAndDropAction, selectDragAndDropState, selectOverLimitUploadState } from '@mezon/store';
+import { dragAndDropAction, selectDragAndDropState, selectOverLimitReasonState, selectOverLimitUploadState } from '@mezon/store';
+import { UploadLimitReason } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -6,6 +7,7 @@ export function useDragAndDrop() {
 	const dispatch = useDispatch();
 	const draggingState = useSelector(selectDragAndDropState);
 	const isOverUploading = useSelector(selectOverLimitUploadState);
+	const overLimitReason = useSelector(selectOverLimitReasonState);
 	const setDraggingState = useCallback(
 		(status: boolean) => {
 			dispatch(dragAndDropAction.setDraggingState(status));
@@ -13,8 +15,9 @@ export function useDragAndDrop() {
 		[dispatch]
 	);
 	const setOverUploadingState = useCallback(
-		(status: boolean) => {
+		(status: boolean, reason: UploadLimitReason) => {
 			dispatch(dragAndDropAction.setOverLimitUploadState(status));
+			dispatch(dragAndDropAction.setOverLimitReasonState(reason));
 		},
 		[dispatch]
 	);
@@ -23,8 +26,9 @@ export function useDragAndDrop() {
 			draggingState,
 			setDraggingState,
 			isOverUploading,
-			setOverUploadingState
+			setOverUploadingState,
+			overLimitReason
 		}),
-		[draggingState, isOverUploading, setDraggingState, setOverUploadingState]
+		[draggingState, isOverUploading, overLimitReason, setDraggingState, setOverUploadingState]
 	);
 }

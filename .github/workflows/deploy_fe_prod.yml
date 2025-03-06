@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Environments"
-          echo "NODE_ENV: ${{ env.NODE_ENV }}"
+          echo "NODE_ENV: $(which node)"
           export nv=$(node -v)
           echo "Node version: $nv"
           echo "Installing dependencies"

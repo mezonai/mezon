@@ -1,16 +1,16 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth } from '@mezon/core';
-import { CheckIcon, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon, Icons } from '@mezon/mobile-components';
 import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { ClansEntity, selectAllClans, selectCurrentClan } from '@mezon/store-mobile';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Dimensions, FlatList, Keyboard, KeyboardAvoidingView, TouchableOpacity, View } from 'react-native';
+import { Alert, DeviceEventEmitter, Dimensions, FlatList, Keyboard, KeyboardAvoidingView, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { IClanProfileValue } from '..';
 import { SeparatorWithLine } from '../../../../../app/components/Common';
-import { MezonBottomSheet, MezonClanAvatar, MezonInput } from '../../../../componentUI';
+import { MezonClanAvatar, MezonInput } from '../../../../componentUI';
 import { normalizeString } from '../../../../utils/helpers';
 import BannerAvatar from '../UserProfile/components/Banner';
 import { style } from './styles';
@@ -32,10 +32,6 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 	const currentClan = useSelector(selectCurrentClan);
 	const [selectedClan, setSelectedClan] = useState<ClansEntity>(currentClan);
 	const [searchClanText, setSearchClanText] = useState('');
-
-	const openBottomSheet = () => {
-		bottomSheetDetail.current?.present();
-	};
 
 	const onPressHashtag = () => {
 		Toast.show({
@@ -97,6 +93,39 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 	const filteredClanList = useMemo(() => {
 		return clans?.filter((it) => normalizeString(it?.clan_name)?.includes(normalizeString(searchClanText)));
 	}, [searchClanText, clans]);
+
+	const openBottomSheet = () => {
+		bottomSheetDetail.current?.present();
+		const data = {
+			title: t('selectAClan'),
+			heightFitContent: true,
+			children: (
+				<View style={styles.bottomSheetContainer}>
+					<MezonInput value={searchClanText} onTextChange={setSearchClanText} placeHolder={t('searchClanPlaceholder')} />
+					<FlatList
+						data={filteredClanList}
+						keyExtractor={(item) => item?.id}
+						ItemSeparatorComponent={SeparatorWithLine}
+						renderItem={({ item }) => {
+							return (
+								<TouchableOpacity style={styles.clanItem} onPress={() => switchClan(item)}>
+									<View style={styles.optionTitle}>
+										<View style={[styles.clanAvatarWrapper]}>
+											<MezonClanAvatar alt={item?.clan_name} image={item?.logo} />
+										</View>
+
+										<Text style={styles.clanName}>{item?.clan_name}</Text>
+									</View>
+									{item?.clan_id === selectedClan?.clan_id ? <CheckIcon color="green" /> : null}
+								</TouchableOpacity>
+							);
+						}}
+					/>
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
 	return (
 		<KeyboardAvoidingView behavior={'position'} style={{ width: Dimensions.get('screen').width }}>
 			<TouchableOpacity onPress={() => openBottomSheet()} style={styles.actionItem}>
@@ -137,30 +166,6 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 				/>
 			</View>
 
-			<MezonBottomSheet ref={bottomSheetDetail} title={t('selectAClan')} heightFitContent>
-				<View style={styles.bottomSheetContainer}>
-					<MezonInput value={searchClanText} onTextChange={setSearchClanText} placeHolder={t('searchClanPlaceholder')} />
-					<FlatList
-						data={filteredClanList}
-						keyExtractor={(item) => item?.id}
-						ItemSeparatorComponent={SeparatorWithLine}
-						renderItem={({ item }) => {
-							return (
-								<TouchableOpacity style={styles.clanItem} onPress={() => switchClan(item)}>
-									<View style={styles.optionTitle}>
-										<View style={[styles.clanAvatarWrapper]}>
-											<MezonClanAvatar alt={item?.clan_name} image={item?.logo} />
-										</View>
-
-										<Text style={styles.clanName}>{item?.clan_name}</Text>
-									</View>
-									{item?.clan_id === selectedClan?.clan_id ? <CheckIcon color="green" /> : null}
-								</TouchableOpacity>
-							);
-						}}
-					/>
-				</View>
-			</MezonBottomSheet>
 			<View style={{ height: 250 }} />
 		</KeyboardAvoidingView>
 	);

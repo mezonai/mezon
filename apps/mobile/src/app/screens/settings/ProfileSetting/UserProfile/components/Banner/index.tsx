@@ -1,9 +1,9 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { useMemo, useRef } from 'react';
-import { View } from 'react-native';
+import { DeviceEventEmitter, View } from 'react-native';
 import { useMixImageColor } from '../../../../../../../app/hooks/useMixImageColor';
-import { IMezonImagePickerHandler, IMezonMenuSectionProps, MezonBottomSheet, MezonImagePicker, MezonMenu } from '../../../../../../componentUI';
+import { IMezonImagePickerHandler, IMezonMenuSectionProps, MezonImagePicker, MezonMenu } from '../../../../../../componentUI';
 import { style } from './styles';
 
 interface IBannerAvatarProps {
@@ -17,25 +17,20 @@ export default function BannerAvatar({ avatar, onLoad, alt, defaultAvatar }: IBa
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { color } = useMixImageColor(avatar);
-	const avatarBSRef = useRef<BottomSheetModal>();
 	const avatarPickerRef = useRef<IMezonImagePickerHandler>();
 
 	const handleOnload = async (url: string) => {
 		onLoad && onLoad(url);
 	};
 
-	const openAvatarBS = () => {
-		avatarBSRef?.current?.present();
-	};
-
 	const removeAvatar = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		onLoad && onLoad(defaultAvatar || '');
-		avatarBSRef?.current?.dismiss();
 	};
 
 	const pickAvatar = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		avatarPickerRef?.current?.openSelector();
-		avatarBSRef?.current?.dismiss();
 	};
 
 	const menu = useMemo(
@@ -55,6 +50,18 @@ export default function BannerAvatar({ avatar, onLoad, alt, defaultAvatar }: IBa
 			}) satisfies IMezonMenuSectionProps,
 		[]
 	);
+
+	const openAvatarBS = () => {
+		const data = {
+			heightFitContent: true,
+			children: (
+				<View style={{ padding: size.s_20 }}>
+					<MezonMenu menu={[menu]} />
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
 
 	return (
 		<View>
@@ -87,12 +94,6 @@ export default function BannerAvatar({ avatar, onLoad, alt, defaultAvatar }: IBa
 
 				<View style={[styles.onLineStatus]}></View>
 			</View>
-
-			<MezonBottomSheet heightFitContent title="Avatar" ref={avatarBSRef}>
-				<View style={{ padding: size.s_20 }}>
-					<MezonMenu menu={[menu]} />
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 }

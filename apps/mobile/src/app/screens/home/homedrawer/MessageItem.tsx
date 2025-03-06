@@ -43,25 +43,32 @@ export type MessageItemProps = {
 	preventAction?: boolean;
 	isSearchTab?: boolean;
 	userId?: string;
+	isHighlight?: boolean;
 };
 
 const MessageItem = React.memo(
 	(props: MessageItemProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const { mode, isNumberOfLine, showUserInformation = false, preventAction = false, channelId = '', isSearchTab = false } = props;
+		const {
+			mode,
+			isNumberOfLine,
+			showUserInformation = false,
+			preventAction = false,
+			channelId = '',
+			isSearchTab = false,
+			isHighlight = false
+		} = props;
 		const dispatch = useAppDispatch();
 		const { t } = useTranslation('message');
 		const message: MessagesEntity = props?.message;
 		const previousMessage: MessagesEntity = props?.previousMessage;
-		const [showHighlightReply, setShowHighlightReply] = useState(false);
 		const { t: contentMessage, lk = [] } = message?.content || {};
 		const userId = props?.userId;
 
 		const isInviteLink = Array.isArray(lk) && validLinkInviteRegex.test(contentMessage);
 		const isMessageCallLog = !!message?.content?.callLog;
 		const isGoogleMapsLink = Array.isArray(lk) && validLinkGoogleMapRegex.test(contentMessage);
-		const timeoutRef = useRef<NodeJS.Timeout>(null);
 		const checkAnonymous = message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 		const checkSystem = message?.sender_id === '0' && message?.username?.toLowerCase() === 'system';
 		const isMessageSystem =
@@ -101,7 +108,6 @@ const MessageItem = React.memo(
 		const backgroundColor = React.useRef(new Animated.Value(0)).current;
 
 		const isDM = [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
-
 		const messageAvatar =
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
 				? message?.clan_avatar || message?.avatar
@@ -126,27 +132,6 @@ const MessageItem = React.memo(
 		const usernameMessage = isDM ? message?.display_name || message?.user?.username : checkAnonymous ? 'Anonymous' : message?.user?.username;
 
 		const isSendTokenLog = message?.code === TypeMessage.SendToken;
-
-		// move to parent
-		// useEffect(() => {
-		// 	const event = DeviceEventEmitter.addListener(ActionEmitEvent.MESSAGE_ID_TO_JUMP, (msgId: string) => {
-		// 		if (msgId === message?.id) {
-		// 			setShowHighlightReply(true);
-		// 			timeoutRef.current = setTimeout(() => {
-		// 				setShowHighlightReply(false);
-		// 				dispatch(messagesActions.setIdMessageToJump(null));
-		// 			}, 3000);
-		// 		} else {
-		// 			setShowHighlightReply(false);
-		// 			timeoutRef.current && clearTimeout(timeoutRef.current);
-		// 		}
-		// 	});
-
-		// 	return () => {
-		// 		event.remove();
-		// 		timeoutRef.current && clearTimeout(timeoutRef.current);
-		// 	};
-		// }, [dispatch, message?.id]);
 
 		const onLongPressImage = useCallback(() => {
 			if (preventAction) return;
@@ -252,7 +237,7 @@ const MessageItem = React.memo(
 						styles.messageWrapper,
 						(isCombine || preventAction) && { marginTop: 0 },
 						hasIncludeMention && styles.highlightMessageReply,
-						showHighlightReply && styles.highlightMessageMention
+						isHighlight && styles.highlightMessageMention
 					]}
 				>
 					<RenderMessageItemRef message={message} preventAction={preventAction} isSearchTab={isSearchTab} />
@@ -339,6 +324,7 @@ const MessageItem = React.memo(
 												/>
 											))}
 									</View>
+									{/* check  */}
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment
 											attachments={message?.attachments}
@@ -352,6 +338,7 @@ const MessageItem = React.memo(
 							{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
 							{!preventAction && !!message?.reactions?.length ? (
 								<MessageAction
+									userId={userId}
 									message={message}
 									mode={mode}
 									preventAction={preventAction}
@@ -369,14 +356,6 @@ const MessageItem = React.memo(
 						</View>
 					</View>
 				</Pressable>
-
-				{/*<NewMessageRedLine*/}
-				{/*	channelId={props?.channelId}*/}
-				{/*	messageId={props?.messageId}*/}
-				{/*	isEdited={message?.hide_editted}*/}
-				{/*	isSending={message?.isSending}*/}
-				{/*	isMe={message.sender_id === userProfile?.user?.id}*/}
-				{/*/>*/}
 			</Animated.View>
 		);
 	},
@@ -386,11 +365,13 @@ const MessageItem = React.memo(
 				prevProps?.message?.update_time +
 				prevProps?.previousMessage?.id +
 				prevProps?.message?.code +
+				prevProps?.isHighlight +
 				prevProps?.message?.reactions ===
 			nextProps?.message?.id +
 				nextProps?.message?.update_time +
 				nextProps?.previousMessage?.id +
 				nextProps?.message?.code +
+				nextProps?.isHighlight +
 				nextProps?.message?.reactions
 		);
 	}

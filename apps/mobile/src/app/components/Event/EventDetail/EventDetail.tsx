@@ -1,12 +1,9 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectClanById, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus } from '@mezon/utils';
-import { useRef } from 'react';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonBottomSheet } from '../../../componentUI';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonButton from '../../../componentUI/MezonButton2';
 import { EventChannelDetail } from '../EventChannelTitle';
@@ -17,18 +14,20 @@ import { style } from './styles';
 
 interface IEventDetailProps {
 	event: EventManagementEntity;
-	eventDetailRef?: any;
 }
 
-export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
+export function EventDetail({ event }: IEventDetailProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId2(state, event?.creator_id || ''));
 	const clans = useSelector(selectClanById(event?.clan_id || ''));
-	const menuBottomSheet = useRef<BottomSheetModal>(null);
 
 	function handlePress() {
-		menuBottomSheet?.current?.present();
+		const data = {
+			heightFitContent: true,
+			children: <EventMenu event={event} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}
 
 	return (
@@ -41,7 +40,7 @@ export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
 					</View>
 				</View>
 			)}
-			<Text style={styles.title}>{event.title}</Text>
+			<Text style={styles.title}>{event?.title}</Text>
 
 			<View>
 				<View style={styles.mainSection}>
@@ -83,10 +82,6 @@ export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
 			</View>
 
 			{!!event?.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}
-
-			<MezonBottomSheet ref={menuBottomSheet}>
-				<EventMenu event={event} eventDetailRef={eventDetailRef} />
-			</MezonBottomSheet>
 		</View>
 	);
 }

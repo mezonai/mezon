@@ -45,7 +45,7 @@ export function MemberProfile({
 		if (userInfo) {
 			return nickName || userInfo?.display_name || userInfo?.username;
 		}
-	}, [userInfo]);
+	}, [nickName, userInfo]);
 	const userColorRolesClan = useColorsRoleById(userInfo?.id || '')?.highestPermissionRoleColor;
 
 	const colorUserName = useMemo(() => {

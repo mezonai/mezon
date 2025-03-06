@@ -75,7 +75,7 @@ export class MezonNotificationService {
 		this.currentUserId = userId;
 	};
 
-	public connect = async (token: string, pushNotiCallback?: (notification: NotificationData) => void) => {
+	public connect = async (token: string) => {
 		const hasPermission = await this.checkNotificationPermission();
 
 		if (!hasPermission) {
@@ -115,11 +115,8 @@ export class MezonNotificationService {
 					if (e2eemess === 'true') {
 						msgContent = await MessageCrypt.mapE2EEcontent(message, this.currentUserId as string, true);
 					}
-					this.pushNotification(title, msgContent, image, link);
-					if (pushNotiCallback) {
-						pushNotiCallback(msg);
-					}
-					//check app update
+
+					this.pushNotification(title, msgContent, image, link, msg);
 					if (isElectron() && msg?.appid && msg.appid !== this.previousAppId) {
 						this.previousAppId = msg.appid;
 						electronBridge.invoke('APP::CHECK_UPDATE');
@@ -163,15 +160,19 @@ export class MezonNotificationService {
 		}
 	}
 
-	private pushNotification(title: string, message: string, image: string, link: string | undefined) {
+	private pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
 		if (isElectron()) {
-			electronBridge.pushNotification(title, {
-				body: message,
-				icon: image ?? '',
-				data: {
-					link: link ?? ''
-				}
-			});
+			electronBridge.pushNotification(
+				title,
+				{
+					body: message,
+					icon: image ?? '',
+					data: {
+						link: link ?? ''
+					}
+				},
+				msg
+			);
 		} else {
 			this.pushNotificationForWeb(title, message, image, link);
 		}

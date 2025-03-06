@@ -7,7 +7,7 @@ import {
 	EStateFriend,
 	friendsActions,
 	getStoreAsync,
-	selectChannelById,
+	selectChannelById2,
 	selectDmGroupCurrent,
 	selectFriendStatus,
 	selectMemberClanByUserId2,
@@ -26,7 +26,7 @@ interface IWelcomeMessage {
 }
 
 const useCurrentChannel = (channelId: string) => {
-	const channel = useAppSelector((state) => selectChannelById(state, channelId));
+	const channel = useAppSelector((state) => selectChannelById2(state, channelId));
 	const dmGroup = useAppSelector(selectDmGroupCurrent(channelId));
 	return channel || dmGroup;
 };
@@ -42,8 +42,8 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 	}, [currenChannel?.usernames]);
 
 	const isChannel = useMemo(() => {
-		return currenChannel?.parrent_id === '0';
-	}, [currenChannel?.parrent_id]);
+		return currenChannel?.parent_id === '0';
+	}, [currenChannel?.parent_id]);
 
 	const isDM = useMemo(() => {
 		return currenChannel?.clan_id === '0';
@@ -63,19 +63,21 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 					};
 				})
 			: [];
-	}, [isDMGroup, currenChannel?.user_id]);
+	}, [currenChannel?.category_name, currenChannel?.channel_avatar, isDMGroup]);
 
 	const creatorUser = useAppSelector((state) => selectMemberClanByUserId2(state, currenChannel?.creator_id));
 	const checkAddFriend = useAppSelector(selectFriendStatus(currenChannel?.user_id?.[0]));
 
 	const handleAddFriend = async () => {
-		const store = await getStoreAsync();
-		store.dispatch(
-			friendsActions.sendRequestAddFriend({
-				usernames: [],
-				ids: [currenChannel?.user_id[0]]
-			})
-		);
+		if (currenChannel?.user_id?.[0]) {
+			const store = await getStoreAsync();
+			store.dispatch(
+				friendsActions.sendRequestAddFriend({
+					usernames: [],
+					ids: [currenChannel?.user_id?.[0]]
+				})
+			);
+		}
 	};
 
 	const handleAcceptFriend = async () => {

@@ -840,7 +840,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	};
 
 	return (
-		<div className="relative">
+		<div className="contain-layout relative">
 			{props.isThread && !props.isTopic && !threadCurrentChannel && (
 				<div className={`flex flex-col overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}>
 					<div className="flex flex-col justify-end flex-grow">

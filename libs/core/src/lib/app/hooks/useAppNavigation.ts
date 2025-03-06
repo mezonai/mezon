@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCustomNavigate } from '../../chat/hooks/useCustomNavigate';
 
 export type ToClanPageArgs = {
 	clanId: string;
 };
 
 export function useAppNavigation() {
-	const navigate = useNavigate();
+	const navigate = useCustomNavigate();
 
 	const toLoginPage = useCallback(() => {
 		return `/guest/login`;
@@ -52,11 +52,11 @@ export function useAppNavigation() {
 	}, []);
 
 	const toDmGroupPageFromFriendPage = useCallback((directId: string, type: number) => {
-		return `../message/${directId}/${type}`;
+		return `/chat/direct/message/${directId}/${type}`;
 	}, []);
 
 	const toDmGroupPageFromMainApp = useCallback((directId: string, type: number) => {
-		return `chat/direct/message/${directId}/${type}`;
+		return `/chat/direct/message/${directId}/${type}`;
 	}, []);
 
 	return useMemo(

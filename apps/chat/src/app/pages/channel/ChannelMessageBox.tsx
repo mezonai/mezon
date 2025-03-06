@@ -142,7 +142,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			)}
 			<MessageBox
 				listMentions={UserMentionList({
-					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parrent_id ?? '') : (channelId ?? ''),
+					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parent_id ?? '') : (channelId ?? ''),
 					channelMode: mode
 				})}
 				onSend={handleSend}

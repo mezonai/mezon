@@ -82,7 +82,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		};
 	}, [isClanView, direct?.type, directId, channel?.type, channel?.clan_id, channel?.id, thread?.channel_id, isFocusTopicBox, isFocusThreadBox]);
 	const membersOfChild = useAppSelector((state) => (channel?.id ? selectAllChannelMembers(state, channel?.id as string) : null));
-	const membersOfParent = useAppSelector((state) => (channel?.parrent_id ? selectAllChannelMembers(state, channel?.parrent_id as string) : null));
+	const membersOfParent = useAppSelector((state) => (channel?.parent_id ? selectAllChannelMembers(state, channel?.parent_id as string) : null));
 	const updateChannelUsers = async (currentChannel: ChannelsEntity | null, userIds: string[], clanId: string) => {
 		const timestamp = Date.now() / 1000;
 
@@ -109,10 +109,10 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 	};
 	const addMemberToThread = useCallback(
 		async (userId: string) => {
-			if (channel?.parrent_id === '0' || channel?.parrent_id === '') return;
-			const existingUserIdOfParrent = membersOfParent?.some((member) => member.id === userId);
+			if (channel?.parent_id === '0' || channel?.parent_id === '') return;
+			const existingUserIdOfParent = membersOfParent?.some((member) => member.id === userId);
 			const existingUserIdOfChild = membersOfChild?.some((member) => member.id === userId);
-			if (existingUserIdOfParrent && !existingUserIdOfChild) {
+			if (existingUserIdOfParent && !existingUserIdOfChild) {
 				await updateChannelUsers(channel, [userId], channel?.clan_id as string);
 			}
 		},

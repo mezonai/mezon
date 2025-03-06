@@ -4,6 +4,7 @@ import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, crea
 import { ApiNotificationUserChannel } from 'mezon-js/api.gen';
 import { channelsActions } from '../channels/channels.slice';
 import { directActions } from '../direct/direct.slice';
+import { directMetaActions } from '../direct/directmeta.slice';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 import { defaultNotificationCategoryActions } from './notificationSettingCategory.slice';
@@ -142,6 +143,7 @@ export const setMuteNotificationSetting = createAsyncThunk(
 				thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
 			} else {
 				thunkAPI.dispatch(directActions.update({ id: channel_id as string, changes: { is_mute: active === 0 } }));
+				thunkAPI.dispatch(directMetaActions.updateMuteDM({ channelId: channel_id as string, isMute: active === 0 }));
 			}
 			return response;
 		} catch (error) {
@@ -195,6 +197,16 @@ export const notificationSettingSlice = createSlice({
 				...action.payload
 			};
 			NotificationSettingsAdapter.upsertOne(state, notificationEntity);
+		},
+		removeNotiSetting: (state, action: PayloadAction<string>) => {
+			const channelId = action.payload;
+			if (!state.entities[channelId]) return;
+			NotificationSettingsAdapter.updateOne(state, {
+				id: channelId,
+				changes: {
+					active: 1
+				}
+			});
 		}
 	},
 	extraReducers: (builder) => {

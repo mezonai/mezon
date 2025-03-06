@@ -1,5 +1,6 @@
 import { BottomSheetModalProps, BottomSheetScrollView, BottomSheetModal as OriginalBottomSheet } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import { useIdleRender } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { ReactNode, Ref, forwardRef, useCallback, useMemo } from 'react';
 import { Text, View } from 'react-native';
@@ -20,9 +21,7 @@ export interface IMezonBottomSheetProps extends BottomSheetModalProps {
 	enablePanDownToClose?: boolean;
 }
 
-const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBottomSheetProps, ref: Ref<BottomSheetModalMethods>) {
-	//check later
-
+const BaseMezonBottomSheet = forwardRef(function BaseMezonBottomSheet(props: IMezonBottomSheetProps, ref: Ref<BottomSheetModalMethods>) {
 	const { children, title, headerLeft, headerRight, heightFitContent, snapPoints = ['90%'], titleSize = 'sm', footer } = props;
 	const isTabletLandscape = useTabletLandscape();
 	const themeValue = useTheme().themeValue;
@@ -38,7 +37,6 @@ const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBotto
 				</View>
 			);
 		}
-
 		return null;
 	}, [title, headerLeft, headerRight, styles, titleSize]);
 
@@ -61,5 +59,14 @@ const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBotto
 		</OriginalBottomSheet>
 	);
 });
+
+const MezonBottomSheet = forwardRef(function MezonBottomSheet(props: IMezonBottomSheetProps, ref: Ref<BottomSheetModalMethods>) {
+	const shouldRender = useIdleRender();
+	if (!shouldRender) return null;
+
+	return <BaseMezonBottomSheet {...props} ref={ref} />;
+});
+
+MezonBottomSheet.displayName = 'MezonBottomSheet';
 
 export default React.memo(MezonBottomSheet);

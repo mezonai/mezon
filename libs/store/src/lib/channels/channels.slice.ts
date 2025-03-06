@@ -1,34 +1,34 @@
 import { captureSentryError } from '@mezon/logger';
 import {
-	ApiChannelMessageHeaderWithChannel,
-	BuzzArgs,
-	ChannelThreads,
-	checkIsThread,
-	ICategory,
-	IChannel,
-	LoadingStatus,
-	ModeResponsive,
-	RequestInput,
-	TypeCheck
+    ApiChannelMessageHeaderWithChannel,
+    BuzzArgs,
+    ChannelThreads,
+    checkIsThread,
+    ICategory,
+    IChannel,
+    LoadingStatus,
+    ModeResponsive,
+    RequestInput,
+    TypeCheck
 } from '@mezon/utils';
 import {
-	createAsyncThunk,
-	createEntityAdapter,
-	createSelector,
-	createSlice,
-	EntityState,
-	GetThunkAPI,
-	PayloadAction,
-	Update
+    createAsyncThunk,
+    createEntityAdapter,
+    createSelector,
+    createSlice,
+    EntityState,
+    GetThunkAPI,
+    PayloadAction,
+    Update
 } from '@reduxjs/toolkit';
 import isEqual from 'lodash.isequal';
 import { ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
 import {
-	ApiAddFavoriteChannelRequest,
-	ApiChangeChannelPrivateRequest,
-	ApiChannelDescription,
-	ApiCreateChannelDescRequest,
-	ApiMarkAsReadRequest
+    ApiAddFavoriteChannelRequest,
+    ApiChangeChannelPrivateRequest,
+    ApiChannelDescription,
+    ApiCreateChannelDescRequest,
+    ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
 import { ApiChannelAppResponse } from 'mezon-js/dist/api.gen';
 import { categoriesActions, FetchCategoriesPayload } from '../categories/categories.slice';
@@ -49,10 +49,10 @@ import { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import { channelMetaActions, ChannelMetaEntity, enableMute } from './channelmeta.slice';
 import {
-	LIST_CHANNELS_USER_FEATURE_KEY,
-	listChannelsByUserActions,
-	ListChannelsByUserState,
-	selectEntitiesChannelsByUser
+    LIST_CHANNELS_USER_FEATURE_KEY,
+    listChannelsByUserActions,
+    ListChannelsByUserState,
+    selectEntitiesChannelsByUser
 } from './channelUser.slice';
 import { listChannelRenderAction } from './listChannelRender.slice';
 
@@ -210,11 +210,11 @@ export const joinChannel = createAsyncThunk(
 
 			const channel = selectChannelById(getChannelsRootState(thunkAPI), channelId);
 			if (!noFetchMembers) {
-				if (channel && channel?.parrent_id !== '0' && channel?.parrent_id !== '') {
+				if (channel && channel?.parent_id !== '0' && channel?.parent_id !== '') {
 					thunkAPI.dispatch(
 						channelMembersActions.fetchChannelMembers({
 							clanId,
-							channelId: channel.parrent_id || '',
+							channelId: channel.parent_id || '',
 							channelType: ChannelType.CHANNEL_TYPE_CHANNEL
 						})
 					);
@@ -268,9 +268,9 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 					})
 				);
 			}
-			if (response.parrent_id !== '0') {
+			if (response.parent_id !== '0') {
 				await thunkAPI.dispatch(
-					threadsActions.setListThreadId({ channelId: response.parrent_id as string, threadId: response.channel_id as string })
+					threadsActions.setListThreadId({ channelId: response.parent_id as string, threadId: response.channel_id as string })
 				);
 			}
 
@@ -328,7 +328,7 @@ export interface IUpdateChannelRequest {
 	e2ee?: number;
 	topic?: string;
 	age_restricted?: number;
-	parrent_id?: string;
+	parent_id?: string;
 	channel_private?: number;
 	category_name?: string;
 }
@@ -925,14 +925,14 @@ export const channelsSlice = createSlice({
 				state.byClans[clanId] = getInitialClanState();
 			}
 
-			if (payload.parrent_id !== '0' && payload.channel_private !== 1) {
+			if (payload.parent_id !== '0' && payload.channel_private !== 1) {
 				const channel = mapChannelToEntity({
 					...payload,
 					type: payload.channel_type,
 					active: 1
 				});
 				channelsAdapter.addOne(state.byClans[clanId].entities, channel);
-			} else if (payload.parrent_id === '0' && payload.channel_private !== 1) {
+			} else if (payload.parent_id === '0' && payload.channel_private !== 1) {
 				const channel = mapChannelToEntity({
 					...payload,
 					type: payload.channel_type
@@ -1355,7 +1355,7 @@ export const selectCurrentVoiceChannel = createSelector(selectChannelsEntities, 
 );
 
 export const selectVoiceChannelAll = createSelector(selectAllChannels, (channels) =>
-	channels.filter((channel) => channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE)
+	channels.filter((channel) => channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE)
 );
 export const selectAllTextChannel = createSelector(selectAllChannels, (channels) =>
 	channels.filter(
@@ -1377,7 +1377,7 @@ export const selectChannelsByClanId = createSelector(
 export const selectDefaultChannelIdByClanId = createSelector(
 	[selectAllChannels, (state: RootState, clanId: string) => clanId],
 	(channels, clanId) => {
-		const defaultChannel = channels.find((channel) => channel.parrent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL);
+		const defaultChannel = channels.find((channel) => channel.parent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL);
 		return defaultChannel ? defaultChannel.id : null;
 	}
 );
@@ -1450,7 +1450,7 @@ export const selectChannelThreads = createSelector([selectAllChannels], (channel
 	const parentChannels: ChannelsEntity[] = [];
 
 	for (const channel of channels) {
-		const parentId = channel.parrent_id;
+		const parentId = channel.parent_id;
 
 		if (parentId === '0' || parentId === '') {
 			parentChannels.push(channel);

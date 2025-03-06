@@ -187,13 +187,17 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 			<div className="relative z-10 dark:bg-bgDisable bg-bgLightMode dark:text-textDarkTheme text-textLightTheme p-6 rounded-[5px] w-[440px] text-[15px]">
 				<h2 className="text-[24px] font-semibold text-center">Add members or roles</h2>
 				<div className="flex justify-center">
-					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && (
-						<Icons.SpeakerLocked defaultSize="w-5 h-5" />
-					)}
+					{isPrivate === ChannelStatusEnum.isPrivate &&
+						(channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
+							<Icons.SpeakerLocked defaultSize="w-5 h-5" />
+						)}
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
 						<Icons.HashtagLocked defaultSize="w-5 h-5 " />
 					)}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && <Icons.Speaker defaultSize="w-5 5-5" />}
+					{isPrivate === undefined &&
+						(channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
+							<Icons.Speaker defaultSize="w-5 5-5" />
+						)}
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream defaultSize="w-5 5-5" />}
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.Hashtag defaultSize="w-5 h-5" />}
 					<p className="dark:text-[#AEAEAE] text-colorTextLightMode text-[16px]" style={{ wordBreak: 'break-word' }}>

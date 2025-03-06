@@ -1,5 +1,5 @@
-import { Attributes, Metrics, size } from '@mezon/mobile-ui';
-import { Platform, StyleSheet } from 'react-native';
+import { Attributes, size } from '@mezon/mobile-ui';
+import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		createChannelContainer: {
@@ -43,6 +43,6 @@ export const style = (colors: Attributes) =>
 			color: colors.textStrong
 		},
 		scrollView: {
-			height: Metrics.screenHeight / (Platform.OS === 'ios' ? 1.3 : 1.2)
+			height: '95%'
 		}
 	});

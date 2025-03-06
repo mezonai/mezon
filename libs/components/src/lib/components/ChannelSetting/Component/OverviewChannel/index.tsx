@@ -106,7 +106,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			if (isThread) {
 				await checkDuplicate(checkDuplicateThread, {
 					thread_name: value.trim(),
-					channel_id: channel.parrent_id ?? ''
+					channel_id: channel.parent_id ?? ''
 				});
 			} else {
 				await checkDuplicate(checkDuplicateChannelInCategory, {
@@ -185,7 +185,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			topic: topic,
 			age_restricted: isAgeRestricted,
 			e2ee: isE2ee,
-			parrent_id: channel?.parrent_id,
+			parent_id: channel?.parent_id,
 			channel_private: channel?.channel_private
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));

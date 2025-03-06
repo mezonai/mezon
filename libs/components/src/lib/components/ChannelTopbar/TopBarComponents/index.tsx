@@ -34,7 +34,7 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 	const isChannelStream = type === ChannelType.CHANNEL_TYPE_STREAMING;
 	const isAppChannel = type === ChannelType.CHANNEL_TYPE_APP;
 
-	const channelParent = useAppSelector((state) => selectChannelById(state, channel?.parrent_id as string));
+	const channelParent = useAppSelector((state) => selectChannelById(state, channel?.parent_id as string));
 
 	const isPrivate = channelParent?.id ? channelParent?.channel_private : channel?.channel_private;
 	const isActive = currentChannel?.channel_id === channel?.channel_id && !channelParent;

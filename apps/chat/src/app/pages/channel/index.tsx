@@ -67,6 +67,7 @@ import {
 	ParticipantMeetState,
 	SubPanelName,
 	TIME_OFFSET,
+	UploadLimitReason,
 	isLinuxDesktop,
 	isWindowsDesktop,
 	titleMission
@@ -243,7 +244,7 @@ type ChannelMainContentProps = {
 const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
-	const { draggingState, setDraggingState, isOverUploading, setOverUploadingState } = useDragAndDrop();
+	const { draggingState, setDraggingState, isOverUploading, setOverUploadingState, overLimitReason } = useDragAndDrop();
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, channelId));
 	const closeMenu = useSelector(selectCloseMenu);
@@ -451,7 +452,9 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					{!isShowCanvas && !isShowAgeRestricted && draggingState && !isChannelMezonVoice && (
 						<FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />
 					)}
-					{isOverUploading && <TooManyUpload togglePopup={() => setOverUploadingState(false)} />}
+					{isOverUploading && (
+						<TooManyUpload togglePopup={() => setOverUploadingState(false, UploadLimitReason.COUNT)} limitReason={overLimitReason} />
+					)}
 					<div
 						className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] z-10"
 						id="mainChat"

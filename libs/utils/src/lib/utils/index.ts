@@ -670,7 +670,8 @@ export async function fetchAndCreateFiles(fileData: ApiMessageAttachment[] | nul
 			}
 
 			const response = await fetch(file.url);
-			const blob = await response.blob();
+			const arrayBuffer = await response.arrayBuffer();
+			const blob = new Blob([arrayBuffer], { type: file.filetype || 'application/octet-stream' });
 			const createdFile = new CustomFile([blob], file.filename ?? 'untitled', { type: file.filetype || 'application/octet-stream' });
 			createdFile.url = file.url;
 			createdFile.width = file.width || 0;
@@ -832,7 +833,7 @@ export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => 
 	});
 };
 export const checkIsThread = (channel?: IChannel) => {
-	return channel?.parrent_id !== '0' && channel?.parrent_id !== '';
+	return channel?.parent_id !== '0' && channel?.parent_id !== '';
 };
 
 export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();

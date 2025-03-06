@@ -1,5 +1,7 @@
+import { useAuth } from '@mezon/core';
 import {
 	debounce,
+	getAppInfo,
 	Icons,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
@@ -24,7 +26,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 	const [filteredMenu, setFilteredMenu] = useState<IMezonMenuSectionProps[]>([]);
 	const [searchText, setSearchText] = useState<string>('');
 	const [isShowCancel, setIsShowCancel] = useState<boolean>(false);
-
+	const { userProfile } = useAuth();
 	const logout = async () => {
 		const store = await getStoreAsync();
 		store.dispatch(channelsActions.removeAll());
@@ -37,7 +39,9 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		store.dispatch(authActions.logOut());
+		const [appInfo] = await Promise.all([getAppInfo()]);
+		const { app_platform: platform } = appInfo;
+		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: platform }));
 	};
 
 	const confirmLogout = () => {

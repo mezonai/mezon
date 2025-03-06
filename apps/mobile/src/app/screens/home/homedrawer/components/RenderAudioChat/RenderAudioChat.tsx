@@ -1,18 +1,20 @@
 import { PauseIcon, PlayIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { AVPlaybackStatusSuccess, Audio } from 'expo-av';
 import LottieView from 'lottie-react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
+import Sound from 'react-native-sound';
 import { WAY_AUDIO } from '../../../../../../assets/lottie';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
+
 const formatTime = (millis: number) => {
 	const minutes = Math.floor(millis / 60000);
 	const seconds = Math.floor((millis % 60000) / 1000);
 	return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
+
 const RenderAudioChat = React.memo(
 	({ audioURL, stylesContainerCustom, styleLottie }: { audioURL: string; stylesContainerCustom?: ViewStyle; styleLottie?: ViewStyle }) => {
 		const isTabletLandscape = useTabletLandscape();
@@ -20,7 +22,7 @@ const RenderAudioChat = React.memo(
 		const styles = style(themeValue, isTabletLandscape);
 		const recordingWaveRef = useRef(null);
 		const [isPlaying, setIsPlaying] = useState(false);
-		const [sound, setSound] = useState<Audio.Sound | null>(null);
+		const [sound, setSound] = useState<Sound | null>(null);
 		const [totalTime, setTotalTime] = useState(0);
 
 		useEffect(() => {
@@ -28,58 +30,42 @@ const RenderAudioChat = React.memo(
 		}, []);
 
 		useEffect(() => {
-			const loadSound = async () => {
-				try {
-					const { sound: newSound } = await Audio.Sound.createAsync({
-						uri: audioURL
-					});
-					setSound(newSound);
-				} catch (error) {
+			const newSound = new Sound(audioURL, Sound.MAIN_BUNDLE, (error) => {
+				if (error) {
 					console.error('Failed to load sound:', error);
+					return;
 				}
-			};
-
-			loadSound();
+				setTotalTime(newSound.getDuration() * 1000);
+				setSound(newSound);
+			});
 
 			return () => {
-				if (sound) {
-					sound?.unloadAsync();
-				}
+				newSound.release();
 			};
 		}, [audioURL]);
 
-		const handlePlaybackStatusUpdate = useCallback(
-			(status: AVPlaybackStatusSuccess) => {
-				setTotalTime(status?.durationMillis - status?.positionMillis);
-				if (status?.isLoaded && status?.didJustFinish) {
-					sound?.setPositionAsync(0);
-					sound?.pauseAsync();
-					recordingWaveRef?.current?.reset();
-					setIsPlaying(false);
-				}
-			},
-			[sound]
-		);
-
-		useEffect(() => {
-			if (sound) sound?.setOnPlaybackStatusUpdate(handlePlaybackStatusUpdate);
-		}, [handlePlaybackStatusUpdate, sound]);
-
-		const playSound = async () => {
+		const playSound = () => {
 			if (sound) {
-				await sound?.playAsync();
+				sound.play((success) => {
+					if (success) {
+						sound.setCurrentTime(0);
+						recordingWaveRef?.current?.reset();
+						setIsPlaying(false);
+					}
+				});
 				setIsPlaying(true);
 				recordingWaveRef?.current?.play(0, 45);
 			}
 		};
 
-		const pauseSound = async () => {
+		const pauseSound = () => {
 			if (sound) {
+				sound.pause();
 				recordingWaveRef?.current?.pause();
-				await sound.pauseAsync();
 				setIsPlaying(false);
 			}
 		};
+
 		return (
 			<TouchableOpacity
 				onPress={isPlaying ? pauseSound : playSound}
@@ -104,7 +90,7 @@ const RenderAudioChat = React.memo(
 						)}
 					</View>
 					<LottieView source={WAY_AUDIO} ref={recordingWaveRef} resizeMode="cover" style={{ ...styles.soundLottie, ...styleLottie }} />
-					<Text style={styles.currentTime}>{`${formatTime(totalTime)}`}</Text>
+					{!isPlaying && <Text style={styles.currentTime}>{`${formatTime(totalTime)}`}</Text>}
 				</View>
 			</TouchableOpacity>
 		);

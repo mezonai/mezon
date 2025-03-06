@@ -121,7 +121,7 @@ export const style = (colors: Attributes) =>
 		},
 		iconEmojiReaction: {
 			width: size.s_18,
-			height: '100%',
+			height: size.s_18,
 			marginRight: size.s_2
 		},
 		iconEmojiReactionDetail: {

@@ -13,6 +13,7 @@ import {
 import {
 	MessagesEntity,
 	RootState,
+	getStore,
 	messagesActions,
 	selectAllAccount,
 	selectAllChannelMemberIds,
@@ -23,6 +24,7 @@ import {
 	selectHasMoreBottomByChannelId2,
 	selectHasMoreMessageByChannelId2,
 	selectIdMessageToJump,
+	selectIsJumpingToPresent,
 	selectIsMessageIdExist,
 	selectLastMessageByChannelId,
 	selectMessageEntitiesByChannelId,
@@ -52,7 +54,7 @@ import classNames from 'classnames';
 import { ChannelMessage as ChannelMessageType, ChannelType } from 'mezon-js';
 import { ApiMessageRef } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ChannelMessage, MemorizedChannelMessage } from './ChannelMessage';
 
 type ChannelMessagesProps = {
@@ -92,12 +94,10 @@ function ChannelMessages({
 	topicId,
 	isPrivate
 }: ChannelMessagesProps) {
-	const store = useStore();
 	const appearanceTheme = useSelector(selectTheme);
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const messageIds = useAppSelector((state) => selectMessageIdsByChannelId2(state, channelId));
 	const idMessageNotified = useSelector(selectMessageNotified);
-	const isFetching = useSelector(selectMessageIsLoading);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, isDM));
 	const allUserIdsInChannel = isThreadBox ? userIdsFromThreadBox : isTopicBox ? userIdsFromTopicBox : getMemberIds;
@@ -109,7 +109,6 @@ function ChannelMessages({
 	const dispatch = useAppDispatch();
 	const chatRef = useRef<HTMLDivElement | null>(null);
 
-	const isFetchingRef = useRef<boolean>(false);
 	const skipCalculateScroll = useRef<boolean>(false);
 
 	const anchorIdRef = useRef<string | null>(null);
@@ -138,13 +137,11 @@ function ChannelMessages({
 		};
 	}, []);
 
-	useEffect(() => {
-		isFetchingRef.current = isFetching;
-	}, [isFetching]);
-
 	const loadMoreMessage = useCallback(
 		async (direction: ELoadMoreDirection, cb?: IBeforeRenderCb) => {
-			if (isFetchingRef.current) {
+			const store = getStore();
+			const isFetching = selectMessageIsLoading(store.getState());
+			if (isFetching) {
 				return;
 			}
 
@@ -360,14 +357,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		setAnchor,
 		isPrivate
 	}) => {
-		const store = useStore();
 		const dispatch = useAppDispatch();
 		const userId = useSelector(selectAllAccount)?.user?.id;
 		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 		const idMessageToJump = useSelector(selectIdMessageToJump);
 		const entities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, channelId));
+		const jumpToPresent = useAppSelector((state) => selectIsJumpingToPresent(state, channelId));
 		const firstMsgOfThisTopic = useSelector(selectFirstMessageOfCurrentTopic);
-
 		const [getContainerHeight, prevContainerHeightRef] = useContainerHeight(chatRef, true);
 
 		const isViewportNewest = true;
@@ -379,6 +375,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const [isNotchShown, setIsNotchShown] = useState<boolean | undefined>();
 
 		const [forceRender, setForceRender] = useState<boolean>(false);
+
+		useEffect(() => {
+			if (chatRef.current) {
+				chatRef.current.scrollTop = 99999;
+				dispatch(messagesActions.setIsJumpingToPresent({ channelId, status: false }));
+			}
+		}, [jumpToPresent]);
 
 		const { withHistoryTriggers, backwardsTriggerRef, forwardsTriggerRef, fabTriggerRef } = useScrollHooks(
 			'thread',
@@ -616,7 +619,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					messageElement.scrollIntoView({ behavior: 'auto', block: 'center' });
 				}
 			};
-
+			const store = getStore();
 			const isMessageExist = selectIsMessageIdExist(store.getState() as RootState, channelId, idMessageToJump?.id);
 
 			if (idMessageToJump && isMessageExist) {

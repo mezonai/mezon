@@ -14,16 +14,13 @@ export const MessageItemBS = React.memo((props: IReplyBottomSheet) => {
 	const styles = style(themeValue);
 	const { type, onClose, isOnlyEmojiPicker = false } = props;
 	const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
-	const [isShowBottomSheet, setSetShowBottomSheet] = useState(false);
 
 	const setVisibleBottomSheet = (isShow: boolean) => {
 		if (bottomSheetRef) {
 			if (isShow) {
 				bottomSheetRef.current?.present();
-				setSetShowBottomSheet(true);
 			} else {
 				bottomSheetRef.current?.close();
-				setSetShowBottomSheet(false);
 			}
 		}
 	};

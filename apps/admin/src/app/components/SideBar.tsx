@@ -14,7 +14,7 @@ const SideBar: React.FC<ISideBarProps> = ({ tabs, mode = 'root' }) => {
 				{tabs.map((tab, index) => (
 					<NavLink
 						key={index}
-						to={tab.routerLink}
+						to={`/developers/${tab.routerLink}`}
 						className={({ isActive }) =>
 							isActive
 								? 'sidebar-tab flex gap-1 items-center py-2 px-4 dark:bg-[#3C4370] bg-bgLightModeButton text-[#5865F3] dark:text-[#C9CDFB] rounded-[4px]'

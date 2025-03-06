@@ -59,7 +59,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }, refRBSheet: Rea
 							clanName: clanById?.clan_name || '',
 							streamId: channel?.channel_id || '',
 							streamName: channel?.channel_label || '',
-							parentId: channel?.parrent_id || ''
+							parentId: channel?.parent_id || ''
 						})
 					);
 				}

@@ -1,7 +1,6 @@
 #import "AppDelegate.h"
 #import <Firebase.h>
 #import <React/RCTBundleURLProvider.h>
-#import <RNGoogleSignin/RNGoogleSignin.h>
 #import <React/RCTLinkingManager.h>
 #import "RNBootSplash.h"
 #import <CodePush/CodePush.h>
@@ -10,6 +9,7 @@
 #import "RNVoipPushNotificationManager.h"
 #import <AVFoundation/AVFoundation.h>
 #import "RNFBMessagingModule.h"
+#import <React/RCTRootView.h>
 
 @implementation AppDelegate
 

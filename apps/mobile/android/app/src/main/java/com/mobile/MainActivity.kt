@@ -1,5 +1,4 @@
 package com.mobile.mezon
-import expo.modules.ReactActivityDelegateWrapper
 import android.os.Bundle;
 
 import android.content.Intent;
@@ -34,5 +33,5 @@ class MainActivity : ReactActivity() {
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
-      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
+      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 }

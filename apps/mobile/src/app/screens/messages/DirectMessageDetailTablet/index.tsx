@@ -185,7 +185,6 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	const handleAppStateChange = async (state: string) => {
 		if (state === 'active') {
 			try {
-				DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: false });
 				const store = await getStoreAsync();
 				save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
 				store.dispatch(
@@ -198,12 +197,10 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 					})
 				);
 				save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
-				DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });
 			} catch (error) {
 				const store = await getStoreAsync();
 				store.dispatch(appActions.setIsFromFCMMobile(false));
 				save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
-				DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });
 			}
 		}
 	};

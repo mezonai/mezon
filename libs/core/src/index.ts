@@ -24,6 +24,7 @@ export * from './lib/chat/hooks/useClanOwner';
 export * from './lib/chat/hooks/useClanProfileSetting';
 export * from './lib/chat/hooks/useClans';
 export * from './lib/chat/hooks/useClickUpToEdit';
+export * from './lib/chat/hooks/useCustomNavigate';
 export * from './lib/chat/hooks/useDMInvite';
 export * from './lib/chat/hooks/useIdleRender';
 export * from './lib/chat/hooks/useUserById';
