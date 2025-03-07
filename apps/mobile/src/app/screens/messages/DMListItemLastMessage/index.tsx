@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { ETokenMessage, IExtendedMessage, getSrcEmoji } from '@mezon/utils';
+import { ETokenMessage, IExtendedMessage, TypeMessage, getSrcEmoji } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -17,16 +17,6 @@ type IEmojiMarkup = {
 	emojiid: string;
 };
 
-const contentTitle = (t, styles, styleText) => {
-	const [title] = (t ?? '').split(' | ');
-	return <Text style={[styles.message, styleText && styleText]}>{title}</Text>;
-};
-
-const pattern = /^Tokens sent:.*\|.*/;
-const checkTokenMessage = (text: string) => {
-	return pattern.test(text);
-};
-
 const EmojiMarkup = ({ shortname, emojiid }: IEmojiMarkup) => {
 	const srcEmoji = getSrcEmoji(emojiid);
 
@@ -37,7 +27,7 @@ const EmojiMarkup = ({ shortname, emojiid }: IEmojiMarkup) => {
 };
 
 const EMOJI_KEY = '[ICON_EMOJI]';
-export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleText?: any }) => {
+export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleText?: any; code?: TypeMessage }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t, ej = [] } = props.content || {};
@@ -104,7 +94,7 @@ export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleT
 
 	return (
 		<Text style={[styles.dmMessageContainer, props?.styleText && props?.styleText]} numberOfLines={1}>
-			{checkTokenMessage(t) ? contentTitle(t, styles, props?.styleText) : convertTextToEmoji()}
+			{convertTextToEmoji()}
 		</Text>
 	);
 };
