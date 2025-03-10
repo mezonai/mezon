@@ -12,7 +12,6 @@ import {
 } from '@mezon/store';
 import { Button, Icons, Image, InputField } from '@mezon/ui';
 import { isMacDesktop } from '@mezon/utils';
-import isElectron from 'is-electron';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
@@ -81,7 +80,7 @@ const FriendsPage = () => {
 
 	const handleAddFriend = async () => {
 		const checkIsAlreadyFriend = (username: string) => {
-			return friends.some((user) => user.user?.username === username);
+			return friends.some((user) => user?.user?.username === username);
 		};
 		if (requestAddFriend?.usernames?.length && checkIsAlreadyFriend(requestAddFriend.usernames[0])) {
 			setIsAlreadyFriend(true);
@@ -177,7 +176,7 @@ const FriendsPage = () => {
 					</button>
 				</div>
 			</div>
-			<div className={`contain-strict flex-1 flex w-full h-full ${isElectron() ? 'pb-8' : ''}`}>
+			<div className={`contain-strict flex-1 flex w-full h-full`}>
 				<div className=" flex-1 dark:bg-bgPrimary bg-[#F0F0F0] flex flex-col">
 					{!openModalAddFriend && (
 						<>
@@ -197,7 +196,7 @@ const FriendsPage = () => {
 									{currentTabStatus.toUpperCase()} - {listFriendFilter.length}
 								</span>
 							</div>
-							<div className="pl-8 overflow-hidden flex flex-1 pb-16">
+							<div className="pl-8 overflow-hidden flex flex-1 pb-4">
 								<FriendList listFriendFilter={listFriendFilter} />
 							</div>
 						</>

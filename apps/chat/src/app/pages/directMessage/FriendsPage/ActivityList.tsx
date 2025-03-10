@@ -35,7 +35,7 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 				user: {
 					avatar_url: friend?.user?.avatar_url,
 					display_name: friend?.user?.display_name,
-					id: friend.user?.id,
+					id: friend?.user?.id,
 					username: friend?.user?.username,
 					online: friend?.user?.online,
 					metadata: friend?.user?.metadata

@@ -94,8 +94,8 @@ const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
 					{valueTopic?.attachments?.length > 0 && (
 						<MessageAttachment
 							attachments={valueTopic?.attachments || []}
-							senderId={valueTopic?.sender_id}
-							createTime={valueTopic?.create_time}
+							clanId={valueTopic?.clan_id}
+							channelId={valueTopic?.channel_id}
 						/>
 					)}
 				</View>

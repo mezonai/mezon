@@ -6,6 +6,7 @@ import { getStoreAsync } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,6 +19,7 @@ import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
 export const QRScanner = () => {
+	const { t } = useTranslation(['qrScanner']);
 	const [hasPermission, setHasPermission] = useState(false);
 	const device = useCameraDevice('back');
 	const navigation = useNavigation<any>();
@@ -47,11 +49,11 @@ export const QRScanner = () => {
 		const permission = await Camera.requestCameraPermission();
 		if (permission === 'denied') {
 			Alert.alert(
-				'Camera Permission Denied',
-				'Please allow camera access in your device settings.',
+				t('cameraPermissionDenied'),
+				t('pleaseAllowCamera'),
 				[
-					{ text: 'Cancel', style: 'cancel' },
-					{ text: 'Open Settings', onPress: () => Linking.openSettings() }
+					{ text: t('cancel'), style: 'cancel' },
+					{ text: t('openSettings'), onPress: () => Linking.openSettings() }
 				],
 				{ cancelable: false }
 			);
@@ -71,7 +73,7 @@ export const QRScanner = () => {
 				if (res?.action?.action?.requestStatus === 'rejected' || !res) {
 					Toast.show({
 						type: 'error',
-						text1: 'An error occurred, please try again'
+						text1: t('anErrorOccurred')
 					});
 				} else {
 					setIsSuccess(true);
@@ -107,7 +109,7 @@ export const QRScanner = () => {
 			store.dispatch(appActions.setLoadingMainMobile(false));
 			Toast.show({
 				type: 'error',
-				text1: 'An error occurred, please try again'
+				text1: t('anErrorOccurred')
 			});
 		}
 	};
@@ -174,7 +176,7 @@ export const QRScanner = () => {
 							requestCameraPermission();
 						}}
 					>
-						<Text style={styles.buttonText}>Request Camera Permission</Text>
+						<Text style={styles.buttonText}>{t('requestCameraPermission')}</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -220,7 +222,7 @@ export const QRScanner = () => {
 								}}
 							>
 								<Icons.UserIcon width={size.s_24} height={size.s_24} color={baseColor.white} />
-								<Text style={styles.textMyQRCode}>My QR code</Text>
+								<Text style={styles.textMyQRCode}>{t('myQRCode')}</Text>
 							</View>
 						</TouchableOpacity>
 						<View style={{ width: size.s_50, backgroundColor: 'transparent' }} />
@@ -250,18 +252,18 @@ export const QRScanner = () => {
 						) : (
 							<LogoMezonLight width={size.s_100} height={size.s_80} />
 						)}
-						<Text style={styles.title}>{isSuccess ? `You're in!` : `Log in on a new device?`}</Text>
+						<Text style={styles.title}>{isSuccess ? `${t('youAreIn')}` : `${t('logInOnNewDevice')}`}</Text>
 						{isSuccess ? (
-							<Text style={styles.subTitleSuccess}>You're now logged in on desktop</Text>
+							<Text style={styles.subTitleSuccess}>{t('youAreLoggedInOnDesktop')}</Text>
 						) : (
-							<Text style={styles.subTitle}>Never scan a login QR code from another user.</Text>
+							<Text style={styles.subTitle}>{t('neverScanALoginQRCodeFromAnotherUser')}</Text>
 						)}
 						<TouchableOpacity style={styles.button} onPress={isSuccess ? onGoback : onConfirmLogin}>
-							<Text style={styles.buttonTextOutline}>{isSuccess ? 'Start talking' : 'Log in'}</Text>
+							<Text style={styles.buttonTextOutline}>{isSuccess ? `${t('startTalking')}` : `${t('logIn')}`}</Text>
 						</TouchableOpacity>
 						{!isSuccess && (
 							<TouchableOpacity style={[styles.button, { backgroundColor: 'transparent', marginTop: size.s_10 }]} onPress={onGoback}>
-								<Text style={styles.buttonTextOutline}>Cancel</Text>
+								<Text style={styles.buttonTextOutline}>{t('cancel')}</Text>
 							</TouchableOpacity>
 						)}
 					</View>

@@ -394,7 +394,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 				<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10, flex: 1, gap: size.s_10 }}>
 					<MezonInput
 						inputWrapperStyle={styles.searchText}
-						placeHolder={'Select user to send token'}
+						placeHolder={t('selectUser')}
 						onTextChange={handleSearchText}
 						prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
 					/>

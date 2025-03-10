@@ -115,7 +115,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			const response = await createDirectMessageWithUser(userId);
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(`Tokens sent: ${formatMoney(tokenValue)}₫ | ${note}`, response.channel_id, channelMode, TypeMessage.SendToken);
+				sendInviteMessage(
+					`Balance notifications: ${formatMoney(tokenValue)}₫ | ${note}`,
+					response.channel_id,
+					channelMode,
+					TypeMessage.SendToken
+				);
 			}
 		},
 		[createDirectMessageWithUser, sendInviteMessage]

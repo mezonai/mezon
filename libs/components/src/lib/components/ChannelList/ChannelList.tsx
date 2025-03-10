@@ -9,6 +9,7 @@ import {
 	selectCurrentUserId,
 	selectIsElectronDownloading,
 	selectIsElectronUpdateAvailable,
+	selectIsOpenCreateNewChannel,
 	selectIsShowEmptyCategory,
 	selectListChannelRenderByClanId,
 	selectStatusStream,
@@ -28,6 +29,7 @@ import {
 	toggleDisableHover
 } from '@mezon/utils';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { CreateNewChannelModal } from '../CreateChannelModal';
 import { MentionFloatButton } from '../MentionFloatButton';
@@ -41,9 +43,19 @@ export type CategoriesState = Record<string, boolean>;
 
 function ChannelList() {
 	const appearanceTheme = useSelector(selectTheme);
+	const isOpenModal = useAppSelector((state) => selectIsOpenCreateNewChannel(state));
+	const [openCreateChannel, closeCreateChannel] = useModal(() => <CreateNewChannelModal />, []);
+
+	useEffect(() => {
+		if (isOpenModal) {
+			openCreateChannel();
+		} else {
+			closeCreateChannel();
+		}
+	}, [isOpenModal]);
+
 	return (
 		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="contain-strict h-full">
-			<CreateNewChannelModal />
 			<hr className="h-[0.08px] w-full dark:border-borderDivider border-white mx-2" />
 			<div className={`flex-1 space-y-[21px] text-gray-300`}>
 				<RowVirtualizerDynamic appearanceTheme={appearanceTheme} />

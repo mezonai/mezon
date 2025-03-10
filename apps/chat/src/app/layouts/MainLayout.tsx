@@ -1,4 +1,4 @@
-import { ChatContext, ChatContextProvider, useCustomNavigate, useFriends, useIdleRender } from '@mezon/core';
+import { ChatContext, ChatContextProvider, ColorRoleProvider, useCustomNavigate, useFriends, useIdleRender } from '@mezon/core';
 import {
 	e2eeActions,
 	gifsStickerEmojiActions,
@@ -141,7 +141,9 @@ const MainLayoutWrapper = () => {
 		<MezonSuspense>
 			<ChatContextProvider>
 				<WebRTCStreamProvider>
-					<MainLayout />
+					<ColorRoleProvider>
+						<MainLayout />
+					</ColorRoleProvider>
 				</WebRTCStreamProvider>
 			</ChatContextProvider>
 		</MezonSuspense>

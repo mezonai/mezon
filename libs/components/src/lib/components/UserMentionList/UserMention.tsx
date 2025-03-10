@@ -38,9 +38,9 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 		const mentionList =
 			userMentionRaw?.map((item: ChannelMembersEntity) => ({
 				id: item?.id ?? '',
-				display: getNameForPrioritize(item.clan_nick ?? '', item.user?.display_name ?? '', item.user?.username ?? ''),
-				avatarUrl: item.clan_avatar ? item.clan_avatar : (item?.user?.avatar_url ?? ''),
-				username: item.user?.username
+				display: getNameForPrioritize(item?.clan_nick ?? '', item?.user?.display_name ?? '', item?.user?.username ?? ''),
+				avatarUrl: item?.clan_avatar ? item?.clan_avatar : (item?.user?.avatar_url ?? ''),
+				username: item?.user?.username
 			})) ?? [];
 		const hardcodedUser: MentionDataProps = {
 			id: ID_MENTION_HERE,

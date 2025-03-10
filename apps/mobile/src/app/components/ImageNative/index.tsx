@@ -19,7 +19,7 @@ const ImageNative = ({ url, style, resizeMode }: CustomImageProps) => {
 	return Platform.OS === 'android' ? (
 		<CustomImageView url={url?.toString()} resizeMode={resizeMode} style={style} />
 	) : (
-		<CustomImageViewIOS source={{ uri: url?.toString() }} resizeMode={'cover'} style={style} />
+		<CustomImageViewIOS source={{ uri: url?.toString() }} resizeMode={resizeMode} style={style} />
 	);
 };
 

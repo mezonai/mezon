@@ -3,16 +3,14 @@ import { Colors } from '@mezon/mobile-ui';
 import { AppDispatch, pinMessageActions } from '@mezon/store-mobile';
 import { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
-import { ChannelStreamMode } from 'mezon-js';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
-import MessageItem from '../../MessageItem';
 import { EMessageActionType } from '../../enums';
 import { styles } from './styles';
 
@@ -81,11 +79,6 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 				<Text style={styles.descriptionText}>
 					{EMessageActionType.PinMessage === type ? t('confirmPinMessage') : t('confirmUnPinMessage')}
 				</Text>
-				<View style={styles.messageBox}>
-					<ScrollView>
-						{message && <MessageItem message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} showUserInformation preventAction />}
-					</ScrollView>
-				</View>
 				<View style={styles.buttonsWrapper}>
 					<TouchableOpacity onPress={() => onConfirm()} style={styles.yesButton}>
 						<Text style={styles.buttonText}>{t('Yes')}</Text>

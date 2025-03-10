@@ -1,0 +1,15 @@
+{
+    "cameraPermissionDenied": "Camera Permission Denied",
+    "pleaseAllowCamera": "Please allow camera access in your device settings.",
+    "cancel": "Cancel",
+    "openSettings": "Open Settings",
+    "anErrorOccurred": "An error occurred, please try again",
+    "youAreIn": "You're in!",
+    "logInOnNewDevice": "Log in on a new device?",
+    "youAreLoggedInOnDesktop": "You're now logged in on desktop",
+    "neverScanALoginQRCodeFromAnotherUser": "Never scan a login QR code from another user.",
+    "startTalking": "Start talking",
+    "logIn": "Log in",
+    "requestCameraPermission": "Request Camera Permission",
+    "myQRCode": "My QR code"
+}

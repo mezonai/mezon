@@ -1,7 +1,7 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { baseColor, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { appActions, categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonMenu, MezonSwitch, reserve } from '../../../../../../componentUI';
+import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonMenu, MezonSwitch } from '../../../../../../componentUI';
 import MezonButtonIcon from '../../../../../../componentUI/MezonButtonIcon';
 import DeleteClanModal from '../../../../../../components/DeleteClanModal';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
@@ -200,11 +200,11 @@ export default function ClanMenu() {
 				<ClanMenuInfo clan={currentClan} />
 
 				<ScrollView contentContainerStyle={styles.actionWrapper} horizontal>
-					<MezonButtonIcon
-						title={`18 ${t('actions.boot')}`}
-						icon={<Icons.BoostTier2Icon color={baseColor.purple} />}
-						onPress={() => reserve()}
-					/>
+					{/*<MezonButtonIcon*/}
+					{/*	title={`18 ${t('actions.boot')}`}*/}
+					{/*	icon={<Icons.BoostTier2Icon color={baseColor.purple} />}*/}
+					{/*	onPress={() => reserve()}*/}
+					{/*/>*/}
 					<MezonButtonIcon
 						title={t('actions.invite')}
 						icon={<Icons.GroupPlusIcon color={themeValue.textStrong} />}

@@ -1,4 +1,4 @@
-import { useAuth, useFriends } from '@mezon/core';
+import { useAuth, useCustomNavigate, useFriends } from '@mezon/core';
 import {
 	channelsActions,
 	clansActions,
@@ -15,12 +15,12 @@ import { ModeResponsive, createImgproxyUrl } from '@mezon/utils';
 import { useCallback, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
 import { Coords } from '../ChannelLink';
 import NavLinkComponent from '../NavLink';
 import PanelClan from '../PanelClan';
 
 const SidebarLogoItem = () => {
+	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 	const appearanceTheme = useSelector(selectTheme);
 	const { userProfile } = useAuth();
@@ -56,10 +56,10 @@ const SidebarLogoItem = () => {
 	const { quantityPendingRequest } = useFriends();
 	const logoCustom = useSelector(selectLogoCustom);
 	return (
-		<NavLink
-			to={currentDmId ? `/chat/direct/message/${currentDmId}/${currentDmIType}` : '/chat/direct/friends'}
+		<button
 			onClick={() => {
 				setModeResponsive(ModeResponsive.MODE_DM);
+				navigate(currentDmId ? `/chat/direct/message/${currentDmId}/${currentDmIType}` : '/chat/direct/friends');
 			}}
 			draggable="false"
 		>
@@ -85,7 +85,7 @@ const SidebarLogoItem = () => {
 					)}
 				</div>
 			</NavLinkComponent>
-		</NavLink>
+		</button>
 	);
 };
 

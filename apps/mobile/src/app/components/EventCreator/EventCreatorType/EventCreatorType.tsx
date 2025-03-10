@@ -204,7 +204,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 					<TouchableOpacity style={styles.fakeInput} onPress={handleOpenSelectChannel}>
 						{!!eventChannel && channelIcon(eventChannel?.type, eventChannel?.channel_private === ChannelStatusEnum.isPrivate)}
-						<Text style={styles.inputValue}>{eventChannel?.channel_label || 'Select channel'} </Text>
+						<Text style={styles.inputValue}>{eventChannel?.channel_label || t('fields.channel.title')} </Text>
 						<View style={styles.chevronDownIcon}>
 							<Icons.ChevronSmallDownIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
 						</View>
@@ -230,7 +230,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 				<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10, flex: 1, gap: size.s_10 }}>
 					<MezonInput
 						inputWrapperStyle={styles.searchText}
-						placeHolder={'Select user to send token'}
+						placeHolder={t('selectUser')}
 						onTextChange={handleSearchText}
 						prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
 					/>

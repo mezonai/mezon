@@ -1,9 +1,10 @@
 import { AvatarImage } from '@mezon/components';
+import { useCustomNavigate } from '@mezon/core';
 import { DMMetaEntity, directActions, directMetaActions, selectDirectById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useMemo } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export type DirectMessUnreadProp = {
 	readonly directMessage: Readonly<DMMetaEntity>;
@@ -13,7 +14,7 @@ export type DirectMessUnreadProp = {
 function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 	const dispatch = useAppDispatch();
 	const direct = useAppSelector((state) => selectDirectById(state, directMessage.id)) || {};
-	const navigate = useNavigate();
+	const navigate = useCustomNavigate();
 	const handleClick = async () => {
 		await dispatch(
 			directActions.joinDirectMessage({

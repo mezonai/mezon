@@ -14,5 +14,7 @@
   "joinedThreads": "chủ đề đã tham gia",
   "joinedThread": "chủ đề đã tham gia",
   "otherActiveThreads": "chủ đề đang hoạt động khác",
-  "olderThreads": "chủ đề cũ hơn"
+  "olderThreads": "chủ đề cũ hơn",
+  "searchThreads": "chủ đề tìm kiếm",
+  "searchThread": "chủ đề tìm kiếm"
 }

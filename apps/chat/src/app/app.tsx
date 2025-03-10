@@ -11,7 +11,7 @@ import isElectron from 'is-electron';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
-import './app.module.scss';
+// import './app.module.scss';
 import { preloadedState } from './mock/state';
 import { Routes } from './routes';
 

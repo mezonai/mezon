@@ -1,4 +1,4 @@
-import { useChatSending, useCurrentInbox, useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
+import { ColorRoleProvider, useChatSending, useCurrentInbox, useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
 import { selectCurrentTopicId, selectOpenEditMessageState, topicsActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageWithUser } from '@mezon/utils';
@@ -109,17 +109,19 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 						</p>
 					</div>
 					<div className="p-4 max-w-[720px] max-h-[50vh] overflow-y-auto hide-scrollbar">
-						<MessageWithUser
-							allowDisplayShortProfile={false}
-							message={
-								isRemoveAttachmentAction && messagePreviewWithAttachmentRemove
-									? (messagePreviewWithAttachmentRemove as IMessageWithUser)
-									: (mess as IMessageWithUser)
-							}
-							mode={mode}
-							isMention={true}
-							isShowFull={true}
-						/>
+						<ColorRoleProvider>
+							<MessageWithUser
+								allowDisplayShortProfile={false}
+								message={
+									isRemoveAttachmentAction && messagePreviewWithAttachmentRemove
+										? (messagePreviewWithAttachmentRemove as IMessageWithUser)
+										: (mess as IMessageWithUser)
+								}
+								mode={mode}
+								isMention={true}
+								isShowFull={true}
+							/>
+						</ColorRoleProvider>
 					</div>
 					<div className="w-full dark:bg-bgSecondary bg-bgLightSecondary p-4 flex justify-end gap-x-4">
 						<button

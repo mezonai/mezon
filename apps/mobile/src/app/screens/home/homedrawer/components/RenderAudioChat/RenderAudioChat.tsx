@@ -30,7 +30,7 @@ const RenderAudioChat = React.memo(
 		}, []);
 
 		useEffect(() => {
-			const newSound = new Sound(audioURL, Sound.MAIN_BUNDLE, (error) => {
+			const newSound = new Sound(audioURL, '', (error) => {
 				if (error) {
 					console.error('Failed to load sound:', error);
 					return;

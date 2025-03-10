@@ -18,6 +18,7 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 	dispatch(topicsActions.setCurrentTopicId(''));
 	dispatch(topicsActions.setFocusTopicBox(false));
 	dispatch(threadsActions.setFocusThreadBox(false));
+	dispatch(threadsActions.hideThreadModal());
 	return null;
 };
 

@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
 import { ActionEmitEvent, CopyIcon, Icons, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
@@ -23,6 +22,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
+import { useMezon } from '@mezon/transport';
 import {
 	AMOUNT_TOKEN,
 	EMOJI_GIVE_COFFEE,
@@ -32,41 +32,41 @@ import {
 	ThreadStatus,
 	TypeMessage,
 	formatMoney,
-	getSrcEmoji
+	isPublicChannel
 } from '@mezon/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, Platform, Pressable, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Alert, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
 import { EMessageActionType, EMessageBSToShow } from '../../enums';
-import { IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
+import { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
+import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
+import ForwardMessageModal from '../ForwardMessage';
 import { IReactionMessageProps } from '../MessageReaction';
-import UserProfile from '../UserProfile';
-import { emojiFakeData } from '../fakeData';
+import { ReportMessageModal } from '../ReportMessageModal';
+import { RecentEmojiMessageAction } from './RecentEmojiMessageAction';
 import { style } from './styles';
 
-const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
-export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
+export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
-	const { type, onClose, onConfirmAction, message, mode, isOnlyEmojiPicker = false, user, senderDisplayName = '', handleBottomSheetExpand } = props;
-	const checkAnonymous = useMemo(() => message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.sender_id]);
-	const timeoutRef = useRef(null);
+	const { type, message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', handleBottomSheetExpand } = props;
+	const { socketRef } = useMezon();
+
 	const [content, setContent] = useState<React.ReactNode>(<View />);
 	const { t } = useTranslation(['message']);
-	const [recentEmoji, setRecentEmoji] = useState([]);
 	const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
+	const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
+
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
@@ -82,6 +82,46 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		message?.code === TypeMessage.CreateThread ||
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;
+
+	const onClose = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+	};
+
+	const onDeleteMessage = useCallback(
+		async (messageId: string) => {
+			const socket = socketRef.current;
+			const isPublic = isPublicChannel(currentChannel);
+
+			dispatch(
+				messagesActions.remove({
+					channelId: currentChannelId,
+					messageId
+				})
+			);
+			await socket.removeChatMessage(currentClanId || '', currentChannelId, mode, isPublic, messageId);
+		},
+		[currentChannel, currentChannelId, currentClanId, dispatch, mode, socketRef]
+	);
+
+	const onConfirmAction = useCallback(
+		(payload: IConfirmActionPayload) => {
+			const { type, message } = payload;
+			switch (type) {
+				case EMessageActionType.DeleteMessage:
+					onDeleteMessage(message?.id);
+					break;
+				case EMessageActionType.ForwardMessage:
+				case EMessageActionType.Report:
+				case EMessageActionType.PinMessage:
+				case EMessageActionType.UnPinMessage:
+					setCurrentMessageActionType(type);
+					break;
+				default:
+					break;
+			}
+		},
+		[onDeleteMessage, setCurrentMessageActionType]
+	);
 
 	const tokenInWallet = useMemo(() => {
 		return userProfile?.wallet ? safeJSONParse(userProfile?.wallet || '{}')?.value : 0;
@@ -159,16 +199,16 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji, userId);
 				if (directMessageId) {
 					sendInviteMessage(
-						`Tokens sent: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
+						`Balance notifications: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
 						directMessageId,
 						ChannelStreamMode.STREAM_MODE_DM,
 						TypeMessage.SendToken
 					);
 				} else {
-					const response = await createDirectMessageWithUser(message?.user?.id);
+					const response = await createDirectMessageWithUser(message?.user?.id, true);
 					if (response?.channel_id) {
 						sendInviteMessage(
-							`Tokens sent: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
+							`Balance notifications: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
 							response?.channel_id,
 							ChannelStreamMode.STREAM_MODE_DM,
 							TypeMessage.SendToken
@@ -182,7 +222,6 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	};
 
 	const listPinMessages = useSelector(selectPinMessageByChannelId(message?.channel_id));
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
 	const isDM = useMemo(() => {
 		return [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
 	}, [mode]);
@@ -244,27 +283,11 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	};
 
 	const handleActionPinMessage = () => {
-		if (message) onClose();
-		timeoutRef.current = setTimeout(
-			() => {
-				onConfirmAction({
-					type: EMessageActionType.PinMessage
-				});
-			},
-			Platform.OS === 'ios' ? 500 : 0
-		);
+		setCurrentMessageActionType(EMessageActionType.PinMessage);
 	};
 
 	const handleActionUnPinMessage = () => {
-		if (message) onClose();
-		timeoutRef.current = setTimeout(
-			() => {
-				onConfirmAction({
-					type: EMessageActionType.UnPinMessage
-				});
-			},
-			Platform.OS === 'ios' ? 500 : 0
-		);
+		setCurrentMessageActionType(EMessageActionType.UnPinMessage);
 	};
 
 	const handleActionMarkUnRead = () => {
@@ -279,28 +302,7 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 			})
 		);
 		onClose();
-		await sendMessage(
-			message.content,
-			message.mentions,
-			message.attachments,
-			message.references,
-			false,
-			message?.isMentionEveryone || false,
-			true
-		);
-	};
-
-	const handleActionMention = () => {
-		onClose();
-		const payload: IMessageActionNeedToResolve = {
-			type: EMessageActionType.Mention,
-			targetMessage: message
-		};
-		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, payload);
-	};
-
-	const handleActionCopyMessageLink = () => {
-		Toast.show({ type: 'info', text1: 'Updating...' });
+		await sendMessage(message.content, message.mentions, message.attachments, message.references, false, false, true);
 	};
 
 	const handleActionCopyMediaLink = () => {
@@ -328,55 +330,28 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 	};
 
 	const handleActionSaveImage = async () => {
-		onClose();
 		const media = message?.attachments;
-		bottomSheetRef?.current?.dismiss();
 		dispatch(appActions.setLoadingMainMobile(true));
 		if (media && media.length > 0) {
 			const promises = media?.map(downloadAndSaveMedia);
 			await Promise.all(promises);
 		}
 		dispatch(appActions.setLoadingMainMobile(false));
+		onClose();
 	};
 
 	const handleActionReportMessage = () => {
-		onClose();
-		timeoutRef.current = setTimeout(
-			() => {
-				onConfirmAction({
-					type: EMessageActionType.Report
-				});
-			},
-			Platform.OS === 'ios' ? 500 : 0
-		);
+		setCurrentMessageActionType(EMessageActionType.Report);
 	};
 
 	const handleForwardMessage = () => {
-		onClose();
 		dispatch(setIsForwardAll(false));
-		timeoutRef.current = setTimeout(
-			() => {
-				onConfirmAction({
-					type: EMessageActionType.ForwardMessage,
-					message
-				});
-			},
-			Platform.OS === 'ios' ? 500 : 0
-		);
+		setCurrentMessageActionType(EMessageActionType.ForwardMessage);
 	};
 
 	const handleForwardAllMessages = () => {
-		onClose();
 		dispatch(setIsForwardAll(true));
-		timeoutRef.current = setTimeout(
-			() => {
-				onConfirmAction({
-					type: EMessageActionType.ForwardMessage,
-					message
-				});
-			},
-			Platform.OS === 'ios' ? 500 : 0
-		);
+		setCurrentMessageActionType(EMessageActionType.ForwardMessage);
 	};
 
 	const handleActionTopicDiscussion = async () => {
@@ -424,12 +399,9 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 			case EMessageActionType.MarkUnRead:
 				handleActionMarkUnRead();
 				break;
-			// case EMessageActionType.Mention:
-			// 	handleActionMention();
+			// case EMessageActionType.CopyMessageLink:
+			// 	handleActionCopyMessageLink();
 			// 	break;
-			case EMessageActionType.CopyMessageLink:
-				handleActionCopyMessageLink();
-				break;
 			case EMessageActionType.CopyMediaLink:
 				handleActionCopyMediaLink();
 				break;
@@ -584,20 +556,6 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		t
 	]);
 
-	const renderUserInformation = () => {
-		return (
-			<UserProfile
-				userId={user?.id}
-				user={user}
-				message={message}
-				checkAnonymous={checkAnonymous}
-				showAction={!isDM}
-				currentChannel={isDM ? currentDmGroup : currentChannel}
-				showRole={!isDM}
-			/>
-		);
-	};
-
 	const handleReact = async (mode, messageId, emoji_id: string, emoji: string, senderId) => {
 		if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
 			await dispatch(threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channel_id ?? '', activeCode: ThreadStatus.joined }));
@@ -622,58 +580,17 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		onClose();
 	};
 
-	useEffect(() => {
-		if (type === EMessageBSToShow?.MessageAction) {
-			AsyncStorage.getItem('recentEmojis')
-				.then((emojis) => safeJSONParse(emojis || '[]'))
-				.then((parsedEmojis) => {
-					const recentEmojis = parsedEmojis
-						?.reverse()
-						?.slice(0, 5)
-						?.map((item: { emoji: any; emojiId: any }) => ({
-							shortname: item.emoji,
-							id: item.emojiId
-						}));
-
-					const uniqueEmojis = [...recentEmojis, ...emojiFakeData]?.filter(
-						(emoji, index, self) => index === self?.findIndex((e) => e?.id === emoji?.id)
-					);
-					setRecentEmoji(uniqueEmojis?.slice(0, 5));
-				});
-		}
-	}, [type]);
-
 	const renderMessageItemActions = () => {
 		return (
 			<View style={styles.messageActionsWrapper}>
-				<View style={styles.reactWrapper}>
-					{recentEmoji?.map((item, index) => {
-						return (
-							<Pressable
-								key={index}
-								style={styles.favouriteIconItem}
-								onPress={() =>
-									handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, item.id, item.shortname, userId)
-								}
-							>
-								<FastImage
-									source={{
-										uri: getSrcEmoji(item.id)
-									}}
-									resizeMode={'contain'}
-									style={{
-										width: size.s_28,
-										height: size.s_28
-									}}
-								/>
-							</Pressable>
-						);
-					})}
-
-					<Pressable onPress={() => setIsShowEmojiPicker(true)} style={{ height: size.s_28, width: size.s_28 }}>
-						<Icons.ReactionIcon color={themeValue.text} height={size.s_30} width={size.s_30} />
-					</Pressable>
-				</View>
+				<RecentEmojiMessageAction
+					messageId={message.id}
+					mode={mode}
+					type={type}
+					userId={userId}
+					handleReact={handleReact}
+					setIsShowEmojiPicker={setIsShowEmojiPicker}
+				/>
 				<View style={styles.messageActionGroup}>
 					{messageActionList.frequent.map((action) => {
 						return (
@@ -733,41 +650,42 @@ export const ContainerModal = React.memo((props: IReplyBottomSheet) => {
 		);
 	};
 
-	const setVisibleBottomSheet = (isShow: boolean) => {
-		if (bottomSheetRef) {
-			if (isShow) {
-				bottomSheetRef.current?.present();
-			} else {
-				bottomSheetRef.current?.close();
-			}
-		}
-	};
-
-	useEffect(() => {
-		return () => {
-			timeoutRef.current && clearTimeout(timeoutRef.current);
-		};
-	}, []);
-
 	useEffect(() => {
 		switch (type) {
 			case EMessageBSToShow.MessageAction:
-				setVisibleBottomSheet(true);
 				if (isShowEmojiPicker || isOnlyEmojiPicker) {
 					setContent(renderEmojiSelector());
 				} else {
 					setContent(renderMessageItemActions());
 				}
 				break;
-			case EMessageBSToShow.UserInformation:
-				setVisibleBottomSheet(true);
-				setContent(renderUserInformation());
-				break;
 			default:
-				setVisibleBottomSheet(false);
 				setContent(<View />);
 		}
-	}, [type, isShowEmojiPicker, isOnlyEmojiPicker, recentEmoji]);
+	}, [type, isShowEmojiPicker, isOnlyEmojiPicker]);
 
-	return <View style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>{content}</View>;
+	return (
+		<View style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>
+			{content}
+			{currentMessageActionType === EMessageActionType.ForwardMessage && (
+				<ForwardMessageModal
+					show={currentMessageActionType === EMessageActionType.ForwardMessage}
+					onClose={onClose}
+					message={message}
+					isPublic={isPublicChannel(currentChannel)}
+				/>
+			)}
+			{currentMessageActionType === EMessageActionType.Report && (
+				<ReportMessageModal isVisible={currentMessageActionType === EMessageActionType.Report} onClose={onClose} message={message} />
+			)}
+			{[EMessageActionType.PinMessage, EMessageActionType.UnPinMessage].includes(currentMessageActionType) && (
+				<ConfirmPinMessageModal
+					isVisible={[EMessageActionType.PinMessage, EMessageActionType.UnPinMessage].includes(currentMessageActionType)}
+					onClose={onClose}
+					message={message}
+					type={currentMessageActionType}
+				/>
+			)}
+		</View>
+	);
 });

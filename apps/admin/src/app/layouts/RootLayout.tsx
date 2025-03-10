@@ -41,7 +41,7 @@ const RootLayout: React.FC = () => {
 		const RESPONSE_TYPE = process.env.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE;
 		const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
 		const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
-		return (window.location.href = authUrl);
+		window.location.replace(authUrl);
 	}
 
 	return (

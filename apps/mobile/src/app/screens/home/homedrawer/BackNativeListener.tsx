@@ -1,9 +1,8 @@
-import { ActionEmitEvent } from '@mezon/mobile-components';
 import { selectDmGroupCurrentId, selectHiddenBottomTabMobile } from '@mezon/store';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import { DrawerActions, useNavigation, useNavigationState } from '@react-navigation/native';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, BackHandler, DeviceEventEmitter, View } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { Alert, BackHandler, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 
@@ -12,7 +11,6 @@ function BackNativeListener() {
 	const drawerStatus = useDrawerStatus();
 	const isHiddenTab = useSelector(selectHiddenBottomTabMobile);
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
-	const [isOpenBottomSheetClan, setIsOpenBottomSheetClan] = useState<boolean>(false);
 
 	const routesNavigation = useNavigationState((state) => state?.routes?.[state?.index]);
 
@@ -24,25 +22,11 @@ function BackNativeListener() {
 	}, [routesNavigation]);
 
 	useEffect(() => {
-		const eventOpenBottomSheet = DeviceEventEmitter.addListener(ActionEmitEvent.ON_STATUS_OPEN_BOTTOM_SHEET, ({ isOpen = false }) => {
-			setIsOpenBottomSheetClan(isOpen);
-		});
-
-		return () => {
-			eventOpenBottomSheet.remove();
-		};
-	}, []);
-
-	useEffect(() => {
 		const backAction = () => {
 			if (drawerStatus === 'closed') {
 				navigation.dispatch(DrawerActions.openDrawer());
 				return true;
 			} else if (isHomeActive && !isHiddenTab && !currentDirectId) {
-				if (isOpenBottomSheetClan) {
-					DeviceEventEmitter.emit(ActionEmitEvent.ON_MENU_CLAN_CHANNEL, true);
-					return true;
-				}
 				Alert.alert(
 					'Exit App',
 					'Are you sure you want to close the app?',
@@ -69,7 +53,7 @@ function BackNativeListener() {
 		return () => {
 			backHandler.remove();
 		};
-	}, [isHomeActive, drawerStatus, navigation, isHiddenTab, isOpenBottomSheetClan, currentDirectId]);
+	}, [isHomeActive, drawerStatus, navigation, isHiddenTab, currentDirectId]);
 
 	return <View />;
 }

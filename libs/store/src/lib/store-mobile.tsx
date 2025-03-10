@@ -375,7 +375,7 @@ const reducer = {
 	listpermissionroleschannel: persistedPermissionRoleChannelReducer,
 	channelMembers: persistedChannelMembersReducer,
 	listusersbyuserid: persistedListUsersByUserReducer,
-	threads: persistedThreadReducer,
+	threads: threadsReducer,
 	topicdiscussions: persistedTopicReducer,
 	[SEARCH_MESSAGES_FEATURE_KEY]: searchMessageReducer,
 	messages: persistedMessageReducer,

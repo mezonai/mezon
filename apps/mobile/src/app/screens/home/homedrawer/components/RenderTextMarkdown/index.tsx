@@ -12,10 +12,11 @@ import { EBacktickType, ETokenMessage, IExtendedMessage, getSrcEmoji, getYouTube
 import { TFunction } from 'i18next';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
-import { Dimensions, Image, Linking, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Linking, StyleSheet, Text, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import WebView from 'react-native-webview';
 import CustomIcon from '../../../../../../../src/assets/CustomIcon';
+import ImageNative from '../../../../../components/ImageNative';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
@@ -107,6 +108,7 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 		},
 		link: {
 			color: colors.textLink,
+			fontSize: size.medium,
 			textDecorationLine: 'none',
 			lineHeight: size.s_20
 		},
@@ -192,7 +194,7 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 			fontSize: size.medium,
 			fontWeight: 'bold',
 			lineHeight: size.s_20,
-			color: colors.white
+			color: colors.text
 		}
 	});
 };
@@ -277,7 +279,7 @@ export const RenderTextMarkdownContent = ({
 }: IMarkdownProps) => {
 	const { themeValue } = useTheme();
 
-	const { t, mentions = [], hg = [], ej = [], mk = [] } = content || {};
+	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [] } = content || {};
 	let lastIndex = 0;
 	const textParts: React.ReactNode[] = [];
 	const markdownBlackParts: React.ReactNode[] = [];
@@ -286,7 +288,8 @@ export const RenderTextMarkdownContent = ({
 		...hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })),
 		...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
 		...ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })),
-		...(mk?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) || [])
+		...(mk?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) || []),
+		...(lk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS, type: EBacktickType.LINK })) || [])
 	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
 	const store = elements?.length > 0 ? getStore() : null;
@@ -308,9 +311,9 @@ export const RenderTextMarkdownContent = ({
 			case ETokenMessage.EMOJIS: {
 				const srcEmoji = getSrcEmoji(element.emojiid);
 				textParts.push(
-					<Image
+					<ImageNative
 						key={`emoji-${index}`}
-						source={{ uri: srcEmoji }}
+						url={srcEmoji}
 						style={isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage}
 						resizeMode={'contain'}
 					/>
@@ -483,7 +486,7 @@ export const RenderTextMarkdownContent = ({
 						if (isYouTubeLink(contentInElement)) {
 							const videoUrl = getYouTubeEmbedUrl(contentInElement);
 							const widthScreen = Dimensions.get('screen').width;
-							textParts.push(
+							markdownBlackParts.push(
 								<View key={`youtube-${index}`} style={{ width: widthScreen - size.s_70, display: 'flex', gap: size.s_4 }}>
 									<Text
 										style={[themeValue ? markdownStyles(themeValue).link : {}]}
@@ -496,6 +499,7 @@ export const RenderTextMarkdownContent = ({
 										<View style={themeValue ? markdownStyles(themeValue).borderLeftView : {}} />
 										<View style={themeValue ? markdownStyles(themeValue).viewYoutube : {}}>
 											<WebView
+												originWhitelist={['*']}
 												source={{ uri: videoUrl }}
 												allowsFullscreenVideo={true}
 												javaScriptEnabled={true}

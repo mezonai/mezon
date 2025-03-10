@@ -16,7 +16,7 @@
             "title": "Here's a preview of your event",
             "subtitle": "This event will auto start when it's time",
             "subtitleVoice": "When it's time, visit to channel voice to start the event!"
-        }, 
+        },
         "channelSelection": {
             "title": "Who are aidiences?",
             "description": "Choose members in the specified channel.",
@@ -86,7 +86,8 @@
         "time": "Invalid start time or end time"
     },
     "eventDetail": {
-      "eventIsTaking": "Event is taking place!",
-      "tenMinutesLeft": "10 minutes left. Join in!"
-    }
+        "eventIsTaking": "Event is taking place!",
+        "tenMinutesLeft": "10 minutes left. Join in!"
+    },
+    "selectUser": "Select user to transfer"
 }

@@ -1,9 +1,11 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
+import { AttachmentEntity } from '@mezon/store';
 import { createImgproxyUrl, IEmbedProps } from '@mezon/utils';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { ImageListModal } from '../../../../../components/ImageListModal';
 import { EmbedAuthor } from './EmbedAuthor';
 import { EmbedDescription } from './EmbedDescription';
 import { EmbedFields } from './EmbedFields';
@@ -44,11 +46,10 @@ export const EmbedMessage = memo(({ message_id, embed }: EmbedMessageProps) => {
 				{!!image && (
 					<TouchableOpacity
 						onPress={() => {
-							DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_IMAGE_DETAIL_MESSAGE_ITEM, {
-								...image,
-								uploader: '',
-								create_time: ''
-							});
+							const data = {
+								children: <ImageListModal channelId={''} imageSelected={image as AttachmentEntity} />
+							};
+							DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 						}}
 					>
 						<FastImage source={{ uri: image?.url }} style={styles.imageWrapper} resizeMode="cover" />

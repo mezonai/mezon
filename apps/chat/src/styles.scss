@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('../../../libs/assets/src/assets/font/nato-san-gg.css');
 @import 'tippy.js/dist/tippy.css';
+@import 'quill/dist/quill.snow.css';
 
 @font-face {
 	font-family: 'gg sans';
@@ -381,42 +381,11 @@ input:-webkit-autofill:active {
 }
 
 #scrollLoading {
-	width: 100%;
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	scrollbar-width: thin;
-	scrollbar-color: transparent transparent;
-	transition: scrollbar-color 0.3s ease;
-
-	-webkit-overflow-scrolling: touch;
-	// Fix scroll lock on iOS
-	pointer-events: auto;
-
-	&::-webkit-scrollbar-thumb {
-		background-color: transparent;
-		border-radius: 0.375rem;
-		// `box-shadow` prevents repaint on macOS when hovering out of scrollable container
-		box-shadow: 0 0 1px rgba(255, 255, 255, 0.01);
-	}
-
-	&:hover,
-	&:focus,
-	&:focus-within {
-		scrollbar-color: var(--color-scrollbar) transparent;
-
-		&::-webkit-scrollbar-thumb {
-			background-color: var(--color-scrollbar);
-		}
-	}
 }
 
 // css mainChat
-#mainChat:has(#memberList) {
-	[class='editorStyles_mentionSuggestions__-tu0h'] {
-		left: -50px !important;
-	}
-}
 
 .messages-container {
 	display: flex;
@@ -671,31 +640,6 @@ input:-webkit-autofill:active {
 .thread-scroll {
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	scrollbar-width: thin;
-	scrollbar-color: transparent transparent;
-	transition: scrollbar-color 0.3s ease;
-
-	-webkit-overflow-scrolling: touch;
-	// Fix scroll lock on iOS
-	pointer-events: auto;
-
-	&::-webkit-scrollbar-thumb {
-		background-color: transparent;
-		border-radius: 0.375rem;
-		// `box-shadow` prevents repaint on macOS when hovering out of scrollable container
-		box-shadow: 0 0 1px rgba(255, 255, 255, 0.01);
-	}
-
-	&:hover,
-	&:focus,
-	&:focus-within {
-		scrollbar-color: var(--color-scrollbar) transparent;
-
-		&::-webkit-scrollbar-thumb {
-			background-color: var(--color-scrollbar);
-		}
-	}
 }
 
 // editor-scroll
@@ -1002,9 +946,9 @@ input:-webkit-autofill:active {
 	}
 }
 
-.custom-member-list {
-	-ms-overflow-style: none;
-}
+// .custom-member-list {
+// 	-ms-overflow-style: none;
+// }
 
 .error-boundary {
 	overflow: hidden;

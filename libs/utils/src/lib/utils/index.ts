@@ -1080,7 +1080,9 @@ export const getAttachmentDataForWindow = (
 		return {
 			...image,
 			uploaderData: {
-				avatar: (uploader?.clan_avatar || uploader?.user?.avatar_url) as string,
+				avatar: (uploader?.clan_avatar ||
+					uploader?.user?.avatar_url ||
+					window.location.origin + '/assets/images/anonymous-avatar.png') as string,
 				name: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username || ''
 			},
 			url: createImgproxyUrl(image.url || '', {

@@ -381,7 +381,7 @@ export const fetchMessages = createAsyncThunk(
 			});
 
 			if (clanId === '0' || !clanId) {
-				messages = await MessageCrypt.decryptMessages(messages, currentUser.user?.id as string);
+				messages = await MessageCrypt.decryptMessages(messages, currentUser?.user?.id as string);
 			}
 
 			if (messages.length > 0) {

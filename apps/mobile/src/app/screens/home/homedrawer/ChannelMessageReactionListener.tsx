@@ -1,7 +1,7 @@
 import { ChatContext, useChatReaction } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { mapReactionToEntity, reactionActions, selectDmGroupCurrentId, useAppDispatch } from '@mezon/store';
-import { messagesActions, selectCurrentChannel } from '@mezon/store-mobile';
+import { getStore, messagesActions, selectCurrentChannel } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { isPublicChannel } from '@mezon/utils';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
@@ -12,7 +12,7 @@ import { IReactionMessageProps } from './components';
 const maxRetries = 10;
 const ChannelMessageReactionListener = React.memo(() => {
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const store = getStore();
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
 	const { reactionMessageDispatch } = useChatReaction({ isMobile: true, isClanViewMobile: !currentDirectId });
 	const { socketRef } = useMezon();
@@ -22,6 +22,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 
 	const onReactionMessage = useCallback(
 		async (data: IReactionMessageProps) => {
+			const currentChannel = selectCurrentChannel(store.getState() as any);
 			const fakeDataToRetry = {
 				action: false,
 				channel_id: data.channelId,
@@ -68,12 +69,13 @@ const ChannelMessageReactionListener = React.memo(() => {
 				);
 			}
 		},
-		[currentDirectId, currentChannel, dispatch, socketRef, handleReconnect, reactionMessageDispatch]
+		[store, currentDirectId, dispatch, socketRef, handleReconnect, reactionMessageDispatch]
 	);
 
 	const onReactionMessageRetry = useCallback(
 		async (data: IReactionMessageProps) => {
 			if (socketRef?.current?.isOpen()) {
+				const currentChannel = selectCurrentChannel(store.getState() as any);
 				counterRef.current = 0;
 				intervalRef?.current && clearInterval(intervalRef.current);
 				await reactionMessageDispatch(
@@ -90,7 +92,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 				);
 			}
 		},
-		[socketRef, reactionMessageDispatch, currentDirectId, currentChannel]
+		[socketRef, store, reactionMessageDispatch, currentDirectId]
 	);
 
 	useEffect(() => {

@@ -1,10 +1,10 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { Icons } from '@mezon/mobile-components';
 import { Text, baseColor, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan, selectCurrentClanId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MezonModal } from '../../../../../../../componentUI/MezonModal';
 import KickUserClanModal from '../KickUserClanModal';
@@ -116,7 +116,6 @@ const UserSettingProfile = ({
 	const handleRemoveUserClans = useCallback(async () => {
 		if (user) {
 			setVisibleKickUserModal(false);
-			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET, { isHiddenBottomSheet: true });
 			const userIds = [user.user?.id ?? ''];
 			await removeMemberClan({ clanId: currentClanId as string, channelId: user.channelId as string, userIds });
 		}

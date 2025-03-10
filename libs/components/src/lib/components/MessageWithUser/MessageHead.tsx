@@ -1,9 +1,7 @@
-import { useShowName } from '@mezon/core';
-import { RolesClanEntity, selectRolesClanEntities } from '@mezon/store';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, DEFAULT_ROLE_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
+import { useColorsRoleById, useShowName } from '@mezon/core';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { memo } from 'react';
 import usePendingNames from './usePendingNames';
 
 type IMessageHeadProps = {
@@ -12,32 +10,13 @@ type IMessageHeadProps = {
 	onClick?: (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => void;
 };
 
+// fix later
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 	const messageTime = convertTimeString(message?.create_time as string);
 	const usernameSender = message?.username;
 	const clanNick = message?.clan_nick;
 	const displayName = message?.display_name;
-	const rolesClanEntity = useSelector(selectRolesClanEntities);
-	const userRolesClan = useMemo(() => {
-		const activeRole: Array<RolesClanEntity> = [];
-		let highestPermissionRole = null;
-		let maxLevelPermission = 0;
-		for (const key in rolesClanEntity) {
-			const role = rolesClanEntity[key];
-			const checkHasRole = role.role_user_list?.role_users?.some((listUser) => listUser.id === message?.sender_id);
-			if (checkHasRole) {
-				activeRole.push(role);
-				if (role.max_level_permission !== undefined && role.max_level_permission > maxLevelPermission) {
-					maxLevelPermission = role.max_level_permission;
-					highestPermissionRole = role;
-				}
-			}
-		}
-		return {
-			highestPermissionRoleColor: highestPermissionRole?.color || activeRole[0]?.color || DEFAULT_ROLE_COLOR
-		};
-	}, [message?.sender_id, rolesClanEntity]);
-
+	const userRolesClan = useColorsRoleById(message?.sender_id);
 	const { pendingClannick, pendingDisplayName, pendingUserName } = usePendingNames(
 		message,
 		clanNick ?? '',

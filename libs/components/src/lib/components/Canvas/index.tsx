@@ -11,7 +11,6 @@ import {
 	selectTitle
 } from '@mezon/store';
 import { EEventAction } from '@mezon/utils';
-import 'quill/dist/quill.snow.css';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CanvasContent from './CanvasContent';

@@ -20,14 +20,9 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 	};
 	const Btn = useCallback(
 		({ val }: { val: EActionDataNotify }) => (
-			<MezonSwitch
-				value={selectedTabs[val]}
-				onValueChange={(isSelected) => {
-					handleTabChange(val, isSelected);
-				}}
-			/>
+			<MezonSwitch value={selectedTabs[val]} onValueChange={(isSelected) => handleTabChange(val, isSelected)} />
 		),
-		[]
+		[selectedTabs]
 	);
 
 	const notificationMenu = useMemo(

@@ -2,7 +2,6 @@ import { canvasActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { safeJSONParse } from 'mezon-js';
 import Quill from 'quill';
-import 'quill/dist/quill.snow.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 

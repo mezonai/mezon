@@ -4,11 +4,9 @@ import {
 	ChannelsEntity,
 	RootState,
 	ThreadsEntity,
-	selectActiveThreads,
 	selectCurrentChannel,
-	selectJoinedThreadsWithinLast30Days,
-	selectShowEmptyStatus,
-	selectThreadsOlderThan30Days,
+	selectSearchedThreadResult,
+	selectThreadsByParentChannelId,
 	threadsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -25,6 +23,7 @@ import { SearchThreadsBar } from './SearchThread';
 import SkeletonThread from './SkeletonThread/SkeletonThread';
 import ThreadAddButton from './ThreadAddButton';
 import ThreadItem from './ThreadItem';
+import { getActiveThreads, getJoinedThreadsWithinLast30Days, getThreadsOlderThan30Days } from './helper';
 import { style } from './styles';
 
 type CreateThreadModalScreen = typeof APP_SCREEN.MENU_THREAD.CREATE_THREAD;
@@ -33,7 +32,6 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 	const styles = style(themeValue);
 	const { channelThreads } = route.params || {};
 	const { t } = useTranslation(['createThread']);
-	const [searchText, setSearchText] = useState<string>('');
 	const { setValueThread } = useThreads();
 	const dispatch = useAppDispatch();
 	navigation.setOptions({
@@ -42,7 +40,7 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 		headerTitleAlign: 'center',
 		headerRight: () => <ThreadAddButton onPress={handleNavigateCreateForm} />
 	});
-
+	const [searchText, setSearchText] = useState('');
 	const currentChannel = useSelector(selectCurrentChannel);
 	const isThread = checkIsThread(currentChannel as ChannelsEntity);
 	const loadingStatus = useSelector((state: RootState) => state?.threads?.loadingStatus);
@@ -50,6 +48,15 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 	const [page, setPage] = useState<number>(1);
 	const [isNextDisabled, setIsNextDisabled] = useState<boolean>(false);
 	const [isPaginationVisible, setIsPaginationVisible] = useState<boolean>(false);
+	const threadFetched = useSelector((state) => selectThreadsByParentChannelId(state, currentChannel?.channel_id));
+	const threadsSearched = useSelector((state) => selectSearchedThreadResult(state, currentChannel?.channel_id));
+	const activeThreads = getActiveThreads(threadFetched);
+	const joinedThreads = getJoinedThreadsWithinLast30Days(threadFetched);
+	const oldThreads = getThreadsOlderThan30Days(threadFetched);
+	const showThreadSearch = threadsSearched && threadsSearched?.length > 0 && searchText;
+	const showThreadList = threadFetched?.length > 0 && !showThreadSearch;
+	const noResultSearched = threadsSearched?.length === 0;
+	const showEmpty = noResultSearched || threadFetched.length === 0;
 
 	const fetchThreads = useCallback(
 		async (currentPage: number) => {
@@ -79,11 +86,6 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 		fetchThreads(page);
 	}, [fetchThreads, page]);
 
-	const isEmpty = useSelector(selectShowEmptyStatus());
-	const getActiveThreads = useSelector(selectActiveThreads());
-	const getJoinedThreadsWithinLast30Days = useSelector(selectJoinedThreadsWithinLast30Days());
-	const getThreadsOlderThan30Days = useSelector(selectThreadsOlderThan30Days());
-
 	const handleNavigateCreateForm = useCallback(() => {
 		dispatch(threadsActions.setOpenThreadMessageState(false));
 		setValueThread(null);
@@ -95,17 +97,22 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 		});
 	}, [channelThreads, dispatch, navigation, setValueThread]);
 
-	const debouncedSetSearchText = useCallback((value) => {
-		setSearchText(value);
-		setPage(1);
-	}, []);
+	const debouncedSetSearchText = useCallback(
+		(value) => {
+			setSearchText(value);
+			dispatch(threadsActions.setThreadInputSearch({ channelId: currentChannel?.channel_id, value }));
+			dispatch(threadsActions.searchedThreads({ label: value, channelId: currentChannel?.channel_id ?? '' }));
+			setPage(1);
+		},
+		[currentChannel?.channel_id, dispatch]
+	);
 
 	return (
 		// TODO: MezonMenu??
 		<View style={styles.createChannelContainer}>
 			{isLoading ? (
 				<SkeletonThread numberSkeleton={12} />
-			) : isEmpty ? (
+			) : showEmpty ? (
 				<EmptyThread onPress={handleNavigateCreateForm} />
 			) : (
 				<View>
@@ -115,44 +122,65 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 						showsVerticalScrollIndicator={false}
 						contentContainerStyle={{ paddingBottom: size.s_60, paddingTop: size.s_10 }}
 					>
-						{getJoinedThreadsWithinLast30Days?.length > 0 && (
-							<GroupThread
-								title={
-									getJoinedThreadsWithinLast30Days?.length > 1
-										? `${getJoinedThreadsWithinLast30Days?.length} ${t('joinedThreads')}`
-										: `${getJoinedThreadsWithinLast30Days?.length} ${t('joinedThread')}`
-								}
-							>
-								{getJoinedThreadsWithinLast30Days?.map((thread: ThreadsEntity) => (
-									<ThreadItem thread={thread} key={`${thread.id}-joined-threads`} />
-								))}
-							</GroupThread>
+						{showThreadSearch && (
+							<View>
+								{threadsSearched?.length > 0 && (
+									<GroupThread
+										title={
+											threadsSearched?.length > 1
+												? `${threadsSearched?.length} ${t('searchThreads')}`
+												: `${threadsSearched?.length} ${t('searchThread')}`
+										}
+									>
+										{threadsSearched?.map((thread: ThreadsEntity) => (
+											<ThreadItem thread={thread} key={`${thread.id}-joined-threads`} />
+										))}
+									</GroupThread>
+								)}
+							</View>
 						)}
-						{getActiveThreads?.length > 0 && (
-							<GroupThread
-								title={
-									getActiveThreads?.length > 1
-										? `${getActiveThreads?.length} ${t('otherActiveThreads')}`
-										: `${getActiveThreads?.length} ${t('otherActiveThread')}`
-								}
-							>
-								{getActiveThreads?.map((thread: ThreadsEntity) => (
-									<ThreadItem thread={thread} key={`${thread.id}-other-active-threads`} />
-								))}
-							</GroupThread>
-						)}
-						{getThreadsOlderThan30Days?.length > 0 && (
-							<GroupThread
-								title={
-									getThreadsOlderThan30Days?.length > 1
-										? `${getThreadsOlderThan30Days?.length} ${t('olderThreads')}`
-										: `${getThreadsOlderThan30Days?.length} ${t('olderThread')}`
-								}
-							>
-								{getThreadsOlderThan30Days?.map((thread: ThreadsEntity) => (
-									<ThreadItem thread={thread} key={`${thread.id}-older-threads`} />
-								))}
-							</GroupThread>
+						{showThreadList && (
+							<View>
+								{joinedThreads?.length > 0 && (
+									<GroupThread
+										title={
+											joinedThreads?.length > 1
+												? `${joinedThreads?.length} ${t('joinedThreads')}`
+												: `${joinedThreads?.length} ${t('joinedThread')}`
+										}
+									>
+										{joinedThreads?.map((thread: ThreadsEntity) => (
+											<ThreadItem thread={thread} key={`${thread.id}-joined-threads`} />
+										))}
+									</GroupThread>
+								)}
+								{activeThreads?.length > 0 && (
+									<GroupThread
+										title={
+											activeThreads?.length > 1
+												? `${activeThreads?.length} ${t('otherActiveThreads')}`
+												: `${activeThreads?.length} ${t('otherActiveThread')}`
+										}
+									>
+										{activeThreads?.map((thread: ThreadsEntity) => (
+											<ThreadItem thread={thread} key={`${thread.id}-other-active-threads`} />
+										))}
+									</GroupThread>
+								)}
+								{oldThreads?.length > 0 && (
+									<GroupThread
+										title={
+											oldThreads?.length > 1
+												? `${oldThreads?.length} ${t('olderThreads')}`
+												: `${oldThreads?.length} ${t('olderThread')}`
+										}
+									>
+										{oldThreads?.map((thread: ThreadsEntity) => (
+											<ThreadItem thread={thread} key={`${thread.id}-older-threads`} />
+										))}
+									</GroupThread>
+								)}
+							</View>
 						)}
 					</ScrollView>
 

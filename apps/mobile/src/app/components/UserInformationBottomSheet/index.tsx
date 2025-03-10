@@ -19,17 +19,6 @@ interface IUserInformationBottomSheetProps {
 export const UserInformationBottomSheet = React.memo((props: IUserInformationBottomSheetProps) => {
 	const { onClose, userId, user, showAction = true, showRole = true, currentChannel } = props;
 	const bottomSheetRef = useRef(null);
-	useEffect(() => {
-		const showUserInfoBottomSheetListener = DeviceEventEmitter.addListener(
-			ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET,
-			({ isHiddenBottomSheet }) => {
-				isHiddenBottomSheet && bottomSheetRef.current?.close();
-			}
-		);
-		return () => {
-			showUserInfoBottomSheetListener.remove();
-		};
-	}, []);
 
 	useEffect(() => {
 		if (bottomSheetRef) {

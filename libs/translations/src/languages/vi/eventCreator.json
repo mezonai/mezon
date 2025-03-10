@@ -1,92 +1,93 @@
 {
-  "screens": {
-      "eventType": {
-          "headerTitle": "Bước 1 trong 3",
-          "title": "Sự kiện của bạn ở đâu?",
-          "subtitle": "Để không ai bị lạc đường đến nơi",
-          "description": "Bạn có thể cho người khác quyền tạo sự kiện trong Server > Cài đặt > Vai trò"
-      },
-      "eventDetails": {
-          "headerTitle": "Bước 2 trong 3",
-          "title": "Sự kiện của bạn nói về điều gì?",
-          "subtitle": "Điền thông tin chi tiết về sự kiện của bạn"
-      },
-      "eventPreview": {
-          "headerTitle": "Bước 3 trong 3",
-          "title": "Dưới đây là một bản xem trước sự kiện của bạn",
-          "subtitle": "Sự kiện này sẽ tự động bắt đầu khi đến giờ",
-          "subtitleVoice": "Khi đến giờ, hãy đến kênh thoại để bắt đầu sự kiện!"
-      }, 
-      "channelSelection": {
+    "screens": {
+        "eventType": {
+            "headerTitle": "Bước 1 trong 3",
+            "title": "Sự kiện của bạn ở đâu?",
+            "subtitle": "Để không ai bị lạc đường đến nơi",
+            "description": "Bạn có thể cho người khác quyền tạo sự kiện trong Server > Cài đặt > Vai trò"
+        },
+        "eventDetails": {
+            "headerTitle": "Bước 2 trong 3",
+            "title": "Sự kiện của bạn nói về điều gì?",
+            "subtitle": "Điền thông tin chi tiết về sự kiện của bạn"
+        },
+        "eventPreview": {
+            "headerTitle": "Bước 3 trong 3",
+            "title": "Dưới đây là một bản xem trước sự kiện của bạn",
+            "subtitle": "Sự kiện này sẽ tự động bắt đầu khi đến giờ",
+            "subtitleVoice": "Khi đến giờ, hãy đến kênh thoại để bắt đầu sự kiện!"
+        },
+        "channelSelection": {
             "title": "Khán giả là ai?",
             "description": "Chọn thành viên trong kênh đã chỉ định.",
             "channel": "Khán giả bao gồm các thành viên từ {{channel}}: "
         }
-  },
-  "fields": {
-      "channelType": {
-          "voiceChannel": {
-              "title": "Kênh Giọng Nói",
-              "description": "Giao lưu bằng giọng nói, video, chia sẻ màn hình và Go Live."
-          },
-          "somewhere": {
-              "title": "Nơi khác",
-              "description": "Kênh văn bản, liên kết bên ngoài hoặc địa điểm trực tiếp."
-          }
-      },
-      "channel": {
-          "title": "Chọn kênh"
-      },
-      "address": {
-          "title": "Địa điểm",
-          "placeholder": "Thêm địa điểm, liên kết hoặc cái gì đó"
-      },
-      "eventName": {
-          "title": "Chủ đề Sự kiện",
-          "placeholder": "Sự kiện của bạn là gì?",
-          "errorMessage": "Cần có chủ đề cho sự kiện"
-      },
-      "startDate": {
-          "title": "Ngày Bắt đầu",
-          "errorMessage": "Vui lòng chọn một ngày trong hoặc sau"
-      },
-      "startTime": {
-          "title": "Thời gian Bắt đầu",
-          "errorMessage": "Vui lòng chọn một thời gian hợp lệ"
-      },
-      "endDate": {
-          "title": "Ngày Kết thúc",
-          "errorMessage": "Vui lòng chọn một ngày trong hoặc sau"
-      },
-      "endTime": {
-          "title": "Thời gian Kết thúc",
-          "errorMessage": "Vui lòng chọn một thời gian hợp lệ"
-      },
-      "eventFrequency": {
-          "title": "Tần suất Sự kiện",
-          "noRepeat": "Không lặp lại",
-          "weeklyOn": "Hàng tuần vào {{name}}",
-          "everyOther": "Cách tuần {{name}}",
-          "monthlyOn": "Hàng tháng vào {{name}}",
-          "annuallyOn": "Hàng năm vào {{name}}",
-          "everyWeekday": "Mỗi ngày làm việc (Thứ Hai đến Thứ Sáu)"
-      },
-      "description": {
-          "title": "Mô tả",
-          "description": "Hãy cho mọi người biết thêm một chút về sự kiện của bạn. Markdown, dòng mới và liên kết được hỗ trợ."
-      }
-  },
-  "actions": {
-      "next": "Tiếp theo",
-      "create": "Tạo Sự kiện"
-  },
-  "notify": {
-      "locationBlank": "Cần có một địa điểm",
-      "titleBlank": "Cần có một chủ đề cho sự kiện",
-      "time": "Thời gian bắt đầu hoặc kết thúc không hợp lệ"
-  },
-  "eventDetail": {
-      "eventIsTaking": "Sự kiện đang diễn ra!",
-      "tenMinutesLeft": "Còn 10 phút. Tham gia ngay!"
-  }
+    },
+    "fields": {
+        "channelType": {
+            "voiceChannel": {
+                "title": "Kênh Giọng Nói",
+                "description": "Giao lưu bằng giọng nói, video, chia sẻ màn hình và Go Live."
+            },
+            "somewhere": {
+                "title": "Nơi khác",
+                "description": "Kênh văn bản, liên kết bên ngoài hoặc địa điểm trực tiếp."
+            }
+        },
+        "channel": {
+            "title": "Chọn kênh"
+        },
+        "address": {
+            "title": "Địa điểm",
+            "placeholder": "Thêm địa điểm, liên kết hoặc cái gì đó"
+        },
+        "eventName": {
+            "title": "Chủ đề Sự kiện",
+            "placeholder": "Sự kiện của bạn là gì?",
+            "errorMessage": "Cần có chủ đề cho sự kiện"
+        },
+        "startDate": {
+            "title": "Ngày Bắt đầu",
+            "errorMessage": "Vui lòng chọn một ngày trong hoặc sau"
+        },
+        "startTime": {
+            "title": "Thời gian Bắt đầu",
+            "errorMessage": "Vui lòng chọn một thời gian hợp lệ"
+        },
+        "endDate": {
+            "title": "Ngày Kết thúc",
+            "errorMessage": "Vui lòng chọn một ngày trong hoặc sau"
+        },
+        "endTime": {
+            "title": "Thời gian Kết thúc",
+            "errorMessage": "Vui lòng chọn một thời gian hợp lệ"
+        },
+        "eventFrequency": {
+            "title": "Tần suất Sự kiện",
+            "noRepeat": "Không lặp lại",
+            "weeklyOn": "Hàng tuần vào {{name}}",
+            "everyOther": "Cách tuần {{name}}",
+            "monthlyOn": "Hàng tháng vào {{name}}",
+            "annuallyOn": "Hàng năm vào {{name}}",
+            "everyWeekday": "Mỗi ngày làm việc (Thứ Hai đến Thứ Sáu)"
+        },
+        "description": {
+            "title": "Mô tả",
+            "description": "Hãy cho mọi người biết thêm một chút về sự kiện của bạn. Markdown, dòng mới và liên kết được hỗ trợ."
+        }
+    },
+    "actions": {
+        "next": "Tiếp theo",
+        "create": "Tạo Sự kiện"
+    },
+    "notify": {
+        "locationBlank": "Cần có một địa điểm",
+        "titleBlank": "Cần có một chủ đề cho sự kiện",
+        "time": "Thời gian bắt đầu hoặc kết thúc không hợp lệ"
+    },
+    "eventDetail": {
+        "eventIsTaking": "Sự kiện đang diễn ra!",
+        "tenMinutesLeft": "Còn 10 phút. Tham gia ngay!"
+    },
+    "selectUser": "Chọn người dùng để chuyển khoản"
 }

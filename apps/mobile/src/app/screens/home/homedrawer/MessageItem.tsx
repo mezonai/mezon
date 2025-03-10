@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
 import { Text, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, MessagesEntity, useAppDispatch } from '@mezon/store-mobile';
-import React, { useCallback, useState } from 'react';
+import { ChannelsEntity, getStoreAsync, MessagesEntity, selectCurrentChannel, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import React, { useCallback } from 'react';
 import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, View } from 'react-native';
 import { EmbedMessage, MessageAction, RenderTextMarkdownContent } from './components';
 import { EMessageActionType, EMessageBSToShow } from './enums';
@@ -20,9 +20,11 @@ import { EmbedComponentsPanel } from './components/EmbedComponents';
 import { InfoUserMessage } from './components/InfoUserMessage';
 import { MessageAttachment } from './components/MessageAttachment';
 import { MessageCallLog } from './components/MessageCallLog';
+import { ContainerMessageActionModal } from './components/MessageItemBS/ContainerMessageActionModal';
 import MessageSendTokenLog from './components/MessageSendTokenLog';
 import MessageTopic from './components/MessageTopic/MessageTopic';
 import { RenderMessageItemRef } from './components/RenderMessageItemRef';
+import UserProfile from './components/UserProfile';
 import { MessageLineSystem } from './MessageLineSystem';
 import RenderMessageBlock from './RenderMessageBlock';
 import { IMessageActionNeedToResolve } from './types';
@@ -135,26 +137,49 @@ const MessageItem = React.memo(
 
 		const onLongPressImage = useCallback(() => {
 			if (preventAction) return;
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
-				type: EMessageBSToShow.MessageAction,
-				senderDisplayName,
-				message
-			});
 			dispatch(setSelectedMessage(message));
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [message, preventAction]);
+			const data = {
+				snapPoints: ['60%', '90%'],
+				children: (
+					<ContainerMessageActionModal
+						message={message}
+						mode={mode}
+						type={EMessageBSToShow.MessageAction}
+						senderDisplayName={senderDisplayName}
+					/>
+				)
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		}, [dispatch, message, mode, preventAction, senderDisplayName]);
 
-		const onPressInfoUser = useCallback(() => {
+		const onPressInfoUser = useCallback(async () => {
 			if (preventAction) return;
 
 			if (!checkAnonymous && !checkSystem) {
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
-					type: EMessageBSToShow.UserInformation,
-					user: message?.user,
-					message
-				});
+				const store = await getStoreAsync();
+				let currentChannel;
+				if (isDM) {
+					currentChannel = selectDmGroupCurrent(channelId as string);
+				} else {
+					currentChannel = selectCurrentChannel(store.getState() as any);
+				}
+				const data = {
+					snapPoints: ['50%', '80%'],
+					children: (
+						<UserProfile
+							userId={message?.user?.id}
+							user={message?.user}
+							message={message}
+							checkAnonymous={checkAnonymous}
+							showAction={!isDM}
+							currentChannel={currentChannel}
+							showRole={!isDM}
+						/>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			}
-		}, [checkAnonymous, checkSystem, message, preventAction]);
+		}, [channelId, checkAnonymous, checkSystem, isDM, message, preventAction]);
 
 		const onMention = useCallback(async (mentionedUser: string) => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_MENTION_USER_MESSAGE_ITEM, mentionedUser);
@@ -166,13 +191,20 @@ const MessageItem = React.memo(
 
 		const handleLongPressMessage = useCallback(() => {
 			if (preventAction) return;
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
-				type: EMessageBSToShow.MessageAction,
-				senderDisplayName,
-				message
-			});
 			dispatch(setSelectedMessage(message));
-		}, [dispatch, message, preventAction, senderDisplayName]);
+			const data = {
+				snapPoints: ['60%', '90%'],
+				children: (
+					<ContainerMessageActionModal
+						message={message}
+						mode={mode}
+						type={EMessageBSToShow.MessageAction}
+						senderDisplayName={senderDisplayName}
+					/>
+				)
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		}, [dispatch, message, mode, preventAction, senderDisplayName]);
 
 		// Message welcome
 		if (message?.sender_id === '0' && !message?.content?.t && message?.username?.toLowerCase() === 'system') {
@@ -240,7 +272,7 @@ const MessageItem = React.memo(
 						isHighlight && styles.highlightMessageMention
 					]}
 				>
-					<RenderMessageItemRef message={message} preventAction={preventAction} isSearchTab={isSearchTab} />
+					{!isMessageSystem && <RenderMessageItemRef message={message} preventAction={preventAction} isSearchTab={isSearchTab} />}
 					<View style={[styles.wrapperMessageBox, !isCombine && styles.wrapperMessageBoxCombine]}>
 						{!isMessageSystem && (
 							<AvatarMessage
@@ -328,8 +360,8 @@ const MessageItem = React.memo(
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment
 											attachments={message?.attachments}
-											senderId={message?.sender_id}
-											createTime={message?.create_time}
+											clanId={message?.clan_id}
+											channelId={message?.channel_id}
 											onLongPressImage={onLongPressImage}
 										/>
 									)}
@@ -343,12 +375,19 @@ const MessageItem = React.memo(
 									mode={mode}
 									preventAction={preventAction}
 									openEmojiPicker={() => {
-										DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
-											type: EMessageBSToShow.MessageAction,
-											senderDisplayName,
-											message,
-											isOnlyEmoji: true
-										});
+										const data = {
+											snapPoints: ['70%', '90%'],
+											children: (
+												<ContainerMessageActionModal
+													message={message}
+													mode={mode}
+													type={EMessageBSToShow.MessageAction}
+													senderDisplayName={senderDisplayName}
+													isOnlyEmojiPicker={true}
+												/>
+											)
+										};
+										DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 									}}
 								/>
 							) : null}

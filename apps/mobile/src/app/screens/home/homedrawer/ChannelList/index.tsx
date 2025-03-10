@@ -113,10 +113,13 @@ const ChannelList = () => {
 					initialNumToRender={20}
 					windowSize={10}
 					onScrollToIndexFailed={(info) => {
-						const wait = new Promise((resolve) => setTimeout(resolve, 500));
-						wait.then(() => {
-							flashListRef.current?.scrollToIndex({ index: info.index, animated: true });
-						});
+						const wait = new Promise((resolve) => setTimeout(resolve, 200));
+						if (info.highestMeasuredFrameIndex < info.index) {
+							flashListRef.current?.scrollToIndex({ index: info.highestMeasuredFrameIndex, animated: true });
+							wait.then(() => {
+								flashListRef.current?.scrollToIndex({ index: info.index, animated: true });
+							});
+						}
 					}}
 				/>
 				<View style={{ height: 80 }} />

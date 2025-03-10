@@ -4,6 +4,7 @@ import { Icons } from '@mezon/ui';
 import {
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
+	ID_MENTION_HERE,
 	TypeMessage,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
@@ -95,7 +96,7 @@ function MessageWithUser({
 
 	const hasIncludeMention = (() => {
 		if (typeof message?.content?.t == 'string') {
-			if (message?.content.t?.includes('@here')) return true;
+			if (message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
 		}
 		if (typeof message?.mentions === 'string') {
 			const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;

@@ -68,12 +68,12 @@ module.exports = {
         "9/10": "90%",
       },
       height: {
-        heightMessageViewChat: `calc(100vh - ${topBarHeight} - ${chatBoxHeight})`,
-        heightMessageViewChatMobile: `calc(100vh  - ${chatBoxHeight})`,
-        heightMessageViewChatDM: `calc(100vh - ${topBarHeight})`,
-        heightMessageViewChatThread: `calc(100vh - ${topBarHeight} - ${chatBoxHeightThread})`,
-        heightWithoutTopBar: `calc(100vh - ${topBarHeight})`,
-        heightWithoutTopBarMobile: `calc(100vh)`,
+        heightMessageViewChat: `calc(100dvh - ${topBarHeight} - ${chatBoxHeight})`,
+        heightMessageViewChatMobile: `calc(100dvh  - ${chatBoxHeight})`,
+        heightMessageViewChatDM: `calc(100dvh - ${topBarHeight})`,
+        heightMessageViewChatThread: `calc(100dvh - ${topBarHeight} - ${chatBoxHeightThread})`,
+        heightWithoutTopBar: `calc(100dvh - ${topBarHeight})`,
+        heightWithoutTopBarMobile: `calc(100dvh)`,
         heightTopBar: topBarHeight,
         heightChatBox: chatBoxHeight,
         heightModalSearch: heightModalSearch,
@@ -92,9 +92,9 @@ module.exports = {
       maxHeight: {
         '4/5': '80%',
         '9/10': "90%",
-        heightInBox: `calc(100vh - 168px)`,
-        messageViewChatDM: `calc(100vh - 60px)`,
-        listMemberRole: `calc(100vh - 225px)`,
+        heightInBox: `calc(100dvh - 168px)`,
+        messageViewChatDM: `calc(100dvh - 60px)`,
+        listMemberRole: `calc(100dvh - 225px)`,
       },
 
       minHeight: {

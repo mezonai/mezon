@@ -11,8 +11,11 @@ import moment from 'moment';
 import { Dimensions, NativeModules, Platform } from 'react-native';
 import BottomSheetRootListener from '../../components/BottomSheetRootListener';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
+import ModalRootListener from '../../components/ModalRootListener';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
+import ChannelMessageListener from '../../screens/home/homedrawer/ChannelMessageListener';
+import ChannelMessageReactionListener from '../../screens/home/homedrawer/ChannelMessageReactionListener';
 import HomeDefaultWrapper from '../../screens/home/homedrawer/HomeDefaultWrapper';
 import ChannelVoicePopup from '../../screens/home/homedrawer/components/ChannelVoicePopup';
 import { RenderVideoDetail } from '../../screens/home/homedrawer/components/RenderVideoDetail';
@@ -150,6 +153,9 @@ export const Authentication = memo(() => {
 				<StreamingWrapper />
 				<ChannelVoicePopup />
 				<BottomSheetRootListener />
+				<ModalRootListener />
+				<ChannelMessageListener />
+				<ChannelMessageReactionListener />
 			</ColorRoleProvider>
 		</BottomSheetModalProvider>
 	);

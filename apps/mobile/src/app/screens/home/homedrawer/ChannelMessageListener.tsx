@@ -4,6 +4,7 @@ import {
 	channelsActions,
 	ChannelsEntity,
 	directActions,
+	getStore,
 	getStoreAsync,
 	selectAllRolesClan,
 	selectAllUserClans,
@@ -17,49 +18,46 @@ import {
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { DeviceEventEmitter, Linking, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useWebRTCStream } from '../../../components/StreamContext/StreamContext';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../utils/helpers';
-import { EMessageBSToShow } from './enums';
+import UserProfile from './components/UserProfile';
 
 const ChannelMessageListener = React.memo(() => {
-	const usersClan = useSelector(selectAllUserClans);
-	const rolesInClan = useSelector(selectAllRolesClan);
-	const clanId = useSelector(selectCurrentClanId);
-	const currentDirectId = useSelector(selectDmGroupCurrentId);
-	const currentClanId = currentDirectId ? '0' : clanId;
+	const store = getStore();
 	const navigation = useNavigation<any>();
-	const playStream = useSelector(selectStatusStream);
 	const dispatch = useAppDispatch();
-	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const { handleChannelClick, disconnect } = useWebRTCStream();
 	const { userProfile } = useAuth();
-	const membersDM = useSelector((state) => selectGrouplMembers(state, currentDirectId));
-
-	const listUser = useMemo(() => {
-		if (!!currentDirectId && currentDirectId !== '0') return membersDM;
-		else return usersClan;
-	}, [currentDirectId, membersDM, usersClan]);
 
 	const onMention = useCallback(
 		async (mentionedUser: string) => {
 			try {
 				const tagName = mentionedUser?.slice(1);
+				let listUser = [];
+				const currentDirectId = selectDmGroupCurrentId(store.getState());
+				if (!!currentDirectId && currentDirectId !== '0') {
+					listUser = selectGrouplMembers(store.getState(), currentDirectId);
+				} else {
+					listUser = selectAllUserClans(store.getState());
+				}
+				const rolesInClan = selectAllRolesClan(store.getState());
+
 				const clanUser = listUser?.find((userClan) => tagName === userClan?.user?.username);
 				const isRoleMention = rolesInClan?.some((role) => tagName === role?.id);
 				if (!mentionedUser || tagName === 'here' || isRoleMention) return;
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_MESSAGE_ACTION_MESSAGE_ITEM, {
-					type: EMessageBSToShow.UserInformation,
-					user: clanUser?.user
-				});
+				const data = {
+					snapPoints: ['50%', '80%'],
+					children: <UserProfile userId={clanUser?.user?.id} user={clanUser?.user} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			} catch (error) {
 				/* empty */
 			}
 		},
-		[listUser, rolesInClan]
+		[store]
 	);
 
 	const onChannelMention = useCallback(
@@ -68,6 +66,9 @@ const ChannelMessageListener = React.memo(() => {
 				const type = channel?.type;
 				const channelId = channel?.channel_id;
 				const clanId = channel?.clan_id;
+				const clanIdStore = selectCurrentClanId(store.getState());
+				const currentDirectId = selectDmGroupCurrentId(store.getState());
+				const currentClanId = currentDirectId ? '0' : clanIdStore;
 
 				if (type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel?.meeting_code) {
 					const urlVoice = `${linkGoogleMeet}${channel?.meeting_code}`;
@@ -85,6 +86,8 @@ const ChannelMessageListener = React.memo(() => {
 					save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 					await jumpToChannel(channelId, clanId);
 					if (type === ChannelType.CHANNEL_TYPE_STREAMING) {
+						const currentStreamInfo = selectCurrentStreamInfo(store.getState());
+						const playStream = selectStatusStream(store.getState());
 						if (currentStreamInfo?.streamId !== channel?.id || (!playStream && currentStreamInfo?.streamId === channel?.id)) {
 							disconnect();
 							handleChannelClick(
@@ -128,18 +131,7 @@ const ChannelMessageListener = React.memo(() => {
 				/* empty */
 			}
 		},
-		[
-			currentClanId,
-			currentDirectId,
-			currentStreamInfo?.streamId,
-			disconnect,
-			dispatch,
-			handleChannelClick,
-			navigation,
-			playStream,
-			userProfile?.user?.id,
-			userProfile?.user?.username
-		]
+		[disconnect, dispatch, handleChannelClick, navigation, store, userProfile?.user?.id, userProfile?.user?.username]
 	);
 
 	useEffect(() => {

@@ -49,6 +49,14 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 		handleRadioValue(option?.value, radioId);
 	};
 
+	const checkMultiple = useMemo(() => {
+		const options = fields[0]?.inputs?.component as IMessageRatioOption[];
+		if (options?.length > 1 && options[0]?.name) {
+			return options[0].name === options[1]?.name;
+		}
+		return true;
+	}, [fields]);
+
 	const handleRadioValue = (value: string, id: string) => {
 		dispatch(
 			embedActions.addEmbedValue({
@@ -56,7 +64,9 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 				data: {
 					id: id,
 					value: value
-				}
+				},
+				multiple: true,
+				onlyChooseOne: checkMultiple
 			})
 		);
 	};

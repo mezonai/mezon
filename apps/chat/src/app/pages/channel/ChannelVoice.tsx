@@ -48,8 +48,8 @@ const ChannelVoice = memo(
 				handleParticipantMeetState({
 					clan_id: clanId,
 					channel_id: channelId,
-					user_id: userProfile.user.id,
-					display_name: userProfile.user.display_name,
+					user_id: userProfile?.user?.id,
+					display_name: userProfile?.user?.display_name,
 					state
 				})
 			);

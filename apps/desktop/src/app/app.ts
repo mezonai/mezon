@@ -5,6 +5,7 @@ import { join } from 'path';
 import { format } from 'url';
 import { rendererAppName, rendererAppPort } from './constants';
 
+import ua from 'universal-analytics';
 import tray from '../Tray';
 import { EActivityCoding, EActivityGaming, EActivityMusic } from './activities';
 import setupAutoUpdates from './autoUpdates';
@@ -67,10 +68,13 @@ export default class App {
 		}
 
 		autoUpdater.checkForUpdates();
-		const sixHoursInMilliseconds = 6 * 60 * 60 * 1000;
+		const updateCheckTimeInMilliseconds = 60 * 60 * 1000;
 		setInterval(() => {
 			autoUpdater.checkForUpdates();
-		}, sixHoursInMilliseconds);
+		}, updateCheckTimeInMilliseconds);
+
+		const visitor = ua('G-9SD8R7Z8TJ');
+		visitor.screenview('Home Screen', 'Mezon Name').send();
 	}
 
 	private static onActivate() {
@@ -196,12 +200,7 @@ export default class App {
 
 		App.application.on('before-quit', async () => {
 			try {
-				const updateCheckResult = await autoUpdater.checkForUpdates();
-				if (updateCheckResult?.downloadPromise) {
-					await updateCheckResult.downloadPromise;
-					forceQuit.enable();
-					return autoUpdater.quitAndInstall();
-				}
+				autoUpdater.checkForUpdates();
 			} catch (error) {
 				console.error('Update check failed:', error);
 			}
@@ -330,10 +329,14 @@ export default class App {
 							autoUpdater.checkForUpdates().then((data) => {
 								if (!data?.updateInfo) return;
 								const appVersion = app.getVersion();
+								let body = `The current version (${appVersion}) is up to date.`;
+								if (data?.updateInfo.version != appVersion) {
+									body = `The current version is ${appVersion}. A new version ${data?.updateInfo.version} is available`;
+								}
 								new Notification({
 									icon: 'apps/desktop/src/assets/desktop-taskbar.ico',
-									title: 'No update',
-									body: `The current version (${appVersion}) is the latest.`
+									title: 'Checking for updates..',
+									body: body
 								}).show();
 							});
 						}

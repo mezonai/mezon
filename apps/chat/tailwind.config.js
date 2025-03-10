@@ -15,14 +15,14 @@ const heightModalSearch = '300px';
 const dmProfileWidth = '340px'
 const iconWidth = '160px';
 const titleBarHeight = '21px';
-  const heightMessageViewChat = `calc(100vh - 10px - ${topBarHeight} - ${chatBoxHeight})`;
-const heightMessageViewChatMobile = `calc(100vh - 10px - ${chatBoxHeight})`;
-const heightMessageViewChatDM = `calc(100vh - 60px - ${topBarHeight})`;
-const heightMessageViewChatThread = `calc(100vh - 10px - ${topBarHeight} - ${chatBoxHeightThread})`;
-const heightWithoutTopBar = `calc(100vh - ${topBarHeight})`;
-const heightWithoutTopBarMobile = `calc(100vh)`;
+  const heightMessageViewChat = `calc(100dvh - 10px - ${topBarHeight} - ${chatBoxHeight})`;
+const heightMessageViewChatMobile = `calc(100dvh - 10px - ${chatBoxHeight})`;
+const heightMessageViewChatDM = `calc(100dvh - 60px - ${topBarHeight})`;
+const heightMessageViewChatThread = `calc(100dvh - 10px - ${topBarHeight} - ${chatBoxHeightThread})`;
+const heightWithoutTopBar = `calc(100dvh - ${topBarHeight})`;
+const heightWithoutTopBarMobile = `calc(100dvh)`;
 const heightCallDm = `calc(100% - 240px)`;
-const messageViewChatDM = `calc(100vh - 60px)`;
+const messageViewChatDM = `calc(100dvh - 60px)`;
 
 const plugin = require('tailwindcss/plugin');
 
@@ -97,7 +97,7 @@ module.exports = {
         heightModalSearch: heightModalSearch,
         heightHeader: "60px",
         "9/10": "90%",
-        heightTitleBar: `calc(100vh - ${titleBarHeight})`,
+        heightTitleBar: `calc(100dvh - ${titleBarHeight})`,
         heightTitleBarMessageViewChat: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
         heightTitleBarMessageViewChatMobile: `calc(${heightMessageViewChatMobile} - ${titleBarHeight})`,
         heightTitleBarMessageViewChatDM: `calc(${heightMessageViewChatDM} - ${titleBarHeight})`,
@@ -117,10 +117,10 @@ module.exports = {
       maxHeight: {
         '4/5': '80%',
         '9/10': "90%",
-        heightInBox: `calc(100vh - 168px)`,
+        heightInBox: `calc(100dvh - 168px)`,
         messageViewChatDM: messageViewChatDM,
         titleBarMessageViewChatDM: `calc(${messageViewChatDM} - ${titleBarHeight})`,
-        listMemberRole: `calc(100vh - 225px)`,
+        listMemberRole: `calc(100dvh - 225px)`,
         "50vh": "50vh"
       },
 

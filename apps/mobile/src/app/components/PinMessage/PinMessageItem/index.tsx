@@ -65,7 +65,7 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 				<Text style={styles.pinMessageItemName}>{pinMessageItem?.username}</Text>
 				<RenderTextMarkdownContent content={contentMessage} isEdited={false} />
 				{message?.attachments?.length > 0 && (
-					<MessageAttachment attachments={message?.attachments || []} senderId={message?.sender_id} createTime={message?.create_time} />
+					<MessageAttachment attachments={message?.attachments || []} clanId={message?.clan_id} channelId={message?.channel_id} />
 				)}
 			</View>
 			<View>

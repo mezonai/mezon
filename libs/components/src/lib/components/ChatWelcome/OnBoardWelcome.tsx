@@ -1,7 +1,5 @@
-import { EElementHightLight, useDriver } from '@mezon/core';
 import { channelsActions, selectAllChannels, selectCurrentClanId, selectMembersClanCount, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import 'driver.js/dist/driver.css';
 import { ReactNode, useEffect } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,10 +16,10 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 	const dispatch = useDispatch();
 	const [openInviteClanModal, closeInviteClanModal] = useModal(() => <ModalInvite onClose={closeInviteClanModal} open={true} />);
 
-	const { openHighLight, closeHighLight } = useDriver();
+	// const { openHighLight, closeHighLight } = useDriver();
 
 	const handleSendMessage = () => {
-		openHighLight(EElementHightLight.MAIN_INPUT, undefined, 'Write content and press Enter to send message!');
+		// openHighLight(EElementHightLight.MAIN_INPUT, undefined, 'Write content and press Enter to send message!');
 	};
 
 	const handleCreateChannel = () => {
@@ -33,7 +31,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 
 	useEffect(() => {
 		if (nextMessageId) {
-			closeHighLight();
+			// closeHighLight();
 		}
 	}, [nextMessageId]);
 

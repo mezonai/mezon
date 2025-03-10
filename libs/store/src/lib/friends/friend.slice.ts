@@ -30,7 +30,7 @@ export enum EStateFriend {
 }
 
 export const mapFriendToEntity = (FriendRes: Friend) => {
-	return { ...FriendRes, id: FriendRes.user?.id || '' };
+	return { ...FriendRes, id: FriendRes?.user?.id || '' };
 };
 
 export interface FriendsState extends EntityState<FriendsEntity, string> {

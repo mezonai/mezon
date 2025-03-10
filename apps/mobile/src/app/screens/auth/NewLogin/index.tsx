@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import WebView from 'react-native-webview';
-import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
@@ -67,10 +66,15 @@ const NewLoginScreen = () => {
 
 	return (
 		<View style={styles.supperContainer}>
-			<StatusBarHeight />
 			{authUri && (
 				<View style={styles.webView}>
-					<WebView source={{ uri: authUri }} onShouldStartLoadWithRequest={handleShouldNavigationStateChange} startInLoadingState={true} />
+					<WebView
+						originWhitelist={['*']}
+						style={styles.supperContainer}
+						source={{ uri: authUri }}
+						onShouldStartLoadWithRequest={handleShouldNavigationStateChange}
+						startInLoadingState={true}
+					/>
 				</View>
 			)}
 		</View>

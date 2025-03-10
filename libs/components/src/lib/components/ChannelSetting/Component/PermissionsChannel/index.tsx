@@ -43,7 +43,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 
 	const handleSaveChannelPrivateChanged = useCallback(async () => {
 		setValueToggleInit(valueToggle);
-		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile.user.id] : selectedUserIds;
+		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
 		await dispatch(
 			channelsActions.updateChannelPrivate({
 				channel_id: channel.id,

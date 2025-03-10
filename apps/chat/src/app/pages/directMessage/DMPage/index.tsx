@@ -212,7 +212,9 @@ const DirectMessage = () => {
 				<div className="h-heightTopBar">
 					<DmTopbar dmGroupId={directId} isHaveCallInChannel={isHaveCallInChannel || isPlayDialTone} />
 				</div>
-				<div className={`cotain-strict flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : ''}`}>
+				<div
+					className={`cotain-strict flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : 'h-[calc(100%_-_60px)]'}`}
+				>
 					<div
 						className={`flex-col flex-1 h-full pb-[10px] ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>

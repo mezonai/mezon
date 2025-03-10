@@ -2,7 +2,6 @@ import { MentionReactInput, ReplyMessageBox, UserMentionList } from '@mezon/comp
 import { useAuth, useTopics } from '@mezon/core';
 import {
 	fetchMessages,
-	messagesActions,
 	selectAllChannelMemberIds,
 	selectCurrentChannel,
 	selectCurrentChannelId,
@@ -111,14 +110,6 @@ const TopicDiscussionBox = () => {
 			} else {
 				const topic = (await createTopic()) as ApiSdTopic;
 				if (topic) {
-					dispatch(
-						messagesActions.updateToBeTopicMessage({
-							channelId: currentChannelId as string,
-							messageId: currentTopicInitMessage?.id as string,
-							topicId: topic.id as string,
-							creatorId: userProfile?.user?.id as string
-						})
-					);
 					await sleep(10);
 					await sendMessageTopic(content, mentions, attachments, references, topic.id || '');
 				}

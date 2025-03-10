@@ -47,7 +47,7 @@ export enum IThreadActiveType {
 export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 	const bottomSheetChannelStreamingRef = useRef<BottomSheetModal>(null);
 	const isUnRead = useAppSelector((state) => selectIsUnreadChannelById(state, props?.data?.id));
-	const [isActive, setIsActive] = useState<boolean>(false);
+	const [channelIdActive, setChannelIdActive] = useState<string>('');
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, props?.data?.category_id as string));
 	const isChannelVoice = useMemo(() => {
 		return (
@@ -63,18 +63,14 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 
 	useEffect(() => {
 		const event = DeviceEventEmitter.addListener(ActionEmitEvent.CHANNEL_ID_ACTIVE, (channelId: string) => {
-			if (channelId === props?.data?.id) {
-				setIsActive(true);
-			} else {
-				if (isActive) setIsActive(false);
-			}
+			setChannelIdActive(channelId);
 		});
 
 		return () => {
 			event.remove();
 			timeoutRef.current && clearTimeout(timeoutRef.current);
 		};
-	}, [props?.data?.id, isActive]);
+	}, [props.data.id]);
 
 	const openBottomSheetJoinVoice = useCallback(() => {
 		const data = {
@@ -152,8 +148,12 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 		openBottomSheetChannelMenu(props?.data, props?.data?.type === ChannelType.CHANNEL_TYPE_THREAD);
 	}, [openBottomSheetChannelMenu, props?.data]);
 
-	const shouldDisplay = isCategoryExpanded || isUnRead || isChannelVoice || isActive;
-	// || props.parentIdList?.has(props.data.id);
+	const shouldDisplay =
+		isCategoryExpanded ||
+		isUnRead ||
+		isChannelVoice ||
+		channelIdActive === props?.data?.channel_id ||
+		props?.data?.threadIds?.includes(channelIdActive);
 
 	if (!shouldDisplay) return null;
 	return (
@@ -165,7 +165,7 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 					onLongPress={handleLongPressChannel}
 					data={props?.data}
 					isUnRead={isUnRead}
-					isActive={isActive}
+					isActive={channelIdActive === props?.data?.channel_id}
 				/>
 			)}
 			{isChannelVoice && (
@@ -176,7 +176,7 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 					onLongPress={handleLongPressChannel}
 					data={props?.data}
 					isUnRead={false}
-					isActive={isActive}
+					isActive={channelIdActive === props?.data?.channel_id}
 				/>
 			)}
 		</>

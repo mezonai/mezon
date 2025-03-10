@@ -2,7 +2,7 @@ import { BottomSheetScrollView, BottomSheetModal as OriginalBottomSheet } from '
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, Text, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Text, View } from 'react-native';
 import Backdrop from '../../componentUI/MezonBottomSheet/backdrop';
 import { style } from '../../componentUI/MezonBottomSheet/styles';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
@@ -87,6 +87,7 @@ const BottomSheetRootListener = () => {
 			if (isDismiss) {
 				onCloseBottomSheet();
 			} else {
+				Keyboard.dismiss();
 				onTriggerBottomSheet(data);
 			}
 		});

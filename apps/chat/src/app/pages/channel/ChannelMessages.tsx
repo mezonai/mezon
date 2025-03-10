@@ -377,7 +377,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const [forceRender, setForceRender] = useState<boolean>(false);
 
 		useEffect(() => {
-			if (chatRef.current) {
+			if (chatRef.current && jumpToPresent) {
 				chatRef.current.scrollTop = 99999;
 				dispatch(messagesActions.setIsJumpingToPresent({ channelId, status: false }));
 			}
@@ -403,8 +403,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const scrollOffsetRef = useRef<number>(0);
 
 		const memoFocusingIdRef = useRef<number>();
-
-		const attachmentSending = useRef<string | null>();
 
 		useSyncEffect(() => {
 			if (idMessageToJump) {
@@ -484,18 +482,14 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					// const isAtBottom = isViewportNewest && prevIsViewportNewest && bottomOffset <= BOTTOM_THRESHOLD;
 					const isAtBottom =
 						chatRef?.current &&
-						Math.abs(chatRef.current.scrollHeight - chatRef.current.clientHeight - chatRef.current.scrollTop) <= BOTTOM_THRESHOLD;
+						(Math.abs(chatRef.current.scrollHeight - chatRef.current.clientHeight - chatRef.current.scrollTop) <= BOTTOM_THRESHOLD ||
+							(userId === lastMessage?.sender_id &&
+								lastMessage?.create_time &&
+								new Date().getTime() - new Date(lastMessage.create_time).getTime() < 500));
 					// const isAlreadyFocusing = messageIds && memoFocusingIdRef.current === messageIds[messageIds.length - 1];
 					const isAlreadyFocusing = false;
 					// Animate incoming message, but if app is in background mode, scroll to the first unread
-					if (lastMessage?.isSending && lastMessage?.attachments?.[0]) {
-						attachmentSending.current = lastMessage?.attachments[0].url;
-					}
-					// (lastMessage?.isSending && lastMessage?.sender_id === userId) ||
-					if (
-						(isAtBottom || (attachmentSending.current && attachmentSending.current === lastMessage?.attachments?.[0]?.url)) &&
-						!isAlreadyFocusing
-					) {
+					if (isAtBottom && !isAlreadyFocusing) {
 						// Break out of `forceLayout`
 						// if (!lastItemElement) return;
 
@@ -514,12 +508,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 								undefined
 							);
 						});
-						if (userId === lastMessage?.sender_id) {
-							if (attachmentSending.current === lastMessage?.attachments?.[0]?.url && !lastMessage?.isSending) {
-								attachmentSending.current = null;
-							}
-							return;
-						}
 					}
 
 					const isResized = prevContainerHeight !== undefined && prevContainerHeight !== containerHeight;
@@ -701,8 +689,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						skipCalculateScroll.current = false;
 					}}
 					ref={chatRef}
-					id="scrollLoading"
 					className={classNames([
+						'thread-scroll',
 						'absolute top-0 left-0 bottom-0 right-0',
 						'overflow-y-scroll overflow-x-hidden',
 						'dark:bg-bgPrimary bg-bgLightPrimary',

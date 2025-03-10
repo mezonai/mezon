@@ -26,7 +26,7 @@ export const isImage = (url?: string) => {
 };
 
 export const isVideo = (url?: string) => {
-	return /\.(mp4|webm|mov)/.test(url);
+	return /\.(mp4|webm|mov|mkv)/.test(url);
 };
 
 export const isAudio = (url?: string) => {

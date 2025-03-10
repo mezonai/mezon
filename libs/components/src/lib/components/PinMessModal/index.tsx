@@ -1,4 +1,4 @@
-import { useEscapeKeyClose } from '@mezon/core';
+import { ColorRoleProvider, useEscapeKeyClose } from '@mezon/core';
 import { IMessageWithUser, KEY_KEYBOARD } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
 import MessageWithUser from '../MessageWithUser';
@@ -48,14 +48,16 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 						<p>Hey, just double-checking that you want to pin this message to #{channelLabel} for posterity and greatness?</p>
 					</div>
 					<div className="p-4 max-h-[60vh] overflow-y-auto hide-scrollbar">
-						<MessageWithUser
-							isSearchMessage={true} // to correct size youtube emmbed
-							allowDisplayShortProfile={false}
-							message={mess}
-							mode={mode}
-							isMention={true}
-							isShowFull={true}
-						/>
+						<ColorRoleProvider>
+							<MessageWithUser
+								isSearchMessage={true} // to correct size youtube emmbed
+								allowDisplayShortProfile={false}
+								message={mess}
+								mode={mode}
+								isMention={true}
+								isShowFull={true}
+							/>
+						</ColorRoleProvider>
 					</div>
 					<div className="w-full dark:bg-bgSecondary bg-bgLightSecondary p-4 flex justify-end gap-x-4">
 						<button onClick={closeModal} className="px-4 py-2 hover:underline rounded">

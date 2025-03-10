@@ -68,7 +68,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const listMembersNotInChannel = useMemo(
 		() =>
 			listUserInvite
-				? listUserInvite.map((member: any) => ({ ...member.user, clanNick: member.clan_nick, clanAvatar: member.clan_avatar }))
+				? listUserInvite.map((member: any) => ({ ...member?.user, clanNick: member?.clan_nick, clanAvatar: member?.clan_avatar }))
 				: [],
 		[listUserInvite]
 	);

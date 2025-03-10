@@ -39,42 +39,42 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 	};
 
 	const userFriend = useMemo(() => {
-		if (friend.user) {
-			return friend.user as any;
+		if (friend?.user) {
+			return friend?.user as any;
 		}
-	}, [friend.user]);
+	}, [friend?.user]);
 
 	return (
 		<div className="border-t-[1px] dark:border-[#3f4147] border-gray-300 group/list_friends">
 			<div
-				key={friend.user?.id}
-				onClick={() => directMessageWithUser(friend.user?.id ?? '')}
+				key={friend?.user?.id}
+				onClick={() => directMessageWithUser(friend?.user?.id ?? '')}
 				className=" py-3 flex justify-between items-center px-[12px] cursor-pointer dark:hover:bg-[#393c41] hover:bg-[#eaebed] rounded-lg"
 			>
-				<div key={friend.user?.id} className={'flex-1'}>
+				<div key={friend?.user?.id} className={'flex-1'}>
 					<MemberProfile
 						avatar={friend?.user?.avatar_url ?? ''}
 						name={(friend?.user?.display_name || friend?.user?.username) ?? ''}
 						usernameAva={friend?.user?.username ?? ''}
-						status={{ status: friend.user?.online, isMobile: false }}
-						isHideStatus={friend.state !== 0}
-						isHideIconStatus={friend.state !== 0}
+						status={{ status: friend?.user?.online, isMobile: false }}
+						isHideStatus={friend?.state !== 0}
+						isHideIconStatus={friend?.state !== 0}
 						isHideAnimation={true}
-						key={friend.user?.id}
+						key={friend?.user?.id}
 						numberCharacterCollapse={100}
-						classParent={friend.state !== undefined && friend.state >= 1 ? '' : 'friendList h-10'}
+						classParent={friend?.state !== undefined && friend?.state >= 1 ? '' : 'friendList h-10'}
 						positionType={MemberProfileType.LIST_FRIENDS}
-						customStatus={(friend.user?.metadata as MetaDateStatusUser).status ?? ''}
+						customStatus={(friend?.user?.metadata as MetaDateStatusUser).status ?? ''}
 						isDM={true}
 						user={friend as ChannelMembersEntity}
 						statusOnline={userFriend?.metadata?.user_status}
 					/>
 				</div>
 				<div onClick={(e) => e.stopPropagation()}>
-					{friend.state === 0 && (
+					{friend?.state === 0 && (
 						<div className="flex gap-3 items-center">
 							<button
-								onClick={() => directMessageWithUser(friend.user?.id ?? '')}
+								onClick={() => directMessageWithUser(friend?.user?.id ?? '')}
 								className="dark:bg-bgTertiary bg-[#E1E1E1] rounded-full p-2"
 							>
 								<Icons.IconChat className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
@@ -109,7 +109,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 									theme={{
 										base: 'dark:hover:bg-colorDanger dark:hover:text-contentSecondary hover:bg-bgLightModeThird p-2 rounded-[5px] w-full text-colorDanger flex'
 									}}
-									onClick={() => handleDeleteFriend(friend?.user?.username as string, friend.user?.id as string)}
+									onClick={() => handleDeleteFriend(friend?.user?.username as string, friend?.user?.id as string)}
 								>
 									Remove Friend
 								</Dropdown.Item>
@@ -117,44 +117,44 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 									theme={{
 										base: 'dark:hover:bg-colorDanger dark:hover:text-contentSecondary hover:bg-bgLightModeThird p-2 rounded-[5px] w-full text-colorDanger flex'
 									}}
-									onClick={() => handleBlockFriend(friend?.user?.username as string, friend.user?.id as string)}
+									onClick={() => handleBlockFriend(friend?.user?.username as string, friend?.user?.id as string)}
 								>
 									Block
 								</Dropdown.Item>
 							</Dropdown>
 						</div>
 					)}
-					{friend.state === 1 && (
+					{friend?.state === 1 && (
 						<div className="flex gap-3 items-center">
 							<button
 								className="dark:bg-bgTertiary bg-bgLightModeButton dark:text-contentSecondary text-textLightTheme rounded-full w-8 h-8 flex items-center justify-center"
-								onClick={() => handleDeleteFriend(friend?.user?.username as string, friend.user?.id as string)}
+								onClick={() => handleDeleteFriend(friend?.user?.username as string, friend?.user?.id as string)}
 							>
 								✕
 							</button>
 						</div>
 					)}
-					{friend.state === 2 && (
+					{friend?.state === 2 && (
 						<div className="flex gap-3 items-center">
 							<button
 								className="dark:bg-bgTertiary bg-bgLightModeButton dark:text-contentSecondary text-textLightTheme rounded-full w-8 h-8 flex items-center justify-center"
-								onClick={() => handleAcceptFriend(friend?.user?.username as string, friend.user?.id as string)}
+								onClick={() => handleAcceptFriend(friend?.user?.username as string, friend?.user?.id as string)}
 							>
 								✓
 							</button>
 							<button
 								className="dark:bg-bgTertiary bg-bgLightModeButton dark:text-contentSecondary text-textLightTheme rounded-full w-8 h-8 flex items-center justify-center"
-								onClick={() => handleDeleteFriend(friend?.user?.username as string, friend.user?.id as string)}
+								onClick={() => handleDeleteFriend(friend?.user?.username as string, friend?.user?.id as string)}
 							>
 								✕
 							</button>
 						</div>
 					)}
-					{friend.state === 3 && (
+					{friend?.state === 3 && (
 						<div className="flex gap-3 items-center">
 							<button
 								className="bg-bgTertiary text-contentSecondary rounded-[6px] text-[14px] p-2 flex items-center justify-center hover:bg-bgPrimary"
-								onClick={() => handleUnBlockFriend(friend?.user?.username as string, friend.user?.id as string)}
+								onClick={() => handleUnBlockFriend(friend?.user?.username as string, friend?.user?.id as string)}
 							>
 								UnBlock
 							</button>

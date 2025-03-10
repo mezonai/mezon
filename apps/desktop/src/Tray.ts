@@ -31,10 +31,14 @@ export class TrayIcon {
 						autoUpdater.checkForUpdates().then((data) => {
 							if (!data?.updateInfo) return;
 							const appVersion = app.getVersion();
+							let body = `The current version (${appVersion}) is up to date.`;
+							if (data?.updateInfo.version != appVersion) {
+								body = `The current version is ${appVersion}. A new version ${data?.updateInfo.version} is available`;
+							}
 							new Notification({
 								icon: 'apps/desktop/src/assets/desktop-taskbar.ico',
-								title: 'No update',
-								body: `The current version (${appVersion}) is the latest.`
+								title: 'Checking for updates..',
+								body: body
 							}).show();
 						});
 					}

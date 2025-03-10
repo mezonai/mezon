@@ -1,0 +1,15 @@
+{
+    "cameraPermissionDenied": "Quyền truy cập máy ảnh bị từ chối",
+    "pleaseAllowCamera": "Vui lòng cho phép truy cập máy ảnh trong cài đặt thiết bị của bạn.",
+    "cancel": "Hủy",
+    "openSettings": "Mở Cài đặt",
+    "anErrorOccurred": "Đã xảy ra lỗi, vui lòng thử lại",
+    "youAreIn": "Bạn đã đăng nhập!",
+    "logInOnNewDevice": "Đăng nhập trên thiết bị mới?",
+    "youAreLoggedInOnDesktop": "Bây giờ bạn đã đăng nhập trên desktop",
+    "neverScanALoginQRCodeFromAnotherUser": "Không bao giờ quét mã QR đăng nhập từ người dùng khác.",
+    "startTalking": "Bắt đầu nói chuyện",
+    "logIn": "Đăng nhập",
+    "requestCameraPermission": "Yêu cầu quyền truy cập máy ảnh",
+    "myQRCode": "Mã QR của tôi"
+}

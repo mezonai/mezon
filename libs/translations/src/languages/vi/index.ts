@@ -37,6 +37,7 @@ import notificationSetting from './notificationSetting.json';
 import pinMessage from './pinMessage.json';
 import profile from './profile.json';
 import profileSetting from './profileSetting.json';
+import qrScanner from './qrScanner.json';
 import recordChatMessage from './recordChatMessage.json';
 import screen from './screen.json';
 import screenStack from './screenStack.json';
@@ -96,5 +97,6 @@ export default {
 	ageRestricted,
 	recordChatMessage,
 	channelVoice,
-	token
+	token,
+	qrScanner
 };

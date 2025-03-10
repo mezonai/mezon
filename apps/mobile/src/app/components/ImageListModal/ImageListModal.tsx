@@ -1,10 +1,11 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, Text } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectAllListAttachmentByChannel } from '@mezon/store-mobile';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, View } from 'react-native';
+import { DeviceEventEmitter, View } from 'react-native';
 import Gallery, { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -14,8 +15,6 @@ import { RenderFooterModal } from './RenderFooterModal';
 import { RenderHeaderModal } from './RenderHeaderModal';
 
 interface IImageListModalProps {
-	visible?: boolean;
-	onClose?: () => void;
 	imageSelected?: AttachmentEntity;
 	channelId: string;
 }
@@ -29,14 +28,14 @@ const TIME_TO_HIDE_THUMBNAIL = 5000;
 const TIME_TO_SHOW_SAVE_IMAGE_SUCCESS = 3000;
 
 export const ImageListModal = React.memo((props: IImageListModalProps) => {
-	const { visible, onClose, imageSelected } = props;
+	const { imageSelected, channelId } = props;
 	const { t } = useTranslation('common');
 	const [currentImage, setCurrentImage] = useState<AttachmentEntity | null>(null);
 	const [visibleToolbarConfig, setVisibleToolbarConfig] = useState<IVisibleToolbarConfig>({ showHeader: true, showFooter: false });
 	const [currentScale, setCurrentScale] = useState(1);
 	const [showSavedImage, setShowSavedImage] = useState(false);
 	const [isLoadingSaveImage, setIsLoadingSaveImage] = useState(false);
-	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, props.channelId));
+	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, channelId));
 	const ref = useRef<GalleryRef>(null);
 	const footerTimeoutRef = useRef<NodeJS.Timeout>(null);
 	const imageSavedTimeoutRef = useRef<NodeJS.Timeout>(null);
@@ -62,6 +61,10 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 				? attachments
 				: [];
 	}, [attachments, imageSelected]);
+
+	const onClose = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+	};
 
 	const updateToolbarConfig = useCallback(
 		(newValue: Partial<IVisibleToolbarConfig>) => {
@@ -168,39 +171,37 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 	const setScaleDebounced = useThrottledCallback(setCurrentScale, 300);
 
 	return (
-		<Modal visible={visible}>
-			<View style={{ flex: 1 }}>
-				{visibleToolbarConfig.showHeader && (
-					<RenderHeaderModal onClose={onClose} imageSelected={currentImage} onImageSaved={onImageSaved} onLoading={onLoading} />
-				)}
-				<Gallery
-					ref={ref}
-					initialIndex={initialIndex === -1 ? 0 : initialIndex}
-					data={formattedImageList}
-					keyExtractor={(item, index) => `${item?.filename}_${index}`}
-					onSwipeToClose={onClose}
-					onIndexChange={onIndexChange}
-					renderItem={renderItem}
-					onDoubleTap={onDoubleTap}
-					onTap={onTap}
-					onPanStart={onPanStart}
-					onScaleChange={setScaleDebounced}
-				/>
-				<RenderFooterModal
-					allImageList={formattedImageList}
-					visible={visibleToolbarConfig.showFooter}
-					imageSelected={currentImage}
-					onImageThumbnailChange={onImageThumbnailChange}
-				/>
-				{showSavedImage && (
-					<View style={{ position: 'absolute', top: '50%', width: '100%', alignItems: 'center' }}>
-						<View style={{ backgroundColor: Colors.bgDarkSlate, padding: size.s_10, borderRadius: size.s_10 }}>
-							<Text style={{ color: Colors.white }}>{t('savedSuccessfully')}</Text>
-						</View>
+		<View style={{ flex: 1 }}>
+			{visibleToolbarConfig.showHeader && (
+				<RenderHeaderModal onClose={onClose} imageSelected={currentImage} onImageSaved={onImageSaved} onLoading={onLoading} />
+			)}
+			<Gallery
+				ref={ref}
+				initialIndex={initialIndex === -1 ? 0 : initialIndex}
+				data={formattedImageList}
+				keyExtractor={(item, index) => `${item?.filename}_${index}`}
+				onSwipeToClose={onClose}
+				onIndexChange={onIndexChange}
+				renderItem={renderItem}
+				onDoubleTap={onDoubleTap}
+				onTap={onTap}
+				onPanStart={onPanStart}
+				onScaleChange={setScaleDebounced}
+			/>
+			<RenderFooterModal
+				allImageList={formattedImageList}
+				visible={visibleToolbarConfig.showFooter}
+				imageSelected={currentImage}
+				onImageThumbnailChange={onImageThumbnailChange}
+			/>
+			{showSavedImage && (
+				<View style={{ position: 'absolute', top: '50%', width: '100%', alignItems: 'center' }}>
+					<View style={{ backgroundColor: Colors.bgDarkSlate, padding: size.s_10, borderRadius: size.s_10 }}>
+						<Text style={{ color: Colors.white }}>{t('savedSuccessfully')}</Text>
 					</View>
-				)}
-			</View>
+				</View>
+			)}
 			<LoadingModal isVisible={isLoadingSaveImage} />
-		</Modal>
+		</View>
 	);
 });

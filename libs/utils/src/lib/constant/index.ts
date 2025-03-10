@@ -27,7 +27,7 @@ export const FOR_24_HOURS = 24 * 60 * 60 * 1000;
 export const MUTE = 0;
 export const ACTIVE = 1;
 export const DEFAULT_ID = '0';
-export const LIMIT = 10;
+export const LIMIT = 50;
 
 export const threadError: ThreadError = {
 	name: 'Thread Name is required',

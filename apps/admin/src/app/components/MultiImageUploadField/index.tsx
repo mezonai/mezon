@@ -74,7 +74,7 @@ const MultiImageUploadField = connectField((props: CustomFormFieldProps) => {
 					<div className="w-full flex gap-1 flex-col ">
 						{value.map((file, index) => (
 							<div key={index} className="flex justify-between items-center bg-white dark:bg-[#36393f] p-2 rounded-md">
-								<span className="truncate max-w-[80%]">{extractFileNameFromUrl(file)}</span>
+								<span className="truncate max-w-[100%]">{extractFileNameFromUrl(file)}</span>
 								<button className="text-red-500 hover:text-red-700" onClick={() => handleRemoveImage(index)}>
 									<Icons.CloseIcon className="w-4 h-4" />
 								</button>

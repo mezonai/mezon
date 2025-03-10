@@ -35,6 +35,8 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	currentTopicId?: string;
 	firstMessageOfCurrentTopic?: ApiSdTopic;
 	isFocusTopicBox: boolean;
+	channelTopics: Record<string, string>;
+	clanTopics: Record<string, EntityState<TopicDiscussionsEntity, string>>;
 }
 
 export const topicsAdapter = createEntityAdapter({ selectId: (topic: TopicDiscussionsEntity) => topic.id || '' });
@@ -61,7 +63,7 @@ const fetchTopicsCached = memoizee(
 const mapToTopicEntity = (topics: ApiSdTopic[]) => {
 	return topics.map((topic) => ({
 		...topic,
-		id: topic.id
+		id: topic.id || ''
 	}));
 };
 
@@ -83,12 +85,17 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 			fetchTopicsCached.clear(mezon, clanId);
 		}
 		const response = await fetchTopicsCached(mezon, clanId);
-		if (!response.topics) {
-			return [];
+		if (Date.now() - response.time > 100) {
+			return {
+				fromCache: true,
+				topics: []
+			};
 		}
-
-		const topics = mapToTopicEntity(response.topics);
-		return topics;
+		const topics = mapToTopicEntity(response.topics || []);
+		return {
+			clan_id: clanId,
+			topics: topics
+		};
 	} catch (error) {
 		captureSentryError(error, 'topics/fetchTopics');
 		return thunkAPI.rejectWithValue(error);
@@ -102,7 +109,9 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 	isPrivate: 0,
 	currentTopicInitMessage: null,
 	openTopicMessageState: false,
-	isFocusTopicBox: false
+	isFocusTopicBox: false,
+	channelTopics: {},
+	clanTopics: {}
 });
 
 export const createTopic = createAsyncThunk('topics/createTopic', async (body: ApiSdTopicRequest, thunkAPI) => {
@@ -220,8 +229,12 @@ export const topicsSlice = createSlice({
 		setFirstMessageOfCurrentTopic(state, action) {
 			state.firstMessageOfCurrentTopic = action.payload;
 		},
-		setTopicLastSent: (state, action: PayloadAction<{ topicId: string; lastSentMess: ApiChannelMessageHeader }>) => {
-			const topic = state.entities[action.payload.topicId];
+		setChannelTopic: (state, action: PayloadAction<{ channelId: string; topicId: string }>) => {
+			const { channelId, topicId } = action.payload;
+			state.channelTopics[channelId] = topicId;
+		},
+		setTopicLastSent: (state, action: PayloadAction<{ clanId: string; topicId: string; lastSentMess: ApiChannelMessageHeader }>) => {
+			const topic = state.clanTopics[action.payload.clanId].entities[action.payload.topicId];
 			if (topic) {
 				if (!topic.last_sent_message) {
 					topic.last_sent_message = {} as ApiChannelMessageHeader;
@@ -244,6 +257,13 @@ export const topicsSlice = createSlice({
 		},
 		setFocusTopicBox(state, action: PayloadAction<boolean>) {
 			state.isFocusTopicBox = action.payload;
+		},
+		addTopic: (state, action: PayloadAction<{ clanId: string; topic: TopicDiscussionsEntity }>) => {
+			const { clanId, topic } = action.payload;
+			if (!state.clanTopics[clanId]) {
+				state.clanTopics[clanId] = topicsAdapter.getInitialState();
+			}
+			topicsAdapter.addOne(state.clanTopics[clanId], topic);
 		}
 	},
 	extraReducers: (builder) => {
@@ -251,8 +271,17 @@ export const topicsSlice = createSlice({
 			.addCase(fetchTopics.pending, (state: TopicDiscussionsState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchTopics.fulfilled, (state: TopicDiscussionsState, action: PayloadAction<any[]>) => {
-				topicsAdapter.setAll(state, action.payload);
+			.addCase(fetchTopics.fulfilled, (state: TopicDiscussionsState, action: PayloadAction<any>) => {
+				if (action.payload?.fromCache) return;
+				const clanId = action.payload.clan_id;
+				if (!clanId) {
+					return;
+				}
+
+				if (!state.clanTopics[clanId]) {
+					state.clanTopics[clanId] = topicsAdapter.getInitialState();
+				}
+				state.clanTopics[clanId] = topicsAdapter.setAll(state.clanTopics[clanId], action.payload.topics);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchTopics.rejected, (state: TopicDiscussionsState, action) => {
@@ -308,12 +337,11 @@ const { selectAll, selectEntities } = topicsAdapter.getSelectors();
 
 export const getTopicsState = (rootState: { [TOPIC_DISCUSSIONS_FEATURE_KEY]: TopicDiscussionsState }): TopicDiscussionsState =>
 	rootState[TOPIC_DISCUSSIONS_FEATURE_KEY];
-
-export const selectAllTopics = createSelector(getTopicsState, selectAll);
+export const selectAllTopics = createSelector([getTopicsState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) =>
+	selectAll(state.clanTopics[clanId] ?? topicsAdapter.getInitialState())
+);
 
 export const selectTopicsEntities = createSelector(getTopicsState, selectEntities);
-
-export const selectTopicById = createSelector([selectTopicsEntities, (state, topicId: string) => topicId], (state, topicId) => state[topicId]);
 
 export const selectMessageTopicError = createSelector(getTopicsState, (state) => state.messageTopicError);
 
@@ -339,5 +367,8 @@ export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 		return timestampB - timestampA;
 	});
 });
+
+export const selectTopicByChannelId = (channelId: string) =>
+	createSelector(getTopicsState, (state: TopicDiscussionsState) => state.channelTopics[channelId] ?? null);
 
 export const selectClickedOnTopicStatus = createSelector(getTopicsState, (state) => state.isFocusTopicBox);

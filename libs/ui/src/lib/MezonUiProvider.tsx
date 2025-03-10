@@ -1,6 +1,6 @@
 import React from 'react';
 import { SkeletonTheme } from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+// import 'react-loading-skeleton/dist/skeleton.css';
 import { ModalProvider } from 'react-modal-hook';
 
 type Props = {
