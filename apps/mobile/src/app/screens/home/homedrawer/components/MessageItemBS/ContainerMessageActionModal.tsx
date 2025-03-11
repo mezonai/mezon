@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, CopyIcon, Icons, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
-import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
 	appActions,
@@ -42,6 +42,8 @@ import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
@@ -82,6 +84,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		message?.code === TypeMessage.CreateThread ||
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;
+	console.log('currentMessageId', message?.channel_id, currentChannelId);
 
 	const onClose = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -253,7 +256,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			type: 'success',
 			props: {
 				text2: t('toast.copyText'),
-				leadingIcon: <CopyIcon color={Colors.bgGrayLight} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.coppyIcon} width={size.s_20} height={size.s_20} />
 			}
 		});
 	};
@@ -434,43 +437,43 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const getActionMessageIcon = (type: EMessageActionType) => {
 		switch (type) {
 			case EMessageActionType.EditMessage:
-				return <Icons.PencilIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.Reply:
-				return <Icons.ArrowAngleLeftUpIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.arrowAngleLeftUpIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.ForwardMessage:
-				return <Icons.ArrowAngleRightUpIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.arrowAngleRightUpIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.ForwardAllMessages:
-				return <Icons.ArrowAngleRightUpIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.arrowAngleRightUpIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.CreateThread:
-				return <Icons.ThreadIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.CopyText:
-				return <Icons.CopyIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.coppyIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.DeleteMessage:
-				return <Icons.TrashIcon color={baseColor.red} height={size.s_20} width={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.trashIconRed} width={size.s_18} height={size.s_18} />;
 			case EMessageActionType.PinMessage:
-				return <Icons.PinIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.pinIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.UnPinMessage:
-				return <Icons.PinIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.pinIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.MarkUnRead:
-				return <Icons.ChatMarkUnreadIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.markUnreadIcon} width={size.s_20} height={size.s_20} />;
 			// case EMessageActionType.Mention:
 			// 	return <Icons.AtIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
 			case EMessageActionType.SaveImage:
-				return <Icons.DownloadIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.downloadIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.CopyMediaLink:
-				return <Icons.LinkIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.linkIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.CopyMessageLink:
-				return <Icons.LinkIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.linkIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.Report:
-				return <Icons.FlagIcon color={baseColor.red} height={size.s_14} width={size.s_14} />;
+				return <MezonIconCDN icon={IconCDN.redFlag} width={size.s_14} height={size.s_14} />;
 			case EMessageActionType.GiveACoffee:
-				return <Icons.GiftIcon color={themeValue.text} height={size.s_20} width={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.giftIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.ResendMessage:
-				return <Icons.ChatMarkUnreadIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.markUnreadIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.TopicDiscussion:
-				return <Icons.DiscussionIcon color={themeValue.text} width={size.s_32} height={size.s_32} />;
+				return <MezonIconCDN icon={IconCDN.discussionIcon} width={size.s_20} height={size.s_20} />;
 			case EMessageActionType.Buzz:
-				return <Icons.Buzz color={baseColor.red} width={size.s_24} height={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.buzz} width={size.s_18} height={size.s_18} />;
 			default:
 				return <View />;
 		}

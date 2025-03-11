@@ -1,7 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ICategoryChannel } from '@mezon/utils';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MezonIconCDN } from '../../../../../../../app/componentUI';
+import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';
 

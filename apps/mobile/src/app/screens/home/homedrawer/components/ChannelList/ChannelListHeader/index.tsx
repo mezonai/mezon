@@ -2,12 +2,12 @@ import { ActionEmitEvent, ETypeSearch, VerifyIcon } from '@mezon/mobile-componen
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { getStoreAsync, selectCurrentChannel, selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import { EventViewer } from 'apps/mobile/src/app/components/Event';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonIconCDN } from '../../../../../../../app/componentUI';
+import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
+import { EventViewer } from '../../../../../../../app/components/Event';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import ClanMenu from '../../ClanMenu/ClanMenu';

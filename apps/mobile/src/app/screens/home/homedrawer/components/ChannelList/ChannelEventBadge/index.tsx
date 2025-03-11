@@ -3,7 +3,7 @@ import { selectChannelById, selectEventsByChannelId, useAppSelector } from '@mez
 import { EEventStatus } from '@mezon/utils';
 import { memo } from 'react';
 import { Linking, Pressable, View } from 'react-native';
-import { MezonIconCDN } from '../../../../../../componentUI/MezonIconCDN';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
 

@@ -3,7 +3,7 @@ import { MessagesEntity } from '@mezon/store';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { MezonIconCDN } from '../../../../../../../src/app/componentUI';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { style } from '../../styles';
 import { MessageReferences } from '../MessageReferences';

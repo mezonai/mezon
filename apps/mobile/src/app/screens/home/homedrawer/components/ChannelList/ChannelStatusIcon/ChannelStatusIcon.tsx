@@ -3,7 +3,7 @@ import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
-import { MezonIconCDN } from '../../../../../../../app/componentUI';
+import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 
 export const ChannelStatusIcon = ({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {

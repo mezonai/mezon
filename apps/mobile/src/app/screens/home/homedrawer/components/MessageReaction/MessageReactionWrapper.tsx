@@ -5,7 +5,7 @@ import { EmojiDataOptionals, SenderInfoOptionals, TypeMessage, calculateTotalCou
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
-import { MezonIconCDN } from '../../../../../../../src/app/componentUI';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { UserInformationBottomSheet } from '../../../../../../app/components/UserInformationBottomSheet';
 import ImageNative from '../../../../../components/ImageNative';

@@ -4,7 +4,7 @@ import { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MezonIconCDN } from '../../../../../../../app/componentUI';
+import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';

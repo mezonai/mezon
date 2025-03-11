@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Dimensions, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { FlatList } from 'react-native-gesture-handler';
-import { MezonIconCDN } from '../../../../../../../../src/app/componentUI';
+import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import { style } from '../styles';
 import { ReactionMember } from './ReactionMember';
