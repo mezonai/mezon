@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, ScrollView, View } from 'react-native';
 import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, reserve } from '../../componentUI';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { LogoClanSelector } from './LogoClanSelector';
@@ -47,7 +49,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.OVERVIEW_SETTING);
 			},
 			expandable: true,
-			icon: <Icons.CircleInformationIcon color={themeValue.text} />
+			icon: <MezonIconCDN icon={IconCDN.inbox} />
 		},
 		// {
 		// 	title: t('menu.settings.moderation'),

@@ -42,7 +42,8 @@ type IconName =
 	| 'buzz'
 	| 'redFlag'
 	| 'trashIconRed'
-	| 'closeSmallBold';
+	| 'closeSmallBold'
+	| 'circleInformation';
 
 type IconsCDN = {
 	[key in IconName]: IconSet;
@@ -204,5 +205,9 @@ export const IconCDN: IconsCDN = {
 	closeSmallBold: {
 		light: 'https://cdn.mezon.vn/1827886151055183872/1840671774119825408/1820658435042054100/1741603627026_0closeSmallBoldIcon.png',
 		dark: 'https://cdn.mezon.vn/1827886151055183872/1840671774119825408/1820658435042054100/1741603691725_0closeSmallBoldIconDark.png'
+	},
+	circleInformation: {
+		light: 'https://cdn.mezon.vn/1827886151055183872/1840672359971819520/1820658435042054100/1741748290689_0circleInformation__1_.png',
+		dark: 'https://cdn.mezon.vn/1827886151055183872/1840672359971819520/1820658435042054100/1741748295992_0circleInformationdark.svg.png'
 	}
 };
