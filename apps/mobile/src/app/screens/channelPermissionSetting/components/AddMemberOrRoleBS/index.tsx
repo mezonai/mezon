@@ -2,7 +2,7 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { memo, useCallback } from 'react';
 import { Dimensions } from 'react-native';
-import Backdrop from '../../../../componentUI/MezonBottomSheet/backdrop';
+import Backdrop from '../../../../components/BottomSheetRootListener/backdrop';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { IAddMemberOrRoleBSProps } from '../../types/channelPermission.type';
 import { AddMemberOrRoleContent } from './AddMemberOrRoleContent';

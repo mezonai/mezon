@@ -6,12 +6,12 @@ import { ChannelUserListChannelUser } from 'mezon-js/dist/api.gen';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { ChannelsEntity } from '../channels/channels.slice';
 import { USERS_CLANS_FEATURE_KEY, UsersClanState, selectEntitesUserClans } from '../clanMembers/clan.members';
+import { selectClanView } from '../clans/clans.slice';
 import { DirectEntity, selectDirectById, selectDirectMessageEntities } from '../direct/direct.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { RootState } from '../store';
-
 const CHANNEL_MEMBERS_CACHED_TIME = 1000 * 60 * 60;
 export const CHANNEL_MEMBERS_FEATURE_KEY = 'channelMembers';
 
@@ -422,7 +422,7 @@ export const selectMemberCustomStatusById = createSelector(
 		const userClan = usersClanState.entities[userId];
 		const userGroup = directs?.[currentDirectMessageId];
 
-		if (userId === myId) {
+		if (statusList?.[userId]) {
 			return statusList?.[userId] || false;
 		}
 		if (userClan && (isDM === 'false' || 'undefined')) {
@@ -504,15 +504,16 @@ export const selectMemberStatusById = createSelector(
 	[
 		getUsersClanState,
 		selectDirectMessageEntities,
+		selectClanView,
 		(state, userId: string) => {
 			return `${userId},${state?.direct.currentDirectMessageId}`;
 		}
 	],
-	(usersClanState, directs, payload) => {
+	(usersClanState, directs, isClanView, payload) => {
 		const [userId, currentDirectMessageId] = payload.split(',');
 		const userClan = usersClanState.entities[userId];
 		const userGroup = directs?.[currentDirectMessageId];
-		if (userClan) {
+		if (userClan && isClanView) {
 			return { status: userClan.user?.online, isMobile: userClan.user?.is_mobile };
 		}
 		const index = userGroup?.user_id?.findIndex((item) => item === userId) ?? -1;

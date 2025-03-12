@@ -8,13 +8,12 @@ import {
 	TypeMessage,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
-	convertDateString,
-	convertTimeHour
+	convertDateString
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
-import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
@@ -88,12 +87,6 @@ function MessageWithUser({
 
 	const checkReplied = message?.references && message?.references[0]?.message_sender_id === userId;
 
-	const attachments = message?.attachments ?? [];
-	const hasFailedAttachment = attachments.length === 1 && attachments[0].filename === 'failAttachment' && attachments[0].filetype === 'unknown';
-	const isMeMessage = message?.isMe;
-
-	const shouldNotRender = hasFailedAttachment && !isMeMessage && Object.keys(message?.content).length === 0 && !message?.mentions?.length;
-
 	const hasIncludeMention = (() => {
 		if (typeof message?.content?.t == 'string') {
 			if (message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
@@ -115,12 +108,6 @@ function MessageWithUser({
 
 	const checkMessageIncludeMention = hasIncludeMention;
 
-	const containerClass = classNames('relative', 'message-container', {
-		'is-sending': message?.isSending,
-		'is-error': message?.isError,
-		'bg-[#383B47]': isHighlight
-	});
-
 	const parentDivClass = classNames(
 		'flex h-15 flex-col w-auto px-3',
 		{ 'mt-0': isMention },
@@ -129,9 +116,6 @@ function MessageWithUser({
 		{
 			'dark:bg-[#403D38] bg-[#EAB3081A]': (checkMessageIncludeMention || checkReplied) && !messageReplyHighlight && !checkMessageTargetToMoved
 		},
-		// {
-		// 	'dark:group-hover:bg-bgPrimary1 ': !hasIncludeMention && !checkReplied && !checkMessageTargetToMoved && !messageReplyHighlight
-		// },
 		{ 'bg-bgMessageReplyHighline': messageReplyHighlight }
 	);
 
@@ -139,10 +123,6 @@ function MessageWithUser({
 		'absolute w-0.5 h-full left-0',
 		{ 'bg-blue-500': messageReplyHighlight },
 		{ 'bg-bgMentionReply': hasIncludeMention || checkReplied }
-		// {
-		// 	'dark:group-hover:bg-bgPrimary1 group-hover:bg-[#EAB3081A]':
-		// 		!hasIncludeMention && !checkReplied && !checkMessageTargetToMoved && !messageReplyHighlight
-		// }
 	);
 
 	const handleOpenShortUser = useCallback(
@@ -173,17 +153,10 @@ function MessageWithUser({
 		[mode]
 	);
 
-	const isDM = useMemo(() => {
-		return mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
-	}, [mode]);
+	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
 
-	const avatar = useMemo(() => {
-		if (shortUserId.current === message?.sender_id) {
-			return isDM ? message?.avatar : message?.clan_avatar || message?.avatar;
-		}
-	}, [isDM, shortUserId.current, message?.avatar, message?.clan_avatar, message?.sender_id]);
+	const avatar = isDM ? message?.avatar : message?.clan_avatar || message?.avatar;
 
-	const messageHour = message ? convertTimeHour(message.create_time) : '';
 	const [isAnonymousOnModal, setIsAnonymousOnModal] = useState<boolean>(false);
 
 	const [openProfileItem, closeProfileItem] = useModal(() => {
@@ -225,158 +198,126 @@ function MessageWithUser({
 	return (
 		<>
 			{message && showDivider && <MessageDateDivider message={message} />}
-			{message && !shouldNotRender && (
-				<HoverStateWrapper isSearchMessage={isSearchMessage} popup={popup}>
-					<div className={containerClass} onContextMenu={onContextMenu} id={`msg-${message?.id}`}>
-						<div className="relative rounded-sm overflow-visible">
-							<div className={!isMessageSystem ? childDivClass : 'absolute w-0.5 h-full left-0'}></div>
-							<div className={!isMessageSystem ? parentDivClass : 'flex h-15 flex-col w-auto px-3 pt-[2px]'}>
-								{checkMessageHasReply && (
-									<MessageReply
+			{message && (
+				<HoverStateWrapper
+					isSearchMessage={isSearchMessage}
+					popup={popup}
+					onContextMenu={onContextMenu}
+					messageId={message?.id}
+					className={classNames(
+						'fullBoxText relative group',
+						{
+							'pt-3': !isCombine || (message.code !== TypeMessage.CreatePin && message.references?.[0]?.message_ref_id)
+						},
+						isHighlight ? 'bg-[#383B47]' : ''
+					)}
+				>
+					{/* <div className={!isMessageSystem ? childDivClass : 'absolute w-0.5 h-full left-0'}></div> */}
+					<div className={!isMessageSystem ? parentDivClass : 'flex h-15 flex-col w-auto px-3 pt-[2px]'}>
+						{checkMessageHasReply && (
+							<MessageReply
+								message={message}
+								mode={mode}
+								onClick={
+									checkAnonymousOnReplied
+										? () => {}
+										: (e) =>
+												handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, checkAnonymousOnReplied)
+								}
+								isAnonymousReplied={checkAnonymousOnReplied}
+							/>
+						)}
+						<div
+							className={`pl-[60px] justify-start inline-flex flex-wrap w-full relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
+						>
+							{isMessageSystem ? (
+								<>
+									{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8 pr-1" />}
+									{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon defaultSize="size-6 pr-1" />}
+									{message?.code === TypeMessage.CreatePin && <Icons.PinRight defaultSize="size-6" className="pr-1" />}
+									{message?.code === TypeMessage.AuditLog && <Icons.AuditLogIcon defaultSize="size-8 pr-1" />}
+								</>
+							) : message?.references?.length === 0 && isCombine && !isShowFull ? (
+								<>{/* <div className="w-10 flex items-center justify-center min-w-10">message hour</div> */}</>
+							) : (
+								<>
+									<MessageAvatar
+										message={message}
+										isEditing={isEditing}
+										mode={mode}
+										onClick={checkAnonymous ? () => {} : (e) => handleOpenShortUser(e, message?.sender_id)}
+									/>
+									<MessageHead
 										message={message}
 										mode={mode}
-										onClick={
-											checkAnonymousOnReplied
-												? () => {}
-												: (e) =>
-														handleOpenShortUser(
-															e,
-															message?.references?.[0]?.message_sender_id as string,
-															checkAnonymousOnReplied
-														)
-										}
-										isAnonymousReplied={checkAnonymousOnReplied}
+										onClick={checkAnonymous ? () => {} : (e) => handleOpenShortUser(e, message?.sender_id)}
 									/>
-								)}
-								<div
-									className={`justify-start gap-4 inline-flex w-full relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
-								>
-									{isMessageSystem ? (
-										<div className="size-10 mt-[2px] flex justify-center rounded-full object-cover min-w-5 min-h-5">
-											{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8" />}
-											{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon defaultSize="size-6" />}
-											{message?.code === TypeMessage.CreatePin && <Icons.PinRight defaultSize="size-6" />}
-											{message?.code === TypeMessage.AuditLog && <Icons.AuditLogIcon defaultSize="size-8" />}
-										</div>
-									) : (
-										<div>
-											{message?.references?.length === 0 && isCombine && !isShowFull ? (
-												<div className="w-10 flex items-center justify-center min-w-10">
-													<div className="hidden group-hover:text-zinc-400 group-hover:text-[10px] group-hover:block cursor-default">
-														{messageHour}
-													</div>
-												</div>
-											) : (
-												<MessageAvatar
-													message={message}
-													isEditing={isEditing}
-													mode={mode}
-													onClick={checkAnonymous ? () => {} : (e) => handleOpenShortUser(e, message?.sender_id)}
-												/>
-											)}
-										</div>
-									)}
-
-									<div className="w-full relative h-full select-text">
-										{!isMessageSystem && (
-											<div>
-												{!(isCombine && message?.references?.length === 0 && !isShowFull) && (
-													<MessageHead
-														message={message}
-														mode={mode}
-														onClick={checkAnonymous ? () => {} : (e) => handleOpenShortUser(e, message?.sender_id)}
-													/>
-												)}
-											</div>
-										)}
-										<div className={`flex gap-4 ${message?.content?.fwd ? 'pt-2' : ''}`}>
-											{!!message?.content?.fwd && (
-												<div className="border-l-4 dark:border-[#414348] border-[#ebebeb] rounded"></div>
-											)}
-											<div className="h-full w-full">
-												{!!message?.content?.fwd && (
-													<div className="flex gap-1 items-center italic text-[#5e6068] dark:text-[#949ba4] font-medium">
-														<Icons.ForwardRightClick defaultSize="w-4 h-4" />
-														<p>Forwarded</p>
-													</div>
-												)}
-
-												<div className="justify-start items-center inline-flex w-full h-full pt-[2px] textChat">
-													<div
-														className="flex flex-col whitespace-pre-wrap text-base w-full cursor-text"
-														style={{ wordBreak: 'break-word' }}
-													>
-														{isEditing && (
-															<MessageInput
-																messageId={message?.id}
-																channelId={message?.channel_id}
-																mode={mode}
-																channelLabel={channelLabel as string}
-																message={message}
-																isTopic={!!isTopic}
-															/>
-														)}
-														{!isEditing &&
-															!message?.content?.callLog?.callLogType &&
-															!(message.code === TypeMessage.SendToken) && (
-																<MessageContent
-																	message={message}
-																	isSending={message?.isSending}
-																	isError={message?.isError}
-																	mode={mode}
-																	isSearchMessage={isSearchMessage}
-																	isInTopic={isTopic}
-																/>
-															)}
-
-														{(message?.attachments?.length as number) > 0 && (
-															<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
-														)}
-
-														{Array.isArray(message?.content?.embed) &&
-															message?.content.embed?.map((embed, index) => (
-																<EmbedMessage
-																	key={index}
-																	embed={embed}
-																	senderId={message?.sender_id}
-																	message_id={message?.id}
-																/>
-															))}
-
-														{!!message?.content?.callLog?.callLogType && (
-															<CallLogMessage
-																userId={userId || ''}
-																username={user?.user?.display_name || ''}
-																channelId={message?.channel_id}
-																messageId={message?.id}
-																senderId={message?.sender_id}
-																callLog={message?.content?.callLog}
-																contentMsg={message?.content?.t || ''}
-															/>
-														)}
-
-														{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
-
-														{message?.content?.components &&
-															message?.content.components.map((actionRow, index) => (
-																<div className={'flex flex-col'} key={index}>
-																	<MessageActionsPanel
-																		actionRow={actionRow}
-																		messageId={message?.id}
-																		senderId={message?.sender_id}
-																	/>
-																</div>
-															))}
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
+								</>
+							)}
+							{!!message?.content?.fwd && <div className="border-l-4 dark:border-[#414348] border-[#ebebeb] rounded"></div>}
+							{!!message?.content?.fwd && (
+								<div className="flex gap-1 items-center italic text-[#5e6068] dark:text-[#949ba4] font-medium">
+									<Icons.ForwardRightClick defaultSize="w-4 h-4" />
+									<p>Forwarded</p>
 								</div>
-							</div>
+							)}
+
+							{isEditing && (
+								<MessageInput
+									messageId={message?.id}
+									channelId={message?.channel_id}
+									mode={mode}
+									channelLabel={channelLabel as string}
+									message={message}
+									isTopic={!!isTopic}
+								/>
+							)}
+							{!isEditing && !message?.content?.callLog?.callLogType && !(message.code === TypeMessage.SendToken) && (
+								<MessageContent
+									message={message}
+									isSending={message?.isSending}
+									isError={message?.isError}
+									mode={mode}
+									isSearchMessage={isSearchMessage}
+									isInTopic={isTopic}
+								/>
+							)}
+
+							{(message?.attachments?.length as number) > 0 && (
+								<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
+							)}
+
+							{Array.isArray(message?.content?.embed) && (
+								<div className="w-full">
+									{message?.content?.embed?.map((embed, index) => (
+										<EmbedMessage key={index} embed={embed} senderId={message?.sender_id} message_id={message?.id} />
+									))}
+								</div>
+							)}
+
+							{!!message?.content?.callLog?.callLogType && (
+								<CallLogMessage
+									userId={userId || ''}
+									username={user?.user?.display_name || ''}
+									channelId={message?.channel_id}
+									messageId={message?.id}
+									senderId={message?.sender_id}
+									callLog={message?.content?.callLog}
+									contentMsg={message?.content?.t || ''}
+								/>
+							)}
+
+							{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
+
+							{message?.content?.components &&
+								message?.content.components.map((actionRow, index) => (
+									<div className={'flex flex-col w-full'} key={index}>
+										<MessageActionsPanel actionRow={actionRow} messageId={message?.id} senderId={message?.sender_id} />
+									</div>
+								))}
 						</div>
-						<MessageReaction message={message} mode={mode} />
 					</div>
+					<MessageReaction message={message} mode={mode} />
 				</HoverStateWrapper>
 			)}
 		</>
@@ -386,10 +327,9 @@ function MessageWithUser({
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const messageDate = !message?.create_time ? '' : convertDateString(message?.create_time as string);
 	return (
-		<div className="flex flex-row w-full px-4 items-center pt-3 text-zinc-400 text-[12px] font-[600] dark:bg-transparent bg-transparent">
-			<div className="w-full border-b-[1px] dark:border-borderDivider border-borderDividerLight opacity-50 text-center"></div>
-			<span className="text-center px-3 whitespace-nowrap">{messageDate}</span>
-			<div className="w-full border-b-[1px] dark:border-borderDivider border-borderDividerLight opacity-50 text-center"></div>
+		<div className="relative text-center my-4 px-4">
+			<hr className="border-t border-gray-300 dark:border-borderDivider absolute top-1/2 left-0 right-0" />
+			<span className="relative inline-block px-3 dark:bg-bgPrimary bg-bgLightPrimary text-zinc-400 text-xs font-semibold">{messageDate}</span>
 		</div>
 	);
 };
@@ -398,8 +338,11 @@ interface HoverStateWrapperProps {
 	children: ReactNode;
 	popup?: () => ReactNode;
 	isSearchMessage?: boolean;
+	onContextMenu?: (event: React.MouseEvent<HTMLParagraphElement>) => void;
+	messageId?: string;
+	className?: string;
 }
-const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, isSearchMessage }) => {
+const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, isSearchMessage, onContextMenu, messageId, className }) => {
 	const [isHover, setIsHover] = useState(false);
 	const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -420,11 +363,14 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, 
 			setIsHover(false);
 		}, 100);
 	};
+	// className="message-list-item" id={'msg-' + messageId}
 	return (
 		<div
-			className={`${isSearchMessage ? 'w-full' : ''} hover:dark:bg-[#2e3035] hover:bg-[#f7f7f7]`}
+			className={`message-list-item ${isSearchMessage ? 'w-full' : ''} hover:dark:bg-[#2e3035] hover:bg-[#f7f7f7] relative message-container ${className || ''}`}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
+			onContextMenu={onContextMenu}
+			id={`msg-${messageId}`}
 		>
 			{children}
 			{isHover && popup && popup()}

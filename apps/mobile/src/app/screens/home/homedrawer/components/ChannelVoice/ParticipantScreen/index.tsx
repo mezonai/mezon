@@ -6,7 +6,7 @@ import { selectMemberClanByUserName } from '@mezon/store-mobile';
 import { Track } from 'livekit-client';
 import React, { useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { MezonAvatar } from '../../../../../../componentUI';
+import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { style } from '../styles';
 

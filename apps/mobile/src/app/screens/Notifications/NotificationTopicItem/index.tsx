@@ -15,7 +15,7 @@ import { safeJSONParse } from 'mezon-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { MezonAvatar } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { parseObject } from '../NotificationMentionItem';
 import { style } from './styles';

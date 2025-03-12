@@ -7,7 +7,7 @@ import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonAvatar } from '../../../../../../componentUI';
+import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import { MessageAttachment } from '../../MessageAttachment';
 import { RenderTextMarkdownContent } from '../../RenderTextMarkdown';
 import { style } from './styles';

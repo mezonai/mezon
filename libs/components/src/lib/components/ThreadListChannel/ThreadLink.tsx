@@ -123,7 +123,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, i
 				</div>
 			</Link>
 
-			{numberNotification > 0 && (
+			{numberNotification !== 0 && (
 				<div className="absolute ml-auto w-4 h-4 top-[9px] text-white right-3 group-hover:hidden bg-red-600 flex justify-center items-center rounded-full text-xs font-medium">
 					{numberNotification}
 				</div>

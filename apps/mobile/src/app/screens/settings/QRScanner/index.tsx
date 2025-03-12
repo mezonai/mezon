@@ -148,7 +148,7 @@ export const QRScanner = () => {
 	if (device == null || !hasPermission) {
 		return (
 			<View style={styles.wrapper}>
-				<View style={styles.popupLogin}>
+				<View style={[styles.popupLogin, { backgroundColor: 'rgba(0,0,0,0.16)' }]}>
 					<View
 						style={{
 							zIndex: 100,

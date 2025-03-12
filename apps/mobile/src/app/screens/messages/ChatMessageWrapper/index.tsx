@@ -6,7 +6,7 @@ import ShareLocationConfirmModal from '../../../components/ShareLocationConfirmM
 import ChannelMessagesWrapper from '../../home/homedrawer/ChannelMessagesWrapper';
 import { ChatBox } from '../../home/homedrawer/ChatBox';
 import PanelKeyboard from '../../home/homedrawer/PanelKeyboard';
-import { IModeKeyboardPicker } from '../../home/homedrawer/components';
+import { IModeKeyboardPicker } from '../../home/homedrawer/components/BottomKeyboardPicker';
 import { style } from './styles';
 
 interface IChatMessageWrapperProps {

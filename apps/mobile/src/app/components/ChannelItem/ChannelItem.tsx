@@ -29,7 +29,7 @@ export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProp
 					<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
 					<View>
 						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6, marginBottom: size.s_2 }}>
-							<Text style={styles.channelName}>{`${channelData?.channel_label} ${parentLabel}`}</Text>
+							<Text style={styles.channelName} numberOfLines={1}>{`${channelData?.channel_label} ${parentLabel}`}</Text>
 						</View>
 						{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 					</View>
@@ -43,7 +43,9 @@ export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProp
 						<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
 						<View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6, marginBottom: size.s_2 }}>
-								<Text style={styles.channelName}>{channelData?.channel_label}</Text>
+								<Text style={styles.channelName} numberOfLines={1}>
+									{channelData?.channel_label}
+								</Text>
 								<LockIcon width={10} height={10} color={Colors.textGray} />
 							</View>
 							{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}

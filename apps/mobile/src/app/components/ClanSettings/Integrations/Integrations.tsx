@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from '../styles';
 

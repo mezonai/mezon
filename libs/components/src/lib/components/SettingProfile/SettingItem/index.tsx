@@ -18,7 +18,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 		await dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
 		await dispatch(appActions.setIsShowSettingFooterStatus(false));
 		if (!isElectron()) {
-			window.location.href = '/desktop/login';
+			window.location.href = `${process.env.NX_CHAT_APP_OAUTH2_LOG_OUT}`;
 		}
 	};
 	const handleCloseModal = () => {

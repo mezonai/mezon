@@ -54,7 +54,11 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 					src={direct.type === ChannelType.CHANNEL_TYPE_DM ? direct?.channel_avatar?.at(0) : 'assets/images/avatar-group.png'}
 				/>
 				{directMessage?.count_mess_unread && (
-					<div className="absolute border-[4px] dark:border-bgPrimary border-white w-[24px] h-[24px] rounded-full bg-colorDanger text-[#fff] font-bold text-[11px] flex items-center justify-center top-7 right-[-6px]">
+					<div
+						className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[5px] right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+							directMessage?.count_mess_unread >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
+						}`}
+					>
 						{directMessage?.count_mess_unread >= 100 ? '99+' : directMessage?.count_mess_unread}
 					</div>
 				)}

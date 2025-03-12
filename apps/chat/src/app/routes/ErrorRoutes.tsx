@@ -25,7 +25,7 @@ const ErrorRoutes = () => {
 		>
 			<div className="max-w-md w-full text-center">
 				<div className="flex justify-center">
-					<Image src={`assets/images/error-boundary.svg`} alt="error-boundary" />
+					<Image src={`assets/images/error-boundary.svg`} />
 				</div>
 				<h2 className="mt-6 text-2xl leading-[8px] mb-4 font-semibold text-center text-white leading-none">Well, this is awkward</h2>
 				<p className="m-3.5 text-base leading-none">Looks like Mezon has crashed unexpectedly....</p>

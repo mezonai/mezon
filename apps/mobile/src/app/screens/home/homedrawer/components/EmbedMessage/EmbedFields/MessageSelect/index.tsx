@@ -3,8 +3,8 @@ import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Text, TouchableOpacity, View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../../../../../componentUI';
 import { IMezonFakeBoxProps } from '../../../../../../../componentUI/MezonFakeBox';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../../componentUI/MezonMenu';
 import { style } from './styles';
 
 type ISelectItem = {

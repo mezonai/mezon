@@ -630,27 +630,28 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				const checkMessageTargetToMoved = msgIdJumpHightlight.current === messageId && messageId !== lastMessageId;
 				const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
 				return (
-					<div className="message-list-item" key={messageId} id={'msg-' + messageId}>
-						<MemorizedChannelMessage
-							index={index}
-							message={entities[messageId]}
-							previousMessage={entities[messageIds[index - 1]]}
-							avatarDM={avatarDM}
-							username={username}
-							messageId={messageId}
-							nextMessageId={messageIds[index + 1]}
-							channelId={channelId}
-							isHighlight={messageId === idMessageNotified}
-							mode={mode}
-							channelLabel={channelLabel ?? ''}
-							isPrivate={isPrivate}
-							isLastSeen={Boolean(messageId === lastMessageUnreadId && messageId !== lastMessageId)}
-							checkMessageTargetToMoved={checkMessageTargetToMoved}
-							messageReplyHighlight={messageReplyHighlight}
-							isTopic={isTopic}
-							canSendMessage={canSendMessage}
-						/>
-					</div>
+					// <div className="message-list-item" id={'msg-' + messageId}>
+					// </div>
+					<MemorizedChannelMessage
+						key={messageId}
+						index={index}
+						message={entities[messageId]}
+						previousMessage={entities[messageIds[index - 1]]}
+						avatarDM={avatarDM}
+						username={username}
+						messageId={messageId}
+						nextMessageId={messageIds[index + 1]}
+						channelId={channelId}
+						isHighlight={messageId === idMessageNotified}
+						mode={mode}
+						channelLabel={channelLabel ?? ''}
+						isPrivate={isPrivate}
+						isLastSeen={Boolean(messageId === lastMessageUnreadId && messageId !== lastMessageId)}
+						checkMessageTargetToMoved={checkMessageTargetToMoved}
+						messageReplyHighlight={messageReplyHighlight}
+						isTopic={isTopic}
+						canSendMessage={canSendMessage}
+					/>
 				);
 			});
 		}, [
@@ -673,7 +674,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 		return (
-			<div className="w-full h-full relative messages-container">
+			<div className="w-full h-full relative messages-container select-text">
 				<div
 					onWheelCapture={() => {
 						toggleDisableHover(chatRef.current, scrollTimeoutId2);

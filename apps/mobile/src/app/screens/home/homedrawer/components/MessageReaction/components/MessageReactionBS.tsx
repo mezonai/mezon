@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { memo } from 'react';
-import Backdrop from '../../../../../../componentUI/MezonBottomSheet/backdrop';
+import Backdrop from '../../../../../../components/BottomSheetRootListener/backdrop';
 import { IDetailReactionBottomSheet } from '../../../types';
 import { MessageReactionContent } from './MessageReactionContent';
 

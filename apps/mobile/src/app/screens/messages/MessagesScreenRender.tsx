@@ -4,7 +4,7 @@ import { DirectEntity, directActions, useAppDispatch } from '@mezon/store-mobile
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { DeviceEventEmitter, FlatList, Pressable, RefreshControl, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, Platform, Pressable, RefreshControl, View } from 'react-native';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DmListItem } from './DmListItem';
@@ -40,6 +40,13 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 		setRefreshing(false);
 	};
 
+	const renderItem = useCallback(
+		({ item }) => {
+			return <DmListItem id={item} navigation={navigation} onLongPress={handleLongPress} />;
+		},
+		[handleLongPress, navigation]
+	);
+
 	return (
 		<View style={styles.container}>
 			<MessageHeader />
@@ -49,18 +56,20 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			) : (
 				<FlatList
 					data={dmGroupChatList}
+					renderItem={renderItem}
 					contentContainerStyle={{
 						paddingBottom: size.s_100
 					}}
-					maxToRenderPerBatch={10}
-					updateCellsBatchingPeriod={50}
-					disableVirtualization={true}
-					initialNumToRender={20}
-					windowSize={10}
-					decelerationRate={'fast'}
 					keyExtractor={(dm) => dm + 'DM_MSG_ITEM'}
+					showsVerticalScrollIndicator={true}
+					removeClippedSubviews={Platform.OS === 'android'}
+					initialNumToRender={10}
+					maxToRenderPerBatch={10}
+					windowSize={10}
+					onEndReachedThreshold={0.7}
+					keyboardShouldPersistTaps={'handled'}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-					renderItem={({ item }) => <DmListItem id={item} navigation={navigation} key={item} onLongPress={handleLongPress} />}
+					disableVirtualization
 				/>
 			)}
 

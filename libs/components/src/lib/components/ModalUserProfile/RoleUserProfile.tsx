@@ -14,8 +14,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_ID } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
-import { Tooltip } from 'flowbite-react';
+import Tooltip from 'rc-tooltip';
 import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -102,9 +101,14 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 				))}
 				{userRolesClan.length > 6 && (
 					<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 dark:bg-bgSecondary600 bg-slate-300 dark:text-contentTertiary text-colorTextLightMode hoverIconBlackImportant ml-1">
-						<Tippy
-							content={
-								<div className={'flex flex-col items-start gap-1'}>
+						<Tooltip
+							overlay={
+								<div
+									className={
+										'flex flex-col items-start gap-1 dark:!text-white !text-black' +
+										`${isLightMode ? 'tooltipLightMode' : 'tooltip'}`
+									}
+								>
 									{userRolesClan.slice(6, userRolesClan.length).map((userRole, index) => (
 										<RoleClanItem
 											key={`${userRole.id}_role`}
@@ -117,28 +121,30 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 									))}
 								</div>
 							}
-							className={`dark:!text-white !text-black ${isLightMode ? 'tooltipLightMode' : 'tooltip'}`}
 						>
 							<span className="text-xs font-medium px-1 cursor-pointer" style={{ lineHeight: '15px' }}>
 								+ {userRolesClan.length - 6}
 							</span>
-						</Tippy>
+						</Tooltip>
 					</span>
 				)}
 				<UserRestrictionZone policy={hasPermissionEditRole}>
 					<Tooltip
-						content={<AddRolesComp addRole={addRole} filteredListRoleBySearch={filteredListRoleBySearch} setSearchTerm={setSearchTerm} />}
+						overlay={
+							<div className="dark:bg-transparent bg-transparent p-0 h-60 w-[300px]">
+								<AddRolesComp addRole={addRole} filteredListRoleBySearch={filteredListRoleBySearch} setSearchTerm={setSearchTerm} />
+							</div>
+						}
 						trigger="click"
 						placement="bottom-start"
-						arrow={false}
-						className="dark:bg-transparent bg-transparent p-0 h-60 w-[300px]"
 					>
-						<Tippy content="Add roles" className={`dark:!text-white !text-black ${isLightMode ? 'tooltipLightMode' : 'tooltip'}`}>
-							<button className="flex gap-x-1 dark:text-[#AEAEAE] text-colorTextLightMode rounded p-1 dark:bg-slate-800 bg-slate-300 items-center">
-								<Icons.Plus className="size-5 select-none" />
-								<p className="text-xs m-0 font-medium select-none">Add Role</p>
-							</button>
-						</Tippy>
+						<button
+							title="Add roles"
+							className="flex gap-x-1 dark:text-[#AEAEAE] text-colorTextLightMode rounded p-1 dark:bg-slate-800 bg-slate-300 items-center"
+						>
+							<Icons.Plus className="size-5 select-none" />
+							<p className="text-xs m-0 font-medium select-none">Add Role</p>
+						</button>
 					</Tooltip>
 				</UserRestrictionZone>
 			</div>
@@ -208,7 +214,6 @@ const RoleClanItem = ({
 	appearanceTheme: string;
 }) => {
 	const [isHovered, setIsHovered] = useState(false);
-	const isLightMode = appearanceTheme === 'light';
 	return (
 		<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 dark:bg-slate-800 bg-slate-300 dark:text-[#AEAEAE] text-colorTextLightMode hoverIconBlackImportant">
 			{hasPermissionEditRole ? (
@@ -219,11 +224,9 @@ const RoleClanItem = ({
 					onMouseEnter={() => setIsHovered(true)}
 					onMouseLeave={() => setIsHovered(false)}
 				>
-					<Tippy content="Remove role" className={`dark:!text-white !text-black ${isLightMode ? 'tooltipLightMode' : 'tooltip'}`}>
-						<span>
-							<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : role.color || DEFAULT_ROLE_COLOR} />
-						</span>
-					</Tippy>
+					<span title="Remove role">
+						<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : role.color || DEFAULT_ROLE_COLOR} />
+					</span>
 				</button>
 			) : (
 				<div className="size-2 rounded-full" style={{ backgroundColor: role.color || DEFAULT_ROLE_COLOR }}></div>

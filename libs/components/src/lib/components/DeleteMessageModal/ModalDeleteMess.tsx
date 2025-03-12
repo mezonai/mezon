@@ -1,10 +1,11 @@
 import { ColorRoleProvider, useChatSending, useCurrentInbox, useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
 import { selectCurrentTopicId, selectOpenEditMessageState, topicsActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageWithUser } from '@mezon/utils';
+import { IMessageWithUser, TypeMessage } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import MessageWithSystem from '../MessageWithSystem';
 import MessageWithUser from '../MessageWithUser';
 
 type ModalDeleteMessProps = {
@@ -91,6 +92,12 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 
 	useEscapeKeyClose(modalRef, closeModal);
 
+	const isMessageSystem =
+		mess?.code === TypeMessage.Welcome ||
+		mess?.code === TypeMessage.CreateThread ||
+		mess?.code === TypeMessage.CreatePin ||
+		mess?.code === TypeMessage.AuditLog;
+
 	return (
 		<div
 			className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center"
@@ -108,19 +115,23 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 								: 'Do you want to delete this message?'}
 						</p>
 					</div>
-					<div className="p-4 max-w-[720px] max-h-[50vh] overflow-y-auto hide-scrollbar">
+					<div className="p-4 max-w-[720px] max-h-[50vh] overflow-y-auto hide-scrollbar truncate">
 						<ColorRoleProvider>
-							<MessageWithUser
-								allowDisplayShortProfile={false}
-								message={
-									isRemoveAttachmentAction && messagePreviewWithAttachmentRemove
-										? (messagePreviewWithAttachmentRemove as IMessageWithUser)
-										: (mess as IMessageWithUser)
-								}
-								mode={mode}
-								isMention={true}
-								isShowFull={true}
-							/>
+							{isMessageSystem ? (
+								<MessageWithSystem message={mess as IMessageWithUser} mode={mode} />
+							) : (
+								<MessageWithUser
+									allowDisplayShortProfile={false}
+									message={
+										isRemoveAttachmentAction && messagePreviewWithAttachmentRemove
+											? (messagePreviewWithAttachmentRemove as IMessageWithUser)
+											: (mess as IMessageWithUser)
+									}
+									mode={mode}
+									isMention={true}
+									isShowFull={true}
+								/>
+							)}
 						</ColorRoleProvider>
 					</div>
 					<div className="w-full dark:bg-bgSecondary bg-bgLightSecondary p-4 flex justify-end gap-x-4">

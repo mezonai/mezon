@@ -3,6 +3,7 @@ import {
 	ChannelsEntity,
 	channelUsersActions,
 	reactionActions,
+	selectAllAccount,
 	selectAllChannelMembers,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
@@ -19,7 +20,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useAuth } from '../../auth/hooks/useAuth';
 export type UseMessageReactionOption = {
 	currentChannelId?: string | null | undefined;
 };
@@ -28,9 +28,11 @@ interface ChatReactionProps {
 	isClanViewMobile?: boolean;
 }
 
+// check and fix it
+
 export function useChatReaction({ isMobile = false, isClanViewMobile = undefined }: ChatReactionProps = {}) {
 	const dispatch = useAppDispatch();
-	const { userId } = useAuth();
+	const userId = useSelector(selectAllAccount)?.user?.id as string;
 	const checkIsClanView = useSelector(selectClanView);
 	const isClanView = isClanViewMobile !== undefined ? isClanViewMobile : checkIsClanView;
 	const directId = useSelector(selectDmGroupCurrentId);

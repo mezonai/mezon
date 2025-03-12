@@ -4,7 +4,9 @@ import { defaultNotificationActions, selectCurrentClanId, selectDefaultNotificat
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, MezonOption, MezonSwitch, reserve } from '../../componentUI';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
+import MezonOption from '../../componentUI/MezonOption';
+import MezonSwitch from '../../componentUI/MezonSwitch';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { CategoryChannel } from './CategoryChannel';

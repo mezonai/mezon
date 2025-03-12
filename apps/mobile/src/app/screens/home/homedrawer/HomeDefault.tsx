@@ -14,7 +14,7 @@ import { ChatBox } from './ChatBox';
 import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
 import PanelKeyboard from './PanelKeyboard';
-import { IModeKeyboardPicker } from './components';
+import { IModeKeyboardPicker } from './components/BottomKeyboardPicker';
 import LicenseAgreement from './components/LicenseAgreement';
 import { style } from './styles';
 // HomeDefault check

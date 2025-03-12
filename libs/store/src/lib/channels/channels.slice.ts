@@ -1,34 +1,34 @@
 import { captureSentryError } from '@mezon/logger';
 import {
-    ApiChannelMessageHeaderWithChannel,
-    BuzzArgs,
-    ChannelThreads,
-    checkIsThread,
-    ICategory,
-    IChannel,
-    LoadingStatus,
-    ModeResponsive,
-    RequestInput,
-    TypeCheck
+	ApiChannelMessageHeaderWithChannel,
+	BuzzArgs,
+	ChannelThreads,
+	checkIsThread,
+	ICategory,
+	IChannel,
+	LoadingStatus,
+	ModeResponsive,
+	RequestInput,
+	TypeCheck
 } from '@mezon/utils';
 import {
-    createAsyncThunk,
-    createEntityAdapter,
-    createSelector,
-    createSlice,
-    EntityState,
-    GetThunkAPI,
-    PayloadAction,
-    Update
+	createAsyncThunk,
+	createEntityAdapter,
+	createSelector,
+	createSlice,
+	EntityState,
+	GetThunkAPI,
+	PayloadAction,
+	Update
 } from '@reduxjs/toolkit';
 import isEqual from 'lodash.isequal';
 import { ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
 import {
-    ApiAddFavoriteChannelRequest,
-    ApiChangeChannelPrivateRequest,
-    ApiChannelDescription,
-    ApiCreateChannelDescRequest,
-    ApiMarkAsReadRequest
+	ApiAddFavoriteChannelRequest,
+	ApiChangeChannelPrivateRequest,
+	ApiChannelDescription,
+	ApiCreateChannelDescRequest,
+	ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
 import { ApiChannelAppResponse } from 'mezon-js/dist/api.gen';
 import { categoriesActions, FetchCategoriesPayload } from '../categories/categories.slice';
@@ -49,10 +49,10 @@ import { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import { channelMetaActions, ChannelMetaEntity, enableMute } from './channelmeta.slice';
 import {
-    LIST_CHANNELS_USER_FEATURE_KEY,
-    listChannelsByUserActions,
-    ListChannelsByUserState,
-    selectEntitiesChannelsByUser
+	LIST_CHANNELS_USER_FEATURE_KEY,
+	listChannelsByUserActions,
+	ListChannelsByUserState,
+	selectEntitiesChannelsByUser
 } from './channelUser.slice';
 import { listChannelRenderAction } from './listChannelRender.slice';
 
@@ -753,23 +753,6 @@ export const updateChannelBadgeCountAsync = createAsyncThunk(
 			return;
 		}
 		const entity = channelState.entities.entities[channelId];
-		if (!entity) {
-			const state = thunkAPI.getState() as RootState;
-			const updatedEntity = state.channels.byClans[clanId].entities.entities[channelId];
-			const newCountMessUnread = isReset ? 0 : (updatedEntity?.count_mess_unread ?? 0) + count;
-
-			if (updatedEntity?.count_mess_unread !== newCountMessUnread) {
-				thunkAPI.dispatch(
-					channelsActions.updateChannelBadgeCount({
-						clanId: clanId,
-						channelId: channelId,
-						count: 1
-					})
-				);
-				thunkAPI.dispatch(listChannelRenderAction.addBadgeToChannelRender({ clanId: clanId, channelId: channelId }));
-			}
-		}
-
 		if (entity || state.channels.byClans[clanId].entities.entities[channelId]) {
 			const updatedEntity = state.channels.byClans[clanId].entities.entities[channelId];
 			const newCountMessUnread = isReset ? 0 : (updatedEntity?.count_mess_unread ?? 0) + count;

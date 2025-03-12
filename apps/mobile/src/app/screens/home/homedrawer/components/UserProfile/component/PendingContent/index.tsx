@@ -10,8 +10,7 @@ import { FlatList, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { EFriendState } from '../..';
 import { SeparatorWithLine } from '../../../../../../../components/Common';
-import { MezonAvatar } from '../../../../../../../componentUI';
-
+import MezonAvatar from '../../../../../../../componentUI/MezonAvatar';
 interface IPendingContentProps {
 	targetUser: FriendsEntity;
 	onClose?: () => void;

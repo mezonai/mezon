@@ -23,7 +23,6 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			backgroundColor: Colors.bgViolet
 		},
 		inviteHeader: {
-			backgroundColor: colors.tertiary,
 			padding: 19,
 			width: '100%'
 		},
@@ -163,7 +162,7 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			height: '100%',
 			overflow: 'hidden',
 			paddingBottom: size.s_10,
-			backgroundColor: colors.tertiary,
+			backgroundColor: colors.primary,
 			borderTopRightRadius: 8,
 			borderTopLeftRadius: 8
 		},

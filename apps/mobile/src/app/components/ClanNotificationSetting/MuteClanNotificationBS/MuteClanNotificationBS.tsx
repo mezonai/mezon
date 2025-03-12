@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
+import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
 import { style } from './MuteClanNotificationBS.styles';
 
 type MuteClanNotificationBSProps = {

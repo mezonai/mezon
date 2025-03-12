@@ -3,10 +3,8 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Animated, DeviceEventEmitter, Keyboard, Platform, View } from 'react-native';
-import { AlbumPanel } from './AlbumPannel';
-import { IModeKeyboardPicker } from './components';
 import AttachmentPicker from './components/AttachmentPicker';
-import BottomKeyboardPicker from './components/BottomKeyboardPicker';
+import BottomKeyboardPicker, { IModeKeyboardPicker } from './components/BottomKeyboardPicker';
 import EmojiPicker from './components/EmojiPicker';
 import { IMessageActionNeedToResolve } from './types';
 
@@ -24,8 +22,6 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 	const timer = useRef<NodeJS.Timeout | null>(null);
 	const animatedHeight = useRef(new Animated.Value(0)).current;
 	const [messageActionNeedToResolve, setMessageActionNeedToResolve] = useState<IMessageActionNeedToResolve | null>(null);
-	const [isShowAlbum, setIsShowAlbum] = useState<boolean>(false);
-	const [currentAlbum, setCurrentAlbum] = useState<string>('All');
 
 	const onShowKeyboardBottomSheet = useCallback(
 		(isShow: boolean, type?: IModeKeyboardPicker) => {
@@ -97,17 +93,8 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 		};
 	}, []);
 
-	const handleShow = useCallback((value) => {
-		setIsShowAlbum(value);
-	}, []);
-
-	const handleChangeAlbum = (value) => {
-		setCurrentAlbum(value);
-	};
-
 	return (
 		<>
-			{isShowAlbum && <AlbumPanel valueAlbum={currentAlbum} onAlbumChange={handleChangeAlbum} />}
 			<Animated.View
 				style={{
 					height: Platform.OS === 'ios' || typeKeyboardBottomSheet !== 'text' ? animatedHeight : 0,
@@ -115,13 +102,7 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 				}}
 			/>
 			{heightKeyboardShow !== 0 && typeKeyboardBottomSheet !== 'text' && (
-				<BottomKeyboardPicker
-					height={heightKeyboardShow}
-					ref={bottomPickerRef}
-					isStickyHeader={typeKeyboardBottomSheet === 'emoji'}
-					isAlbumHeader={typeKeyboardBottomSheet === 'attachment'}
-					changeBottomSheet={handleShow}
-				>
+				<BottomKeyboardPicker height={heightKeyboardShow} ref={bottomPickerRef} isStickyHeader={typeKeyboardBottomSheet === 'emoji'}>
 					{typeKeyboardBottomSheet === 'emoji' ? (
 						<EmojiPicker
 							onDone={onClose}

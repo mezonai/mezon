@@ -9,14 +9,13 @@ import {
 	videoStreamActions
 } from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
-import { InviteToChannel } from '../InviteToChannel';
 import { style } from './StreamingRoom.styles';
 import { StreamingScreenComponent } from './StreamingScreen';
 import UserStreamingRoom from './UserStreamingRoom';
@@ -26,7 +25,6 @@ const { width, height } = Dimensions.get('window');
 function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMinimizeRoom: () => void; isAnimationComplete: boolean }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetInviteRef = useRef(null);
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const isTabletLandscape = useTabletLandscape();
@@ -52,10 +50,6 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 			await handleLeaveChannel();
 		});
 	}, [handleLeaveChannel]);
-
-	const handleAddPeopleToVoice = () => {
-		bottomSheetInviteRef.current.present();
-	};
 
 	const handleShowChat = () => {
 		if (!isTabletLandscape) {
@@ -88,11 +82,11 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 								<Icons.ChevronSmallDownIcon />
 							</TouchableOpacity>
 						</View>
-						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
-							<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.buttonCircle}>
-								<Icons.UserPlusIcon />
-							</TouchableOpacity>
-						</View>
+						{/*<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>*/}
+						{/*	<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.buttonCircle}>*/}
+						{/*		<Icons.UserPlusIcon />*/}
+						{/*	</TouchableOpacity>*/}
+						{/*</View>*/}
 					</View>
 				)}
 
@@ -130,7 +124,6 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 					</View>
 				)}
 			</View>
-			<InviteToChannel isUnknownChannel={false} ref={bottomSheetInviteRef} />
 		</View>
 	);
 }

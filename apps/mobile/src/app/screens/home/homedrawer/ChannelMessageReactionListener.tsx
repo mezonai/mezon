@@ -7,7 +7,7 @@ import { isPublicChannel } from '@mezon/utils';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IReactionMessageProps } from './components';
+import { IReactionMessageProps } from './components/MessageReaction';
 
 const maxRetries = 10;
 const ChannelMessageReactionListener = React.memo(() => {
@@ -65,7 +65,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 					data?.actionDelete ?? false,
 					currentDirectId ? false : isPublicChannel(currentChannel),
 					!!data?.topicId,
-					data?.channelId ?? ''
+					data?.topicId ?? ''
 				);
 			}
 		},
@@ -88,7 +88,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 					data?.actionDelete ?? false,
 					currentDirectId ? false : isPublicChannel(currentChannel),
 					!!data?.topicId,
-					data?.channelId ?? ''
+					data?.topicId ?? ''
 				);
 			}
 		},

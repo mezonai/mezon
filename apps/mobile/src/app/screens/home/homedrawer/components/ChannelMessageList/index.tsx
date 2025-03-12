@@ -55,10 +55,10 @@ const ChannelListMessage = React.memo(
 				maxToRenderPerBatch={10}
 				windowSize={10}
 				onEndReachedThreshold={0.7}
-				maintainVisibleContentPosition={{
-					minIndexForVisible: 0,
-					autoscrollToTopThreshold: 10
-				}}
+				// maintainVisibleContentPosition={{
+				// 	minIndexForVisible: 0,
+				// 	autoscrollToTopThreshold: 10
+				// }}
 				ref={flatListRef}
 				// inverted
 				// overrideProps={{ isInvertedVirtualizedList: true }}

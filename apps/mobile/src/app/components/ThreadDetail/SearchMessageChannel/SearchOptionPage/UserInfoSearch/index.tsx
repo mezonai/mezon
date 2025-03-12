@@ -4,7 +4,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MezonAvatar } from '../../../../../componentUI';
+import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from '../SearchOptionPage.styles';
 

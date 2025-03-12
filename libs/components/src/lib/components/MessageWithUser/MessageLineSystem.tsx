@@ -1,5 +1,13 @@
 import { channelsActions, messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
-import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, IMessageWithUser, TypeMessage, parseThreadInfo } from '@mezon/utils';
+import {
+	ChannelMembersEntity,
+	ETokenMessage,
+	IExtendedMessage,
+	IMessageWithUser,
+	TypeMessage,
+	convertTimeString,
+	parseThreadInfo
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -39,17 +47,6 @@ interface RenderContentProps {
 	isJumMessageEnabled: boolean;
 }
 
-interface ElementTokenSystem {
-	s?: number;
-	e?: number;
-	kindOf: ETokenMessage;
-	user_id?: string;
-	role_id?: string;
-	channelid?: string;
-	emojiid?: string;
-	type?: EBacktickType;
-}
-
 const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessageEnabled, isTokenClickAble }: RenderContentProps) => {
 	const { t, mentions = [] } = data;
 	const elements = useMemo(() => {
@@ -74,6 +71,8 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 		},
 		[dispatch, message?.channel_id, message?.clan_id, message?.references]
 	);
+
+	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
 
 	let lastindex = 0;
 	const content = useMemo(() => {
@@ -124,6 +123,12 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 			lastindex = e;
 		});
 
+		if (!isCustom && t && lastindex < t?.length) {
+			formattedContent.push(
+				<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-end-${message.id}`} text={t.slice(lastindex)} />
+			);
+		}
+
 		return formattedContent;
 	}, [elements, t, mode, allUserIdsInChannel]);
 
@@ -151,49 +156,54 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	};
 
 	return (
-		<div
-			style={
-				isJumMessageEnabled
-					? {
-							whiteSpace: 'nowrap',
-							overflow: 'hidden',
-							textOverflow: 'ellipsis'
-						}
-					: {
-							whiteSpace: 'pre-line'
-						}
-			}
-			className={`${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] flex items-center  cursor-pointer' : 'text-[#4E5057] dark:text-[#DFDFE0]'}`}
-		>
-			{content}{' '}
-			{message.code === TypeMessage.CreatePin && (
-				<>
-					pinned{' '}
-					<span onClick={getIdMessageToJump} className="font-semibold cursor-pointer hover:underline">
-						a message
-					</span>{' '}
-					to this channel. See{' '}
-					<span onClick={handleShowPinMessage} className="font-semibold cursor-pointer hover:underline">
-						all pinned
-					</span>{' '}
-					messages.
-				</>
-			)}
-			{message.code === TypeMessage.CreateThread &&
-				(threadId ? (
+		<div className={`flex flex-row ${isCustom ? 'pl-7' : 'pl-5'} max-2xl:flex-col max-2xl:gap-0`}>
+			<div
+				style={
+					isJumMessageEnabled
+						? {
+								whiteSpace: 'nowrap',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis'
+							}
+						: {
+								whiteSpace: 'pre-line'
+							}
+				}
+				className={` ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] flex items-center  cursor-pointer' : 'text-[#4E5057] dark:text-[#DFDFE0]'}`}
+			>
+				{content}{' '}
+				{message.code === TypeMessage.CreatePin && (
 					<>
-						started a thread:{' '}
-						<span onClick={handelJumpToChannel} className="font-semibold cursor-pointer hover:underline">
-							{threadLabel}
+						pinned{' '}
+						<span onClick={getIdMessageToJump} className="font-semibold cursor-pointer hover:underline">
+							a message
 						</span>{' '}
-						. See{' '}
-						<span onClick={handleShowThreads} className="font-semibold cursor-pointer hover:underline">
-							all threads
+						to this channel. See{' '}
+						<span onClick={handleShowPinMessage} className="font-semibold cursor-pointer hover:underline">
+							all pinned
 						</span>{' '}
+						messages.
 					</>
-				) : (
-					<>{threadContent}</>
-				))}
+				)}
+				{message.code === TypeMessage.CreateThread &&
+					(threadId ? (
+						<>
+							started a thread:{' '}
+							<span onClick={handelJumpToChannel} className="font-semibold cursor-pointer hover:underline">
+								{threadLabel}
+							</span>{' '}
+							. See{' '}
+							<span onClick={handleShowThreads} className="font-semibold cursor-pointer hover:underline">
+								all threads
+							</span>{' '}
+						</>
+					) : (
+						<>{threadContent}</>
+					))}
+			</div>
+			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 dark:text-zinc-400 text-colorTextLightMode text-[10px] cursor-default">
+				{convertTimeString(message?.create_time as string)}
+			</div>
 		</div>
 	);
 };

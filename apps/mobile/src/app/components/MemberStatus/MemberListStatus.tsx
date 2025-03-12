@@ -1,5 +1,4 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -14,10 +13,10 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
-import { InviteToChannel } from '../../screens/home/homedrawer/components/InviteToChannel';
+import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
 import { threadDetailContext } from '../ThreadDetail/MenuThreadDetail';
 import { UserInformationBottomSheet } from '../UserInformationBottomSheet';
 import { MemoizedMemberItem } from './MemberItem';
@@ -42,13 +41,18 @@ export const MemberListStatus = React.memo(() => {
 
 	const [selectedUser, setSelectedUser] = useState<ChannelMembersEntity | null>(null);
 	const { t } = useTranslation();
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
 
 	const isDMThread = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
 	}, [currentChannel]);
 	const handleAddOrInviteMembers = useCallback((action: EActionButton) => {
-		if (action === EActionButton.InviteMembers) bottomSheetRef?.current?.present();
+		if (action === EActionButton.InviteMembers) {
+			const data = {
+				snapPoints: ['70%', '90%'],
+				children: <InviteToChannel isUnknownChannel={false} isDMThread={isDMThread} />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		}
 		if (action === EActionButton.AddMembers) navigateToNewGroupScreen();
 	}, []);
 
@@ -183,7 +187,6 @@ export const MemberListStatus = React.memo(() => {
 				/>
 			) : null}
 			<UserInformationBottomSheet userId={selectedUser?.user?.id} user={selectedUser} onClose={onClose} currentChannel={currentChannel} />
-			<InviteToChannel isUnknownChannel={false} ref={bottomSheetRef} isDMThread={isDMThread} />
 		</View>
 	);
 });

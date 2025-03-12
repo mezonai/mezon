@@ -21,7 +21,11 @@ import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
-import { IFile, IMezonMenuItemProps, IMezonMenuSectionProps, MezonConfirm, MezonInput, MezonMenu, MezonOption } from '../../../../../componentUI';
+import MezonConfirm from '../../../../../componentUI/MezonConfirm';
+import { IFile } from '../../../../../componentUI/MezonImagePicker';
+import MezonInput from '../../../../../componentUI/MezonInput';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
+import MezonOption from '../../../../../componentUI/MezonOption';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 

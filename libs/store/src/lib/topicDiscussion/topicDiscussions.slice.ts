@@ -234,7 +234,7 @@ export const topicsSlice = createSlice({
 			state.channelTopics[channelId] = topicId;
 		},
 		setTopicLastSent: (state, action: PayloadAction<{ clanId: string; topicId: string; lastSentMess: ApiChannelMessageHeader }>) => {
-			const topic = state.clanTopics[action.payload.clanId].entities[action.payload.topicId];
+			const topic = state.clanTopics[action.payload.clanId]?.entities?.[action.payload.topicId];
 			if (topic) {
 				if (!topic.last_sent_message) {
 					topic.last_sent_message = {} as ApiChannelMessageHeader;

@@ -231,13 +231,7 @@ const FriendsPage = () => {
 								</div>
 							</div>
 							<div className="flex flex-col items-center gap-7">
-								<Image
-									src={`assets/images/${addFriendImg}`}
-									alt={'logoMezon'}
-									width={48}
-									height={48}
-									className="object-cover w-[376px]"
-								/>
+								<Image src={`assets/images/${addFriendImg}`} width={48} height={48} className="object-cover w-[376px]" />
 								<div className="dark:text-contentTertiary text-textLightTheme">
 									Komuu is waiting on friends. You don't have to, though!
 								</div>

@@ -1,7 +1,7 @@
 import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, openVoiceChannel } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
+import Tooltip from 'rc-tooltip';
 import React from 'react';
 import { timeFomat } from '../ChannelList/EventChannelModal/timeFomatEvent';
 
@@ -31,8 +31,8 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 	};
 
 	return (
-		<Tippy
-			content={
+		<Tooltip
+			overlay={
 				<div style={{ width: 'max-content' }}>
 					<p>{`Event: ${event.title}`}</p>
 					<p>{eventStatusNotice}</p>
@@ -43,7 +43,7 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 			<div className={className} onClick={handleOpenVoiceChannel}>
 				<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
 			</div>
-		</Tippy>
+		</Tooltip>
 	);
 };
 

@@ -118,11 +118,9 @@ const AppLayout = () => {
 
 	return (
 		<MezonUiProvider themeName={theme}>
-			<div id="app-layout">
-				<ViewModeHandler />
-				<ToastController />
-				<Outlet />
-			</div>
+			<ViewModeHandler />
+			<ToastController />
+			<Outlet />
 		</MezonUiProvider>
 	);
 };

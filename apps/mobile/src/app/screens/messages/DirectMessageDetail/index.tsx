@@ -28,6 +28,7 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
 	const isFetchMemberChannelDmRef = useRef(false);
 	const { handleReconnect } = useContext(ChatContext);
+	const appStateRef = useRef(AppState.currentState);
 
 	const dmType = useMemo(() => {
 		return currentDmGroup?.type;
@@ -145,20 +146,26 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 				}
 			}
 		},
-		[directMessageId, dmType, handleReconnect]
+		[directMessageId, dispatch, dmType, handleReconnect]
 	);
 
 	useEffect(() => {
-		const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
-
+		const appStateSubscription = AppState.addEventListener('change', handleAppStateChangeListener);
 		return () => {
 			appStateSubscription.remove();
 		};
-	}, [directMessageId, dmType, handleAppStateChange]);
+	}, []);
 
-	const handleBack = useCallback(() => {
-		navigation.goBack();
-	}, [navigation]);
+	const handleAppStateChangeListener = useCallback(
+		(nextAppState: typeof AppState.currentState) => {
+			if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+				handleAppStateChange(nextAppState);
+			}
+
+			appStateRef.current = nextAppState;
+		},
+		[handleAppStateChange]
+	);
 
 	return (
 		<View style={{ flex: 1 }}>

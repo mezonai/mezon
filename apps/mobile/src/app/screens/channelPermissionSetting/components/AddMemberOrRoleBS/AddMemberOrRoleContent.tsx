@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../../componentUI';
+import MezonInput from '../../../../componentUI/MezonInput';
 import { normalizeString } from '../../../../utils/helpers';
 import { EOverridePermissionType, ERequestStatus } from '../../types/channelPermission.enum';
 import { IAddMemberOrRoleContentProps } from '../../types/channelPermission.type';

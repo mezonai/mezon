@@ -2,9 +2,7 @@ import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import {
-	MessagesEntity,
 	channelsActions,
-	directActions,
 	directMetaActions,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
@@ -30,33 +28,28 @@ interface HeaderProps {
 	themeValue: any;
 	directMessageId: string;
 }
-function useChannelSeen(channelId: string) {
+function useChannelSeen(channelId: string, currentDmGroup: any) {
 	const dispatch = useAppDispatch();
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 	const mounted = useRef('');
 
-	const updateChannelSeenState = (channelId: string, lastMessage: MessagesEntity) => {
-		dispatch(directActions.setActiveDirect({ directId: channelId }));
-	};
-
 	const { markAsReadSeen } = useSeenMessagePool();
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
-	useEffect(() => {
-		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-		if (lastMessage) {
-			markAsReadSeen(lastMessage, mode);
-		}
-	}, [lastMessage, channelId, currentDmGroup?.type, markAsReadSeen]);
 
+	const refCountWasCalled = useRef<number>(0);
 	useEffect(() => {
-		if (lastMessage) {
-			const timestamp = Date.now() / 1000;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
-			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
-			dispatch(channelsActions.updateChannelBadgeCount({ clanId: '0', channelId: channelId || '', count: 0, isReset: true }));
-			updateChannelSeenState(channelId, lastMessage);
+		if (currentDmGroup?.type) {
+			const mode =
+				currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+			if (lastMessage && refCountWasCalled.current <= 1) {
+				markAsReadSeen(lastMessage, mode);
+				const timestamp = Date.now() / 1000;
+				dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
+				dispatch(directMetaActions.updateLastSeenTime(lastMessage));
+				dispatch(channelsActions.updateChannelBadgeCount({ clanId: '0', channelId: channelId || '', count: 0, isReset: true }));
+				refCountWasCalled.current += 1;
+			}
 		}
-	}, [lastMessage]);
+	}, [lastMessage, channelId, currentDmGroup?.type, markAsReadSeen, dispatch]);
 
 	useEffect(() => {
 		if (mounted.current === channelId) {
@@ -64,17 +57,16 @@ function useChannelSeen(channelId: string) {
 		}
 		if (lastMessage) {
 			mounted.current = channelId;
-			updateChannelSeenState(channelId, lastMessage);
 		}
 	}, [dispatch, channelId, lastMessage]);
 }
 
 const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId }) => {
-	useChannelSeen(directMessageId || '');
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
+	useChannelSeen(directMessageId || '', currentDmGroup);
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
-	const user = useSelector((state) => selectMemberClanByUserId2(state, firstUserId));
+	const user = useSelector((state) => selectMemberClanByUserId2(state, currentDmGroup?.user_id?.[0]));
 	const status = getUserStatusByMetadata(user?.user?.metadata);
 
 	const isModeDM = useMemo(() => {
@@ -83,10 +75,6 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 	const isTypeDMGroup = useMemo(() => {
 		return Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP;
-	}, [currentDmGroup?.type]);
-
-	const dmType = useMemo(() => {
-		return currentDmGroup?.type;
 	}, [currentDmGroup?.type]);
 
 	const dmLabel = useMemo(() => {
@@ -98,11 +86,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		return currentDmGroup?.channel_avatar?.[0];
 	}, [currentDmGroup?.channel_avatar?.[0]]);
 
-	const firstUserId = useMemo(() => {
-		return currentDmGroup?.user_id?.[0];
-	}, [currentDmGroup?.user_id?.[0]]);
-
-	const userStatus = useMemberStatus(isModeDM ? firstUserId : '');
+	const userStatus = useMemberStatus(isModeDM ? currentDmGroup?.user_id?.[0] : '');
 
 	const navigateToThreadDetail = useCallback(() => {
 		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.BOTTOM_SHEET, params: { directMessage: currentDmGroup } });
@@ -120,7 +104,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
 			params: {
-				receiverId: firstUserId,
+				receiverId: currentDmGroup?.user_id?.[0],
 				receiverAvatar: dmAvatar,
 				directMessageId
 			}
@@ -169,7 +153,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 						<Icons.Inbox width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				)}
-				{!isTypeDMGroup && !!firstUserId && (
+				{!isTypeDMGroup && !!currentDmGroup?.user_id?.[0] && (
 					<TouchableOpacity style={styles.iconHeader} onPress={goToCall}>
 						<Icons.PhoneCallIcon width={size.s_18} height={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>

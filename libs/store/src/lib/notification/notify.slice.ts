@@ -1,20 +1,20 @@
 import { captureSentryError } from '@mezon/logger';
-import { Direction_Mode, INotification, LoadingStatus, NotificationCode, NotificationEntity } from '@mezon/utils';
+import { Direction_Mode, INotification, LoadingStatus, NotificationCategory, NotificationEntity } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
-import { Notification } from 'mezon-js';
-import { ChannelMetaEntity } from '../channels/channelmeta.slice';
+import { ApiNotification } from 'mezon-js/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIST_NOTIFICATION_CACHED_TIME = 1000 * 60 * 60;
 const LIMIT_NOTIFICATION = 50;
 
-export const mapNotificationToEntity = (notifyRes: Notification): INotification => {
-	return { ...notifyRes, id: notifyRes.id || '', content: notifyRes.content ? { ...notifyRes.content, create_time: notifyRes.create_time } : null };
+export const mapNotificationToEntity = (notifyRes: ApiNotification): INotification => {
+	return { ...notifyRes, id: notifyRes.id || '', content: notifyRes.content };
 };
 
 export interface FetchNotificationArgs {
 	clanId: string;
+	category: NotificationCategory;
 	notificationId?: string;
 	noCache?: boolean;
 }
@@ -24,7 +24,7 @@ export interface NotificationState extends EntityState<NotificationEntity, strin
 	error?: string | null;
 	messageNotifiedId: string;
 	isShowInbox: boolean;
-	lastNotificationId: string;
+	notifications: Record<NotificationCategory, { data: NotificationEntity[]; lastId: string }>;
 }
 
 export type LastSeenTimeStampChannelArgs = {
@@ -36,13 +36,13 @@ export type LastSeenTimeStampChannelArgs = {
 export const notificationAdapter = createEntityAdapter<NotificationEntity>();
 
 const fetchListNotificationCached = memoizee(
-	async (mezon: MezonValueContext, clanId: string, notificationId: string) => {
+	async (mezon: MezonValueContext, clanId: string, category: NotificationCategory | undefined, notificationId: string) => {
 		const response = await mezon.client.listNotifications(
 			mezon.session,
 			clanId,
 			LIMIT_NOTIFICATION,
 			notificationId || '',
-			undefined, // code
+			category, // category
 			Direction_Mode.BEFORE_TIMESTAMP
 		);
 		return { ...response, time: Date.now() };
@@ -51,31 +51,40 @@ const fetchListNotificationCached = memoizee(
 		promise: true,
 		maxAge: LIST_NOTIFICATION_CACHED_TIME,
 		normalizer: (args) => {
-			if (args[2] === undefined) {
-				args[2] = '';
+			if (args[3] === undefined) {
+				args[3] = '';
 			}
-			return args[1] + args[2] + args[0].session.username;
+			return args[1] + args[2] + args[3] + args[0].session.username;
 		}
 	}
 );
 
 export const fetchListNotification = createAsyncThunk(
 	'notification/fetchListNotification',
-	async ({ clanId, notificationId, noCache }: FetchNotificationArgs, thunkAPI) => {
+	async ({ clanId, category, notificationId, noCache }: FetchNotificationArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchListNotificationCached.delete(mezon, clanId, notificationId as string);
+				fetchListNotificationCached.delete(mezon, clanId, category, notificationId as string);
 			}
-			const response = await fetchListNotificationCached(mezon, clanId, notificationId as string);
+			const response = await fetchListNotificationCached(mezon, clanId, category, notificationId as string);
 			if (!response.notifications) {
-				return [];
+				return {
+					category,
+					data: [] as INotification[]
+				};
 			}
 			if (Date.now() - response.time < 100) {
 				const notifications = response.notifications.map(mapNotificationToEntity);
-				return notifications;
+				return {
+					data: notifications,
+					category: category
+				};
 			}
-			return null;
+			return {
+				category,
+				data: [] as INotification[]
+			};
 		} catch (error) {
 			captureSentryError(error, 'notification/fetchListNotification');
 			return thunkAPI.rejectWithValue(error);
@@ -83,19 +92,22 @@ export const fetchListNotification = createAsyncThunk(
 	}
 );
 
-export const deleteNotify = createAsyncThunk('notification/deleteNotify', async ({ ids, clanId }: { ids: string[]; clanId: string }, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.deleteNotifications(mezon.session, ids);
-		if (!response) {
-			return thunkAPI.rejectWithValue([]);
+export const deleteNotify = createAsyncThunk(
+	'notification/deleteNotify',
+	async ({ ids, category }: { ids: string[]; category: NotificationCategory }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.deleteNotifications(mezon.session, ids, category);
+			if (!response) {
+				return thunkAPI.rejectWithValue([]);
+			}
+			return { ids, category };
+		} catch (error) {
+			captureSentryError(error, 'notification/deleteNotify');
+			return thunkAPI.rejectWithValue(error);
 		}
-		return { ids };
-	} catch (error) {
-		captureSentryError(error, 'notification/deleteNotify');
-		return thunkAPI.rejectWithValue(error);
 	}
-});
+);
 
 export const initialNotificationState: NotificationState = notificationAdapter.getInitialState({
 	loadingStatus: 'not loaded',
@@ -106,18 +118,35 @@ export const initialNotificationState: NotificationState = notificationAdapter.g
 	lastSeenTimeStampChannels: {},
 	quantityNotifyClans: {},
 	isShowInbox: false,
-	lastNotificationId: ''
+	notifications: {
+		[NotificationCategory.FOR_YOU]: { data: [], lastId: '' },
+		[NotificationCategory.MESSAGES]: { data: [], lastId: '' },
+		[NotificationCategory.MENTIONS]: { data: [], lastId: '' }
+	}
 });
 
 export const notificationSlice = createSlice({
 	name: NOTIFICATION_FEATURE_KEY,
 	initialState: initialNotificationState,
 	reducers: {
-		add(state, action) {
-			notificationAdapter.addOne(state, action.payload);
+		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
+			const { data, category } = action.payload;
+
+			if (state.notifications[category]) {
+				state.notifications[category].data = [data, ...state.notifications[category].data];
+			} else {
+				state.notifications[category] = { data: [data], lastId: '' };
+			}
 		},
 
-		remove: notificationAdapter.removeOne,
+		remove(state, action: PayloadAction<{ id: string; category: NotificationCategory }>) {
+			const { id, category } = action.payload;
+
+			if (state.notifications[category]) {
+				state.notifications[category].data = state.notifications[category].data.filter((item) => item.id !== id);
+			}
+		},
+
 		setMessageNotifiedId(state, action) {
 			state.messageNotifiedId = action.payload;
 		},
@@ -135,23 +164,41 @@ export const notificationSlice = createSlice({
 			.addCase(fetchListNotification.pending, (state: NotificationState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchListNotification.fulfilled, (state: NotificationState, action: PayloadAction<INotification[] | null>) => {
-				if (action.payload && Array.isArray(action.payload) && action.payload.length > 0) {
-					notificationAdapter.setMany(state, action.payload);
-					state.loadingStatus = 'loaded';
-					if (action.payload.length >= LIMIT_NOTIFICATION) {
-						state.lastNotificationId = action.payload[action.payload.length - 1].id;
+			.addCase(
+				fetchListNotification.fulfilled,
+				(state: NotificationState, action: PayloadAction<{ data: INotification[]; category: NotificationCategory }>) => {
+					if (action.payload && Array.isArray(action.payload.data) && action.payload.data.length > 0) {
+						notificationAdapter.setMany(state, action.payload.data);
+
+						const { data, category } = action.payload;
+
+						if (state.notifications[category]) {
+							state.notifications[category].data = [...state.notifications[category].data, ...data];
+						} else {
+							state.notifications[category] = { data: [...data], lastId: '' };
+						}
+
+						state.loadingStatus = 'loaded';
+
+						if (data.length >= LIMIT_NOTIFICATION) {
+							state.notifications[category].lastId = data[data.length - 1].id;
+						}
+					} else {
+						state.loadingStatus = 'not loaded';
 					}
-				} else {
-					state.loadingStatus = 'not loaded';
 				}
-			})
+			)
+
 			.addCase(fetchListNotification.rejected, (state: NotificationState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			})
-			.addCase(deleteNotify.fulfilled, (state: NotificationState, action: PayloadAction<{ ids: string[] }>) => {
-				notificationAdapter.removeMany(state, action.payload.ids);
+			.addCase(deleteNotify.fulfilled, (state: NotificationState, action: PayloadAction<{ ids: string[]; category: NotificationCategory }>) => {
+				const { ids, category } = action.payload;
+
+				if (state.notifications[category]) {
+					state.notifications[category].data = state.notifications[category].data.filter((item) => !ids.includes(item.id));
+				}
 			});
 	}
 });
@@ -164,80 +211,15 @@ export const notificationActions = {
 	deleteNotify
 };
 
-const { selectAll, selectEntities } = notificationAdapter.getSelectors();
-
 export const getNotificationState = (rootState: { [NOTIFICATION_FEATURE_KEY]: NotificationState }): NotificationState =>
 	rootState[NOTIFICATION_FEATURE_KEY];
 
-export const selectLastNotificationId = createSelector(getNotificationState, (state) => state.lastNotificationId);
+export const selectNotifications = createSelector(getNotificationState, (state) => state.notifications);
 
-export const selectAllNotification = createSelector(getNotificationState, selectAll);
-
-export const selectNotificationEntities = createSelector(getNotificationState, selectEntities);
-
-export const selectNotificationMentions = createSelector(selectAllNotification, (notifications) =>
-	notifications.filter(
-		(notification) => notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED
-	)
-);
-
-export const selectNotificationMessages = createSelector(selectAllNotification, (notifications) => {
-	return notifications.filter((notification) => notification.code !== -2 && notification.code !== -3);
-});
+export const selectNotificationForYou = createSelector(selectNotifications, (notifications) => notifications[NotificationCategory.FOR_YOU]);
+export const selectNotificationMentions = createSelector(selectNotifications, (notifications) => notifications[NotificationCategory.MENTIONS]);
+export const selectNotificationClan = createSelector(selectNotifications, (notifications) => notifications[NotificationCategory.MESSAGES]);
 
 export const selectMessageNotified = createSelector(getNotificationState, (state: NotificationState) => state.messageNotifiedId);
 
 export const selectIsShowInbox = createSelector(getNotificationState, (state: NotificationState) => state.isShowInbox);
-
-export const selectAllNotificationExcludeMentionAndReply = createSelector(selectAllNotification, (notifications) =>
-	notifications.filter(
-		(notification) =>
-			notification.code !== NotificationCode.USER_REPLIED &&
-			notification.code !== NotificationCode.USER_MENTIONED &&
-			notification.code !== NotificationCode.NOTIFICATION_CLAN
-	)
-);
-export const selectAllNotificationMentionAndReply = createSelector(selectAllNotification, (notifications) =>
-	notifications.filter(
-		(notification) => notification.code === NotificationCode.USER_REPLIED || notification.code === NotificationCode.USER_MENTIONED
-	)
-);
-
-export const selectAllNotificationClan = createSelector(selectAllNotification, (notifications) =>
-	notifications.filter((notification) => notification.code === NotificationCode.NOTIFICATION_CLAN)
-);
-
-export const selectMentionAndReplyUnreadByChanneld = (channelId: string, lastSeenStamp: number) =>
-	createSelector(selectAllNotificationMentionAndReply, (notifications) => {
-		const result = notifications.filter((notification) => {
-			if (!notification.create_time) {
-				return false;
-			}
-			const timeCreate = new Date(notification.create_time).getTime() / 1000;
-
-			return notification.content.channel_id === channelId && lastSeenStamp < timeCreate;
-		});
-
-		return result;
-	});
-
-export const selectMentionAndReplyUnreadByClanId = (listLastSeen: ChannelMetaEntity[]) =>
-	createSelector(selectAllNotificationMentionAndReply, (notifications) => {
-		const lastSeenMap = new Map<string, number>();
-		listLastSeen.forEach((channel) => {
-			lastSeenMap.set(channel.id, channel.lastSeenTimestamp ?? 0);
-		});
-
-		return notifications.filter((notification) => {
-			if (!notification.create_time) {
-				return false;
-			}
-
-			const notificationTimestamp = new Date(notification.create_time).getTime() / 1000;
-			const channelId = notification.content.channel_id;
-
-			const lastSeen = lastSeenMap.get(channelId) ?? 0;
-
-			return notificationTimestamp > lastSeen;
-		});
-	});

@@ -1,4 +1,3 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -14,10 +13,11 @@ import {
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonConfirm, MezonMenu } from '../../componentUI';
+import MezonConfirm from '../../componentUI/MezonConfirm';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import CustomGroupDm from './CustomGroupDm';
 import style from './MenuCustomDm.styles';
@@ -26,7 +26,6 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const { t } = useTranslation(['menuCustomDM', 'dmMessage']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetCustomGroup = useRef<BottomSheetModal>(null);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const [isVisibleLeaveGroupModal, setIsVisibleLeaveGroupModal] = useState<boolean>(false);

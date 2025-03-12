@@ -132,7 +132,7 @@ const MentionUser = ({
 	);
 
 	return (
-		<span>
+		<>
 			{displayToken?.type === MentionType.ROLE_EXIST && (
 				<span className="font-medium px-[0.1rem] rounded-sm bg-[#E3F1E4] hover:bg-[#B1E0C7] text-[#0EB08C] dark:bg-[#3D4C43] dark:hover:bg-[#2D6457]">{`${displayToken.display}`}</span>
 			)}
@@ -159,7 +159,7 @@ const MentionUser = ({
 					{displayToken.display}
 				</button>
 			)}
-		</span>
+		</>
 	);
 };
 

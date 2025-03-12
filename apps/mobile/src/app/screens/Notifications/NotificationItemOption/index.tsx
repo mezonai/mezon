@@ -3,7 +3,7 @@ import { Metrics, useTheme } from '@mezon/mobile-ui';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
+import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
 
 export default memo(function NotificationItemOption({ onDelete }: { onDelete: () => void }) {
 	const { t } = useTranslation(['notification']);

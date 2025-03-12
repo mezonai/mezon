@@ -3,9 +3,9 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Text, View } from 'react-native';
-import Backdrop from '../../componentUI/MezonBottomSheet/backdrop';
-import { style } from '../../componentUI/MezonBottomSheet/styles';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
+import Backdrop from './backdrop';
+import { style } from './styles';
 
 const useBottomSheetState = () => {
 	const [snapPoints, setSnapPoints] = useState(['90%']);

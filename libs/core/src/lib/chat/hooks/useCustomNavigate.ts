@@ -2,14 +2,12 @@ import { useCallback, useContext } from 'react';
 import { UNSAFE_NavigationContext } from 'react-router-dom';
 
 export const useCustomNavigate = () => {
-	const navigation = useContext(UNSAFE_NavigationContext);
+	const { navigator } = useContext(UNSAFE_NavigationContext);
 
-	const navigate = useCallback(
+	return useCallback(
 		(to: any) => {
-			navigation.navigator.push(to);
+			navigator.push(to);
 		},
-		[navigation]
+		[navigator]
 	);
-
-	return navigate;
 };

@@ -32,7 +32,7 @@ const EventModal = (props: EventModalProps) => {
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className="outline-none justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-black bg-opacity-80 dark:text-white text-black hide-scrollbar overflow-hidden"
+			className="outline-none justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-10 outline-none focus:outline-none bg-black bg-opacity-80 dark:text-white text-black hide-scrollbar overflow-hidden"
 		>
 			{!openModalDetail ? (
 				<div className={`relative w-full sm:h-auto rounded-lg ${openModal ? 'max-w-[472px]' : 'max-w-[600px]'}`}>

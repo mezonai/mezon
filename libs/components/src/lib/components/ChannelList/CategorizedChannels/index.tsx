@@ -161,31 +161,29 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	};
 
 	return (
-		<>
-			{category.category_name && (
-				<div className="flex flex-row px-2 relative gap-1" onMouseDown={handleMouseClick} ref={panelRef} role={'button'}>
-					<button
-						onClick={handleToggleCategory}
-						className="dark:text-channelTextLabel text-colorTextLightMode flex items-center px-0.5 w-full font-title tracking-wide dark:hover:text-gray-100 hover:text-black uppercase text-sm font-semibold"
-					>
-						{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}
-						<span className="one-line">{category.category_name}</span>
-					</button>
-					{!category.isFavor && (
-						<UserRestrictionZone policy={isShowCreateChannel}>
-							<button
-								className="focus-visible:outline-none dark:text-channelTextLabely text-colorTextLightMode dark:hover:text-white hover:text-black"
-								onClick={() => handleOpenCreateChannelModal(category)}
-							>
-								<Icons.Plus />
-							</button>
-						</UserRestrictionZone>
-					)}
+		category.category_name && (
+			<div className="flex flex-row px-2 relative gap-1" onMouseDown={handleMouseClick} ref={panelRef} role={'button'}>
+				<button
+					onClick={handleToggleCategory}
+					className="dark:text-channelTextLabel text-colorTextLightMode flex items-center px-0.5 w-full font-title tracking-wide dark:hover:text-gray-100 hover:text-black uppercase text-sm font-semibold"
+				>
+					{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}
+					<span className="one-line">{category.category_name}</span>
+				</button>
+				{!category.isFavor && (
+					<UserRestrictionZone policy={isShowCreateChannel}>
+						<button
+							className="focus-visible:outline-none dark:text-channelTextLabely text-colorTextLightMode dark:hover:text-white hover:text-black"
+							onClick={() => handleOpenCreateChannelModal(category)}
+						>
+							<Icons.Plus />
+						</button>
+					</UserRestrictionZone>
+				)}
 
-					{isShowCategorySetting && <CategorySetting onClose={handleCloseCategorySetting} category={category} />}
-				</div>
-			)}
-		</>
+				{isShowCategorySetting && <CategorySetting onClose={handleCloseCategorySetting} category={category} />}
+			</div>
+		)
 	);
 };
 export default memo(CategorizedItem);

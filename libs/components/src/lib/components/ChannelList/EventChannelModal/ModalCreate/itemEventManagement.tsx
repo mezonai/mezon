@@ -2,8 +2,8 @@ import { useAppNavigation, useEventManagement, useOnClickOutside, usePermissionC
 import { EventManagementEntity, selectChannelById, selectChannelFirst, selectMemberClanByUserId, selectTheme, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { ChannelType } from 'mezon-js';
+import Tooltip from 'rc-tooltip';
 import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
@@ -135,7 +135,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						{isPrivateEvent && <p className="bg-red-500 text-white rounded-sm px-1 text-center">Private Event</p>}{' '}
 					</div>
 					{event?.creator_id && (
-						<Tippy content={<p style={{ width: 'max-content' }}>{`Created by ${userCreate?.user?.username}`}</p>}>
+						<Tooltip overlay={<p style={{ width: 'max-content' }}>{`Created by ${userCreate?.user?.username}`}</p>}>
 							<div>
 								<AvatarImage
 									alt={userCreate?.user?.username || ''}
@@ -146,7 +146,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									classNameText="text-[9px] pt-[3px]"
 								/>
 							</div>
-						</Tippy>
+						</Tooltip>
 					)}
 				</div>
 				<div className="flex justify-between gap-4 select-text">

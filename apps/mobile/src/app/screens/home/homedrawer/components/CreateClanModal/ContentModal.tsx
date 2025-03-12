@@ -11,7 +11,9 @@ import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { IFile, MezonButton, MezonInput } from '../../../../../componentUI';
+import { MezonButton } from '../../../../../componentUI/MezonButton';
+import { IFile } from '../../../../../componentUI/MezonImagePicker';
+import MezonInput from '../../../../../componentUI/MezonInput';
 import { validInput } from '../../../../../utils/validate';
 import { style } from './CreateClanModal.styles';
 

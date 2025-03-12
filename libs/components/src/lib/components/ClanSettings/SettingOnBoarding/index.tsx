@@ -141,15 +141,7 @@ const MainIndex = ({ isEnableOnBoarding, toggleEnableStatus, handleGoToPage, onC
 				</div>
 			</div>
 			<GuideItemLayout
-				icon={
-					<Image
-						src={`assets/images/wumpus_addbba.svg`}
-						alt={'wumpus'}
-						width={40}
-						height={40}
-						className="aspect-square object-cover w-[40px]"
-					/>
-				}
+				icon={<Image src={`assets/images/wumpus_addbba.svg`} width={40} height={40} className="aspect-square object-cover w-[40px]" />}
 				title="Recent Updates"
 				description={
 					<div className="font-medium text-sm">

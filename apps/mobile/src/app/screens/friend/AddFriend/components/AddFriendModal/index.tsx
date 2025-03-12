@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
-import { MezonButton, MezonModal } from '../../../../../componentUI';
+import { MezonButton } from '../../../../../componentUI/MezonButton';
+import { MezonModal } from '../../../../../componentUI/MezonModal';
 import { EAddFriendBy, EAddFriendWays } from '../../../enum';
 import { style } from './styles';
 

@@ -1,4 +1,4 @@
-import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
+import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import {
 	ActionEmitEvent,
 	Icons,
@@ -13,17 +13,16 @@ import { selectCurrentClanId } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useRef } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
-import { InviteToChannel } from '../../InviteToChannel';
+import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinChannelVoiceBS.styles';
-function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: React.MutableRefObject<BottomSheetModal>) {
+function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetInviteRef = useRef(null);
 	const { dismiss } = useBottomSheetModal();
 	const { t } = useTranslation(['channelVoice']);
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -71,7 +70,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexGrow: 1, flexShrink: 1 }}>
 					<TouchableOpacity
 						onPress={() => {
-							refRBSheet?.current.dismiss();
+							DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 						}}
 						style={styles.buttonCircle}
 					>
@@ -83,8 +82,11 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 				</View>
 				<TouchableOpacity
 					onPress={() => {
-						bottomSheetInviteRef.current.present();
-						refRBSheet?.current.dismiss();
+						const data = {
+							snapPoints: ['70%', '90%'],
+							children: <InviteToChannel isUnknownChannel={false} />
+						};
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					}}
 					style={{
 						backgroundColor: themeValue.tertiary,
@@ -155,9 +157,8 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 					</TouchableOpacity>
 				</View>
 			</View>
-			<InviteToChannel isUnknownChannel={false} ref={bottomSheetInviteRef} />
 		</View>
 	);
 }
 
-export default React.forwardRef(JoinChannelVoiceBS);
+export default React.memo(JoinChannelVoiceBS);

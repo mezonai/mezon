@@ -7,7 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { MezonAvatar } from '../../../../../componentUI';
+import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 import { DmListItemLastMessage } from '../../../../messages/DMListItemLastMessage';
 import { style } from './styles';
 

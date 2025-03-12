@@ -2,77 +2,12 @@
 import { selectAllChannels, useAppSelector } from '@mezon/store';
 import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
 
-type MessageLineProps = {
-	mode?: number;
-	content?: IExtendedMessage;
-	onClickToMessage?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-	isOnlyContainEmoji?: boolean;
-	isSearchMessage?: boolean;
-	isHideLinkOneImage?: boolean;
-	isJumMessageEnabled: boolean;
-	isTokenClickAble: boolean;
-	isEditted: boolean;
-	isInPinMsg?: boolean;
-	code?: number;
-	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
-	messageId?: string;
-	isReply?: boolean;
-};
-
-const MessageLineComponent = ({
-	mode,
-	content,
-	isJumMessageEnabled,
-	onClickToMessage,
-	isOnlyContainEmoji,
-	isSearchMessage,
-	isTokenClickAble,
-	isHideLinkOneImage,
-	isEditted,
-	isInPinMsg,
-	code,
-	onCopy,
-	messageId,
-	isReply
-}: MessageLineProps) => {
-	return (
-		<div
-			onClick={
-				isJumMessageEnabled
-					? onClickToMessage
-					: () => {
-							// eslint-disable-next-line @typescript-eslint/no-empty-function
-						}
-			}
-			className={`${!isJumMessageEnabled ? '' : 'cursor-pointer'} `}
-		>
-			<RenderContent
-				isHideLinkOneImage={isHideLinkOneImage}
-				isTokenClickAble={isTokenClickAble}
-				isOnlyContainEmoji={isOnlyContainEmoji}
-				isJumMessageEnabled={isJumMessageEnabled}
-				data={content as IExtendedMessage}
-				mode={mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL}
-				isSearchMessage={isSearchMessage}
-				isEditted={isEditted}
-				isInPinMsg={isInPinMsg}
-				code={code}
-				onCopy={onCopy}
-				messsageId={messageId}
-				isReply={isReply}
-			/>
-		</div>
-	);
-};
-
-export const MessageLine = memo(MessageLineComponent);
-
 interface RenderContentProps {
-	data: IExtendedMessage;
-	mode: number;
+	content: IExtendedMessage;
+	mode?: number;
 	isOnlyContainEmoji?: boolean;
 	isSearchMessage?: boolean;
 	isHideLinkOneImage?: boolean;
@@ -83,8 +18,10 @@ interface RenderContentProps {
 	isInPinMsg?: boolean;
 	code?: number;
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
-	messsageId?: string;
+	messageId?: string;
 	isReply?: boolean;
+	onClickToMessage?: (event: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => void;
+	className?: string;
 }
 
 export interface ElementToken {
@@ -100,7 +37,7 @@ export interface ElementToken {
 }
 
 const RenderContent = ({
-	data,
+	content,
 	mode,
 	isSearchMessage,
 	isJumMessageEnabled,
@@ -112,10 +49,12 @@ const RenderContent = ({
 	isInPinMsg,
 	code,
 	onCopy,
-	messsageId,
-	isReply
+	messageId,
+	isReply,
+	onClickToMessage
 }: RenderContentProps) => {
-	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], lky = [] } = data;
+	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
+	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], lky = [] } = content;
 	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
 	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 	const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
@@ -133,7 +72,7 @@ const RenderContent = ({
 	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
 	let lastindex = 0;
-	const content = useMemo(() => {
+	const content2 = useMemo(() => {
 		const formattedContent: React.ReactNode[] = [];
 
 		elements.forEach((element, index) => {
@@ -144,14 +83,14 @@ const RenderContent = ({
 
 			if (lastindex < s) {
 				formattedContent.push(
-					<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-${messsageId}`} text={t?.slice(lastindex, s) ?? ''} />
+					<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-${messageId}`} text={t?.slice(lastindex, s) ?? ''} />
 				);
 			}
 
 			if (element.kindOf === ETokenMessage.HASHTAGS) {
 				formattedContent.push(
 					<ChannelHashtag
-						key={`hashtag-${s}-${messsageId}`}
+						key={`hashtag-${s}-${messageId}`}
 						isTokenClickAble={isTokenClickAble}
 						isJumMessageEnabled={isJumMessageEnabled}
 						channelHastagId={`<#${element.channelid}>`}
@@ -163,7 +102,7 @@ const RenderContent = ({
 			) {
 				formattedContent.push(
 					<MentionContent
-						key={`mentionUser-${s}-${messsageId}`}
+						key={`mentionUser-${s}-${messageId}`}
 						element={element}
 						contentInElement={contentInElement}
 						isTokenClickAble={isTokenClickAble}
@@ -177,7 +116,7 @@ const RenderContent = ({
 			} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
 				formattedContent.push(
 					<RoleMentionContent
-						key={`mentionRole-${s}-${messsageId}`}
+						key={`mentionRole-${s}-${messageId}`}
 						element={element}
 						contentInElement={contentInElement}
 						isTokenClickAble={isTokenClickAble}
@@ -190,7 +129,7 @@ const RenderContent = ({
 			} else if (element.kindOf === ETokenMessage.EMOJIS) {
 				formattedContent.push(
 					<EmojiMarkup
-						key={`emoji-${s}-${messsageId}`}
+						key={`emoji-${s}-${messageId}`}
 						isOne={Number(t?.length) - 1 === Number(element?.e) - Number(element.s)}
 						emojiSyntax={contentInElement ?? ''}
 						onlyEmoji={isOnlyContainEmoji ?? false}
@@ -200,7 +139,7 @@ const RenderContent = ({
 			} else if ((element.kindOf === ETokenMessage.LINKS || element.kindOf === ETokenMessage.LINKYOUTUBE) && !isHideLinkOneImage) {
 				formattedContent.push(
 					<MarkdownContent
-						key={`link${s}-${messsageId}`}
+						key={`link${s}-${messageId}`}
 						isLink={true}
 						isTokenClickAble={isTokenClickAble}
 						isJumMessageEnabled={isJumMessageEnabled}
@@ -213,7 +152,7 @@ const RenderContent = ({
 				const meetingCode = contentInElement?.split('/').pop();
 				formattedContent.push(
 					<VoiceLinkContent
-						key={`voiceLink-${s}-${messsageId}`}
+						key={`voiceLink-${s}-${messageId}`}
 						meetingCode={meetingCode}
 						isTokenClickAble={isTokenClickAble}
 						isJumMessageEnabled={isJumMessageEnabled}
@@ -226,7 +165,7 @@ const RenderContent = ({
 				if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
 					formattedContent.push(
 						<MarkdownContent
-							key={`link${s}-${messsageId}`}
+							key={`link${s}-${messageId}`}
 							isLink={true}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
@@ -236,12 +175,12 @@ const RenderContent = ({
 						/>
 					);
 				} else if (element.type === EBacktickType.BOLD) {
-					formattedContent.push(<b key={`markdown-${s}-${messsageId}`}> {contentInElement} </b>);
+					formattedContent.push(<b key={`markdown-${s}-${messageId}`}> {contentInElement} </b>);
 				} else if (element.type === EBacktickType.VOICE_LINK) {
 					const meetingCode = contentInElement?.split('/').pop();
 					formattedContent.push(
 						<VoiceLinkContent
-							key={`voiceLink-${s}-${messsageId}`}
+							key={`voiceLink-${s}-${messageId}`}
 							meetingCode={meetingCode}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
@@ -266,7 +205,7 @@ const RenderContent = ({
 					}
 					formattedContent.push(
 						<MarkdownContent
-							key={`markdown-${s}-${messsageId}`}
+							key={`markdown-${s}-${messageId}`}
 							isBacktick={true}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
@@ -283,7 +222,7 @@ const RenderContent = ({
 
 		if (t && lastindex < t?.length) {
 			formattedContent.push(
-				<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-end-${messsageId}`} text={t.slice(lastindex)} />
+				<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}-end-${messageId}`} text={t.slice(lastindex)} />
 			);
 		}
 
@@ -361,6 +300,7 @@ const RenderContent = ({
 	return (
 		<div
 			ref={divRef}
+			onClick={onClickToMessage}
 			onCopy={handleCopy}
 			style={
 				isJumMessageEnabled
@@ -374,9 +314,9 @@ const RenderContent = ({
 							overflowWrap: 'break-word'
 						}
 			}
-			className={`${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] flex items-center  cursor-pointer' : 'text-[#4E5057] dark:text-[#DFDFE0]'}`}
+			className={`basis-full break-all ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] flex items-center  cursor-pointer' : 'text-[#4E5057] dark:text-[#E6E6E6]'}`}
 		>
-			{code === TypeMessage.MessageBuzz ? <span className="text-red-500">{content}</span> : <span>{content}</span>}
+			{code === TypeMessage.MessageBuzz ? <span className="text-red-500">{content2}</span> : content2}
 		</div>
 	);
 };
@@ -484,3 +424,5 @@ export const RoleMentionContent = ({ element, contentInElement, isTokenClickAble
 
 	return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
 };
+
+export const MessageLine = RenderContent;

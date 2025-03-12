@@ -53,7 +53,7 @@ const Onboarditem = ({ icon, title, tick, onClick }: { icon: ReactNode; title: s
 	};
 	return (
 		<div
-			className="w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold bg-[#232428] hover:bg-[#393c41] rounded-lg"
+			className="w-[400px] pb-10 gap-4 h-[72px] items-center flex p-4 text-sm font-semibold bg-[#232428] hover:bg-[#393c41] rounded-lg"
 			onClick={handleOnClickItem}
 		>
 			{icon}

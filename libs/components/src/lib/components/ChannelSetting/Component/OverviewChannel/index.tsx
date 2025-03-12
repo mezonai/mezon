@@ -476,7 +476,7 @@ const BottomBlock = ({
 				<div>New threads will not show in the channel list after being inactive for the specified duration.</div>
 			</div>
 			<div className="flex justify-center pb-10">
-				<Image src={logoImgSrc} alt={'channelSettingLogo'} width={48} height={48} className="object-cover w-[280px]" />
+				<Image src={logoImgSrc} width={48} height={48} className="object-cover w-[280px]" />
 			</div>
 		</div>
 	);

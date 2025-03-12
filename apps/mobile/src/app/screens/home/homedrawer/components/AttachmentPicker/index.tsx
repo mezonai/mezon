@@ -1,17 +1,18 @@
 import { Icons } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, referencesActions } from '@mezon/store-mobile';
 import { createUploadFilePath, useMezon } from '@mezon/transport';
 import Geolocation from '@react-native-community/geolocation';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Linking, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
-import { IFile } from '../../../../../componentUI';
+import { AlbumPanel } from '../../AlbumPannel';
 import Gallery from './Gallery';
 import { style } from './styles';
+import { IFile } from "../../../../../componentUI/MezonImagePicker";
 export type AttachmentPickerProps = {
 	mode?: number;
 	currentChannelId?: string;
@@ -26,6 +27,8 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 	const { sessionRef } = useMezon();
 	const timeRef = useRef<any>();
 	const dispatch = useDispatch();
+	const [isShowAlbum, setIsShowAlbum] = useState<boolean>(false);
+	const [currentAlbum, setCurrentAlbum] = useState<string>('All');
 
 	useEffect(() => {
 		return () => {
@@ -188,12 +191,32 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 		}
 	};
 
+	const handleShow = () => {
+		setIsShowAlbum(!isShowAlbum);
+	};
+
+	const handleChangeAlbum = (value) => {
+		setIsShowAlbum(false);
+		setCurrentAlbum(value);
+	};
+
 	return (
 		<View style={styles.container}>
+			{isShowAlbum && <AlbumPanel valueAlbum={currentAlbum} onAlbumChange={handleChangeAlbum} />}
 			<View style={styles.wrapperHeader}>
 				<TouchableOpacity activeOpacity={0.8} style={styles.buttonHeader} onPress={() => handleLinkGoogleMap()}>
 					<Icons.LocationIcon height={20} width={20} color={themeValue.text} />
 					<Text style={styles.titleButtonHeader}>{t('message:actions.location')}</Text>
+				</TouchableOpacity>
+				<TouchableOpacity activeOpacity={0.8} style={styles.buttonAlbum} onPress={handleShow}>
+					<View style={styles.albumButtonGroup}>
+						<Text style={styles.albumTitle}>{currentAlbum}</Text>
+						{isShowAlbum ? (
+							<Icons.ChevronSmallUpIcon color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
+						) : (
+							<Icons.ChevronSmallDownIcon color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
+						)}
+					</View>
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} onPress={onPickFiles} style={styles.buttonHeader}>
 					<Icons.AttachmentIcon height={20} width={20} color={themeValue.text} />

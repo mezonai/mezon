@@ -81,7 +81,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				) : (
 					<div className={`relative prose-backtick ${isLightMode ? 'triple-markdown-lightMode' : 'triple-markdown'} `}>
 						<pre
-							className={`pre ${isInPinMsg ? `flex items-start  ${isLightMode ? 'pin-msg-modeLight' : 'pin-msg'}` : ''}`}
+							className={`pre font-sans ${isInPinMsg ? `flex items-start  ${isLightMode ? 'pin-msg-modeLight' : 'pin-msg'}` : ''}`}
 							style={{ padding: 0 }}
 						>
 							<code className={`${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}>{content}</code>
@@ -116,7 +116,7 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, i
 			style={{ display: posInPinOrNotification ? '' : 'inline', padding: 2, margin: 0 }}
 		>
 			<code
-				className={`${
+				className={`font-sans ${
 					posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
 				} ${posInPinOrNotification && isLightMode ? 'pin-msg-modeLight' : posInPinOrNotification && !isLightMode ? 'pin-msg' : null}`}
 				style={{ wordWrap: 'break-word', overflowWrap: 'break-word', whiteSpace: posInPinOrNotification ? 'normal' : 'break-spaces' }}
@@ -146,7 +146,7 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 						{copied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}
 					</button>
 				</CopyToClipboard>
-				<code className={`${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}>
+				<code className={`font-sans ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}>
 					{contentBacktick.trim() === '' ? contentBacktick : contentBacktick.trim()}
 				</code>
 			</pre>

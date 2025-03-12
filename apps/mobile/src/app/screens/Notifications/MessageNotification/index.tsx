@@ -5,15 +5,13 @@ import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
-import { useMessageParser } from '../../../hooks/useMessageParser';
-import { RenderTextMarkdownContent } from '../../home/homedrawer/components';
+import { RenderTextMarkdownContent } from '../../home/homedrawer/components/RenderTextMarkdown';
 import { styles } from './MessageNotification.styles';
 
 interface IMessageNotificationProps {
 	message: IMessageWithUser;
 }
 const MessageNotification = React.memo(({ message }: IMessageNotificationProps) => {
-	const { attachments } = useMessageParser(message);
 	const { t } = useTranslation('message');
 
 	const isEdited = useMemo(() => {
@@ -27,7 +25,7 @@ const MessageNotification = React.memo(({ message }: IMessageNotificationProps) 
 
 	return (
 		<View>
-			{attachments?.length ? (
+			{message?.attachments?.length ? (
 				<View style={styles.attachmentBox}>
 					<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')}</Text>
 					<AttachmentImageIcon width={13} height={13} color={Colors.textGray} />

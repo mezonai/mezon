@@ -3,6 +3,7 @@ import { IEmoji } from '@mezon/utils';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { ClanEmoji } from 'mezon-js';
 import { ApiClanEmojiCreateRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import { ApiClanEmoji } from 'mezon-js/dist/api.gen';
 import { ensureSession, getMezonCtx, MezonValueContext } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 
@@ -42,7 +43,14 @@ type EmojiObjPickedArgs = {
 };
 
 export const fetchEmojiCached = memoizeAndTrack(
-	async (mezon: MezonValueContext) => {
+	async (mezon: MezonValueContext, defaultResponse?: Array<ApiClanEmoji>) => {
+		if (defaultResponse) {
+			return {
+				emoji_list: defaultResponse,
+				time: Date.now()
+			};
+		}
+
 		const response = await mezon.client.getListEmojisByUserId(mezon.session);
 		return { ...response, time: Date.now() };
 	},
@@ -54,6 +62,13 @@ export const fetchEmojiCached = memoizeAndTrack(
 		}
 	}
 );
+
+export const updateEmojiCache = createAsyncThunk('emoji/updateCache', async (emojiList: Array<ApiClanEmoji>, thunkAPI) => {
+	const mezon = await ensureSession(getMezonCtx(thunkAPI));
+	fetchEmojiCached.clear();
+
+	await fetchEmojiCached(mezon, emojiList);
+});
 
 export const fetchEmoji = createAsyncThunk('emoji/fetchEmoji', async ({ noCache = false }: { noCache?: boolean }, thunkAPI) => {
 	try {
@@ -137,7 +152,8 @@ export const emojiSuggestionSlice = createSlice({
 	initialState: initialEmojiSuggestionState,
 	reducers: {
 		add: (state, action: PayloadAction<any>) => {
-			emojiSuggestionAdapter.addOne(state, action.payload);
+			state.ids.unshift(action.payload.id);
+			state.entities[action.payload.id] = action.payload;
 		},
 		remove: emojiSuggestionAdapter.removeOne,
 		update: emojiSuggestionAdapter.updateOne,
@@ -204,7 +220,8 @@ export const emojiSuggestionActions = {
 	fetchEmoji,
 	updateEmojiSetting,
 	deleteEmojiSetting,
-	createEmojiSetting
+	createEmojiSetting,
+	updateEmojiCache
 };
 
 const { selectAll, selectEntities } = emojiSuggestionAdapter.getSelectors();

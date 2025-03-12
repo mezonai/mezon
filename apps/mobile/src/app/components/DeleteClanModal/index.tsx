@@ -24,7 +24,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonConfirm } from '../../componentUI';
+import MezonConfirm from '../../componentUI/MezonConfirm';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { styles } from './DeleteClanModal.styles';
 

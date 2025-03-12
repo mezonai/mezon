@@ -93,17 +93,23 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const onDeleteMessage = useCallback(
 		async (messageId: string) => {
 			const socket = socketRef.current;
-			const isPublic = isPublicChannel(currentChannel);
+			const isPublic = currentDmId ? false : isPublicChannel(currentChannel);
 
 			dispatch(
 				messagesActions.remove({
-					channelId: currentChannelId,
+					channelId: currentDmId ? currentDmId : currentChannelId,
 					messageId
 				})
 			);
-			await socket.removeChatMessage(currentClanId || '', currentChannelId, mode, isPublic, messageId);
+			await socket.removeChatMessage(
+				currentDmId ? '0' : currentClanId || '',
+				currentDmId ? currentDmId : currentChannelId,
+				mode,
+				isPublic,
+				messageId
+			);
 		},
-		[currentChannel, currentChannelId, currentClanId, dispatch, mode, socketRef]
+		[currentChannel, currentChannelId, currentClanId, currentDmId, dispatch, mode, socketRef]
 	);
 
 	const onConfirmAction = useCallback(

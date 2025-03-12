@@ -4,7 +4,7 @@ import { ChannelMembersEntity, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from
 import { ChannelType } from 'mezon-js';
 import { useContext, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { MezonAvatar } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
 import { threadDetailContext } from '../../ThreadDetail/MenuThreadDetail';
 import { style } from './style';

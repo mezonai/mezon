@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { MezonModal } from '../../../../../componentUI';
+import { MezonModal } from '../../../../../componentUI/MezonModal';
 import ContentModal from './ContentModal';
 import { style } from './CreateClanModal.styles';
 

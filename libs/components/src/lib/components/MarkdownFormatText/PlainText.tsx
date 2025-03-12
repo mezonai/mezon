@@ -6,6 +6,6 @@ type PlainTextOpt = {
 };
 
 export const PlainText: React.FC<PlainTextOpt> = ({ text, isSearchMessage }) => {
-	return <span>{text}</span>;
+	return text;
 };
 export default PlainText;

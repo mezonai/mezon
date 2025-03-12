@@ -14,12 +14,7 @@ const FirstJoinPopup = ({ onclose, openCreateClanModal }: IFirstJoinPopup) => {
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000c9]">
 			<div className="relative z-10 w-[680px] flex max-sm:justify-center">
-				<Image
-					src={`assets/images/first-join-bg.svg`}
-					alt={'first-join-bg'}
-					width={240}
-					className="object-cover rounded-l-md max-sm:hidden"
-				/>
+				<Image src={`assets/images/first-join-bg.svg`} width={240} className="object-cover rounded-l-md max-sm:hidden" />
 				<div className="text-[#4e5058] bg-white rounded-r-md max-sm:rounded-md relative flex flex-col">
 					<Icons.MenuClose onClick={onclose} className="absolute top-5 right-5 w-[16px] cursor-pointer" />
 					<div className="px-[16px] flex flex-col justify-center h-full flex-1 gap-[15px]">

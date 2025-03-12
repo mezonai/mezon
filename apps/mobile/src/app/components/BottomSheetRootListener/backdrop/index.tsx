@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 interface CustomBackdropProps extends BottomSheetBackdropProps {
-	onBackdropPress: () => void;
+	onBackdropPress?: () => void;
 }
 
 const Backdrop = ({ onBackdropPress, ...props }: CustomBackdropProps) => {

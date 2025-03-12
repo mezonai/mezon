@@ -13,6 +13,7 @@ import {
 	getStoreAsync,
 	selectCategoryExpandStateByCategoryId,
 	selectIsUnreadChannelById,
+	selectIsUnreadThreadInChannel,
 	useAppSelector
 } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
@@ -31,8 +32,6 @@ import UserListVoiceChannel from '../ChannelListUserVoice';
 
 interface IChannelListItemProps {
 	data: any;
-	isFirstThread?: boolean;
-	// parentIdList?: Set<string>;
 }
 
 export enum StatusVoiceChannel {
@@ -45,7 +44,6 @@ export enum IThreadActiveType {
 }
 
 export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
-	const bottomSheetChannelStreamingRef = useRef<BottomSheetModal>(null);
 	const isUnRead = useAppSelector((state) => selectIsUnreadChannelById(state, props?.data?.id));
 	const [channelIdActive, setChannelIdActive] = useState<string>('');
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, props?.data?.category_id as string));
@@ -56,6 +54,7 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 			props?.data?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
 		);
 	}, [props?.data?.type]);
+	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, props?.data?.threadIds || []));
 
 	const timeoutRef = useRef<any>();
 	const navigation = useNavigation<any>();
@@ -77,9 +76,9 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 			snapPoints: ['45%'],
 			children:
 				props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
-					<JoinStreamingRoomBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
+					<JoinStreamingRoomBS channel={props?.data} />
 				) : (
-					<JoinChannelVoiceBS channel={props?.data} ref={bottomSheetChannelStreamingRef} />
+					<JoinChannelVoiceBS channel={props?.data} />
 				)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
@@ -153,14 +152,14 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 		isUnRead ||
 		isChannelVoice ||
 		channelIdActive === props?.data?.channel_id ||
-		props?.data?.threadIds?.includes(channelIdActive);
+		props?.data?.threadIds?.includes(channelIdActive) ||
+		hasUnread;
 
 	if (!shouldDisplay) return null;
 	return (
 		<>
 			{!isChannelVoice && (
 				<ChannelItem
-					isFirstThread={props?.isFirstThread}
 					onPress={handleRouteData}
 					onLongPress={handleLongPressChannel}
 					data={props?.data}

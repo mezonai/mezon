@@ -15,7 +15,8 @@ export const style = (colors: Attributes) =>
 		},
 		content: {
 			gap: size.s_6,
-			flex: 1
+			flex: 1,
+			overflow: 'hidden'
 		},
 		sizeColor: {
 			width: size.s_4,

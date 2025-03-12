@@ -5,7 +5,7 @@ import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
-import { MezonInput } from '../../../componentUI';
+import MezonInput from '../../../componentUI/MezonInput';
 import style from '../MenuCustomDm.styles';
 
 const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channelLabel: string }) => {

@@ -19,7 +19,7 @@ import InCallManager from 'react-native-incall-manager';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import Images from '../../../../assets/Images';
-import { MezonConfirm } from '../../../componentUI';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { useWebRTCCallMobile } from '../../../hooks/useWebRTCCallMobile';
 import { style } from './styles';

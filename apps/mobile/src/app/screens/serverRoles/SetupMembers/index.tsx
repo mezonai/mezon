@@ -10,7 +10,7 @@ import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View }
 import { FlatList } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../componentUI';
+import MezonInput from '../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../components/Common';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';

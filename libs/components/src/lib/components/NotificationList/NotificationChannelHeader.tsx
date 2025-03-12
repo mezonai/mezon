@@ -1,10 +1,8 @@
 import { useMarkAsRead } from '@mezon/core';
-import { selectChannelById, selectClanById, selectTheme, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectClanById, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { INotification, TNotificationChannel } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
 type NotificationChannelHeaderProps = {
 	itemUnread?: TNotificationChannel;
@@ -21,8 +19,6 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 	}, [itemUnread?.channel_id]);
 
 	const getChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
-
-	const appearanceTheme = useSelector(selectTheme);
 
 	const { handleMarkAsReadChannel } = useMarkAsRead();
 
@@ -58,57 +54,29 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 			<div className="flex flex-row items-center gap-3 relative">
 				{isUnreadTab ? (
 					<>
-						<Tippy
-							className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
-							arrow={false}
-							content={
-								<p style={{ whiteSpace: 'nowrap' }} className="max-w-60 truncate">
-									{'Notification Settings'}
-								</p>
-							}
-							placement="top"
+						<button
+							title="Notification Settings"
+							className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
 						>
-							<button className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]">
-								<Icons.UnMuteBell defaultSize="w-4 h-4" />
-							</button>
-						</Tippy>
+							<Icons.UnMuteBell defaultSize="w-4 h-4" />
+						</button>
 
-						<Tippy
-							className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
-							arrow={false}
-							content={
-								<p style={{ whiteSpace: 'nowrap' }} className="max-w-60 truncate">
-									{'Mark as read'}
-								</p>
-							}
-							placement="top"
+						<button
+							title="Mark as read"
+							className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
+							onClick={() => handleMarkAsReadChannel(getChannel)}
 						>
-							<button
-								className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
-								onClick={() => handleMarkAsReadChannel(getChannel)}
-							>
-								✔
-							</button>
-						</Tippy>
+							✔
+						</button>
 					</>
 				) : (
-					<Tippy
-						className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
-						arrow={false}
-						content={
-							<p style={{ whiteSpace: 'nowrap' }} className="max-w-60 truncate">
-								{'Close'}
-							</p>
-						}
-						placement="top"
+					<button
+						title="Close"
+						className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
+						onClick={onDeleteNotification}
 					>
-						<button
-							className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
-							onClick={onDeleteNotification}
-						>
-							✕
-						</button>
-					</Tippy>
+						✕
+					</button>
 				)}
 			</div>
 		</div>

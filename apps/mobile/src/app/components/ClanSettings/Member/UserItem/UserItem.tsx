@@ -4,7 +4,7 @@ import { selectAllRolesClan, selectMemberClanByUserId2, useAppSelector } from '@
 import { UsersClanEntity } from '@mezon/utils';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { MezonAvatar } from '../../../../componentUI';
+import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import { style } from './styles';
 
 interface IUserItem {

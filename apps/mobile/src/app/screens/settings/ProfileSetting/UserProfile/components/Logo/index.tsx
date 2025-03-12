@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import LogoMezonDark from '../../../../../../../assets/svg/logoMezonDark.svg';
 import LogoMezonLight from '../../../../../../../assets/svg/logoMezonLight.svg';
-import { MezonImagePicker } from '../../../../../../componentUI';
+import MezonImagePicker from '../../../../../../componentUI/MezonImagePicker';
 import { style } from './styles';
 
 export const DirectMessageLogo = memo(() => {

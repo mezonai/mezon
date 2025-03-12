@@ -14,10 +14,9 @@ interface IChannelListThreadItemProps {
 	onLongPress?: (thread: ChannelThreads) => void;
 	thread: any;
 	isActive?: boolean;
-	isFirstThread?: boolean;
 }
 
-const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirstThread }: IChannelListThreadItemProps) => {
+const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive }: IChannelListThreadItemProps) => {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 
@@ -36,26 +35,20 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirst
 	return (
 		<View key={thread.id} style={[styles.channelListLink]}>
 			<View style={[styles.threadItem]}>
-				{isFirstThread ? (
-					<View style={{ top: -size.s_14 }}>
-						<MezonIconCDN icon={IconCDN.shortCorner} height={size.s_16} width={size.s_12} />
-					</View>
-				) : (
-					<View style={{ top: -size.s_20 }}>
-						<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} />
-						{/*hardcode virtual view to connect thread lines */}
-						<View
-							style={{
-								backgroundColor: '#535353',
-								width: 1.2,
-								height: size.s_10,
-								position: 'absolute',
-								top: -5,
-								left: 0.3
-							}}
-						/>
-					</View>
-				)}
+				<View style={{ top: -size.s_20 }}>
+					<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} />
+					{/*hardcode virtual view to connect thread lines */}
+					<View
+						style={{
+							backgroundColor: '#535353',
+							width: 1.2,
+							height: size.s_10,
+							position: 'absolute',
+							top: -5,
+							left: 0.3
+						}}
+					/>
+				</View>
 				<TouchableOpacity
 					style={[
 						styles.boxThread,
@@ -73,6 +66,7 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive, isFirst
 								backgroundColor: themeBasic === ThemeModeBase.DARK ? themeValue.secondaryLight : themeValue.secondaryWeight
 							}
 						]}
+						numberOfLines={1}
 					>
 						{thread?.channel_label}
 					</Text>

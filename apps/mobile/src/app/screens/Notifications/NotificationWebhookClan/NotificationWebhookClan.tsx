@@ -5,7 +5,7 @@ import { selectClanById, useAppSelector } from '@mezon/store-mobile';
 import { INotification } from '@mezon/utils';
 import React from 'react';
 import { Text, View } from 'react-native';
-import { MezonAvatar } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { parseObject } from '../NotificationMentionItem';
 import MessageWebhookClan from './MessageWebhookClan';
 import { style } from './styles';

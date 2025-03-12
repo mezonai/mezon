@@ -3,7 +3,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { MezonImagePicker } from '../../../componentUI';
+import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import { style } from './style';
 
 const LogoClanSelector = () => {

@@ -5,6 +5,7 @@ import { NotificationCode } from '@mezon/utils';
 import { View } from 'react-native';
 import NotificationIndividualItem from '../NotificationIndividualItem';
 import NotificationMentionItem from '../NotificationMentionItem';
+import NotificationTopicItem from '../NotificationTopicItem';
 import NotificationWebhookClan from '../NotificationWebhookClan/NotificationWebhookClan';
 import { NotifyProps } from '../types';
 
@@ -35,6 +36,7 @@ const NotificationItem = React.memo(({ notify, onLongPressNotify, onPressNotify 
 				<NotificationMentionItem onPressNotify={onPressNotify} notify={notify} onLongPressNotify={onLongPressNotify} />
 			) : null}
 			{isNotificationWebhookClan && <NotificationWebhookClan notify={notify}></NotificationWebhookClan>}
+			{!notify?.code && <NotificationTopicItem onPressNotify={onPressNotify} notify={notify} />}
 		</View>
 	);
 });

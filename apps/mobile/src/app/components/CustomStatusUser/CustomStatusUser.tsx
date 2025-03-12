@@ -6,7 +6,8 @@ import { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, IMezonOptionData, MezonMenu, MezonOption } from '../../componentUI';
+import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonOption, { IMezonOptionData } from '../../componentUI/MezonOption';
 import { ETypeCustomUserStatus } from '../../screens/profile/ProfileScreen';
 
 interface ICustomStatusUserProps {

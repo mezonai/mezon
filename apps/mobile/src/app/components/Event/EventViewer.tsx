@@ -6,7 +6,7 @@ import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonTab } from '../../componentUI';
+import MezonTab from '../../componentUI/MezonTab';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { EventDetail } from './EventDetail';
 import { EventItem } from './EventItem';

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
-import { MezonAvatar } from '../../../../../componentUI';
+import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 
 interface IMemberItemProps {
 	member: UsersClanEntity;

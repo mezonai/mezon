@@ -66,7 +66,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 							))}
 						{(isDm || isDmGroup) && (
 							<WelComeDm
-								name={name || `${selectedChannel?.creator_name}'s Groups`}
+								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
 								username={username}
 								avatar={avatarDM}
 								classNameSubtext={classNameSubtext}

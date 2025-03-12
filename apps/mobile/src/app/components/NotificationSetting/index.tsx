@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import { MezonRadioButton } from '../../componentUI';
+import MezonRadioButton from '../../componentUI/MezonRadioButton';
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox';
 import { style } from './NotificationSetting.styles';
 

@@ -2,7 +2,9 @@ import { useTheme } from '@mezon/mobile-ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { IMezonMenuSectionProps, IMezonOptionData, MezonMenu, MezonOption, MezonSwitch } from '../../../componentUI';
+import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
+import MezonSwitch from '../../../componentUI/MezonSwitch';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 

@@ -312,7 +312,6 @@ export const style = (colors: Attributes) =>
 		wrapperMessageBox: {
 			flexDirection: 'row',
 			paddingLeft: size.s_6,
-			marginBottom: size.s_2,
 			paddingRight: size.s_28
 		},
 		aboveMessage: {
@@ -781,17 +780,6 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'space-between',
 			width: '90%'
 		},
-		albumTitleBar: {
-			height: size.s_60,
-			backgroundColor: colors.primary,
-			position: 'absolute',
-			top: -size.s_60,
-			left: 0,
-			right: 0,
-			zIndex: 1,
-			borderBottomWidth: 1,
-			borderColor: colors.tertiary
-		},
 		albumButton: {
 			alignSelf: 'center',
 			justifyContent: 'center',
@@ -812,23 +800,27 @@ export const style = (colors: Attributes) =>
 		},
 		albumPanel: {
 			position: 'absolute',
-			backgroundColor: colors.primary,
-			top: size.s_40,
-			left: 0,
-			right: 0,
+			backgroundColor: colors.secondaryLight,
+			top: size.s_70,
+			left: '25%',
+			right: '25%',
 			zIndex: 2,
 			overflow: 'hidden',
-			maxHeight: Dimensions.get('window').height - size.s_40,
-			paddingVertical: size.s_4
+			maxHeight: Dimensions.get('window').height * 0.7,
+			paddingVertical: size.s_4,
+			borderRadius: size.s_16
 		},
 		albumItem: {
-			padding: size.s_4,
+			paddingVertical: size.s_4,
 			flexDirection: 'row',
-			paddingHorizontal: size.s_10
+			alignItems: 'center',
+			marginHorizontal: size.s_8,
+			backgroundColor: colors.secondaryLight
 		},
 		albumCoverImage: {
-			height: size.s_80,
-			width: size.s_80
+			height: size.s_40,
+			width: size.s_40,
+			borderRadius: size.s_8
 		},
 		albumTitleAndCount: {
 			gap: size.s_10,
@@ -846,7 +838,7 @@ export const style = (colors: Attributes) =>
 		},
 		albumSelectedIcon: {
 			position: 'absolute',
-			right: size.s_20,
+			right: size.s_10,
 			height: '100%',
 			justifyContent: 'center',
 			bottom: size.s_6

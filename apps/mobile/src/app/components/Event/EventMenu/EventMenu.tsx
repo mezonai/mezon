@@ -4,8 +4,8 @@ import { EventManagementEntity } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { IMezonMenuSectionProps, MezonConfirm } from '../../../componentUI';
-import MezonMenu from '../../../componentUI/MezonMenu';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
 import styles from './styles';
 
 interface IEventMenuProps {

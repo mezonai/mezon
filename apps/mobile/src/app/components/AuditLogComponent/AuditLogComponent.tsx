@@ -10,7 +10,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, MezonDateTimePicker, MezonMenu } from '../../componentUI';
+import MezonDateTimePicker from '../../componentUI/MezonDateTimePicker';
+import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { AuditLogItem } from './AuditLogItem/AuditLogItem';
 import EmptyAuditLog from './EmptyAuditLog/EmptyAuditLog';

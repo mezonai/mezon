@@ -48,7 +48,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 	};
 
 	return (
-		<div className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black  flex flex-row justify-center items-center">
+		<div className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-[100] bg-black  flex flex-row justify-center items-center">
 			<div className="w-fit h-fit dark:bg-bgPrimary bg-bgLightModeSecond rounded-lg flex-col justify-start  items-start gap-3 inline-flex overflow-hidden">
 				<div className={`dark:text-white text-black ${isError ? 'w-[400px]' : ''} `}>
 					<div className="p-4 relative">

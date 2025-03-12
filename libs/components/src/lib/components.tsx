@@ -111,4 +111,6 @@ export * from './components/HtmlCanvas';
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 
+export { default as MessageWithSystem } from './components/MessageWithSystem';
 export * from './components/VoiceChannel';
+export * from './components/virtual-core/useVirtualizer';

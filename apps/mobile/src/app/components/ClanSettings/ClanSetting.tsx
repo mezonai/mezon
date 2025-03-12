@@ -5,11 +5,12 @@ import { EPermission } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, ScrollView, View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, reserve } from '../../componentUI';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
 import { LogoClanSelector } from './LogoClanSelector';
 import { style } from './styles';
 
@@ -149,7 +150,13 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 		},
 		{
 			title: t('menu.userManagement.invite'),
-			onPress: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL),
+			onPress: () => {
+				const data = {
+					snapPoints: ['70%', '90%'],
+					children: <InviteToChannel isUnknownChannel={false} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+			},
 			expandable: true,
 			icon: <Icons.LinkIcon color={themeValue.text} />
 		},

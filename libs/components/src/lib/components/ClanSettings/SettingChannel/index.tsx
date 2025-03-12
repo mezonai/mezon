@@ -10,7 +10,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { formatDistance } from 'date-fns';
 import { Avatar, AvatarSizes, Dropdown, Pagination } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
@@ -350,15 +349,12 @@ const ItemInfor = ({
 
 				<div className="overflow-hidden flex w-12 items-center justify-center">
 					{(creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url) && (
-						<Tippy
-							content={
-								<span>{creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username} </span>
-							}
-							placement="left"
-							arrow={false}
-						>
-							<img src={imgCreator} className="w-8 h-8 object-cover rounded-full " />
-						</Tippy>
+						<img
+							title={creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username}
+							src={imgCreator}
+							className="w-8 h-8 object-cover rounded-full"
+							alt=""
+						/>
 					)}
 				</div>
 			</div>

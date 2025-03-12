@@ -5,7 +5,7 @@ import { ChannelMembersEntity, ChannelsEntity } from '@mezon/store-mobile';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../../../../../componentUI';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../../componentUI/MezonMenu';
 import { style } from './UserInfoDm.styles';
 
 export default function UserInfoDm({ user, currentChannel }: { user: ChannelMembersEntity; currentChannel: ChannelsEntity }) {

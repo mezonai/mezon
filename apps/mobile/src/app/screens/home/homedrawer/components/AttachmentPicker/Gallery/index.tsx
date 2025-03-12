@@ -22,7 +22,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import { Camera } from 'react-native-vision-camera';
-import { IFile } from '../../../../../../componentUI';
+import { IFile } from '../../../../../../componentUI/MezonImagePicker';
 import { style } from './styles';
 export const { height } = Dimensions.get('window');
 interface IProps {
@@ -53,7 +53,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		return () => {
 			timerRef?.current && clearTimeout(timerRef.current);
 		};
-	}, [currentAlbums]);
+	}, []);
 
 	const checkAndRequestPermissions = async () => {
 		const hasPermission = await requestPermission();
@@ -184,11 +184,11 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		try {
 			const res = await CameraRoll.getPhotos({
 				first: 30,
-				assetType: 'All',
+				assetType: album === 'All Videos' ? 'Videos' : 'All',
 				...(!!pageInfo && !!after && { after: after }),
 				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
 				groupTypes: album === 'All' ? 'All' : 'Album',
-				groupName: album === 'All' ? null : album
+				groupName: album === 'All' || album === 'All Videos' ? null : album
 			});
 			setPhotos(after ? [...photos, ...res.edges] : res.edges);
 			setPageInfo(res.page_info);
@@ -201,6 +201,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 
 	useEffect(() => {
 		const showKeyboard = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SELECT_ALBUM, (value) => {
+			loadPhotos(value);
 			setCurrentAlbums(value);
 		});
 		return () => {
@@ -232,7 +233,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				}}
 				disabled={disabled}
 			>
-				<Image source={{ uri: item.node.image.uri, cache: 'force-cache' }} style={styles.imageGallery} />
+				<Image source={{ uri: item.node.image.uri }} style={styles.imageGallery} />
 				{isVideo && (
 					<View style={styles.videoOverlay}>
 						<PlayIcon width={size.s_20} height={size.s_20} />

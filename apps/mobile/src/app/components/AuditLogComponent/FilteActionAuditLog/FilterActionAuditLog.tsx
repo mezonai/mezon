@@ -6,7 +6,7 @@ import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonOptionData, MezonOption } from '../../../componentUI';
+import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
 import InputSearchAuditLog from '../InputSearchAuditLog/InputSearchAuditLog';
 
 const iconMap: { [key in ActionLog]: ReactNode | string } = {

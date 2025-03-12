@@ -17,16 +17,6 @@ type IEmojiMarkup = {
 	emojiid: string;
 };
 
-const contentTitle = (t, styles, styleText) => {
-	const [title] = (t ?? '').split(' | ');
-	return <Text style={[styles.message, styleText && styleText]}>{title}</Text>;
-};
-
-const pattern = /^Tokens sent:.*\|.*/;
-const checkTokenMessage = (text: string) => {
-	return pattern.test(text);
-};
-
 const EmojiMarkup = ({ shortname, emojiid }: IEmojiMarkup) => {
 	const srcEmoji = getSrcEmoji(emojiid);
 
@@ -104,7 +94,7 @@ export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleT
 
 	return (
 		<Text style={[styles.dmMessageContainer, props?.styleText && props?.styleText]} numberOfLines={1}>
-			{checkTokenMessage(t) ? contentTitle(t, styles, props?.styleText) : convertTextToEmoji()}
+			{convertTextToEmoji()}
 		</Text>
 	);
 };

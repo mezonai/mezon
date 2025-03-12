@@ -2,7 +2,7 @@ import { size } from '@mezon/mobile-ui';
 import { ClansEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { MezonAvatar } from '../../../../componentUI';
+import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import { styles } from './styles';
 
 type SharingSuggestItemProps = {

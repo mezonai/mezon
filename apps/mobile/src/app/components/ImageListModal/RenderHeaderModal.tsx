@@ -5,7 +5,7 @@ import { convertTimeString } from '@mezon/utils';
 import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonClanAvatar } from '../../componentUI';
+import MezonClanAvatar from '../../componentUI/MezonClanAvatar';
 import { useImage } from '../../hooks/useImage';
 import { style } from './styles';
 

@@ -10,11 +10,15 @@ import {
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
 } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { authActions, channelsActions, clansActions, getStoreAsync, messagesActions } from '@mezon/store-mobile';
+import { appActions, authActions, channelsActions, clansActions, getAuthState, getStoreAsync, messagesActions } from '@mezon/store-mobile';
+import { sleep } from '@mezon/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, MezonSearch, reserve } from '../../componentUI';
+import WebView from 'react-native-webview';
+import { useSelector } from 'react-redux';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
+import MezonSearch from '../../componentUI/MezonSearch';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -26,6 +30,9 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 	const [filteredMenu, setFilteredMenu] = useState<IMezonMenuSectionProps[]>([]);
 	const [searchText, setSearchText] = useState<string>('');
 	const [isShowCancel, setIsShowCancel] = useState<boolean>(false);
+	const [linkRedirectLogout, setLinkRedirectLogout] = useState<string>('');
+	const authState = useSelector(getAuthState);
+	const session = JSON.stringify(authState.session);
 	const { userProfile } = useAuth();
 	const logout = async () => {
 		const store = await getStoreAsync();
@@ -42,6 +49,14 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		const [appInfo] = await Promise.all([getAppInfo()]);
 		const { app_platform: platform } = appInfo;
 		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: platform }));
+		store.dispatch(appActions.setLoadingMainMobile(false));
+		setLinkRedirectLogout('');
+	};
+
+	const logoutRedirect = async () => {
+		const store = await getStoreAsync();
+		store.dispatch(appActions.setLoadingMainMobile(true));
+		setLinkRedirectLogout(process.env.NX_CHAT_APP_OAUTH2_LOG_OUT);
 	};
 
 	const confirmLogout = () => {
@@ -54,7 +69,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					onPress: () => {},
 					style: 'cancel'
 				},
-				{ text: 'Yes', onPress: () => logout() }
+				{ text: 'Yes', onPress: () => logoutRedirect() }
 			],
 			{ cancelable: false }
 		);
@@ -361,8 +376,37 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		setIsShowCancel(false);
 	}, []);
 
+	const injectedJS = `
+    (function() {
+	const authData = {
+		"loadingStatus":JSON.stringify("loaded"),
+		"session": JSON.stringify(${session}),
+		"isLogin": "true",
+		"_persist": JSON.stringify({"version":-1,"rehydrated":true})
+	};
+    localStorage.setItem('persist:auth', JSON.stringify(authData));
+    })();
+	true;
+	true;
+  `;
+
 	return (
 		<View style={styles.settingContainer}>
+			{!!linkRedirectLogout && (
+				<WebView
+					source={{
+						uri: linkRedirectLogout
+					}}
+					originWhitelist={['*']}
+					injectedJavaScriptBeforeContentLoaded={injectedJS}
+					javaScriptEnabled={true}
+					nestedScrollEnabled={true}
+					onLoadEnd={async () => {
+						await sleep(1000);
+						await logout();
+					}}
+				/>
+			)}
 			<ScrollView contentContainerStyle={styles.settingScroll} keyboardShouldPersistTaps={'handled'}>
 				<MezonSearch
 					value={searchText}

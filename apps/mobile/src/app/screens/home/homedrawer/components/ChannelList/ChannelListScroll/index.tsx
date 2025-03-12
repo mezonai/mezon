@@ -14,11 +14,21 @@ const ChannelListScroll = ({ flashListRef, data }: IProps) => {
 
 			const targetIndex = data.findIndex((item) => item.id === channelId);
 			if (targetIndex !== -1) {
+				const countToScroll = Math.floor(targetIndex / 20);
 				flashListRef.current.scrollToIndex({
 					index: targetIndex,
-					animated: true,
-					viewPosition: 0.5
+					animated: true
 				});
+				if (countToScroll > 0) {
+					for (let i = 0; i < countToScroll; i++) {
+						setTimeout(() => {
+							flashListRef.current.scrollToIndex({
+								index: targetIndex,
+								animated: true
+							});
+						}, 300 * i);
+					}
+				}
 			} else {
 				console.warn('Channel ID not found in list:', channelId);
 			}

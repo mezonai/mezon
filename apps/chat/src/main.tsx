@@ -2,8 +2,6 @@ import * as ReactDOM from 'react-dom/client';
 
 import App from './app/app';
 
-import 'rc-tooltip/assets/bootstrap.css';
-
 // import './styles.scss';
 
 // import './instrument/instrument';

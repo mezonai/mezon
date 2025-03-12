@@ -38,10 +38,8 @@ export const style = (colors: Attributes) =>
 		},
 		titleThread: {
 			flex: 1,
-			fontSize: size.s_15,
-			maxHeight: size.s_22,
+			fontSize: size.medium,
 			fontWeight: '600',
-			maxWidth: '90%',
 			color: colors.channelNormal,
 			top: verticalScale(3),
 			paddingBottom: size.s_2,

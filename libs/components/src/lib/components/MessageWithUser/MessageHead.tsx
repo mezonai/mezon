@@ -1,7 +1,6 @@
 import { useColorsRoleById, useShowName } from '@mezon/core';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo } from 'react';
 import usePendingNames from './usePendingNames';
 
 type IMessageHeadProps = {
@@ -37,26 +36,24 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 	const priorityName = message.display_name ? message.display_name : message.username;
 
 	return (
-		<div className="relative group">
-			<div className="flex-row items-center w-full gap-4 flex">
-				<div
-					className="text-base font-medium tracking-normal cursor-pointer break-all username hover:underline"
-					onClick={onClick}
-					role="button"
-					style={{
-						letterSpacing: '-0.01rem',
-						color:
-							mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
-								? userRolesClan.highestPermissionRoleColor
-								: DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR
-					}}
-				>
-					{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? nameShowed : priorityName}
-				</div>
-				<div className=" dark:text-zinc-400 text-colorTextLightMode text-[10px] cursor-default">{messageTime}</div>
+		<>
+			<div
+				className="text-base font-medium tracking-normal cursor-pointer break-all username hover:underline"
+				onClick={onClick}
+				role="button"
+				style={{
+					letterSpacing: '-0.01rem',
+					color:
+						mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
+							? userRolesClan.highestPermissionRoleColor
+							: DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR
+				}}
+			>
+				{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? nameShowed : priorityName}
 			</div>
-		</div>
+			<div className="pl-1 pt-[5px] dark:text-zinc-400 text-colorTextLightMode text-[10px]">{messageTime}</div>
+		</>
 	);
 };
 
-export default memo(MessageHead, (prev, cur) => prev.message?.id === cur.message?.id && prev.message?.sender_id === cur.message?.sender_id);
+export default MessageHead;

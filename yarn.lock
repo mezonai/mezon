@@ -7883,11 +7883,6 @@ dotenv@~16.3.1:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.2.tgz#3cb611ce5a63002dbabf7c281bc331f69d28f03f"
   integrity sha512-HTlk5nmhkm8F6JcdXvHIzaorzCoziNQT9mGxLPVXW8wJF1TiGSL60ZGB4gHWabHOaMmWmhvk2/lPHfnBiT78AQ==
 
-driver.js@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/driver.js/-/driver.js-1.3.1.tgz#5ac4d0d9e1c60f7eade418992ceffef7bf6c6610"
-  integrity sha512-MvUdXbqSgEsgS/H9KyWb5Rxy0aE6BhOVT4cssi2x2XjmXea6qQfgdx32XKVLLSqTaIw7q/uxU5Xl3NV7+cN6FQ==
-
 dunder-proto@^1.0.0, dunder-proto@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/dunder-proto/-/dunder-proto-1.0.1.tgz#d7ae667e1dc83482f8b70fd0f6eefc50da30f58a"
@@ -12316,17 +12311,17 @@ mezon-active-windows@0.1.38:
   dependencies:
     node-addon-api "^1.7.2"
 
-mezon-js-protobuf@1.7.18:
-  version "1.7.18"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.7.18.tgz#81586400e06658db72dd9aa1a5749a692071ad6a"
-  integrity sha512-EzFFP9WuxQAqrXQ9SA33ucgMuYOx+lZHaqrM0Jrsa0+kXzHxJQxRr0t/OsICYvNbRMYaxNQsE+K5UEjS1RwxOw==
+mezon-js-protobuf@1.7.22:
+  version "1.7.22"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.7.22.tgz#01899eb2d2dcf12fc82b3026366812626f606cbf"
+  integrity sha512-9JXiVSunIH5h7voEcgnyAokLYFwr6C8e7bytIXjdaGRce8PK9adh6AJUE8hE7cqHfapB0U55mEYokEfwzP32Ug==
   dependencies:
     "@scarf/scarf" "^1.1.1"
 
-mezon-js@2.11.4:
-  version "2.11.4"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.11.4.tgz#3c245aedb9bbe59cc2cd9aff97d46e89da3fc955"
-  integrity sha512-4SfkUnEjXFacARqABm5WNT6wryy84CV0SBYOHbSo+sbH0RcUacBhQDuiwFAeNFYtbiRRD1xZd3Z1QtOvvjLTNw==
+mezon-js@2.11.8:
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.11.8.tgz#fcbc54d1dc4fa489bbf0bef2c59d099921013714"
+  integrity sha512-8t2PRh1zN5GrR/xJEJQcujBvZ/crhfVtVvsQqKYmxhwdL/e5l3zmZ3cdUcIDrQHF0fVBuDbX9Y2ZN6s9l1ibYA==
   dependencies:
     "@scarf/scarf" "^1.1.1"
     base64-arraybuffer "^1.0.2"
@@ -14615,11 +14610,6 @@ react-image-file-resizer@^0.4.8:
   version "0.4.8"
   resolved "https://registry.yarnpkg.com/react-image-file-resizer/-/react-image-file-resizer-0.4.8.tgz#85f4ae4469fd2867d961568af660ef403d7a79af"
   integrity sha512-Ue7CfKnSlsfJ//SKzxNMz8avDgDSpWQDOnTKOp/GNRFJv4dO9L5YGHNEnj40peWkXXAK2OK0eRIoXhOYpUzUTQ==
-
-react-image@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-image/-/react-image-4.1.0.tgz#92f2d4a809a178b3bf69acd7bad7da7aa5e7364c"
-  integrity sha512-qwPNlelQe9Zy14K2pGWSwoL+vHsAwmJKS6gkotekDgRpcnRuzXNap00GfibD3eEPYu3WCPlyIUUNzcyHOrLHjw==
 
 react-is@^16.12.0, react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
@@ -17034,6 +17024,14 @@ unique-slug@^5.0.0:
   dependencies:
     imurmurhash "^0.1.4"
 
+universal-analytics@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/universal-analytics/-/universal-analytics-0.5.3.tgz#ff2d9b850062cdd4a8f652448047982a183c8e96"
+  integrity sha512-HXSMyIcf2XTvwZ6ZZQLfxfViRm/yTGoRgDeTbojtq6rezeyKB0sTBcKH2fhddnteAHRcHiKgr/ACpbgjGOC6RQ==
+  dependencies:
+    debug "^4.3.1"
+    uuid "^8.0.0"
+
 universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
@@ -17156,7 +17154,7 @@ uuid@^10.0.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-10.0.0.tgz#5a95aa454e6e002725c79055fd42aaba30ca6294"
   integrity sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==
 
-uuid@^8.3.2:
+uuid@^8.0.0, uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==

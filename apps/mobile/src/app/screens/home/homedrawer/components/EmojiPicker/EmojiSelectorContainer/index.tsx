@@ -23,7 +23,7 @@ import { DeviceEventEmitter, Platform, Text, TextInput, TouchableOpacity, View }
 import FastImage from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
-import { MezonClanAvatar } from '../../../../../../componentUI';
+import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 

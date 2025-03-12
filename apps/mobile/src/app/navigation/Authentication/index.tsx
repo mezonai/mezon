@@ -22,6 +22,7 @@ import { RenderVideoDetail } from '../../screens/home/homedrawer/components/Rend
 import StreamingWrapper from '../../screens/home/homedrawer/components/StreamingWrapper';
 import { DirectMessageDetailScreen } from '../../screens/messages/DirectMessageDetail';
 import { APP_SCREEN } from '../ScreenTypes';
+import { AuthenticationLoader } from './AuthenticationLoader';
 import BottomNavigatorWrapper from './BottomNavigatorWrapper';
 import { FriendStacks } from './stacks/FriendStacks';
 import { MenuChannelStacks } from './stacks/MenuChannelStack';
@@ -156,6 +157,7 @@ export const Authentication = memo(() => {
 				<ModalRootListener />
 				<ChannelMessageListener />
 				<ChannelMessageReactionListener />
+				<AuthenticationLoader />
 			</ColorRoleProvider>
 		</BottomSheetModalProvider>
 	);

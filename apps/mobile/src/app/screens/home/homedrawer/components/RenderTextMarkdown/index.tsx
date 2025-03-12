@@ -20,17 +20,6 @@ import ImageNative from '../../../../../components/ImageNative';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
-interface ElementToken {
-	s?: number;
-	e?: number;
-	kindOf: ETokenMessage;
-	user_id?: string;
-	role_id?: string;
-	channelid?: string;
-	emojiid?: string;
-	type?: EBacktickType;
-	username?: string;
-}
 
 export default function openUrl(url, customCallback) {
 	if (customCallback) {
@@ -101,7 +90,7 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 			color: colors.text,
 			width: codeBlockMaxWidth,
 			backgroundColor: colors.secondaryLight,
-			marginTop: size.s_6,
+			marginTop: size.s_2,
 			borderColor: colors.black,
 			borderRadius: size.s_4,
 			overflow: 'hidden'
@@ -397,13 +386,13 @@ export const RenderTextMarkdownContent = ({
 						>
 							{payloadChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ||
 							payloadChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
-								<CustomIcon name="volume-up" size={size.s_14} color={Colors.textLink} style={{ marginTop: 10 }} />
+								<CustomIcon name="volume-up" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
 							) : payloadChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-								<CustomIcon name="thread-icon" size={size.s_14} color={Colors.textLink} style={{ marginTop: 10 }} />
+								<CustomIcon name="thread-icon" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
 							) : payloadChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
-								<CustomIcon name="stream" size={size.s_14} color={Colors.textLink} style={{ marginTop: 10 }} />
+								<CustomIcon name="stream" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
 							) : payloadChannel?.channel_id === 'undefined' ? (
-								<Feather name="lock" size={size.s_14} color={themeValue.text} style={{ marginTop: 10 }} />
+								<Feather name="lock" size={size.s_14} color={themeValue.text} style={{ marginTop: size.s_10 }} />
 							) : null}
 							{payloadChannel?.channel_id === 'undefined' ? 'private-channel' : text}
 						</Text>

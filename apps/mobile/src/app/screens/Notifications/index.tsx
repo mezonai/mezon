@@ -19,11 +19,14 @@ import {
 	notificationActions,
 	RootState,
 	selectCurrentClanId,
-	selectLastNotificationId,
+	selectNotificationClan,
+	selectNotificationForYou,
+	selectNotificationMentions,
+	selectTopicsSort,
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { INotification, NotificationCode, NotificationEntity } from '@mezon/utils';
+import { INotification, NotificationCategory, NotificationEntity, sortNotificationsByDate } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode } from 'mezon-js';
@@ -39,12 +42,19 @@ import NotificationItemOption from './NotificationItemOption';
 import NotificationOption from './NotificationOption';
 import { style } from './Notifications.styles';
 import SkeletonNotification from './SkeletonNotification';
-import { EActionDataNotify, ENotifyBsToShow } from './types';
+import { ENotifyBsToShow } from './types';
+
+const InboxType = {
+	INDIVIDUAL: 'individual',
+	MESSAGES: 'messages',
+	MENTIONS: 'mentions',
+	TOPICS: 'topics'
+};
 
 const Notifications = () => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { notification, deleteNotify } = useNotification();
+	const { deleteNotify } = useNotification();
 	const [notify, setNotify] = useState<INotification>();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const loadingStatus = useSelector((state: RootState) => state?.notification?.loadingStatus);
@@ -56,15 +66,24 @@ const Notifications = () => {
 	const timeoutRef = useRef(null);
 	const [isLoadMore, setIsLoadMore] = useState(true);
 	const [firstLoading, setFirstLoading] = useState(true);
-	const [selectedTabs, setSelectedTabs] = useState({
-		[EActionDataNotify.Individual]: true,
-		[EActionDataNotify.Mention]: true,
-		[EActionDataNotify.Messages]: true,
-		[EActionDataNotify.Topics]: true
-	});
-	const selectedTabsRef = useRef(selectedTabs);
+	const [selectedTabs, setSelectedTabs] = useState<string>(InboxType.INDIVIDUAL);
 	const [notificationsFilter, setNotificationsFilter] = useState<NotificationEntity[]>([]);
-	const lastNotificationId = useSelector(selectLastNotificationId);
+	const allNotificationForYou = useSelector(selectNotificationForYou);
+	const allNotificationMentions = useSelector(selectNotificationMentions);
+	const allNotificationClan = useSelector(selectNotificationClan);
+	const getAllTopic = useSelector(selectTopicsSort);
+
+	const getAllNotificationForYou = useMemo(() => {
+		return sortNotificationsByDate([...allNotificationForYou.data]);
+	}, [allNotificationForYou]);
+
+	const getAllNotificationMentions = useMemo(() => {
+		return sortNotificationsByDate([...allNotificationMentions.data]);
+	}, [allNotificationMentions]);
+
+	const getAllNotificationClan = useMemo(() => {
+		return sortNotificationsByDate([...allNotificationClan.data]);
+	}, [allNotificationClan]);
 
 	useEffect(() => {
 		if (currentClanId && currentClanId !== '0') {
@@ -73,72 +92,56 @@ const Notifications = () => {
 		}
 	}, [currentClanId]);
 
+	useEffect(() => {
+		if (!currentClanId) return;
+
+		let category = null;
+
+		if (selectedTabs === InboxType.INDIVIDUAL) {
+			category = NotificationCategory.FOR_YOU;
+		} else if (selectedTabs === InboxType.MESSAGES) {
+			category = NotificationCategory.MESSAGES;
+		} else if (selectedTabs === InboxType.MENTIONS) {
+			category = NotificationCategory.MENTIONS;
+		}
+
+		if (category) {
+			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category }));
+		}
+	}, [currentClanId, dispatch, selectedTabs]);
+
 	const handleFilterNotify = useCallback(
 		(selectedTabs) => {
-			const sortNotifications = notification?.sort((a, b) => {
-				const dateA = new Date(a.create_time || '').getTime();
-				const dateB = new Date(b.create_time || '').getTime();
-				return dateB - dateA;
-			});
-
-			const allTabs = [EActionDataNotify.Individual, EActionDataNotify.Mention, EActionDataNotify.Messages, EActionDataNotify.Topics];
-			const isAllSelected = allTabs.every((tab) => selectedTabs.includes(tab));
-			if (isAllSelected) {
-				setNotificationsFilter(sortNotifications);
-				return;
+			switch (selectedTabs) {
+				case InboxType.INDIVIDUAL:
+					setNotificationsFilter(getAllNotificationForYou);
+					break;
+				case InboxType.MESSAGES:
+					setNotificationsFilter(getAllNotificationClan);
+					break;
+				case InboxType.MENTIONS:
+					setNotificationsFilter(getAllNotificationMentions);
+					break;
+				case InboxType.TOPICS:
+					setNotificationsFilter(getAllTopic);
+					break;
 			}
-
-			const isNotificationIncluded = (notification) => {
-				return selectedTabs.some((tab) => {
-					switch (tab) {
-						case EActionDataNotify.Individual:
-							return (
-								notification?.code !== NotificationCode.USER_REPLIED &&
-								notification?.code !== NotificationCode.USER_MENTIONED &&
-								notification?.code !== NotificationCode.NOTIFICATION_CLAN &&
-								notification?.code
-							);
-						case EActionDataNotify.Mention:
-							return notification?.code === NotificationCode.USER_REPLIED || notification?.code === NotificationCode.USER_MENTIONED;
-						case EActionDataNotify.Messages:
-							return notification?.code === NotificationCode.NOTIFICATION_CLAN;
-						case EActionDataNotify.Topics:
-							return notification?.content?.topic_id && notification.content.topic_id !== '0';
-						default:
-							return false;
-					}
-				});
-			};
-
-			const filteredNotifications = sortNotifications.filter(isNotificationIncluded);
-			setNotificationsFilter(filteredNotifications);
 		},
-		[notification]
+		[getAllNotificationClan, getAllNotificationForYou, getAllNotificationMentions, getAllTopic]
 	);
 
 	const initLoader = async () => {
 		const store = await getStoreAsync();
-		store.dispatch(notificationActions.fetchListNotification({ clanId: currentClanId }));
+		store.dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
 		store.dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
 	};
 
-	const handleTabChange = (value, isSelected) => {
-		setSelectedTabs((prevState) => {
-			const newState = {
-				...prevState,
-				[value]: isSelected
-			};
-			selectedTabsRef.current = newState;
-			return newState;
-		});
-	};
+	const handleTabChange = useCallback((value) => {
+		setSelectedTabs(value);
+	}, []);
 
 	useEffect(() => {
-		const selectedTabKeys = Object.entries(selectedTabs)
-			.filter(([_, isSelected]) => isSelected)
-			.map(([key]) => key);
-
-		handleFilterNotify(selectedTabKeys);
+		handleFilterNotify(selectedTabs);
 	}, [selectedTabs, handleFilterNotify]);
 
 	useEffect(() => {
@@ -147,23 +150,26 @@ const Notifications = () => {
 		};
 	}, []);
 
-	const openBottomSheet = useCallback((type: ENotifyBsToShow, notify?: INotification) => {
-		switch (type) {
-			case ENotifyBsToShow.notification:
-				triggerBottomSheetOption();
-				break;
-			case ENotifyBsToShow.removeNotification:
-				triggerRemoveBottomSheet();
-				setNotify(notify);
-				break;
-			default:
-				triggerBottomSheetOption();
-				break;
-		}
-	}, []);
+	const openBottomSheet = useCallback(
+		(type: ENotifyBsToShow, notify?: INotification) => {
+			switch (type) {
+				case ENotifyBsToShow.notification:
+					triggerBottomSheetOption();
+					break;
+				case ENotifyBsToShow.removeNotification:
+					triggerRemoveBottomSheet();
+					setNotify(notify);
+					break;
+				default:
+					triggerBottomSheetOption();
+					break;
+			}
+		},
+		[selectedTabs]
+	);
 
 	const handleDeleteNotify = (notify?: INotification) => {
-		notify && deleteNotify(notify.id, currentClanId || '0');
+		notify && deleteNotify(notify.id, NotificationCategory.FOR_YOU);
 		closeBottomSheet();
 	};
 
@@ -249,15 +255,27 @@ const Notifications = () => {
 	const fetchMoreData = useCallback(async () => {
 		setFirstLoading(false);
 		if (isLoadMore) {
+			if (!currentClanId) return;
+
+			let category = null;
+
+			if (selectedTabs === InboxType.INDIVIDUAL) {
+				category = NotificationCategory.FOR_YOU;
+			} else if (selectedTabs === InboxType.MESSAGES) {
+				category = NotificationCategory.MESSAGES;
+			} else if (selectedTabs === InboxType.MENTIONS) {
+				category = NotificationCategory.MENTIONS;
+			}
 			await dispatch(
 				fetchListNotification({
 					clanId: currentClanId || '',
-					notificationId: lastNotificationId
+					category: category,
+					notificationId: ''
 				})
 			);
 			setIsLoadMore(false);
 		}
-	}, [isLoadMore, dispatch, currentClanId, lastNotificationId]);
+	}, [isLoadMore, currentClanId, selectedTabs, dispatch]);
 
 	const ViewLoadMore = () => {
 		return (
@@ -267,15 +285,15 @@ const Notifications = () => {
 		);
 	};
 
-	const triggerBottomSheetOption = () => {
+	const triggerBottomSheetOption = useCallback(() => {
 		const data = {
 			heightFitContent: true,
 			title: t('headerTitle'),
 			titleSize: 'md',
-			children: <NotificationOption onChangeTab={handleTabChange} selectedTabs={selectedTabsRef.current} />
+			children: <NotificationOption onChangeTab={handleTabChange} selectedTabs={selectedTabs} />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-	};
+	}, [handleTabChange, selectedTabs, t]);
 
 	const triggerRemoveBottomSheet = () => {
 		const data = {
@@ -315,7 +333,7 @@ const Notifications = () => {
 						paddingBottom: size.s_100 * 2
 					}}
 					estimatedItemSize={200}
-					keyExtractor={(item) => `${item.id}_item_noti`}
+					keyExtractor={(item, index) => `${item.id}_${index}_item_noti`}
 					onEndReached={fetchMoreData}
 					onEndReachedThreshold={0.5}
 					ListFooterComponent={isLoadMore && <ViewLoadMore />}

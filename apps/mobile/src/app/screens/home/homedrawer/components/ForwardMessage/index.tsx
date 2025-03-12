@@ -23,7 +23,7 @@ import { TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../../../componentUI';
+import MezonInput from '../../../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';

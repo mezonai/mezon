@@ -188,11 +188,12 @@ ipcMain.on(TITLE_BAR_ACTION, (event, action, _data) => {
 ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 	const win = BrowserWindow.getFocusedWindow();
 	const fileURL = action?.payload?.fileURL;
+	const cleanedWebpOnUrl = fileURL?.replace('@webp', '');
 	const actionImage = action?.payload?.action;
 
 	switch (actionImage) {
 		case 'copyLink': {
-			clipboard.writeText(fileURL);
+			clipboard.writeText(cleanedWebpOnUrl);
 			break;
 		}
 		case 'copyImage': {
@@ -213,11 +214,11 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 			break;
 		}
 		case 'openLink': {
-			shell.openExternal(fileURL);
+			shell.openExternal(cleanedWebpOnUrl);
 			break;
 		}
 		case 'saveImage': {
-			win.webContents.downloadURL(fileURL);
+			win.webContents.downloadURL(cleanedWebpOnUrl);
 			break;
 		}
 	}

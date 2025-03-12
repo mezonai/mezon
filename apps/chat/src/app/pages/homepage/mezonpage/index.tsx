@@ -147,7 +147,7 @@ function MezonPage() {
 								/>
 							) : platform === 'Linux' ? (
 								<a className="cursor-pointer leading-[0px]" href={downloadUrl} target="_blank" rel="noreferrer">
-									<Image src={`assets/linux.svg`} alt={'linux'} className="max-w-full max-md:h-[32px] max-md:w-full" />
+									<Image src={`assets/linux.svg`} className="max-w-full max-md:h-[32px] max-md:w-full" />
 								</a>
 							) : (
 								<DropdownButton

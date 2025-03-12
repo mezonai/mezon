@@ -76,6 +76,7 @@ import {
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiOnboardingItem, ApiTokenSentEvent } from 'mezon-js/api.gen';
 import { DragEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { ChannelApps } from './ChannelApp';
 import { ChannelMedia } from './ChannelMedia';
@@ -282,6 +283,10 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 		return `userChannels=${JSON.stringify(userChannels)}`;
 	}, [userChannels]);
 
+	const [openUploadFileModal, closeUploadFileModal] = useModal(() => {
+		return <FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />;
+	}, [currentChannel]);
+
 	const handleDragEnter = (e: DragEvent<HTMLElement>) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -296,6 +301,16 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			setIsShowCreateThread(false);
 		}
 	}, [isShowMemberList, setIsShowCreateThread]);
+
+	useEffect(() => {
+		if (!isShowCanvas && !isShowAgeRestricted && draggingState && !isChannelMezonVoice) {
+			openUploadFileModal();
+		}
+
+		if (!draggingState) {
+			closeUploadFileModal();
+		}
+	}, [draggingState]);
 
 	useEffect(() => {
 		if (currentChannelAppId && currentChannelAppClanId) {
@@ -450,9 +465,6 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				<ChannelApps appChannel={appChannel} miniAppRef={miniAppRef} miniAppDataHash={miniAppDataHash} />
 			) : (
 				<>
-					{!isShowCanvas && !isShowAgeRestricted && draggingState && !isChannelMezonVoice && (
-						<FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />
-					)}
 					{isOverUploading && (
 						<TooManyUpload togglePopup={() => setOverUploadingState(false, UploadLimitReason.COUNT)} limitReason={overLimitReason} />
 					)}

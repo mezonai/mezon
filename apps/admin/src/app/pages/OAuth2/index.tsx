@@ -1,12 +1,20 @@
 import { ModalSaveChanges } from '@mezon/components';
 import { editMezonOauthClient, selectApplicationById, selectCurrentAppId, useAppDispatch } from '@mezon/store';
 import { ApiMezonOauthClient } from 'mezon-js/api.gen';
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import ClientInformation from './ClientInformation/ClientInformation';
 import Generator from './Generator/Generator';
 import Redirects from './Redirects/Redirects';
+
+const scopesList = process.env.NX_CHAT_APP_OAUTH2_SCOPES_LIST || '';
+const defaultScopeList = scopesList.split(',');
+
+export interface IScope {
+	isChecked: boolean;
+	value: string;
+}
 
 const OAuth2 = () => {
 	const dispatch = useAppDispatch();
@@ -15,9 +23,34 @@ const OAuth2 = () => {
 	const currentApp = useSelector((state) => selectApplicationById(state, currentAppId as string)) ?? {};
 
 	//For Redirects URIs
-	const appURIes = currentApp?.oAuthClient?.redirect_uris ?? [];
+	const appURIes = useMemo(() => currentApp?.oAuthClient?.redirect_uris ?? [], [currentApp?.oAuthClient?.redirect_uris]);
 	const uriInputValuesRef = useRef<string[]>([...appURIes]);
 	const [inputArrLength, setInputArrLength] = useState<number>(appURIes.length);
+
+	//For scopes
+	const initialAppScopesStringArray = (currentApp?.oAuthClient?.scope || '').split(' ');
+
+	const initialScopeValues = useMemo(() => {
+		const arr: IScope[] = [];
+		defaultScopeList.forEach((item) => {
+			if (initialAppScopesStringArray.includes(item)) {
+				const scope: IScope = {
+					isChecked: true,
+					value: item
+				};
+				arr.push(scope);
+			} else {
+				const scope: IScope = {
+					isChecked: false,
+					value: item
+				};
+				arr.push(scope);
+			}
+		});
+		return arr;
+	}, [initialAppScopesStringArray]);
+
+	const [clientScopeValues, setClientScopeValues] = useState<IScope[]>([...initialScopeValues]);
 
 	const handleSaveChanges = async () => {
 		let includeInvalidURI = false;
@@ -35,13 +68,24 @@ const OAuth2 = () => {
 			}
 		}
 
+		if (!uriInputValuesRef.current.length) {
+			toast.warning('Redirect URI is required!');
+			return;
+		}
+
 		if (includeInvalidURI) {
 			return;
 		}
 
+		let newScope = '';
+		clientScopeValues.forEach((item) => {
+			if (item.isChecked) newScope += item.value + ' ';
+		});
+
 		const request: ApiMezonOauthClient = {
 			...currentApp?.oAuthClient,
-			redirect_uris: uriInputValuesRef.current
+			redirect_uris: uriInputValuesRef.current,
+			scope: newScope.trim()
 		};
 
 		await dispatch(editMezonOauthClient({ body: request }));
@@ -49,13 +93,28 @@ const OAuth2 = () => {
 	};
 
 	const handleResetChanges = () => {
+		//URIs
 		uriInputValuesRef.current = [...appURIes];
 		setInputArrLength(appURIes.length);
+		//Scopes
+		setClientScopeValues([...initialScopeValues]);
+
 		setHasChange(false);
 	};
 
+	useEffect(() => {
+		const isSameURIArray =
+			appURIes.length === uriInputValuesRef.current.length && JSON.stringify(appURIes) === JSON.stringify(uriInputValuesRef.current);
+		const isTheSameScopeArray = JSON.stringify(initialScopeValues) === JSON.stringify(clientScopeValues);
+		if (!isTheSameScopeArray || !isSameURIArray || inputArrLength !== appURIes.length) {
+			setHasChange(true);
+			return;
+		}
+		setHasChange(false);
+	}, [appURIes, clientScopeValues, initialScopeValues, inputArrLength, setHasChange]);
+
 	return (
-		<div className="flex flex-col gap-10">
+		<div className="flex flex-col gap-10 pb-10">
 			<div className="flex gap-5 flex-col">
 				<div className="text-2xl font-semibold">OAuth2</div>
 				<div className="text-xl dark:text-[#b5bac1] text-[#4e5058]">
@@ -72,7 +131,12 @@ const OAuth2 = () => {
 				currentApp={currentApp}
 				setHasChange={setHasChange}
 			/>
-			<Generator />
+			<Generator
+				setClientScopeValues={setClientScopeValues}
+				clientScopeValues={clientScopeValues}
+				initialScopeValues={initialScopeValues}
+				setHasChange={setHasChange}
+			/>
 			{hasChange && <ModalSaveChanges onReset={handleResetChanges} onSave={handleSaveChanges} />}
 		</div>
 	);

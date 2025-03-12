@@ -71,7 +71,6 @@ const SidebarLogoItem = () => {
 								? createImgproxyUrl(logoCustom, { width: 44, height: 44, resizeType: 'fit' })
 								: `assets/images/${appearanceTheme === 'dark' ? 'mezon-logo-black.svg' : 'mezon-logo-white.svg'}`
 						}
-						alt={'logoMezon'}
 						width={48}
 						height={48}
 						className="clan w-full aspect-square object-cover"

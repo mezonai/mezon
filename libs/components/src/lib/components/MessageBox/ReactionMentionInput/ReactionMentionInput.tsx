@@ -192,6 +192,9 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 	const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(props.currentChannelId ?? ''));
 
+	const isDm = props.mode === ChannelStreamMode.STREAM_MODE_DM;
+	const isGr = props.mode === ChannelStreamMode.STREAM_MODE_GROUP;
+
 	const userProfile = useSelector(selectAllAccount);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
 	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, currentDmOrChannelId));
@@ -503,7 +506,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	);
 
 	const listChannelsMention: ChannelsMentionProps[] = useMemo(() => {
-		if (props.mode !== ChannelStreamMode.STREAM_MODE_GROUP && props.mode !== ChannelStreamMode.STREAM_MODE_DM) {
+		if (!isGr && !isDm) {
 			return channels
 				.map((item) => ({
 					id: item?.channel_id ?? '',
@@ -516,7 +519,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	}, [props.mode, channels]);
 
 	const commonChannelsMention: ChannelsMentionProps[] = useMemo(() => {
-		if (props.mode === ChannelStreamMode.STREAM_MODE_DM) {
+		if (isDm) {
 			return commonChannelDms
 				.map((item) => ({
 					id: item?.channel_id ?? '',
@@ -682,7 +685,7 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 	const handleSearchHashtag = (search: string, callback: any) => {
 		setValueHightlight(search);
-		if (props.mode === ChannelStreamMode.STREAM_MODE_DM) {
+		if (isDm) {
 			callback(searchMentionsHashtag(search, commonChannelsMention ?? []));
 		} else {
 			callback(searchMentionsHashtag(search, listChannelsMention ?? []));
@@ -736,10 +739,10 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 	const [chatBoxMaxWidth, setChatBoxMaxWidth] = useState('');
 
 	useEffect(() => {
-		if (props.mode === ChannelStreamMode.STREAM_MODE_DM) {
+		if (isDm) {
 			setMentionWidth(isShowDMUserProfile ? widthDmUserProfile : widthThumbnailAttachment);
 			setChatBoxMaxWidth(isShowDMUserProfile ? maxWidthWithDmUserProfile : defaultMaxWidth);
-		} else if (props.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+		} else if (isGr) {
 			setMentionWidth(isShowMemberListDM ? widthDmGroupMemberList : widthThumbnailAttachment);
 			setChatBoxMaxWidth(isShowMemberListDM ? maxWidthWithDmGroupMemberList : defaultMaxWidth);
 		} else {
@@ -919,20 +922,18 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
 							border: 'none',
 							maxHeight: '350px',
-							overflow: 'auto',
-							minWidth: '300px'
+							overflow: 'auto'
 						},
 						input: {
 							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
 							border: 'none',
 							outline: 'none',
 							maxHeight: '350px',
-							overflow: 'auto',
-							minWidth: '300px'
+							overflow: 'auto'
 						}
 					}
 				}}
-				className={`min-h-11 dark:bg-channelTextarea  bg-channelTextareaLight dark:text-white text-colorTextLightMode rounded-lg ${appearanceTheme === 'light' ? 'lightMode lightModeScrollBarMention' : 'darkMode'} cursor-not-allowed`}
+				className={` min-h-11 dark:bg-channelTextarea  bg-channelTextareaLight dark:text-white text-colorTextLightMode rounded-lg ${appearanceTheme === 'light' ? 'lightMode lightModeScrollBarMention' : 'darkMode'} cursor-not-allowed`}
 				allowSpaceInQuery={true}
 				onKeyDown={onKeyDown}
 				forceSuggestionsAboveCursor={true}

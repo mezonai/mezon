@@ -4,7 +4,7 @@ import { ClansEntity, selectClanMemberWithStatusIds, selectMembersClanCount } fr
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonBadge } from '../../../../../../componentUI';
+import MezonBadge from '../../../../../../componentUI/MezonBadge';
 import { style } from './styles';
 
 interface ClanMenuInfoProps {

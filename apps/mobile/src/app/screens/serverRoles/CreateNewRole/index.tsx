@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../componentUI';
+import MezonInput from '../../../componentUI/MezonInput';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 
 type CreateNewRoleScreen = typeof APP_SCREEN.MENU_CLAN.CREATE_NEW_ROLE;

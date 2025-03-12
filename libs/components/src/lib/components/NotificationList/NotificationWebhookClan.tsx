@@ -1,7 +1,6 @@
 import { useNotification } from '@mezon/core';
 import { channelMetaActions, selectClanById, selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
-import { INotification, TIME_OFFSET } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
+import { INotification, NotificationCategory, TIME_OFFSET } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import NotificationWebhookClanItem from './NotificationWebhookClanItem';
@@ -24,7 +23,7 @@ export const NotificationWebhookClan = ({ isUnreadTab, notification }: Notificat
 					timestamp: timestamp + TIME_OFFSET
 				})
 			);
-			deleteNotify(notification.id, notification.content.clan_id ?? '0');
+			deleteNotify(notification.id, notification.category as NotificationCategory);
 		},
 		[deleteNotify, dispatch]
 	);
@@ -80,23 +79,13 @@ const NotificationClanHeader = ({ isUnreadTab, clan_id, notification, onDeleteNo
 
 			<div className="flex flex-row items-center gap-3 relative">
 				{isUnreadTab && (
-					<Tippy
-						className={`${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
-						arrow={false}
-						content={
-							<p style={{ whiteSpace: 'nowrap' }} className="max-w-60 truncate">
-								{'Clear'}
-							</p>
-						}
-						placement="top"
+					<button
+						title="Clear"
+						className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
+						onClick={onDeleteNotification}
 					>
-						<button
-							className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
-							onClick={onDeleteNotification}
-						>
-							✕
-						</button>
-					</Tippy>
+						✕
+					</button>
 				)}
 			</div>
 		</div>

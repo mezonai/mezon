@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	selectAllUserChannel,
@@ -18,7 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonConfirm, MezonSwitch } from '../../../componentUI';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonSwitch from '../../../componentUI/MezonSwitch';
 import { AddMemberOrRoleBS } from '../components/AddMemberOrRoleBS';
 import { MemberItem } from '../components/MemberItem';
 import { RoleItem } from '../components/RoleItem';
