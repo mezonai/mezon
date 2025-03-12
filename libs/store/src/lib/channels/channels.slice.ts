@@ -272,6 +272,7 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 				await thunkAPI.dispatch(
 					threadsActions.setListThreadId({ channelId: response.parent_id as string, threadId: response.channel_id as string })
 				);
+				await thunkAPI.dispatch(listChannelsByUserActions.updateCachedChannelsByUser());
 			}
 
 			return response;

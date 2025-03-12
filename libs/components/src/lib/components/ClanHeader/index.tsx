@@ -50,7 +50,7 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	const [openSearchModal, closeSearchModal] = useModal(() => <SearchModal onClose={closeSearchModal} open={true} />);
 
 	const [openCreateCate, setOpenCreateCate] = useState(false);
-	const [openServerSettings, setOpenServerSettings] = useState(false);
+
 	const [isShowModalPanelClan, setIsShowModalPanelClan] = useState<boolean>(false);
 	const hasChildModal = useSelector(hasGrandchildModal);
 	const hasChildModalRef = useRef(false);
