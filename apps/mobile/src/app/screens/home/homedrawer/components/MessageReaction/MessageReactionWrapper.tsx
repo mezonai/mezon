@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { EmojiDataOptionals, SenderInfoOptionals, TypeMessage, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useRef, useState } from 'react';
@@ -123,7 +123,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 
 			{messageReactions?.length ? (
 				<Pressable onPress={() => !preventAction && openEmojiPicker?.()} style={styles.addEmojiIcon}>
-					<MezonIconCDN icon={IconCDN.faceIcon} height={size.s_20} width={size.s_20} />
+					<MezonIconCDN icon={IconCDN.faceIcon} height={size.s_20} width={size.s_20} color={Colors.gray72} />
 				</Pressable>
 			) : null}
 

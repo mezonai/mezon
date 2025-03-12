@@ -4,7 +4,6 @@ import {
 	ActionEmitEvent,
 	ENotificationActive,
 	ENotificationChannelId,
-	Icons,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	getUpdateOrAddClanChannelCache,
@@ -31,6 +30,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
 import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
@@ -95,7 +96,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		{
 			title: t('menu.watchMenu.markAsRead'),
 			onPress: () => handleMarkAsRead(),
-			icon: <Icons.EyeIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -109,7 +110,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <Icons.GroupPlusIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />
 		},
 		{
 			title: isFavorite ? t('menu.inviteMenu.unMarkFavorite') : t('menu.inviteMenu.markFavorite'),
@@ -117,7 +118,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				isFavorite ? removeFavoriteChannel() : markFavoriteChannel();
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
-			icon: <Icons.FavoriteFilledIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.favoriteFilledIcon} color={themeValue.textStrong} />
 		}
 		//TODO: update later
 		// {
@@ -175,9 +176,9 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
 			icon: isChannelUnmute ? (
-				<Icons.BellSlashIcon color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 			) : (
-				<Icons.BellIcon width={22} height={22} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
 			)
 		},
 		{
@@ -189,7 +190,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <Icons.ChannelNotificationIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -204,7 +205,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					params: { channelThreads: channel }
 				});
 			},
-			icon: <Icons.ThreadIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -220,18 +221,18 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					}
 				});
 			},
-			icon: <Icons.SettingsIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
 		},
 		{
 			title: t('menu.organizationMenu.duplicateChannel'),
 			onPress: () => reserve(),
-			icon: <Icons.CopyIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.copyIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
 		},
 		{
 			title: t('menu.organizationMenu.deleteChannel'),
-			icon: <Icons.CloseSmallBoldIcon color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={Colors.textRed} />,
 			onPress: () => {
 				setIsShowModalDeleteChannel(true);
 			},
@@ -245,7 +246,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const manageThreadMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.manageThreadMenu.leaveThread'),
-			icon: <Icons.LeaveGroup color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
 			onPress: () => {
 				setIsShowModalLeaveThread(true);
 			},
@@ -268,7 +269,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		// },
 		{
 			title: t('menu.manageThreadMenu.editThread'),
-			icon: <Icons.PencilIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.pencilIcon} color={themeValue.textStrong} />,
 			onPress: () => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -282,7 +283,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		},
 		{
 			title: t('menu.manageThreadMenu.deleteThread'),
-			icon: <Icons.TrashIcon color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.trashIcon} color={Colors.textRed} />,
 			onPress: () => {
 				setIsShowModalDeleteChannel(true);
 			},

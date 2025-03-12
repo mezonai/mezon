@@ -111,12 +111,12 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 				<View style={styles.iconWelcomeMessage}>
 					{isChannel ? (
 						currenChannel?.channel_private === ChannelStatusEnum.isPrivate ? (
-							<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_50} height={size.s_50} />
+							<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
 						) : (
-							<MezonIconCDN icon={IconCDN.channelText} width={size.s_50} height={size.s_50} />
+							<MezonIconCDN icon={IconCDN.channelText} width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
 						)
 					) : (
-						<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_50} height={size.s_50} />
+						<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
 					)}
 				</View>
 			)}

@@ -1,6 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import MezonButtonIcon from '../../../../../../componentUI/MezonButtonIcon';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../componentUI/MezonMenu';
@@ -209,18 +211,18 @@ export default function ClanMenu() {
 					{/*/>*/}
 					<MezonButtonIcon
 						title={t('actions.invite')}
-						icon={<Icons.GroupPlusIcon color={themeValue.textStrong} />}
+						icon={<MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />}
 						onPress={handleOpenInvite}
 					/>
 					<MezonButtonIcon
 						title={t('actions.notifications')}
-						icon={<Icons.BellIcon color={themeValue.textStrong} />}
+						icon={<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />}
 						onPress={handelOpenNotifications}
 					/>
 
 					<MezonButtonIcon
 						title={t('actions.settings')}
-						icon={<Icons.SettingsIcon color={themeValue.textStrong} />}
+						icon={<MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />}
 						onPress={handleOpenSettings}
 					/>
 				</ScrollView>

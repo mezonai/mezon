@@ -31,7 +31,7 @@ export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 				}}
 			>
 				<Pressable onPress={hanleEventChannel}>
-					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} />
+					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={colorStatusEvent} />
 				</Pressable>
 			</View>
 		);

@@ -19,7 +19,13 @@ const ChannelListSectionHeader = ({ onPress, title, onLongPress, isCollapsed, ca
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={() => onPress(category)} onLongPress={onLongPress} style={styles.channelListHeader}>
 			<View style={styles.channelListHeaderItem}>
-				<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} />
+				<MezonIconCDN
+					icon={IconCDN.chevronDownSmallIcon}
+					height={size.s_18}
+					width={size.s_18}
+					color={themeValue.text}
+					customStyle={[!isCollapsed && { transform: [{ rotate: '-90deg' }] }]}
+				/>
 				<Text style={styles.channelListHeaderItemTitle}>{title}</Text>
 			</View>
 		</TouchableOpacity>

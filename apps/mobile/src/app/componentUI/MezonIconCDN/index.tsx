@@ -1,19 +1,17 @@
-import { size, useTheme } from '@mezon/mobile-ui';
-import { ImageStyle } from 'react-native-fast-image';
-import ImageNative from '../../components/ImageNative';
-import { IconSet } from '../../constants/icon_cdn';
+import { size } from '@mezon/mobile-ui';
+import { Image, ImageStyle } from 'react-native';
 
 type IconComponentProps = {
-	icon: IconSet;
+	icon: string;
 	height?: number;
 	width?: number;
-	customStyle?: ImageStyle;
+	color?: string;
+	customStyle?: ImageStyle | ImageStyle[];
 };
 
-const MezonIconCDN = ({ icon, height = size.s_24, width = size.s_24, customStyle }: IconComponentProps) => {
-	const { themeBasic } = useTheme();
-	const iconUrl = icon?.[themeBasic];
-	return <ImageNative url={iconUrl} style={[{ height: height, width: width }, customStyle]} resizeMode="contain" />;
+const MezonIconCDN = ({ icon, height = size.s_24, width = size.s_24, color = 'white', customStyle }: IconComponentProps) => {
+	const iconUrl = icon;
+	return <Image source={{ uri: iconUrl }} style={[{ height: height, width: width, tintColor: color }, customStyle]} resizeMode="contain" />;
 };
 
 export default MezonIconCDN;

@@ -1,5 +1,5 @@
 import { usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannelId, selectCurrentClan } from '@mezon/store-mobile';
 import { EPermission, ICategoryChannel } from '@mezon/utils';
@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
 import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../../../componentUI/MezonMenu';
@@ -34,7 +36,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 		{
 			title: t('menu.watchMenu.markAsRead'),
 			onPress: () => reserve(),
-			icon: <Icons.EyeIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -48,7 +50,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <Icons.GroupPlusIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -56,12 +58,12 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 		{
 			title: t('menu.notification.muteCategory'),
 			onPress: () => reserve(),
-			icon: <Icons.BellSlashIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 		},
 		{
 			title: t('menu.notification.notification'),
 			onPress: () => reserve(),
-			icon: <Icons.ChannelNotificationIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -77,7 +79,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 					}
 				});
 			},
-			icon: <Icons.SettingsIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
 		},
 		{
@@ -91,7 +93,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 					}
 				});
 			},
-			icon: <Icons.PlusLargeIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.plusLargeIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
 		}
 	];
@@ -99,7 +101,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	const devMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.devMode.copyServerID'),
-			icon: <Icons.IDIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.idIcon} color={themeValue.textStrong} />,
 			onPress: () => {
 				Clipboard.setString(category?.category_id);
 				Toast.show({
