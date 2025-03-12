@@ -4,6 +4,7 @@ import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, crea
 import { ChannelDescription } from 'mezon-js';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
+import { RootState } from '../store';
 
 export const LIST_CHANNELS_USER_FEATURE_KEY = 'listchannelbyusers';
 
@@ -30,9 +31,17 @@ export interface ListChannelsByUserRootState {
 }
 
 export const fetchListChannelsByUserCached = memoizeAndTrack(
-	async (mezon: MezonValueContext) => {
+	async (mezon: MezonValueContext, cachedUpdate?: ChannelUsersEntity[]) => {
+		if (cachedUpdate) {
+			return cachedUpdate;
+		}
 		const response = await mezon.client.listChannelByUserId(mezon.session);
-		return { ...response, time: Date.now() };
+		if (!response?.channeldesc) {
+			return [] as ChannelUsersEntity[];
+		}
+		const channels = response.channeldesc.map(mapChannelsByUserToEntity);
+
+		return channels;
 	},
 	{
 		promise: true,
@@ -52,18 +61,22 @@ export const fetchListChannelsByUser = createAsyncThunk(
 				fetchListChannelsByUserCached.clear(mezon);
 			}
 			const response = await fetchListChannelsByUserCached(mezon);
-			if (!response?.channeldesc) {
-				return [];
-			}
-
-			const channels = response.channeldesc.map(mapChannelsByUserToEntity);
-			return channels;
+			return response;
 		} catch (error) {
 			captureSentryError(error, 'channelsByUser/fetchListChannelsByUser');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );
+
+export const updateCachedChannelsByUser = createAsyncThunk('channelsByUser/updateCached', async (_, thunkAPI) => {
+	const { selectAll } = listChannelsByUserAdapter.getSelectors();
+	const state = thunkAPI.getState() as RootState;
+	const allChannels = selectAll(state[LIST_CHANNELS_USER_FEATURE_KEY]);
+	const mezon = await ensureSession(getMezonCtx(thunkAPI));
+	fetchListChannelsByUserCached.clear(mezon);
+	await fetchListChannelsByUserCached(mezon, allChannels);
+});
 
 export const initialListChannelsByUserState: ListChannelsByUserState = listChannelsByUserAdapter.getInitialState({
 	loadingStatus: 'not loaded',
@@ -172,7 +185,8 @@ export const listchannelsByUserReducer = listChannelsByUserSlice.reducer;
 
 export const listChannelsByUserActions = {
 	...listChannelsByUserSlice.actions,
-	fetchListChannelsByUser
+	fetchListChannelsByUser,
+	updateCachedChannelsByUser
 };
 
 /*
