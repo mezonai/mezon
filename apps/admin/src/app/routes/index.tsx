@@ -50,6 +50,10 @@ export const Routes = () => {
 					element: <Navigate to="/developers" />
 				},
 				{
+					path: '*',
+					element: <Navigate to="/developers" />
+				},
+				{
 					path: '/developers',
 					loader: loaderWithStore(appLoader),
 					shouldRevalidate: shouldRevalidateApp,

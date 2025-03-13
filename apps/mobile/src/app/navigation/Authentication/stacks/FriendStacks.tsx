@@ -73,6 +73,9 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				component={FriendScreen}
 				options={{
 					headerTitle: t('headerTitle.Friends'),
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					},
 					headerRight: () => <AddFriendButton navigation={navigation} />
 				}}
 			/>
@@ -80,7 +83,10 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				name={APP_SCREEN.FRIENDS.ADD_FRIEND}
 				component={AddFriendScreen}
 				options={{
-					headerTitle: t('headerTitle.addFriends')
+					headerTitle: t('headerTitle.addFriends'),
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					}
 				}}
 			/>
 			<Stack.Screen
@@ -88,6 +94,9 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				component={RequestFriendScreen}
 				options={{
 					headerTitle: t('headerTitle.requestFriend'),
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					},
 					headerRight: () => <SettingFriendRequestButton navigation={navigation} />
 				}}
 			/>
@@ -95,7 +104,10 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				name={APP_SCREEN.FRIENDS.REQUEST_FRIEND_SETTING}
 				component={SettingFriendRequestScreen}
 				options={{
-					headerTitle: t('headerTitle.friendRequestSettings')
+					headerTitle: t('headerTitle.friendRequestSettings'),
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					}
 				}}
 			/>
 		</Stack.Navigator>

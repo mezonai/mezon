@@ -20,6 +20,7 @@ import {
 	EntityState,
 	GetThunkAPI,
 	PayloadAction,
+	Update,
 	createAsyncThunk,
 	createEntityAdapter,
 	createSelector,
@@ -921,7 +922,17 @@ export const messagesSlice = createSlice({
 		},
 
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
-			const { code, channel_id: channelId, id: messageId, isSending, isMe, isAnonymous, content, topic_id } = action.payload;
+			const {
+				code,
+				channel_id: channelId,
+				id: messageId,
+				isSending,
+				isMe,
+				isAnonymous,
+				content,
+				topic_id,
+				referenced_message
+			} = action.payload;
 
 			if (!channelId || !messageId) return state;
 
@@ -938,6 +949,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.CreateThread:
 				case TypeMessage.CreatePin:
 				case TypeMessage.MessageBuzz:
+				case TypeMessage.AuditLog:
 				case TypeMessage.SendToken:
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
@@ -1026,6 +1038,7 @@ export const messagesSlice = createSlice({
 					break;
 				}
 				case TypeMessage.ChatRemove: {
+					updateReferenceMessage({ state, channelId, listMessageIds: referenced_message as string[] });
 					handleRemoveOneMessage({ state, channelId, messageId });
 					break;
 				}
@@ -1588,6 +1601,28 @@ const handleRemoveOneMessage = ({ state, channelId, messageId }: { state: Messag
 		state.channelViewPortMessageIds[channelId] = state.channelViewPortMessageIds[channelId].filter((item) => item !== messageId);
 	}
 	return channelMessagesAdapter.removeOne(channelEntity, messageId);
+};
+
+const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: MessagesState; channelId: string; listMessageIds: string[] }) => {
+	const channelEntity = state.channelMessages[channelId];
+	const index = channelEntity.ids.indexOf(listMessageIds[0]);
+	if (index === -1) return;
+
+	const listReferencesUpdate: Update<MessagesEntity, string>[] = listMessageIds.map((id) => {
+		return {
+			id: id,
+			changes: {
+				references: [
+					{
+						...(channelEntity.entities[id].references?.[0] as ApiMessageRef),
+						content: '{"t":"Original message was deleted"}',
+						message_ref_id: undefined
+					}
+				]
+			}
+		};
+	});
+	channelMessagesAdapter.updateMany(channelEntity, listReferencesUpdate);
 };
 
 const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: MessagesState; channelId: string; adapterPayload: MessagesEntity }) => {

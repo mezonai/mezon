@@ -52,7 +52,6 @@ const Header = ({ toggleSideBar }: IHeaderProps) => {
 				<Link to="/developers/applications" className="flex flex-row items-center justify-center gap-[4px]">
 					<Image
 						src={`${isDarkMode ? 'assets/images/mezon-logo-black.svg' : 'assets/images/mezon-logo-white.svg'}`}
-						alt={'logoMezon'}
 						width={28}
 						height={28}
 					/>

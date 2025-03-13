@@ -10,16 +10,17 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, InputField } from '@mezon/ui';
-import { createImgproxyUrl, fetchAndCreateFiles, fileTypeImage } from '@mezon/utils';
+import { ImageSourceObject, createImgproxyUrl, fileTypeImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { ApiMessageAttachment } from 'mezon-js/dist/api.gen';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Coords } from '../../ChannelLink';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
 import PanelClan from '../../PanelClan';
-import SettingUserClanProfileCard, { Profilesform } from '../SettingUserClanProfileCard';
+import ImageEditor from '../ImageEditor/ImageEditor';
+import PreviewSetting, { Profilesform } from '../SettingUserClanProfileCard';
+import { processImage } from '../helper';
 
 const SettingRightUser = ({
 	onClanProfileClick,
@@ -73,46 +74,55 @@ const SettingRightUser = ({
 		}
 	};
 
-	const handleFile = async (e: any) => {
-		const file = e?.target?.files[0];
-		const sizeImage = file?.size;
-		const session = sessionRef.current;
-		const client = clientRef.current;
+	// Editor Avatar Profile//
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [imageObject, setImageObject] = useState<ImageSourceObject | null>(null);
+	const [imageCropped, setImageCropped] = useState<File | null>(null);
+	const [openModalEditor, closeModalEditor] = useModal(
+		() =>
+			imageObject ? (
+				<ImageEditor setImageCropped={setImageCropped} setImageObject={setImageObject} onClose={closeModalEditor} imageSource={imageObject} />
+			) : null,
+		[imageObject]
+	);
 
-		const files = [
-			{
-				filename: file.name,
-				filetype: file.type,
-				size: file.size,
-				url: URL.createObjectURL(file)
-			}
-		] as ApiMessageAttachment[];
+	useEffect(() => {
+		if (!imageCropped) return;
 
-		if (!file) return;
-		if (!client || !session) {
-			throw new Error('Client or file is not initialized');
-		}
-
-		const allowedTypes = fileTypeImage;
-		if (!allowedTypes.includes(file.type)) {
-			setOpenModalType(true);
-			e.target.value = null;
-			return;
-		}
-
-		if (sizeImage > 1000000) {
-			setOpenModal(true);
-			e.target.value = null;
-			return;
-		}
-		const createdFiles = await fetchAndCreateFiles(files);
-		handleUploadFile(client, session, currentClanId || '0', currentChannelId || '0', files[0]?.filename || '', createdFiles[0]).then(
-			(attachment: any) => {
-				setUrlImage(attachment.url ?? '');
-			}
+		processImage(
+			imageCropped,
+			dispatch,
+			clientRef,
+			sessionRef,
+			currentClanId || '0',
+			userProfile,
+			setUrlImage as any,
+			setImageObject as any,
+			setImageCropped as any,
+			setIsLoading,
+			setOpenModal
 		);
+	}, [imageCropped]);
+
+	const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		if (!fileTypeImage.includes(file.type)) {
+			setOpenModalType(true);
+			return;
+		}
+		const newImageObject: ImageSourceObject = {
+			filename: file.name,
+			filetype: file.type,
+			size: file.size,
+			url: URL.createObjectURL(file)
+		};
 		setFlags(true);
+		setImageObject(newImageObject);
+		openModalEditor();
+		e.target.value = '';
 	};
+
 	const handleClose = () => {
 		setValueDisplayName(currentDisplayName);
 		setEditAboutUser(aboutMe);
@@ -223,10 +233,7 @@ const SettingRightUser = ({
 						<p className="font-semibold tracking-wide text-sm">AVATAR</p>
 						<div className="flex mt-[10px] gap-x-5">
 							<label>
-								<div
-									className="text-white font-medium bg-[#155EEF] hover:bg-blue-500 rounded-[4px] p-[8px] pr-[10px] pl-[10px] cursor-pointer text-[14px]"
-									onChange={(e) => handleFile(e)}
-								>
+								<div className="text-white font-medium bg-[#155EEF] hover:bg-blue-500 rounded-[4px] p-[8px] pr-[10px] pl-[10px] cursor-pointer text-[14px]">
 									Change avatar
 								</div>
 								<input type="file" onChange={(e) => handleFile(e)} className="w-full text-sm text-slate-500 hidden" />
@@ -286,7 +293,7 @@ const SettingRightUser = ({
 				</div>
 				<div className="flex-1  text-white">
 					<p className="mt-[20px] dark:text-[#CCCCCC] text-black font-semibold tracking-wide text-sm">PREVIEW</p>
-					<SettingUserClanProfileCard profiles={editProfile} isDM={isDM} />
+					<PreviewSetting isLoading={isLoading} profiles={editProfile} isDM={isDM} />
 				</div>
 			</div>
 			{(urlImage !== avatar && flags) ||

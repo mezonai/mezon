@@ -9,7 +9,7 @@ import {
 	parseThreadInfo
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MentionUser, PlainText, useMessageContextMenu } from '../../components';
 
@@ -49,9 +49,7 @@ interface RenderContentProps {
 
 const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessageEnabled, isTokenClickAble }: RenderContentProps) => {
 	const { t, mentions = [] } = data;
-	const elements = useMemo(() => {
-		return [...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS }))].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-	}, [mentions]);
+	const elements = [...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS }))].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 	const { allUserIdsInChannel } = useMessageContextMenu();
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
@@ -75,7 +73,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
 
 	let lastindex = 0;
-	const content = useMemo(() => {
+	const content = (() => {
 		const formattedContent: React.ReactNode[] = [];
 
 		elements.forEach((element, index) => {
@@ -130,14 +128,14 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 		}
 
 		return formattedContent;
-	}, [elements, t, mode, allUserIdsInChannel]);
+	})();
 
-	const { threadLabel, threadId, threadContent } = useMemo(() => {
+	const { threadLabel, threadId, threadContent } = (() => {
 		if (message.code === TypeMessage.CreateThread && message.content?.t) {
 			return parseThreadInfo(message.content.t);
 		}
 		return { threadLabel: '', threadId: '', threadContent: '' };
-	}, [message.code, message.content?.t]);
+	})();
 
 	const handelJumpToChannel = async () => {
 		if (threadId) {

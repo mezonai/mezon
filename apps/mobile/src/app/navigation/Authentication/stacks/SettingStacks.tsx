@@ -131,7 +131,7 @@ export const SettingStacks = ({}: any) => {
 					headerTitle: t('settingStack.sendToken'),
 					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
-						backgroundColor: themeValue.secondary
+						backgroundColor: themeValue.primary
 					}
 				}}
 			/>
@@ -142,7 +142,7 @@ export const SettingStacks = ({}: any) => {
 					headerTitle: '',
 					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
-						backgroundColor: themeValue.secondary
+						backgroundColor: themeValue.primary
 					}
 				}}
 			/>
@@ -153,7 +153,7 @@ export const SettingStacks = ({}: any) => {
 					headerTitle: '',
 					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
-						backgroundColor: themeValue.secondary
+						backgroundColor: themeValue.primary
 					}
 				}}
 			/>

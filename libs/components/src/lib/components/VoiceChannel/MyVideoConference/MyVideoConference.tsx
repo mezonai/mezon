@@ -198,27 +198,32 @@ export function MyVideoConference({ channel, onLeaveRoom, onFullScreen }: MyVide
 										onClick={handleShowInbox}
 										onContextMenu={(e) => e.preventDefault()}
 									>
-										<Icons.Inbox isWhite={isShowInbox} defaultFill="text-contentTertiary" />
+										<Icons.Inbox
+											isWhite={isShowInbox}
+											defaultFill="text-contentTertiary"
+											className="hover:text-white text-[#B5BAC1]"
+										/>
 										{(currentClan?.badge_count ?? 0) > 0 && <RedDot />}
 									</button>
 									{isShowInbox && <NotificationList rootRef={inboxRef} />}
 								</div>
 								<Tooltip
+									showArrow={{ className: '!top-[6px]' }}
 									key={+focusTrack}
 									placement="bottomRight"
 									align={{
-										offset: [11, 4]
+										offset: [11, -4]
 									}}
 									overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">{focusTrack ? 'Grid' : 'Focus'}</span>}
 									overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
-									overlayClassName="whitespace-nowrap z-50 !p-0"
+									overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 									getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 								>
 									<span onClick={toggleViewMode} className="cursor-pointer">
 										{focusTrack ? (
-											<Icons.VoiceGridIcon className="dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+											<Icons.VoiceGridIcon className="hover:text-white text-[#B5BAC1]" />
 										) : (
-											<Icons.VoiceFocusIcon className="dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+											<Icons.VoiceFocusIcon className="hover:text-white text-[#B5BAC1]" />
 										)}
 									</span>
 								</Tooltip>

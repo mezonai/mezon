@@ -1446,3 +1446,10 @@ export type IvoiceInfo = {
 	channelId: string;
 	channelLabel: string;
 };
+
+export type ImageSourceObject = {
+	filename: string;
+	filetype: string;
+	size: number;
+	url: string;
+};

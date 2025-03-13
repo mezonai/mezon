@@ -116,9 +116,9 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 		{
 			items: watchMenu
 		},
-		{
-			items: inviteMenu
-		},
+		// {
+		// 	items: inviteMenu
+		// },
 		{
 			items: notificationMenu
 		},

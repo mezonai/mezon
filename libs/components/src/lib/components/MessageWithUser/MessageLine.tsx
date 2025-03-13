@@ -2,7 +2,7 @@
 import { selectAllChannels, useAppSelector } from '@mezon/store';
 import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { useCallback, useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
 
 interface RenderContentProps {
@@ -35,6 +35,42 @@ export interface ElementToken {
 	type?: EBacktickType;
 	username?: string;
 }
+
+// Utility functions for text selection
+const getSelectionIndex = (node: Node, offset: number, containerRef: HTMLDivElement | null) => {
+	let currentNode = node;
+	let totalOffset = offset;
+
+	// Traverse up the DOM tree to calculate the index
+	while (currentNode && currentNode !== containerRef) {
+		// Traverse previous siblings to account for their text content
+		while (currentNode.previousSibling) {
+			currentNode = currentNode.previousSibling;
+			totalOffset += currentNode.textContent?.length ?? 0;
+		}
+		currentNode = currentNode.parentNode as Node;
+	}
+	return totalOffset;
+};
+
+const getSelectionRange = (containerRef: HTMLDivElement | null) => {
+	const selection = window.getSelection();
+
+	// Ensure selection exists and is within the div
+	if (selection && selection.rangeCount > 0 && containerRef) {
+		const range = selection?.getRangeAt(0);
+		const { startContainer, endContainer, startOffset, endOffset } = range;
+
+		// Check if selection is within the target div
+		if (containerRef.contains(startContainer) && containerRef.contains(endContainer)) {
+			const startIndex = getSelectionIndex(startContainer, startOffset, containerRef);
+			const endIndex = getSelectionIndex(endContainer, endOffset, containerRef);
+			return { startIndex, endIndex };
+		}
+	}
+
+	return { startIndex: 0, endIndex: 0 };
+};
 
 const RenderContent = ({
 	content,
@@ -72,7 +108,7 @@ const RenderContent = ({
 	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
 	let lastindex = 0;
-	const content2 = useMemo(() => {
+	const content2 = (() => {
 		const formattedContent: React.ReactNode[] = [];
 
 		elements.forEach((element, index) => {
@@ -238,52 +274,12 @@ const RenderContent = ({
 		}
 
 		return formattedContent;
-	}, [elements, t, mode]);
+	})();
 
 	const divRef = useRef<HTMLDivElement>(null);
 
-	// Calculate the index position within the div
-	const getSelectionIndex = useCallback(
-		(node: Node, offset: number) => {
-			let currentNode = node;
-			let totalOffset = offset;
-
-			// Traverse up the DOM tree to calculate the index
-			while (currentNode && currentNode !== divRef.current) {
-				// Traverse previous siblings to account for their text content
-				while (currentNode.previousSibling) {
-					currentNode = currentNode.previousSibling;
-					totalOffset += currentNode.textContent?.length ?? 0;
-				}
-				currentNode = currentNode.parentNode as Node;
-			}
-			return totalOffset;
-		},
-		[divRef]
-	);
-
-	// Determine the selection's start and end index
-	const getSelectionRange = () => {
-		const selection = window.getSelection();
-
-		// Ensure selection exists and is within the div
-		if (selection && selection.rangeCount > 0 && divRef.current) {
-			const range = selection?.getRangeAt(0);
-			const { startContainer, endContainer, startOffset, endOffset } = range;
-
-			// // Check if selection is within the target div
-			if (divRef.current.contains(startContainer) && divRef.current.contains(endContainer)) {
-				const startIndex = getSelectionIndex(startContainer, startOffset);
-				const endIndex = getSelectionIndex(endContainer, endOffset);
-				return { startIndex, endIndex };
-			}
-		}
-
-		return { startIndex: 0, endIndex: 0 };
-	};
-
 	const handleCopy = (event: React.ClipboardEvent<HTMLDivElement>) => {
-		const { startIndex, endIndex } = getSelectionRange();
+		const { startIndex, endIndex } = getSelectionRange(divRef.current);
 
 		const isSelectionHasMention = mentions.find((mention) => {
 			return (mention.s || 0) >= startIndex && (mention.e as number) <= endIndex;
@@ -314,7 +310,7 @@ const RenderContent = ({
 							overflowWrap: 'break-word'
 						}
 			}
-			className={`basis-full break-all ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] flex items-center  cursor-pointer' : 'text-[#4E5057] dark:text-[#E6E6E6]'}`}
+			className={`w-full ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] flex items-center  cursor-pointer' : 'text-[#4E5057] dark:text-[#E6E6E6]'}`}
 		>
 			{code === TypeMessage.MessageBuzz ? <span className="text-red-500">{content2}</span> : content2}
 		</div>

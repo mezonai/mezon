@@ -8,7 +8,6 @@ import { FlatList, Platform, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import ChannelListBackground from '../components/ChannelList/ChannelListBackground';
-import ChannelListBottomSheet from '../components/ChannelList/ChannelListBottomSheet';
 import ChannelListHeader from '../components/ChannelList/ChannelListHeader';
 import { ChannelListItem } from '../components/ChannelList/ChannelListItem';
 import ChannelListScroll from '../components/ChannelList/ChannelListScroll';
@@ -86,57 +85,55 @@ const ChannelList = () => {
 
 	const keyExtractor = useCallback((item, index) => item.id + item.isFavor?.toString() + index, []);
 	return (
-		<>
-			<View style={styles.mainList}>
-				<ChannelListScroll data={data} flashListRef={flashListRef} />
-				<FlatList
-					ref={flashListRef}
-					data={data}
-					renderItem={renderItem}
-					keyExtractor={keyExtractor}
-					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-					stickyHeaderIndices={[1]}
-					showsVerticalScrollIndicator={true}
-					initialNumToRender={10}
-					maxToRenderPerBatch={10}
-					windowSize={10}
-					onEndReachedThreshold={0.7}
-					removeClippedSubviews={Platform.OS === 'android'}
-					keyboardShouldPersistTaps={'handled'}
-					ListHeaderComponent={() => {
-						return <ChannelListBackground />;
-					}}
-					getItemLayout={(data, index) => ({
-						length: index === 0 ? size.s_100 + size.s_10 : size.s_36,
-						offset: index === 0 ? size.s_100 + size.s_10 : size.s_36 * index,
-						index
-					})}
-					CellRendererComponent={({ children, index, style }) => {
-						if (index === 0) {
-							return <View style={[style, { zIndex: 10 }]}>{children}</View>;
+		<View style={styles.mainList}>
+			<ChannelListScroll data={data} flashListRef={flashListRef} />
+			<FlatList
+				ref={flashListRef}
+				data={data}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+				stickyHeaderIndices={[1]}
+				showsVerticalScrollIndicator={true}
+				initialNumToRender={10}
+				maxToRenderPerBatch={10}
+				windowSize={10}
+				onEndReachedThreshold={0.7}
+				removeClippedSubviews={Platform.OS === 'android'}
+				keyboardShouldPersistTaps={'handled'}
+				ListHeaderComponent={() => {
+					return <ChannelListBackground />;
+				}}
+				getItemLayout={(data, index) => ({
+					length: index === 0 ? size.s_100 + size.s_10 : size.s_36,
+					offset: index === 0 ? size.s_100 + size.s_10 : size.s_36 * index,
+					index
+				})}
+				CellRendererComponent={({ children, index, style }) => {
+					if (index === 0) {
+						return <View style={[style, { zIndex: 10 }]}>{children}</View>;
+					}
+					if (data?.[index]?.threadIds) {
+						return <View style={[style, { backgroundColor: themeValue.secondary, zIndex: 1 }]}>{children}</View>;
+					}
+					return children;
+				}}
+				onScrollToIndexFailed={(info) => {
+					if (info?.highestMeasuredFrameIndex) {
+						const wait = new Promise((resolve) => setTimeout(resolve, 200));
+						if (info.highestMeasuredFrameIndex < info.index) {
+							flashListRef.current?.scrollToIndex({ index: info.highestMeasuredFrameIndex, animated: true });
+							wait.then(() => {
+								flashListRef.current?.scrollToIndex({ index: info.index, animated: true });
+							});
 						}
-						if (data?.[index]?.threadIds) {
-							return <View style={[style, { backgroundColor: themeValue.secondary, zIndex: 1 }]}>{children}</View>;
-						}
-						return children;
-					}}
-					onScrollToIndexFailed={(info) => {
-						if (info?.highestMeasuredFrameIndex) {
-							const wait = new Promise((resolve) => setTimeout(resolve, 200));
-							if (info.highestMeasuredFrameIndex < info.index) {
-								flashListRef.current?.scrollToIndex({ index: info.highestMeasuredFrameIndex, animated: true });
-								wait.then(() => {
-									flashListRef.current?.scrollToIndex({ index: info.index, animated: true });
-								});
-							}
-						}
-					}}
-					disableVirtualization
-				/>
-				<View style={{ height: 80 }} />
-				<ButtonNewUnread />
-			</View>
-		</>
+					}
+				}}
+				disableVirtualization
+			/>
+			<View style={{ height: 80 }} />
+			<ButtonNewUnread />
+		</View>
 	);
 };
 

@@ -1,15 +1,18 @@
 import { useAuth, useClanProfileSetting } from '@mezon/core';
 import { checkDuplicateClanNickName, selectUserClanProfileByClanID, useAppDispatch } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { useMezon } from '@mezon/transport';
 import { InputField } from '@mezon/ui';
-import { fileTypeImage, resizeFileImage } from '@mezon/utils';
+import { ImageSourceObject, fileTypeImage } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { ModalSettingSave } from '../../ClanSettings/SettingRoleManagement';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
-import SettingRightClanCard from '../SettingUserClanProfileCard';
+import ImageEditor from '../ImageEditor/ImageEditor';
+import PreviewSetting from '../SettingUserClanProfileCard';
+import { processImage } from '../helper';
 import { SettingUserClanProfileSave } from './SettingUserClanProfileSave';
 
 interface SettingUserClanProfileEditProps {
@@ -35,9 +38,12 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 		setDraftProfile(userClansProfile);
 	}, [userClansProfile]);
 
-	const setUrlImage = (url_image: string) => {
-		setDraftProfile((prevState) => (prevState ? { ...prevState, avatar: url_image } : prevState));
-	};
+	const setUrlImage = useCallback(
+		(url_image: string) => {
+			setDraftProfile((prevState) => (prevState ? { ...prevState, avatar: url_image } : prevState));
+		},
+		[setDraftProfile]
+	);
 	const setDisplayName = (nick_name: string) => {
 		setDraftProfile((prevState) => (prevState ? { ...prevState, nick_name } : prevState));
 	};
@@ -58,28 +64,53 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 
 	const { displayName, urlImage } = editProfile;
 
+	// Editor Avatar //
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [imageObject, setImageObject] = useState<ImageSourceObject | null>(null);
+	const [imageCropped, setImageCropped] = useState<File | null>(null);
+	const [openModalEditor, closeModalEditor] = useModal(
+		() =>
+			imageObject ? (
+				<ImageEditor setImageCropped={setImageCropped} setImageObject={setImageObject} onClose={closeModalEditor} imageSource={imageObject} />
+			) : null,
+		[imageObject]
+	);
+	useEffect(() => {
+		if (!imageCropped) return;
+
+		processImage(
+			imageCropped,
+			dispatch,
+			clientRef,
+			sessionRef,
+			clanId,
+			userProfile,
+			setUrlImage as any,
+			setImageObject as any,
+			setImageCropped as any,
+			setIsLoading,
+			setOpenModal,
+			setFlagOption as any
+		);
+	}, [imageCropped]);
+
 	const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (!file) return;
-		if (!clientRef.current || !sessionRef.current) throw new Error('Client or session is not initialized');
 		if (!fileTypeImage.includes(file.type)) {
 			setOpenModalType(true);
-			e.target.value = '';
 			return;
 		}
-		if (file.size > 1000000) {
-			setOpenModal(true);
-			e.target.value = '';
-			return;
-		}
-		const imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+		const newImageObject: ImageSourceObject = {
+			filename: file.name,
+			filetype: file.type,
+			size: file.size,
+			url: URL.createObjectURL(file)
+		};
 
-		handleUploadFile(clientRef.current, sessionRef.current, clanId, userProfile?.user?.id || '0', imageAvatarResize.name, imageAvatarResize).then(
-			(attachment) => {
-				setUrlImage(attachment.url || '');
-				setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
-			}
-		);
+		setImageObject(newImageObject);
+		openModalEditor();
+		e.target.value = '';
 	};
 
 	const debouncedSetCategoryName = useDebouncedCallback(async (value: string) => {
@@ -193,10 +224,11 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 				</div>
 				<div className="flex-1 text-white">
 					<p className="mt-[20px] dark:text-[#CCCCCC] text-textLightTheme font-bold tracking-wide text-sm">PREVIEW</p>
-					<SettingRightClanCard
+					<PreviewSetting
 						profiles={editProfile}
 						currentDisplayName={!displayName ? userProfile?.user?.display_name : ''}
 						isDM={isDM}
+						isLoading={isLoading}
 					/>
 				</div>
 			</div>

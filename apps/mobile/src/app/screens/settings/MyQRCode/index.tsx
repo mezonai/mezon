@@ -1,6 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllAccount, selectUpdateToken } from '@mezon/store-mobile';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, formatMoney } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -63,7 +63,7 @@ export const MyQRCode = () => {
 				/>
 				<View>
 					<Text style={styles.nameProfile}>{userProfile?.user?.display_name || userProfile?.user?.username}</Text>
-					<Text style={styles.tokenProfile}>Balance: {Number(tokenInWallet) + Number(getTokenSocket)}</Text>
+					<Text style={styles.tokenProfile}>Balance: {formatMoney(Number(tokenInWallet || 0) + Number(getTokenSocket || 0))}₫</Text>
 				</View>
 			</View>
 			{urlQRCode ? (

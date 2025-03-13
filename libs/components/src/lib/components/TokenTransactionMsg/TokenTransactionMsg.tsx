@@ -18,7 +18,7 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 	return (
 		<>
 			<div className="py-2 w-full">
-				<div className="w-[230px] border dark:border-borderDivider rounded-md dark:bg-bgSecondary bg-bgLightSecondary text-[#4E5057] dark:text-[#E6E6E6]">
+				<div className="w-[300px] border dark:border-borderDivider rounded-md dark:bg-bgSecondary bg-bgLightSecondary text-[#4E5057] dark:text-[#E6E6E6]">
 					<div className="p-3 flex gap-2 border-b dark:border-borderDivider w-full">
 						<div className="w-[50px]">
 							<Icons.Transaction className="w-full dark:text-green-600 text-green-700" />

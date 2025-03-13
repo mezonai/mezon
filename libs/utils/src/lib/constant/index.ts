@@ -107,3 +107,5 @@ export enum UploadLimitReason {
 	SIZE = 'size',
 	COUNT = 'count'
 }
+
+export const MAX_FILE_SIZE_1MB = 1 * 1024 * 1024; // 1MB

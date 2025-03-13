@@ -111,7 +111,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					onPress={() => {
 						const data = {
 							snapPoints: ['70%', '90%'],
-							children: <InviteToChannel isUnknownChannel={false} />
+							children: <InviteToChannel isUnknownChannel={false} channelId={channel?.channel_id} />
 						};
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					}}

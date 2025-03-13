@@ -434,7 +434,7 @@ input:-webkit-autofill:active {
 			background-color: #f2f3f5;
 			border-radius: 6px;
 			padding: 3px 6px;
-			font-weight: 300;
+			font-weight: 400;
 			font-size: 14px;
 			display: inline;
 			/* Keep the code inline */
@@ -462,7 +462,7 @@ input:-webkit-autofill:active {
 			background-color: #2b2d31;
 			border-radius: 6px;
 			padding: 3px 6px;
-			font-weight: 300;
+			font-weight: 400;
 			font-size: 14px;
 			display: inline;
 			/* Keep the code inline */
@@ -494,7 +494,7 @@ input:-webkit-autofill:active {
 
 			code {
 				font-size: 14px;
-				font-weight: 300;
+				font-weight: 400;
 				border-radius: 6px;
 				padding: 3px 6px;
 				color: #e6e6e6;
@@ -522,9 +522,8 @@ input:-webkit-autofill:active {
 				font-size: 14px;
 				border-radius: 6px;
 				padding: 3px 6px;
-				color: #e6e6e6;
-				font-weight: 300;
-
+				color: #535353;
+				font-weight: 400;
 				display: inline-block;
 				white-space: pre-wrap;
 				word-wrap: break-word;
@@ -554,7 +553,7 @@ input:-webkit-autofill:active {
 
 	border: 1px solid #e3e5e8 !important;
 	background-color: #f2f3f5;
-	color: #e6e6e6;
+	color: #535353;
 	padding: 2px;
 	border-radius: 6px;
 	margin-top: 0;

@@ -16,9 +16,10 @@ interface IInviteToChannelProp {
 	isUnknownChannel: boolean;
 	onClose?: () => void;
 	isDMThread?: boolean;
+	channelId?: string;
 }
 
-const InviteToChannel = ({ isUnknownChannel, onClose, isDMThread = false }: IInviteToChannelProp) => {
+const InviteToChannel = ({ isUnknownChannel, onClose, isDMThread = false, channelId = '' }: IInviteToChannelProp) => {
 	const [isVisibleEditLinkModal, setIsVisibleEditLinkModal] = useState(false);
 	const reducedMotion = useReducedMotion();
 	const isTabletLandscape = useTabletLandscape();
@@ -86,6 +87,7 @@ const InviteToChannel = ({ isUnknownChannel, onClose, isDMThread = false }: IInv
 				isDMThread={isDMThread}
 				isKeyboardVisible={isKeyboardVisible}
 				openEditLinkModal={openEditLinkModal}
+				channelId={channelId}
 			/>
 
 			{/*{isVisibleEditLinkModal ? (*/}

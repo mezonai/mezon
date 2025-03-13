@@ -1,5 +1,5 @@
 import { useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useShowName } from '@mezon/core';
-import { messagesActions, selectChannelById, selectClanById, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
+import { messagesActions, selectChannelById, selectClanById, selectMemberDMByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
 	IMentionOnMessage,
@@ -12,7 +12,6 @@ import {
 } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import MessageAttachment from '../MessageWithUser/MessageAttachment';
@@ -127,7 +126,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 	}, [message.references]);
 
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
-	const user = useSelector(selectMemberClanByUserId(senderId ?? ''));
+	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
 
 	const username = message.username;
 	let subjectText = subject;
@@ -136,7 +135,6 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 		const usernameLenght = username.length;
 		subjectText = subject?.slice(usernameLenght);
 	}
-
 	const isChannel = message.mode === ChannelStreamMode.STREAM_MODE_CHANNEL;
 
 	return (

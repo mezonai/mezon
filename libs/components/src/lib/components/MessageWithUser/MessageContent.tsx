@@ -1,14 +1,4 @@
-import {
-	getFirstMessageOfTopic,
-	selectCurrentChannelId,
-	selectMemberClanByUserId2,
-	selectMessageByMessageId,
-	selectTheme,
-	threadsActions,
-	topicsActions,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { getFirstMessageOfTopic, selectMemberClanByUserId2, threadsActions, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
 	ETypeLinkMedia,
@@ -21,8 +11,7 @@ import {
 	isValidEmojiData
 } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import React, { memo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback } from 'react';
 import { MessageLine } from './MessageLine';
 
 type IMessageContentProps = {
@@ -37,14 +26,13 @@ type IMessageContentProps = {
 	isInTopic?: boolean;
 };
 
-const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMessageContentProps) => {
+const MessageContent = ({ message, mode, isSearchMessage, isInTopic }: IMessageContentProps) => {
 	const dispatch = useAppDispatch();
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentMessage = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, message.id || ''));
-	const topicCreator = useAppSelector((state) => selectMemberClanByUserId2(state, currentMessage?.content?.cid as string));
+
+	const topicCreator = useAppSelector((state) => selectMemberClanByUserId2(state, message?.content?.cid as string));
 	const lineValue = (() => {
 		if (lines === undefined && typeof message.content === 'string') {
 			return safeJSONParse(message.content).t;
@@ -52,13 +40,11 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 			return lines;
 		}
 	})();
-	const theme = useAppSelector(selectTheme);
-
 	const handleOpenTopic = () => {
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channel_id as string, isShowCreateThread: false }));
-		dispatch(topicsActions.setCurrentTopicId(currentMessage?.content?.tp || ''));
-		dispatch(getFirstMessageOfTopic(currentMessage?.content?.tp || ''));
+		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
+		dispatch(getFirstMessageOfTopic(message?.content?.tp || ''));
 	};
 
 	const handleCopyMessage = useCallback(
@@ -107,7 +93,7 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 				mode={mode}
 				onCopy={handleCopyMessage}
 			/>
-			{!isInTopic && currentMessage?.code === TypeMessage.Topic && (
+			{!isInTopic && message?.code === TypeMessage.Topic && (
 				<div
 					className="border border-colorTextLightMode dark:border-contentTertiary dark:text-contentTertiary text-colorTextLightMode rounded-md my-1 p-1 w-[70%] flex justify-between items-center bg-textPrimary dark:bg-bgSearchHover cursor-pointer hover:border-black hover:text-black dark:hover:border-white dark:hover:text-white group/view-topic-btn"
 					onClick={handleOpenTopic}
@@ -122,64 +108,59 @@ const MessageContent = memo(({ message, mode, isSearchMessage, isInTopic }: IMes
 						<div className="font-semibold text-blue-500 group-hover/view-topic-btn:text-blue-700">Creator</div>
 						<p>View topic</p>
 					</div>
-					<Icons.ArrowRight
-						defaultFill={theme === 'dark' ? '#AEAEAE' : '#535353'}
-						defaultSize={'w-4 h-4 min-w-4 hover:text-white text-borderDividerLight'}
-					/>
+					<Icons.ArrowRight defaultFill={'#AEAEAE'} defaultSize={'w-4 h-4 min-w-4 hover:text-white text-borderDividerLight'} />
 				</div>
 			)}
 		</>
 	);
-});
+};
 
 export default MessageContent;
 
-const MessageText = memo(
-	({
-		message,
-		lines,
-		mode,
-		content,
-		isOnlyContainEmoji,
-		isSearchMessage,
-		onCopy
-	}: {
-		message: IMessageWithUser;
-		lines: string;
-		mode?: number;
-		content?: IExtendedMessage;
-		isSearchMessage?: boolean;
-		isOnlyContainEmoji?: boolean;
-		onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
-	}) => {
-		const attachmentOnMessage = message.attachments;
+const MessageText = ({
+	message,
+	lines,
+	mode,
+	content,
+	isOnlyContainEmoji,
+	isSearchMessage,
+	onCopy
+}: {
+	message: IMessageWithUser;
+	lines: string;
+	mode?: number;
+	content?: IExtendedMessage;
+	isSearchMessage?: boolean;
+	isOnlyContainEmoji?: boolean;
+	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
+}) => {
+	const attachmentOnMessage = message.attachments;
 
-		const contentToMessage = message.content?.t;
+	const contentToMessage = message.content?.t;
 
-		const checkOneLinkImage =
-			attachmentOnMessage?.length === 1 &&
-			attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
-			attachmentOnMessage[0].url === contentToMessage?.trim();
-		const showEditted = !message.hide_editted && !isSearchMessage;
-		return (
-			// eslint-disable-next-line react/jsx-no-useless-fragment
-			<>
-				{lines?.length > 0 ? (
-					<MessageLine
-						isEditted={showEditted}
-						isHideLinkOneImage={checkOneLinkImage}
-						isTokenClickAble={true}
-						isSearchMessage={isSearchMessage}
-						isOnlyContainEmoji={isOnlyContainEmoji}
-						isJumMessageEnabled={false}
-						content={content as any} // fix later
-						mode={mode}
-						code={message.code}
-						onCopy={onCopy}
-						messageId={message.message_id}
-					/>
-				) : null}
-			</>
-		);
-	}
-);
+	const checkOneLinkImage =
+		attachmentOnMessage?.length === 1 &&
+		attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
+		attachmentOnMessage[0].url === contentToMessage?.trim();
+	const showEditted = !message.hide_editted && !isSearchMessage;
+	return (
+		// eslint-disable-next-line react/jsx-no-useless-fragment
+		<>
+			{lines?.length > 0 ? (
+				<MessageLine
+					isEditted={showEditted}
+					isHideLinkOneImage={checkOneLinkImage}
+					isTokenClickAble={true}
+					isSearchMessage={isSearchMessage}
+					isOnlyContainEmoji={isOnlyContainEmoji}
+					isJumMessageEnabled={false}
+					content={content as any} // fix later
+					mode={mode}
+					code={message.code}
+					onCopy={onCopy}
+					messageId={message.id}
+				/>
+			) : null}
+		</>
+	);
+};

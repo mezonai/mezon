@@ -136,7 +136,7 @@ export const listChannelsByUserSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchListChannelsByUser.fulfilled, (state: ListChannelsByUserState, action: PayloadAction<ChannelUsersEntity[]>) => {
-				listChannelsByUserAdapter.setAll(state, action.payload);
+				listChannelsByUserAdapter.upsertMany(state, action.payload);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchListChannelsByUser.rejected, (state: ListChannelsByUserState, action) => {

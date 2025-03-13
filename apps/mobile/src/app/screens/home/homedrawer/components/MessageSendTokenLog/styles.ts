@@ -20,7 +20,7 @@ export const style = (colors: Attributes) =>
 		},
 		title: {
 			color: colors.text,
-			fontSize: size.medium,
+			fontSize: size.s_14,
 			fontWeight: 'bold'
 		},
 		lightTitle: {

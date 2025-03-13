@@ -2,7 +2,6 @@
 import { MessagesEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { TypeMessage, addMention, convertDateString } from '@mezon/utils';
-import classNames from 'classnames';
 import React, { ReactNode, useRef, useState } from 'react';
 import { MessageReaction } from '../../components';
 import { MessageLineSystem } from '../MessageWithUser/MessageLineSystem';
@@ -35,7 +34,7 @@ function MessageWithSystem({ message, mode, onContextMenu, popup, isSearchMessag
 					popup={popup}
 					onContextMenu={onContextMenu}
 					messageId={message?.id}
-					className={classNames('fullBoxText relative group')}
+					className={'fullBoxText relative group'}
 				>
 					<div className={`flex items-start min-h-8 relative w-full px-3 pt-2 pl-5 ${isCustom ? 'pb-2' : ''}`}>
 						{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8 flex-shrink-0" />}
@@ -99,7 +98,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({ children, popup, 
 	};
 	return (
 		<div
-			className={`mb-1 message-list-item ${isSearchMessage ? 'w-full' : ''} hover:dark:bg-[#2e3035] hover:bg-[#f7f7f7] relative message-container ${className || ''}`}
+			className={`message-list-item ${isSearchMessage ? 'w-full' : ''} hover:dark:bg-[#2e3035] hover:bg-[#f7f7f7] relative message-container ${className || ''}`}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			onContextMenu={onContextMenu}

@@ -6,6 +6,7 @@ import {
 	IUpdateChannelRequest,
 	IUpdateSystemMessage,
 	selectAppChannelById,
+	selectChannelById,
 	selectClanSystemMessage,
 	selectTheme,
 	updateSystemMessage,
@@ -27,12 +28,13 @@ export type OverviewChannelProps = {
 
 const OverviewChannel = (props: OverviewChannelProps) => {
 	const { channel } = props;
+	const realtimeChannel = useSelector((state) => selectChannelById(state, channel.channel_id ?? ''));
 	const appearanceTheme = useSelector(selectTheme);
 	const channelApp = useSelector(selectAppChannelById(channel?.id) || {});
 	const [appUrlInit, setAppUrlInit] = useState(channelApp?.url || '');
 	const [appUrl, setAppUrl] = useState(appUrlInit);
 	const dispatch = useAppDispatch();
-	const [channelLabelInit, setChannelLabelInit] = useState(channel.channel_label || '');
+	const [channelLabelInit, setChannelLabelInit] = useState(realtimeChannel.channel_label || '');
 	const [topicInit, setTopicInit] = useState(channel.topic);
 	const [ageRestrictedInit, setAgeRestrictedInit] = useState(channel.age_restricted);
 	const [e2eeInit, setE2eeInit] = useState(channel.e2ee);
@@ -402,24 +404,6 @@ const BottomBlock = ({
 				<div>
 					Users will need to confirm they are of legal age to view the content in this channel. Age-restricted channels are exempt from the
 					explicit content filter.
-				</div>
-			</div>
-
-			<hr className="border-t border-solid dark:border-borderDivider" />
-			<div className="flex flex-col gap-3">
-				<div className="flex justify-between">
-					<div className="font-semibold text-base dark:text-white text-black"> End-to-End Encryption Channel</div>
-					<input
-						className="peer relative h-4 w-8 cursor-pointer appearance-none rounded-lg
-														bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
-														after:bg-slate-500 after:transition-all checked:bg-blue-200 checked:after:left-4 checked:after:bg-blue-500
-														hover:bg-slate-400 after:hover:bg-slate-600 checked:hover:bg-blue-300 checked:after:hover:bg-blue-600
-														focus:outline-none checked:focus:bg-blue-400 checked:after:focus:bg-blue-700 focus-visible:outline-none disabled:cursor-not-allowed
-														disabled:bg-slate-200 disabled:after:bg-slate-300"
-						type="checkbox"
-						checked={isE2ee === 1}
-						onChange={handleCheckboxE2ee}
-					/>
 				</div>
 			</div>
 

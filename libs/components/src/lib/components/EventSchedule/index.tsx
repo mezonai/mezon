@@ -1,7 +1,6 @@
 import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, openVoiceChannel } from '@mezon/utils';
-import Tooltip from 'rc-tooltip';
 import React from 'react';
 import { timeFomat } from '../ChannelList/EventChannelModal/timeFomatEvent';
 
@@ -31,19 +30,13 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 	};
 
 	return (
-		<Tooltip
-			overlay={
-				<div style={{ width: 'max-content' }}>
-					<p>{`Event: ${event.title}`}</p>
-					<p>{eventStatusNotice}</p>
-					<p>{timeFomat(event.start_time ?? '')}</p>
-				</div>
-			}
+		<div
+			className={className}
+			onClick={handleOpenVoiceChannel}
+			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.start_time ?? '')}`}
 		>
-			<div className={className} onClick={handleOpenVoiceChannel}>
-				<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
-			</div>
-		</Tooltip>
+			<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
+		</div>
 	);
 };
 

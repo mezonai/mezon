@@ -17,7 +17,9 @@ export interface SystemMessageState extends EntityState<SystemMessageEntity, str
 	currentClanSystemMessage: ApiSystemMessage;
 }
 
-const systemMessageAdapter = createEntityAdapter<SystemMessageEntity>();
+export const systemMessageAdapter = createEntityAdapter({
+	selectId: (mes: SystemMessageEntity) => mes.id || ''
+});
 
 export const initialSystemMessageState: SystemMessageState = systemMessageAdapter.getInitialState({
 	loadingStatus: 'not loaded',

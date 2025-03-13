@@ -118,38 +118,27 @@ export const ChannelMessage: ChannelMessageComponent = ({
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;
 
-	return (
-		<>
-			{message.code === TypeMessage.Indicator && mode === ChannelStreamMode.STREAM_MODE_CHANNEL && (
-				<OnBoardWelcome nextMessageId={nextMessageId} />
-			)}
-			{message.isFirst && (
-				<ChatWelcome isPrivate={isPrivate} key={messageId} name={channelLabel} avatarDM={avatarDM} username={username} mode={mode} />
-			)}
-
-			{isMessageSystem && (
-				<MessageWithSystem message={mess} mode={mode} popup={popup} onContextMenu={handleContextMenu} showDivider={isDifferentDay} />
-			)}
-
-			{!message.isFirst && !isMessageSystem && (
-				<MessageWithUser
-					allowDisplayShortProfile={true}
-					message={mess}
-					mode={mode}
-					isEditing={isEditing}
-					isHighlight={isHighlight}
-					popup={popup}
-					onContextMenu={handleContextMenu}
-					isCombine={isCombine}
-					showDivider={isDifferentDay}
-					checkMessageTargetToMoved={checkMessageTargetToMoved}
-					messageReplyHighlight={messageReplyHighlight}
-					isTopic={isTopic}
-				/>
-			)}
-
-			{/* {!isMyMessage && isLastSeen && <UnreadMessageBreak />} */}
-		</>
+	return message.code === TypeMessage.Indicator && mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? (
+		<OnBoardWelcome nextMessageId={nextMessageId} />
+	) : message.isFirst ? (
+		<ChatWelcome isPrivate={isPrivate} key={messageId} name={channelLabel} avatarDM={avatarDM} username={username} mode={mode} />
+	) : isMessageSystem ? (
+		<MessageWithSystem message={mess} mode={mode} popup={popup} onContextMenu={handleContextMenu} showDivider={isDifferentDay} />
+	) : (
+		<MessageWithUser
+			allowDisplayShortProfile={true}
+			message={mess}
+			mode={mode}
+			isEditing={isEditing}
+			isHighlight={isHighlight}
+			popup={popup}
+			onContextMenu={handleContextMenu}
+			isCombine={isCombine}
+			showDivider={isDifferentDay}
+			checkMessageTargetToMoved={checkMessageTargetToMoved}
+			messageReplyHighlight={messageReplyHighlight}
+			isTopic={isTopic}
+		/>
 	);
 };
 
@@ -161,7 +150,9 @@ export const MemorizedChannelMessage = memo(
 		prev.messageReplyHighlight === curr.messageReplyHighlight &&
 		prev.checkMessageTargetToMoved === curr.checkMessageTargetToMoved &&
 		// prev.message.content === curr.message.content &&
-		prev.previousMessage?.id === curr.previousMessage?.id
+		prev.previousMessage?.id === curr.previousMessage?.id &&
+		prev.message?.code === curr.message?.code &&
+		prev.message?.references?.[0]?.message_ref_id === curr.message?.references?.[0]?.message_ref_id
 );
 
 MemorizedChannelMessage.displayName = 'MemorizedChannelMessage';

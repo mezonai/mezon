@@ -75,27 +75,24 @@ function NotificationList({ rootRef }: NotificationProps) {
 	useEffect(() => {
 		if (!currentClan?.clan_id) return;
 
+		const isAllNotificationForYouEmpty = !(allNotificationForYou?.data?.length > 0);
+		const isAllNotificationClanEmpty = !(allNotificationClan?.data?.length > 0);
+		const isAllNotificationMentionsEmpty = !(allNotificationMentions?.data?.length > 0);
+
 		let category = null;
 
-		if (currentTabNotify === InboxType.INDIVIDUAL) {
+		if (currentTabNotify === InboxType.INDIVIDUAL && isAllNotificationForYouEmpty) {
 			category = NotificationCategory.FOR_YOU;
-		} else if (currentTabNotify === InboxType.MESSAGES) {
+		} else if (currentTabNotify === InboxType.MESSAGES && isAllNotificationClanEmpty) {
 			category = NotificationCategory.MESSAGES;
-		} else if (currentTabNotify === InboxType.MENTIONS) {
+		} else if (currentTabNotify === InboxType.MENTIONS && isAllNotificationMentionsEmpty) {
 			category = NotificationCategory.MENTIONS;
 		}
 
 		if (category) {
 			dispatch(notificationActions.fetchListNotification({ clanId: currentClan.clan_id, category }));
 		}
-	}, [
-		currentTabNotify,
-		currentClan?.clan_id,
-		allNotificationForYou.data.length,
-		allNotificationClan.data.length,
-		allNotificationMentions.data.length,
-		dispatch
-	]);
+	}, [currentTabNotify]);
 
 	const listRefForYou = useRef<HTMLDivElement | null>(null);
 	const listRefMentions = useRef<HTMLDivElement | null>(null);

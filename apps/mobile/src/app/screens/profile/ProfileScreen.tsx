@@ -238,7 +238,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}>
 						<CheckIcon width={size.s_14} height={size.s_14} color={Colors.azureBlue} />
 						<TouchableOpacity style={styles.token} onPress={showSendTokenBottomSheet}>
-							<Text style={styles.text}>{`${t('token')} ${formatNumber(Number(tokenInWallet), 'vi-VN', 'VND')}`}</Text>
+							<Text
+								style={styles.text}
+							>{`${t('token')} ${tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}`}</Text>
 						</TouchableOpacity>
 					</View>
 					{userCustomStatus ? (

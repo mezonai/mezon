@@ -2,6 +2,7 @@ import { useAuth } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sentry from '@sentry/react';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -74,6 +75,12 @@ const NewLoginScreen = () => {
 						source={{ uri: authUri }}
 						onShouldStartLoadWithRequest={handleShouldNavigationStateChange}
 						startInLoadingState={true}
+						onError={(error) => {
+							Sentry.captureException('WebviewLogin', { extra: { error } });
+						}}
+						domStorageEnabled={true}
+						iosTimeoutInMilliseconds={120000}
+						androidTimeoutInMilliseconds={120000}
 					/>
 				</View>
 			)}

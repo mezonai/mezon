@@ -86,9 +86,9 @@ const VoiceInfo = React.memo(() => {
 							</span>
 						) : null
 					}
-					showArrow={hasMicrophoneAccess ?? false}
+					showArrow={hasMicrophoneAccess ? { className: '!bottom-1' } : false}
 					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button
@@ -107,9 +107,9 @@ const VoiceInfo = React.memo(() => {
 							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{showCamera ? 'Turn Off Camera' : 'Turn On Camera'}</span>
 						) : null
 					}
-					showArrow={hasCameraAccess ?? false}
+					showArrow={hasCameraAccess ? { className: '!bottom-1' } : false}
 					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button
@@ -122,12 +122,13 @@ const VoiceInfo = React.memo(() => {
 					</button>
 				</Tooltip>
 				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
 					placement="top"
 					overlay={
 						<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{showScreen ? 'Stop screen share' : 'Share Your Screen'}</span>
 					}
 					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button
@@ -138,10 +139,11 @@ const VoiceInfo = React.memo(() => {
 					</button>
 				</Tooltip>
 				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
 					placement="top"
 					overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">Disconnect</span>}
 					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button className="flex justify-center items-center bg-[#da373c] hover:bg-[#a12829] p-[6px] rounded-md" onClick={leaveVoice}>

@@ -336,9 +336,11 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 
 			const addMentionToPayload = addMention(payload, adjustedMentionsPos);
 			const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);
+			const encoder = new TextEncoder();
 			const payloadJson = JSON.stringify(removeEmptyOnPayload);
+			const utf8Bytes = encoder.encode(payloadJson);
 
-			if (payloadJson.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
+			if (utf8Bytes.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
 				setIsPasteMulti(true);
 				props.handleConvertToFile(payload.t ?? '');
 				setRequestInput(

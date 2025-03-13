@@ -97,7 +97,13 @@ export function ChannelApps({
 	return appChannel?.url ? (
 		<>
 			<div className="w-full h-full">
-				<iframe ref={miniAppRef} title={appChannel?.url} src={`${appChannel?.url}#${miniAppDataHash}`} className="w-full h-full" />
+				<iframe
+					allow="clipboard-read; clipboard-write"
+					ref={miniAppRef}
+					title={appChannel?.url}
+					src={`${appChannel?.url}#${miniAppDataHash}`}
+					className="w-full h-full"
+				/>
 			</div>
 
 			{token ? (

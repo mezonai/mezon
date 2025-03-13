@@ -4,9 +4,9 @@ import { selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { ENotifyBsToShow, NotifyProps } from '../types';
 import { style } from './NotificationIndividualItem.styles';
-import MezonAvatar from "../../../componentUI/MezonAvatar";
 
 function NotificationIndividualItem({ notify, onLongPressNotify, onPressNotify }: NotifyProps) {
 	const user = useSelector((state) => selectMemberClanByUserId2(state, notify?.sender_id ?? ''));

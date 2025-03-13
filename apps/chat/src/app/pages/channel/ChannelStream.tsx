@@ -21,7 +21,6 @@ import {
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize, IChannelMember, IStreamInfo } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import Tooltip from 'rc-tooltip';
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -419,23 +418,17 @@ export default function ChannelStream({
 							<div
 								className={`absolute z-50 opacity-0 transition-opacity duration-300 ${showMembers ? '-bottom-10' : `${isShowChatStream ? 'bottom-20' : 'bottom-20 max-[1700px]:bottom-2'}`} group-hover:opacity-100`}
 							>
-								<Tooltip
-									overlay={
-										<div className="dark:!text-white !text-black w-max"> `${showMembers ? 'Hide Members' : 'Show Members'}` </div>
-									}
-									// style={appearanceTheme === 'light' ? 'light' : 'dark'}
+								<div
+									title={showMembers ? 'Hide Members' : 'Show Members'}
+									onClick={toggleMembers}
+									className={`flex gap-1 items-center cursor-pointer bg-neutral-700 hover:bg-bgSecondary600 rounded-3xl px-2 py-[6px] ${showMembersButton ? 'opacity-100' : 'opacity-0'}`}
 								>
-									<div
-										onClick={toggleMembers}
-										className={`flex gap-1 items-center cursor-pointer bg-neutral-700 hover:bg-bgSecondary600 rounded-3xl px-2 py-[6px] ${showMembersButton ? 'opacity-100' : 'opacity-0'}`}
-									>
-										<Icons.ArrowDown
-											defaultFill="white"
-											defaultSize={`size-6 transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`}
-										/>
-										<Icons.MemberList defaultFill="text-white" />
-									</div>
-								</Tooltip>
+									<Icons.ArrowDown
+										defaultFill="white"
+										defaultSize={`size-6 transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`}
+									/>
+									<Icons.MemberList defaultFill="text-white" />
+								</div>
 							</div>
 						)}
 					</div>

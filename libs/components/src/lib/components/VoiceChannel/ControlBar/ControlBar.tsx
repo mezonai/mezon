@@ -79,16 +79,17 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent">
 			<div className="flex justify-start gap-4">
 				<span>
-					<Icons.VoiceSoundControlIcon className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+					<Icons.VoiceSoundControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
 				</span>
 				<span>
-					<Icons.VoiceEmojiControlIcon className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+					<Icons.VoiceEmojiControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
 				</span>
 			</div>
 			<div className="flex justify-center gap-3">
 				{visibleControls.microphone && hasMicrophoneAccess && (
 					<div className="relative rounded-full">
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							key={+showMicrophone}
 							placement="top"
 							overlay={
@@ -119,6 +120,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				{visibleControls.camera && hasCameraAccess && (
 					<div className="relative rounded-full">
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							key={+showCamera}
 							placement="top"
 							overlay={
@@ -146,6 +148,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				)}
 				{visibleControls.screenShare && browserSupportsScreenSharing && (
 					<Tooltip
+						showArrow={{ className: '!bottom-1' }}
 						key={+showScreen}
 						placement="top"
 						overlay={
@@ -169,6 +172,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				)}
 				{visibleControls.leave && (
 					<Tooltip
+						showArrow={{ className: '!bottom-1' }}
 						placement="top"
 						overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Disconnect</span>}
 						overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
@@ -186,6 +190,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 			</div>
 			<div className="flex justify-end gap-4">
 				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
 					placement="top"
 					overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Pop Out</span>}
 					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
@@ -193,12 +198,13 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 					getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 				>
 					<span>
-						<Icons.VoicePopOutIcon className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+						<Icons.VoicePopOutIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
 					</span>
 				</Tooltip>
 				<div onClick={onFullScreen}>
 					{isFullScreen ? (
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							placement="topRight"
 							align={{
 								offset: [11, -4]
@@ -209,11 +215,12 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 						>
 							<span>
-								<Icons.ExitFullScreen className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+								<Icons.ExitFullScreen className="cursor-pointer hover:text-white text-[#B5BAC1]" />
 							</span>
 						</Tooltip>
 					) : (
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							placement="topRight"
 							align={{
 								offset: [11, -4]
@@ -224,7 +231,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							key={Number(isFullScreen)}
 						>
 							<span>
-								<Icons.FullScreen className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+								<Icons.FullScreen className="cursor-pointer hover:text-white text-[#B5BAC1]" />
 							</span>
 						</Tooltip>
 					)}

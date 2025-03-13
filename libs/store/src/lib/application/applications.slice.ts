@@ -141,16 +141,19 @@ export const deleteApplication = createAsyncThunk('adminApplication/deleteApplic
 	}
 });
 
-export const fetchMezonOauthClient = createAsyncThunk('adminApplication/fetchMezonOauthClient', async ({ appId }: { appId: string }, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.getMezonOauthClient(mezon.session, appId);
-		return response;
-	} catch (error) {
-		captureSentryError(error, 'adminApplication/fetchMezonOauthClient');
-		return thunkAPI.rejectWithValue(error);
+export const fetchMezonOauthClient = createAsyncThunk(
+	'adminApplication/fetchMezonOauthClient',
+	async ({ appId, appName }: { appId: string; appName?: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.getMezonOauthClient(mezon.session, appId, appName);
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'adminApplication/fetchMezonOauthClient');
+			return thunkAPI.rejectWithValue(error);
+		}
 	}
-});
+);
 
 export const editMezonOauthClient = createAsyncThunk(
 	'adminApplication/editMezonOauthClient',

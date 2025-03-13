@@ -1,7 +1,7 @@
 import { useDMInvite, useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, selectCurrentChannelId, selectCurrentClanId } from '@mezon/store-mobile';
+import { DirectEntity, selectCurrentClanId } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FlashList } from '@shopify/flash-list';
@@ -36,7 +36,6 @@ interface IInviteToChannelIconProp {
 
 export const FriendList = React.memo(
 	({ isUnknownChannel, expiredTimeSelected, isDMThread = false, isKeyboardVisible, openEditLinkModal, channelId }: IInviteToChannelProp) => {
-		const currentChannelId = useSelector(selectCurrentChannelId);
 		const [currentInviteLink, setCurrentInviteLink] = useState('');
 		const [searchUserText, setSearchUserText] = useState('');
 		const { themeValue } = useTheme();
@@ -44,7 +43,7 @@ export const FriendList = React.memo(
 		const currentClanId = useSelector(selectCurrentClanId);
 		const { createLinkInviteUser } = useInvite();
 		const { t } = useTranslation(['inviteToChannel']);
-		const { listDMInvite, listUserInvite } = useDMInvite(currentChannelId);
+		const { listDMInvite, listUserInvite } = useDMInvite(channelId ?? '');
 		const { createDirectMessageWithUser } = useDirect();
 		const { sendInviteMessage } = useSendInviteMessage();
 		const [sentIdList, setSentIdList] = useState<string[]>([]);
@@ -119,7 +118,7 @@ export const FriendList = React.memo(
 		};
 
 		const fetchInviteLink = async () => {
-			const response = await createLinkInviteUser(currentClanId ?? '', currentChannelId ?? '', 10);
+			const response = await createLinkInviteUser(currentClanId ?? '', channelId ?? '', 10);
 			if (!response) {
 				return;
 			}
@@ -127,10 +126,10 @@ export const FriendList = React.memo(
 		};
 
 		useEffect(() => {
-			if (currentClanId && currentChannelId && currentClanId !== '0') {
+			if (currentClanId && currentClanId !== '0') {
 				fetchInviteLink();
 			}
-		}, [currentClanId, currentChannelId]);
+		}, [currentClanId, channelId]);
 
 		const showUpdating = () => {
 			Toast.show({

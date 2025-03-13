@@ -8,9 +8,9 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import MezonInput from '../../../../../componentUI/MezonInput';
 import { normalizeString } from '../../../../../utils/helpers';
 import { MemberItem } from '../MemberItem';
-import MezonInput from "../../../../../componentUI/MezonInput";
 
 interface IAddMemberBsContentProps {
 	memberList?: UsersClanEntity[];

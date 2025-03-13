@@ -56,8 +56,7 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 	const rowVirtualizer = useVirtualizer({
 		count: listDM.length,
 		getScrollElement: () => parentRef.current,
-		estimateSize: () => 50,
-		overscan: 5
+		estimateSize: () => 43
 	});
 
 	const joinToChatAndNavigate = useCallback(
