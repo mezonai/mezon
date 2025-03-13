@@ -1,5 +1,5 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons, SpeakerIcon, ThreadIcon, ThreadIconLocker } from '@mezon/mobile-components';
+import { Icons, SpeakerIcon } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectAllTextChannel, selectVoiceChannelAll } from '@mezon/store-mobile';
 import { ChannelStatusEnum, OptionEvent } from '@mezon/utils';
@@ -12,9 +12,11 @@ import { Pressable } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
 import MezonSelect from '../../../componentUI/MezonSelect';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import Backdrop from '../../BottomSheetRootListener/backdrop';
 import { style } from './styles';
@@ -65,7 +67,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					disabled: !voicesChannel?.length,
-					icon: <Icons.VoiceNormalIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
 				},
 				{
 					title: t('fields.channelType.somewhere.title'),
@@ -98,14 +100,14 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const channelIcon = (type: ChannelType, isPrivate: boolean) => {
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isPrivate) {
-				return <Icons.TextLockIcon height={size.s_24} width={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_24} width={size.s_24} />;
 			}
-			return <Icons.TextIcon height={size.s_24} width={size.s_24} />;
+			return <MezonIconCDN icon={IconCDN.channelText} height={size.s_24} width={size.s_24} />;
 		} else {
 			if (isPrivate) {
-				return <ThreadIconLocker height={size.s_24} width={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.threadLockIcon} height={size.s_24} width={size.s_24} />;
 			}
-			return <ThreadIcon height={size.s_24} width={size.s_24} />;
+			return <MezonIconCDN icon={IconCDN.threadIcon} height={size.s_24} width={size.s_24} />;
 		}
 	};
 
@@ -178,7 +180,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 					{eventType && eventType === OptionEvent.OPTION_SPEAKER && !!voicesChannel?.length && (
 						<MezonSelect
-							prefixIcon={<Icons.VoiceNormalIcon height={20} width={20} color={themeValue.textStrong} />}
+							prefixIcon={<MezonIconCDN icon={IconCDN.channelVoice} height={20} width={20} color={themeValue.textStrong} />}
 							title={t('fields.channel.title')}
 							titleUppercase
 							onChange={handleChannelIDChange}
@@ -208,7 +210,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						{!!eventChannel && channelIcon(eventChannel?.type, eventChannel?.channel_private === ChannelStatusEnum.isPrivate)}
 						<Text style={styles.inputValue}>{eventChannel?.channel_label || t('fields.channel.title')} </Text>
 						<View style={styles.chevronDownIcon}>
-							<Icons.ChevronSmallDownIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 						</View>
 					</TouchableOpacity>
 				</ScrollView>
@@ -234,7 +236,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						inputWrapperStyle={styles.searchText}
 						placeHolder={t('selectUser')}
 						onTextChange={handleSearchText}
-						prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
+						prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
 					/>
 					<View style={{ flex: 1, borderRadius: size.s_8 }}>
 						<BottomSheetFlatList data={filteredOptionsChannels} renderItem={renderItem} />

@@ -19,7 +19,9 @@ import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonSwitch from '../../../componentUI/MezonSwitch';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { AddMemberOrRoleBS } from '../components/AddMemberOrRoleBS';
 import { MemberItem } from '../components/MemberItem';
 import { RoleItem } from '../components/RoleItem';
@@ -170,10 +172,10 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 							}}
 						>
 							<View style={{ flexDirection: 'row', gap: size.s_14, alignItems: 'center' }}>
-								<Icons.CirclePlusPrimaryIcon color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} color={themeValue.text} />
 								<Text color={themeValue.text}>{t('channelPermission.addMemberAndRoles')}</Text>
 							</View>
-							<Icons.ChevronSmallRightIcon color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 						</View>
 					</TouchableOpacity>
 				</View>

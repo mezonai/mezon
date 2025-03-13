@@ -1,12 +1,14 @@
 import { usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectAllTextChannel, selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonTab from '../../componentUI/MezonTab';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { EventDetail } from './EventDetail';
 import { EventItem } from './EventItem';
@@ -76,7 +78,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 			) : (
 				<View style={styles.emptyView}>
 					<View style={styles.iconWrapper}>
-						<Icons.CalendarIcon height={48} width={48} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.calendarIcon} height={48} width={48} color={themeValue.text} />
 					</View>
 					<Text style={styles.emptyText}>There are no upcoming events.</Text>
 					<Text style={styles.emptyTextDescription}>

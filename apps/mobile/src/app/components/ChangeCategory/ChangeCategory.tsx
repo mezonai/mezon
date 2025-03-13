@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, Text, useTheme } from '@mezon/mobile-ui';
 import { CategoriesEntity, channelsActions, selectAllCategories, useAppDispatch } from '@mezon/store-mobile';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
@@ -6,7 +5,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 
 type ChangeCategory = typeof APP_SCREEN.MENU_CHANNEL.CHANGE_CATEGORY;
@@ -69,7 +70,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			return (
 				<TouchableOpacity onPress={() => navigation.goBack()}>
 					<View style={{ marginLeft: size.s_16 }}>
-						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
 					</View>
 				</TouchableOpacity>
 			);

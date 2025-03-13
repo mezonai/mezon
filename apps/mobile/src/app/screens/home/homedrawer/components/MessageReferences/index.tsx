@@ -1,4 +1,4 @@
-import { AttachmentImageIcon, ReplyIcon } from '@mezon/mobile-components';
+import { ReplyIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { messagesActions, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { DmListItemLastMessage } from '../../../../messages/DMListItemLastMessage';
 import { style } from './styles';
 
@@ -66,7 +68,7 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 					{messageReferences?.has_attachment ? (
 						<Text>
 							<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')} </Text>
-							<AttachmentImageIcon width={size.s_12} height={size.s_12} color={Colors.textGray} />
+							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={Colors.textGray} />
 						</Text>
 					) : (
 						<DmListItemLastMessage

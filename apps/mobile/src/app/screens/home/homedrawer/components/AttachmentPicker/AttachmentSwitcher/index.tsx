@@ -1,7 +1,8 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, TouchableOpacity } from 'react-native';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 
 export type AttachmentPickerProps = {
@@ -65,7 +66,8 @@ function AttachmentSwitcher({ mode: _mode, onChange }: AttachmentPickerProps) {
 					backgroundColor: themeValue.tertiary
 				}}
 			>
-				<Icons.PlusLargeIcon
+				<MezonIconCDN
+					icon={IconCDN.plusLargeIcon}
 					width={size.s_24}
 					height={size.s_24}
 					color={mode === 'attachment' ? themeValue.bgViolet : themeValue.textStrong}

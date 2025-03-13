@@ -1,5 +1,5 @@
 import { useCheckVoiceStatus } from '@mezon/core';
-import { Icons, ThreadIcon, ThreadIconLocker } from '@mezon/mobile-components';
+import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum, checkIsThread, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
@@ -8,6 +8,8 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './SuggestItem.styles';
 
 type SuggestItemProps = {
@@ -89,26 +91,40 @@ const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaul
 				)}
 				{emojiSrc && <Image style={styles.emojiImage} source={{ uri: emojiSrc }} />}
 				{!isChannelPrivate && isChannelText && !isThread && (
-					<Icons.TextIcon width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN icon={IconCDN.channelText} width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
 				)}
 				{isChannelPrivate && isChannelText && !isThread && (
-					<Icons.TextLockIcon width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
 				)}
 				{!isChannelPrivate && isChannelText && isThread && (
-					<ThreadIcon width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
 				)}
 				{isChannelPrivate && isChannelText && isThread && (
-					<ThreadIconLocker width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN icon={IconCDN.threadLockIcon} width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
 				)}
 				{!isChannelPrivate && isChannelVoice && (
-					<Icons.VoiceNormalIcon width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
 				)}
-				{isChannelPrivate && isChannelVoice && <Icons.VoiceLockIcon width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />}
+				{isChannelPrivate && isChannelVoice && (
+					<MezonIconCDN icon={IconCDN.channelVoiceLock} width={size.s_16} height={size.s_16} color={themeValue.channelNormal} />
+				)}
 				{!isChannelPrivate && isChannelStream && (
-					<Icons.StreamIcon style={styles.streamIcon} height={size.s_16} width={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN
+						icon={IconCDN.channelStream}
+						customStyle={styles.streamIcon}
+						height={size.s_16}
+						width={size.s_16}
+						color={themeValue.channelNormal}
+					/>
 				)}
 				{!isChannelPrivate && isChannelApp && (
-					<Icons.AppChannelIcon style={styles.streamIcon} height={size.s_16} width={size.s_16} color={themeValue.channelNormal} />
+					<MezonIconCDN
+						icon={IconCDN.channelApp}
+						customStyle={styles.streamIcon}
+						height={size.s_16}
+						width={size.s_16}
+						color={themeValue.channelNormal}
+					/>
 				)}
 
 				{isRoleUser || name?.startsWith('here') ? renderRoleUser() : renderChannelBusy()}

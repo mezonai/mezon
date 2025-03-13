@@ -1,5 +1,5 @@
 import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
-import { ActionEmitEvent, Icons, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, load, save } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -22,7 +22,9 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Image, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { UserStatus } from '../../../components/UserStatus';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
 import { ChatMessageWrapper } from '../ChatMessageWrapper';
@@ -199,7 +201,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 				<Pressable style={styles.channelTitle} onPress={() => navigateToThreadDetail()}>
 					{isTypeDMGroup ? (
 						<View style={styles.groupAvatar}>
-							<Icons.GroupIcon width={18} height={18} />
+							<MezonIconCDN icon={IconCDN.groupIcon} width={18} height={18} />
 						</View>
 					) : (
 						<View style={styles.avatarWrapper}>

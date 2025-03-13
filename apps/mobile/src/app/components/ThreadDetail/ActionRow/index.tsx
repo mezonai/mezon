@@ -2,12 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useContext } from 'react';
 
 import { usePermissionChecker } from '@mezon/core';
-import { ENotificationActive, ETypeSearch, Icons } from '@mezon/mobile-components';
+import { ENotificationActive, ETypeSearch } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EOverriddenPermission, EPermission } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import useStatusMuteChannel from '../../../hooks/useStatusMuteChannel';
 import { APP_SCREEN, AppStackScreenProps } from '../../../navigation/ScreenTypes';
 import { threadDetailContext } from '../MenuThreadDetail';
@@ -58,7 +60,7 @@ export const ActionRow = React.memo(() => {
 					});
 				}
 			},
-			icon: <Icons.MagnifyingIcon width={22} height={22} color={themeValue.text} />,
+			icon: <MezonIconCDN icon={IconCDN.magnifyingIcon} width={22} height={22} color={themeValue.text} />,
 			isShow: true,
 			type: EActionRow.Search
 		},
@@ -67,7 +69,7 @@ export const ActionRow = React.memo(() => {
 			action: () => {
 				navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD });
 			},
-			icon: <Icons.ThreadIcon width={22} height={22} color={themeValue.text} />,
+			icon: <MezonIconCDN icon={IconCDN.threadIcon} width={22} height={22} color={themeValue.text} />,
 			isShow: isChannel,
 			type: EActionRow.Threads
 		},
@@ -92,7 +94,7 @@ export const ActionRow = React.memo(() => {
 					}
 				});
 			},
-			icon: <Icons.SettingsIcon width={22} height={22} color={themeValue.text} />,
+			icon: <MezonIconCDN icon={IconCDN.settingIcon} width={22} height={22} color={themeValue.text} />,
 			isShow: isCanManageThread || isCanManageChannel,
 			type: EActionRow.Settings
 		}
@@ -113,9 +115,9 @@ export const ActionRow = React.memo(() => {
 							<View style={styles.iconWrapper}>
 								{[EActionRow.Mute].includes(action.type) ? (
 									statusMute === ENotificationActive.ON ? (
-										<Icons.BellIcon width={22} height={22} color={themeValue.text} />
+										<MezonIconCDN icon={IconCDN.bellIcon} width={22} height={22} color={themeValue.text} />
 									) : (
-										<Icons.BellSlashIcon width={22} height={22} color={themeValue.text} />
+										<MezonIconCDN icon={IconCDN.bellSlashIcon} width={22} height={22} color={themeValue.text} />
 									)
 								) : (
 									action.icon

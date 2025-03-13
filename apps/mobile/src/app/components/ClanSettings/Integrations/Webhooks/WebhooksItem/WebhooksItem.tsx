@@ -1,5 +1,4 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +6,8 @@ import { ApiWebhook } from 'mezon-js/api.gen';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -60,7 +61,7 @@ export function WebhooksItem({ webhook }: { webhook: ApiWebhook }) {
 						})}
 					</Text>
 				</View>
-				<Icons.ChevronSmallRightIcon />
+				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} />
 			</View>
 		</TouchableOpacity>
 	);

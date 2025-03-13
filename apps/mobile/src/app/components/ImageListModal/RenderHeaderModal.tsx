@@ -6,6 +6,8 @@ import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonClanAvatar from '../../componentUI/MezonClanAvatar';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { useImage } from '../../hooks/useImage';
 import { style } from './styles';
 
@@ -58,7 +60,7 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 		>
 			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 				<TouchableOpacity onPress={onClose}>
-					<Icons.ArrowLargeLeftIcon color={Colors.white} />
+					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={Colors.white} />
 				</TouchableOpacity>
 				{!!uploader && (
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6 }}>

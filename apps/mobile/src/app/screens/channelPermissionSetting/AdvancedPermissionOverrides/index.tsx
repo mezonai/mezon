@@ -8,6 +8,8 @@ import { ScrollView, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../../navigation/ScreenTypes';
 import { PermissionItem } from '../components/PermissionItem';
 import { EOverridePermissionType, EPermissionStatus, ERequestStatus } from '../types/channelPermission.enum';
@@ -100,7 +102,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			return (
 				<TouchableOpacity onPress={handleBack}>
 					<View style={{ marginLeft: size.s_16 }}>
-						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
 					</View>
 				</TouchableOpacity>
 			);

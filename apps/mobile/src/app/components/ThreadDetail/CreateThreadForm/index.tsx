@@ -1,13 +1,6 @@
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useThreadMessage, useThreads } from '@mezon/core';
-import {
-	ActionEmitEvent,
-	Icons,
-	STORAGE_CLAN_ID,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	getUpdateOrAddClanChannelCache,
-	save
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, save } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
@@ -30,8 +23,10 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonSwitch from '../../../componentUI/MezonSwitch';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuThreadScreenProps } from '../../../navigation/ScreenTypes';
 import { ChatBox } from '../../../screens/home/homedrawer/ChatBox';
 import MessageItem from '../../../screens/home/homedrawer/MessageItem';
@@ -184,7 +179,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 					>
 						<View style={{ margin: size.s_20, flex: 1 }}>
 							<View style={styles.iconContainer}>
-								<Icons.ThreadIcon width={size.s_20} height={size.s_20} color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
 							</View>
 							<MezonInput
 								label={t('threadName')}

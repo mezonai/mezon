@@ -21,6 +21,8 @@ import { useSelector } from 'react-redux';
 import { useMixImageColor } from '../../../../../../app/hooks/useMixImageColor';
 import { APP_SCREEN } from '../../../../../../app/navigation/ScreenTypes';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from './UserProfile.styles';
 import ActivityAppComponent from './component/ActivityAppComponent';
@@ -169,7 +171,7 @@ const UserProfile = React.memo(
 			{
 				id: 4,
 				text: t('userAction.addFriend'),
-				icon: <Icons.UserPlusIcon color={Colors.green} />,
+				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={Colors.green} />,
 				action: () => {
 					const userIdToAddFriend = userId || user?.id;
 					if (userIdToAddFriend) {

@@ -19,9 +19,11 @@ import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../componentUI/MezonAvatar';
 import { MezonButton } from '../../componentUI/MezonButton';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { AddStatusUserModal } from '../../components/AddStatusUserModal';
 import { CustomStatusUser, EUserStatus } from '../../components/CustomStatusUser';
 import { SendTokenUser } from '../../components/SendTokenUser';
+import { IconCDN } from '../../constants/icon_cdn';
 import { useMixImageColor } from '../../hooks/useMixImageColor';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -154,11 +156,11 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={[styles.backgroundListIcon, isTabletLandscape && { justifyContent: 'space-between' }]}>
 					{isTabletLandscape && (
 						<TouchableOpacity style={styles.backgroundSetting} onPress={navigateGoback}>
-							<Icons.ChevronSmallLeftIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 						</TouchableOpacity>
 					)}
 					<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToSettingScreen()}>
-						<Icons.SettingsIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.settingIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				</View>
 
@@ -230,7 +232,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={styles.contentContainer}>
 					<TouchableOpacity style={styles.viewInfo} onPress={showUserStatusBottomSheet}>
 						<Text style={styles.textName}>{user?.userProfile?.user?.display_name}</Text>
-						<Icons.ChevronSmallDownIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 					<Text style={styles.text}>{user?.userProfile?.user?.username}</Text>
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}>
@@ -248,7 +250,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								<Text style={styles.text}>{userCustomStatus}</Text>
 							</TouchableOpacity>
 							<Pressable onPress={() => handleCustomUserStatus('', ETypeCustomUserStatus.Close)} style={styles.closeBtnUserStatus}>
-								<Icons.CircleXIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 							</Pressable>
 						</View>
 					) : null}
@@ -290,10 +292,11 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					<Text style={styles.textTitle}>{t('yourFriend')}</Text>
 
 					<MezonAvatar avatarUrl="" username="" height={size.s_30} width={size.s_30} stacks={firstFriendImageList} />
-					<Icons.ChevronSmallRightIcon
+					<MezonIconCDN
+						icon={IconCDN.chevronSmallRightIcon}
 						width={size.s_18}
 						height={size.s_18}
-						style={{ marginLeft: size.s_4 }}
+						customStyle={{ marginLeft: size.s_4 }}
 						color={themeValue.textStrong}
 					/>
 				</TouchableOpacity>

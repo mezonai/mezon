@@ -7,12 +7,14 @@ import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, Keyboard, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, DeviceEventEmitter, ImageStyle, Keyboard, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
 import { useSelector } from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
 import { SOUND_WAVES_CIRCLE } from '../../../../../../../assets/lottie';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import RenderAudioChat from '../../RenderAudioChat/RenderAudioChat';
 import ModalConfirmRecord from '../ModalConfirmRecord/ModalConfirmRecord';
 import { RecordingAudioMessage } from '../RecordingAudioMessage/RecordingAudioMessage';
@@ -228,10 +230,10 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMes
 						}}
 					>
 						<TouchableOpacity onPress={handleRemoveRecord} style={styles.boxIcon}>
-							<Icons.TrashIcon color={themeValue.white} />
+							<MezonIconCDN icon={IconCDN.trashIcon} color={themeValue.white} />
 						</TouchableOpacity>
 						<TouchableOpacity onPress={sendMessage} style={styles.soundContainer}>
-							<Icons.SendMessageIcon style={styles.iconOverlay} color={themeValue.white} />
+							<MezonIconCDN icon={IconCDN.sendMessageIcon} customStyle={styles.iconOverlay as ImageStyle} color={themeValue.white} />
 							<LottieView ref={meterSoundRef} source={SOUND_WAVES_CIRCLE} resizeMode="cover" style={styles.soundLottie}></LottieView>
 						</TouchableOpacity>
 						{!isPreviewRecord && (

@@ -23,9 +23,11 @@ import { TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';
 import { styles } from './styles';
 
@@ -245,7 +247,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 					placeHolder={t('search')}
 					onTextChange={setSearchText}
 					value={searchText}
-					prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
+					prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
 					inputWrapperStyle={{ backgroundColor: themeValue.primary, paddingHorizontal: size.s_6 }}
 				/>
 

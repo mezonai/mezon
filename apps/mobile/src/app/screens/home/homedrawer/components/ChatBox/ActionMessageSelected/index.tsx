@@ -1,8 +1,10 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, View } from 'react-native';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
@@ -45,7 +47,7 @@ export const ActionMessageSelected = memo(({ messageActionNeedToResolve, onClose
 					}}
 				>
 					<Pressable onPress={() => handleCloseMessageAction(EMessageActionType.Reply)}>
-						<Icons.CircleXIcon height={20} width={20} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={20} width={20} color={themeValue.text} />
 					</Pressable>
 					<Text color={themeValue.text} h6>
 						{t('chatBox.replyingTo')} {messageActionNeedToResolve?.replyTo}
@@ -64,7 +66,7 @@ export const ActionMessageSelected = memo(({ messageActionNeedToResolve, onClose
 					}}
 				>
 					<Pressable onPress={() => handleCloseMessageAction(EMessageActionType.EditMessage)}>
-						<Icons.CircleXIcon height={20} width={20} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={20} width={20} color={themeValue.text} />
 					</Pressable>
 					<Text color={themeValue.text} h6>
 						{t('chatBox.editingMessage')}

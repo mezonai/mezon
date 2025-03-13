@@ -3,6 +3,8 @@ import { useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { linkGoogleMeet } from '../../../utils/helpers';
 import { style } from './styles';
 
@@ -28,7 +30,7 @@ export function EventLocation({ event }: IEventLocation) {
 		<View style={styles.container}>
 			{option === OptionEvent.OPTION_SPEAKER && (
 				<TouchableOpacity style={styles.inline} onPress={joinVoiceChannel}>
-					<Icons.VoiceNormalIcon height={16} width={16} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.channelVoice} height={16} width={16} color={themeValue.textStrong} />
 					<Text style={styles.smallText}>{channelVoice?.channel_label}</Text>
 				</TouchableOpacity>
 			)}

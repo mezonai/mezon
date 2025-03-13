@@ -2,7 +2,6 @@ import { useAuth } from '@mezon/core';
 import {
 	debounce,
 	getAppInfo,
-	Icons,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
@@ -17,8 +16,10 @@ import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, View } from 'react-native';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
 import MezonSearch from '../../componentUI/MezonSearch';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -92,7 +93,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.account'),
-					icon: <Icons.UserCircleIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.userCircleIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				// {
 				// 	onPress: () => reserve(),
@@ -138,7 +139,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.friendRequests'),
-					icon: <Icons.FriendIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.friendIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -148,7 +149,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.MyQRCode'),
-					icon: <Icons.MyQRCodeIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.myQRcodeIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -158,7 +159,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.QRScan'),
-					icon: <Icons.QRCodeCameraIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.myQRcodeIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[navigation, t, themeValue.textStrong, i18n.language]
@@ -171,19 +172,19 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('paymentSettings.serverBoost'),
-					icon: <Icons.BoostTier2Icon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.boostTier2Icon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('paymentSettings.nitroGift'),
-					icon: <Icons.GiftIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN color={themeValue.textStrong} width={size.s_24} height={size.s_24} icon={IconCDN.giftIcon} />
 				},
 				{
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('paymentSettings.restoreSubscription'),
-					icon: <Icons.NitroWheelIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN color={themeValue.textStrong} width={size.s_24} height={size.s_24} icon={IconCDN.nitroWheelIcon} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[themeValue.textStrong]
@@ -206,7 +207,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('appSettings.appearance'),
-					icon: <Icons.PaintPaletteIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.paintPaletteIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				// {
 				// 	onPress: () => reserve(),
@@ -223,7 +224,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					title: t('appSettings.language'),
 					expandable: true,
 					previewValue: i18n.language,
-					icon: <Icons.LanguageIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.languageIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 				// {
 				// 	onPress: () => reserve(),
@@ -266,19 +267,19 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('supportSettings.support'),
-					icon: <Icons.CircleQuestionIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.circleQuestionIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('supportSettings.uploadLog'),
-					icon: <Icons.CircleInformationIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.circleInformation} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('supportSettings.acknowledgement'),
-					icon: <Icons.CircleInformationIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.circleInformation} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[themeValue.textStrong]
@@ -291,7 +292,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					onPress: () => reserve(),
 					expandable: true,
 					title: t('whatsNew.whatsNew'),
-					icon: <Icons.CircleInformationIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.circleInformation} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[themeValue.textStrong]
@@ -304,7 +305,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					onPress: () => confirmLogout(),
 					title: t('logOut'),
 					textStyle: { color: baseColor.redStrong },
-					icon: <Icons.DoorExitIcon color={baseColor.redStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.doorExitIcon} color={baseColor.redStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[i18n.language]

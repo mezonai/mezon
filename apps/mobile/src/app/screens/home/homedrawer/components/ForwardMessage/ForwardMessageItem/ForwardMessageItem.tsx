@@ -1,4 +1,3 @@
-import { UserGroupIcon } from '@mezon/mobile-components';
 import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -7,6 +6,8 @@ import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import FastImage from 'react-native-fast-image';
 import { IForwardIObject } from '..';
+import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import { styles } from '../styles';
 
 function ForwardMessageItem({
@@ -51,7 +52,7 @@ function ForwardMessageItem({
 			case ChannelType.CHANNEL_TYPE_GROUP:
 				return (
 					<View style={styles.groupAvatar}>
-						<UserGroupIcon />
+						<MezonIconCDN icon={IconCDN.userGroupIcon} />
 					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_CHANNEL:

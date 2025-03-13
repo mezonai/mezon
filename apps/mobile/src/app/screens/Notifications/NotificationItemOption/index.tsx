@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { Metrics, useTheme } from '@mezon/mobile-ui';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import { IconCDN } from '../../../constants/icon_cdn';
 
 export default memo(function NotificationItemOption({ onDelete }: { onDelete: () => void }) {
 	const { t } = useTranslation(['notification']);
@@ -16,7 +17,7 @@ export default memo(function NotificationItemOption({ onDelete }: { onDelete: ()
 					items: [
 						{
 							title: t('removeNotification'),
-							icon: <Icons.TrashIcon height={20} width={20} color={themeValue.textStrong} />,
+							icon: <MezonIconCDN icon={IconCDN.trashIcon} height={20} width={20} color={themeValue.textStrong} />,
 							onPress: () => {
 								onDelete();
 							}

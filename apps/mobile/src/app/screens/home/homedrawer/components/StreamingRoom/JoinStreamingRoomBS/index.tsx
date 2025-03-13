@@ -25,7 +25,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { useWebRTCStream } from '../../../../../../components/StreamContext/StreamContext';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinStreamingRoomBS.styles';
@@ -103,7 +105,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					}}
 					style={styles.buttonCircle}
 				>
-					<Icons.ChevronSmallDownIcon />
+					<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
 				</TouchableOpacity>
 				<TouchableOpacity
 					onPress={() => {
@@ -119,7 +121,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 						borderRadius: size.s_22
 					}}
 				>
-					<Icons.UserPlusIcon />
+					<MezonIconCDN icon={IconCDN.userPlusIcon} />
 				</TouchableOpacity>
 			</View>
 			<View style={{ alignItems: 'center', gap: size.s_6 }}>
@@ -133,7 +135,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 						backgroundColor: themeValue.tertiary
 					}}
 				>
-					<Icons.VoiceNormalIcon width={size.s_36} height={size.s_36} />
+					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_36} height={size.s_36} />
 				</View>
 				<Text style={styles.text}>{t('joinStreamingRoomBS.stream')}</Text>
 				<Text style={styles.textDisable}>{t('joinStreamingRoomBS.noOne')}</Text>

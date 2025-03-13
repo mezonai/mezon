@@ -1,9 +1,11 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useRef, useState } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
+import { IconCDN } from '../../constants/icon_cdn';
 import MezonFakeInputBox, { IMezonFakeBoxProps } from '../MezonFakeBox';
+import MezonIconCDN from '../MezonIconCDN';
 import MezonOption, { IMezonOptionData } from '../MezonOption';
 import { style } from './styles';
 
@@ -44,7 +46,7 @@ export default function MezonSelect({ data, onChange, ...props }: IMezonSelectPr
 		<View>
 			<MezonFakeInputBox
 				{...props}
-				postfixIcon={<Icons.ChevronSmallDownIcon height={size.s_20} width={size.s_20} color={themeValue.text} />}
+				postfixIcon={<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />}
 				value={currentContent}
 				onPress={handlePress}
 			/>

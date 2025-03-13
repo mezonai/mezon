@@ -1,10 +1,11 @@
-import { AttachmentImageIcon } from '@mezon/mobile-components';
 import { Colors } from '@mezon/mobile-ui';
 import { IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { RenderTextMarkdownContent } from '../../home/homedrawer/components/RenderTextMarkdown';
 import { styles } from './MessageNotification.styles';
 
@@ -28,7 +29,7 @@ const MessageNotification = React.memo(({ message }: IMessageNotificationProps) 
 			{message?.attachments?.length ? (
 				<View style={styles.attachmentBox}>
 					<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')}</Text>
-					<AttachmentImageIcon width={13} height={13} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.imageIcon} width={13} height={13} color={Colors.textGray} />
 				</View>
 			) : null}
 			<RenderTextMarkdownContent

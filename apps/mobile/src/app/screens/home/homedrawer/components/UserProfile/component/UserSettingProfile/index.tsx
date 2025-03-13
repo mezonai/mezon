@@ -6,7 +6,9 @@ import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
 import { MezonModal } from '../../../../../../../componentUI/MezonModal';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import KickUserClanModal from '../KickUserClanModal';
 import { ManageUserModal } from '../ManageUserModal';
 import { style } from './UserSettingProfile.style';
@@ -84,7 +86,7 @@ const UserSettingProfile = ({
 			{
 				label: `${EActionSettingUserProfile.Manage}`,
 				value: EActionSettingUserProfile.Manage,
-				icon: <Icons.SettingsIcon color={themeValue.text} width={20} height={20} />,
+				icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.text} width={20} height={20} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission
 			},
@@ -98,14 +100,14 @@ const UserSettingProfile = ({
 			{
 				label: `${EActionSettingUserProfile.Kick}`,
 				value: EActionSettingUserProfile.Kick,
-				icon: <Icons.UserMinusIcon width={20} height={20} color={baseColor.red} />,
+				icon: <MezonIconCDN icon={IconCDN.userMinusIcon} width={20} height={20} color={baseColor.red} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission && !isItMe && !isThatClanOwner
 			},
 			{
 				label: `${EActionSettingUserProfile.Ban}`,
 				value: EActionSettingUserProfile.Ban,
-				icon: <Icons.HammerIcon width={20} height={20} color={baseColor.red} />,
+				icon: <MezonIconCDN icon={IconCDN.hammerIcon} width={20} height={20} color={baseColor.red} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission && !isItMe
 			}

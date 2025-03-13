@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	PinMessageEntity,
@@ -15,6 +14,8 @@ import { memo, useContext, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { MessageAttachment } from '../../../screens/home/homedrawer/components/MessageAttachment';
 import { RenderTextMarkdownContent } from '../../../screens/home/homedrawer/components/RenderTextMarkdown';
@@ -75,7 +76,7 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 						handleUnpinMessage(pinMessageItem);
 					}}
 				>
-					<Icons.CircleXIcon color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.circleXIcon} color={themeValue.text} />
 				</TouchableOpacity>
 			</View>
 		</TouchableOpacity>

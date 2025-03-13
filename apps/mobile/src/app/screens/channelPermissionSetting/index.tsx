@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 import { AdvancedView } from './AdvancedView';
 import { BasicView } from './BasicView';
@@ -83,7 +84,7 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 							marginTop: size.s_16
 						}}
 					>
-						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
 					</View>
 				</TouchableOpacity>
 			);

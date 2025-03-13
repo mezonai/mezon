@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, FilterSearchIcon, Icons, IOption, IUerMention } from '@mezon/mobile-components';
+import { ArrowLeftIcon, FilterSearchIcon, IOption, IUerMention } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { NativeSyntheticEvent, Pressable, Text, TextInput, TextInputKeyPressEventData, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import ListOptionSearch from '../ListOptionSearch';
 import { style } from './InputSearchMessageChannel.styles';
 
@@ -78,7 +80,7 @@ const InputSearchMessageChannel = ({
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
 				<View style={{ marginRight: size.s_6 }}>
-					<Icons.MagnifyingIcon width={20} height={20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.magnifyingIcon} width={20} height={20} color={Colors.textGray} />
 				</View>
 				{optionFilter?.title || userMention?.display ? (
 					<View
@@ -107,7 +109,7 @@ const InputSearchMessageChannel = ({
 				></TextInput>
 				{textInput?.length ? (
 					<Pressable onPress={() => clearTextInput()}>
-						<Icons.CircleXIcon height={18} width={18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={18} width={18} color={themeValue.text} />
 					</Pressable>
 				) : null}
 			</View>

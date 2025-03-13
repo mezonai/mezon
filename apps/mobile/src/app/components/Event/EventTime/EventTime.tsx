@@ -1,4 +1,4 @@
-import { Icons, isSameDay, timeFormat } from '@mezon/mobile-components';
+import { isSameDay, timeFormat } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity } from '@mezon/store-mobile';
 import { EEventStatus } from '@mezon/utils';
@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import MezonBadge from '../../../componentUI/MezonBadge';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IEventTimeProps {
@@ -43,7 +45,7 @@ export function EventTime({ event, eventStatus }: IEventTimeProps) {
 	return (
 		<View style={styles.inline}>
 			{isSameDay(event.create_time as string) && <MezonBadge title="new" type="success" />}
-			<Icons.CalendarIcon height={size.s_20} width={size.s_20} color={colorStatusEvent} />
+			<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_20} width={size.s_20} color={colorStatusEvent} />
 			<Text style={{ ...styles.smallText, color: colorStatusEvent }}>{textStatusEvent}</Text>
 		</View>
 	);

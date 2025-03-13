@@ -4,7 +4,9 @@ import { useTheme } from '@mezon/mobile-ui';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../componentUI/MezonMenu';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './NotificationOption.styles';
 interface INotificationOptionProps {
 	selectedTabs: string;
@@ -34,13 +36,13 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 			[
 				{
 					title: t('tabNotify.forYou'),
-					icon: <Icons.AtIcon color={themeValue.textStrong} />,
+					icon: <MezonIconCDN icon={IconCDN.atIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.INDIVIDUAL),
 					component: selectedTabs === InboxType.INDIVIDUAL ? <CheckIcon color={themeValue.textStrong} /> : null
 				},
 				{
 					title: t('tabNotify.mention'),
-					icon: <Icons.BellIcon color={themeValue.textStrong} />,
+					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.MENTIONS),
 					component: selectedTabs === InboxType.MENTIONS ? <CheckIcon color={themeValue.textStrong} /> : null
 				},
@@ -65,7 +67,7 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 			[
 				{
 					title: t('tabNotify.notificationSettings'),
-					icon: <Icons.SettingsIcon color={themeValue.textStrong} />,
+					icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
 					expandable: true,
 					onPress: () => reserve()
 				}

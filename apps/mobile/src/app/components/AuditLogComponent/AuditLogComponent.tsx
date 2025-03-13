@@ -1,5 +1,5 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { auditLogList } from '@mezon/store';
 import { RootState, auditLogFilterActions, selectActionAuditLog, selectCurrentClanId, selectUserAuditLog, useAppDispatch } from '@mezon/store-mobile';
@@ -11,7 +11,9 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonDateTimePicker from '../../componentUI/MezonDateTimePicker';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { AuditLogItem } from './AuditLogItem/AuditLogItem';
 import EmptyAuditLog from './EmptyAuditLog/EmptyAuditLog';
@@ -56,7 +58,7 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 			headerTitle: t('auditLogComponent.title'),
 			headerLeft: () => (
 				<TouchableOpacity style={styles.headerLeftBtn} onPress={() => navigation.goBack()}>
-					<Icons.ArrowLargeLeftIcon height={Fonts.size.s_20} width={Fonts.size.s_20} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={Fonts.size.s_20} width={Fonts.size.s_20} color={themeValue.textStrong} />
 				</TouchableOpacity>
 			),
 			headerRight: () => (
@@ -166,7 +168,7 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 							{displayActionLog}
 						</Text>
 					</View>
-					<Icons.ChevronSmallRightIcon width={size.s_18} height={size.s_18} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 				</View>
 			</TouchableOpacity>
 			<View style={{ paddingHorizontal: size.s_10 }}>

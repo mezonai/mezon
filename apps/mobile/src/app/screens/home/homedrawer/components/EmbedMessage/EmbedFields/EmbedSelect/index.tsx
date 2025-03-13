@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { embedActions, useAppDispatch } from '@mezon/store-mobile';
 import { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import MessageSelect from '../MessageSelect';
 import { style } from './styles';
 
@@ -91,7 +92,9 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 				<Text ellipsizeMode="tail" style={styles.itemTitle} numberOfLines={1}>
 					{option?.title}
 				</Text>
-				<Icons.CircleXIcon height={size.s_20} width={size.s_20} onPress={() => handleRemoveOption(option)} />
+				<Pressable onPress={() => handleRemoveOption(option)}>
+					<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_20} width={size.s_20} />
+				</Pressable>
 			</View>
 		);
 	};

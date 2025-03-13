@@ -17,6 +17,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinChannelVoiceBS.styles';
@@ -74,7 +76,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 						}}
 						style={styles.buttonCircle}
 					>
-						<Icons.ChevronSmallDownIcon />
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
 					</TouchableOpacity>
 					<Text numberOfLines={2} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
 						{channel?.channel_label}
@@ -94,7 +96,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 						borderRadius: size.s_22
 					}}
 				>
-					<Icons.UserPlusIcon />
+					<MezonIconCDN icon={IconCDN.userPlusIcon} />
 				</TouchableOpacity>
 			</View>
 			<View style={{ alignItems: 'center', gap: size.s_6, marginTop: size.s_20 }}>
@@ -108,7 +110,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 						backgroundColor: themeValue.tertiary
 					}}
 				>
-					<Icons.VoiceNormalIcon width={size.s_36} height={size.s_36} />
+					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_36} height={size.s_36} />
 				</View>
 				<Text style={styles.text}>{t('joinChannelVoiceBS.channelVoice')}</Text>
 				<Text style={styles.textDisable}>{t('joinChannelVoiceBS.readyTalk')}</Text>

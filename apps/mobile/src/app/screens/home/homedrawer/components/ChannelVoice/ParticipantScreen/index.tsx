@@ -6,6 +6,8 @@ import { selectMemberClanByUserName } from '@mezon/store-mobile';
 import { Track } from 'livekit-client';
 import React, { useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { style } from '../styles';
@@ -73,9 +75,9 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 					<VideoTrack trackRef={videoTrackRef} style={styles.participantView} />
 					<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 						{participant.isMicrophoneEnabled ? (
-							<Icons.MicrophoneIcon height={size.s_14} />
+							<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
 						) : (
-							<Icons.MicrophoneSlashIcon height={size.s_14} />
+							<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
 						)}
 						<Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>
 					</View>
@@ -99,9 +101,9 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 					</View>
 					<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 						{participant.isMicrophoneEnabled ? (
-							<Icons.MicrophoneIcon height={size.s_14} />
+							<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
 						) : (
-							<Icons.MicrophoneSlashIcon height={size.s_14} />
+							<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
 						)}
 						{isLoading ? <Icons.LoadingIcon width={24} height={24} /> : <Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>}
 					</View>

@@ -8,9 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonSwitch from '../../../componentUI/MezonSwitch';
 import { SeparatorWithLine } from '../../../components/Common';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 
@@ -126,7 +128,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 			if (isEditRoleMode) {
 				return (
 					<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-						<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.textStrong} />
 					</Pressable>
 				);
 			}

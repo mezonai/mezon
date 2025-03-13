@@ -59,7 +59,7 @@ export function StickerSetting() {
 		if (file) {
 			timerRef.current = setTimeout(
 				async () => {
-					if (file.type === 'image/gif') {
+					if (file.type === 'image/gif' || file.type === 'image/png') {
 						if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
 							Toast.show({
 								type: 'error',

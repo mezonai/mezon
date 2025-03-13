@@ -1,7 +1,7 @@
 import { TouchableOpacity, TouchableWithoutFeedback } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending, useGifsStickersEmoji } from '@mezon/core';
-import { Icons, debounce } from '@mezon/mobile-components';
+import { debounce } from '@mezon/mobile-components';
 import { Colors, Fonts, size, useTheme } from '@mezon/mobile-ui';
 import {
 	getStoreAsync,
@@ -18,6 +18,8 @@ import React, { MutableRefObject, useCallback, useEffect, useState } from 'react
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Platform, Text, TextInput, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { EMessageActionType } from '../../enums';
 import { IMessageActionNeedToResolve } from '../../types';
 import EmojiSelector from './EmojiSelector';
@@ -190,12 +192,12 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 									setValueInputSearch('');
 								}}
 							>
-								<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.text} />
 							</TouchableOpacity>
 						)}
 
 						<View style={styles.textInputWrapper}>
-							<Icons.MagnifyingIcon height={18} width={18} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.magnifyingIcon} height={18} width={18} color={themeValue.text} />
 							<TextInput
 								placeholder={mode === 'sticker' ? t('findThePerfectSticker') : 'search'}
 								placeholderTextColor={themeValue.text}

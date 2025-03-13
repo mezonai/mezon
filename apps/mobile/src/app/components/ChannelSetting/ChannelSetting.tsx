@@ -1,15 +1,5 @@
 import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
-import {
-	BellIcon,
-	CheckIcon,
-	Icons,
-	LinkIcon,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	TrashIcon,
-	getUpdateOrAddClanChannelCache,
-	isEqual,
-	save
-} from '@mezon/mobile-components';
+import { CheckIcon, Icons, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, isEqual, save } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
@@ -29,10 +19,12 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonInput from '../../componentUI/MezonInput';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonOption from '../../componentUI/MezonOption';
 import { IMezonSliderData } from '../../componentUI/MezonSlider';
+import { IconCDN } from '../../constants/icon_cdn';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 import { AddMemberOrRoleBS } from '../../screens/channelPermissionSetting/components/AddMemberOrRoleBS';
@@ -137,7 +129,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: isChannel ? t('fields.channelCategory.title') : t('fields.ThreadCategory.title'),
 					expandable: true,
 					previewValue: currentCategoryName,
-					icon: <Icons.FolderPlusIcon color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.forderPlusIcon} color={themeValue.text} />,
 					isShow: isChannel,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -187,17 +179,17 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.channelNotifications.notification'),
 					expandable: true,
-					icon: <BellIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
 				},
 				{
 					title: t('fields.channelNotifications.pinned'),
 					expandable: true,
-					icon: <Icons.PinIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.pinIcon} color={themeValue.text} />
 				},
 				{
 					title: t('fields.channelNotifications.invite'),
 					expandable: true,
-					icon: <LinkIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[]
@@ -209,7 +201,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.channelWebhooks.webhook'),
 					expandable: true,
-					icon: <Icons.WebhookIcon color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.webhookIcon} color={themeValue.text} />,
 					isShow: isChannel,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
@@ -228,7 +220,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: isChannel ? t('fields.channelDelete.delete') : t('fields.threadDelete.delete'),
 					textStyle: { color: 'red' },
 					onPress: () => handlePressDeleteChannel(),
-					icon: <TrashIcon color="red" />
+					icon: <MezonIconCDN icon={IconCDN.trashIcon} color="red" />
 				},
 				{
 					title: t('fields.threadLeave.leave'),

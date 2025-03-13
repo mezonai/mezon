@@ -1,10 +1,12 @@
-import { Icons, LockIcon } from '@mezon/mobile-components';
+import { LockIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelUsersEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import IconChannel from '../IconChannel';
 import style from './ChannelItem.styles';
 
@@ -52,7 +54,7 @@ export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProp
 						</View>
 					</View>
 					<View style={styles.joinChannelBtn}>
-						<Icons.VoiceNormalIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+						<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 						<Text style={styles.joinChannelBtnText}>{t('joinChannel')}</Text>
 					</View>
 				</View>

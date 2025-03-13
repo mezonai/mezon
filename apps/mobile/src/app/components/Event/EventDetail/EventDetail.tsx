@@ -6,6 +6,8 @@ import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonButton from '../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { EventMenu } from '../EventMenu';
@@ -52,7 +54,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 					<EventLocation event={event} />
 
 					<View style={styles.inline}>
-						<Icons.BellIcon height={16} width={16} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.bellIcon} height={16} width={16} color={themeValue.text} />
 						<Text style={styles.smallText}>{event?.user_ids?.length}</Text>
 						<Text style={styles.smallText}>{event?.user_ids?.length > 1 ? 'people are interested' : 'person is interested'}</Text>
 					</View>
@@ -78,7 +80,10 @@ export function EventDetail({ event }: IEventDetailProps) {
 				/>
 				{/* <MezonButton title="Start event" fluid type="success" /> */}
 				<MezonButton icon={<Icons.ShareIcon height={20} width={20} color={themeValue.text} />} />
-				<MezonButton icon={<Icons.MoreVerticalIcon height={20} width={20} color={themeValue.text} />} onPress={handlePress} />
+				<MezonButton
+					icon={<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={20} width={20} color={themeValue.text} />}
+					onPress={handlePress}
+				/>
 			</View>
 
 			{!!event?.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}

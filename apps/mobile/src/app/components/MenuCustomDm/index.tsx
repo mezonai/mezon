@@ -17,7 +17,9 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
 import MezonConfirm from '../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import CustomGroupDm from './CustomGroupDm';
 import style from './MenuCustomDm.styles';
@@ -51,7 +53,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		{
 			title: t('leaveGroup'),
 			expandable: false,
-			icon: <Icons.CircleXIcon width={size.s_22} height={size.s_22} color={themeValue.text}></Icons.CircleXIcon>,
+			icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_22} height={size.s_22} color={themeValue.text} />,
 			textStyle: styles.label,
 			onPress: () => {
 				setIsVisibleLeaveGroupModal(true);
@@ -70,7 +72,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 				{
 					title: t('closeDM'),
 					expandable: false,
-					icon: <Icons.CircleXIcon width={size.s_18} height={size.s_18} color={themeValue.text}></Icons.CircleXIcon>,
+					icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
 					textStyle: styles.label,
 					onPress: async () => {
 						await dispatch(directActions.closeDirectMessage({ channel_id: currentChannel?.channel_id }));

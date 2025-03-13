@@ -16,6 +16,8 @@ import { Track } from 'livekit-client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { DeviceEventEmitter, Platform, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import FocusedScreenPopup from '../FocusedScreenPopup';
@@ -142,7 +144,11 @@ const RoomView = ({
 							{isCameraEnabled ? <Icons.VideoIcon /> : <Icons.VideoSlashIcon />}
 						</TouchableOpacity>
 						<TouchableOpacity onPress={handleToggleMicrophone} style={styles.menuIcon}>
-							{isMicrophoneEnabled ? <Icons.MicrophoneIcon /> : <Icons.MicrophoneSlashIcon />}
+							{isMicrophoneEnabled ? (
+								<MezonIconCDN icon={IconCDN.microphoneIcon} />
+							) : (
+								<MezonIconCDN icon={IconCDN.microphoneSlashIcon} />
+							)}
 						</TouchableOpacity>
 						<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
 							<Icons.ChatIcon />

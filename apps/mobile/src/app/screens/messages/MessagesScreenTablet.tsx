@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { AppState, DeviceEventEmitter, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { FriendsTablet } from '../friend/FriendsTablet';
@@ -97,13 +99,13 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 						<View style={styles.headerWrapper}>
 							<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
 							<Pressable style={styles.addFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
-								<Icons.UserPlusIcon height={size.s_16} width={size.s_16} color={themeValue.textStrong} />
+								<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_16} width={size.s_16} color={themeValue.textStrong} />
 								<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 							</Pressable>
 						</View>
 
 						<View style={styles.searchMessage}>
-							<Icons.MagnifyingIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 							<TextInput
 								ref={searchInputRef}
 								placeholder={t('common:searchPlaceHolder')}
@@ -113,7 +115,7 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 							/>
 							{!!searchText?.length && (
 								<Pressable onPress={clearTextInput}>
-									<Icons.CircleXIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+									<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 								</Pressable>
 							)}
 						</View>
@@ -122,7 +124,7 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 							onPress={handleFriendsPress}
 							style={[styles.friendsWrapper, !currentDmGroupId && { backgroundColor: themeValue.secondary }]}
 						>
-							<Icons.FriendIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.friendIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 							<Text style={styles.headerTitle}>{t('dmMessage:friends')}</Text>
 						</Pressable>
 

@@ -1,12 +1,5 @@
 import { useNotification } from '@mezon/core';
-import {
-	ActionEmitEvent,
-	getUpdateOrAddClanChannelCache,
-	Icons,
-	save,
-	STORAGE_CLAN_ID,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, getUpdateOrAddClanChannelCache, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -34,6 +27,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import EmptyNotification from './EmptyNotification';
@@ -66,7 +61,7 @@ const Notifications = () => {
 	const timeoutRef = useRef(null);
 	const [isLoadMore, setIsLoadMore] = useState(true);
 	const [firstLoading, setFirstLoading] = useState(true);
-	const [selectedTabs, setSelectedTabs] = useState<string>(InboxType.INDIVIDUAL);
+	const [selectedTabs, setSelectedTabs] = useState<string>(InboxType.MENTIONS);
 	const [notificationsFilter, setNotificationsFilter] = useState<NotificationEntity[]>([]);
 	const allNotificationForYou = useSelector(selectNotificationForYou);
 	const allNotificationMentions = useSelector(selectNotificationMentions);
@@ -132,7 +127,7 @@ const Notifications = () => {
 
 	const initLoader = async () => {
 		const store = await getStoreAsync();
-		store.dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
+		store.dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
 		store.dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
 	};
 
@@ -309,14 +304,14 @@ const Notifications = () => {
 				{isTabletLandscape && (
 					<Pressable onPress={handleGoback}>
 						<View style={styles.notificationHeaderIcon}>
-							<Icons.ChevronSmallLeftIcon height={20} width={20} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={20} width={20} color={themeValue.textStrong} />
 						</View>
 					</Pressable>
 				)}
 				<Text style={styles.notificationHeaderTitle}>{t('headerTitle')}</Text>
 				<Pressable onPress={() => openBottomSheet(ENotifyBsToShow.notification)}>
 					<View style={styles.notificationHeaderIcon}>
-						<Icons.MoreHorizontalIcon height={20} width={20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.moreHorizontalIcon} height={20} width={20} color={themeValue.textStrong} />
 					</View>
 				</Pressable>
 			</View>

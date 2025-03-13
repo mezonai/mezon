@@ -7,6 +7,8 @@ import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { EOverridePermissionType, ERequestStatus } from '../../types/channelPermission.enum';
 import { IRoleItemProps } from '../../types/channelPermission.type';
 
@@ -60,7 +62,7 @@ export const RoleItem = memo(
 						{!isCheckbox && !isAdvancedSetting && <Text color={themeValue.textDisabled}>{'Role'}</Text>}
 					</View>
 					{isAdvancedSetting ? (
-						<Icons.ChevronSmallRightIcon color={themeValue.white} />
+						<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.white} />
 					) : (
 						<View>
 							{isCheckbox ? (
@@ -80,7 +82,7 @@ export const RoleItem = memo(
 								</View>
 							) : (
 								<TouchableOpacity onPress={deleteRole} disabled={isEveryoneRole}>
-									<Icons.CircleXIcon color={isEveryoneRole ? themeValue.textDisabled : themeValue.white} />
+									<MezonIconCDN icon={IconCDN.circleXIcon} color={isEveryoneRole ? themeValue.textDisabled : themeValue.white} />
 								</TouchableOpacity>
 							)}
 						</View>

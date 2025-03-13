@@ -7,7 +7,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../components/Common';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 
 type ClanSettingsScreen = typeof APP_SCREEN.MENU_CLAN.ROLE_SETTING;
@@ -30,7 +32,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	navigation.setOptions({
 		headerRight: () => (
 			<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.CREATE_NEW_ROLE)}>
-				<Icons.PlusLargeIcon height={20} width={20} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.plusLargeIcon} height={20} width={20} color={themeValue.textStrong} />
 			</Pressable>
 		)
 	});
@@ -63,7 +65,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				>
 					<View style={{ flexDirection: 'row', flex: 1, gap: 10 }}>
 						<View style={{ backgroundColor: themeValue.tertiary, borderRadius: 50, padding: size.s_8 }}>
-							<Icons.GroupIcon color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.groupIcon} color={themeValue.text} />
 						</View>
 						<View style={{ flex: 1 }}>
 							<Text color={themeValue.white}>@everyone</Text>
@@ -72,7 +74,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 							</Text>
 						</View>
 					</View>
-					<Icons.ChevronSmallRightIcon color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 				</View>
 			</TouchableOpacity>
 
@@ -102,7 +104,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													gap: size.s_10
 												}}
 											>
-												<Icons.ShieldUserIcon color={'gray'} height={size.s_32} width={size.s_32} />
+												<MezonIconCDN icon={IconCDN.shieldUserIcon} color={'gray'} height={size.s_32} width={size.s_32} />
 												<View style={{ flex: 1 }}>
 													<View style={{ flexDirection: 'row', gap: size.s_6 }}>
 														<Text color={themeValue.white}>{item.title}</Text>
@@ -115,7 +117,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													</Text>
 												</View>
 												<View>
-													<Icons.ChevronSmallRightIcon color={themeValue.text} />
+													<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 												</View>
 											</View>
 											{index !== allClanRoles.length - 1 && <SeparatorWithLine />}

@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons, PaperclipIcon, STORAGE_MY_USER_ID, convertTimestampToTimeAgo, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, PaperclipIcon, STORAGE_MY_USER_ID, convertTimestampToTimeAgo, load } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { useAppDispatch, useAppSelector } from '@mezon/store';
 import { directActions, selectDirectById, selectIsUnreadDMById } from '@mezon/store-mobile';
@@ -7,8 +7,10 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import BuzzBadge from '../../components/BuzzBadge/BuzzBadge';
 import ImageNative from '../../components/ImageNative';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { DmListItemLastMessage } from './DMListItemLastMessage';
@@ -97,6 +99,7 @@ export const DmListItem = React.memo((props: { id: string; navigation: any; onLo
 					<DmListItemLastMessage
 						content={typeof content === 'object' ? content : safeJSONParse(content || '{}')}
 						styleText={{ color: isUnReadChannel && !isYourAccount ? themeValue.white : themeValue.textDisabled }}
+						// code={directMessage.last_sent_message?.content}
 					/>
 				)}
 			</View>
@@ -148,7 +151,7 @@ export const DmListItem = React.memo((props: { id: string; navigation: any; onLo
 		>
 			{isTypeDMGroup ? (
 				<View style={styles.groupAvatar}>
-					<Icons.GroupIcon />
+					<MezonIconCDN icon={IconCDN.groupIcon} />
 				</View>
 			) : (
 				<View style={styles.avatarWrapper}>

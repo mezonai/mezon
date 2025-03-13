@@ -6,8 +6,10 @@ import { forwardRef, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonOption, { IMezonOptionData } from '../../componentUI/MezonOption';
+import { IconCDN } from '../../constants/icon_cdn';
 import { ETypeCustomUserStatus } from '../../screens/profile/ProfileScreen';
 
 interface ICustomStatusUserProps {
@@ -99,7 +101,7 @@ export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICus
 					items: [
 						{
 							title: userCustomStatus ? userCustomStatus : t('setCustomStatus'),
-							icon: <Icons.ReactionIcon height={20} width={20} color={themeValue.textDisabled} />,
+							icon: <MezonIconCDN icon={IconCDN.reactionIcon} height={20} width={20} color={themeValue.textDisabled} />,
 							onPress: () => onPressSetCustomStatus(),
 							component: userCustomStatus ? (
 								<Pressable onPress={() => handleCustomUserStatus('', ETypeCustomUserStatus.Close)}>

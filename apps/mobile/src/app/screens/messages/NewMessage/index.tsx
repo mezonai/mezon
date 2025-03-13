@@ -1,5 +1,5 @@
 import { useDirect, useFriends } from '@mezon/core';
-import { ChevronIcon, UserGroupIcon, UserIcon } from '@mezon/mobile-components';
+import { ChevronIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity, selectDirectsOpenlist } from '@mezon/store-mobile';
 import { User } from 'mezon-js';
@@ -9,10 +9,12 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../../components/Common';
 import { EFriendItemAction } from '../../../components/FriendItem';
 import { FriendListByAlphabet } from '../../../components/FriendListByAlphabet';
 import { UserInformationBottomSheet } from '../../../components/UserInformationBottomSheet';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { style } from './styles';
@@ -105,7 +107,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 			<View style={styles.actionsWrapper}>
 				<TouchableOpacity onPress={() => navigateToNewGroupScreen()} style={styles.actionItem}>
 					<View style={[styles.actionIconWrapper, styles.bgNewGroupIcon]}>
-						<UserGroupIcon />
+						<MezonIconCDN icon={IconCDN.userGroupIcon} />
 					</View>
 					<Text style={styles.actionTitle}>{t('message:newMessage.newGroup')}</Text>
 					<ChevronIcon height={15} width={15} color={themeValue.text} />
@@ -113,7 +115,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 				<SeparatorWithLine />
 				<TouchableOpacity onPress={() => navigateToAddFriendScreen()} style={styles.actionItem}>
 					<View style={[styles.actionIconWrapper, styles.bgAddFriendIcon]}>
-						<UserIcon />
+						<MezonIconCDN icon={IconCDN.userIcon} />
 					</View>
 					<Text style={styles.actionTitle}>{t('message:newMessage.addFriend')}</Text>
 					<ChevronIcon height={15} width={15} color={themeValue.text} />

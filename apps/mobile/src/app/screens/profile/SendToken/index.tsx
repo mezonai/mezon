@@ -26,8 +26,10 @@ import Toast from 'react-native-toast-message';
 import { captureRef } from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import Backdrop from '../../../components/BottomSheetRootListener/backdrop';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
 import { Sharing } from '../../settings/Sharing';
 import { style } from './styles';
@@ -397,7 +399,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 						inputWrapperStyle={styles.searchText}
 						placeHolder={t('selectUser')}
 						onTextChange={handleSearchText}
-						prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
+						prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
 					/>
 					<View style={{ flex: 1, backgroundColor: themeValue.secondary, borderRadius: size.s_8 }}>
 						<BottomSheetFlatList data={filteredUsers} renderItem={renderItem} />

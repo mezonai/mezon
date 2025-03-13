@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonButton from '../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { EventTime } from '../EventTime';
@@ -65,7 +67,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 							/>
 						</View>
 						<View style={styles.inline}>
-							<Icons.GroupIcon height={size.s_10} width={size.s_10} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.groupIcon} height={size.s_10} width={size.s_10} color={themeValue.text} />
 							<Text style={styles.tinyText}>{event?.user_ids?.length}</Text>
 						</View>
 					</View>

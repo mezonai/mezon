@@ -9,6 +9,8 @@ import { memo, useContext, useMemo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
@@ -69,23 +71,23 @@ export const ThreadHeader = memo(() => {
 		}
 		if (isPrivateChannel && isTextOrThreadChannel) {
 			return isChannel ? (
-				<Icons.TextLockIcon width={20} height={20} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.channelTextLock} width={20} height={20} color={themeValue.text} />
 			) : (
-				<Icons.ThreadLockIcon width={20} height={20} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.threadLockIcon} width={20} height={20} color={themeValue.text} />
 			);
 		}
 
 		return isChannel ? (
-			<Icons.TextIcon width={20} height={20} color={themeValue.text} />
+			<MezonIconCDN icon={IconCDN.channelText} width={20} height={20} color={themeValue.text} />
 		) : (
-			<Icons.ThreadIcon width={20} height={20} color={themeValue.text} />
+			<MezonIconCDN icon={IconCDN.threadIcon} width={20} height={20} color={themeValue.text} />
 		);
 	};
 
 	return (
 		<View style={styles.channelLabelWrapper}>
 			<TouchableOpacity style={styles.iconBackHeader} onPress={handlebackMessageDetail}>
-				<Icons.ArrowLargeLeftIcon color={themeValue.text} height={20} width={20} />
+				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} height={20} width={20} />
 			</TouchableOpacity>
 
 			{isDMThread ? (
@@ -93,7 +95,7 @@ export const ThreadHeader = memo(() => {
 					<View>
 						{currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
 							<View style={[styles.groupAvatar, styles.avatarSize]}>
-								<Icons.GroupIcon color={baseColor.white} />
+								<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
 							</View>
 						) : (
 							<MezonAvatar

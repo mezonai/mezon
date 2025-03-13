@@ -11,6 +11,8 @@ import Toast from 'react-native-toast-message';
 import { EFriendState } from '../..';
 import { SeparatorWithLine } from '../../../../../../../components/Common';
 import MezonAvatar from '../../../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 interface IPendingContentProps {
 	targetUser: FriendsEntity;
 	onClose?: () => void;
@@ -72,7 +74,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 					type: 'success',
 					props: {
 						text2: t('pendingContent.copiedUserName', { username: targetUser?.user?.username }),
-						leadingIcon: <Icons.CopyIcon />
+						leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} />
 					}
 				});
 			},

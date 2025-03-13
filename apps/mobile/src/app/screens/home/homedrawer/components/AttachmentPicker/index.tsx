@@ -9,10 +9,12 @@ import { Alert, Linking, PermissionsAndroid, Platform, Text, TouchableOpacity, V
 import DocumentPicker from 'react-native-document-picker';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IFile } from '../../../../../componentUI/MezonImagePicker';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { AlbumPanel } from '../../AlbumPannel';
 import Gallery from './Gallery';
 import { style } from './styles';
-import { IFile } from "../../../../../componentUI/MezonImagePicker";
 export type AttachmentPickerProps = {
 	mode?: number;
 	currentChannelId?: string;
@@ -212,14 +214,14 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 					<View style={styles.albumButtonGroup}>
 						<Text style={styles.albumTitle}>{currentAlbum}</Text>
 						{isShowAlbum ? (
-							<Icons.ChevronSmallUpIcon color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
+							<MezonIconCDN icon={IconCDN.chevronSmallUpIcon} color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
 						) : (
-							<Icons.ChevronSmallDownIcon color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
+							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
 						)}
 					</View>
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} onPress={onPickFiles} style={styles.buttonHeader}>
-					<Icons.AttachmentIcon height={20} width={20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.attachmentIcon} height={20} width={20} color={themeValue.text} />
 					<Text style={styles.titleButtonHeader}>{t('message:actions.files')}</Text>
 				</TouchableOpacity>
 			</View>

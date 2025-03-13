@@ -9,6 +9,8 @@ import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { EOverridePermissionType, ERequestStatus } from '../../types/channelPermission.enum';
 import { IMemberItemProps } from '../../types/channelPermission.type';
 
@@ -67,11 +69,11 @@ export const MemberItem = memo(
 				);
 			}
 			if (isAdvancedSetting) {
-				return <Icons.ChevronSmallRightIcon color={themeValue.white} />;
+				return <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.white} />;
 			}
 			return (
 				<TouchableOpacity onPress={deleteMember} disabled={disableDeleteButton}>
-					<Icons.CircleXIcon color={disableDeleteButton ? themeValue.textDisabled : themeValue.white} />
+					<MezonIconCDN icon={IconCDN.circleXIcon} color={disableDeleteButton ? themeValue.textDisabled : themeValue.white} />
 				</TouchableOpacity>
 			);
 		};

@@ -1,5 +1,5 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, notificationSettingActions, selectCurrentClanId, selectNotifiSettingsEntitiesById, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, IChannel } from '@mezon/utils';
@@ -11,7 +11,9 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import { IconCDN } from '../../constants/icon_cdn';
 import NotificationSetting from '../NotificationSetting';
 import { style } from './MuteThreadDetailModal.styles';
 
@@ -207,7 +209,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 						}}
 						style={styles.wrapperUnmuteBox}
 					>
-						<Icons.BellSlashIcon width={20} height={20} style={{ marginRight: 20 }} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.bellSlashIcon} width={20} height={20} style={{ marginRight: 20 }} color={themeValue.text} />
 						<Text
 							style={styles.option}
 						>{`${t('bottomSheet.unMute')} ${isDMThread ? currentChannel?.channel_label : isChannel ? `#${currentChannel?.channel_label}` : `"${currentChannel?.channel_label}"`} `}</Text>

@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { EventItem } from '../../Event/EventItem';
 import { style } from './styles';
@@ -28,7 +30,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 		},
 		headerLeft: () => (
 			<TouchableOpacity style={{ marginLeft: 20 }} onPress={() => navigation.goBack()}>
-				<Icons.ArrowLargeLeftIcon height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 			</TouchableOpacity>
 		),
 		headerRight: () => (

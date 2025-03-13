@@ -10,8 +10,10 @@ import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View }
 import { FlatList } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../components/Common';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { AddMemberBS } from './components/AddMemberBs';
@@ -70,7 +72,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 			if (isEditRoleMode) {
 				return (
 					<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-						<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.textStrong} />
 					</Pressable>
 				);
 			}
@@ -193,11 +195,11 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 									justifyContent: 'center'
 								}}
 							>
-								<Icons.CirclePlusPrimaryIcon />
+								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} />
 								<View style={{ flex: 1 }}>
 									<Text color={themeValue.text}>{t('setupMember.addMember')}</Text>
 								</View>
-								<Icons.ChevronSmallRightIcon />
+								<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} />
 							</View>
 						</TouchableOpacity>
 					)}

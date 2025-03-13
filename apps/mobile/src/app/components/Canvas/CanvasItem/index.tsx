@@ -4,6 +4,8 @@ import { CanvasAPIEntity } from '@mezon/store-mobile';
 import { ApiAccount } from 'mezon-js/api.gen';
 import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 type CanvasItemProps = {
@@ -42,7 +44,7 @@ const CanvasItem = memo(({ canvas, currentUser, creatorIdChannel, onPressItem, o
 				</TouchableOpacity>
 				{!isDisableDelCanvas && (
 					<TouchableOpacity style={styles.button} onPress={handleDeleteCanvas}>
-						<Icons.CircleXIcon height={size.s_20} width={size.s_20} color={baseColor.redStrong} />
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_20} width={size.s_20} color={baseColor.redStrong} />
 					</TouchableOpacity>
 				)}
 			</View>
