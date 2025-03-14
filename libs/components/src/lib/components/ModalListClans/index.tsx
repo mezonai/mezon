@@ -2,7 +2,7 @@ import { useCustomNavigate } from '@mezon/core';
 import { appActions, selectBadgeCountByClanId, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import { IClan, createImgproxyUrl } from '@mezon/utils';
-import { memo, useState } from 'react';
+import { memo, useState, useTransition } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Coords } from '../ChannelLink';
@@ -16,6 +16,7 @@ export type SidebarClanItemProps = {
 };
 
 const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => {
+	const [_, startTransition] = useTransition();
 	const badgeCountClan = useSelector(selectBadgeCountByClanId(option.clan_id ?? '')) || 0;
 	const navigate = useCustomNavigate();
 	const isShowDmProfile = useSelector(selectIsUseProfileDM);
@@ -24,7 +25,9 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 		if (isShowDmProfile) {
 			dispatch(appActions.setIsUseProfileDM(false));
 		}
-		navigate(linkClan);
+		startTransition(() => {
+			navigate(linkClan);
+		});
 	};
 	const [coords, setCoords] = useState<Coords>({
 		mouseX: 0,
@@ -45,7 +48,7 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 	};
 
 	return (
-		<div onContextMenu={handleMouseClick} className="relative">
+		<div onContextMenu={handleMouseClick} className="relative h-[48px]">
 			<button onClick={handleClick} draggable="false">
 				<NavLinkComponent active={active}>
 					{option.logo ? (
@@ -68,7 +71,7 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 			</button>
 			{badgeCountClan > 0 ? (
 				<div
-					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[5px] right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-0 right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
 						badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 					}`}
 				>

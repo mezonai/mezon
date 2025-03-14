@@ -8,6 +8,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 class CustomImageView(context: Context) : ImageView(context) {
     private var currentUrl: String? = null
@@ -34,6 +35,7 @@ class CustomImageView(context: Context) : ImageView(context) {
         Glide.with(context)
             .load(currentUrl)
             .apply(requestOptions)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .into(this)
     }
 }

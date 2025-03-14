@@ -4,7 +4,7 @@ import { DirectEntity, directActions, useAppDispatch } from '@mezon/store-mobile
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { DeviceEventEmitter, FlatList, Platform, Pressable, RefreshControl, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, Keyboard, Platform, Pressable, RefreshControl, View } from 'react-native';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DmListItem } from './DmListItem';
@@ -67,6 +67,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 					maxToRenderPerBatch={10}
 					windowSize={10}
 					onEndReachedThreshold={0.7}
+					onMomentumScrollBegin={() => Keyboard.dismiss()}
 					keyboardShouldPersistTaps={'handled'}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 					disableVirtualization

@@ -98,9 +98,9 @@ export const Authentication = memo(() => {
 					initialRouteName={APP_SCREEN.BOTTOM_BAR}
 					screenOptions={{
 						headerShown: false,
+						animationEnabled: false,
 						gestureEnabled: Platform.OS === 'ios',
-						gestureDirection: 'horizontal',
-						animationEnabled: false
+						gestureDirection: 'horizontal'
 					}}
 				>
 					<RootStack.Screen name={APP_SCREEN.BOTTOM_BAR} component={BottomNavigatorWrapper} />
@@ -108,7 +108,7 @@ export const Authentication = memo(() => {
 						name={APP_SCREEN.HOME_DEFAULT}
 						component={isTabletLandscape ? HomeScreenTablet : HomeDefaultWrapper}
 						options={{
-							animationEnabled: false,
+							animationEnabled: true,
 							headerShown: false,
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
@@ -119,7 +119,7 @@ export const Authentication = memo(() => {
 						name={APP_SCREEN.MESSAGES.MESSAGE_DETAIL}
 						component={DirectMessageDetailScreen}
 						options={{
-							animationEnabled: false,
+							animationEnabled: true,
 							headerShown: false,
 							headerShadowVisible: false,
 							gestureEnabled: true,

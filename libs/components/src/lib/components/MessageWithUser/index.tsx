@@ -311,9 +311,8 @@ function MessageWithUser({
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const messageDate = !message.create_time ? '' : convertDateString(message.create_time as string);
 	return (
-		<div className="relative text-center p-4">
-			<hr className="border-t border-gray-300 dark:border-borderDivider absolute top-1/2 left-0 right-0" />
-			<span className="relative inline-block px-3 dark:bg-bgPrimary bg-bgLightPrimary text-zinc-400 text-xs font-semibold">{messageDate}</span>
+		<div className="mt-5 mb-2 dark:bg-borderDivider w-full h-px flex items-center justify-center">
+			<span className="px-4 dark:bg-bgPrimary bg-bgLightPrimary text-zinc-400 text-xs font-semibold">{messageDate}</span>
 		</div>
 	);
 };

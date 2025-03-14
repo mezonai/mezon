@@ -43,6 +43,7 @@ import MezonPage from '../pages/homepage/mezonpage';
 import InvitePage from '../pages/invite';
 import Login from '../pages/login';
 import LoginCallback from '../pages/loginCallback';
+import LogoutCallback from '../pages/logoutCallback';
 import Main from '../pages/main';
 import MemberMain from '../pages/member';
 import ChannelSettingMain from '../pages/setting/channelSetting';
@@ -92,6 +93,10 @@ export const Routes = memo(() => {
 							{
 								path: 'login/callback',
 								element: <LoginCallback />
+							},
+							{
+								path: 'logout/callback',
+								element: <LogoutCallback />
 							},
 							isElectron()
 								? {

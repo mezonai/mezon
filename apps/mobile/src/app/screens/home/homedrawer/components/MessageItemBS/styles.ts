@@ -19,7 +19,8 @@ export const style = (colors: Attributes) =>
 		reactWrapper: {
 			flexDirection: 'row',
 			justifyContent: 'space-between',
-			padding: size.s_12,
+			paddingHorizontal: size.s_12,
+			paddingBottom: size.s_12,
 			alignItems: 'center'
 		},
 		messageActionGroup: {

@@ -124,10 +124,9 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						/>
 						<div className="flex flex-col">
 							<p
-								className="text-base font-medium"
+								className="text-base font-medium font-normal"
 								style={{
-									color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR,
-									fontWeight: 'bold'
+									color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR
 								}}
 							>
 								{HighlightMatchBold(displayName, searchQuery)}
@@ -137,10 +136,10 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 					</div>
 				</div>
 				<div className="flex-1 p-1 text-center">
-					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">{clanJoinTime ?? '-'}</span>
+					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-medium uppercase">{clanJoinTime ?? '-'}</span>
 				</div>
 				<div className="flex-1 p-1 text-center">
-					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">
+					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-medium uppercase">
 						{mezonJoinTime ? mezonJoinTime + ' ago' : '-'}
 					</span>
 				</div>
@@ -156,7 +155,11 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 									<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-opacity-50 dark:text-contentTertiary text-colorTextLightMode hoverIconBlackImportant ml-1">
 										<Tooltip
 											overlay={
-												<div className={'dark:!text-white !text-black flex flex-col items-start'}>
+												<div
+													className={
+														'rounded p-1 dark:bg-bgSecondary600 bg-bgLightMode dark:!text-white !text-black flex flex-col items-start'
+													}
+												>
 													{userRolesClan.sortedRoles.slice(1).map((userRole) => (
 														<div className={'my-0.5'} key={userRole.id}>
 															<RoleNameCard roleName={userRole.title || ''} roleColor={userRole.color || ''} />
@@ -178,7 +181,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						{hasClanPermission && (
 							<Tooltip
 								overlay={
-									<div className="max-h-52 overflow-y-auto overflow-x-hidden scrollbar-hide">
+									<div className="rounded p-1 dark:bg-bgSecondary600 bg-bgLightMode max-h-52 overflow-y-auto overflow-x-hidden scrollbar-hide">
 										<div className="flex flex-col gap-1 max-w-72">
 											{<ListOptionRole userId={userId} rolesClanEntity={rolesClanEntity} userRolesClan={userRolesClan} />}
 										</div>
@@ -198,7 +201,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 					</span>
 				</div>
 				<div className="flex-1 p-1 text-center">
-					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">Signals</span>
+					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-medium uppercase">Signals</span>
 				</div>
 			</div>
 			{openModalRemoveMember && (

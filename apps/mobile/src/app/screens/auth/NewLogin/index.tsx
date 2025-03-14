@@ -52,6 +52,7 @@ const NewLoginScreen = () => {
 									});
 								}
 							}
+							dispatch(appActions.setLoadingMainMobile(false));
 						} catch (error) {
 							dispatch(appActions.setLoadingMainMobile(false));
 						}

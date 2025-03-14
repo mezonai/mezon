@@ -15,10 +15,12 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 		setOpenModal(true);
 	};
 	const handleLogOut = async () => {
-		await dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
-		await dispatch(appActions.setIsShowSettingFooterStatus(false));
 		if (!isElectron()) {
 			window.location.href = `${process.env.NX_CHAT_APP_OAUTH2_LOG_OUT}`;
+			return;
+		} else {
+			await dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
+			await dispatch(appActions.setIsShowSettingFooterStatus(false));
 		}
 	};
 	const handleCloseModal = () => {

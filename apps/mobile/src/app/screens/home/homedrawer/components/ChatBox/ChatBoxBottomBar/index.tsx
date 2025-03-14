@@ -74,19 +74,19 @@ interface IChatInputProps {
 	isPublic: boolean;
 }
 
-function useIdleRender() {
-	const [shouldRender, setShouldRender] = useState(false);
-
-	useEffect(() => {
-		const handle = requestIdleCallback(() => {
-			setShouldRender(true);
-		});
-
-		return () => cancelIdleCallback(handle);
-	}, []);
-
-	return shouldRender;
-}
+// function useIdleRender() {
+// 	const [shouldRender, setShouldRender] = useState(false);
+//
+// 	useEffect(() => {
+// 		const handle = requestIdleCallback(() => {
+// 			setShouldRender(true);
+// 		});
+//
+// 		return () => cancelIdleCallback(handle);
+// 	}, []);
+//
+// 	return shouldRender;
+// }
 
 export const ChatBoxBottomBar = memo(
 	({
@@ -477,8 +477,6 @@ export const ChatBoxBottomBar = memo(
 			};
 		}, [handleEventAfterEmojiPicked]);
 
-		const shouldRender = useIdleRender();
-
 		return (
 			<View
 				style={{
@@ -515,36 +513,33 @@ export const ChatBoxBottomBar = memo(
 						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
 						handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
 					/>
-					{!shouldRender ? (
-						<TempInputComponent />
-					) : (
-						<ChatMessageInput
-							channelId={channelId}
-							mode={mode}
-							isFocus={isFocus}
-							isShowAttachControl={isShowAttachControl}
-							text={text}
-							textInputProps={textInputProps}
-							ref={inputRef}
-							messageAction={messageAction}
-							messageActionNeedToResolve={messageActionNeedToResolve}
-							modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
-							onSendSuccess={onSendSuccess}
-							handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
-							setIsShowAttachControl={setIsShowAttachControl}
-							onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
-							setModeKeyBoardBottomSheet={setModeKeyBoardBottomSheet}
-							mentionsOnMessage={mentionsOnMessage}
-							hashtagsOnMessage={hashtagsOnMessage}
-							emojisOnMessage={emojiList}
-							linksOnMessage={linkList}
-							boldsOnMessage={boldList}
-							markdownsOnMessage={markdownList}
-							voiceLinkRoomOnMessage={voiceLinkRoomList}
-							isShowCreateThread={!hiddenIcon?.threadIcon}
-							isPublic={isPublic}
-						/>
-					)}
+
+					<ChatMessageInput
+						channelId={channelId}
+						mode={mode}
+						isFocus={isFocus}
+						isShowAttachControl={isShowAttachControl}
+						text={text}
+						textInputProps={textInputProps}
+						ref={inputRef}
+						messageAction={messageAction}
+						messageActionNeedToResolve={messageActionNeedToResolve}
+						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
+						onSendSuccess={onSendSuccess}
+						handleKeyboardBottomSheetMode={handleKeyboardBottomSheetMode}
+						setIsShowAttachControl={setIsShowAttachControl}
+						onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
+						setModeKeyBoardBottomSheet={setModeKeyBoardBottomSheet}
+						mentionsOnMessage={mentionsOnMessage}
+						hashtagsOnMessage={hashtagsOnMessage}
+						emojisOnMessage={emojiList}
+						linksOnMessage={linkList}
+						boldsOnMessage={boldList}
+						markdownsOnMessage={markdownList}
+						voiceLinkRoomOnMessage={voiceLinkRoomList}
+						isShowCreateThread={!hiddenIcon?.threadIcon}
+						isPublic={isPublic}
+					/>
 				</View>
 			</View>
 		);

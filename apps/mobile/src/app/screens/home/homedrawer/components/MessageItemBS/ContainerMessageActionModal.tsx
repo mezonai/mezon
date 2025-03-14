@@ -37,7 +37,7 @@ import {
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -45,7 +45,7 @@ import { useSelector } from 'react-redux';
 import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
-import { EMessageActionType, EMessageBSToShow } from '../../enums';
+import { EMessageActionType } from '../../enums';
 import { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
@@ -62,7 +62,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const { type, message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', handleBottomSheetExpand } = props;
 	const { socketRef } = useMezon();
 
-	const [content, setContent] = useState<React.ReactNode>(<View />);
 	const { t } = useTranslation(['message']);
 	const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
 	const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
@@ -648,31 +647,15 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		[handleReact, message?.id, mode, userId]
 	);
 
-	const renderEmojiSelector = () => {
-		return (
-			<View style={{ padding: size.s_10 }}>
-				<EmojiSelector onSelected={onSelectEmoji} isReactMessage handleBottomSheetExpand={handleBottomSheetExpand} />
-			</View>
-		);
-	};
-
-	useEffect(() => {
-		switch (type) {
-			case EMessageBSToShow.MessageAction:
-				if (isShowEmojiPicker || isOnlyEmojiPicker) {
-					setContent(renderEmojiSelector());
-				} else {
-					setContent(renderMessageItemActions());
-				}
-				break;
-			default:
-				setContent(<View />);
-		}
-	}, [type, isShowEmojiPicker, isOnlyEmojiPicker]);
-
 	return (
 		<View style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>
-			{content}
+			{isShowEmojiPicker || isOnlyEmojiPicker ? (
+				<View style={{ padding: size.s_10 }}>
+					<EmojiSelector onSelected={onSelectEmoji} isReactMessage handleBottomSheetExpand={handleBottomSheetExpand} />
+				</View>
+			) : (
+				renderMessageItemActions()
+			)}
 			{currentMessageActionType === EMessageActionType.ForwardMessage && (
 				<ForwardMessageModal
 					show={currentMessageActionType === EMessageActionType.ForwardMessage}

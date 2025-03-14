@@ -142,6 +142,7 @@ function useChannelSeen(channelId: string) {
 		if (isTabVisible) {
 			dispatch(listChannelRenderAction.removeBadgeFromChannel({ clanId: currentChannel.clan_id as string, channelId: currentChannel.id }));
 			dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: numberNotification * -1 }));
+			dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId: currentChannel.id, count: numberNotification * -1 }));
 		}
 	}, [statusFetchChannel, isFocusDesktop, isTabVisible]);
 
