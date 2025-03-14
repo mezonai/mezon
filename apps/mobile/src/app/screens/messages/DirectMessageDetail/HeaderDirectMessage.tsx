@@ -157,7 +157,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				)}
 				{!isTypeDMGroup && !!currentDmGroup?.user_id?.[0] && (
 					<TouchableOpacity style={styles.iconHeader} onPress={goToCall}>
-						<Icons.PhoneCallIcon width={size.s_18} height={size.s_18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 				)}
 			</Pressable>

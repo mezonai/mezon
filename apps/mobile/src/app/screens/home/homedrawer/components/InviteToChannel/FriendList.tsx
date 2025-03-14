@@ -1,5 +1,4 @@
 import { useDMInvite, useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, selectCurrentClanId } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
@@ -142,7 +141,7 @@ export const FriendList = React.memo(
 			const iconList: IInviteToChannelIconProp[] = [
 				{
 					title: t('iconTitle.shareInvite'),
-					icon: <Icons.ShareIcon color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.shareIcon} color={themeValue.text} />,
 					onPress: () => showUpdating()
 				},
 				{

@@ -1,11 +1,12 @@
-import { Icons } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import Video from 'react-native-video';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 
 export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 	const videoURL = route?.params?.videoURL as string;
@@ -74,7 +75,7 @@ export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 			/>
 
 			<TouchableOpacity onPress={handleClose} style={{ position: 'absolute', top: size.s_24, right: 0, padding: size.s_10 }}>
-				<Icons.CloseIcon height={size.s_40} width={size.s_40} />
+				<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_40} width={size.s_40} />
 			</TouchableOpacity>
 
 			{(isBuffering || !isPlaying) && (

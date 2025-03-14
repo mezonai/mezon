@@ -257,13 +257,13 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		},
 		// {
 		// 	title: t('menu.manageThreadMenu.closeThread'),
-		// 	icon: <Icons.CloseSmallBoldIcon color={themeValue.textStrong} />,
+		// 	icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={themeValue.textStrong} />,
 		// 	onPress: () => reserve(),
 		// 	isShow: isCanManageThread
 		// },
 		// {
 		// 	title: t('menu.manageThreadMenu.lockThread'),
-		// 	icon: <Icons.LockIcon color={themeValue.textStrong} />,
+		// 	icon: <MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.textStrong} />,
 		// 	onPress: () => reserve(),
 		// 	isShow: isCanManageThread
 		// },

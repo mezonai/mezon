@@ -1,9 +1,11 @@
-import { ArrowLeftIcon, Icons } from '@mezon/mobile-components';
+import { ArrowLeftIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { ReactNode } from 'react';
 import { Keyboard, Modal, ModalBaseProps, Pressable, Text, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '../../configs/toastConfig';
+import { IconCDN } from '../../constants/icon_cdn';
+import MezonIconCDN from '../MezonIconCDN';
 import { style as _style } from './style';
 
 interface IMezonModalProps extends Pick<ModalBaseProps, 'animationType'> {
@@ -75,14 +77,14 @@ export const MezonModal = (props: IMezonModalProps) => {
 								<View />
 							)}
 							<Pressable onPress={() => setVisible(false)}>
-								<Icons.CloseIcon color={themeValue.textStrong} height={size.s_24} width={size.s_24} />
+								<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.textStrong} height={size.s_24} width={size.s_24} />
 							</Pressable>
 						</View>
 					) : (
 						<View style={[styles.headerWrapper, isEmptyHeader && styles.bgDefault, headerStyles]}>
 							<View style={styles.headerContent}>
 								<Pressable onPress={() => setVisible(false)}>
-									<Icons.CloseIcon color={themeValue.textStrong} height={size.s_24} width={size.s_24} />
+									<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.textStrong} height={size.s_24} width={size.s_24} />
 								</Pressable>
 								{isTitleString ? (
 									<Text style={[styles.textTitle, titleStyle]}>{title}</Text>

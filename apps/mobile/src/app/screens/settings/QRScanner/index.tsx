@@ -1,5 +1,4 @@
 import { useAuth } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, Colors, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { appActions } from '@mezon/store';
 import { getStoreAsync } from '@mezon/store-mobile';
@@ -169,7 +168,7 @@ export const QRScanner = () => {
 								navigation.goBack();
 							}}
 						>
-							<Icons.CloseSmallBoldIcon width={size.s_28} height={size.s_28} color={baseColor.white} />
+							<MezonIconCDN icon={IconCDN.closeSmallBold} width={size.s_28} height={size.s_28} color={baseColor.white} />
 						</TouchableOpacity>
 					</View>
 					<TouchableOpacity
@@ -208,7 +207,7 @@ export const QRScanner = () => {
 								navigation.goBack();
 							}}
 						>
-							<Icons.CloseSmallBoldIcon width={size.s_28} height={size.s_28} color={baseColor.white} />
+							<MezonIconCDN icon={IconCDN.closeSmallBold} width={size.s_28} height={size.s_28} color={baseColor.white} />
 						</TouchableOpacity>
 						<TouchableOpacity onPress={onMyQRCode}>
 							<View

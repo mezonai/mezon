@@ -12,6 +12,8 @@ import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { captureRef } from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
 import { Sharing } from '../Sharing';
 import { style } from './styles';
@@ -278,7 +280,7 @@ export const SendCoffeeScreen = ({ navigation, route }: SettingScreenProps<Scree
 					<View style={styles.action}>
 						<View style={styles.actionMore}>
 							<TouchableOpacity activeOpacity={1} style={styles.buttonActionMore} onPress={handleShare}>
-								<Icons.ShareIcon width={24} height={24} />
+								<MezonIconCDN icon={IconCDN.shareIcon} width={24} height={24} />
 								<Text style={styles.textActionMore}>{t('share')}</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.buttonActionMore} onPress={handleSendNewToken}>

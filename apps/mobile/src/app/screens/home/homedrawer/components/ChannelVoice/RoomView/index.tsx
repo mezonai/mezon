@@ -141,7 +141,7 @@ const RoomView = ({
 				<View style={[styles.menuFooter, { bottom: Platform.OS === 'ios' || isTabletLandscape ? size.s_100 : size.s_50 }]}>
 					<View style={{ gap: size.s_16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: size.s_6 }}>
 						<TouchableOpacity onPress={handleToggleCamera} style={styles.menuIcon}>
-							{isCameraEnabled ? <Icons.VideoIcon /> : <Icons.VideoSlashIcon />}
+							{isCameraEnabled ? <MezonIconCDN icon={IconCDN.videoIcon} /> : <MezonIconCDN icon={IconCDN.videoSlashIcon} />}
 						</TouchableOpacity>
 						<TouchableOpacity onPress={handleToggleMicrophone} style={styles.menuIcon}>
 							{isMicrophoneEnabled ? (
@@ -151,13 +151,13 @@ const RoomView = ({
 							)}
 						</TouchableOpacity>
 						<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
-							<Icons.ChatIcon />
+							<MezonIconCDN icon={IconCDN.chatIcon} />
 						</TouchableOpacity>
 						<TouchableOpacity onPress={handleToggleScreenShare} style={styles.menuIcon}>
 							{isScreenShareEnabled ? <Icons.ShareScreenIcon /> : <Icons.ShareScreenSlashIcon />}
 						</TouchableOpacity>
 						<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-							<Icons.PhoneCallIcon />
+							<MezonIconCDN icon={IconCDN.phoneCallIcon} />
 						</TouchableOpacity>
 					</View>
 				</View>

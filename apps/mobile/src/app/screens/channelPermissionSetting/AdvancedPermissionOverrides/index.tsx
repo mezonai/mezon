@@ -1,5 +1,5 @@
 import { useMyRole } from '@mezon/core';
-import { Icons, isEqual } from '@mezon/mobile-components';
+import { isEqual } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { permissionRoleChannelActions, selectAllPermissionRoleChannel, selectPermissionChannel, useAppDispatch } from '@mezon/store-mobile';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -62,7 +62,11 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			type: 'success',
 			props: {
 				text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-				leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+				leadingIcon: isError ? (
+					<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+				) : (
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+				)
 			}
 		});
 		if (visibleConfirmModal) {

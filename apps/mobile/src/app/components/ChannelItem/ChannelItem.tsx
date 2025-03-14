@@ -1,4 +1,3 @@
-import { LockIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelUsersEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
@@ -48,7 +47,7 @@ export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProp
 								<Text style={styles.channelName} numberOfLines={1}>
 									{channelData?.channel_label}
 								</Text>
-								<LockIcon width={10} height={10} color={Colors.textGray} />
+								<MezonIconCDN icon={IconCDN.lockIcon} width={10} height={10} color={Colors.textGray} />
 							</View>
 							{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 						</View>

@@ -14,5 +14,9 @@ export const style = (colors: Attributes) =>
 			color: colors.textDisabled,
 			fontWeight: '500',
 			textAlign: 'center'
+		},
+		hookEmpty: {
+			height: 145,
+			width: 272
 		}
 	});

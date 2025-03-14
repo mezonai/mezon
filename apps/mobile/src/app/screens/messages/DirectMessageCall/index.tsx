@@ -1,5 +1,4 @@
 import { RTCView } from '@livekit/react-native-webrtc';
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
@@ -207,9 +206,9 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 						>
 							<TouchableOpacity onPress={toggleVideo} style={[styles.menuIcon, localMediaControl?.camera && styles.menuIconActive]}>
 								{localMediaControl?.camera ? (
-									<Icons.VideoIcon width={size.s_24} height={size.s_24} color={themeValue.black} />
+									<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<Icons.VideoSlashIcon width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
@@ -220,11 +219,11 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={() => {}} style={styles.menuIcon}>
-								<Icons.ChatIcon />
+								<MezonIconCDN icon={IconCDN.chatIcon} />
 							</TouchableOpacity>
 
 							<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-								<Icons.PhoneCallIcon />
+								<MezonIconCDN icon={IconCDN.phoneCallIcon} />
 							</TouchableOpacity>
 						</View>
 					</View>

@@ -1,5 +1,4 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectUserStatus, useAppDispatch, userStatusActions } from '@mezon/store-mobile';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
@@ -73,22 +72,22 @@ export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICus
 				{
 					title: t('userStatus.online'),
 					value: EUserStatus.ONLINE,
-					icon: <OnlineStatus />
+					icon: <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" />
 				},
 				{
 					title: t('userStatus.idle'),
 					value: EUserStatus.IDLE,
-					icon: <IdleStatusIcon />
+					icon: <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#16A34A" />
 				},
 				{
 					title: t('userStatus.doNotDisturb'),
 					value: EUserStatus.DO_NOT_DISTURB,
-					icon: <DisturbStatusIcon />
+					icon: <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#F23F43" />
 				},
 				{
 					title: t('userStatus.invisible'),
 					value: EUserStatus.INVISIBLE,
-					icon: <OfflineStatus />
+					icon: <MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" />
 				}
 			] as IMezonOptionData,
 		[]
@@ -105,7 +104,7 @@ export const CustomStatusUser = forwardRef(function CustomStatusUser(props: ICus
 							onPress: () => onPressSetCustomStatus(),
 							component: userCustomStatus ? (
 								<Pressable onPress={() => handleCustomUserStatus('', ETypeCustomUserStatus.Close)}>
-									<Icons.CloseIcon color={themeValue.textStrong} />
+									<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.textStrong} />
 								</Pressable>
 							) : null
 						}

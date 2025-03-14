@@ -1,5 +1,5 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import { debounce, Icons } from '@mezon/mobile-components';
+import { debounce } from '@mezon/mobile-components';
 import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import {
 	channelUsersActions,
@@ -17,7 +17,9 @@ import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../componentUI/MezonInput';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { normalizeString } from '../../../../utils/helpers';
 import { EOverridePermissionType, ERequestStatus } from '../../types/channelPermission.enum';
 import { IAddMemberOrRoleContentProps } from '../../types/channelPermission.type';
@@ -130,7 +132,11 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 			type: 'success',
 			props: {
 				text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-				leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+				leadingIcon: isError ? (
+					<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+				) : (
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+				)
 			}
 		});
 		onDismiss && onDismiss();

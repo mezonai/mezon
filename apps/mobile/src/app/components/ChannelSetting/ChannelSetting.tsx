@@ -1,5 +1,5 @@
 import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { CheckIcon, Icons, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, isEqual, save } from '@mezon/mobile-components';
+import { CheckIcon, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, isEqual, save } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
@@ -149,7 +149,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.channelPermission.permission'),
 					expandable: true,
-					icon: <Icons.BravePermission color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
 					isShow: isChannel,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -163,7 +163,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.privateChannelInvite.addMember'),
 					expandable: true,
-					icon: <Icons.BravePermission color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
 					isShow: isChannel && !!channel.channel_private,
 					onPress: () => {
 						bottomSheetRef?.current?.present();
@@ -226,7 +226,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: t('fields.threadLeave.leave'),
 					textStyle: { color: 'red' },
 					onPress: () => handlePressLeaveChannel(),
-					icon: <Icons.LeaveGroup color={Colors.textRed} />,
+					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
 					isShow: channel?.creator_id !== currentUserId
 				}
 			] satisfies IMezonMenuItemProps[],

@@ -48,7 +48,7 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 				},
 				{
 					title: t('tabNotify.messages'),
-					icon: <Icons.ChatIcon color={themeValue.textStrong} />,
+					icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.MESSAGES),
 					component: selectedTabs === InboxType.MESSAGES ? <CheckIcon color={themeValue.textStrong} /> : null
 				},

@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
@@ -9,6 +9,8 @@ import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 
 interface IMemberItemProps {
 	member: UsersClanEntity;
@@ -51,7 +53,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}
@@ -96,7 +98,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 						/>
 					) : (
 						<TouchableOpacity onPress={onDeleteMember} disabled={disabled}>
-							<Icons.CloseIcon color={disabled ? themeValue.textDisabled : themeValue.white} />
+							<MezonIconCDN icon={IconCDN.closeIcon} color={disabled ? themeValue.textDisabled : themeValue.white} />
 						</TouchableOpacity>
 					)}
 				</View>

@@ -1,7 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import {
 	ActionEmitEvent,
-	Icons,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	changeClan,
 	getUpdateOrAddClanChannelCache,
@@ -180,7 +179,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 								borderRadius: size.s_30
 							}}
 						>
-							<Icons.ChatIcon />
+							<MezonIconCDN icon={IconCDN.chatIcon} />
 						</View>
 					</TouchableOpacity>
 				</View>

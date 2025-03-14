@@ -372,7 +372,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 						<View style={styles.action}>
 							<View style={styles.actionMore}>
 								<TouchableOpacity activeOpacity={1} style={styles.buttonActionMore} onPress={handleShare}>
-									<Icons.ShareIcon width={24} height={24} />
+									<MezonIconCDN icon={IconCDN.shareIcon} width={24} height={24} />
 									<Text style={styles.textActionMore}>{t('share')}</Text>
 								</TouchableOpacity>
 								<TouchableOpacity style={styles.buttonActionMore} onPress={handleSendNewToken}>

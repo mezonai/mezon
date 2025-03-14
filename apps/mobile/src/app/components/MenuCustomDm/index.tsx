@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -40,7 +40,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		{
 			title: t('customiseGroup'),
 			expandable: false,
-			icon: <Icons.PencilIcon width={size.s_18} height={size.s_18} color={themeValue.text}></Icons.PencilIcon>,
+			icon: <MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
 			textStyle: styles.label,
 			onPress: () => {
 				const data = {

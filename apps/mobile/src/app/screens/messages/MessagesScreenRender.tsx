@@ -1,10 +1,12 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, directActions, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { DeviceEventEmitter, FlatList, Platform, Pressable, RefreshControl, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DmListItem } from './DmListItem';
@@ -74,7 +76,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			)}
 
 			<Pressable style={styles.addMessage} onPress={() => navigateToNewMessageScreen()}>
-				<Icons.MessagePlusIcon width={size.s_22} height={size.s_22} />
+				<MezonIconCDN icon={IconCDN.messagePlusIcon} width={size.s_22} height={size.s_22} />
 			</Pressable>
 		</View>
 	);

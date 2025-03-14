@@ -1,5 +1,4 @@
 import { useAuth, useClans, useEventManagement } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { Fonts, useTheme } from '@mezon/mobile-ui';
 import { OptionEvent } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +34,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 		),
 		headerRight: () => (
 			<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
-				<Icons.CloseLargeIcon height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 			</TouchableOpacity>
 		)
 	});

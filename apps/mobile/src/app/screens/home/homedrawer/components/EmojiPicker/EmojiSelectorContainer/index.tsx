@@ -3,7 +3,6 @@ import {
 	BicycleIcon,
 	BowlIcon,
 	HeartIcon,
-	Icons,
 	LeafIcon,
 	ObjectIcon,
 	PenIcon,
@@ -105,7 +104,7 @@ export default function EmojiSelectorContainer({
 				)
 			: [];
 		return [
-			<Icons.ClockIcon color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.clockIcon} color={themeValue.textStrong} />,
 			...clanEmojis,
 			<SmilingFaceIcon height={size.s_24} width={size.s_24} color={themeValue.textStrong} />,
 			<LeafIcon color={themeValue.textStrong} />,

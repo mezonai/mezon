@@ -1,5 +1,5 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	ChannelMembersEntity,
@@ -18,9 +18,11 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../../../../../../componentUI/MezonMenu';
 import { MezonModal } from '../../../../../../../componentUI/MezonModal';
 import { toastConfig } from '../../../../../../../configs/toastConfig';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import KickUserClanModal from '../KickUserClanModal';
 import { EActionSettingUserProfile, IProfileSetting } from '../UserSettingProfile';
 
@@ -71,7 +73,7 @@ export const ManageUserModal = memo(
 					type: 'success',
 					props: {
 						text2: 'Failed',
-						leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 					}
 				});
 			}
@@ -192,7 +194,7 @@ export const ManageUserModal = memo(
 									}}
 									disabled={isLoading}
 								>
-									<Icons.CloseIcon height={size.s_30} width={size.s_30} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_30} width={size.s_30} color={themeValue.white} />
 								</TouchableOpacity>
 							)}
 						</View>

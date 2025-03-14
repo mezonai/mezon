@@ -1,4 +1,4 @@
-import { getDayName, getDayWeekName, getDayYearName, getNearTime, Icons } from '@mezon/mobile-components';
+import { getDayName, getDayWeekName, getDayYearName, getNearTime } from '@mezon/mobile-components';
 import { Fonts, useTheme } from '@mezon/mobile-ui';
 import { OptionEvent } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -37,7 +37,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 		),
 		headerRight: () => (
 			<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
-				<Icons.CloseLargeIcon height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 			</TouchableOpacity>
 		)
 	});

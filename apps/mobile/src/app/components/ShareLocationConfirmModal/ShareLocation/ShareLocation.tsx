@@ -1,5 +1,4 @@
 import { useChatSending } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
 import { IMessageSendPayload, filterEmptyArrays, processText } from '@mezon/utils';
@@ -8,6 +7,8 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from '../styles';
 
 const ShareLocation = ({
@@ -74,7 +75,7 @@ const ShareLocation = ({
 			</View>
 			<View style={styles.modalContent}>
 				<View style={styles.circleIcon}>
-					<Icons.LocationIcon />
+					<MezonIconCDN icon={IconCDN.locationIcon} />
 				</View>
 				<Text
 					style={styles.textContent}

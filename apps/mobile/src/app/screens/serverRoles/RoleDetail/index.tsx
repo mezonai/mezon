@@ -1,5 +1,5 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons, isEqual } from '@mezon/mobile-components';
+import { CheckIcon, isEqual } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { rolesClanActions, selectRoleByRoleId, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -116,7 +116,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}
@@ -146,7 +146,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 							type: 'success',
 							props: {
 								text2: t('failed'),
-								leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+								leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 							}
 						});
 					}
@@ -236,7 +236,12 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 											<View style={{ flex: 1, flexDirection: 'row', gap: size.s_6 }}>
 												<Text color={themeValue.white}>{item.actionTitle}</Text>
 												{item?.isView && (
-													<Icons.LockIcon color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />
+													<MezonIconCDN
+														icon={IconCDN.lockIcon}
+														color={themeValue.textDisabled}
+														height={size.s_16}
+														width={size.s_16}
+													/>
 												)}
 											</View>
 											<View>

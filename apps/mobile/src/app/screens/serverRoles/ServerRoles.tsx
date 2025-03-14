@@ -1,5 +1,4 @@
 import { usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity, selectAllRolesClan, selectEveryoneRole } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -109,7 +108,12 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													<View style={{ flexDirection: 'row', gap: size.s_6 }}>
 														<Text color={themeValue.white}>{item.title}</Text>
 														{item?.isView && (
-															<Icons.LockIcon color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />
+															<MezonIconCDN
+																icon={IconCDN.lockIcon}
+																color={themeValue.textDisabled}
+																height={size.s_16}
+																width={size.s_16}
+															/>
 														)}
 													</View>
 													<Text color={themeValue.text}>

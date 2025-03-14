@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
-import { CheckIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -235,7 +235,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 				<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
 					<View style={{ position: 'absolute', left: 0 }}>
 						<TouchableOpacity onPress={() => onClose()}>
-							<Icons.CloseLargeIcon color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
 						</TouchableOpacity>
 					</View>
 					<Text h3 color={themeValue.white}>

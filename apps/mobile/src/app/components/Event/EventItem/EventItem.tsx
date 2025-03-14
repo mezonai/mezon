@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus, createImgproxyUrl } from '@mezon/utils';
@@ -90,12 +89,12 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 				{showActions && (
 					<View style={styles.inline}>
 						<MezonButton
-							icon={<Icons.CheckmarkSmallIcon height={size.s_20} width={size.s_20} color={themeValue.text} />}
+							icon={<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />}
 							title="Interested"
 							fluid
 							border
 						/>
-						<MezonButton icon={<Icons.ShareIcon height={size.s_20} width={size.s_20} color={themeValue.text} />} />
+						<MezonButton icon={<MezonIconCDN icon={IconCDN.shareIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />} />
 					</View>
 				)}
 				{!!event.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}

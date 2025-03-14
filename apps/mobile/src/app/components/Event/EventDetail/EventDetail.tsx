@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectClanById, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus } from '@mezon/utils';
@@ -72,14 +72,14 @@ export function EventDetail({ event }: IEventDetailProps) {
 			<View style={styles.inline}>
 				{/* <MezonButton title="End event" fluid /> */}
 				<MezonButton
-					icon={<Icons.CheckmarkLargeIcon height={16} width={16} color={themeValue.text} />}
+					icon={<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} height={16} width={16} color={themeValue.text} />}
 					title="Interested"
 					fluid
 					border
 					titleStyle={{ color: themeValue.text }}
 				/>
 				{/* <MezonButton title="Start event" fluid type="success" /> */}
-				<MezonButton icon={<Icons.ShareIcon height={20} width={20} color={themeValue.text} />} />
+				<MezonButton icon={<MezonIconCDN icon={IconCDN.shareIcon} height={20} width={20} color={themeValue.text} />} />
 				<MezonButton
 					icon={<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={20} width={20} color={themeValue.text} />}
 					onPress={handlePress}

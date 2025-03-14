@@ -1,6 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -133,14 +133,14 @@ const UserProfile = React.memo(
 			{
 				id: 1,
 				text: t('userAction.sendMessage'),
-				icon: <Icons.ChatIcon color={themeValue.text} />,
+				icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />,
 				action: navigateToMessageDetail,
 				isShow: true
 			},
 			// {
 			// 	id: 2,
 			// 	text: t('userAction.voiceCall'),
-			// 	icon: <Icons.PhoneCallIcon color={themeValue.text} />,
+			// 	icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
 			// 	action: () => {
 			// 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			// 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
@@ -155,7 +155,7 @@ const UserProfile = React.memo(
 			// {
 			// 	id: 3,
 			// 	text: t('userAction.videoCall'),
-			// 	icon: <Icons.VideoIcon color={themeValue.text} />,
+			// 	icon: <MezonIconCDN icon={IconCDN.videoIcon} color={themeValue.text} />,
 			// 	action: () => {
 			// 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			// 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
@@ -189,7 +189,7 @@ const UserProfile = React.memo(
 			{
 				id: 5,
 				text: t('userAction.pending'),
-				icon: <Icons.ClockIcon color={Colors.goldenrodYellow} />,
+				icon: <MezonIconCDN icon={IconCDN.clockIcon} color={Colors.goldenrodYellow} />,
 				action: () => {
 					setIsShowPendingContent(true);
 				},

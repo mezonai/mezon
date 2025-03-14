@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectAllUserClans, selectRoleByRoleId } from '@mezon/store-mobile';
 import { EPermission, UsersClanEntity } from '@mezon/utils';
@@ -78,7 +78,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 			}
 			return (
 				<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-					<Icons.CloseSmallBoldIcon height={20} width={20} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
 				</Pressable>
 			);
 		}
@@ -135,7 +135,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}

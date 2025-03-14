@@ -1,10 +1,12 @@
-import { CallIcon, CheckIcon, CloseIcon, MessageIcon } from '@mezon/mobile-components';
+import { CallIcon, CheckIcon, MessageIcon } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox/build/dist/BouncyCheckbox';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import ImageNative from '../ImageNative';
 import { UserStatus } from '../UserStatus';
@@ -107,7 +109,7 @@ export const FriendItem = React.memo(
 						{isPendingFriendRequest && showAction && !selectMode ? (
 							<View style={styles.friendAction}>
 								<Pressable onPress={() => onPressAction(EFriendItemAction.Delete)}>
-									<CloseIcon width={18} height={18} color={Colors.textGray} />
+									<MezonIconCDN icon={IconCDN.closeIcon} width={18} height={18} color={Colors.textGray} />
 								</Pressable>
 								{!isSentRequestFriend ? (
 									<Pressable onPress={() => onPressAction(EFriendItemAction.Approve)} style={styles.approveIcon}>

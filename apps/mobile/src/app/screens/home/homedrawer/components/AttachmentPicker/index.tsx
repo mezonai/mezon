@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, referencesActions } from '@mezon/store-mobile';
 import { createUploadFilePath, useMezon } from '@mezon/transport';
@@ -207,7 +206,7 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 			{isShowAlbum && <AlbumPanel valueAlbum={currentAlbum} onAlbumChange={handleChangeAlbum} />}
 			<View style={styles.wrapperHeader}>
 				<TouchableOpacity activeOpacity={0.8} style={styles.buttonHeader} onPress={() => handleLinkGoogleMap()}>
-					<Icons.LocationIcon height={20} width={20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.locationIcon} height={20} width={20} color={themeValue.text} />
 					<Text style={styles.titleButtonHeader}>{t('message:actions.location')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} style={styles.buttonAlbum} onPress={handleShow}>

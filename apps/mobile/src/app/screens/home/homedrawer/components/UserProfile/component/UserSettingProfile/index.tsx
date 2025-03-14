@@ -1,5 +1,4 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { Text, baseColor, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan, selectCurrentClanId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -93,7 +92,7 @@ const UserSettingProfile = ({
 			{
 				label: `${EActionSettingUserProfile.TimeOut}`,
 				value: EActionSettingUserProfile.TimeOut,
-				icon: <Icons.ClockWarningIcon color={themeValue.text} width={20} height={20} />,
+				icon: <MezonIconCDN icon={IconCDN.clockWarningIcon} color={themeValue.text} width={20} height={20} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission && !isItMe
 			},

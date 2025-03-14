@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -144,7 +144,7 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 						)}
 
 						<Pressable style={styles.addMessage} onPress={() => navigateToNewMessageScreen()}>
-							<Icons.MessagePlusIcon width={size.s_22} height={size.s_22} />
+							<MezonIconCDN icon={IconCDN.messagePlusIcon} width={size.s_22} height={size.s_22} />
 						</Pressable>
 					</View>
 				</View>

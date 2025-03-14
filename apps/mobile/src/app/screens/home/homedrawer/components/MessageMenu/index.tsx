@@ -164,7 +164,11 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: handleEnableOrDisableE2EE,
 			title: messageInfo?.e2ee ? t('menu.disableE2EE') : t('menu.enableE2EE'),
-			icon: messageInfo?.e2ee ? <Icons.LockUnlockedIcon color={themeValue.textStrong} /> : <Icons.LockIcon color={themeValue.text} />
+			icon: messageInfo?.e2ee ? (
+				<MezonIconCDN icon={IconCDN.lockUnlockIcon} color={themeValue.textStrong} />
+			) : (
+				<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} />
+			)
 		},
 		{
 			title: isDmUnmute ? t('menu.muteConversation') : t('menu.unMuteConversation'),

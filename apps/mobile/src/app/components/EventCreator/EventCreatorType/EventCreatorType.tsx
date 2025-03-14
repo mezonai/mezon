@@ -1,5 +1,5 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons, SpeakerIcon } from '@mezon/mobile-components';
+import { SpeakerIcon } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectAllTextChannel, selectVoiceChannelAll } from '@mezon/store-mobile';
 import { ChannelStatusEnum, OptionEvent } from '@mezon/utils';
@@ -42,7 +42,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 		headerLeft: () => <View />,
 		headerRight: () => (
 			<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
-				<Icons.CloseLargeIcon height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 			</TouchableOpacity>
 		)
 	});
@@ -76,7 +76,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 					textStyle: {
 						fontWeight: 'bold'
 					},
-					icon: <Icons.LocationIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.locationIcon} color={themeValue.text} />
 				}
 			] satisfies IMezonOptionData,
 		[]

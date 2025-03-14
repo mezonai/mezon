@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
@@ -37,7 +36,7 @@ export function EventLocation({ event }: IEventLocation) {
 
 			{option === OptionEvent.OPTION_LOCATION && (
 				<View style={styles.inline}>
-					<Icons.LocationIcon height={16} width={16} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.locationIcon} height={16} width={16} color={themeValue.textStrong} />
 					<Text style={styles.smallText}>{event?.address}</Text>
 				</View>
 			)}

@@ -1,5 +1,5 @@
 import { useAuth, useFriends } from '@mezon/core';
-import { CheckIcon, CloseIcon } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { friendsActions, requestAddFriendParam, selectStatusSentMobile } from '@mezon/store-mobile';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -8,7 +8,9 @@ import { Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, View } from 
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { MezonButton } from '../../../../../componentUI/MezonButton';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { MezonModal } from '../../../../../componentUI/MezonModal';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { EAddFriendBy, EAddFriendWays } from '../../../enum';
 import { style } from './styles';
 
@@ -49,7 +51,7 @@ export const AddFriendModal = React.memo((props: IAddFriendModal) => {
 					type: 'success',
 					props: {
 						text2: t('toast.sendAddFriendFail'),
-						leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 					}
 				});
 			}

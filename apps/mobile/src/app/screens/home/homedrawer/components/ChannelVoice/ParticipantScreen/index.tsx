@@ -59,7 +59,11 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 						</Text>
 					</View>
 					<TouchableOpacity style={styles.focusIcon} onPress={handleFocusScreen}>
-						{isParticipantFocused ? <Icons.CloseIcon height={size.s_14} /> : <Icons.ArrowSaltIcon height={size.s_14} />}
+						{isParticipantFocused ? (
+							<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_14} />
+						) : (
+							<Icons.ArrowSaltIcon height={size.s_14} />
+						)}
 					</TouchableOpacity>
 				</View>
 			)}

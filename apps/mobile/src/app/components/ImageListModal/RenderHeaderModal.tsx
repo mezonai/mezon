@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectDmGroupCurrentId, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { convertTimeString } from '@mezon/utils';
@@ -83,7 +82,7 @@ export const RenderHeaderModal = React.memo(({ onClose, imageSelected, onImageSa
 				)}
 			</View>
 			<TouchableOpacity onPress={handleDownloadImage}>
-				<Icons.DownloadIcon color={Colors.white} />
+				<MezonIconCDN icon={IconCDN.downloadIcon} color={Colors.white} />
 			</TouchableOpacity>
 		</View>
 	);

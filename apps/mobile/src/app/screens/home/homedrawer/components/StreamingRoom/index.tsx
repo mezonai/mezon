@@ -1,4 +1,4 @@
-import { Icons, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
+import { STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	selectCurrentStreamInfo,
@@ -115,11 +115,11 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 								}}
 							>
 								<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
-									<Icons.ChatIcon />
+									<MezonIconCDN icon={IconCDN.chatIcon} />
 								</TouchableOpacity>
 
 								<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-									<Icons.PhoneCallIcon />
+									<MezonIconCDN icon={IconCDN.phoneCallIcon} />
 								</TouchableOpacity>
 							</View>
 						</View>

@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { channelUsersActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
@@ -36,7 +35,11 @@ export const RoleItem = memo(
 				type: 'success',
 				props: {
 					text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-					leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+					leadingIcon: isError ? (
+						<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+					) : (
+						<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+					)
 				}
 			});
 		};
@@ -52,7 +55,9 @@ export const RoleItem = memo(
 		return (
 			<TouchableOpacity onPress={onPressRoleItem} disabled={!isCheckbox && !isAdvancedSetting}>
 				<View style={{ gap: size.s_10, flexDirection: 'row', padding: size.s_10, alignItems: 'center' }}>
-					{!isAdvancedSetting && <Icons.BravePermission color={themeValue.text} width={size.s_24} height={size.s_24} />}
+					{!isAdvancedSetting && (
+						<MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} width={size.s_24} height={size.s_24} />
+					)}
 					<View style={{ flex: 1 }}>
 						<View style={{ flexDirection: 'row', gap: size.s_4, alignItems: 'center' }}>
 							<Text h4 color={themeValue.white}>

@@ -225,7 +225,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 				<View style={styles.actions}>
 					{/* TODO: update later */}
 					{/* <CallIcon />
-                    <VideoIcon /> */}
+                    <MezonIconCDN icon={IconCDN.videoIcon} /> */}
 				</View>
 			</View>
 			{directMessageId && <ChatMessageWrapper directMessageId={directMessageId} isModeDM={isModeDM} currentClanId={'0'} />}

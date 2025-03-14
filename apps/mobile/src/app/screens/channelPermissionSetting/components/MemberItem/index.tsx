@@ -1,5 +1,5 @@
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
-import { Icons, OwnerIcon } from '@mezon/mobile-components';
+import { OwnerIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { channelUsersActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
@@ -40,7 +40,11 @@ export const MemberItem = memo(
 				type: 'success',
 				props: {
 					text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-					leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+					leadingIcon: isError ? (
+						<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+					) : (
+						<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+					)
 				}
 			});
 		};

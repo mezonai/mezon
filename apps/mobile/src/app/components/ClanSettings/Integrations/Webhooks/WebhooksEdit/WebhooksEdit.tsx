@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { ActionEmitEvent, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -247,7 +247,13 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 							uri: urlImageWebhook
 						}}
 					/>
-					<Icons.UploadPlusIcon style={styles.uploadIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
+					<MezonIconCDN
+						icon={IconCDN.uploadPlusIcon}
+						customStyle={styles.uploadIcon}
+						height={size.s_20}
+						width={size.s_20}
+						color={themeValue.white}
+					/>
 				</TouchableOpacity>
 				<Text style={styles.textRecommend}>{t('webhooksEdit.recommendImage', { ns: 'clanIntegrationsSetting' })}</Text>
 			</View>
