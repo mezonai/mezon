@@ -22,6 +22,7 @@ import {
 	selectEnableMic,
 	selectGetRoomId,
 	selectIsPinModalVisible,
+	selectIsShowAppDiscussion,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
@@ -178,7 +179,8 @@ const TopBarChannelApps = ({ channel, mode }: ChannelTopbarProps) => {
 									<MicButton onClick={() => dispatch(channelAppActions.setEnableVoice(!enableMic))} isTalking={enableMic} />
 								</>
 							)}
-							<ChatButton />
+							<ChatButton isApp={true} />
+
 							<HelpButton isLightMode={appearanceTheme === 'light'} />
 						</div>
 					</div>
@@ -478,10 +480,16 @@ function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 	);
 }
 
-function ChatButton({ isLightMode }: { isLightMode?: boolean }) {
+function ChatButton({ isLightMode, isApp = false }: { isLightMode?: boolean; isApp?: boolean }) {
 	const dispatch = useDispatch();
+	const isShowAppDiscussion = useSelector(selectIsShowAppDiscussion);
+
 	const handleClick = () => {
-		dispatch(appActions.setIsShowChatStream(true));
+		if (isApp) {
+			dispatch(appActions.setIsShowAppDiscussion(!isShowAppDiscussion));
+		} else {
+			dispatch(appActions.setIsShowChatStream(true));
+		}
 	};
 	return (
 		<div className="relative leading-5 h-5">

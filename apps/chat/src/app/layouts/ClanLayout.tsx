@@ -12,6 +12,7 @@ import {
 	selectIsElectronUpdateAvailable,
 	selectIsInCall,
 	selectIsJoin,
+	selectIsShowAppDiscussion,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
@@ -29,6 +30,7 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
+import AppDiscussionMain from '../pages/appDiscussion';
 import ChatStream from '../pages/chatStream';
 import Setting from '../pages/setting';
 import ThreadsMain from '../pages/thread';
@@ -86,6 +88,8 @@ const ClanLayout = () => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
+	const isShowAppDiscussion = useSelector(selectIsShowAppDiscussion);
+
 	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
 	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const location = useLocation();
@@ -111,7 +115,6 @@ const ClanLayout = () => {
 	};
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
-
 	return (
 		<>
 			<div
@@ -148,6 +151,11 @@ const ClanLayout = () => {
 				{isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
 					<div ref={chatStreamRef} className="flex flex-col flex-1 max-w-[480px] min-w-60 dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
 						<ChatStream currentChannel={currentChannel} />
+					</div>
+				)}
+				{isShowAppDiscussion && currentChannel?.type === ChannelType.CHANNEL_TYPE_APP && (
+					<div className="flex flex-col flex-1 max-w-[480px] min-w-60 dark:bg-bgPrimary bg-bgLightPrimary rounded-l-lg">
+						<AppDiscussionMain appChannel={currentChannel} />
 					</div>
 				)}
 			</div>

@@ -177,7 +177,9 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const mode =
-		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_APP
 			? ChannelStreamMode.STREAM_MODE_CHANNEL
 			: ChannelStreamMode.STREAM_MODE_THREAD;
 
@@ -241,9 +243,10 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 type ChannelMainContentProps = {
 	channelId: string;
+	isAppDiscussion?: boolean;
 };
 
-const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
+const ChannelMainContent = ({ channelId, isAppDiscussion }: ChannelMainContentProps) => {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const { draggingState, setDraggingState, isOverUploading, setOverUploadingState, overLimitReason } = useDragAndDrop();
@@ -461,7 +464,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	return (
 		<div className={`w-full ${isChannelMezonVoice ? 'hidden' : ''}`}>
-			{isChannelApp ? (
+			{!isAppDiscussion && isChannelApp ? (
 				<ChannelApps appChannel={appChannel} miniAppRef={miniAppRef} miniAppDataHash={miniAppDataHash} />
 			) : (
 				<>
@@ -526,9 +529,10 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 interface IChannelMainProps {
 	topicChannelId?: string;
+	isAppDiscussion?: boolean;
 }
 
-export default function ChannelMain({ topicChannelId }: IChannelMainProps) {
+export default function ChannelMain({ topicChannelId, isAppDiscussion = false }: IChannelMainProps) {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const isOpenTopic = useSelector(selectTopicByChannelId(currentChannel?.channel_id ?? ''));
 	const dispatch = useAppDispatch();
@@ -556,7 +560,7 @@ export default function ChannelMain({ topicChannelId }: IChannelMainProps) {
 
 	return (
 		<>
-			<ChannelMainContent channelId={chlId} />
+			<ChannelMainContent channelId={chlId} isAppDiscussion={isAppDiscussion} />
 			<ChannelSeenListener channelId={chlId} />
 		</>
 	);

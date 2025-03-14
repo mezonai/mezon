@@ -28,6 +28,7 @@ export interface AppState {
 	error?: string | null;
 	isShowMemberList: boolean;
 	isShowChatStream: boolean;
+	isShowAppDiscussion: boolean;
 	chatStreamWidth: number;
 	isShowCanvas: boolean;
 	isShowMemberListDM: boolean;
@@ -51,6 +52,7 @@ export const initialAppState: AppState = {
 	themeApp: 'dark',
 	isShowMemberList: true,
 	isShowChatStream: false,
+	isShowAppDiscussion: false,
 	chatStreamWidth: 0,
 	isShowCanvas: true,
 	isShowMemberListDM: true,
@@ -143,6 +145,9 @@ export const appSlice = createSlice({
 		},
 		setIsShowChatStream: (state, action) => {
 			state.isShowChatStream = action.payload;
+		},
+		setIsShowAppDiscussion: (state, action) => {
+			state.isShowAppDiscussion = action.payload;
 		},
 		setChatStreamWidth: (state, action) => {
 			state.chatStreamWidth = action.payload;
@@ -278,3 +283,5 @@ export const selectIsShowPopupQuickMess = createSelector(getAppState, (state: Ap
 export const selectCategoryChannelOffsets = createSelector(getAppState, (state: AppState) => state.categoryChannelOffsets);
 
 export const selectIsFocusOnChannelInput = createSelector(getAppState, (state: AppState) => state.isFocusOnChannelInput);
+
+export const selectIsShowAppDiscussion = createSelector(getAppState, (state: AppState) => state.isShowAppDiscussion);
