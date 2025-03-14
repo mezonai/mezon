@@ -157,32 +157,34 @@ const TopBarChannelApps = ({ channel, mode }: ChannelTopbarProps) => {
 
 		fetchData();
 	}, [channel, dispatch, roomId, joinCall, appChannel]);
+	const appearanceTheme = useSelector(selectTheme);
 
 	return (
-		roomId && (
-			<>
-				<div className="justify-start items-center gap-1 flex">
-					<ChannelLabel channel={channel} />
-				</div>
-
-				<div className="items-center h-full ml-auto flex">
-					<div className="justify-end items-center gap-2 flex">
-						<div className="flex">
-							<div className="relative justify-start items-center gap-[15px] flex mr-4">
-								<StartCallButton
-									loading={loading}
-									onClick={() => dispatch(channelAppActions.setEnableCall(!joinVoice))}
-									isJoinVoice={joinVoice}
-								/>
-
-								<MicButton onClick={() => dispatch(channelAppActions.setEnableVoice(!enableMic))} isTalking={enableMic} />
-								{/* <VideoButoon onClick={() => dispatch(channelAppActions.setEnableVideo(!enableVideo))} isEnable={enableVideo} /> */}
-							</div>
+		<>
+			<div className="justify-start items-center gap-1 flex">
+				<ChannelLabel channel={channel} />
+			</div>
+			<div className="items-center h-full ml-auto flex">
+				<div className="justify-end items-center gap-2 flex">
+					<div className="flex">
+						<div className="relative justify-start items-center gap-[15px] flex mr-4">
+							{roomId && (
+								<>
+									<StartCallButton
+										loading={loading}
+										onClick={() => dispatch(channelAppActions.setEnableCall(!joinVoice))}
+										isJoinVoice={joinVoice}
+									/>
+									<MicButton onClick={() => dispatch(channelAppActions.setEnableVoice(!enableMic))} isTalking={enableMic} />
+								</>
+							)}
+							<ChatButton />
+							<HelpButton isLightMode={appearanceTheme === 'light'} />
 						</div>
 					</div>
 				</div>
-			</>
-		)
+			</div>
+		</>
 	);
 };
 
