@@ -111,6 +111,8 @@ export * from './components/HtmlCanvas';
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 
+export { default as PrivateThread } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/PrivateThread';
+export { default as ChannelMessageThread } from './components/MessageBox/ReactionMentionInput/ChannelMessageThread';
 export { default as MessageWithSystem } from './components/MessageWithSystem';
 export * from './components/VoiceChannel';
 export * from './components/virtual-core/useVirtualizer';

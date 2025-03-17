@@ -221,7 +221,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({ coords, category, onDele
 			<UserRestrictionZone policy={canManageCategory}>
 				<GroupPanels>
 					<ItemPanel children={'Edit Category'} onClick={openEditCategory} />
-					<ItemPanel children={'Delete Category'} onClick={handleDeleteCategory} danger />
+					{!category?.channels?.length && <ItemPanel children={'Delete Category'} onClick={handleDeleteCategory} danger />}
 				</GroupPanels>
 			</UserRestrictionZone>
 		</div>

@@ -169,6 +169,13 @@ export const listChannelRenderSlice = createSlice({
 				state.listChannelRender[clanId] = [...state.listChannelRender[clanId], cate];
 			}
 		},
+		removeCategoryFromListRender: (state, action: PayloadAction<{ clanId: string; categoryId: string }>) => {
+			const { clanId, categoryId } = action.payload;
+
+			if (state.listChannelRender[clanId]) {
+				state.listChannelRender[clanId] = state.listChannelRender[clanId].filter((item) => item.id !== categoryId);
+			}
+		},
 		updateCategory: (state, action: PayloadAction<{ clanId: string; cate: ApiUpdateCategoryDescRequest }>) => {
 			const { clanId, cate } = action.payload;
 			if (state.listChannelRender[clanId]) {

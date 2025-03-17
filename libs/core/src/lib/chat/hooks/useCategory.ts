@@ -1,4 +1,11 @@
-import { categoriesActions, selectAllCategories, selectCategoryIdSortChannel, selectChannelThreads, useAppDispatch } from '@mezon/store';
+import {
+	categoriesActions,
+	listChannelRenderAction,
+	selectAllCategories,
+	selectCategoryIdSortChannel,
+	selectChannelThreads,
+	useAppDispatch
+} from '@mezon/store';
 import { ICategoryChannel, IChannel } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -24,7 +31,13 @@ export function useCategory() {
 					categoryLabel: category.category_name as string
 				})
 			);
-			if (currenChannel.category_id === category.category_id) {
+			dispatch(
+				listChannelRenderAction.removeCategoryFromListRender({
+					clanId: category?.clan_id || '',
+					categoryId: category.id
+				})
+			);
+			if (currenChannel?.category_id === category?.category_id) {
 				const linkPageMember = toMembersPage(category.clan_id || '');
 				navigate(linkPageMember);
 			}

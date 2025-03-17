@@ -10,7 +10,10 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 		return JSON.stringify({
 			name: image.uploaderData.name,
 			avatar: image.uploaderData.avatar,
-			create_item: escapeHtml(formatDateTime(image.create_time))
+			create_item: escapeHtml(formatDateTime(image.create_time)),
+			realUrl: image.realUrl,
+			url: image.url,
+			fileName: image.filename
 		});
 	});
 	imageWindow.webContents.executeJavaScript(`
@@ -48,6 +51,11 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
             document.getElementById('userAvatar').src = uploaderData[currentIndex].avatar;
             document.getElementById('username').innerHTML  = uploaderData[currentIndex].name;
             document.getElementById('timestamp').innerHTML  =  uploaderData[currentIndex].create_item;
+            currentImageUrl = {
+              fileName : uploaderData[currentIndex].fileName,
+              url : uploaderData[currentIndex].url,
+              realUrl : uploaderData[currentIndex].realUrl
+            };
           }
           break;
 
@@ -63,6 +71,11 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
             document.getElementById('userAvatar').src = uploaderData[currentIndex].avatar;
             document.getElementById('username').innerHTML  = uploaderData[currentIndex].name;
             document.getElementById('timestamp').innerHTML  =  uploaderData[currentIndex].create_item;
+            currentImageUrl = {
+              fileName : uploaderData[currentIndex].fileName,
+              url : uploaderData[currentIndex].url,
+              realUrl : uploaderData[currentIndex].realUrl
+            };
           }
           break;
 		}

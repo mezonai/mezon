@@ -6,11 +6,12 @@ import {
 	selectCurrentClanId,
 	selectLogoCustom,
 	selectTheme,
+	toastActions,
 	useAppDispatch
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, InputField } from '@mezon/ui';
-import { ImageSourceObject, createImgproxyUrl, fileTypeImage } from '@mezon/utils';
+import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, resizeFileImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -111,15 +112,40 @@ const SettingRightUser = ({
 			setOpenModalType(true);
 			return;
 		}
-		const newImageObject: ImageSourceObject = {
-			filename: file.name,
-			filetype: file.type,
-			size: file.size,
-			url: URL.createObjectURL(file)
-		};
-		setFlags(true);
-		setImageObject(newImageObject);
-		openModalEditor();
+		if (file.type === fileTypeImage[2]) {
+			if (file.size > MAX_FILE_SIZE_1MB) {
+				dispatch(toastActions.addToastError({ message: 'File size exceeds 1MB limit' }));
+				return;
+			}
+			if (!clientRef.current || !sessionRef.current) {
+				dispatch(toastActions.addToastError({ message: 'Client or session is not initialized' }));
+				return;
+			}
+			setIsLoading(true);
+			const imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+			const attachment = await handleUploadFile(
+				clientRef.current,
+				sessionRef.current,
+				currentClanId || '0',
+				userProfile?.user?.id || '0',
+				imageAvatarResize.name,
+				imageAvatarResize
+			);
+			setUrlImage(attachment?.url || '');
+			setFlags(true);
+			setIsLoading(false);
+		} else {
+			const newImageObject: ImageSourceObject = {
+				filename: file.name,
+				filetype: file.type,
+				size: file.size,
+				url: URL.createObjectURL(file)
+			};
+			setFlags(true);
+			setImageObject(newImageObject);
+			openModalEditor();
+		}
+
 		e.target.value = '';
 	};
 
@@ -263,7 +289,10 @@ const SettingRightUser = ({
 						</div>
 					</div>
 
-					<div className="mt-8 flex items-center bg-bgTertiary p-4 rounded justify-between" onContextMenu={handleMouseClick}>
+					<div
+						className="mt-8 flex items-center dark:bg-bgTertiary bg-[#F0F0F0] p-4 rounded justify-between"
+						onContextMenu={handleMouseClick}
+					>
 						<p className="font-semibold tracking-wide text-sm">Direct Message Icon</p>
 						<div className="flex gap-x-5">
 							<label

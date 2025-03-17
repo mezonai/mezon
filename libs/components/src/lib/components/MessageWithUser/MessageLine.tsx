@@ -1,6 +1,6 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { selectAllChannels, useAppSelector } from '@mezon/store';
-import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown } from '@mezon/utils';
+import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useRef } from 'react';
 import { ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
@@ -185,7 +185,7 @@ const RenderContent = ({
 					/>
 				);
 			} else if (element.kindOf === ETokenMessage.VOICE_LINKS) {
-				const meetingCode = contentInElement?.split('/').pop();
+				const meetingCode = getMeetCode(contentInElement as string) as string;
 				formattedContent.push(
 					<VoiceLinkContent
 						key={`voiceLink-${s}-${messageId}`}
@@ -213,7 +213,7 @@ const RenderContent = ({
 				} else if (element.type === EBacktickType.BOLD) {
 					formattedContent.push(<b key={`markdown-${s}-${messageId}`}> {contentInElement} </b>);
 				} else if (element.type === EBacktickType.VOICE_LINK) {
-					const meetingCode = contentInElement?.split('/').pop();
+					const meetingCode = getMeetCode(contentInElement as string) as string;
 					formattedContent.push(
 						<VoiceLinkContent
 							key={`voiceLink-${s}-${messageId}`}
