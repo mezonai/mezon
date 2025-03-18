@@ -1,6 +1,7 @@
 import { Dispatch } from '@reduxjs/toolkit';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { MentionItem } from 'react-mentions';
+import { scaleImageToBase64 } from '../helper/imageResize';
 import { IMentionOnMessage, IRolesClan, IStartEndIndex, MentionDataProps, MentionReactInputProps, RequestInput } from '../types';
 
 function createFileMetadata<T>(file: File): T {
@@ -42,12 +43,20 @@ function processImageFile<T>(file: File): Promise<T> {
 		const reader = new FileReader();
 		reader.onload = (event) => {
 			const img = new Image();
-			img.onload = () => {
-				resolve({
+			img.onload = async () => {
+				const MAX_THUMB_IMG_SIZE = 40; // px
+				const shouldShrinkPreview = Math.max(img.width, img.height) > MAX_THUMB_IMG_SIZE;
+				const metadata = {
 					...createFileMetadata(file),
 					width: img.width,
 					height: img.height
-				} as T);
+				} as T;
+
+				if (shouldShrinkPreview) {
+					(metadata as any).thumbnail = await scaleImageToBase64(file, MAX_THUMB_IMG_SIZE / Math.max(img.width, img.height), 'image/jpeg');
+				}
+
+				resolve(metadata);
 				URL.revokeObjectURL(img.src);
 			};
 			img.onerror = () => {

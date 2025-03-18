@@ -61,7 +61,7 @@ import {
 
 import { useWebRTCStream } from '@mezon/components';
 import { Icons } from '@mezon/ui';
-import { IClan, Platform, TIME_OF_SHOWING_FIRST_POPUP, getPlatform, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
+import { IClan, PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
 import { ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -209,8 +209,7 @@ function MyApp() {
 
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
-			const platform = getPlatform();
-			const prefixKey = platform === Platform.MACOS ? 'metaKey' : 'ctrlKey';
+			const prefixKey = PLATFORM_ENV === Platform.MACOS ? 'metaKey' : 'ctrlKey';
 			if (event[prefixKey] && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
 				dispatch(fetchDirectMessage({}));

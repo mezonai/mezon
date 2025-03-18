@@ -1,7 +1,6 @@
 import { useMemo, useRef, type RefObject } from 'react';
 
-import { BooleanToVoidFunction, debounce, Signal } from '@mezon/utils';
-import { useIntersectionObserver, useOnIntersect } from './useIntersectionObserver';
+import { BooleanToVoidFunction, debounce, Signal, useIntersectionObserver, useOnIntersect } from '@mezon/utils';
 
 export enum LoadMoreDirection {
 	Backwards,
@@ -9,7 +8,7 @@ export enum LoadMoreDirection {
 	Around
 }
 
-export const MESSAGE_LIST_SENSITIVE_AREA = 250;
+export const MESSAGE_LIST_SENSITIVE_AREA = 750;
 
 const FAB_THRESHOLD = 50;
 const NOTCH_THRESHOLD = 1; // Notch has zero height so we at least need a 1px margin to intersect

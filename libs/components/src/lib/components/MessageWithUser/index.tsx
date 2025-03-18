@@ -5,6 +5,7 @@ import {
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
 	ID_MENTION_HERE,
+	ObserveFn,
 	TypeMessage,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
@@ -56,6 +57,7 @@ export type MessageWithUserProps = {
 	checkMessageTargetToMoved?: boolean;
 	messageReplyHighlight?: boolean;
 	isTopic?: boolean;
+	observeIntersectionForLoading?: ObserveFn;
 };
 
 function MessageWithUser({
@@ -73,7 +75,8 @@ function MessageWithUser({
 	channelLabel,
 	checkMessageTargetToMoved,
 	messageReplyHighlight,
-	isTopic
+	isTopic,
+	observeIntersectionForLoading
 }: Readonly<MessageWithUserProps>) {
 	const userId = useSelector(selectAllAccount)?.user?.id as string;
 	const user = useAppSelector((state) => selectMemberClanByUserId2(state, userId));
@@ -269,7 +272,12 @@ function MessageWithUser({
 						)}
 
 						{(message?.attachments?.length as number) > 0 && (
-							<MessageAttachment mode={mode} message={message} onContextMenu={onContextMenu} />
+							<MessageAttachment
+								observeIntersectionForLoading={observeIntersectionForLoading}
+								mode={mode}
+								message={message}
+								onContextMenu={onContextMenu}
+							/>
 						)}
 
 						{Array.isArray(message?.content?.embed) && (

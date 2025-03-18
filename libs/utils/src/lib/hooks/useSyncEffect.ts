@@ -1,5 +1,5 @@
-import { NoneToVoidFunction } from '@mezon/utils';
 import { useRef } from 'react';
+import { NoneToVoidFunction } from '../types';
 import usePreviousDeprecated from './usePreviousDeprecated';
 import { useUnmountCleanup } from './useUnmountCleanup';
 

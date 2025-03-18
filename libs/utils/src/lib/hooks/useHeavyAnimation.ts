@@ -1,8 +1,8 @@
-import { AnyToVoidFunction, createCallbackManager, getIsHeavyAnimating } from '@mezon/utils';
-
 // getIsHeavyAnimating
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { AnyToVoidFunction } from '../types';
+import { createCallbackManager, getIsHeavyAnimating } from '../utils';
 import useLastCallback from './useLastCallback';
 
 export const startCallbacks = createCallbackManager();

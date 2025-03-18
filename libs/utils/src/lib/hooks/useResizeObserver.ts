@@ -1,5 +1,5 @@
-import { CallbackManager, createCallbackManager } from '@mezon/utils';
 import { useEffect } from 'react';
+import { CallbackManager, createCallbackManager } from '../utils';
 import { useStateRef } from './useStateRef';
 
 const elementObserverMap = new Map<HTMLElement, [ResizeObserver, CallbackManager]>();

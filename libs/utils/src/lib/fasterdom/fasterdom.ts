@@ -1,5 +1,5 @@
 import { AnyToVoidFunction, NoneToVoidFunction } from '../types';
-import { fastRaf, throttleWith } from '../utils';
+import { Scheduler, fastRaf } from '../utils';
 import safeExec from '../utils/safeExec';
 import { setPhase } from './stricterdom';
 
@@ -81,6 +81,24 @@ function throttleWithRafFallback<F extends AnyToVoidFunction>(fn: F) {
 	return throttleWith((throttledFn: NoneToVoidFunction) => {
 		fastRaf(throttledFn, true);
 	}, fn);
+}
+
+function throttleWith<F extends AnyToVoidFunction>(schedulerFn: Scheduler, fn: F) {
+	let waiting = false;
+	let args: Parameters<F>;
+
+	return (..._args: Parameters<F>) => {
+		args = _args;
+
+		if (!waiting) {
+			waiting = true;
+
+			schedulerFn(() => {
+				waiting = false;
+				fn(...args);
+			});
+		}
+	};
 }
 
 export * from './stricterdom';

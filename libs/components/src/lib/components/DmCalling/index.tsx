@@ -39,6 +39,8 @@ type DmCallingProps = {
 	readonly dmGroupId?: Readonly<string>;
 	directId: string;
 };
+
+// DmCalling check later
 const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: boolean) => void }, DmCallingProps>(({ dmGroupId, directId }, ref) => {
 	const dispatch = useAppDispatch();
 	const currentDmGroup = useSelector(selectDmGroupCurrent(dmGroupId ?? ''));

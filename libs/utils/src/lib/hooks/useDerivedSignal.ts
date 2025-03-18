@@ -1,5 +1,4 @@
-import { Signal } from '@mezon/utils';
-
+import { Signal } from '../utils';
 import { useSignal } from './useSignal';
 import { useSignalEffect } from './useSignalEffect';
 import { useStateRef } from './useStateRef';

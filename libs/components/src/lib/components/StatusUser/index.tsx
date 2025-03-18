@@ -1,4 +1,4 @@
-import { selectCurrentChannelId, selectDmGroupCurrentId, selectTypingUserIdsByChannelId, useAppSelector } from '@mezon/store';
+import { selectCurrentChannelId, selectDmGroupCurrentId, selectIsUserTypingInChannel, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EUserStatus } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -33,25 +33,26 @@ const StatusUser = memo((props: StatusUserProps) => {
 	} = props;
 	const currentDMChannelID = useSelector(selectDmGroupCurrentId);
 	const currentChannelID = useSelector(selectCurrentChannelId);
-	const typingListMemberDMIds = useAppSelector((state) => selectTypingUserIdsByChannelId(state, currentDMChannelID || ''));
-	const typingListMemberChannelIds = useAppSelector((state) => selectTypingUserIdsByChannelId(state, currentChannelID || ''));
-	const typingListDMIds = useAppSelector((state) => selectTypingUserIdsByChannelId(state, directMessageValue?.dmID || ''));
-	const checkDmGroup = Number(directMessageValue?.type) === ChannelType.CHANNEL_TYPE_GROUP;
+	const isTypingInDM = useAppSelector((state) => selectIsUserTypingInChannel(state, currentDMChannelID || '', userId));
+	const isTypingInChannel = useAppSelector((state) => selectIsUserTypingInChannel(state, currentChannelID || '', userId));
+	const isTypingInDirectMessage = useAppSelector((state) =>
+		selectIsUserTypingInChannel(state, directMessageValue?.dmID || '', directMessageValue?.userId)
+	);
 
+	const checkDmGroup = Number(directMessageValue?.type) === ChannelType.CHANNEL_TYPE_GROUP;
+	// fix
 	let checkTypingUser = false;
 
 	switch (true) {
 		case isMemberDMGroup:
-			checkTypingUser = !!typingListMemberDMIds?.some((item) => item.id === userId);
+			checkTypingUser = isTypingInDM;
 			break;
 		case isMemberChannel:
-			checkTypingUser = !!typingListMemberChannelIds?.some((item) => item.id === userId);
+			checkTypingUser = isTypingInChannel;
 			break;
-
 		case isListDm:
-			checkTypingUser = !!typingListDMIds?.some((item) => directMessageValue?.userId?.includes(item.id));
+			checkTypingUser = isTypingInDirectMessage;
 			break;
-
 		default:
 			checkTypingUser = false;
 			break;

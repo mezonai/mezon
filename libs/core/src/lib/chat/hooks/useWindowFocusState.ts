@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+// check performance
 export const useWindowFocusState = () => {
 	const [isFocusDesktop, setIsFocusDesktop] = useState(true);
 	const [isTabVisible, setIsTabVisible] = useState(true);

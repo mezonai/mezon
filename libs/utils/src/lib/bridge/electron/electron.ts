@@ -12,7 +12,7 @@ import { NotificationData } from './notification';
 import { ElectronBridgeHandler, IElectronBridge, MezonDownloadFile, MezonElectronAPI, MezonNotificationOptions } from './types';
 
 export class ElectronBridge implements IElectronBridge {
-	private readonly bridge: MezonElectronAPI = window.electron;
+	private readonly bridge: MezonElectronAPI | undefined = typeof window !== 'undefined' ? window?.electron : undefined;
 
 	private static instance: ElectronBridge | undefined = undefined;
 
@@ -45,6 +45,7 @@ export class ElectronBridge implements IElectronBridge {
 	}
 
 	public removeAllListeners() {
+		if (!this.bridge) return;
 		this.bridge.removeListener(TRIGGER_SHORTCUT, this.triggerShortcut);
 		this.bridge.removeListener(ACTIVE_WINDOW, this.triggerActiveWindow);
 		this.bridge.removeListener(UPDATE_AVAILABLE, this.triggerUpdateAvaiable);
@@ -54,11 +55,11 @@ export class ElectronBridge implements IElectronBridge {
 	}
 
 	public setBadgeCount(badgeCount: number | null) {
-		this.bridge.setBadgeCount(badgeCount);
+		this.bridge?.setBadgeCount(badgeCount);
 	}
 
 	public invoke(channel: string, data?: MezonDownloadFile): Promise<MezonDownloadFile> {
-		if (this.bridge.invoke) {
+		if (this.bridge?.invoke) {
 			return this.bridge.invoke(channel, data);
 		}
 		console.error(`invoke is not supported on this bridge`);
@@ -66,10 +67,12 @@ export class ElectronBridge implements IElectronBridge {
 	}
 
 	public setActiveWindow() {
-		this.bridge.on(ACTIVE_WINDOW, this.listenerHandlers[ACTIVE_WINDOW]);
+		this.bridge?.on(ACTIVE_WINDOW, this.listenerHandlers[ACTIVE_WINDOW]);
 	}
 
 	public pushNotification(title: string, options: MezonNotificationOptions, msg?: NotificationData) {
+		if (typeof window === 'undefined') return;
+
 		const notification = new Notification(title, options);
 		notification.onclick = () => {
 			const link = options.data?.link;
@@ -88,13 +91,15 @@ export class ElectronBridge implements IElectronBridge {
 	}
 
 	private setupSenderId() {
+		if (!this.bridge?.senderId) return;
+
 		this.bridge.senderId(SENDER_ID).then((senderId: string) => {
-			this.bridge.send(START_NOTIFICATION_SERVICE, senderId);
+			this.bridge?.send(START_NOTIFICATION_SERVICE, senderId);
 		});
 	}
 
 	private setupShortCut() {
-		this.bridge.on(TRIGGER_SHORTCUT, this.listenerHandlers[TRIGGER_SHORTCUT]);
+		this.bridge?.on(TRIGGER_SHORTCUT, this.listenerHandlers[TRIGGER_SHORTCUT]);
 	}
 
 	private triggerShortcut = (_: unknown, name: string) => {
@@ -110,7 +115,7 @@ export class ElectronBridge implements IElectronBridge {
 	};
 
 	private setupUpdateAvaiable() {
-		this.bridge.on(UPDATE_AVAILABLE, this.listenerHandlers[UPDATE_AVAILABLE]);
+		this.bridge?.on(UPDATE_AVAILABLE, this.listenerHandlers[UPDATE_AVAILABLE]);
 	}
 
 	private triggerUpdateAvaiable = (_: unknown, name: string) => {
@@ -120,7 +125,7 @@ export class ElectronBridge implements IElectronBridge {
 	};
 
 	private setupDownloadProgress() {
-		this.bridge.on(DOWNLOAD_PROGRESS, this.listenerHandlers[DOWNLOAD_PROGRESS]);
+		this.bridge?.on(DOWNLOAD_PROGRESS, this.listenerHandlers[DOWNLOAD_PROGRESS]);
 	}
 
 	private triggerDownloadprogress = (_: unknown, response: unknown) => {
@@ -130,7 +135,7 @@ export class ElectronBridge implements IElectronBridge {
 	};
 
 	private setupUpdateError() {
-		this.bridge.on(UPDATE_ERROR, this.listenerHandlers[UPDATE_ERROR]);
+		this.bridge?.on(UPDATE_ERROR, this.listenerHandlers[UPDATE_ERROR]);
 	}
 
 	private triggerUpdateError = (_: unknown, error: unknown) => {

@@ -1,6 +1,5 @@
-import { AnyFunction } from '@mezon/utils';
-
 import { useCallback } from 'react';
+import { AnyFunction } from '../types';
 import { useStateRef } from './useStateRef';
 export default function useLastCallback<T extends AnyFunction>(callback?: T) {
 	const ref = useStateRef(callback);

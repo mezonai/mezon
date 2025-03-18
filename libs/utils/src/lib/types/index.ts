@@ -58,6 +58,8 @@ import {
 export * from './base';
 export * from './config';
 export * from './htmlCanvas';
+export * from './media';
+export * from './message';
 export * from './messageLine';
 export * from './mimeTypes';
 export * from './permissions';

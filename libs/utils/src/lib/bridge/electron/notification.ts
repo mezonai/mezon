@@ -1,6 +1,7 @@
 import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../../e2ee';
+import { isBackgroundModeActive } from '../../hooks';
 import { electronBridge } from './electron';
 export interface IMessageExtras {
 	link: string; // link for navigating
@@ -49,19 +50,23 @@ export class MezonNotificationService {
 	private constructor() {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		if (isElectron()) {
-			window.electron.onWindowFocused(() => {
-				this.isFocusOnApp = true;
-			});
-			window.electron.onWindowBlurred(() => {
-				this.isFocusOnApp = false;
-			});
+			if (typeof window !== 'undefined') {
+				window.electron.onWindowFocused(() => {
+					this.isFocusOnApp = true;
+				});
+				window.electron.onWindowBlurred(() => {
+					this.isFocusOnApp = false;
+				});
+			}
 		} else {
-			window.onfocus = () => {
-				this.isFocusOnApp = true;
-			};
-			window.onblur = () => {
-				this.isFocusOnApp = false;
-			};
+			if (typeof window !== 'undefined') {
+				window.onfocus = () => {
+					this.isFocusOnApp = true;
+				};
+				window.onblur = () => {
+					this.isFocusOnApp = false;
+				};
+			}
 		}
 	}
 
@@ -99,6 +104,8 @@ export class MezonNotificationService {
 
 		ws.onmessage = async (data: MessageEvent<string>) => {
 			try {
+				if (isBackgroundModeActive()) {
+				}
 				const objMsg = safeJSONParse(data.data);
 				if (objMsg === 'ping') {
 					this.handlePong();

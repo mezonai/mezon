@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
-
-import { NoneToVoidFunction, Scheduler, createCallbackManager, debounce, throttle, throttleWith, type CallbackManager } from '@mezon/utils';
+import { Scheduler } from 'timers/promises';
+import { NoneToVoidFunction } from '../types';
+import { CallbackManager, createCallbackManager, debounce, throttle, throttleWith } from '../utils';
 import useHeavyAnimation from './useHeavyAnimation';
 import useLastCallback from './useLastCallback';
 

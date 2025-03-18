@@ -1,4 +1,11 @@
-import { EMimeTypes, ETypeLinkMedia, IMessageWithUser, isMediaTypeNotSupported, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
+import {
+	EMimeTypes,
+	ETypeLinkMedia,
+	IMessageWithUser,
+	isMediaTypeNotSupported,
+	notImplementForGifOrStickerSendFromPanel,
+	ObserveFn
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { memo, useMemo } from 'react';
@@ -6,11 +13,13 @@ import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageImage from './MessageImage';
 import MessageLinkFile from './MessageLinkFile';
 import MessageVideo from './MessageVideo';
+import Photo from './Photo';
 
 type MessageAttachmentProps = {
 	message: IMessageWithUser;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	mode: ChannelStreamMode;
+	observeIntersectionForLoading?: ObserveFn;
 };
 
 const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMessageWithUser) => {
@@ -61,12 +70,13 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	return { videos, images, documents, audio };
 };
 
-const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMessageWithUser; onContextMenu: any; mode: ChannelStreamMode }> = ({
-	attachments,
-	message,
-	onContextMenu,
-	mode
-}) => {
+const Attachments: React.FC<{
+	attachments: ApiMessageAttachment[];
+	message: IMessageWithUser;
+	onContextMenu: any;
+	mode: ChannelStreamMode;
+	observeIntersectionForLoading?: ObserveFn;
+}> = ({ attachments, message, onContextMenu, mode, observeIntersectionForLoading }) => {
 	const { videos, images, documents, audio } = useMemo(() => classifyAttachments(attachments, message), [attachments]);
 	return (
 		<>
@@ -80,7 +90,15 @@ const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMes
 				</div>
 			)}
 
-			{images.length > 0 && <ImageAlbum images={images} message={message} mode={mode} onContextMenu={onContextMenu} />}
+			{images.length > 0 && (
+				<ImageAlbum
+					observeIntersectionForLoading={observeIntersectionForLoading}
+					images={images}
+					message={message}
+					mode={mode}
+					onContextMenu={onContextMenu}
+				/>
+			)}
 
 			{documents.length > 0 &&
 				documents.map((document, index) => (
@@ -151,14 +169,65 @@ const ImageAlbum = ({
 	images,
 	message,
 	mode,
-	onContextMenu
+	onContextMenu,
+	observeIntersectionForLoading
 }: {
 	images: (ApiMessageAttachment & { create_time?: string })[];
 	message: IMessageWithUser;
 	mode?: ChannelStreamMode;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
+	observeIntersectionForLoading?: ObserveFn;
 }) => {
 	const listImageSize = designLayout(images);
+	// const albumLayout = calculateAlbumLayout(isOwn, Boolean(noAvatars), album!, isMobile);
+	if (images.length > 0) {
+		// const albumLayout = calculateAlbumLayout(false, true, images, false);
+		// console.log(albumLayout, 'albumLayout');
+		return (
+			<Photo
+				id={message.id}
+				photo={{
+					mediaType: 'photo',
+					id: '6233268496494609524',
+					thumbnail: {
+						dataUri:
+							'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACgcHiMeGSgjISMtKygwPGRBPDc3PHtYXUlkkYCZlo+AjIqgtObDoKrarYqMyP/L2u71////m8H////6/+b9//j/2wBDASstLTw1PHZBQXb4pYyl+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj/wAARCAAoACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDXdwgyarPIzd8D0FErbnPoOlMrjqVG3ZbG0Y2DJp6SsvfI9DTKKxUmtimrlxHDjIoqtE21x6GiuyFVNamMo2egw9aKfKu1z6GmVxyVnY2TuFFFFIYCinxLucegorWFNyVyHKzLLoHXBqs0TL2yPUUUV0VYJq5nGTWgzFPWJm7YHqaKK56cFJ6mkpNFlECDAooortSSVkYtn//Z',
+						width: 320,
+						height: 320
+					},
+					sizes: [
+						{
+							width: 320,
+							height: 320,
+							type: 'm'
+						},
+						{
+							width: 480,
+							height: 480,
+							type: 'x'
+						}
+					],
+					isSpoiler: false,
+					date: 1741680998,
+					url: images?.[0]?.url,
+					width: images?.[0]?.width,
+					height: images?.[0]?.height
+				}}
+				// isOwn={isOwn}
+				observeIntersection={observeIntersectionForLoading}
+				// canAutoLoad={canAutoLoad}
+				// shouldAffectAppendix={shouldAffectAppendix}
+				// uploadProgress={uploadProgress}
+				// dimensions={dimensions}
+				// isProtected={isProtected}
+				// clickArg={album.isPaidMedia ? index : message.id}
+				// onClick={album.isPaidMedia ? handlePaidMediaClick : handleAlbumMessageClick}
+				// onCancelUpload={handleCancelUpload}
+				isDownloading={false}
+				// noSelectControls={false}
+			/>
+		);
+	}
 
 	return (
 		<div className={`flex flex-row justify-start flex-wrap w-full gap-x-2 max-w-[${MAX_WIDTH_ALBUM_IMAGE}px]`}>

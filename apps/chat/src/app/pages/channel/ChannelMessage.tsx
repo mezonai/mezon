@@ -8,7 +8,7 @@ import {
 	useMessageContextMenu
 } from '@mezon/components';
 import { MessagesEntity, selectChannelDraftMessage, selectIdMessageRefEdit, selectOpenEditMessageState, useAppSelector } from '@mezon/store';
-import { FOR_10_MINUTES, TypeMessage } from '@mezon/utils';
+import { FOR_10_MINUTES, ObserveFn, TypeMessage } from '@mezon/utils';
 import { isSameDay } from 'date-fns';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
@@ -33,6 +33,7 @@ export type MessageProps = {
 	isTopic?: boolean;
 	canSendMessage: boolean;
 	wrapperClassName?: string;
+	observeIntersectionForLoading?: ObserveFn;
 };
 
 export type MessageRef = {
@@ -60,7 +61,8 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	message,
 	previousMessage,
 	isTopic = false,
-	canSendMessage
+	canSendMessage,
+	observeIntersectionForLoading
 }: Readonly<MessageProps>) => {
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
@@ -139,6 +141,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 			checkMessageTargetToMoved={checkMessageTargetToMoved}
 			messageReplyHighlight={messageReplyHighlight}
 			isTopic={isTopic}
+			observeIntersectionForLoading={observeIntersectionForLoading}
 		/>
 	);
 };
