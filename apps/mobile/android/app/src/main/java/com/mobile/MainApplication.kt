@@ -1,4 +1,4 @@
-package com.mobile.mezon
+package com.mezon.mobile
 import android.content.res.Configuration
 import com.microsoft.codepush.react.CodePush
 
@@ -20,20 +20,18 @@ import com.mezon.mobile.CustomImageViewPackage
 
 class MainApplication : Application(), ReactApplication {
 
-  override val reactNativeHost: ReactNativeHost =
+    override val reactNativeHost: ReactNativeHost =
       object : DefaultReactNativeHost(this) {
         override fun getJSBundleFile(): String {
-          return CodePush.getJSBundleFile()
-        }
-        override fun getPackages(): List<ReactPackage> {
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage())
-          val packages = PackageList(this).packages.toMutableList()
-          packages.add(FullScreenNotificationIncomingCallPackage())
-          packages.add(SharedPreferencesPackage())
-          packages.add(CustomImageViewPackage())
-          return packages
-        }
+            return CodePush.getJSBundleFile()
+          }
+        override fun getPackages(): List<ReactPackage> =
+            PackageList(this).packages.apply {
+              // Packages that cannot be autolinked yet can be added manually here, for example:
+              add(FullScreenNotificationIncomingCallPackage())
+              add(CustomImageViewPackage())
+              add(SharedPreferencesPackage())
+            }
 
         override fun getJSMainModuleName(): String = "src/main"
 
@@ -44,7 +42,7 @@ class MainApplication : Application(), ReactApplication {
       }
 
   override val reactHost: ReactHost
-    get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+    get() = getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     super.onCreate()
@@ -56,9 +54,6 @@ class MainApplication : Application(), ReactApplication {
     }
   }
 
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-  }
   fun getReactNativeHostInstance(): ReactNativeHost {
     return reactNativeHost
   }

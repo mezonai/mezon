@@ -44,7 +44,6 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const allChannel = useSelector(selectAllChannels);
 	const [isCopied, setIsCopied] = useState(false);
-	const [isVisibleModal, setIsVisibleModal] = useState(false);
 	const { t } = useTranslation(['screenStack', 'clanIntegrationsSetting']);
 	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
 	const dispatch = useAppDispatch();
@@ -228,14 +227,10 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 
 	const handleDeleteWebhook = async (webhook: ApiWebhook) => {
 		await dispatch(deleteWebhookById({ webhook: webhook, channelId: currentChannel?.channel_id as string, clanId }));
-		setIsVisibleModal(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS);
 		await dispatch(fetchWebhooks({ channelId: '0', clanId: clanId }));
 	};
-
-	const visibleChange = useCallback((value) => {
-		setIsVisibleModal(value);
-	}, []);
 
 	return (
 		<View style={{ backgroundColor: themeValue.primary, width: '100%', height: '100%', padding: size.s_10 }}>
@@ -272,25 +267,31 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				</TouchableOpacity>
 			</View>
 
-			<TouchableOpacity onPress={() => setIsVisibleModal(true)} style={styles.btnDelete}>
+			<TouchableOpacity
+				onPress={() => {
+					const data = {
+						children: (
+							<MezonConfirm
+								confirmText={t('webhooksEdit.yes', { ns: 'clanIntegrationsSetting' })}
+								title={t('webhooksEdit.deleteCaptionHook', { ns: 'clanIntegrationsSetting' })}
+								children={
+									<Text style={{ color: themeValue.white }}>
+										{t('webhooksEdit.deleteWebhookConfirmation', {
+											ns: 'clanIntegrationsSetting',
+											webhookName: webhook?.webhook_name
+										})}
+									</Text>
+								}
+								onConfirm={() => handleDeleteWebhook(webhook)}
+							/>
+						)
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+				}}
+				style={styles.btnDelete}
+			>
 				<Text style={styles.textBtnDelete}>{t('webhooksEdit.delete', { ns: 'clanIntegrationsSetting' })}</Text>
 			</TouchableOpacity>
-
-			<MezonConfirm
-				visible={isVisibleModal}
-				onVisibleChange={visibleChange}
-				confirmText={t('webhooksEdit.yes', { ns: 'clanIntegrationsSetting' })}
-				title={t('webhooksEdit.deleteCaptionHook', { ns: 'clanIntegrationsSetting' })}
-				children={
-					<Text style={{ color: themeValue.white }}>
-						{t('webhooksEdit.deleteWebhookConfirmation', {
-							ns: 'clanIntegrationsSetting',
-							webhookName: webhook?.webhook_name
-						})}
-					</Text>
-				}
-				onConfirm={() => handleDeleteWebhook(webhook)}
-			/>
 		</View>
 	);
 }

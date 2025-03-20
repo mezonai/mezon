@@ -5,7 +5,7 @@ import { ChatContext } from '@mezon/core';
 import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT, remove } from '@mezon/mobile-components';
 import { ColorRoleProvider } from '@mezon/mobile-ui';
 import notifee from '@notifee/react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { ChannelMessage, safeJSONParse } from 'mezon-js';
 import moment from 'moment';
 import { Dimensions, NativeModules, Platform } from 'react-native';
@@ -98,9 +98,9 @@ export const Authentication = memo(() => {
 					initialRouteName={APP_SCREEN.BOTTOM_BAR}
 					screenOptions={{
 						headerShown: false,
+						animationEnabled: false,
 						gestureEnabled: Platform.OS === 'ios',
-						gestureDirection: 'horizontal',
-						animationEnabled: false
+						gestureDirection: 'horizontal'
 					}}
 				>
 					<RootStack.Screen name={APP_SCREEN.BOTTOM_BAR} component={BottomNavigatorWrapper} />
@@ -108,23 +108,25 @@ export const Authentication = memo(() => {
 						name={APP_SCREEN.HOME_DEFAULT}
 						component={isTabletLandscape ? HomeScreenTablet : HomeDefaultWrapper}
 						options={{
-							animationEnabled: false,
+							animationEnabled: true,
 							headerShown: false,
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
-							gestureResponseDistance: Dimensions.get('window').width
+							gestureResponseDistance: Dimensions.get('window').width,
+							cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
 						}}
 					/>
 					<RootStack.Screen
 						name={APP_SCREEN.MESSAGES.MESSAGE_DETAIL}
 						component={DirectMessageDetailScreen}
 						options={{
-							animationEnabled: false,
+							animationEnabled: true,
 							headerShown: false,
 							headerShadowVisible: false,
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
-							gestureResponseDistance: Dimensions.get('window').width
+							gestureResponseDistance: Dimensions.get('window').width,
+							cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
 						}}
 					/>
 					<RootStack.Screen name={APP_SCREEN.SERVERS.STACK} children={(props) => <ServersStacks {...props} />} />

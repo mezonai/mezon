@@ -10,13 +10,6 @@ export function useCategory() {
 	const categorizedChannels = useCategorizedChannels();
 	const handleDeleteCategory = useCallback(
 		async ({ category, currenChannel }: { category: ICategoryChannel; currenChannel: IChannel }) => {
-			const toChannelPage = (channelId: string, clanId: string) => {
-				if (channelId) return `/chat/clans/${clanId}/channels/${channelId}`;
-				return `/chat/clans/${clanId}`;
-			};
-			const toMembersPage = (clanId: string) => {
-				return `/chat/clans/${clanId}/member-safety`;
-			};
 			await dispatch(
 				categoriesActions.deleteCategory({
 					clanId: category.clan_id as string,
@@ -24,10 +17,6 @@ export function useCategory() {
 					categoryLabel: category.category_name as string
 				})
 			);
-			if (currenChannel.category_id === category.category_id) {
-				const linkPageMember = toMembersPage(category.clan_id || '');
-				navigate(linkPageMember);
-			}
 		},
 		[categorizedChannels]
 	);

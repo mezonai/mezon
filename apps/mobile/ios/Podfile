@@ -1,3 +1,4 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 # Resolve react_native_pods.rb with node to allow for hoisting
 # require Pod::Executable.execute_command('node', ['-p',
 #   'require.resolve(
@@ -59,6 +60,7 @@ target 'Mobile' do
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
   pod 'RNCallKeep', :path => '../node_modules/react-native-callkeep'
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
   use_react_native!(
     :path => config[:reactNativePath],

@@ -1,15 +1,6 @@
 import { ELoadMoreDirection, IBeforeRenderCb } from '@mezon/chat-scroll';
 import { MessageContextMenuProvider, MessageWithUser } from '@mezon/components';
-import {
-	LoadMoreDirection,
-	isBackgroundModeActive,
-	useContainerHeight,
-	useLayoutEffectWithPrevDeps,
-	usePermissionChecker,
-	useScrollHooks,
-	useStateRef,
-	useSyncEffect
-} from '@mezon/core';
+import { LoadMoreDirection, useMessageObservers, usePermissionChecker, useScrollHooks } from '@mezon/core';
 import {
 	MessagesEntity,
 	RootState,
@@ -44,11 +35,16 @@ import {
 	convertInitialMessageOfTopic,
 	forceMeasure,
 	isAnimatingScroll,
+	isBackgroundModeActive,
 	requestForcedReflow,
 	requestMeasure,
 	resetScroll,
 	restartCurrentScrollAnimation,
-	toggleDisableHover
+	toggleDisableHover,
+	useContainerHeight,
+	useLayoutEffectWithPrevDeps,
+	useStateRef,
+	useSyncEffect
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelMessage as ChannelMessageType, ChannelType } from 'mezon-js';
@@ -398,6 +394,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			}
 		);
 
+		const { observeIntersectionForLoading } = useMessageObservers('thread', chatRef, null, null, channelId);
+
 		const listItemElementsRef = useRef<HTMLDivElement[]>();
 
 		const scrollOffsetRef = useRef<number>(0);
@@ -651,6 +649,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						messageReplyHighlight={messageReplyHighlight}
 						isTopic={isTopic}
 						canSendMessage={canSendMessage}
+						observeIntersectionForLoading={observeIntersectionForLoading}
 					/>
 				);
 			});

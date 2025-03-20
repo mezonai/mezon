@@ -10,7 +10,8 @@ import {
 	selectClanSystemMessage,
 	selectTheme,
 	updateSystemMessage,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons, Image, InputField, TextArea } from '@mezon/ui';
 import { checkIsThread, IChannel, ValidateSpecialCharacters, ValidateURL } from '@mezon/utils';
@@ -30,7 +31,9 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	const { channel } = props;
 	const realtimeChannel = useSelector((state) => selectChannelById(state, channel.channel_id ?? ''));
 	const appearanceTheme = useSelector(selectTheme);
-	const channelApp = useSelector(selectAppChannelById(channel?.id) || {});
+
+	const channelApp = useAppSelector((state) => selectAppChannelById(state, channel?.id as string));
+
 	const [appUrlInit, setAppUrlInit] = useState(channelApp?.url || '');
 	const [appUrl, setAppUrl] = useState(appUrlInit);
 	const dispatch = useAppDispatch();

@@ -3,7 +3,7 @@ import { selectAllFriends } from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -32,9 +32,11 @@ function MessageHeader() {
 	return (
 		<View style={styles.headerWrapper}>
 			<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
-			<Pressable style={styles.addFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
-				<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
-				<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
+			<View style={styles.addFriendWrapper}>
+				<TouchableOpacity style={styles.btnAddFriend} onPress={() => navigateToAddFriendScreen()}>
+					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+					<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
+				</TouchableOpacity>
 				{!!quantityPendingRequest && (
 					<View
 						style={{
@@ -52,7 +54,7 @@ function MessageHeader() {
 						<Text style={styles.textQuantityPending}>{quantityPendingRequest}</Text>
 					</View>
 				)}
-			</Pressable>
+			</View>
 		</View>
 	);
 }

@@ -61,7 +61,8 @@
         },
         "channelDelete": {
             "title": "",
-            "delete": "Delete Channel"
+            "delete": "Delete Channel",
+            "leave": "Leave Channel"
         },
         "threadDelete": {
             "title": "",

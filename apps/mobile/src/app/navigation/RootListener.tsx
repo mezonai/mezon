@@ -55,10 +55,7 @@ const RootListener = () => {
 	const appStateRef = useRef(AppState.currentState);
 
 	useEffect(() => {
-		if (Platform.OS === 'ios') {
-			setupCallKeep();
-		}
-		setupNotificationListeners(navigation);
+		startupRunning(navigation);
 	}, [navigation]);
 
 	useEffect(() => {
@@ -78,6 +75,13 @@ const RootListener = () => {
 			});
 		}
 	}, [isLoggedIn]);
+
+	const startupRunning = async (navigation: any) => {
+		if (Platform.OS === 'ios') {
+			await setupCallKeep();
+		}
+		await setupNotificationListeners(navigation);
+	};
 
 	const initAppLoading = async () => {
 		const isDisableLoad = await load(STORAGE_IS_DISABLE_LOAD_BACKGROUND);

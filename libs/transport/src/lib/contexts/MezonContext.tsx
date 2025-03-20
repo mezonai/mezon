@@ -21,6 +21,7 @@ type Sessionlike = {
 	token: string;
 	refresh_token: string;
 	created: boolean;
+	is_remember: boolean;
 };
 
 export type MezonContextValue = {
@@ -30,7 +31,7 @@ export type MezonContextValue = {
 	createClient: () => Promise<Client>;
 	authenticateDevice: (username: string) => Promise<Session>;
 	authenticateGoogle: (token: string) => Promise<Session>;
-	authenticateMezon: (token: string) => Promise<Session>;
+	authenticateMezon: (token: string, isRemember?: boolean) => Promise<Session>;
 	createQRLogin: () => Promise<ApiLoginIDResponse>;
 	checkLoginRequest: (LoginRequest: ApiConfirmLoginRequest) => Promise<Session | null>;
 	confirmLoginRequest: (ConfirmRequest: ApiConfirmLoginRequest) => Promise<Session | null>;
@@ -115,11 +116,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 	);
 
 	const authenticateMezon = useCallback(
-		async (token: string) => {
+		async (token: string, isRemember?: boolean) => {
 			if (!clientRef.current) {
 				throw new Error('Mezon client not initialized');
 			}
-			const session = await clientRef.current.authenticateMezon(token);
+			const session = await clientRef.current.authenticateMezon(token, undefined, undefined, isFromMobile ? true : (isRemember ?? false));
 			sessionRef.current = session;
 
 			const socket = await createSocket(); // Create socket after authentication
@@ -206,7 +207,9 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!clientRef.current) {
 				throw new Error('Mezon client not initialized');
 			}
-			const newSession = await clientRef.current.sessionRefresh(new Session(session.token, session.refresh_token, session.created));
+			const newSession = await clientRef.current.sessionRefresh(
+				new Session(session.token, session.refresh_token, session.created, session.is_remember)
+			);
 			sessionRef.current = newSession;
 
 			if (!socketRef.current) {
@@ -265,7 +268,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					try {
 						const socket = await createSocket();
 						const newSession = await clientRef?.current?.sessionRefresh(
-							new Session(session.token, session.refresh_token, session.created)
+							new Session(session.token, session.refresh_token, session.created, session.is_remember ?? false)
 						);
 						const recsession = await socket.connect(
 							newSession || session,

@@ -49,7 +49,7 @@ export default class App {
 	private static onReady() {
 		if (rendererAppName) {
 			App.application.setLoginItemSettings({
-				openAtLogin: true
+				openAtLogin: false
 			});
 			App.initMainWindow();
 			App.loadMainWindow();

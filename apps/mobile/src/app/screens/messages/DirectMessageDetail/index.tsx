@@ -7,8 +7,9 @@ import {
 	load,
 	save
 } from '@mezon/mobile-components';
-import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { appActions, channelsActions, clansActions, directActions, messagesActions, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import { useFocusEffect } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Platform, StatusBar, View } from 'react-native';
@@ -19,7 +20,7 @@ import HeaderDirectMessage from './HeaderDirectMessage';
 import { style } from './styles';
 
 export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: any; route: any }) => {
-	const { themeValue, themeBasic } = useTheme();
+	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const directMessageId = route.params?.directMessageId as string;
 	const dispatch = useAppDispatch();
@@ -61,24 +62,22 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 		]);
 	};
 
+	useFocusEffect(() => {
+		if (Platform.OS === 'android') {
+			StatusBar.setBackgroundColor(themeValue.primary);
+		}
+	});
+
 	useEffect(() => {
-		const focusedListener = navigation.addListener('focus', () => {
-			if (Platform.OS === 'android') {
-				StatusBar.setBackgroundColor(themeValue.primary);
-			}
-			StatusBar.setBarStyle(themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content');
-		});
 		const blurListener = navigation.addListener('blur', () => {
 			if (Platform.OS === 'android') {
 				StatusBar.setBackgroundColor(themeValue.secondary);
 			}
-			StatusBar.setBarStyle(themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content');
 		});
 		return () => {
-			focusedListener();
 			blurListener();
 		};
-	}, [navigation, themeBasic, themeValue.primary, themeValue.secondary]);
+	}, [navigation, themeValue.secondary]);
 
 	useEffect(() => {
 		const onMentionHashtagDM = DeviceEventEmitter.addListener(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, ({ isFetchMemberChannelDM }) => {

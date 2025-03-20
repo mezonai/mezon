@@ -1,11 +1,31 @@
-import { BottomSheetScrollView, BottomSheetModal as OriginalBottomSheet } from '@gorhom/bottom-sheet';
+import { BottomSheetModalProps, BottomSheetScrollView, BottomSheetModal as OriginalBottomSheet } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, Keyboard, Text, View } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Keyboard, NativeEventSubscription, Text, View } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Backdrop from './backdrop';
 import { style } from './styles';
+
+const useBottomSheetBackHandler = (bottomSheetRef: React.RefObject<OriginalBottomSheet | null>) => {
+	const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(null);
+	const handleSheetPositionChange = useCallback<NonNullable<BottomSheetModalProps['onChange']>>(
+		(index) => {
+			const isBottomSheetVisible = index >= 0;
+			if (isBottomSheetVisible && !backHandlerSubscriptionRef.current) {
+				backHandlerSubscriptionRef.current = BackHandler.addEventListener('hardwareBackPress', () => {
+					bottomSheetRef.current?.dismiss();
+					return true;
+				});
+			} else if (!isBottomSheetVisible) {
+				backHandlerSubscriptionRef.current?.remove();
+				backHandlerSubscriptionRef.current = null;
+			}
+		},
+		[bottomSheetRef, backHandlerSubscriptionRef]
+	);
+	return { handleSheetPositionChange };
+};
 
 const useBottomSheetState = () => {
 	const [snapPoints, setSnapPoints] = useState(['90%']);
@@ -65,6 +85,7 @@ const BottomSheetRootListener = () => {
 	} = useBottomSheetState();
 
 	const ref = useRef<OriginalBottomSheet>();
+	const { handleSheetPositionChange } = useBottomSheetBackHandler(ref);
 
 	const onCloseBottomSheet = () => {
 		ref?.current?.close();
@@ -124,6 +145,7 @@ const BottomSheetRootListener = () => {
 			enableDynamicSizing={heightFitContent}
 			handleIndicatorStyle={styles.handleIndicator}
 			style={styles.container}
+			onChange={handleSheetPositionChange}
 		>
 			{renderHeader()}
 			{children && <BottomSheetScrollView>{children}</BottomSheetScrollView>}

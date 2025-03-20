@@ -33,9 +33,10 @@ function useChannelSeen(channelId: string) {
 		const mode =
 			currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD;
 		if (lastMessage) {
-			markAsReadSeen(lastMessage, mode);
+			const numberNotification = currentChannel?.count_mess_unread ? currentChannel?.count_mess_unread : 0;
+			markAsReadSeen(lastMessage, mode, numberNotification);
 		}
-	}, [lastMessage, channelId, markAsReadSeen, currentChannel?.type]);
+	}, [lastMessage, channelId, markAsReadSeen, currentChannel?.type, currentChannel?.count_mess_unread]);
 
 	useEffect(() => {
 		if (!statusFetchChannel) return;

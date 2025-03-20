@@ -57,7 +57,8 @@ export const style = (colors: Attributes) =>
 			width: '85%',
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: 4
+			gap: 4,
+			overflow: 'hidden'
 		},
 		replyDisplayName: {
 			color: Colors.caribbeanGreen,

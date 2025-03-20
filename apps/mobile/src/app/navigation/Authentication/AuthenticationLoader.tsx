@@ -50,7 +50,6 @@ export const AuthenticationLoader = () => {
 	const isLoadingMain = useSelector(selectLoadingMainMobile);
 	const dispatch = useDispatch();
 	const [fileShared, setFileShared] = useState<any>();
-	const [isSessionExpired, setIsSessionExpired] = useState<boolean>(false);
 	const currentDmGroupIdRef = useRef(currentDmGroupId);
 	const currentChannelRef = useRef(currentClan);
 	useCheckUpdatedVersion();
@@ -114,7 +113,17 @@ export const AuthenticationLoader = () => {
 
 	useEffect(() => {
 		const listener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED, () => {
-			setIsSessionExpired(true);
+			const data = {
+				children: (
+					<MezonConfirm
+						onConfirm={logout}
+						title={'Session Expired or Network Error'}
+						confirmText={'Login Again'}
+						content={'Your session has expired. Please log in again to continue.'}
+					/>
+				)
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		});
 
 		return () => {
@@ -123,7 +132,7 @@ export const AuthenticationLoader = () => {
 	}, [dispatch, navigation, userProfile?.user?.id]);
 
 	useEffect(() => {
-		checkNotificationPermission();
+		checkPermission();
 
 		const unsubscribe = messaging().onMessage((remoteMessage) => {
 			if (isShowNotification(currentChannelRef.current?.id, currentDmGroupIdRef.current, remoteMessage)) {
@@ -168,6 +177,10 @@ export const AuthenticationLoader = () => {
 			unsubscribe();
 		};
 	}, []);
+
+	const checkPermission = async () => {
+		await checkNotificationPermission();
+	};
 
 	const playBuzzSound = () => {
 		Sound.setCategory('Playback');
@@ -241,25 +254,12 @@ export const AuthenticationLoader = () => {
 		const [appInfo] = await Promise.all([getAppInfo()]);
 		const { app_platform: platform } = appInfo;
 		store.dispatch(authActions.logOut({ device_id: userProfile?.user?.username, platform: platform }));
-		setIsSessionExpired(false);
-	}, []);
-
-	const cancelConfirm = useCallback(async () => {
-		setIsSessionExpired(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	}, []);
 
 	return (
 		<>
 			<LoadingModal isVisible={isLoadingMain} />
-			<MezonConfirm
-				visible={isSessionExpired}
-				onConfirm={logout}
-				onCancel={cancelConfirm}
-				title={'Session Expired or Network Error'}
-				confirmText={'Login Again'}
-				content={'Your session has expired. Please log in again to continue.'}
-				hasBackdrop={true}
-			/>
 			{!!fileShared && !isLoadingMain && <Sharing data={fileShared} onClose={onCloseFileShare} />}
 		</>
 	);

@@ -132,10 +132,8 @@ export const notificationSlice = createSlice({
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
 
-			if (state.notifications[category]) {
+			if (state.notifications[category]?.data?.length) {
 				state.notifications[category].data = [data, ...state.notifications[category].data];
-			} else {
-				state.notifications[category] = { data: [data], lastId: '' };
 			}
 		},
 

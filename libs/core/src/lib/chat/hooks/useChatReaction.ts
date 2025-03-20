@@ -2,22 +2,25 @@ import {
 	channelMetaActions,
 	ChannelsEntity,
 	channelUsersActions,
+	getStoreAsync,
 	reactionActions,
+	RootState,
 	selectAllAccount,
 	selectAllChannelMembers,
+	selectAllEmojiRecent,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectDirectById,
 	selectDmGroupCurrentId,
+	selectLastEmojiRecent,
 	selectThreadCurrentChannel,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { EmojiStorage, transformPayloadWriteSocket } from '@mezon/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import { transformPayloadWriteSocket } from '@mezon/utils';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 export type UseMessageReactionOption = {
@@ -41,6 +44,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 	const thread = useSelector(selectThreadCurrentChannel);
 	const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const allEmojiRecent = useSelector(selectAllEmojiRecent);
 
 	const currentActive = useMemo(() => {
 		let clanIdActive = '';
@@ -120,6 +124,23 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		},
 		[channel, membersOfParent, membersOfChild]
 	);
+
+	const emojiRecentId = useCallback(
+		async (emoji_id: string) => {
+			const store = await getStoreAsync();
+			const lastEmojiRecent = selectLastEmojiRecent(store.getState() as unknown as RootState);
+			if (lastEmojiRecent.emoji_id === emoji_id) {
+				return '';
+			}
+			const foundEmoji = allEmojiRecent.find((emoji) => emoji.id === emoji_id) as any;
+			if (foundEmoji) {
+				return foundEmoji.emoji_recents_id;
+			}
+			return '0';
+		},
+		[allEmojiRecent]
+	);
+
 	const reactionMessageDispatch = useCallback(
 		async (
 			id: string,
@@ -134,23 +155,13 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 			isFocusTopicBox?: boolean,
 			channelIdOnMessage?: string
 		) => {
-			if (isMobile) {
-				const emojiLastest: EmojiStorage = {
-					emojiId: emoji_id ?? '',
-					emoji: emoji ?? '',
-					messageId: messageId ?? '',
-					senderId: message_sender_id ?? '',
-					action: action_delete ?? false
-				};
-				saveRecentEmojiMobile(emojiLastest);
-			}
 			isClanView && addMemberToThread(userId || '');
 			const payload = transformPayloadWriteSocket({
 				clanId: currentActive.clanIdActive,
 				isPublicChannel: is_public,
 				isClanView: isClanView as boolean
 			});
-
+			const emoji_recent_id = await emojiRecentId(emoji_id);
 			const payloadDispatchReaction = {
 				id,
 				clanId: currentActive.clanIdActive,
@@ -164,7 +175,8 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				actionDelete: action_delete,
 				isPublic: payload.is_public,
 				userId: userId as string,
-				topic_id: isFocusTopicBox ? channelIdOnMessage : ''
+				topic_id: isFocusTopicBox ? channelIdOnMessage : '',
+				emoji_recent_id: emoji_recent_id
 			};
 
 			return dispatch(reactionActions.writeMessageReaction(payloadDispatchReaction)).unwrap();
@@ -178,25 +190,4 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		}),
 		[reactionMessageDispatch]
 	);
-}
-
-function saveRecentEmojiMobile(emojiLastest: EmojiStorage) {
-	AsyncStorage.getItem('recentEmojis').then((storedEmojis) => {
-		const emojisRecentParse = storedEmojis ? safeJSONParse(storedEmojis) : [];
-
-		const duplicateIndex = emojisRecentParse.findIndex((item: any) => {
-			return item.emoji === emojiLastest.emoji && item.senderId === emojiLastest.senderId;
-		});
-
-		if (emojiLastest.action === true) {
-			if (duplicateIndex !== -1) {
-				emojisRecentParse.splice(duplicateIndex, 1);
-			}
-		} else {
-			if (duplicateIndex === -1) {
-				emojisRecentParse.push(emojiLastest);
-			}
-		}
-		AsyncStorage.setItem('recentEmojis', JSON.stringify(emojisRecentParse));
-	});
 }

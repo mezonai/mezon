@@ -20,9 +20,11 @@ type MessageReplyProps = {
 const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isAnonymousReplied }) => {
 	const senderIdMessageRef = message?.references?.[0]?.message_sender_id as string;
 	const messageIdRef = message?.references?.[0]?.message_ref_id;
-	const hasAttachmentInMessageRef = message?.references?.[0]?.has_attachment;
 	const messageUsernameSenderRef = message?.references?.[0]?.message_sender_username ?? '';
 	const messageSender = useUserById(senderIdMessageRef);
+	const content = safeJSONParse(message?.references?.[0]?.content ?? '{}');
+	const hasAttachmentInMessageRef = message?.references?.[0]?.has_attachment;
+	const isEmbedMessage = !content?.t && content?.embed;
 
 	const dispatch = useAppDispatch();
 
@@ -80,7 +82,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isA
 							>
 								{!isClanView ? message?.references?.[0]?.message_sender_display_name || messageUsernameSenderRef : nameShowed}
 							</span>
-							{hasAttachmentInMessageRef ? (
+							{hasAttachmentInMessageRef || isEmbedMessage ? (
 								<div className=" flex flex-row items-center">
 									<div
 										onClick={getIdMessageToJump}
@@ -97,7 +99,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isA
 										isTokenClickAble={false}
 										isJumMessageEnabled={true}
 										onClickToMessage={getIdMessageToJump}
-										content={safeJSONParse(message?.references?.[0]?.content ?? '{}')}
+										content={content}
 										messageId={message.id}
 										isReply={true}
 									/>

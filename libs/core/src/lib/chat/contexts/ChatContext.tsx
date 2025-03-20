@@ -13,6 +13,7 @@ import {
 	attachmentActions,
 	audioCallActions,
 	canvasAPIActions,
+	categoriesActions,
 	channelAppSlice,
 	channelMembers,
 	channelMembersActions,
@@ -28,6 +29,7 @@ import {
 	directMetaActions,
 	directSlice,
 	e2eeActions,
+	emojiRecentActions,
 	emojiSuggestionActions,
 	eventManagementActions,
 	friendsActions,
@@ -99,6 +101,7 @@ import {
 import isElectron from 'is-electron';
 import {
 	AddClanUserEvent,
+	CategoryEvent,
 	ChannelCreatedEvent,
 	ChannelDeletedEvent,
 	ChannelMessage,
@@ -146,6 +149,7 @@ import {
 	ApiNotificationUserChannel,
 	ApiPermissionUpdate,
 	ApiTokenSentEvent,
+	ApiUpdateCategoryDescRequest,
 	ApiWebhook
 } from 'mezon-js/dist/api.gen';
 import { ChannelCanvas, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
@@ -571,8 +575,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onlastseenupdated = useCallback(async (lastSeenMess: LastSeenMessageEvent) => {
 		const timestamp = Date.now() / 1000;
+		dispatch(listChannelRenderAction.removeBadgeFromChannel({ channelId: lastSeenMess.channel_id, clanId: lastSeenMess.clan_id }));
 		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: lastSeenMess.channel_id, timestamp: timestamp + TIME_OFFSET }));
-		await dispatch(clansActions.updateBageClanWS({ channel_id: lastSeenMess.channel_id ?? '' }));
+		await dispatch(clansActions.updateBageClanWS({ clan_id: lastSeenMess.clan_id, badge_count: lastSeenMess.badge_count }));
 		dispatch(
 			channelsActions.updateChannelBadgeCount({ clanId: lastSeenMess.clan_id, channelId: lastSeenMess.channel_id, count: 0, isReset: true })
 		);
@@ -926,6 +931,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const oncustomstatus = useCallback(
 		(statusEvent: CustomStatusEvent) => {
 			dispatch(channelMembersActions.setCustomStatusUser({ userId: statusEvent?.user_id, customStatus: statusEvent?.status }));
+			if (statusEvent.user_id === userId) {
+				dispatch(accountActions.setCustomStatus(statusEvent.status));
+			}
 		},
 		[dispatch]
 	);
@@ -968,18 +976,25 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[dispatch, userId]
 	);
 
-	const onmessagereaction = useCallback(async (e: ApiMessageReaction) => {
-		const reactionEntity = mapReactionToEntity(e);
-		const store = await getStoreAsync();
-		const isFocusTopicBox = selectClickedOnTopicStatus(store.getState());
-		const currenTopicId = selectCurrentTopicId(store.getState());
-		if (reactionEntity.topic_id && reactionEntity.topic_id !== '0' && isFocusTopicBox && currenTopicId) {
-			reactionEntity.channel_id = reactionEntity.topic_id ?? '';
-		}
+	const onmessagereaction = useCallback(
+		async (e: ApiMessageReaction) => {
+			if (e.sender_id === userId) {
+				dispatch(emojiRecentActions.setLastEmojiRecent({ emoji_recents_id: e.emoji_recent_id, emoji_id: e.emoji_id }));
+				dispatch(emojiRecentActions.addFirstEmojiRecent({ emoji_recents_id: e.emoji_recent_id, emoji_id: e.emoji_id }));
+			}
+			const reactionEntity = mapReactionToEntity(e);
+			const store = await getStoreAsync();
+			const isFocusTopicBox = selectClickedOnTopicStatus(store.getState());
+			const currenTopicId = selectCurrentTopicId(store.getState());
+			if (reactionEntity.topic_id && reactionEntity.topic_id !== '0' && isFocusTopicBox && currenTopicId) {
+				reactionEntity.channel_id = reactionEntity.topic_id ?? '';
+			}
 
-		dispatch(reactionActions.setReactionDataSocket(reactionEntity));
-		dispatch(messagesActions.updateMessageReactions(reactionEntity));
-	}, []);
+			dispatch(reactionActions.setReactionDataSocket(reactionEntity));
+			dispatch(messagesActions.updateMessageReactions(reactionEntity));
+		},
+		[userId]
+	);
 
 	const onchannelcreated = useCallback(async (channelCreated: ChannelCreatedEvent) => {
 		if (channelCreated.parent_id) {
@@ -1068,11 +1083,82 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				);
 			}
 		} else if (channelCreated.creator_id === userId) {
+			dispatch(listChannelRenderAction.addChannelToListRender({ type: channelCreated.channel_type, ...channelCreated }));
 			dispatch(
 				listChannelsByUserActions.addOneChannel({
 					id: channelCreated.channel_id,
 					type: channelCreated.channel_type,
 					...channelCreated
+				})
+			);
+		}
+	}, []);
+
+	const oncategoryevent = useCallback(async (categoryEvent: CategoryEvent) => {
+		if (categoryEvent.status === EEventAction.CREATED) {
+			dispatch(
+				categoriesActions.insertOne({
+					clanId: categoryEvent.clan_id as string,
+					category: {
+						id: categoryEvent.id,
+						category_id: categoryEvent.id,
+						category_name: categoryEvent.category_name,
+						clan_id: categoryEvent.clan_id,
+						creator_id: categoryEvent.creator_id
+					}
+				})
+			);
+			dispatch(
+				listChannelRenderAction.addCategoryToListRender({
+					clanId: categoryEvent.clan_id as string,
+					cate: {
+						id: categoryEvent.id as string,
+						channels: [],
+						category_id: categoryEvent.id,
+						category_name: categoryEvent.category_name,
+						creator_id: categoryEvent.creator_id,
+						clan_id: categoryEvent.clan_id as string
+					}
+				})
+			);
+		} else if (categoryEvent.status === EEventAction.DELETE) {
+			const store = await getStoreAsync();
+			const currentChannel = selectCurrentChannel(store.getState() as unknown as RootState);
+			dispatch(categoriesActions.deleteOne({ clanId: categoryEvent.clan_id, categoryId: categoryEvent.id }));
+			dispatch(channelsActions.setCurrentChannelId({ clanId: categoryEvent.clan_id, channelId: '' }));
+			dispatch(channelsActions.removeRememberChannel({ clanId: categoryEvent.clan_id }));
+			dispatch(
+				listChannelRenderAction.removeCategoryFromListRender({
+					clanId: categoryEvent?.clan_id || '',
+					categoryId: categoryEvent.id
+				})
+			);
+			const toMembersPage = (clanId: string) => {
+				return `/chat/clans/${clanId}/member-safety`;
+			};
+			if (currentChannel?.category_id === categoryEvent.id) {
+				const linkPageMember = toMembersPage(categoryEvent?.clan_id || '');
+				navigate(linkPageMember);
+			}
+		} else {
+			const request: ApiUpdateCategoryDescRequest = {
+				category_id: categoryEvent.id || '',
+				category_name: categoryEvent.category_name,
+				ClanId: categoryEvent.clan_id
+			};
+			dispatch(
+				categoriesActions.updateOne({
+					clanId: categoryEvent.clan_id,
+					category: {
+						id: categoryEvent.id as string,
+						...request
+					}
+				})
+			);
+			dispatch(
+				listChannelRenderAction.updateCategory({
+					clanId: categoryEvent.clan_id,
+					cate: request
 				})
 			);
 		}
@@ -1592,6 +1678,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				dispatch(clanMembersMetaActions.updateUserStatus({ userId: userStatusEvent.user_id, user_status: userStatusEvent.custom_status }));
 				dispatch(directMembersMetaActions.updateUserStatus({ userId: userStatusEvent.user_id, user_status: userStatusEvent.custom_status }));
 				dispatch(friendsActions.updateUserStatus({ userId: userStatusEvent.user_id, user_status: userStatusEvent.custom_status }));
+			} else {
+				dispatch(clanMembersMetaActions.updateUserStatus({ userId: userId || '', user_status: userStatusEvent.custom_status }));
+				dispatch(accountActions.updateUserStatus(userStatusEvent.custom_status));
 			}
 		},
 		[userId]
@@ -1703,6 +1792,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			socket.onchannelcreated = onchannelcreated;
 
+			socket.oncategoryevent = oncategoryevent;
+
 			socket.onchanneldeleted = onchanneldeleted;
 
 			socket.onchannelupdated = onchannelupdated;
@@ -1744,6 +1835,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
 			onchannelcreated,
+			oncategoryevent,
 			onchanneldeleted,
 			onchannelmessage,
 			onchannelpresence,
@@ -1932,6 +2024,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		onstreamingchannelleaved,
 		onerror,
 		onchannelcreated,
+		oncategoryevent,
 		onchanneldeleted,
 		onchannelupdated,
 		onuserprofileupdate,

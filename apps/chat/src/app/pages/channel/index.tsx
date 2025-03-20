@@ -12,22 +12,17 @@ import {
 import {
 	ChannelsEntity,
 	ETypeMission,
-	TOKEN_FAILED_STATUS,
-	TOKEN_SUCCESS_STATUS,
 	channelAppActions,
 	channelMetaActions,
 	channelsActions,
 	clansActions,
 	directMetaActions,
+	getStore,
 	gifsStickerEmojiActions,
-	giveCoffeeActions,
 	handleParticipantMeetState,
 	listChannelRenderAction,
 	listChannelsByUserActions,
 	onboardingActions,
-	selectAllChannelMembers,
-	selectAllRolesClan,
-	selectAnyUnreadChannels,
 	selectAppChannelById,
 	selectChannelAppChannelId,
 	selectChannelAppClanId,
@@ -36,13 +31,11 @@ import {
 	selectCurrentChannel,
 	selectCurrentClan,
 	selectFetchChannelStatus,
-	selectInfoSendToken,
 	selectIsSearchMessage,
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowMemberList,
 	selectIsUnreadChannelById,
-	selectJoinChannelAppData,
 	selectLastMessageByChannelId,
 	selectListChannelRenderByClanId,
 	selectMissionDone,
@@ -51,7 +44,6 @@ import {
 	selectOnboardingMode,
 	selectPreviousChannels,
 	selectProcessingByClan,
-	selectSendTokenEvent,
 	selectStatusMenu,
 	selectTheme,
 	selectTopicByChannelId,
@@ -74,11 +66,10 @@ import {
 	titleMission
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import { ApiOnboardingItem, ApiTokenSentEvent } from 'mezon-js/api.gen';
+import { ApiChannelAppResponse, ApiOnboardingItem } from 'mezon-js/api.gen';
 import { DragEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
-import { useSelector } from 'react-redux';
-import { ChannelApps } from './ChannelApp';
+import { useDispatch, useSelector } from 'react-redux';
 import { ChannelMedia } from './ChannelMedia';
 import { ChannelMessageBox } from './ChannelMessageBox';
 import { ChannelTyping } from './ChannelTyping';
@@ -88,7 +79,6 @@ function useChannelSeen(channelId: string) {
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 	const statusFetchChannel = useSelector(selectFetchChannelStatus);
-	const resetBadgeCount = !useSelector(selectAnyUnreadChannels);
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 	const previousChannels = useSelector(selectPreviousChannels);
 	useEffect(() => {
@@ -104,16 +94,23 @@ function useChannelSeen(channelId: string) {
 			currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
 				? ChannelStreamMode.STREAM_MODE_CHANNEL
 				: ChannelStreamMode.STREAM_MODE_THREAD;
-		markAsReadSeen(lastMessage, mode);
+		markAsReadSeen(lastMessage, mode, numberNotification);
 	}, [lastMessage, channelId, isUnreadChannel]);
 	useEffect(() => {
-		if (previousChannels.at(1)) {
+		if (previousChannels.at(1) && lastMessage) {
 			const timestamp = Date.now() / 1000;
 
 			dispatch(
 				listChannelRenderAction.removeBadgeFromChannel({
 					clanId: currentChannel.clan_id as string,
 					channelId: currentChannel.channel_id as string
+				})
+			);
+			dispatch(
+				listChannelsByUserActions.updateChannelBadgeCount({
+					channelId: currentChannel.id,
+					count: 0,
+					isReset: true
 				})
 			);
 
@@ -142,6 +139,7 @@ function useChannelSeen(channelId: string) {
 		if (isTabVisible) {
 			dispatch(listChannelRenderAction.removeBadgeFromChannel({ clanId: currentChannel.clan_id as string, channelId: currentChannel.id }));
 			dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: numberNotification * -1 }));
+			dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId: currentChannel.id, count: numberNotification * -1 }));
 		}
 	}, [statusFetchChannel, isFocusDesktop, isTabVisible]);
 
@@ -174,14 +172,19 @@ type ChannelMainContentTextProps = {
 
 const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainContentTextProps) => {
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
-
+	const store = getStore();
+	const dispatch = useDispatch();
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const mode =
-		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_APP
 			? ChannelStreamMode.STREAM_MODE_CHANNEL
 			: ChannelStreamMode.STREAM_MODE_THREAD;
 
 	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState(true);
+	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
+
 	const currentClan = useSelector(selectCurrentClan);
 	const missionDone = useSelector(selectMissionDone);
 	const missionSum = useSelector(selectMissionSum);
@@ -228,10 +231,38 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		);
 	}
 
+	const handleLaunchApp = () => {
+		if (isAppChannel) {
+			const appChannel = selectAppChannelById(store.getState(), channelId);
+			dispatch(
+				channelsActions.setAppChannelsListShowOnPopUp({
+					clanId: appChannel?.clan_id as string,
+					channelId: appChannel?.channel_id as string,
+					appChannel: appChannel as ApiChannelAppResponse
+				})
+			);
+		}
+	};
+
 	return (
 		<div className={`flex-shrink flex flex-col dark:bg-bgPrimary bg-bgLightPrimary h-auto relative ${isShowMemberList ? 'w-full' : 'w-full'}`}>
 			{showPreviewMode && <OnboardingGuide currentMission={currentMission} missionSum={missionSum} missionDone={missionDone} />}
 			{currentChannel && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />}
+			{isAppChannel && (
+				<div className="flex gap-2 px-3 pt-2 dark:text-channelTextLabel text-colorTextLightMode">
+					<div
+						onClick={handleLaunchApp}
+						className="w-[calc(50%_-_4px)] flex gap-1 items-center justify-center dark:bg-bgSecondary bg-bgLightSecondary dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton py-2 px-2 rounded-md cursor-pointer font-medium dark:hover:text-white hover:text-black"
+					>
+						<Icons.Joystick className="w-6" />
+						<div>Launch App</div>
+					</div>
+					<div className="w-[calc(50%_-_4px)] flex gap-1 items-center justify-center dark:bg-bgSecondary bg-bgLightSecondary dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton py-2 px-2 rounded-md cursor-pointer font-medium dark:hover:text-white hover:text-black">
+						<Icons.AppHelpIcon className="w-6" />
+						<div>Help</div>
+					</div>
+				</div>
+			)}
 			{currentChannel && (
 				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
 			)}
@@ -254,13 +285,8 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const [isShowAgeRestricted, setIsShowAgeRestricted] = useState(false);
-	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, channelId));
-	const miniAppRef = useRef<HTMLIFrameElement>(null);
+
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
-	const currentUser = useAuth();
-	const allRolesInClan = useSelector(selectAllRolesClan);
-	const sendTokenEvent = useSelector(selectSendTokenEvent);
-	const infoSendToken = useSelector(selectInfoSendToken);
 	const { userProfile } = useAuth();
 	const currentChannelAppClanId = useSelector(selectChannelAppClanId);
 	const currentChannelAppId = useSelector(selectChannelAppChannelId);
@@ -275,13 +301,10 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 		},
 		[currentChannel?.id, dispatch]
 	);
-	const appChannel = useSelector(selectAppChannelById(channelId));
-	const appearanceTheme = useSelector(selectTheme);
-	const channelAppUserData = useSelector(selectJoinChannelAppData);
 
-	const miniAppDataHash = useMemo(() => {
-		return `userChannels=${JSON.stringify(userChannels)}`;
-	}, [userChannels]);
+	const appChannel = useAppSelector((state) => selectAppChannelById(state, channelId as string));
+
+	const appearanceTheme = useSelector(selectTheme);
 
 	const [openUploadFileModal, closeUploadFileModal] = useModal(() => {
 		return <FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />;
@@ -335,117 +358,6 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 		}
 	}, [appChannel]);
 
-	const getUserHashInfo = useCallback(
-		async (appId: string) => {
-			try {
-				const response = await dispatch(channelAppActions.generateAppUserHash({ appId: appId })).unwrap();
-
-				return response;
-			} catch (error) {
-				console.error('Error:', error);
-				return null;
-			}
-		},
-		[dispatch, appChannel?.url]
-	);
-
-	useEffect(() => {
-		if (appChannel?.url) {
-			const compareHost = (url1: string, url2: string) => {
-				try {
-					const parsedURL1 = new URL(url1);
-					const parsedURL2 = new URL(url2);
-					return parsedURL1.hostname === parsedURL2.hostname;
-				} catch (error) {
-					return false;
-				}
-			};
-
-			const handleMessage = async (event: MessageEvent) => {
-				if (appChannel?.url && compareHost(event.origin, appChannel?.url ?? '')) {
-					const eventData = safeJSONParse(event.data ?? '{}') || {};
-					// eslint-disable-next-line no-console
-					console.log('[MEZON] < ', eventData);
-
-					const { eventType } = eventData;
-
-					if (!eventType) return;
-
-					if (eventType === 'PING') {
-						miniAppRef.current?.contentWindow?.postMessage(
-							JSON.stringify({ eventType: 'PONG', eventData: { message: 'PONG' } }),
-							appChannel.url ?? ''
-						);
-						miniAppRef.current?.contentWindow?.postMessage(
-							JSON.stringify({ eventType: 'CURRENT_USER_INFO', eventData: currentUser?.userProfile }),
-							appChannel.url ?? ''
-						);
-					} else if (eventType === 'SEND_TOKEN') {
-						const { amount, note, receiver_id, extra_attribute } = (eventData.eventData || {}) as any;
-						const tokenEvent: ApiTokenSentEvent = {
-							sender_id: currentUser.userId as string,
-							sender_name: currentUser?.userProfile?.user?.username as string,
-							receiver_id,
-							amount,
-							note,
-							extra_attribute
-						};
-						dispatch(giveCoffeeActions.setInfoSendToken(tokenEvent));
-						dispatch(giveCoffeeActions.setShowModalSendToken(true));
-					} else if (eventType === 'GET_CLAN_ROLES') {
-						miniAppRef.current?.contentWindow?.postMessage(
-							JSON.stringify({ eventType: 'CLAN_ROLES_RESPONSE', eventData: allRolesInClan }),
-							appChannel.url ?? ''
-						);
-					} else if (eventType === 'SEND_BOT_ID') {
-						const { appId } = (eventData.eventData || {}) as any;
-						const hashData = await getUserHashInfo(appId);
-						miniAppRef.current?.contentWindow?.postMessage(
-							JSON.stringify({ eventType: 'USER_HASH_INFO', eventData: { message: hashData } }),
-							appChannel.url ?? ''
-						);
-					} else if (eventType === 'GET_CLAN_USERS') {
-						miniAppRef.current?.contentWindow?.postMessage(
-							JSON.stringify({ eventType: 'CLAN_USERS_RESPONSE', eventData: userChannels }),
-							appChannel.url ?? ''
-						);
-					} else if (eventType === 'JOIN_ROOM') {
-						const { roomId } = (eventData.eventData || {}) as any;
-						dispatch(channelAppActions.setRoomId(roomId));
-					} else if (eventType === 'LEAVE_ROOM') {
-						dispatch(channelAppActions.setRoomId(null));
-					} else if (eventType === 'CREATE_VOICE_ROOM') {
-						// eslint-disable-next-line no-console
-						const { roomId } = (eventData.eventData || {}) as any;
-						dispatch(channelAppActions.createChannelAppMeet({ channelId, roomName: roomId }));
-					}
-				}
-			};
-			window.addEventListener('message', handleMessage);
-			return () => window.removeEventListener('message', handleMessage);
-		}
-	}, [appChannel?.url, channelAppUserData]);
-
-	const handleTokenResponse = () => {
-		if (sendTokenEvent?.status === TOKEN_SUCCESS_STATUS) {
-			miniAppRef.current?.contentWindow?.postMessage(
-				JSON.stringify({ eventType: 'SEND_TOKEN_RESPONSE_SUCCESS', eventData: infoSendToken?.sender_id }),
-				appChannel.url ?? ''
-			);
-		} else if (sendTokenEvent?.status === TOKEN_FAILED_STATUS) {
-			miniAppRef.current?.contentWindow?.postMessage(
-				JSON.stringify({ eventType: 'SEND_TOKEN_RESPONSE_FAILED', eventData: infoSendToken?.sender_id }),
-				appChannel.url ?? ''
-			);
-		}
-	};
-
-	useEffect(() => {
-		handleTokenResponse();
-		dispatch(giveCoffeeActions.setSendTokenEvent(null));
-		dispatch(giveCoffeeActions.setInfoSendToken(null));
-	}, [sendTokenEvent]);
-
 	useEffect(() => {
 		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '[]');
 		if (!savedChannelIds.includes(currentChannel.channel_id) && currentChannel.age_restricted === 1) {
@@ -461,65 +373,59 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	return (
 		<div className={`w-full ${isChannelMezonVoice ? 'hidden' : ''}`}>
-			{isChannelApp ? (
-				<ChannelApps appChannel={appChannel} miniAppRef={miniAppRef} miniAppDataHash={miniAppDataHash} />
-			) : (
-				<>
-					{isOverUploading && (
-						<TooManyUpload togglePopup={() => setOverUploadingState(false, UploadLimitReason.COUNT)} limitReason={overLimitReason} />
-					)}
-					<div
-						className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] z-10"
-						id="mainChat"
-						// eslint-disable-next-line @typescript-eslint/no-empty-function
-						onDragEnter={canSendMessage ? handleDragEnter : () => {}}
-					>
-						<div
-							className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'}`}`}
-						>
-							{!isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && (
-								<div
-									className={`flex flex-col flex-1 min-w-60 pb-[10px] ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
-								>
-									<div
-										className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}
-										ref={messagesContainerRef}
-									>
-										<ChannelMedia currentChannel={currentChannel} />
-									</div>
-									<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
-								</div>
-							)}
-							{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
-								<div
-									className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
-								>
-									<Canvas />
-								</div>
-							)}
-
-							{!isShowCanvas && isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
-								<div
-									className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
-								>
-									<AgeRestricted closeAgeRestricted={closeAgeRestricted} />
-								</div>
-							)}
-							{isShowMemberList && !isChannelMezonVoice && !isChannelStream && (
-								<div
-									onContextMenu={(event) => event.preventDefault()}
-									className={` dark:bg-bgSecondary bg-bgLightSecondary text-[#84ADFF] relative overflow-y-scroll hide-scrollbar ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'hidden' : 'flex'} ${closeMenu && !statusMenu && isShowMemberList ? 'w-full' : 'w-widthMemberList'}`}
-									id="memberList"
-								>
-									<MemberList />
-								</div>
-							)}
-
-							{isSearchMessage && !isChannelMezonVoice && !isChannelStream && <SearchMessageChannel />}
-						</div>
-					</div>
-				</>
+			{isOverUploading && (
+				<TooManyUpload togglePopup={() => setOverUploadingState(false, UploadLimitReason.COUNT)} limitReason={overLimitReason} />
 			)}
+			<div
+				className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] z-10"
+				id="mainChat"
+				// eslint-disable-next-line @typescript-eslint/no-empty-function
+				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
+			>
+				<div
+					className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'}`}`}
+				>
+					{!isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && (
+						<div
+							className={`flex flex-col flex-1 min-w-60 pb-[10px] ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+						>
+							<div
+								className={`relative dark:bg-bgPrimary max-w-widthMessageViewChat bg-bgLightPrimary ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatMobile' : 'h-heightMessageViewChatMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChat' : 'h-heightMessageViewChat'}`}`}
+								ref={messagesContainerRef}
+							>
+								<ChannelMedia currentChannel={currentChannel} />
+							</div>
+							<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+						</div>
+					)}
+					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
+						<div
+							className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
+						>
+							<Canvas />
+						</div>
+					)}
+
+					{!isShowCanvas && isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
+						<div
+							className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
+						>
+							<AgeRestricted closeAgeRestricted={closeAgeRestricted} />
+						</div>
+					)}
+					{isShowMemberList && !isChannelMezonVoice && !isChannelStream && (
+						<div
+							onContextMenu={(event) => event.preventDefault()}
+							className={` dark:bg-bgSecondary bg-bgLightSecondary text-[#84ADFF] relative overflow-y-scroll hide-scrollbar ${currentChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? 'hidden' : 'flex'} ${closeMenu && !statusMenu && isShowMemberList ? 'w-full' : 'w-widthMemberList'}`}
+							id="memberList"
+						>
+							<MemberList />
+						</div>
+					)}
+
+					{isSearchMessage && !isChannelMezonVoice && !isChannelStream && <SearchMessageChannel />}
+				</div>
+			</div>
 		</div>
 	);
 };
@@ -622,6 +528,7 @@ const OnboardingGuide = ({
 		}
 	}, [missionDone]);
 	return (
+		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
 			{missionDone < missionSum && currentMission ? (
 				<div

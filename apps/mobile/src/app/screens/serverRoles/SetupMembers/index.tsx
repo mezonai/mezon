@@ -121,7 +121,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 			[],
 			[]
 		);
-		if (response) {
+		if (response === true) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
 			Toast.show({
 				type: 'success',

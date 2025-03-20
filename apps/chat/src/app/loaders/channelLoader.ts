@@ -23,13 +23,8 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 };
 
 export const shouldRevalidateChannel: ShouldRevalidateFunction = (ctx) => {
-	const { currentParams, nextParams, currentUrl, nextUrl } = ctx;
-
-	const currentMessageId = new URL(currentUrl).searchParams.get('messageId');
-	const nextMessageId = new URL(nextUrl).searchParams.get('messageId');
-
+	const { currentParams, nextParams } = ctx;
 	const { channelId: currentChannelId } = currentParams;
 	const { channelId: nextChannelId } = nextParams;
-
-	return currentChannelId !== nextChannelId || currentMessageId !== nextMessageId;
+	return currentChannelId !== nextChannelId;
 };

@@ -94,6 +94,7 @@ const PanelMember = ({
 	const [nameChildren, setNameChildren] = useState('');
 	const [mutedUntil, setmutedUntil] = useState('');
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
+	const isCreator = userProfile?.user?.id === currentChannel?.creator_id;
 
 	useEffect(() => {
 		const heightPanel = panelRef.current?.clientHeight;
@@ -497,6 +498,15 @@ const PanelMember = ({
 									danger
 								/>
 							)}
+						</GroupPanelMember>
+					)}
+					{!isSelf && isPrivateThread && isCreator && !(hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner)) && (
+						<GroupPanelMember>
+							<ItemPanelMember
+								onClick={() => RemoveMemberFromPrivateThread(member?.user?.id as string)}
+								children={`Remove ${member?.user?.username} from this thread`}
+								danger
+							/>
 						</GroupPanelMember>
 					)}
 					{isSelf && !isMemberDMGroup && (

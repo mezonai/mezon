@@ -27,20 +27,25 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 	const { t } = useTranslation('clanRoles');
 	const { updateRole } = useRoles();
 
+	const isDisable = useMemo(() => {
+		return disabled || !isSelectMode;
+	}, [disabled, isSelectMode]);
+
 	const memberName = useMemo(() => {
 		return member?.clan_nick || member?.user?.display_name;
 	}, [member?.user?.display_name, member?.clan_nick]);
 
 	const onPressMemberItem = useCallback(() => {
+		if (isDisable) return;
 		if (isSelectMode) {
 			onSelectChange && onSelectChange(!isSelected, member?.id);
 		}
-	}, [isSelectMode, isSelected, member?.id, onSelectChange]);
+	}, [isDisable, isSelectMode, isSelected, member?.id, onSelectChange]);
 
 	const onDeleteMember = useCallback(async () => {
 		const response = await updateRole(role?.clan_id, role?.id, role?.title, role?.color || '', [], [], [member?.id], []);
 
-		if (response) {
+		if (response === true) {
 			Toast.show({
 				type: 'success',
 				props: {
@@ -60,7 +65,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 	}, [role, member?.id, updateRole, memberName, t]);
 
 	return (
-		<TouchableOpacity disabled={disabled || !isSelectMode} onPress={onPressMemberItem}>
+		<TouchableOpacity onPress={onPressMemberItem}>
 			<View
 				style={{
 					flexDirection: 'row',

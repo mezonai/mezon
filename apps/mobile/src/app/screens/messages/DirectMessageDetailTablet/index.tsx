@@ -7,14 +7,14 @@ import {
 	clansActions,
 	directActions,
 	directMetaActions,
+	getStore,
 	getStoreAsync,
 	messagesActions,
 	selectCurrentChannel,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
 	selectMemberClanByUserId2,
-	useAppDispatch,
-	useAppSelector
+	useAppDispatch
 } from '@mezon/store-mobile';
 import { TIME_OFFSET, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -32,35 +32,27 @@ import { style } from './styles';
 
 function useChannelSeen(channelId: string, currentDmGroup: any) {
 	const dispatch = useAppDispatch();
-	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const mounted = useRef('');
+	const store = getStore();
 
 	const { markAsReadSeen } = useSeenMessagePool();
-
 	const refCountWasCalled = useRef<number>(0);
 	useEffect(() => {
-		if (currentDmGroup?.type) {
-			const mode =
-				currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-			if (lastMessage && refCountWasCalled.current <= 1) {
-				markAsReadSeen(lastMessage, mode);
-				const timestamp = Date.now() / 1000;
-				dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
-				dispatch(directMetaActions.updateLastSeenTime(lastMessage));
-				dispatch(channelsActions.updateChannelBadgeCount({ clanId: '0', channelId: channelId || '', count: 0, isReset: true }));
-				refCountWasCalled.current += 1;
+		return () => {
+			if (currentDmGroup?.type) {
+				const mode =
+					currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+				const lastMessage = selectLastMessageByChannelId(store.getState(), channelId);
+				if (lastMessage && refCountWasCalled.current <= 1) {
+					markAsReadSeen(lastMessage, mode, 0);
+					const timestamp = Date.now() / 1000;
+					dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
+					dispatch(directMetaActions.updateLastSeenTime(lastMessage));
+					dispatch(channelsActions.updateChannelBadgeCount({ clanId: '0', channelId: channelId || '', count: 0, isReset: true }));
+					refCountWasCalled.current += 1;
+				}
 			}
-		}
-	}, [lastMessage, channelId, currentDmGroup?.type, markAsReadSeen, dispatch]);
-
-	useEffect(() => {
-		if (mounted.current === channelId) {
-			return;
-		}
-		if (lastMessage) {
-			mounted.current = channelId;
-		}
-	}, [dispatch, channelId, lastMessage]);
+		};
+	}, [channelId, currentDmGroup?.type, markAsReadSeen, dispatch, store]);
 }
 
 export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId?: string }) => {

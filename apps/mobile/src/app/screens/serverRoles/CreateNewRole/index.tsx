@@ -34,7 +34,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 	};
 
 	const createNewRole = async () => {
-		const response = (await createRole(currentClanId, currentClanId, roleName, [], [])) as any;
+		const response = (await createRole(currentClanId, roleName, '', [], [])) as any;
 		if (response?.id) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.SETUP_PERMISSIONS);
 			Toast.show({

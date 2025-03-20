@@ -12,7 +12,7 @@ import { authLoader, shouldRevalidateAuth } from '../loaders/authLoader';
 import { channelLoader, shouldRevalidateChannel } from '../loaders/channelLoader';
 import { clanLoader, shouldRevalidateServer } from '../loaders/clanLoader';
 import { directLoader } from '../loaders/directLoader';
-import { directMessageLoader } from '../loaders/directMessageLoader';
+import { directMessageLoader, shouldRevalidateDirect } from '../loaders/directMessageLoader';
 import { friendsLoader } from '../loaders/friendsLoader';
 import { mainLoader, shouldRevalidateMain } from '../loaders/mainLoader';
 
@@ -43,6 +43,7 @@ import MezonPage from '../pages/homepage/mezonpage';
 import InvitePage from '../pages/invite';
 import Login from '../pages/login';
 import LoginCallback from '../pages/loginCallback';
+import LogoutCallback from '../pages/logoutCallback';
 import Main from '../pages/main';
 import MemberMain from '../pages/member';
 import ChannelSettingMain from '../pages/setting/channelSetting';
@@ -92,6 +93,10 @@ export const Routes = memo(() => {
 							{
 								path: 'login/callback',
 								element: <LoginCallback />
+							},
+							{
+								path: 'logout/callback',
+								element: <LogoutCallback />
 							},
 							isElectron()
 								? {
@@ -243,7 +248,7 @@ export const Routes = memo(() => {
 																	{
 																		path: ':directId/:type',
 																		loader: loaderWithStore(directMessageLoader),
-																		shouldRevalidate: shouldRevalidateChannel,
+																		shouldRevalidate: shouldRevalidateDirect,
 																		element: <DirectMessage />
 																	}
 																]

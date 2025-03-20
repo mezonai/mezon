@@ -1,11 +1,12 @@
 import { useRoles } from '@mezon/core';
-import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, CloseIcon } from '@mezon/mobile-components';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -23,8 +24,27 @@ function RoleCoLourComponent({ roleId }: { roleId: string }) {
 
 	const handleSaveRoleColor = useCallback(async (colorSelected: string) => {
 		if (colorSelected && activeRole) {
-			await updateRole(activeRole?.clan_id || '', activeRole?.id, activeRole?.title ?? '', colorSelected ?? '', [], [], [], []);
-			setRoleColorSelected(colorSelected);
+			const response = await updateRole(
+				activeRole?.clan_id || '',
+				activeRole?.id,
+				activeRole?.title ?? '',
+				colorSelected ?? '',
+				[],
+				[],
+				[],
+				[]
+			);
+			if (response === true) {
+				setRoleColorSelected(colorSelected);
+			} else {
+				Toast.show({
+					type: 'success',
+					props: {
+						text2: t('failed'),
+						leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					}
+				});
+			}
 		}
 	}, []);
 

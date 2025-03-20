@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message';
 import NetInfoComp from '../components/NetworkInfo';
 import { WebRTCStreamProvider } from '../components/StreamContext/StreamContext';
 import { toastConfig } from '../configs/toastConfig';
+import { DeviceProvider } from '../contexts/device';
 import RootListener from './RootListener';
 import RootStack from './RootStack';
 
@@ -94,7 +95,9 @@ const RootNavigation = (props) => {
 				<CustomStatusBar />
 				<ChatContextProvider>
 					<WebRTCStreamProvider>
-						<NavigationMain {...props} />
+						<DeviceProvider>
+							<NavigationMain {...props} />
+						</DeviceProvider>
 					</WebRTCStreamProvider>
 				</ChatContextProvider>
 				<Toast config={toastConfig} />

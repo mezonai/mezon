@@ -4,6 +4,7 @@ import Social
 import MobileCoreServices
 import Photos
 
+@available(iOSApplicationExtension, unavailable)
 class ShareViewController: SLComposeServiceViewController {
  // TODO: IMPORTANT: This should be your host app bundle identifier
  let hostAppBundleIdentifier = "mezon.mobile"
@@ -102,10 +103,10 @@ class ShareViewController: SLComposeServiceViewController {
 
 
        attachment.loadItem(forTypeIdentifier: imageContentType, options: nil) { [weak self] data, error in
-         
+
          if error == nil, let this = self {
 
-     
+
            var url: URL? = nil
 
 
@@ -122,7 +123,7 @@ class ShareViewController: SLComposeServiceViewController {
            if(copied) {
              this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .image))
            }
-           
+
            // If this is the last item, save imagesData in userDefaults and redirect to host app
            if index == (content.attachments?.count)! - 1 {
              let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
@@ -130,16 +131,16 @@ class ShareViewController: SLComposeServiceViewController {
              userDefaults?.synchronize()
              this.redirectToHostApp(type: .media)
            }
-           
+
          } else {
            self?.dismissWithError()
          }
        }
      }
-     
+
 
       private func documentDirectoryPath () -> URL?  {
-        
+
         let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return path.first
       }
@@ -232,19 +233,31 @@ class ShareViewController: SLComposeServiceViewController {
    extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
  }
 
- private func redirectToHostApp(type: RedirectType) {
-   let url = URL(string: "\(shareProtocol)://dataUrl=\(sharedKey)#\(type)")
-   var responder = self as UIResponder?
-   let selectorOpenURL = sel_registerName("openURL:")
-
-   while (responder != nil) {
-     if (responder?.responds(to: selectorOpenURL))! {
-       let _ = responder?.perform(selectorOpenURL, with: url)
-     }
-     responder = responder!.next
+private func redirectToHostApp(type: RedirectType) {
+   guard let url = URL(string: "\(shareProtocol)://dataUrl=\(sharedKey)#\(type)") else {
+      dismissWithError()
+      return //be safe
    }
-   extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
- }
+
+   UIApplication.shared.open(url, options: [:], completionHandler: completeRequest)
+}
+//  private func redirectToHostApp(type: RedirectType) {
+//    let url = URL(string: "\(shareProtocol)://dataUrl=\(sharedKey)#\(type)")
+//    var responder = self as UIResponder?
+//    let selectorOpenURL = sel_registerName("openURL:")
+//
+//    while (responder != nil) {
+//      if (responder?.responds(to: selectorOpenURL))! {
+//        let _ = responder?.perform(selectorOpenURL, with: url)
+//      }
+//      responder = responder!.next
+//    }
+//    extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+//  }
+
+func completeRequest(success: Bool) {
+    extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+}
 
  enum RedirectType {
    case media

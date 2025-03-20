@@ -101,7 +101,8 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 				{isPrivate === undefined && isChannelVoice && <Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />}
 				{isPrivate === undefined && isChannelStream && <Icons.Stream defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />}
 				{!isAgeRestrictedChannel && isPrivate !== 1 && isChannelText && <Icons.Hashtag defaultSize="w-6 h-6" />}
-				{isAppChannel && <Icons.AppChannelIcon className={'w-6 h-6'} fill={theme} />}
+				{!isPrivate && isAppChannel && <Icons.AppChannelIcon className={'w-6 h-6'} fill={theme} />}
+				{isPrivate && isAppChannel && <Icons.PrivateAppChannelIcon className={'w-6 h-6'} fill={theme} />}
 			</div>
 
 			<ChannelLabelContent

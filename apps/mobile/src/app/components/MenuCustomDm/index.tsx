@@ -13,7 +13,7 @@ import {
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
 import MezonConfirm from '../../componentUI/MezonConfirm';
@@ -30,7 +30,6 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
-	const [isVisibleLeaveGroupModal, setIsVisibleLeaveGroupModal] = useState<boolean>(false);
 	const lastOne = useMemo(() => {
 		return !currentChannel?.user_id?.length;
 	}, [currentChannel?.user_id]);
@@ -56,7 +55,23 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_22} height={size.s_22} color={themeValue.text} />,
 			textStyle: styles.label,
 			onPress: () => {
-				setIsVisibleLeaveGroupModal(true);
+				const data = {
+					children: (
+						<MezonConfirm
+							onConfirm={handleLeaveGroupConfirm}
+							title={t('confirm.title', {
+								groupName: currentChannel?.channel_label,
+								ns: 'dmMessage'
+							})}
+							content={t('confirm.content', {
+								groupName: currentChannel?.channel_label,
+								ns: 'dmMessage'
+							})}
+							confirmText={t('confirm.confirmText', { ns: 'dmMessage' })}
+						/>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			}
 		}
 	];
@@ -91,28 +106,13 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			return;
 		}
 		await dispatch(fetchDirectMessage({ noCache: true }));
-		setIsVisibleLeaveGroupModal(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 	};
 
 	return (
 		<View style={{ paddingVertical: size.s_10, paddingHorizontal: size.s_20 }}>
 			{[ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel.type) ? <MezonMenu menu={generalMenu} /> : <MezonMenu menu={closeDm} />}
-
-			<MezonConfirm
-				visible={isVisibleLeaveGroupModal}
-				onConfirm={handleLeaveGroupConfirm}
-				onVisibleChange={setIsVisibleLeaveGroupModal}
-				title={t('confirm.title', {
-					groupName: currentChannel?.channel_label,
-					ns: 'dmMessage'
-				})}
-				content={t('confirm.content', {
-					groupName: currentChannel?.channel_label,
-					ns: 'dmMessage'
-				})}
-				confirmText={t('confirm.confirmText', { ns: 'dmMessage' })}
-			/>
 		</View>
 	);
 };

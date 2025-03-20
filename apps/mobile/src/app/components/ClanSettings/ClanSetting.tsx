@@ -160,12 +160,12 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
 		},
-		{
-			title: t('menu.userManagement.bans'),
-			onPress: () => reserve(),
-			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.hammerIcon} color={themeValue.text} />
-		}
+		// {
+		// 	title: t('menu.userManagement.bans'),
+		// 	onPress: () => reserve(),
+		// 	expandable: true,
+		// 	icon: <Icons.HammerIcon color={themeValue.text} />
+		// }
 	];
 
 	const menu: IMezonMenuSectionProps[] = [

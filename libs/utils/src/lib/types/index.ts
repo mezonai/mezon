@@ -58,6 +58,8 @@ import {
 export * from './base';
 export * from './config';
 export * from './htmlCanvas';
+export * from './media';
+export * from './message';
 export * from './messageLine';
 export * from './mimeTypes';
 export * from './permissions';
@@ -589,6 +591,12 @@ export type IEmoji = {
 	logo?: string;
 	clan_name?: string;
 	clan_id?: string;
+};
+
+export type IEmojiRecent = {
+	emoji_id?: string;
+	emoji_recents_id?: string;
+	update_time?: string;
 };
 
 export type IChannelUser = ChannelDescription & {
@@ -1452,4 +1460,10 @@ export type ImageSourceObject = {
 	filetype: string;
 	size: number;
 	url: string;
+};
+
+export type HistoryItem = {
+	valueTextInput: string;
+	content: string;
+	mentionRaw: any[];
 };

@@ -116,10 +116,18 @@ export const listChannelsByUserSlice = createSlice({
 				if (entity) {
 					const newCountMessUnread = isReset ? 0 : (entity.count_mess_unread ?? 0) + count;
 					if (entity.count_mess_unread !== newCountMessUnread) {
+						const last_sent_message = state.entities[state.ids[state.ids.length - 1]].last_sent_message;
 						listChannelsByUserAdapter.updateOne(state, {
 							id: channelId,
 							changes: {
-								count_mess_unread: newCountMessUnread
+								count_mess_unread: newCountMessUnread,
+								last_seen_message:
+									newCountMessUnread === 0
+										? {
+												id: last_sent_message?.id,
+												timestamp_seconds: Date.now()
+											}
+										: entity.last_seen_message
 							}
 						});
 					}
@@ -128,6 +136,22 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		addOneChannel: (state, action: PayloadAction<ChannelUsersEntity>) => {
 			listChannelsByUserAdapter.addOne(state, action.payload);
+		},
+		markAsReadChannel: (state, action: PayloadAction<string[]>) => {
+			const updateList = action.payload.map((id) => {
+				const last_sent_message = state.entities[id].last_sent_message;
+				return {
+					id: id,
+					changes: {
+						count_mess_unread: 0,
+						last_seen_message: {
+							id: last_sent_message?.id,
+							timestamp_seconds: Date.now()
+						}
+					}
+				};
+			});
+			listChannelsByUserAdapter.updateMany(state, updateList);
 		}
 	},
 	extraReducers: (builder) => {

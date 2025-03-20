@@ -132,8 +132,8 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	};
 
 	return (
-		<div className="max-w-[520px] w-fit dark:bg-bgSecondary bg-bgLightSecondary rounded-lg overflow-hidden text-left relative mt-2 text-textLightTheme dark:text-textDarkTheme shadow-lg">
-			<div className="w-full border dark:border-borderDivider border-contentTertiary rounded-lg">
+		<div className="w-full rounded-lg overflow-hidden text-left relative mt-2 text-textLightTheme dark:text-textDarkTheme">
+			<div className="w-fit max-w-[520px] border dark:bg-bgSecondary bg-bgLightSecondary dark:border-borderDivider border-contentTertiary rounded-lg shadow-lg">
 				<div className="w-full border-b dark:border-borderDivider border-contentTertiary px-5 py-4 flex flex-col gap-4">
 					<div className={`flex items-center justify-between bg-gradient-to-r rounded-t-lg`}>
 						<span className={`${colorClass} font-semibold`}>{text}</span>

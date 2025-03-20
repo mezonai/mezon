@@ -1,6 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { TransitionSpecs, createStackNavigator } from '@react-navigation/stack';
 import { Platform } from 'react-native';
+import MuteCategoryDetailModal from '../../../components/MuteCategoryDetailModal';
 import MuteThreadDetailModal from '../../../components/MuteThreadDetailModal';
 import CreateThreadModal from '../../../components/ThreadDetail';
 import CreateThreadForm from '../../../components/ThreadDetail/CreateThreadForm';
@@ -49,6 +50,7 @@ export const MenuThreadDetailStacks = ({}: any) => {
 			<Stack.Screen name={APP_SCREEN.MENU_THREAD.CREATE_THREAD} component={CreateThreadModal} />
 			<Stack.Screen name={APP_SCREEN.MENU_THREAD.CREATE_THREAD_FORM_MODAL} component={CreateThreadForm} />
 			<Stack.Screen name={APP_SCREEN.MENU_THREAD.MUTE_THREAD_DETAIL_CHANNEL} component={MuteThreadDetailModal} />
+			<Stack.Screen name={APP_SCREEN.MENU_THREAD.MUTE_CATEGORY_DETAIL} component={MuteCategoryDetailModal} />
 		</Stack.Navigator>
 	);
 };

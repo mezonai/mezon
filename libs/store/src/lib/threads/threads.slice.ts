@@ -85,7 +85,7 @@ const fetchThreadsCached = memoizee(
 		promise: true,
 		maxAge: LIST_THREADS_CACHED_TIME,
 		normalizer: (args) => {
-			return args[1] + args[0].session.username;
+			return args[1] + args[0].session.username + args[3];
 		}
 	}
 );

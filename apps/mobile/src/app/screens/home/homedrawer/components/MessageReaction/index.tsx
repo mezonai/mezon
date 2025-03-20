@@ -1,4 +1,3 @@
-import { useIdleRender } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectComputedReactionsByMessageId } from '@mezon/store-mobile';
 import React from 'react';
@@ -28,8 +27,7 @@ export const MessageAction = React.memo((props: IMessageReactionProps) => {
 	const messageReactions = useSelector(selectComputedReactionsByMessageId(message.channel_id, message.id));
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const shouldRender = useIdleRender();
-	if (!shouldRender)
+	if (!!message?.reactions?.length && !messageReactions)
 		return (
 			<View style={[styles.reactionWrapper, styles.reactionSpace]}>
 				{!!message?.reactions?.length &&

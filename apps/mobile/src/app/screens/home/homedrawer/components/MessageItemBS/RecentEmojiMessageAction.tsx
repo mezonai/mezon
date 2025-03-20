@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 import { size, useTheme } from '@mezon/mobile-ui';
+import { selectAllEmojiRecent } from '@mezon/store-mobile';
 import { getSrcEmoji } from '@mezon/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import React, { useEffect, useState } from 'react';
+import { ChannelStreamMode } from 'mezon-js';
+import React, { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
-import { EMessageBSToShow } from '../../enums';
 import { emojiFakeData } from '../fakeData';
 import { style } from './styles';
 
@@ -25,29 +25,25 @@ export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAc
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { messageId, mode, handleReact, userId, type, setIsShowEmojiPicker } = props;
+	const selectRecentEmoji = useSelector(selectAllEmojiRecent);
 
-	const [recentEmoji, setRecentEmoji] = useState([]);
+	const emojiRecentList = useMemo(() => {
+		if (!selectRecentEmoji?.length) return [];
+		return selectRecentEmoji?.map((emoji) => ({ id: emoji?.id, shortname: emoji?.shortname }));
+	}, [selectRecentEmoji]);
 
-	useEffect(() => {
-		if (type === EMessageBSToShow?.MessageAction) {
-			AsyncStorage.getItem('recentEmojis')
-				.then((emojis) => safeJSONParse(emojis || '[]'))
-				.then((parsedEmojis) => {
-					const recentEmojis = parsedEmojis
-						?.reverse()
-						?.slice(0, 5)
-						?.map((item: { emoji: any; emojiId: any }) => ({
-							shortname: item.emoji,
-							id: item.emojiId
-						}));
+	const recentEmoji = useMemo(() => {
+		const uniqueEmojis = [
+			...emojiRecentList,
+			...(emojiFakeData.filter((emoji) => !emojiRecentList.some((recent) => recent?.id === emoji?.id)) || [])
+		]?.slice(0, 5);
+		return uniqueEmojis;
+	}, [emojiRecentList]);
 
-					const uniqueEmojis = [...recentEmojis, ...emojiFakeData]?.filter(
-						(emoji, index, self) => index === self?.findIndex((e) => e?.id === emoji?.id)
-					);
-					setRecentEmoji(uniqueEmojis?.slice(0, 5));
-				});
-		}
-	}, [type]);
+	const handleShowPicker = () => {
+		setIsShowEmojiPicker(true);
+	};
+
 	return (
 		<View style={styles.reactWrapper}>
 			{recentEmoji?.map((item, index) => {
@@ -62,15 +58,12 @@ export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAc
 								uri: getSrcEmoji(item.id)
 							}}
 							resizeMode={'contain'}
-							style={{
-								width: size.s_28,
-								height: size.s_28
-							}}
+							style={styles.reactionImage}
 						/>
 					</Pressable>
 				);
 			})}
-			<Pressable onPress={() => setIsShowEmojiPicker(true)} style={{ height: size.s_28, width: size.s_28 }}>
+			<Pressable onPress={handleShowPicker} style={styles.emojiButton}>
 				<MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_30} width={size.s_30} />
 			</Pressable>
 		</View>

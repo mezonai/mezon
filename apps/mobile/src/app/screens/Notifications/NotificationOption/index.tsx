@@ -75,10 +75,7 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 		[]
 	);
 
-	const menu = useMemo(
-		() => [{ items: notificationMenu }, { items: settingMenu }] satisfies IMezonMenuSectionProps[],
-		[notificationMenu, settingMenu]
-	);
+	const menu = useMemo(() => [{ items: notificationMenu }] satisfies IMezonMenuSectionProps[], [notificationMenu]);
 
 	return (
 		<View style={styles.wrapperOption}>

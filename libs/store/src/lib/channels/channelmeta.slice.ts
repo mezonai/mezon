@@ -45,12 +45,19 @@ export const channelMetaSlice = createSlice({
 		},
 		setChannelLastSeenTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number }>) => {
 			const channel = state?.entities[action.payload.channelId];
+			const { channelId, timestamp } = action.payload;
 			if (channel) {
 				channel.lastSeenTimestamp = action.payload.timestamp;
+				channelMetaAdapter.updateOne(state, {
+					id: channelId,
+					changes: {
+						lastSeenTimestamp: timestamp
+					}
+				});
 			}
 		},
 		setChannelsLastSeenTimestamp: (state, action: PayloadAction<string[]>) => {
-			const timestamp = Date.now();
+			const timestamp = Date.now() / 1000;
 			const updates = action.payload.map((channelId) => ({
 				id: channelId,
 				changes: {

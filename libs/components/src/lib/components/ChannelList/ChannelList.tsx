@@ -40,6 +40,7 @@ import { Events } from './ChannelListComponents';
 import ChannelListItem from './ChannelListItem';
 export type ChannelListProps = { className?: string };
 export type CategoriesState = Record<string, boolean>;
+const clanTopbarEle = 60;
 
 function ChannelList() {
 	const appearanceTheme = useSelector(selectTheme);
@@ -126,23 +127,22 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 
 	const items = virtualizer.getVirtualItems();
 
-	const [height, setHeight] = useState(0);
-	const clanTopbarEle = 60;
-
 	const calculateHeight = useCallback(() => {
+		//TODO: check get height after join clan
 		const clanFooterEle = document.getElementById('clan-footer');
 		const totalHeight = clanTopbarEle + (clanFooterEle?.clientHeight || 0) + 2;
 		const outsideHeight = totalHeight;
 		const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
-		setHeight(window.innerHeight - outsideHeight - titleBarHeight);
+		return window.innerHeight - outsideHeight - titleBarHeight;
 	}, []);
+	const [height, setHeight] = useState(calculateHeight());
 
 	useWindowSize(() => {
-		calculateHeight();
+		setHeight(calculateHeight());
 	});
 
 	useEffect(() => {
-		calculateHeight();
+		setHeight(calculateHeight());
 	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
 
 	const findScrollIndex = () => {

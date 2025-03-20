@@ -4,15 +4,14 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		dmMessageContainer: {
-			flex: 1,
-			flexDirection: 'row'
+			flex: 1
 		},
 		message: {
 			fontSize: size.small,
 			color: colors.text
 		},
 		emoji: {
-			height: size.s_14,
-			width: size.s_14
+			height: size.s_12,
+			width: size.s_12
 		}
 	});

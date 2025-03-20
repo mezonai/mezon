@@ -2,7 +2,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import { ETokenMessage, IExtendedMessage, getSrcEmoji } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { Text } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import ImageNative from '../../../components/ImageNative';
 import { style } from './styles';
 
 interface ElementToken {
@@ -75,7 +75,7 @@ export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleT
 
 			if (endIndex !== -1) {
 				const emojiUrl = formatEmojiInText.slice(startIndex, endIndex);
-				parts.push(<FastImage style={styles.emoji} source={{ uri: emojiUrl }} resizeMode="contain" />);
+				parts.push(<ImageNative style={styles.emoji} url={emojiUrl} resizeMode="contain" />);
 				startIndex = endIndex + EMOJI_KEY.length;
 				endIndex = formatEmojiInText.indexOf(EMOJI_KEY, startIndex);
 			}

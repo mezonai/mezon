@@ -5,7 +5,7 @@ import { AppRegistry } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import App from './src/app/navigation';
 import CustomIncomingCall from './src/app/screens/customIncomingCall';
-import { createLocalNotification, setupIncomingCall } from './src/app/utils/pushNotificationHelpers';
+import { setupIncomingCall } from './src/app/utils/pushNotificationHelpers';
 notifee.onBackgroundEvent(async () => {});
 
 // eslint-disable-next-line no-undef
@@ -20,7 +20,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 	if (offer) {
 		await setupIncomingCall(offer);
 	} else {
-		await createLocalNotification(remoteMessage.notification?.title, remoteMessage.notification?.body, remoteMessage.data);
+		// await createLocalNotification(remoteMessage.notification?.title, remoteMessage.notification?.body, remoteMessage.data);
 	}
 });
 AppRegistry.registerComponent('ComingCallApp', () => CustomIncomingCall);

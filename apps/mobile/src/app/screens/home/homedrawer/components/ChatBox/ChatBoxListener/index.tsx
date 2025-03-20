@@ -1,4 +1,3 @@
-import { useIdleRender } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { selectCurrentChannel, selectDmGroupCurrentId } from '@mezon/store';
 import { ChannelStreamMode } from 'mezon-js';
@@ -42,7 +41,5 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 });
 
 export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
-	const shouldRender = useIdleRender();
-	if (!shouldRender) return null;
 	return <ChatBoxListenerComponent mode={mode} />;
 });

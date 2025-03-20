@@ -53,11 +53,11 @@ const Onboarditem = ({ icon, title, tick, onClick }: { icon: ReactNode; title: s
 	};
 	return (
 		<div
-			className="w-[400px] pb-10 gap-4 h-[72px] items-center flex p-4 text-sm font-semibold bg-[#232428] hover:bg-[#393c41] rounded-lg"
+			className="w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold dark:bg-[#232428] bg-bgLightSecondary hover:bg-bgLightSearchHover dark:hover:bg-[#393c41] rounded-lg"
 			onClick={handleOnClickItem}
 		>
 			{icon}
-			<div className="flex-1">{title}</div>
+			<div className="flex-1 dark:text-white text-black">{title}</div>
 			{tick ? (
 				<div className="flex items-center justify-center rounded-full aspect-square h-8 bg-green-600">
 					<Icons.Tick fill="white" />

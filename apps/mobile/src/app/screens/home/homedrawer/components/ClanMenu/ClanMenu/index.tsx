@@ -3,9 +3,9 @@ import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
-import { EPermission } from '@mezon/utils';
+import { EPermission, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -33,8 +33,6 @@ export default function ClanMenu() {
 	const currentClan = useSelector(selectCurrentClan);
 	const { t } = useTranslation(['clanMenu']);
 	const { themeValue } = useTheme();
-	const [isVisibleDeleteModal, setIsVisibleDeleteModal] = useState<boolean>(false);
-	const [isLeaveClan, setIsLeaveClan] = useState<boolean>(false);
 	const styles = style(themeValue);
 
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
@@ -132,17 +130,26 @@ export default function ClanMenu() {
 		// 	title: t('menu.optionsMenu.reportServer'),
 		// },
 		{
-			onPress: () => {
-				setIsVisibleDeleteModal(true);
-				setIsLeaveClan(true);
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: <DeleteClanModal isLeaveClan={true} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			isShow: !isClanOwner,
 			title: t('menu.optionsMenu.leaveServer'),
 			textStyle: { color: 'red' }
 		},
 		{
-			onPress: () => {
-				setIsVisibleDeleteModal(true);
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: <DeleteClanModal isLeaveClan={false} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			isShow: isClanOwner,
 			title: t('menu.optionsMenu.deleteClan'),
@@ -183,9 +190,9 @@ export default function ClanMenu() {
 
 	function handleToggleEmptyCategories(value: boolean) {
 		if (value) {
-			dispatch(categoriesActions.setShowEmptyCategory());
+			dispatch(categoriesActions.setShowEmptyCategory(currentClan?.clan_id));
 		} else {
-			dispatch(categoriesActions.setHideEmptyCategory());
+			dispatch(categoriesActions.setHideEmptyCategory(currentClan?.clan_id));
 		}
 		setShowEmptyCategories(value);
 	}
@@ -230,13 +237,6 @@ export default function ClanMenu() {
 					<MezonMenu menu={menu} marginVertical={0} />
 				</View>
 			</View>
-			<DeleteClanModal
-				isVisibleModal={isVisibleDeleteModal}
-				visibleChange={(isVisible) => {
-					setIsVisibleDeleteModal(isVisible);
-				}}
-				isLeaveClan={isLeaveClan}
-			></DeleteClanModal>
 		</View>
 	);
 }

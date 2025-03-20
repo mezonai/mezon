@@ -40,7 +40,11 @@ const ModalRootListener = () => {
 		};
 	}, []);
 
-	return <Modal visible={visible}>{children && children}</Modal>;
+	return (
+		<Modal visible={visible} animationType={'fade'} transparent={true} onRequestClose={() => setVisible(false)}>
+			{children && children}
+		</Modal>
+	);
 };
 
 export default memo(ModalRootListener, () => true);

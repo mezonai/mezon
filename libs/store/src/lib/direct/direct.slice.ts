@@ -304,7 +304,7 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 		category_id: '0',
 		type: ChannelType.CHANNEL_TYPE_DM,
 		creator_id: message.sender_id,
-		channel_label: message.display_name,
+		channel_label: message.display_name || message.username,
 		channel_private: 1,
 		channel_avatar: [message.avatar as string],
 		user_id: [message.sender_id],

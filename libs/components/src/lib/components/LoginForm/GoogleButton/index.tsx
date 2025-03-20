@@ -1,6 +1,5 @@
 import { useAuth } from '@mezon/core';
 import { useGoogleLogin } from '@react-oauth/google';
-import isElectron from 'is-electron';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,18 +22,18 @@ const GoogleButtonLogin: React.FC<GoogleButtonLoginProps> = ({ mode }) => {
 		onError: (errorResponse) => console.error(errorResponse)
 	});
 
-	if (isElectron()) {
-		return (
-			<div className="w-full lg:px-0">
-				<button className="flex justify-center w-full h-fit p-3 rounded-[4px] bg-[#d1e0ff] relative" disabled>
-					<div className="flex items-center w-fit h-fit gap-x-1 p-0">
-						<img src={'assets/images/google-icon.png'} className="p-0 object-cover hidden" alt="Google Logo" />
-						<p className="w-fit h-fit text-base font-medium text-[#155eef] leading-[150%]">Continue with QR Login</p>
-					</div>
-				</button>
-			</div>
-		);
-	}
+	// if (isElectron()) {
+	// 	return (
+	// 		<div className="w-full lg:px-0">
+	// 			<button className="flex justify-center w-full h-fit p-3 rounded-[4px] bg-[#d1e0ff] relative" disabled>
+	// 				<div className="flex items-center w-fit h-fit gap-x-1 p-0">
+	// 					<img src={'assets/images/google-icon.png'} className="p-0 object-cover hidden" alt="Google Logo" />
+	// 					<p className="w-fit h-fit text-base font-medium text-[#155eef] leading-[150%]">Continue with QR Login</p>
+	// 				</div>
+	// 			</button>
+	// 		</div>
+	// 	);
+	// }
 	return (
 		<div className="w-full lg:px-0">
 			<button onClick={googleLogin} className="flex justify-center w-full h-fit p-3 rounded-[4px] bg-[#d1e0ff] relative">

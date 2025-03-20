@@ -167,15 +167,21 @@ const RenderImageHaveSize = React.memo(
 				key={index}
 				onPress={() => onPress(image)}
 				onLongPress={onLongPress}
-				style={styles.imageMessageRender}
+				style={[
+					styles.imageMessageRender,
+					{
+						width: photoSize?.width / (isTablet ? 1.8 : 1),
+						height: photoSize?.height / (isTablet ? 1.8 : 1)
+					}
+				]}
 			>
 				<ImageNative
 					url={imagePoxy}
 					resizeMode={isMultiple ? 'cover' : 'contain'}
 					style={[
 						{
-							width: photoSize?.width / (isTablet ? 1.8 : 1),
-							height: photoSize?.height / (isTablet ? 1.8 : 1),
+							width: '100%',
+							height: '100%',
 							opacity: isUploading ? 0.5 : 1,
 							marginVertical: !remainingImagesCount && !isMultiple ? size.s_6 : 0
 						}

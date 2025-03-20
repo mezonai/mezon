@@ -58,7 +58,7 @@ export function EmbedOptionRatio({ options, message_id, idRadio }: EmbedOptionRa
 		<>
 			{options &&
 				options.map((option, index) => (
-					<div className="flex justify-between" key={option.value + message_id}>
+					<div className="flex justify-between items-center gap-4" key={option.value + message_id}>
 						<div className="flex flex-col">
 							<EmbedTitle title={option.label} />
 							<EmbedDescription description={option.description || ''} />

@@ -574,15 +574,16 @@ type UpdateMessageArgs = {
 	channelId: string;
 	messageId: string;
 	mode: number;
+	badge_count: number;
 };
 
 export const updateLastSeenMessage = createAsyncThunk(
 	'messages/updateLastSeenMessage',
-	async ({ clanId, channelId, messageId, mode }: UpdateMessageArgs, thunkAPI) => {
+	async ({ clanId, channelId, messageId, mode, badge_count }: UpdateMessageArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
-			await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, now);
+			await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, now, badge_count);
 		} catch (e) {
 			captureSentryError(e, 'messages/updateLastSeenMessage');
 			return thunkAPI.rejectWithValue(e);

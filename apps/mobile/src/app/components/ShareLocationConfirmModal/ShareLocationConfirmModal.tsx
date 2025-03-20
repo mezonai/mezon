@@ -1,4 +1,3 @@
-import { useIdleRender } from '@mezon/core';
 import { referencesActions, selectGeolocation } from '@mezon/store-mobile';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -40,12 +39,6 @@ const BaseShareLocationConfirmModal = ({ mode, channelId }: { mode: ChannelStrea
 };
 
 const ShareLocationConfirmModal = (props: { mode: ChannelStreamMode; channelId: string }) => {
-	const shouldRender = useIdleRender();
-
-	if (!shouldRender) {
-		return null;
-	}
-
 	return <BaseShareLocationConfirmModal {...props} />;
 };
 

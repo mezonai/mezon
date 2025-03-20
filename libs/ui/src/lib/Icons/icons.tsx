@@ -291,7 +291,17 @@ export function Speakerphone(props: React.HTMLAttributes<SVGElement>) {
 
 export function AddPerson(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" {...props}>
+		<svg
+			aria-hidden="true"
+			role="img"
+			xmlns="http://www.w3.org/2000/svg"
+			width="24"
+			height="24"
+			className="dark:text-[#CBD5E0] text-colorTextLightMode"
+			fill="none"
+			viewBox="0 0 24 24"
+			{...props}
+		>
 			<path d="M19 14a1 1 0 0 1 1 1v3h3a1 1 0 0 1 0 2h-3v3a1 1 0 0 1-2 0v-3h-3a1 1 0 1 1 0-2h3v-3a1 1 0 0 1 1-1Z" fill="currentColor"></path>
 			<path
 				d="M16.83 12.93c.26-.27.26-.75-.08-.92A9.5 9.5 0 0 0 12.47 11h-.94A9.53 9.53 0 0 0 2 20.53c0 .81.66 1.47 1.47 1.47h.22c.24 0 .44-.17.5-.4.29-1.12.84-2.17 1.32-2.91.14-.21.43-.1.4.15l-.26 2.61c-.02.3.2.55.5.55h7.64c.12 0 .17-.31.06-.36C12.82 21.14 12 20.22 12 19a3 3 0 0 1 3-3h.5a.5.5 0 0 0 .5-.5V15c0-.8.31-1.53.83-2.07ZM12 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
@@ -2630,7 +2640,7 @@ export const Download: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', default
 			height="24"
 			fill="none"
 			viewBox="0 0 24 24"
-			className="dark:text-[#AEAEAE] text-textLightTheme"
+			className="dark:text-[#AEAEAE] text-colorTextLightMode"
 		>
 			<path
 				fill="currentColor"
@@ -4698,6 +4708,70 @@ export function AppChannelIcon({ fill, ...props }: ClassIconProps) {
 			<rect height="6" rx="1" width="6" x="14" y="14" />
 			<line x1="14" x2="20" y1="7" y2="7" fill={fill} />
 			<line x1="17" x2="17" y1="4" y2="10" fill={fill} />
+		</svg>
+	);
+}
+
+export function PrivateAppChannelIcon({ fill, ...props }: ClassIconProps) {
+	return (
+		<svg
+			className="icon icon-tabler icon-tabler-apps"
+			fill={fill === 'dark' ? '#AEAEAE' : '#535353'}
+			height="24"
+			viewBox="0 0 24 24"
+			width="24"
+			xmlns="http://www.w3.org/2000/svg"
+			{...props}
+		>
+			<path d="M0 0h24v24H0z" fill="none" stroke="none" />
+			<rect height="6" rx="1" width="6" x="4" y="4" />
+			<rect height="6" rx="1" width="6" x="4" y="14" />
+			<rect height="6" rx="1" width="6" x="14" y="14" />
+			<line x1="14" x2="20" y1="7" y2="7" fill={fill} />
+			<line x1="17" x2="17" y1="4" y2="10" fill={fill} />
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M13.2117 3.45524V3.13004C13.2117 2.31703 13.8621 1.66663 14.6751 1.66663C15.4881 1.66663 16.1385 2.31703 16.1385 3.13004V3.45524H16.4637C16.7889 3.45524 17.0328 3.69915 17.0328 4.02435V6.95118C17.0328 7.27638 16.7889 7.52028 16.4637 7.52028H12.8865C12.5613 7.52028 12.3174 7.27638 12.3174 6.95118V4.02435C12.3174 3.69915 12.5613 3.45524 12.8865 3.45524H13.2117ZM13.7808 3.13004C13.7808 2.64224 14.1873 2.23573 14.6751 2.23573C15.1629 2.23573 15.5694 2.64224 15.5694 3.13004V3.45524H13.7808V3.13004ZM14.6751 4.83736C14.919 4.83736 15.0816 4.99996 15.0816 5.24386V5.81297C15.0816 6.05687 14.919 6.21947 14.6751 6.21947C14.4312 6.21947 14.2686 6.05687 14.2686 5.81297V5.24386C14.3499 4.99996 14.5125 4.83736 14.6751 4.83736Z"
+				fill="currentColor"
+			></path>
+		</svg>
+	);
+}
+
+export function Joystick(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="" {...props}>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				{' '}
+				<path
+					fillRule="evenodd"
+					clipRule="evenodd"
+					d="M16 4C16 5.86658 14.7215 7.43455 12.9924 7.87594C12.9974 7.91659 13 7.95799 13 8V9.7973C13.0054 9.79921 13.0108 9.80113 13.0162 9.80307L20.1604 12.375C21.4569 12.8418 22.0701 14.0289 22 15.177V18.5585C22 19.8498 21.1737 20.9962 19.9487 21.4045L12.9487 23.7379C12.3329 23.9431 11.6671 23.9431 11.0513 23.7379L4.05132 21.4045C2.82629 20.9962 2 19.8498 2 18.5585V15.1769C1.92995 14.0287 2.54315 12.8417 3.83959 12.375L10.9838 9.80307C10.9892 9.80113 10.9946 9.79921 11 9.79731V8C11 7.95799 11.0026 7.91659 11.0076 7.87594C9.27853 7.43455 8 5.86658 8 4C8 1.79086 9.79086 0 12 0C14.2091 0 16 1.79086 16 4ZM11 11.9229L4.51703 14.2568C4.16878 14.3821 3.99464 14.6911 3.99461 15H4C4 15.3341 4.19728 15.6283 4.51702 15.7434L11.6613 18.3153C11.8802 18.3941 12.1198 18.3941 12.3387 18.3153L19.483 15.7434C19.8027 15.6283 20 15.3341 20 15H20.0054C20.0054 14.6911 19.8312 14.3821 19.483 14.2568L13 11.9229V15C13 15.5523 12.5523 16 12 16C11.4477 16 11 15.5523 11 15V11.9229ZM9.98005 4C9.98005 5.11559 10.8844 6.01995 12 6.01995C13.1156 6.01995 14.0199 5.11559 14.0199 4C14.0199 2.88441 13.1156 1.98005 12 1.98005C10.8844 1.98005 9.98005 2.88441 9.98005 4ZM4 18.5585V17.6829L10.9838 20.1971C11.6407 20.4335 12.3594 20.4335 13.0162 20.1971L20 17.6829V18.5585C20 18.9889 19.7246 19.3711 19.3162 19.5072L12.3162 21.8405C12.111 21.9089 11.889 21.9089 11.6838 21.8405L4.68377 19.5072C4.27543 19.3711 4 18.9889 4 18.5585Z"
+					fill="currentColor"
+				></path>{' '}
+			</g>
+		</svg>
+	);
+}
+
+export function AppHelpIcon(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="" {...props}>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				{' '}
+				<path
+					d="M12 10.4V20M12 10.4C12 8.15979 12 7.03969 11.564 6.18404C11.1805 5.43139 10.5686 4.81947 9.81596 4.43597C8.96031 4 7.84021 4 5.6 4H4.6C4.03995 4 3.75992 4 3.54601 4.10899C3.35785 4.20487 3.20487 4.35785 3.10899 4.54601C3 4.75992 3 5.03995 3 5.6V16.4C3 16.9601 3 17.2401 3.10899 17.454C3.20487 17.6422 3.35785 17.7951 3.54601 17.891C3.75992 18 4.03995 18 4.6 18H7.54668C8.08687 18 8.35696 18 8.61814 18.0466C8.84995 18.0879 9.0761 18.1563 9.29191 18.2506C9.53504 18.3567 9.75977 18.5065 10.2092 18.8062L12 20M12 10.4C12 8.15979 12 7.03969 12.436 6.18404C12.8195 5.43139 13.4314 4.81947 14.184 4.43597C15.0397 4 16.1598 4 18.4 4H19.4C19.9601 4 20.2401 4 20.454 4.10899C20.6422 4.20487 20.7951 4.35785 20.891 4.54601C21 4.75992 21 5.03995 21 5.6V16.4C21 16.9601 21 17.2401 20.891 17.454C20.7951 17.6422 20.6422 17.7951 20.454 17.891C20.2401 18 19.9601 18 19.4 18H16.4533C15.9131 18 15.643 18 15.3819 18.0466C15.15 18.0879 14.9239 18.1563 14.7081 18.2506C14.465 18.3567 14.2402 18.5065 13.7908 18.8062L12 20"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				></path>{' '}
+			</g>
 		</svg>
 	);
 }

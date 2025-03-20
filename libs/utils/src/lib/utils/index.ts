@@ -21,7 +21,7 @@ import { MentionItem } from 'react-mentions';
 import { electronBridge } from '../bridge';
 import { REQUEST_PERMISSION_CAMERA, REQUEST_PERMISSION_MICROPHONE } from '../bridge/electron/constants';
 import { EVERYONE_ROLE_ID, ID_MENTION_HERE, TIME_COMBINE } from '../constant';
-import { Platform, getPlatform } from '../hooks/platform';
+import { Platform } from '../hooks/platform';
 import {
 	ChannelMembersEntity,
 	EBacktickType,
@@ -47,13 +47,18 @@ import {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
+import { getPlatform } from './windowEnvironment';
 export * from './animateScroll';
 export * from './audio';
+export * from './buildClassName';
+export * from './buildStyle';
+export * from './calculateAlbumLayout';
 export * from './callbacks';
 export * from './detectTokenMessage';
 export * from './file';
 export * from './forceReflow';
 export * from './heavyAnimation';
+export * from './mediaDimensions';
 export * from './mergeRefs';
 export * from './message';
 export * from './parseHtmlAsFormattedText';
@@ -62,6 +67,7 @@ export * from './schedulers';
 export * from './select';
 export * from './signals';
 export * from './transform';
+export * from './windowEnvironment';
 export * from './windowSize';
 
 export const convertTimeString = (dateString: string) => {
@@ -676,6 +682,7 @@ export async function fetchAndCreateFiles(fileData: ApiMessageAttachment[] | nul
 			createdFile.url = file.url;
 			createdFile.width = file.width || 0;
 			createdFile.height = file.height || 0;
+			createdFile.thumbnail = file.thumbnail;
 			return createdFile;
 		})
 	);
@@ -696,7 +703,6 @@ export async function getWebUploadedAttachments(payload: {
 	}
 	const directLinks = attachments.filter((att) => att.url?.includes(EMimeTypes.tenor) || att.url?.includes(EMimeTypes.cdnmezon));
 	const nonDirectAttachments = attachments.filter((att) => !att.url?.includes(EMimeTypes.tenor) && !att.url?.includes(EMimeTypes.cdnmezon));
-
 	if (nonDirectAttachments.length > 0) {
 		const createdFiles = await fetchAndCreateFiles(nonDirectAttachments);
 		const uploadPromises = createdFiles.map((file, index) => {
@@ -706,7 +712,7 @@ export async function getWebUploadedAttachments(payload: {
 		return await Promise.all(uploadPromises);
 	}
 
-	return directLinks.map((link) => ({ url: link.url, filetype: link.filetype, filename: link.filename }));
+	return directLinks.map((link) => ({ url: link.url, filetype: link.filetype, filename: link.filename, thumbnail: link.thumbnail }));
 }
 
 export async function getMobileUploadedAttachments(payload: {

@@ -19,7 +19,8 @@ export const style = (colors: Attributes) =>
 		reactWrapper: {
 			flexDirection: 'row',
 			justifyContent: 'space-between',
-			padding: size.s_12,
+			paddingHorizontal: size.s_12,
+			paddingBottom: size.s_12,
 			alignItems: 'center'
 		},
 		messageActionGroup: {
@@ -52,7 +53,8 @@ export const style = (colors: Attributes) =>
 		favouriteIconItem: {
 			backgroundColor: colors.secondary,
 			padding: size.s_10,
-			borderRadius: 50
+			borderRadius: 50,
+			marginRight: size.s_16
 		},
 		reactIcon: {
 			fontSize: size.h4,
@@ -87,5 +89,13 @@ export const style = (colors: Attributes) =>
 			borderTopLeftRadius: size.s_14,
 			borderTopRightRadius: size.s_14,
 			overflow: 'hidden'
+		},
+		emojiButton: {
+			height: size.s_28,
+			width: size.s_34
+		},
+		reactionImage: {
+			width: size.s_28,
+			height: size.s_28
 		}
 	});

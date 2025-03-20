@@ -15,7 +15,8 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 	if (
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ||
-		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_APP
 	) {
 		return (
 			<>

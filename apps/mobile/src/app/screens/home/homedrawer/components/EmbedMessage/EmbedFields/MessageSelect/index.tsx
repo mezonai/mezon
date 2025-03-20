@@ -1,7 +1,6 @@
-import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { IMezonFakeBoxProps } from '../../../../../../../componentUI/MezonFakeBox';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
@@ -25,11 +24,10 @@ export default function MessageSelect({ data, placeholder, defaultValue, onChang
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [currentContent, setCurrentContent] = useState(defaultValue?.title || placeholder);
-	const bottomSheetRef = useRef<BottomSheetModalMethods>();
 
 	function handleChange(item: ISelectItem) {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		setCurrentContent(item?.title || placeholder);
-		bottomSheetRef?.current?.dismiss();
 		onChange && onChange(item);
 	}
 

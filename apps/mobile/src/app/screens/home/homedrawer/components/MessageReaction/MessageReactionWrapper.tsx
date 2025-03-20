@@ -1,16 +1,14 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { EmojiDataOptionals, SenderInfoOptionals, TypeMessage, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback } from 'react';
 import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
-import { UserInformationBottomSheet } from '../../../../../../app/components/UserInformationBottomSheet';
 import ImageNative from '../../../../../components/ImageNative';
 import { IMessageReactionProps } from '../../types';
-import { MessageReactionBS } from './components/MessageReactionBS';
+import { MessageReactionContent } from './components/MessageReactionContent';
 import { style } from './styles';
 
 export type IReactionMessageProps = {
@@ -30,9 +28,6 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { message, openEmojiPicker, mode, preventAction = false, messageReactions } = props || {};
-	const [currentEmojiSelectedId, setCurrentEmojiSelectedId] = useState<string | null>(null);
-	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
 	const isMessageSystem =
 		message?.code === TypeMessage.Welcome ||
 		message?.code === TypeMessage.CreateThread ||
@@ -63,19 +58,21 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 	);
 
 	const onReactItemLongPress = (emojiId: string) => {
+		const data = {
+			snapPoints: ['60%', '90%'],
+			children: (
+				<MessageReactionContent
+					allReactionDataOnOneMessage={messageReactions}
+					emojiSelectedId={emojiId}
+					userId={userId}
+					removeEmoji={removeEmoji}
+					channelId={message?.channel_id}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		Keyboard.dismiss();
-		bottomSheetRef.current?.present();
-		setCurrentEmojiSelectedId(emojiId);
 	};
-
-	const onShowUserInformation = useCallback((userId: string) => {
-		bottomSheetRef.current?.close();
-		setSelectedUserId(userId);
-	}, []);
-
-	const onCloseUserInformationBottomSheet = useCallback(() => {
-		setSelectedUserId(null);
-	}, []);
 
 	return (
 		<View style={[styles.reactionWrapper, styles.reactionSpace, isMessageSystem && { paddingTop: 0, marginLeft: size.s_40 }]}>
@@ -126,19 +123,6 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 					<MezonIconCDN icon={IconCDN.faceIcon} height={size.s_20} width={size.s_20} color={Colors.gray72} />
 				</Pressable>
 			) : null}
-
-			<MessageReactionBS
-				bottomSheetRef={bottomSheetRef}
-				allReactionDataOnOneMessage={messageReactions}
-				emojiSelectedId={currentEmojiSelectedId}
-				onClose={() => setCurrentEmojiSelectedId(null)}
-				removeEmoji={removeEmoji}
-				onShowUserInformation={onShowUserInformation}
-				userId={userId}
-				channelId={message?.channel_id}
-			/>
-
-			<UserInformationBottomSheet userId={selectedUserId} onClose={onCloseUserInformationBottomSheet} />
 		</View>
 	);
 });

@@ -1,5 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { ACTION_SHOW_IMAGE, GET_APP_VERSION, GET_DEVICE_ID, OPEN_NEW_WINDOW, SENDER_ID, SET_BADGE_COUNT } from '../events/constants';
+import {
+	ACTION_SHOW_IMAGE,
+	GET_APP_VERSION,
+	GET_DEVICE_ID,
+	OPEN_NEW_WINDOW,
+	REQUEST_PERMISSION_SCREEN,
+	SENDER_ID,
+	SET_BADGE_COUNT
+} from '../events/constants';
 
 contextBridge.exposeInMainWorld('electron', {
 	platform: process.platform,
@@ -25,10 +33,13 @@ contextBridge.exposeInMainWorld('electron', {
 		ipcRenderer.on('window-focused', callback);
 	},
 	invoke: (channel, data) => ipcRenderer.invoke(channel, data),
+
 	openImageWindow: (props: any, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) => {
 		return ipcRenderer.invoke(OPEN_NEW_WINDOW, props, options, params);
 	},
+
 	handleActionShowImage: (action: string, url: any) => {
 		return ipcRenderer.invoke(ACTION_SHOW_IMAGE, { payload: { action, fileURL: url } });
-	}
+	},
+	getScreenSources: () => ipcRenderer.invoke(REQUEST_PERMISSION_SCREEN)
 });

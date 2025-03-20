@@ -1,4 +1,4 @@
-package com.mobile.mezon
+package com.mezon.mobile
 import android.os.Bundle;
 
 import android.content.Intent;

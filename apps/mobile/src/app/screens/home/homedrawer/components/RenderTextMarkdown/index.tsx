@@ -90,7 +90,6 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 			color: colors.text,
 			width: codeBlockMaxWidth,
 			backgroundColor: colors.secondaryLight,
-			marginTop: size.s_2,
 			borderColor: colors.black,
 			borderRadius: size.s_4,
 			overflow: 'hidden'

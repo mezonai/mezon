@@ -6,6 +6,7 @@ import {
 	selectIsElectronUpdateAvailable,
 	selectIsInCall,
 	selectStatusStream,
+	selectVoiceJoined,
 	useAppDispatch
 } from '@mezon/store';
 import { isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
@@ -32,15 +33,17 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 	const isInCall = useSelector(selectIsInCall);
 	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
 	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
+	const isVoiceJoined = useSelector(selectVoiceJoined);
 
 	const calculateHeight = useCallback(() => {
 		const baseHeight = window.innerHeight - heightAroundComponent;
 		const streamAdjustment = streamPlay ? 56 : 0;
 		const callAdjustment = isInCall ? 56 : 0;
+		const voiceAdjustment = isVoiceJoined ? 96 : 0;
 		const electronAdjustment = IsElectronDownloading || isElectronUpdateAvailable ? heightAppUpdate : 0;
 
-		return baseHeight - streamAdjustment - callAdjustment - titleBarHeight - electronAdjustment;
-	}, [IsElectronDownloading, isElectronUpdateAvailable, streamPlay, isInCall]);
+		return baseHeight - streamAdjustment - callAdjustment - titleBarHeight - electronAdjustment - voiceAdjustment;
+	}, [IsElectronDownloading, isElectronUpdateAvailable, streamPlay, isInCall, isVoiceJoined]);
 
 	const [height, setHeight] = useState(calculateHeight());
 

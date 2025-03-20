@@ -16,11 +16,17 @@
         "organizationMenu": {
             "title": "",
             "createChannel": "Create Channel",
-            "edit": "Edit Category"
+            "edit": "Edit Category",
+            "delete":"Delete Category"
         },
         "devMode": {
             "title": "Development Mode",
             "copyServerID": "Copy Clan ID"
+        },
+        "modalConfirm": {
+            "title": "Delete category",
+            "content": "Are you sure you want to delete Category? This can not be undone",
+            "confirmText": "Delete"
         }
     },
     "notify": {

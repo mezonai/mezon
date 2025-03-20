@@ -1,7 +1,6 @@
 import { QRSection } from '@mezon/components';
 import { useAppNavigation, useAuth } from '@mezon/core';
 import { selectIsLogin } from '@mezon/store';
-import { useGoogleOneTapLogin } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLoaderData } from 'react-router-dom';
@@ -11,51 +10,47 @@ function Login() {
 	const { navigate } = useAppNavigation();
 	const isLogin = useSelector(selectIsLogin);
 	const { redirectTo } = useLoaderData() as ILoginLoaderData;
-	const { loginByGoogle, qRCode, checkLoginRequest } = useAuth();
+	const { qRCode, checkLoginRequest } = useAuth();
 	const [loginId, setLoginId] = useState<string | null>(null);
 	const [createSecond, setCreateSecond] = useState<number | null>(null);
 	const [hidden, setHidden] = useState<boolean>(false);
+	const [isRemember, setIsRemember] = useState<boolean>(false);
 	useEffect(() => {
 		const fetchQRCode = async () => {
 			const qRInfo = await qRCode();
-			await setLoginId(qRInfo?.login_id as string);
-			await setCreateSecond(Number(qRInfo?.create_time_second));
+			if (!qRInfo || !qRInfo.login_id) {
+				setHidden(true);
+			} else {
+				await setLoginId(qRInfo?.login_id as string);
+				await setCreateSecond(Number(qRInfo?.create_time_second));
+			}
 		};
 
 		fetchQRCode();
 	}, [qRCode]);
 
 	useEffect(() => {
+		const intervalMsec = 2000;
+		let timeElapsed = 0;
 		const intervalId = setInterval(async () => {
 			if (loginId && createSecond !== null) {
-				const currentTime = Math.floor(Date.now() / 1000);
-				const timeElapsed = currentTime - createSecond;
-
+				timeElapsed += intervalMsec / 1000;
 				if (timeElapsed >= 60) {
 					setHidden(true);
 					clearInterval(intervalId);
 				} else {
-					const currentSession = await checkLoginRequest(loginId);
+					const currentSession = await checkLoginRequest(loginId, isRemember);
 					if (currentSession !== null && currentSession !== undefined) {
 						clearInterval(intervalId);
 					}
 				}
 			}
-		}, 2000);
+		}, intervalMsec);
 
 		return () => {
 			clearInterval(intervalId);
 		};
-	}, [loginId]);
-
-	useGoogleOneTapLogin({
-		onSuccess: async (credentialResponse) => {
-			await loginByGoogle(credentialResponse.credential as string);
-		},
-		auto_select: true,
-		cancel_on_tap_outside: false,
-		use_fedcm_for_prompt: true
-	});
+	}, [checkLoginRequest, createSecond, isRemember, loginId]);
 
 	useEffect(() => {
 		if (isLogin) {
@@ -65,9 +60,13 @@ function Login() {
 
 	const reloadQR = async () => {
 		const qRInfo = await qRCode();
-		await setLoginId(qRInfo?.login_id as string);
-		await setCreateSecond(Number(qRInfo?.create_time_second));
-		setHidden(false);
+		if (!qRInfo || !qRInfo.login_id) {
+			setHidden(true);
+		} else {
+			await setLoginId(qRInfo?.login_id as string);
+			await setCreateSecond(Number(qRInfo?.create_time_second));
+			setHidden(false);
+		}
 	};
 
 	return (
@@ -87,7 +86,13 @@ function Login() {
 					</ol>
 
 					<div className="mt-4 flex items-center text-gray-400">
-						<input disabled type="checkbox" id="keepSignedIn" className="mr-2" />
+						<input
+							type="checkbox"
+							id="keepSignedIn"
+							className="mr-2"
+							checked={isRemember}
+							onChange={(e) => setIsRemember(e.target.checked)}
+						/>
 						<label htmlFor="keepSignedIn">Keep me signed in</label>
 					</div>
 				</div>

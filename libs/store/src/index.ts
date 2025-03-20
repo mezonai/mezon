@@ -32,6 +32,7 @@ export * from './lib/dmcall/audioCall.slice';
 export * from './lib/dmcall/dmcall.slice';
 export * from './lib/dragAndDrop/dragAndDrop.slice';
 export * from './lib/e2ee/e2ee.slice';
+export * from './lib/emojiSuggestion/emojiRecent.slice';
 export * from './lib/emojiSuggestion/emojiSuggestion.slice';
 export * from './lib/errors/errors.slice';
 export * from './lib/eventManagement/eventManagement.slice';

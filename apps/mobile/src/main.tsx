@@ -5,7 +5,7 @@ import { AppRegistry } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
-import { createLocalNotification, setupIncomingCall } from './app/utils/pushNotificationHelpers';
+import { setupIncomingCall } from './app/utils/pushNotificationHelpers';
 notifee.onBackgroundEvent(async () => {});
 if (__DEV__) {
 	require('../reactotronConfig');
@@ -18,7 +18,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 	if (offer) {
 		await setupIncomingCall(offer as string);
 	} else {
-		await createLocalNotification(remoteMessage.notification?.title, remoteMessage.notification?.body, remoteMessage.data);
+		// await createLocalNotification(remoteMessage.notification?.title, remoteMessage.notification?.body, remoteMessage.data);
 	}
 });
 AppRegistry.registerComponent('ComingCallApp', () => CustomIncomingCall);

@@ -53,8 +53,13 @@ export function useAuth() {
 	}, [dispatch]);
 
 	const checkLoginRequest = useCallback(
-		async (loginId: string) => {
-			const action = await dispatch(authActions.checkLoginRequest({ loginId: loginId || '' }));
+		async (loginId: string, isRemember: boolean) => {
+			const action = await dispatch(
+				authActions.checkLoginRequest({
+					loginId: loginId || '',
+					isRemember
+				})
+			);
 			const session = action.payload as Session;
 			return session;
 		},

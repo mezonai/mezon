@@ -3,6 +3,7 @@ import {
 	categoriesActions,
 	channelsActions,
 	defaultNotificationCategoryActions,
+	FAVORITE_CATEGORY_ID,
 	selectCategoryExpandStateByCategoryId,
 	selectCategoryIdSortChannel,
 	selectCurrentChannel,
@@ -115,6 +116,9 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	}, [coords, category]);
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		if (category.id === FAVORITE_CATEGORY_ID) {
+			return;
+		}
 		const mouseX = event.clientX;
 		const mouseY = event.clientY;
 		const windowHeight = window.innerHeight;

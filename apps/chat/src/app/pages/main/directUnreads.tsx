@@ -55,7 +55,7 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 				/>
 				{directMessage?.count_mess_unread && (
 					<div
-						className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[5px] right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+						className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-0 right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
 							directMessage?.count_mess_unread >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 						}`}
 					>

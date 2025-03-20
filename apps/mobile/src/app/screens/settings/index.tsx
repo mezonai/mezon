@@ -393,21 +393,6 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 
 	return (
 		<View style={styles.settingContainer}>
-			{!!linkRedirectLogout && (
-				<WebView
-					source={{
-						uri: linkRedirectLogout
-					}}
-					originWhitelist={['*']}
-					injectedJavaScriptBeforeContentLoaded={injectedJS}
-					javaScriptEnabled={true}
-					nestedScrollEnabled={true}
-					onLoadEnd={async () => {
-						await sleep(1000);
-						await logout();
-					}}
-				/>
-			)}
 			<ScrollView contentContainerStyle={styles.settingScroll} keyboardShouldPersistTaps={'handled'}>
 				<MezonSearch
 					value={searchText}
@@ -419,6 +404,22 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 
 				<MezonMenu menu={renderedMenu} />
 			</ScrollView>
+			{!!linkRedirectLogout && (
+				<WebView
+					source={{
+						uri: linkRedirectLogout
+					}}
+					style={{ height: 0, position: 'absolute', zIndex: -1 }}
+					originWhitelist={['*']}
+					injectedJavaScriptBeforeContentLoaded={injectedJS}
+					javaScriptEnabled={true}
+					nestedScrollEnabled={true}
+					onLoadEnd={async () => {
+						await sleep(1000);
+						await logout();
+					}}
+				/>
+			)}
 		</View>
 	);
 };

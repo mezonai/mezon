@@ -1,11 +1,20 @@
-import { usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentChannelId, selectCurrentClan } from '@mezon/store-mobile';
-import { EPermission, ICategoryChannel } from '@mezon/utils';
+import { useBottomSheetModal } from '@gorhom/bottom-sheet';
+import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
+import {
+	appActions,
+	categoriesActions,
+	channelsActions,
+	defaultNotificationCategoryActions,
+	selectCurrentChannelId,
+	selectCurrentClan,
+	useAppDispatch
+} from '@mezon/store-mobile';
+import { EPermission, ICategoryChannel, sleep } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -14,10 +23,18 @@ import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN'
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
 import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../../../componentUI/MezonMenu';
+import MezonConfirm from '../../../../../componentUI/MezonConfirm';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
+import CategoryNotificationSetting from '../../../../../components/CategoryNotificationSetting';
 import InviteToChannel from '../InviteToChannel';
 import { style } from './styles';
 
+enum StatusMarkAsReadCategory {
+	Error = 'error',
+	Success = 'success',
+	Idle = 'idle',
+	Pending = 'pending'
+}
 interface ICategoryMenuProps {
 	category: ICategoryChannel;
 }
@@ -31,14 +48,73 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	const currentChanelId = useSelector(selectCurrentChannelId);
 	const [isCanManageChannel] = usePermissionChecker([EPermission.manageChannel], currentChanelId ?? '');
 	const navigation = useNavigation<AppStackScreenProps<StackMenuClanScreen>['navigation']>();
+	const { handleMarkAsReadCategory, statusMarkAsReadCategory } = useMarkAsRead();
+	const { dismiss } = useBottomSheetModal();
+	const dispatch = useAppDispatch();
+
+	const handleRemoveCategory = useCallback(() => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		dispatch(
+			categoriesActions.deleteCategory({
+				clanId: category?.clan_id as string,
+				categoryId: category?.id as string,
+				categoryLabel: category?.category_name as string
+			})
+		);
+		dispatch(channelsActions.fetchChannels({ clanId: category?.clan_id, noCache: true, isMobile: true }));
+	}, [category?.category_name, category?.clan_id, category?.id]);
+
+	const handleMarkAsRead = useCallback(async () => {
+		handleMarkAsReadCategory(category);
+	}, [category, handleMarkAsReadCategory]);
+
+	useEffect(() => {
+		dispatch(appActions.setLoadingMainMobile(statusMarkAsReadCategory === StatusMarkAsReadCategory.Pending));
+	}, [dispatch, statusMarkAsReadCategory]);
+
+	useEffect(() => {
+		dispatch(defaultNotificationCategoryActions.getDefaultNotificationCategory({ categoryId: category?.id }));
+	}, []);
+
+	const openBottomSheet = () => {
+		const data = {
+			heightFitContent: true,
+			children: <CategoryNotificationSetting category={category} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
 
 	const watchMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.watchMenu.markAsRead'),
-			onPress: () => reserve(),
+			onPress: handleMarkAsRead,
 			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
 		}
 	];
+
+	const handleDelete = async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		await sleep(500);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={handleRemoveCategory}
+					title={t('menu.modalConfirm.title')}
+					confirmText={t('menu.modalConfirm.confirmText')}
+					content={t('menu.modalConfirm.content')}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	};
+
+	const handleMuteCategory = () => {
+		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, {
+			screen: APP_SCREEN.MENU_THREAD.MUTE_CATEGORY_DETAIL,
+			params: { currentCategory: category }
+		});
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+	};
 
 	const inviteMenu: IMezonMenuItemProps[] = [
 		{
@@ -57,12 +133,12 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	const notificationMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.notification.muteCategory'),
-			onPress: () => reserve(),
+			onPress: handleMuteCategory,
 			icon: <MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 		},
 		{
 			title: t('menu.notification.notification'),
-			onPress: () => reserve(),
+			onPress: openBottomSheet,
 			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />
 		}
 	];
@@ -95,6 +171,15 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 			},
 			icon: <MezonIconCDN icon={IconCDN.plusLargeIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
+		},
+		{
+			title: t('menu.organizationMenu.delete'),
+			onPress: handleDelete,
+			icon: <Icons.CloseLargeIcon color={Colors.textRed} />,
+			isShow: isCanManageChannel,
+			textStyle: {
+				color: Colors.textRed
+			}
 		}
 	];
 

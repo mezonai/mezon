@@ -56,6 +56,7 @@ react {
 //     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", rootDir.getAbsoluteFile().getParentFile().getAbsolutePath(), "android", "absolute"].execute(null, rootDir).text.trim())
 //     cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
 //     bundleCommand = "export:embed"
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -82,13 +83,18 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.mobile.mezon"
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
+
+    namespace "com.mezon.mobile"
     defaultConfig {
-        applicationId "com.mobile.mezon"
+        applicationId "com.mezon.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 278
-        versionName "1.1.44"
+        versionCode 287
+        versionName "1.1.48"
     }
     signingConfigs {
         debug {
@@ -138,7 +144,7 @@ dependencies {
     // For WebP support, including animated WebP
     implementation 'com.facebook.fresco:animated-webp:3.1.3'
     implementation 'com.facebook.fresco:webpsupport:3.1.3'
-
+    implementation 'androidx.core:core:1.10.1'
     // For WebP support, without animations
     implementation 'com.facebook.fresco:webpsupport:3.1.3'
     if (hermesEnabled.toBoolean()) {
@@ -158,5 +164,4 @@ project.ext.vectoricons = [
 ]
 
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
-apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"

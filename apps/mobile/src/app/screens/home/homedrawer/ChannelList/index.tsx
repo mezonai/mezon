@@ -1,4 +1,4 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { channelsActions, selectIsShowEmptyCategory, selectListChannelRenderByClanId, voiceActions } from '@mezon/store';
 import { selectCurrentClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
@@ -76,7 +76,10 @@ const ChannelList = () => {
 			return <ChannelListSection channelsPositionRef={channelsPositionRef} data={item} />;
 		} else {
 			return (
-				<View key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`}>
+				<View
+					key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`}
+					style={[{ backgroundColor: themeValue.secondary }, item?.threadIds && { zIndex: 1 }]}
+				>
 					<ChannelListItem data={item} />
 				</View>
 			);
@@ -104,20 +107,6 @@ const ChannelList = () => {
 				ListHeaderComponent={() => {
 					return <ChannelListBackground />;
 				}}
-				getItemLayout={(data, index) => ({
-					length: index === 0 ? size.s_100 + size.s_10 : size.s_36,
-					offset: index === 0 ? size.s_100 + size.s_10 : size.s_36 * index,
-					index
-				})}
-				CellRendererComponent={({ children, index, style }) => {
-					if (index === 0) {
-						return <View style={[style, { zIndex: 10 }]}>{children}</View>;
-					}
-					if (data?.[index]?.threadIds) {
-						return <View style={[style, { backgroundColor: themeValue.secondary, zIndex: 1 }]}>{children}</View>;
-					}
-					return children;
-				}}
 				onScrollToIndexFailed={(info) => {
 					if (info?.highestMeasuredFrameIndex) {
 						const wait = new Promise((resolve) => setTimeout(resolve, 200));
@@ -130,8 +119,14 @@ const ChannelList = () => {
 					}
 				}}
 				disableVirtualization
+				contentContainerStyle={{
+					backgroundColor: themeValue.secondary
+				}}
+				style={{
+					backgroundColor: themeValue.secondary
+				}}
 			/>
-			<View style={{ height: 80 }} />
+			{!isTabletLandscape && <View style={{ height: 80 }} />}
 			<ButtonNewUnread />
 		</View>
 	);

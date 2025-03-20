@@ -89,7 +89,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 			[],
 			removePermissionList
 		);
-		if (response) {
+		if (response === true) {
 			Toast.show({
 				type: 'success',
 				props: {
@@ -168,8 +168,8 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 	};
 
 	const handleNextStep = async () => {
-		const response = updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
-		if (response) {
+		const response = await updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
+		if (response === true) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.SETUP_ROLE_MEMBERS);
 			// Toast.show({
 			// 	type: 'success',

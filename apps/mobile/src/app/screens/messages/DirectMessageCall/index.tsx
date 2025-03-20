@@ -1,4 +1,5 @@
 import { RTCView } from '@livekit/react-native-webrtc';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
@@ -12,7 +13,7 @@ import {
 import { IMessageTypeCallLog } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { BackHandler, Text, TouchableOpacity, View } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import InCallManager from 'react-native-incall-manager';
 import Toast from 'react-native-toast-message';
@@ -39,7 +40,6 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 	const isAnswerCall = route.params?.isAnswerCall;
 	const isFromNative = route.params?.isFromNative;
 	const userProfile = useSelector(selectAllAccount);
-	const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
 	const [isShowControl, setIsShowControl] = useState<boolean>(true);
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
 	const isInCall = useSelector(selectIsInCall);
@@ -125,6 +125,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 
 	const onCancelCall = async () => {
 		try {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			await handleEndCall({ isCancelGoBack: false });
 			if (!timeStartConnected?.current) {
 				await dispatch(
@@ -154,7 +155,14 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 						<TouchableOpacity
 							onPress={() => {
-								setShowModalConfirm(true);
+								const data = {
+									children: (
+										<MezonConfirm onConfirm={onCancelCall} title="End Call" confirmText="Yes, End Call">
+											<Text style={styles.titleConfirm}>Are you sure you want to end the call?</Text>
+										</MezonConfirm>
+									)
+								};
+								DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 							}}
 							style={styles.buttonCircle}
 						>
@@ -229,17 +237,6 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 					</View>
 				</View>
 			)}
-
-			<MezonConfirm
-				visible={showModalConfirm}
-				onVisibleChange={setShowModalConfirm}
-				onConfirm={onCancelCall}
-				title="End Call"
-				confirmText="Yes, End Call"
-				hasBackdrop={true}
-			>
-				<Text style={styles.titleConfirm}>Are you sure you want to end the call?</Text>
-			</MezonConfirm>
 		</View>
 	);
 });

@@ -60,44 +60,44 @@ export const ChannelsSearchTab = ({ listChannelSearch }: ChannelsSearchTabProps)
 
 	const handleRouteData = useCallback(
 		async (channelData: ChannelThreads) => {
-			if (channelData?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && channelData?.meeting_code) {
-				const urlVoice = `${linkGoogleMeet}${channelData?.meeting_code}`;
-				await Linking.openURL(urlVoice);
-				return;
-			}
+			requestAnimationFrame(async () => {
+				if (channelData?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && channelData?.meeting_code) {
+					const urlVoice = `${linkGoogleMeet}${channelData?.meeting_code}`;
+					await Linking.openURL(urlVoice);
+					return;
+				}
 
-			const clanId = channelData?.clan_id;
-			const store = await getStoreAsync();
-			// Join clan
-			if (currentClanId !== clanId) {
-				requestAnimationFrame(async () => {
+				const clanId = channelData?.clan_id;
+				const store = await getStoreAsync();
+				// Join clan
+				if (currentClanId !== clanId) {
 					store.dispatch(clansActions.joinClan({ clanId: clanId }));
 					store.dispatch(clansActions.changeCurrentClan({ clanId: clanId }));
-				});
-			}
+				}
 
-			if (channelData?.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channelData?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-				const channelId = channelData?.channel_id;
-				store.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
-				navigation.navigate(APP_SCREEN.HOME_DEFAULT);
-				timeoutRef.current = setTimeout(async () => {
-					await store.dispatch(
-						channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false, noCache: true })
-					);
-				}, 0);
+				if (channelData?.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channelData?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+					const channelId = channelData?.channel_id;
+					store.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
+					navigation.navigate(APP_SCREEN.HOME_DEFAULT);
+					timeoutRef.current = setTimeout(async () => {
+						await store.dispatch(
+							channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false, noCache: true })
+						);
+					}, 0);
 
-				// Set cache
-				const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
-				save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-			} else if (channelData?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-				navigation.goBack();
-				if (!channelData.meeting_code) return;
-				const data = {
-					channelId: channelData?.channel_id || '',
-					roomName: channelData?.meeting_code
-				};
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
-			}
+					// Set cache
+					const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
+					save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
+				} else if (channelData?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+					navigation.goBack();
+					if (!channelData.meeting_code) return;
+					const data = {
+						channelId: channelData?.channel_id || '',
+						roomName: channelData?.meeting_code
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
+				}
+			});
 		},
 		[currentClanId, navigation]
 	);

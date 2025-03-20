@@ -79,6 +79,16 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 				onlyChooseOne: !checkMultipleSelect
 			})
 		);
+		dispatch(
+			messagesActions.clickButtonMessage({
+				message_id: messageId,
+				channel_id: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
+				button_id: buttonId,
+				sender_id: senderId,
+				user_id: currentUserId,
+				extra_data: option.value
+			})
+		);
 	};
 
 	const checkMultipleSelect = useMemo(() => {

@@ -1,6 +1,6 @@
-import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useChannelMembersActions } from '@mezon/core';
 import {
+	ActionEmitEvent,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_CLAN_ID,
 	STORAGE_MY_USER_ID,
@@ -22,22 +22,13 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text } from 'react-native';
+import { DeviceEventEmitter, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { styles } from './DeleteClanModal.styles';
 
-const DeleteClanModal = ({
-	isVisibleModal,
-	visibleChange,
-	isLeaveClan = false
-}: {
-	isVisibleModal: boolean;
-	isLeaveClan?: boolean;
-	visibleChange: (isVisible: boolean) => void;
-}) => {
-	const { dismiss } = useBottomSheetModal();
+const DeleteClanModal = ({ isLeaveClan = false }: { isLeaveClan?: boolean }) => {
 	const currentClan = useSelector(selectCurrentClan);
 	const { t } = useTranslation(['deleteClan']);
 	const dispatch = useAppDispatch();
@@ -63,8 +54,7 @@ const DeleteClanModal = ({
 		} else {
 			await dispatch(clansActions.deleteClan({ clanId: currentClan?.clan_id || '' }));
 		}
-
-		dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		const store = await getStoreAsync();
 
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
@@ -87,8 +77,6 @@ const DeleteClanModal = ({
 
 	return (
 		<MezonConfirm
-			visible={isVisibleModal}
-			onVisibleChange={visibleChange}
 			confirmText={t('deleteClanModal.confirm')}
 			title={isLeaveClan ? t('deleteClanModal.titleLeaveClan') : t('deleteClanModal.title')}
 			children={

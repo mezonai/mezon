@@ -1,8 +1,8 @@
 import { useAuth, useClanProfileSetting } from '@mezon/core';
-import { checkDuplicateClanNickName, selectUserClanProfileByClanID, useAppDispatch } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
+import { checkDuplicateClanNickName, selectUserClanProfileByClanID, toastActions, useAppDispatch } from '@mezon/store';
+import { handleUploadFile, useMezon } from '@mezon/transport';
 import { InputField } from '@mezon/ui';
-import { ImageSourceObject, fileTypeImage } from '@mezon/utils';
+import { ImageSourceObject, MAX_FILE_SIZE_1MB, fileTypeImage, resizeFileImage } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -101,15 +101,39 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			setOpenModalType(true);
 			return;
 		}
-		const newImageObject: ImageSourceObject = {
-			filename: file.name,
-			filetype: file.type,
-			size: file.size,
-			url: URL.createObjectURL(file)
-		};
+		if (file.type === fileTypeImage[2]) {
+			if (file.size > MAX_FILE_SIZE_1MB) {
+				dispatch(toastActions.addToastError({ message: 'File size exceeds 1MB limit' }));
+				return;
+			}
+			if (!clientRef.current || !sessionRef.current) {
+				dispatch(toastActions.addToastError({ message: 'Client or session is not initialized' }));
+				return;
+			}
+			setIsLoading(true);
+			const imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+			const attachment = await handleUploadFile(
+				clientRef.current,
+				sessionRef.current,
+				clanId,
+				userProfile?.user?.id || '0',
+				imageAvatarResize.name,
+				imageAvatarResize
+			);
+			setUrlImage(attachment.url || '');
+			setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
+			setIsLoading(false);
+		} else {
+			const newImageObject: ImageSourceObject = {
+				filename: file.name,
+				filetype: file.type,
+				size: file.size,
+				url: URL.createObjectURL(file)
+			};
 
-		setImageObject(newImageObject);
-		openModalEditor();
+			setImageObject(newImageObject);
+			openModalEditor();
+		}
 		e.target.value = '';
 	};
 

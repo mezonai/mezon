@@ -20,8 +20,8 @@ function DirectMessageList() {
 				<div className="w-full flex flex-row items-center">
 					<FriendsButton navigateToFriend={dmGroupChatList?.length === 0} />
 					{quantityPendingRequest > 0 ? (
-						<div className="absolute w-[16px] h-[16px] rounded-full bg-colorDanger text-[#fff] font-bold text-[9px] flex items-center justify-center right-[25px]">
-							{quantityPendingRequest}
+						<div className="absolute w-[16px] h-[16px] rounded-full bg-colorDanger text-[#fff] font-bold flex items-center justify-center right-[25px]">
+							<div className="text-[9px] leading-[9px]">{quantityPendingRequest}</div>
 						</div>
 					) : null}
 				</div>
@@ -31,7 +31,7 @@ function DirectMessageList() {
 					<CreateMessageGroupModal />
 				</div>
 			</div>
-			<div className={`flex-1 font-medium text-gray-300 pl-2 h-2/3`}>
+			<div className={`flex-1 font-medium text-gray-300 pl-2`}>
 				<div className="flex flex-col gap-1 text-[#AEAEAE] text-center relative">
 					<ListDMChannel listDM={dmGroupChatList} />
 				</div>
