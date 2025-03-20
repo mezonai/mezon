@@ -81,7 +81,7 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 			}}
 		>
 			{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
-				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={() => setMessageActionNeedToResolve(null)} />
+				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={deleteMessageActionNeedToResolve} />
 			)}
 			{!props?.canSendMessage && !isDM ? (
 				<View

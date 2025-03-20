@@ -1,4 +1,4 @@
-import { RefObject, useLayoutEffect, useRef } from 'react';
+import { RefObject, useRef } from 'react';
 import { requestMeasure } from '../fasterdom';
 import { addExtraClass, toggleExtraClass } from '../helper';
 import { NoneToVoidFunction } from '../types';
@@ -76,43 +76,6 @@ export default function useShowTransition<RefType extends HTMLElement = HTMLDivE
 	});
 	const onCloseEndLast = useLastCallback(onCloseAnimationEnd);
 
-	useSyncEffectWithPrevDeps(
-		([prevIsOpen]) => {
-			const options = optionsRef.current;
-
-			if (shouldForceOpen) {
-				setState('open');
-				return;
-			}
-
-			if (isOpen) {
-				if (closingTimeoutRef.current) {
-					clearTimeout(closingTimeoutRef.current);
-					closingTimeoutRef.current = undefined;
-				}
-
-				if (options.noOpenTransition || (prevIsOpen === undefined && options.noMountTransition)) {
-					setState('open');
-				} else {
-					setState('scheduled-open');
-					requestMeasure(() => {
-						setState('open');
-					});
-				}
-			} else if (prevIsOpen === undefined || options.noCloseTransition) {
-				setState('closed');
-			} else {
-				setState('closing');
-
-				closingTimeoutRef.current = window.setTimeout(() => {
-					setState('closed');
-					onCloseEndLast();
-				}, options.closeDuration);
-			}
-		},
-		[isOpen, shouldForceOpen]
-	);
-
 	const applyClassNames = useLastCallback(() => {
 		const element = ref.current;
 		if (!element) return;
@@ -134,6 +97,44 @@ export default function useShowTransition<RefType extends HTMLElement = HTMLDivE
 		toggleExtraClass(element, `${prefix}closing`, isClosing);
 	});
 
+	useSyncEffectWithPrevDeps(
+		([prevIsOpen]) => {
+			const options = optionsRef.current;
+			if (shouldForceOpen) {
+				setState('open');
+				applyClassNames();
+				return;
+			}
+
+			if (isOpen) {
+				if (closingTimeoutRef.current) {
+					clearTimeout(closingTimeoutRef.current);
+					closingTimeoutRef.current = undefined;
+				}
+
+				if (options.noOpenTransition || (prevIsOpen === undefined && options.noMountTransition)) {
+					setState('open');
+				} else {
+					setState('scheduled-open');
+					requestMeasure(() => {
+						setState('open');
+					});
+				}
+			} else if (prevIsOpen === undefined || options.noCloseTransition) {
+				setState('closed');
+				applyClassNames();
+			} else {
+				setState('closing');
+				closingTimeoutRef.current = window.setTimeout(() => {
+					setState('closed');
+					onCloseEndLast();
+					applyClassNames();
+				}, options.closeDuration);
+			}
+		},
+		[isOpen, shouldForceOpen]
+	);
+
 	// Workaround for Chrome causing forced reflow in the middle of mutation phase when unmounting a focused element.
 	// Due to such forced reflow setting initial class names in the first layout effect causes transitions to start.
 	useSyncEffect(() => {
@@ -143,7 +144,7 @@ export default function useShowTransition<RefType extends HTMLElement = HTMLDivE
 		};
 	}, [applyClassNames, ref]);
 
-	useLayoutEffect(applyClassNames, [applyClassNames, getState]);
+	// useLayoutEffect(applyClassNames, [applyClassNames, getState]);
 
 	const withShouldRender = 'withShouldRender' in params && params.withShouldRender;
 	const shouldRender = useDerivedState(() => withShouldRender && getState() !== 'closed', [withShouldRender, getState]);

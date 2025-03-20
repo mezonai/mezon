@@ -11,6 +11,10 @@ let instances:
 	| undefined;
 
 const workerCode = `
+  var module = { exports: {} };
+  importScripts(self.location.origin + '/assets/js/blurhash.js');
+  self.blurhash = module.exports;
+
   // Define utility functions
   const callbackState = new Map();
   const pendingPayloads = [];
@@ -56,20 +60,23 @@ const workerCode = `
   }
 
   // API implementation
-  async function blurThumb(canvas, thumbData, radius) {
-    const imageBitmap = thumbData.startsWith('data:')
-      ? await dataUriToImageBitmap(thumbData)
-      : await blobUrlToImageBitmap(thumbData);
+   async function blurThumb(canvas, thumbData) {
+      const { width, height } = canvas;
+  const ctx = canvas.getContext('2d');
 
-    const { width, height } = canvas;
-    const ctx = canvas.getContext('2d');
-    const isFilterSupported = 'filter' in ctx;
+  const pixels = self.blurhash.decode(
+    thumbData,
+    width,
+    height
+  );
 
-    if (isFilterSupported) {
-      ctx.filter = \`blur(\${radius}px)\`;
-    }
+  const blurredImageData = new ImageData(
+    new Uint8ClampedArray(pixels),
+    width,
+    height
+  );
 
-    ctx.drawImage(imageBitmap, -radius * 2, -radius * 2, width + radius * 4, height + radius * 4);
+  ctx.putImageData(blurredImageData, 0, 0);
   }
 
   async function getAppendixColorFromImage(blobUrl, isOwn) {

@@ -17,7 +17,6 @@ const HomeScreen = React.memo((props: any) => {
 	return (
 		<HomeDefault
 			{...props}
-			currentDirectId={currentDirectId}
 			channelId={currentChannel?.channel_id}
 			clanId={currentChannel?.clan_id}
 			isPublicChannel={isPublic}

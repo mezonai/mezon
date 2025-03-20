@@ -79,10 +79,13 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 		};
 	}, []);
 
-	const onClose = useCallback(() => {
-		onShowKeyboardBottomSheet(false, 'text');
-		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, {});
-	}, [onShowKeyboardBottomSheet]);
+	const onClose = useCallback(
+		(isFocusKeyboard = true) => {
+			onShowKeyboardBottomSheet(false, 'text');
+			isFocusKeyboard && DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, {});
+		},
+		[onShowKeyboardBottomSheet]
+	);
 
 	useEffect(() => {
 		const showKeyboard = DeviceEventEmitter.addListener(ActionEmitEvent.SHOW_KEYBOARD, (value) => {

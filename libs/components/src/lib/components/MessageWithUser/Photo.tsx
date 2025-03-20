@@ -4,6 +4,9 @@ import {
 	buildClassName,
 	calculateMediaDimensions,
 	createImgproxyUrl,
+	getMediaFormat,
+	getMediaTransferState,
+	getPhotoMediaHash,
 	IMediaDimensions,
 	MIN_MEDIA_HEIGHT,
 	ObserveFn,
@@ -12,7 +15,9 @@ import {
 	useBlurredMediaThumbRef,
 	useIsIntersecting,
 	useMediaTransition,
-	useMediaWithLoadProgress
+	useMediaWithLoadProgress,
+	usePreviousDeprecated,
+	useShowTransition
 } from '@mezon/utils';
 import { useCallback, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
@@ -43,7 +48,6 @@ export type OwnProps<T> = {
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	onCancelUpload?: (arg: T) => void;
 };
-
 const Photo = <T,>({
 	id,
 	photo,
@@ -51,11 +55,17 @@ const Photo = <T,>({
 	isOwn,
 	observeIntersection,
 	noAvatars,
+	canAutoLoad = true,
+	isInSelectMode,
+	isSelected,
+	uploadProgress,
 	forcedWidth,
 	size = 'inline',
 	dimensions,
 	asForwarded,
 	nonInteractive,
+	shouldAffectAppendix,
+	isDownloading,
 	isProtected,
 	isInWebPage,
 	clickArg,
@@ -64,6 +74,7 @@ const Photo = <T,>({
 	onContextMenu
 }: OwnProps<T>) => {
 	const ref = useRef<HTMLDivElement>(null);
+	const isPaidPreview = photo.mediaType === 'extendedMediaPreview';
 
 	const localBlobUrl = (photo as any).blobUrl;
 
@@ -72,6 +83,8 @@ const Photo = <T,>({
 	const { setImageURL, setPositionShow } = useMessageContextMenu();
 
 	const { isMobile } = useAppLayout();
+	const [isLoadAllowed, setIsLoadAllowed] = useState(canAutoLoad);
+	const shouldLoad = isLoadAllowed && isIntersecting;
 
 	const { width, height, isSmall } =
 		dimensions ||
@@ -84,7 +97,6 @@ const Photo = <T,>({
 			messageText,
 			isInWebPage
 		});
-
 	const { mediaData, loadProgress } = useMediaWithLoadProgress(
 		createImgproxyUrl(photo.url ?? '', { width: width, height: height, resizeType: 'fit' }),
 		!isIntersecting
@@ -93,15 +105,40 @@ const Photo = <T,>({
 
 	const withBlurredBackground = Boolean(forcedWidth);
 	const [withThumb] = useState(!fullMediaData);
-	const noThumb = false;
-
+	const noThumb = Boolean(fullMediaData);
 	const thumbRef = useBlurredMediaThumbRef(photo, false);
 	useMediaTransition(!noThumb, { ref: thumbRef });
 	const blurredBackgroundRef = useBlurredMediaThumbRef(photo, !withBlurredBackground);
 
+	const { loadProgress: downloadProgress } = useMediaWithLoadProgress(
+		!isPaidPreview ? getPhotoMediaHash(photo, 'download') : undefined,
+		!isDownloading,
+		!isPaidPreview ? getMediaFormat(photo, 'download') : undefined
+	);
+
+	const { isUploading, isTransferring, transferProgress } = getMediaTransferState(
+		uploadProgress || (isDownloading ? downloadProgress : loadProgress),
+		shouldLoad && !fullMediaData,
+		uploadProgress !== undefined
+	);
+
+	const wasLoadDisabled = usePreviousDeprecated(isLoadAllowed) === false;
+
+	const { ref: spinnerRef, shouldRender: shouldRenderSpinner } = useShowTransition({
+		isOpen: isTransferring,
+		noMountTransition: wasLoadDisabled,
+		className: 'slow',
+		withShouldRender: true
+	});
+
+	const { ref: downloadButtonRef, shouldRender: shouldRenderDownloadButton } = useShowTransition({
+		isOpen: !fullMediaData && !isLoadAllowed,
+		withShouldRender: true
+	});
+
 	const componentClassName = buildClassName(
 		'media-inner',
-		!nonInteractive && 'interactive',
+		!isUploading && !nonInteractive && 'interactive',
 		isSmall && 'small-image',
 		(width === height || size === 'pictogram') && 'square-image',
 		height < MIN_MEDIA_HEIGHT && 'fix-min-height',
@@ -120,6 +157,45 @@ const Photo = <T,>({
 					})
 				}
 			: undefined;
+
+	const { width: realWidth, height: realHeight } = photo;
+	let displayWidth, displayHeight;
+
+	const originalAspectRatio = realWidth && realHeight ? realWidth / realHeight : 1;
+
+	if (realWidth && realHeight) {
+		if (originalAspectRatio > 1) {
+			displayHeight = Math.min(height, realHeight);
+			displayWidth = Math.round(displayHeight * originalAspectRatio);
+			if (displayWidth > width) {
+				displayWidth = width;
+				displayHeight = Math.round(displayWidth / originalAspectRatio);
+			}
+		} else {
+			displayWidth = Math.min(width, realWidth);
+			displayHeight = Math.round(displayWidth / originalAspectRatio);
+			if (displayHeight > height) {
+				displayHeight = height;
+				displayWidth = Math.round(displayHeight * originalAspectRatio);
+			}
+		}
+	} else {
+		if (width && height) {
+			if (width / height > 1) {
+				displayHeight = height;
+				displayWidth = Math.min(width, Math.round(height * originalAspectRatio));
+			} else {
+				displayWidth = width;
+				displayHeight = Math.min(height, Math.round(width / originalAspectRatio));
+			}
+		} else {
+			displayWidth = width || 300;
+			displayHeight = height || 300;
+		}
+	}
+
+	displayWidth = Math.min(displayWidth, width || displayWidth);
+	displayHeight = Math.min(displayHeight, height || displayHeight);
 
 	const handleContextMenu = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
 		setImageURL(photo?.url ?? '');
@@ -150,8 +226,15 @@ const Photo = <T,>({
 					draggable={!isProtected}
 				/>
 			)}
-			{withThumb && <canvas ref={thumbRef} className="w-full h-full block object-cover absolute bottom-0 left-0" />}
+			{withThumb && (
+				<canvas
+					style={{ width: displayWidth, height: displayHeight }}
+					ref={thumbRef}
+					className="block object-cover absolute bottom-0 left-0 rounded overflow-hidden "
+				/>
+			)}
 			{isProtected && <span className="protector" />}
+			{shouldRenderSpinner && !shouldRenderDownloadButton && <div ref={spinnerRef as any}></div>}
 		</div>
 	);
 };

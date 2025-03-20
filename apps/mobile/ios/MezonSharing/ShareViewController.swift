@@ -241,19 +241,6 @@ private func redirectToHostApp(type: RedirectType) {
 
    UIApplication.shared.open(url, options: [:], completionHandler: completeRequest)
 }
-//  private func redirectToHostApp(type: RedirectType) {
-//    let url = URL(string: "\(shareProtocol)://dataUrl=\(sharedKey)#\(type)")
-//    var responder = self as UIResponder?
-//    let selectorOpenURL = sel_registerName("openURL:")
-//
-//    while (responder != nil) {
-//      if (responder?.responds(to: selectorOpenURL))! {
-//        let _ = responder?.perform(selectorOpenURL, with: url)
-//      }
-//      responder = responder!.next
-//    }
-//    extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
-//  }
 
 func completeRequest(success: Bool) {
     extensionContext!.completeRequest(returningItems: [], completionHandler: nil)

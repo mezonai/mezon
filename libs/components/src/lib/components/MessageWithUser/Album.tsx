@@ -1,4 +1,4 @@
-import { AlbumRectPart, IAlbum, IAlbumLayout, ObserveFn } from '@mezon/utils';
+import { AlbumRectPart, ApiPhoto, IAlbum, IAlbumLayout, ObserveFn } from '@mezon/utils';
 import { FC } from 'react';
 import Photo from './Photo';
 
@@ -26,11 +26,24 @@ const Album: FC<OwnProps> = ({ album, observeIntersection, hasCustomAppendix, is
 				// eslint-disable-next-line no-bitwise
 				(isOwn ? index === mediaCount - 1 : Boolean(sides & AlbumRectPart.Left && sides & AlbumRectPart.Bottom));
 
+			const photoProps = {
+				mediaType: 'photo',
+				id: index + '',
+				url: attachment?.url,
+				width: attachment?.width || 0,
+				height: attachment?.height || 150
+			} as ApiPhoto;
+
+			attachment?.thumbnail &&
+				(photoProps.thumbnail = {
+					dataUri: attachment.thumbnail
+				});
+
 			return (
 				<Photo
 					id={`album-media-${index}`}
 					key={index}
-					photo={attachment}
+					photo={photoProps}
 					isOwn={isOwn}
 					observeIntersection={observeIntersection}
 					shouldAffectAppendix={shouldAffectAppendix}

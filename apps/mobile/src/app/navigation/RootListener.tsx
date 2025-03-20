@@ -77,10 +77,10 @@ const RootListener = () => {
 	}, [isLoggedIn]);
 
 	const startupRunning = async (navigation: any) => {
+		await setupNotificationListeners(navigation);
 		if (Platform.OS === 'ios') {
 			await setupCallKeep();
 		}
-		await setupNotificationListeners(navigation);
 	};
 
 	const initAppLoading = async () => {

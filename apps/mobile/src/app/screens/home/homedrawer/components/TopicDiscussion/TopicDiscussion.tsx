@@ -15,7 +15,6 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { KeyboardAvoidingView, Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import ShareLocationConfirmModal from '../../../../../components/ShareLocationConfirmModal';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import ChannelMessagesWrapper from '../../ChannelMessagesWrapper';
 import { ChatBox } from '../../ChatBox';
@@ -135,10 +134,6 @@ export default function TopicDiscussion() {
 					isPublic={isPublicChannel(currentChannel)}
 				/>
 				<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
-				<ShareLocationConfirmModal
-					channelId={currentChannel?.channel_id}
-					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-				/>
 			</KeyboardAvoidingView>
 		</View>
 	);

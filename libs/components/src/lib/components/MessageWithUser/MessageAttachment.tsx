@@ -294,10 +294,6 @@ const ImageAlbum = ({
 		const photoProps = {
 			mediaType: 'photo',
 			id: message.id,
-			thumbnail: {
-				dataUri: firstImage?.thumbnail || ''
-			},
-			date: Math.floor(Date.now() / 1000),
 			url: firstImage?.url,
 			width: firstImage?.width || 0,
 			height: firstImage?.height || 150

@@ -2,7 +2,6 @@ import { useTheme } from '@mezon/mobile-ui';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useRef } from 'react';
 import { KeyboardAvoidingView, Platform } from 'react-native';
-import ShareLocationConfirmModal from '../../../components/ShareLocationConfirmModal';
 import ChannelMessagesWrapper from '../../home/homedrawer/ChannelMessagesWrapper';
 import { ChatBox } from '../../home/homedrawer/ChatBox';
 import PanelKeyboard from '../../home/homedrawer/PanelKeyboard';
@@ -48,10 +47,6 @@ export const ChatMessageWrapper = memo(({ directMessageId, isModeDM, currentClan
 				directMessageId={directMessageId || ''}
 				currentChannelId={directMessageId}
 				currentClanId={currentClanId}
-			/>
-			<ShareLocationConfirmModal
-				channelId={directMessageId}
-				mode={Number(isModeDM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP)}
 			/>
 		</KeyboardAvoidingView>
 	);

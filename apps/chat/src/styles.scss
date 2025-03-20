@@ -118,12 +118,14 @@
 	/* Firefox */
 }
 
-::-webkit-scrollbar {
-	width: 8px;
-}
-
 #channelList {
 	margin-right: 2px;
+}
+
+// fix later
+
+::-webkit-scrollbar {
+	width: 8px;
 }
 
 /* Track */
@@ -1169,5 +1171,22 @@ input:-webkit-autofill:active {
 			100% 100%,
 			0 100%,
 			0 0;
+	}
+}
+
+.opacity-transition {
+	opacity: 1;
+	transition: opacity 0.15s ease;
+
+	&.not-open {
+		opacity: 0;
+	}
+
+	&.not-shown {
+		display: none;
+	}
+
+	&.slow {
+		transition-duration: 0.3s;
 	}
 }

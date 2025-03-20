@@ -9,12 +9,12 @@ export const style = (colors: Attributes) =>
 			height: '100%',
 			overflow: 'hidden',
 			borderTopLeftRadius: size.s_14,
-			borderTopRightRadius: size.s_14,
-			paddingBottom: size.s_10
+			borderTopRightRadius: size.s_14
 		},
 		messageActionsWrapper: {
 			paddingVertical: size.s_20,
-			gap: size.s_10
+			gap: size.s_10,
+			backgroundColor: colors.primary
 		},
 		reactWrapper: {
 			flexDirection: 'row',
