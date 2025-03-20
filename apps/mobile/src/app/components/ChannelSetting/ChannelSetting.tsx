@@ -236,7 +236,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: isChannel ? t('fields.channelDelete.leave') : t('fields.threadLeave.leave'),
 					textStyle: { color: 'red' },
 					onPress: () => handlePressLeaveChannel(),
-					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
+					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={'red'} />,
 					isShow: channel?.creator_id !== currentUserId
 				}
 			] satisfies IMezonMenuItemProps[],

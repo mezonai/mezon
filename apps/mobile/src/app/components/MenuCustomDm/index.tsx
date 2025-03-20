@@ -1,4 +1,4 @@
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,

@@ -1,4 +1,4 @@
-import { ActionEmitEvent, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -22,12 +22,10 @@ import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
-import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IFile } from '../../../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import MezonOption from '../../../../../componentUI/MezonOption';
-import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -52,7 +50,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		return parentChannelsInClan?.map((channel) => ({
 			title: channel?.channel_label,
 			value: channel?.channel_id,
-			icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
+			icon: <Icons.TextIcon color={themeValue.text} />
 		}));
 	}, [parentChannelsInClan, themeValue.text]);
 
@@ -123,7 +121,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					</Pressable>
 				) : (
 					<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+						<Icons.ArrowLargeLeftIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
 					</Pressable>
 				),
 
@@ -155,7 +153,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					Keyboard.dismiss();
 				},
 				expandable: true,
-				icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
+				icon: <Icons.TextIcon color={themeValue.text} />
 			}
 		];
 	}, [themeValue.text, webhookChannel?.channel_label]);
@@ -242,13 +240,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 							uri: urlImageWebhook
 						}}
 					/>
-					<MezonIconCDN
-						icon={IconCDN.uploadPlusIcon}
-						customStyle={styles.uploadIcon}
-						height={size.s_20}
-						width={size.s_20}
-						color={themeValue.white}
-					/>
+					<Icons.UploadPlusIcon style={styles.uploadIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
 				</TouchableOpacity>
 				<Text style={styles.textRecommend}>{t('webhooksEdit.recommendImage', { ns: 'clanIntegrationsSetting' })}</Text>
 			</View>

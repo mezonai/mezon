@@ -1,6 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -21,8 +21,6 @@ import { useSelector } from 'react-redux';
 import { useMixImageColor } from '../../../../../../app/hooks/useMixImageColor';
 import { APP_SCREEN } from '../../../../../../app/navigation/ScreenTypes';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
-import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../constants/icon_cdn';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from './UserProfile.styles';
 import ActivityAppComponent from './component/ActivityAppComponent';
@@ -133,14 +131,14 @@ const UserProfile = React.memo(
 			{
 				id: 1,
 				text: t('userAction.sendMessage'),
-				icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />,
+				icon: <Icons.ChatIcon color={themeValue.text} />,
 				action: navigateToMessageDetail,
 				isShow: true
 			},
 			// {
 			// 	id: 2,
 			// 	text: t('userAction.voiceCall'),
-			// 	icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
+			// 	icon: <Icons.PhoneCallIcon color={themeValue.text} />,
 			// 	action: () => {
 			// 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			// 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
@@ -155,7 +153,7 @@ const UserProfile = React.memo(
 			// {
 			// 	id: 3,
 			// 	text: t('userAction.videoCall'),
-			// 	icon: <MezonIconCDN icon={IconCDN.videoIcon} color={themeValue.text} />,
+			// 	icon: <Icons.VideoIcon color={themeValue.text} />,
 			// 	action: () => {
 			// 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			// 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
@@ -171,7 +169,7 @@ const UserProfile = React.memo(
 			{
 				id: 4,
 				text: t('userAction.addFriend'),
-				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={Colors.green} />,
+				icon: <Icons.UserPlusIcon color={Colors.green} />,
 				action: () => {
 					const userIdToAddFriend = userId || user?.id;
 					if (userIdToAddFriend) {
@@ -189,7 +187,7 @@ const UserProfile = React.memo(
 			{
 				id: 5,
 				text: t('userAction.pending'),
-				icon: <MezonIconCDN icon={IconCDN.clockIcon} color={Colors.goldenrodYellow} />,
+				icon: <Icons.ClockIcon color={Colors.goldenrodYellow} />,
 				action: () => {
 					setIsShowPendingContent(true);
 				},

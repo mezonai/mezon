@@ -1,3 +1,4 @@
+import { Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllFriends } from '@mezon/store';
 import { useNavigation } from '@react-navigation/native';
@@ -5,8 +6,6 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -34,7 +33,7 @@ function MessageHeader() {
 			<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
 			<View style={styles.addFriendWrapper}>
 				<TouchableOpacity style={styles.btnAddFriend} onPress={() => navigateToAddFriendScreen()}>
-					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+					<Icons.UserPlusIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 					<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 				</TouchableOpacity>
 				{!!quantityPendingRequest && (

@@ -1,4 +1,4 @@
-import { ActionEmitEvent, ETypeSearch, VerifyIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, ETypeSearch, Icons, VerifyIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { getStoreAsync, selectCurrentChannel, selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -6,9 +6,7 @@ import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import { EventViewer } from '../../../../../../components/Event';
-import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import ClanMenu from '../../ClanMenu/ClanMenu';
 import { style } from './styles';
@@ -102,14 +100,14 @@ const ChannelListHeader = () => {
 			</TouchableOpacity>
 			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
 				<TouchableOpacity activeOpacity={0.8} onPress={navigateToSearchPage} style={styles.wrapperSearch}>
-					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<Icons.MagnifyingIcon color={themeValue.text} height={size.s_18} width={size.s_18} />
 					<Text style={styles.placeholderSearchBox}>{t('search')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} onPress={onOpenScanQR} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.scanQR} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<Icons.ScanQR height={size.s_18} width={size.s_18} color={themeValue.text} />
 				</TouchableOpacity>
 				<TouchableOpacity activeOpacity={0.8} onPress={onOpenEvent} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<Icons.CalendarIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
 				</TouchableOpacity>
 			</View>
 		</View>

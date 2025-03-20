@@ -1,5 +1,12 @@
 import { useNotification } from '@mezon/core';
-import { ActionEmitEvent, getUpdateOrAddClanChannelCache, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import {
+	ActionEmitEvent,
+	getUpdateOrAddClanChannelCache,
+	Icons,
+	save,
+	STORAGE_CLAN_ID,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE
+} from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,

@@ -159,7 +159,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			},
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
-		},
+		}
 		// {
 		// 	title: t('menu.userManagement.bans'),
 		// 	onPress: () => reserve(),

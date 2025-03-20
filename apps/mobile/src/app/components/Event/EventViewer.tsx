@@ -1,5 +1,5 @@
 import { usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectAllTextChannel, selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';

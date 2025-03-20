@@ -1,4 +1,5 @@
 import { useClanRestriction } from '@mezon/core';
+import { Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { deleteSticker, selectMemberClanByUserId2, updateSticker, useAppDispatch } from '@mezon/store';
 import { selectCurrentUserId, useAppSelector } from '@mezon/store-mobile';
@@ -11,8 +12,6 @@ import FastImage from 'react-native-fast-image';
 import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../../componentUI/MezonAvatar';
-import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IStickerItem {
@@ -47,7 +46,7 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 		return (
 			<View style={styles.rightItem}>
 				<TouchableOpacity style={styles.deleteButton} onPress={handleDeleteSticker}>
-					<MezonIconCDN icon={IconCDN.trashIcon} width={size.s_20} height={size.s_20} color={baseColor.white} />
+					<Icons.TrashIcon width={size.s_20} height={size.s_20} color={baseColor.white} />
 					<Text style={styles.deleteText}>{t('btn.delete')}</Text>
 				</TouchableOpacity>
 			</View>

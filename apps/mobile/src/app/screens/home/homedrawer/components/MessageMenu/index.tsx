@@ -26,8 +26,6 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../../../componentUI/MezonMenu';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
@@ -106,7 +104,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			},
 			title: t('menu.closeDm'),
 			isShow: !isGroup,
-			icon: <MezonIconCDN icon={IconCDN.userMinusIcon} color={baseColor.gray} />
+			icon: <UserMinus color={baseColor.gray} />
 		}
 	];
 
@@ -133,7 +131,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
-			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={baseColor.gray} />
+			icon: <Icons.EyeIcon color={baseColor.gray} />
 		}
 	];
 
@@ -171,11 +169,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: handleEnableOrDisableE2EE,
 			title: messageInfo?.e2ee ? t('menu.disableE2EE') : t('menu.enableE2EE'),
-			icon: messageInfo?.e2ee ? (
-				<MezonIconCDN icon={IconCDN.lockUnlockIcon} color={themeValue.textStrong} />
-			) : (
-				<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} />
-			)
+			icon: messageInfo?.e2ee ? <Icons.LockUnlockedIcon color={themeValue.textStrong} /> : <Icons.LockIcon color={themeValue.text} />
 		},
 		{
 			title: isDmUnmute ? t('menu.muteConversation') : t('menu.unMuteConversation'),
@@ -191,9 +185,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				dismiss();
 			},
 			icon: isDmUnmute ? (
-				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
+				<Icons.BellSlashIcon color={themeValue.textStrong} />
 			) : (
-				<MezonIconCDN icon={IconCDN.bellIcon} width={22} height={22} color={themeValue.text} />
+				<Icons.BellIcon width={22} height={22} color={themeValue.text} />
 			)
 		}
 		// {
@@ -235,7 +229,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			<View style={styles.header}>
 				{isGroup ? (
 					<View style={styles.groupAvatar}>
-						<MezonIconCDN icon={IconCDN.groupIcon} />
+						<Icons.GroupIcon />
 					</View>
 				) : (
 					<View style={styles.avatarWrapper}>

@@ -1,5 +1,5 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
+import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, notificationSettingActions, selectCurrentClanId, selectNotifiSettingsEntitiesById, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, IChannel } from '@mezon/utils';

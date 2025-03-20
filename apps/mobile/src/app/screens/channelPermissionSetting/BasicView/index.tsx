@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
@@ -20,9 +20,7 @@ import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonSwitch from '../../../componentUI/MezonSwitch';
-import { IconCDN } from '../../../constants/icon_cdn';
 import { AddMemberOrRoleBS } from '../components/AddMemberOrRoleBS';
 import { MemberItem } from '../components/MemberItem';
 import { RoleItem } from '../components/RoleItem';
@@ -113,11 +111,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 			type: 'success',
 			props: {
 				text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-				leadingIcon: isError ? (
-					<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
-				) : (
-					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
-				)
+				leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
 			}
 		});
 	};
@@ -184,10 +178,10 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 							}}
 						>
 							<View style={{ flexDirection: 'row', gap: size.s_14, alignItems: 'center' }}>
-								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} color={themeValue.text} />
+								<Icons.CirclePlusPrimaryIcon color={themeValue.text} />
 								<Text color={themeValue.text}>{t('channelPermission.addMemberAndRoles')}</Text>
 							</View>
-							<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
+							<Icons.ChevronSmallRightIcon color={themeValue.text} />
 						</View>
 					</TouchableOpacity>
 				</View>

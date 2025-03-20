@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { ActionEmitEvent, CloseIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, CloseIcon, Icons } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
@@ -8,8 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../constants/icon_cdn';
 import RoleColorPicker from '../RoleColorPicker/RoleColorPicker';
 import { style } from './styles';
 
@@ -63,7 +61,7 @@ function RoleCoLourComponent({ roleId }: { roleId: string }) {
 				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 					<View style={{ width: size.s_40, height: size.s_40, backgroundColor: roleColorSelected, borderRadius: size.s_6 }}></View>
 					<Text style={styles.colorText}>{activeRole?.color ?? ''}</Text>
-					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
+					<Icons.ChevronSmallRightIcon color={themeValue.text} />
 				</View>
 			</TouchableOpacity>
 		</View>

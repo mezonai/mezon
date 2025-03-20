@@ -1,5 +1,6 @@
 import { ChatContext } from '@mezon/core';
 import {
+	CloseIcon,
 	debounce,
 	getAttachmentUnique,
 	getUpdateOrAddClanChannelCache,
@@ -38,8 +39,6 @@ import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import { useDispatch, useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../constants/icon_cdn';
 import { isImage, isVideo } from '../../../utils/helpers';
 import AttachmentFilePreview from '../../home/homedrawer/components/AttachmentFilePreview';
 import SharingSuggestItem from './SharingSuggestItem';
@@ -421,7 +420,7 @@ export const Sharing = ({ data, onClose }) => {
 		<View style={styles.wrapper}>
 			<View style={styles.header}>
 				<TouchableOpacity onPress={onClose}>
-					<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_28} height={size.s_28} />
+					<CloseIcon width={size.s_28} height={size.s_28} />
 				</TouchableOpacity>
 				<Text style={styles.titleHeader}>Share</Text>
 				{channelSelected && isAttachmentUploaded ? (
@@ -474,7 +473,7 @@ export const Sharing = ({ data, onClose }) => {
 													style={styles.iconRemoveMedia}
 													onPress={() => removeAttachmentByUrl(media.url ?? '')}
 												>
-													<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} height={size.s_18} />
+													<CloseIcon width={size.s_18} height={size.s_18} />
 												</TouchableOpacity>
 											)}
 
@@ -503,7 +502,7 @@ export const Sharing = ({ data, onClose }) => {
 						/>
 						{!!dataText?.length && (
 							<TouchableOpacity activeOpacity={0.8} onPress={() => setDataText('')} style={styles.iconRightInput}>
-								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
+								<CloseIcon width={size.s_18} />
 							</TouchableOpacity>
 						)}
 					</View>
@@ -546,7 +545,7 @@ export const Sharing = ({ data, onClose }) => {
 								}}
 								style={styles.iconRightInput}
 							>
-								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
+								<CloseIcon width={size.s_18} />
 							</TouchableOpacity>
 						) : (
 							!!searchText?.length && (
@@ -558,7 +557,7 @@ export const Sharing = ({ data, onClose }) => {
 									}}
 									style={styles.iconRightInput}
 								>
-									<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
+									<CloseIcon width={size.s_18} />
 								</TouchableOpacity>
 							)
 						)}

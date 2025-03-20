@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon, Icons } from '@mezon/mobile-components';
 import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { ClansEntity, selectAllClans, selectCurrentClan } from '@mezon/store-mobile';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -11,9 +11,7 @@ import { useSelector } from 'react-redux';
 import { IClanProfileValue } from '..';
 import { SeparatorWithLine } from '../../../../../app/components/Common';
 import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
-import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../componentUI/MezonInput';
-import { IconCDN } from '../../../../constants/icon_cdn';
 import { normalizeString } from '../../../../utils/helpers';
 import BannerAvatar from '../UserProfile/components/Banner';
 import { style } from './styles';
@@ -138,7 +136,7 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 				<View style={{ flex: 1 }}>
 					<Text style={styles.clanName}>{selectedClan?.clan_name}</Text>
 				</View>
-				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={size.s_15} width={size.s_15} color={themeValue.text} />
+				<Icons.ChevronSmallRightIcon height={size.s_15} width={size.s_15} color={themeValue.text} />
 			</TouchableOpacity>
 
 			<BannerAvatar
@@ -150,7 +148,7 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 
 			<View style={styles.btnGroup}>
 				<TouchableOpacity onPress={() => onPressHashtag()} style={styles.btnIcon}>
-					<MezonIconCDN icon={IconCDN.channelText} width={size.s_16} height={size.s_16} />
+					<Icons.TextIcon width={size.s_16} height={size.s_16} />
 				</TouchableOpacity>
 			</View>
 

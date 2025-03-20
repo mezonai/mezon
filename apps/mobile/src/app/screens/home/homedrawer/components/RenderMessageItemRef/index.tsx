@@ -1,10 +1,9 @@
+import { ReplyIcon, ReplyMessageDeleted } from '@mezon/mobile-components';
 import { Text, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity } from '@mezon/store';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { style } from '../../styles';
 import { MessageReferences } from '../MessageReferences';
 
@@ -38,10 +37,10 @@ export const RenderMessageItemRef = ({ message, preventAction, isSearchTab }: Re
 			{isMessageReplyDeleted && !isSearchTab ? (
 				<View style={styles.aboveMessageDeleteReply}>
 					<View style={styles.iconReply}>
-						<MezonIconCDN icon={IconCDN.reply} width={34} height={30} customStyle={styles.deletedMessageReplyIcon} />
+						<ReplyIcon width={34} height={30} style={styles.deletedMessageReplyIcon} />
 					</View>
 					<View style={styles.iconMessageDeleteReply}>
-						<MezonIconCDN icon={IconCDN.replyDelete} width={12} height={12} />
+						<ReplyMessageDeleted width={18} height={9} />
 					</View>
 					<Text style={styles.messageDeleteReplyText}>{t('messageDeleteReply')}</Text>
 				</View>

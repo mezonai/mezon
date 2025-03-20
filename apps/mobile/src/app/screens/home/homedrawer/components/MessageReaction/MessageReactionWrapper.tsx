@@ -1,11 +1,9 @@
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, FaceIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { EmojiDataOptionals, SenderInfoOptionals, TypeMessage, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback } from 'react';
 import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
-import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import ImageNative from '../../../../../components/ImageNative';
 import { IMessageReactionProps } from '../../types';
 import { MessageReactionContent } from './components/MessageReactionContent';
@@ -120,7 +118,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 
 			{messageReactions?.length ? (
 				<Pressable onPress={() => !preventAction && openEmojiPicker?.()} style={styles.addEmojiIcon}>
-					<MezonIconCDN icon={IconCDN.faceIcon} height={size.s_20} width={size.s_20} color={Colors.gray72} />
+					<FaceIcon color={Colors.gray72} />
 				</Pressable>
 			) : null}
 		</View>

@@ -1,5 +1,5 @@
 import { RTCView } from '@livekit/react-native-webrtc';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
@@ -20,9 +20,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import Images from '../../../../assets/Images';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
-import { IconCDN } from '../../../constants/icon_cdn';
 import { useWebRTCCallMobile } from '../../../hooks/useWebRTCCallMobile';
 import { style } from './styles';
 
@@ -166,13 +164,13 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 							}}
 							style={styles.buttonCircle}
 						>
-							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} />
+							<Icons.ChevronSmallLeftIcon />
 						</TouchableOpacity>
 					</View>
 
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 						<TouchableOpacity onPress={toggleSpeaker} style={styles.buttonCircle}>
-							{localMediaControl.speaker ? <MezonIconCDN icon={IconCDN.channelVoice} /> : <MezonIconCDN icon={IconCDN.voiceLowIcon} />}
+							{localMediaControl.speaker ? <Icons.VoiceNormalIcon /> : <Icons.VoiceLowIcon />}
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -214,24 +212,24 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 						>
 							<TouchableOpacity onPress={toggleVideo} style={[styles.menuIcon, localMediaControl?.camera && styles.menuIconActive]}>
 								{localMediaControl?.camera ? (
-									<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
+									<Icons.VideoIcon width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<Icons.VideoSlashIcon width={size.s_24} height={size.s_24} color={themeValue.white} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
 								{localMediaControl?.mic ? (
-									<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
+									<Icons.MicrophoneIcon width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<Icons.MicrophoneDenyIcon width={size.s_24} height={size.s_24} color={themeValue.white} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={() => {}} style={styles.menuIcon}>
-								<MezonIconCDN icon={IconCDN.chatIcon} />
+								<Icons.ChatIcon />
 							</TouchableOpacity>
 
 							<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-								<MezonIconCDN icon={IconCDN.phoneCallIcon} />
+								<Icons.PhoneCallIcon />
 							</TouchableOpacity>
 						</View>
 					</View>
