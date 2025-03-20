@@ -22,6 +22,7 @@ import {
 import { Icons } from '@mezon/ui';
 import {
 	AMOUNT_TOKEN,
+	EEventAction,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	IMessageWithUser,
@@ -50,6 +51,7 @@ type ChannelMessageOptProps = {
 	isDifferentDay: boolean;
 	hasPermission: boolean;
 	isTopic: boolean;
+	canSendMessage: boolean;
 };
 
 type JsonObject = {
@@ -75,26 +77,27 @@ const ChannelMessageOpt = ({
 	mode,
 	isDifferentDay,
 	hasPermission = true,
-	isTopic
+	isTopic,
+	canSendMessage
 }: ChannelMessageOptProps) => {
 	const currentChannel = useSelector(selectCurrentChannel);
+	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 	const refOpt = useRef<HTMLDivElement>(null);
 	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannel?.id ?? '');
-	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parrent_id ?? '') && canManageThread);
+	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parent_id ?? '') && canManageThread);
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const replyMenu = useMenuReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
 	const reactMenu = useReactMenuBuilder(message);
-	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission);
+	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const addToNote = useAddToNoteBuilder(message, defaultCanvas, currentChannel, mode);
 	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message);
 	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channel_id ?? ''));
 	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topic_id ?? ''));
-	const doNotAllowCreateTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic) || !hasPermission;
+	const doNotAllowCreateTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic) || !hasPermission || !canSendMessage;
 	const createTopicMenu = useTopicMenuBuilder(message, doNotAllowCreateTopic);
 	const items = useMenuBuilder([createTopicMenu, reactMenu, replyMenu, editMenu, threadMenu, addToNote, giveACoffeeMenu, optionMenu]);
-	const { createDirectMessageWithUser } = useDirect();
 	return (
 		<div
 			className={`chooseForText z-[1] absolute h-8 p-0.5 rounded block ${!isCombine ? (message?.references ? '-top-5' : 'top-0') : '-top-5'} ${isDifferentDay ? 'top-4' : ''} right-6 w-fit`}
@@ -204,6 +207,7 @@ const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
 };
 
 function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
+	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
 	const { reactionMessageDispatch } = useChatReaction();
@@ -218,7 +222,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
-					`Tokens sent: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
+					`Balance notifications: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
 					response.channel_id,
 					channelMode,
 					TypeMessage.SendToken
@@ -261,7 +265,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	}, [isFocusTopicBox, channel]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(userId !== message.sender_id, (builder) => {
+		builder.when(userId !== message?.sender_id && message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID, (builder) => {
 			builder.addMenuItem('giveacoffee', 'Give a coffee', handleItemClick, <Icons.DollarIcon defaultSize="w-5 h-5" />);
 		});
 	});
@@ -282,7 +286,8 @@ function useAddToNoteBuilder(message: IMessageWithUser, defaultCanvas: CanvasAPI
 				content,
 				is_default: true,
 				...(id && { id }),
-				title: defaultCanvas?.title || 'Note'
+				title: defaultCanvas?.title || 'Note',
+				status: defaultCanvas ? 0 : EEventAction.CREATED
 			});
 
 			const insertImageToJson = (jsonObject: JsonObject, imageUrl?: string) => {
@@ -463,7 +468,7 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 	});
 }
 
-function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boolean, hasPermission: boolean) {
+function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boolean, hasPermission: boolean, isAppChannel: boolean) {
 	const [thread, setThread] = useState(false);
 	const dispatch = useAppDispatch();
 
@@ -498,7 +503,7 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 	}, [dispatch, message, setIsShowCreateThread, setOpenThreadMessageState, setThread, thread, setValueThread]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(isShowIconThread && hasPermission, (builder) => {
+		builder.when(isShowIconThread && hasPermission && !isAppChannel, (builder) => {
 			builder.addMenuItem('thread', 'thread', handleItemClick, <Icons.ThreadIcon isWhite={thread} />);
 		});
 	});
@@ -521,6 +526,11 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 	);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.addMenuItem('option', 'option', useHandleClickOption, <Icons.ThreeDot />);
+		builder.addMenuItem(
+			'option',
+			'option',
+			useHandleClickOption,
+			<Icons.ThreeDot defaultSize={'w-5 h-5 dark:hover:text-white hover:text-black'} />
+		);
 	});
 }

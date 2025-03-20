@@ -32,7 +32,7 @@ export function extracMeta(user: UsersClanEntity, state: RootState): ClanMembers
 		try {
 			metadata = safeJSONParse(user.user.metadata);
 		} catch (error) {
-			console.error('Error parsing JSON:', user.user.metadata, error);
+			console.error('Error parsing JSON:', user?.user?.metadata, error);
 		}
 	} else if (typeof user?.user?.metadata === 'object') {
 		metadata = user.user.metadata;

@@ -208,7 +208,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			ref={modalRef}
 			tabIndex={-1}
 			onMouseDown={(e) => e.stopPropagation()}
-			className={`outline-none absolute top-[20px] left-0 dark:bg-bgPrimary bg-bgLightPrimary z-10 w-[440px] border border-slate-300 dark:border-none rounded shadow shadow-neutral-800 ${classNames}`}
+			className={`absolute top-8 right-0 z-50 outline-none dark:bg-bgPrimary bg-bgLightPrimary w-[440px] border border-slate-300 dark:border-none rounded shadow shadow-neutral-800 ${classNames}`}
 			onClick={(e) => {
 				e.stopPropagation();
 			}}

@@ -1,11 +1,12 @@
 import { AudioSession, LiveKitRoom } from '@livekit/react-native';
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById2 } from '@mezon/store';
 import React, { useEffect } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import RoomView from './RoomView';
 import { style } from './styles';
 
@@ -60,7 +61,7 @@ function ChannelVoice({
 								}}
 								style={styles.buttonCircle}
 							>
-								<Icons.ChevronSmallDownIcon />
+								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
 							</TouchableOpacity>
 							<Text numberOfLines={1} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
 								{channel?.channel_label}

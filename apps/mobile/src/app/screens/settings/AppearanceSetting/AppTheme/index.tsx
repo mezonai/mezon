@@ -1,8 +1,8 @@
 import { ThemeMode, ThemeModeBase, themeColors, useTheme } from '@mezon/mobile-ui';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Appearance, View } from 'react-native';
-import { IMezonSlideOptionsData, MezonSlideOption } from '../../../../componentUI';
+import { View } from 'react-native';
+import MezonSlideOption, { IMezonSlideOptionsData } from '../../../../componentUI/MezonSlideOption';
 import { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
 

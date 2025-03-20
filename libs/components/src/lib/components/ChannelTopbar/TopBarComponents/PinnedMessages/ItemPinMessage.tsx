@@ -65,7 +65,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 			key={pinMessage.id}
 			className="relative flex flex-row justify-between dark:bg-bgPrimary bg-white dark: py-3 px-3 mx-2 w-widthPinMess cursor-default rounded overflow-hidden border dark:border-bgTertiary border-gray-300 group/item-pinMess"
 		>
-			<div className="flex items-start gap-2 w-full cursor-default ">
+			<div className="flex items-start gap-2 w-full ">
 				<div className="pointer-events-none">
 					{' '}
 					<MemberProfile
@@ -81,7 +81,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 				<div className="flex flex-col gap-1 text-left w-[85%] enableSelectText cursor-text">
 					<div className="flex items-center gap-4">
 						<div className="font-medium dark:text-textDarkTheme text-textLightTheme">{nameToShow}</div>
-						<div className="dark:text-zinc-400 text-colorTextLightMode text-[10px] cursor-default">{messageTime}</div>
+						<div className="dark:text-zinc-400 text-colorTextLightMode text-[10px]">{messageTime}</div>
 					</div>
 					<div className="leading-6">
 						<MessageLine
@@ -90,7 +90,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							content={messageContentObject}
 							isJumMessageEnabled={false}
 							isTokenClickAble={false}
-							messageId={message?.message_id}
+							messageId={message?.id}
 							isSearchMessage={true} // to correct size youtube emmbed
 						/>
 					</div>

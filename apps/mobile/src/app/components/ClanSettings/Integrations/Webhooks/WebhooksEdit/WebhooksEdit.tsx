@@ -1,4 +1,4 @@
-import { Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { ActionEmitEvent, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -14,23 +14,20 @@ import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { ChannelIsNotThread } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Keyboard, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, Keyboard, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
-import {
-	IFile,
-	IMezonMenuItemProps,
-	IMezonMenuSectionProps,
-	MezonBottomSheet,
-	MezonConfirm,
-	MezonInput,
-	MezonMenu,
-	MezonOption
-} from '../../../../../componentUI';
+import MezonConfirm from '../../../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IFile } from '../../../../../componentUI/MezonImagePicker';
+import MezonInput from '../../../../../componentUI/MezonInput';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
+import MezonOption from '../../../../../componentUI/MezonOption';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -38,7 +35,6 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { webhook } = route.params || {};
-	const bottomSheetSelectChannelRef = useRef(null);
 	const { sessionRef, clientRef } = useMezon();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const [urlImageWebhook, setUrlImageWebhook] = useState<string>('');
@@ -48,16 +44,15 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const allChannel = useSelector(selectAllChannels);
 	const [isCopied, setIsCopied] = useState(false);
-	const [isVisibleModal, setIsVisibleModal] = useState(false);
 	const { t } = useTranslation(['screenStack', 'clanIntegrationsSetting']);
-	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parrent_id === ChannelIsNotThread.TRUE), [allChannel]);
+	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
 	const dispatch = useAppDispatch();
 
 	const channel = useMemo(() => {
 		return parentChannelsInClan?.map((channel) => ({
 			title: channel?.channel_label,
 			value: channel?.channel_id,
-			icon: <Icons.TextIcon color={themeValue.text} />
+			icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
 		}));
 	}, [parentChannelsInClan, themeValue.text]);
 
@@ -128,7 +123,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					</Pressable>
 				) : (
 					<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-						<Icons.ArrowLargeLeftIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 					</Pressable>
 				),
 
@@ -152,11 +147,15 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			{
 				title: webhookChannel?.channel_label,
 				onPress: () => {
-					bottomSheetSelectChannelRef?.current?.present();
+					const data = {
+						snapPoints: ['50%'],
+						children: <MezonOption data={channel} value={webhookChannel?.channel_id} onChange={handleChangeOption} />
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					Keyboard.dismiss();
 				},
 				expandable: true,
-				icon: <Icons.TextIcon color={themeValue.text} />
+				icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
 			}
 		];
 	}, [themeValue.text, webhookChannel?.channel_label]);
@@ -214,7 +213,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const handleChangeOption = useCallback(
 		(value) => {
 			setHasChange(true);
-			bottomSheetSelectChannelRef.current.dismiss();
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			const channelSelect = getChannelSelect(value);
 			setWebhookChannel(channelSelect);
 		},
@@ -228,14 +227,10 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 
 	const handleDeleteWebhook = async (webhook: ApiWebhook) => {
 		await dispatch(deleteWebhookById({ webhook: webhook, channelId: currentChannel?.channel_id as string, clanId }));
-		setIsVisibleModal(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS);
 		await dispatch(fetchWebhooks({ channelId: '0', clanId: clanId }));
 	};
-
-	const visibleChange = useCallback((value) => {
-		setIsVisibleModal(value);
-	}, []);
 
 	return (
 		<View style={{ backgroundColor: themeValue.primary, width: '100%', height: '100%', padding: size.s_10 }}>
@@ -247,7 +242,13 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 							uri: urlImageWebhook
 						}}
 					/>
-					<Icons.UploadPlusIcon style={styles.uploadIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
+					<MezonIconCDN
+						icon={IconCDN.uploadPlusIcon}
+						customStyle={styles.uploadIcon}
+						height={size.s_20}
+						width={size.s_20}
+						color={themeValue.white}
+					/>
 				</TouchableOpacity>
 				<Text style={styles.textRecommend}>{t('webhooksEdit.recommendImage', { ns: 'clanIntegrationsSetting' })}</Text>
 			</View>
@@ -266,33 +267,31 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				</TouchableOpacity>
 			</View>
 
-			<TouchableOpacity onPress={() => setIsVisibleModal(true)} style={styles.btnDelete}>
+			<TouchableOpacity
+				onPress={() => {
+					const data = {
+						children: (
+							<MezonConfirm
+								confirmText={t('webhooksEdit.yes', { ns: 'clanIntegrationsSetting' })}
+								title={t('webhooksEdit.deleteCaptionHook', { ns: 'clanIntegrationsSetting' })}
+								children={
+									<Text style={{ color: themeValue.white }}>
+										{t('webhooksEdit.deleteWebhookConfirmation', {
+											ns: 'clanIntegrationsSetting',
+											webhookName: webhook?.webhook_name
+										})}
+									</Text>
+								}
+								onConfirm={() => handleDeleteWebhook(webhook)}
+							/>
+						)
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+				}}
+				style={styles.btnDelete}
+			>
 				<Text style={styles.textBtnDelete}>{t('webhooksEdit.delete', { ns: 'clanIntegrationsSetting' })}</Text>
 			</TouchableOpacity>
-
-			<MezonBottomSheet
-				title={t('webhooksEdit.selectAChannel', { ns: 'clanIntegrationsSetting' })}
-				snapPoints={['50%']}
-				ref={bottomSheetSelectChannelRef}
-			>
-				<MezonOption data={channel} value={webhookChannel?.channel_id} onChange={handleChangeOption} />
-			</MezonBottomSheet>
-
-			<MezonConfirm
-				visible={isVisibleModal}
-				onVisibleChange={visibleChange}
-				confirmText={t('webhooksEdit.yes', { ns: 'clanIntegrationsSetting' })}
-				title={t('webhooksEdit.deleteCaptionHook', { ns: 'clanIntegrationsSetting' })}
-				children={
-					<Text style={{ color: themeValue.white }}>
-						{t('webhooksEdit.deleteWebhookConfirmation', {
-							ns: 'clanIntegrationsSetting',
-							webhookName: webhook?.webhook_name
-						})}
-					</Text>
-				}
-				onConfirm={() => handleDeleteWebhook(webhook)}
-			/>
 		</View>
 	);
 }

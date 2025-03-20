@@ -10,15 +10,15 @@ interface IChatMessageLeftAreaProps {
 	mode: ChannelStreamMode;
 }
 
-export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
+export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProps) => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
 
 	const listMentions = UseMentionList({
 		channelID: currentDirectId
 			? currentDirectId
-			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parrent_id
-				? currentChannel?.parrent_id
+			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parent_id
+				? currentChannel?.parent_id
 				: currentChannel?.channel_id || '',
 		channelMode: mode
 	});
@@ -26,7 +26,7 @@ export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
 
 	useEffect(() => {
 		const timeoout = setTimeout(() => {
-			if (JSON.stringify(previousListMentions?.current) !== JSON.stringify(listMentions || previousListMentions?.current) && !!listMentions) {
+			if (previousListMentions?.current !== listMentions && !!listMentions) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_SET_LIST_MENTION_DATA, { data: listMentions });
 				previousListMentions.current = listMentions;
 			}
@@ -38,4 +38,8 @@ export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
 	}, [listMentions]);
 
 	return null;
+});
+
+export const ChatBoxListener = memo(({ mode }: IChatMessageLeftAreaProps) => {
+	return <ChatBoxListenerComponent mode={mode} />;
 });

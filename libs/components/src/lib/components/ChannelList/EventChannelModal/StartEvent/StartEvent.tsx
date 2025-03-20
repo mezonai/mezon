@@ -49,6 +49,7 @@ export const StartEventModal = (props: StartEventModalProps) => {
 						onOpenDetailItem={onOpenDetailItem}
 						openModelUpdate={onOpenCreate}
 						onUpdateEventId={onEventUpdateId}
+						onClose={onClose}
 					/>
 				</div>
 			) : (

@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus, createImgproxyUrl } from '@mezon/utils';
@@ -6,6 +5,8 @@ import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonButton from '../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { EventTime } from '../EventTime';
@@ -65,7 +66,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 							/>
 						</View>
 						<View style={styles.inline}>
-							<Icons.GroupIcon height={size.s_10} width={size.s_10} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.groupIcon} height={size.s_10} width={size.s_10} color={themeValue.text} />
 							<Text style={styles.tinyText}>{event?.user_ids?.length}</Text>
 						</View>
 					</View>
@@ -88,12 +89,12 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 				{showActions && (
 					<View style={styles.inline}>
 						<MezonButton
-							icon={<Icons.CheckmarkSmallIcon height={size.s_20} width={size.s_20} color={themeValue.text} />}
+							icon={<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />}
 							title="Interested"
 							fluid
 							border
 						/>
-						<MezonButton icon={<Icons.ShareIcon height={size.s_20} width={size.s_20} color={themeValue.text} />} />
+						<MezonButton icon={<MezonIconCDN icon={IconCDN.shareIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />} />
 					</View>
 				)}
 				{!!event.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}

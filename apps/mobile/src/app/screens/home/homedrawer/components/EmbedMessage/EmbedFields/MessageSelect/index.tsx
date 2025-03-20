@@ -1,10 +1,11 @@
-import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { useRef, useState } from 'react';
-import { Keyboard, Text, TouchableOpacity, View } from 'react-native';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonBottomSheet, MezonMenu } from '../../../../../../../componentUI';
+import { useState } from 'react';
+import { DeviceEventEmitter, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { IMezonFakeBoxProps } from '../../../../../../../componentUI/MezonFakeBox';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../../componentUI/MezonMenu';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 type ISelectItem = {
@@ -22,20 +23,12 @@ type IMezonSelectProps = Omit<IMezonFakeBoxProps, 'onPress' | 'postfixIcon' | 'v
 export default function MessageSelect({ data, placeholder, defaultValue, onChange, ...props }: IMezonSelectProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [currentValue, setCurrentValue] = useState(defaultValue);
 	const [currentContent, setCurrentContent] = useState(defaultValue?.title || placeholder);
-	const bottomSheetRef = useRef<BottomSheetModalMethods>();
 
 	function handleChange(item: ISelectItem) {
-		setCurrentValue(item);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		setCurrentContent(item?.title || placeholder);
-		bottomSheetRef?.current?.dismiss();
 		onChange && onChange(item);
-	}
-
-	function handlePress() {
-		Keyboard.dismiss();
-		bottomSheetRef?.current?.present();
 	}
 
 	const menuOptions: IMezonMenuItemProps[] = data?.length
@@ -53,21 +46,30 @@ export default function MessageSelect({ data, placeholder, defaultValue, onChang
 		}
 	];
 
+	function handlePress() {
+		Keyboard.dismiss();
+		const data = {
+			heightFitContent: true,
+			title: props.title,
+			children: (
+				<View style={styles.bsContainer}>
+					<MezonMenu menu={menu} />
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}
+
 	return (
 		<View>
 			<View style={styles.input}>
 				<TouchableOpacity onPress={handlePress}>
 					<View style={styles.fakeBox}>
 						<Text style={styles.text}>{currentContent as string}</Text>
-						<Icons.ChevronSmallDownIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 					</View>
 				</TouchableOpacity>
 			</View>
-			<MezonBottomSheet ref={bottomSheetRef} heightFitContent title={props.title}>
-				<View style={styles.bsContainer}>
-					<MezonMenu menu={menu} />
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 }

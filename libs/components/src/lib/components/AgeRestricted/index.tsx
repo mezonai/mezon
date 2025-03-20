@@ -2,7 +2,6 @@ import { useAccount, useAppNavigation, useAuth } from '@mezon/core';
 import { selectCurrentChannelId, selectCurrentClanId } from '@mezon/store';
 import { Modal } from 'flowbite-react';
 import { safeJSONParse } from 'mezon-js';
-import 'quill/dist/quill.snow.css';
 import { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useSelector } from 'react-redux';
@@ -49,7 +48,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 
 	return (
 		<div>
-			<div className="w-full h-[calc(100vh-60px)] max-w-[80%] flex justify-center items-center">
+			<div className="w-full h-[calc(100vh-60px)] max-w-[100%] flex justify-center items-center">
 				<div className="flex flex-col items-center">
 					<img src={'assets/images/warning.svg'} alt="warning" width={200} height={200} />
 

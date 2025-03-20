@@ -17,7 +17,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 		setRuleDescription(e.target.value);
 	};
 	const handleAddRules = () => {
-		if (!tempId && tempId !== 0) {
+		if (ruleEdit?.id) {
 			dispatch(
 				editOnboarding({
 					clan_id: ruleEdit?.clan_id as string,
@@ -35,10 +35,13 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 
 		dispatch(
 			onboardingActions.addRules({
-				title: ruleTitle,
-				content: ruleDescription,
-				guide_type: EGuideType.RULE,
-				file: file ? file : undefined
+				rule: {
+					title: ruleTitle,
+					content: ruleDescription,
+					guide_type: EGuideType.RULE,
+					file: file ? file : undefined
+				},
+				update: tempId
 			})
 		);
 		onClose();

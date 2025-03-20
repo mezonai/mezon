@@ -7,7 +7,7 @@ import { safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { MezonAvatar } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MessageNotification from '../MessageNotification';
 import { ENotifyBsToShow, NotifyProps } from '../types';
 import { style } from './NotificationMentionItem.styles';
@@ -62,8 +62,7 @@ const NotificationMentionItem = React.memo(({ notify, onLongPressNotify, onPress
 	const data = parseObject(notify?.content);
 	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.sender_id);
-	const unixTimestamp = Math.floor(new Date(data?.create_time).getTime() / 1000);
-	const messageTimeDifference = convertTimestampToTimeAgo(unixTimestamp);
+	const messageTimeDifference = convertTimestampToTimeAgo(data?.create_time?.seconds);
 	const colorsUsername = useColorsRoleById(notify?.sender_id)?.highestPermissionRoleColor;
 	const subjectText = useMemo(() => {
 		return clan?.clan_name && channelInfo?.channel_label

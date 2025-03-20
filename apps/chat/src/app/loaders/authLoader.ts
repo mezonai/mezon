@@ -8,6 +8,7 @@ import {
 	listUsersByUserActions
 } from '@mezon/store';
 import { IWithError } from '@mezon/utils';
+import { emojiRecentActions } from 'libs/store/src/lib/emojiSuggestion/emojiRecent.slice';
 import { CustomLoaderFunction } from './appLoader';
 
 export interface IAuthLoaderData {
@@ -36,6 +37,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
 	dispatch(friendsActions.fetchListFriends({}));
 	dispatch(directActions.fetchDirectMessage({}));
+	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	// check network not connect
 	if (!navigator.onLine) {
 		const splashScreen = document.getElementById('splash-screen');

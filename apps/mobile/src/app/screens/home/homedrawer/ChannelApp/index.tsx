@@ -5,12 +5,12 @@ import { sleep } from '@mezon/utils';
 import { memo, useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { Chase } from 'react-native-animated-spinkit';
-import { WebView } from 'react-native-webview';
+import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import { style } from './styles';
 
 const ChannelAppScreen = memo(({ channelId }: { channelId: string }) => {
-	const { themeValue, theme } = useTheme();
+	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const authState = useSelector(getAuthState);
 	const session = JSON.stringify(authState.session);
@@ -33,8 +33,8 @@ const ChannelAppScreen = memo(({ channelId }: { channelId: string }) => {
 	(function() {
 		const persistApp = JSON.parse(localStorage.getItem('persist:apps'));
 		if (persistApp) {
-			persistApp.theme = JSON.stringify("${theme}");
-			persistApp.themeApp = JSON.stringify("${theme}");
+			persistApp.theme = JSON.stringify("${themeBasic}");
+			persistApp.themeApp = JSON.stringify("${themeBasic}");
 			localStorage.setItem('persist:apps', JSON.stringify(persistApp));
 		}
 	})();
@@ -59,11 +59,12 @@ const ChannelAppScreen = memo(({ channelId }: { channelId: string }) => {
 					<Chase color={'#cdcdcd'} />
 				</View>
 			)}
-			<StatusBar barStyle={theme === ThemeModeBase.LIGHT ? 'dark-content' : 'light-content'} backgroundColor={themeValue.charcoal} />
+			<StatusBar barStyle={themeBasic === ThemeModeBase.LIGHT ? 'dark-content' : 'light-content'} backgroundColor={themeValue.charcoal} />
 			<WebView
 				source={{
 					uri: uri
 				}}
+				originWhitelist={['*']}
 				style={styles.container}
 				injectedJavaScriptBeforeContentLoaded={injectedJS}
 				javaScriptEnabled={true}

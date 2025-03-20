@@ -1,8 +1,9 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
-import { Dispatch, SetStateAction, memo } from 'react';
+import { Dispatch, Fragment, SetStateAction, memo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import AttachmentSwitcher from '../../AttachmentPicker/AttachmentSwitcher';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
@@ -37,20 +38,20 @@ export const ChatMessageLeftArea = memo(
 			>
 				{isAvailableSending && !isShowAttachControl ? (
 					<TouchableOpacity style={[styles.btnIcon]} onPress={() => setIsShowAttachControl(!isShowAttachControl)}>
-						<Icons.ChevronSmallLeftIcon width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				) : (
-					<>
+					<Fragment>
 						<AttachmentSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 						{isShowCreateThread && (
 							<TouchableOpacity
 								style={[styles.btnIcon, { marginLeft: size.s_6 }]}
 								onPress={() => navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD })}
 							>
-								<Icons.ThreadPlusIcon width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
+								<MezonIconCDN icon={IconCDN.threadPlusIcon} width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
 							</TouchableOpacity>
 						)}
-					</>
+					</Fragment>
 				)}
 			</View>
 		);

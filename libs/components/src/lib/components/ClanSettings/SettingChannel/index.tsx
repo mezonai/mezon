@@ -10,7 +10,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { formatDistance } from 'date-fns';
 import { Avatar, AvatarSizes, Dropdown, Pagination } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
@@ -77,7 +76,7 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 			<AnchorScroll anchorId={clanId} ref={parentRef} className={['hide-scrollbar']} classNameChild={['!justify-start']}>
 				{listChannel.map((channel) => (
 					<RenderChannelAndThread
-						channelParrent={channel}
+						channelParent={channel}
 						key={`group_${channel.id}`}
 						clanId={clanId}
 						currentPage={currentPage}
@@ -131,23 +130,23 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 };
 
 interface IRenderChannelAndThread {
-	channelParrent: ApiChannelSettingItem;
+	channelParent: ApiChannelSettingItem;
 	clanId: string;
 	currentPage: number;
 	pageSize: number;
 	searchFilter?: string;
 }
 
-const RenderChannelAndThread = ({ channelParrent, clanId, currentPage, pageSize, searchFilter }: IRenderChannelAndThread) => {
+const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, searchFilter }: IRenderChannelAndThread) => {
 	const dispatch = useAppDispatch();
-	const threadsList = useSelector(selectThreadsListByParentId(channelParrent.id as string));
+	const threadsList = useSelector(selectThreadsListByParentId(channelParent.id as string));
 
 	const handleFetchThreads = () => {
 		if (!threadsList) {
 			dispatch(
 				channelSettingActions.fetchChannelSettingInClan({
 					clanId,
-					parentId: channelParrent.id as string,
+					parentId: channelParent.id as string,
 					page: currentPage,
 					limit: pageSize,
 					typeFetch: ETypeFetchChannelSetting.FETCH_THREAD
@@ -163,23 +162,25 @@ const RenderChannelAndThread = ({ channelParrent, clanId, currentPage, pageSize,
 	};
 
 	const isVoiceChannel = useMemo(() => {
-		return channelParrent.channel_type === ChannelType.CHANNEL_TYPE_GMEET_VOICE;
-	}, [channelParrent.channel_type]);
+		return (
+			channelParent.channel_type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channelParent.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
+		);
+	}, [channelParent.channel_type]);
 
 	return (
 		<div className="flex flex-col">
 			<div className="relative" onClick={handleFetchThreads}>
 				<ItemInfor
-					creatorId={channelParrent.creator_id as string}
-					label={channelParrent?.channel_label as string}
-					privateChannel={channelParrent?.channel_private as number}
-					isThread={channelParrent?.parent_id !== '0'}
-					key={channelParrent?.id}
-					userIds={channelParrent?.user_ids || []}
-					channelId={channelParrent?.id as string}
+					creatorId={channelParent.creator_id as string}
+					label={channelParent?.channel_label as string}
+					privateChannel={channelParent?.channel_private as number}
+					isThread={channelParent?.parent_id !== '0'}
+					key={channelParent?.id}
+					userIds={channelParent?.user_ids || []}
+					channelId={channelParent?.id as string}
 					isVoice={isVoiceChannel}
-					messageCount={channelParrent?.message_count || 0}
-					lastMessage={channelParrent?.last_sent_message}
+					messageCount={channelParent?.message_count || 0}
+					lastMessage={channelParent?.last_sent_message}
 				/>
 				{!isVoiceChannel && !searchFilter && (
 					<div
@@ -348,15 +349,12 @@ const ItemInfor = ({
 
 				<div className="overflow-hidden flex w-12 items-center justify-center">
 					{(creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url) && (
-						<Tippy
-							content={
-								<span>{creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username} </span>
-							}
-							placement="left"
-							arrow={false}
-						>
-							<img src={imgCreator} className="w-8 h-8 object-cover rounded-full " />
-						</Tippy>
+						<img
+							title={creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username}
+							src={imgCreator}
+							className="w-8 h-8 object-cover rounded-full"
+							alt=""
+						/>
 					)}
 				</div>
 			</div>

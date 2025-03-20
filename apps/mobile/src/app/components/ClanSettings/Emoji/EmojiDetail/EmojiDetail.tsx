@@ -1,5 +1,4 @@
 import { usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, selectCurrentUserId, selectMemberClanByUserId2, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EPermission, createImgproxyUrl } from '@mezon/utils';
@@ -11,6 +10,8 @@ import { Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native
 import FastImage from 'react-native-fast-image';
 import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Toast from 'react-native-toast-message';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './styles';
 
 type ServerDetailProps = {
@@ -88,7 +89,7 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 		return (
 			<View style={styles.rightItem}>
 				<TouchableOpacity style={styles.deleteButton} onPress={handleDeleteEmoji}>
-					<Icons.TrashIcon width={size.s_20} height={size.s_20} color={baseColor.white} />
+					<MezonIconCDN icon={IconCDN.trashIcon} width={size.s_20} height={size.s_20} color={baseColor.white} />
 					<Text style={styles.deleteText}>{t('emojiList.delete')}</Text>
 				</TouchableOpacity>
 			</View>

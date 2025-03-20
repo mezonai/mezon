@@ -12,7 +12,7 @@ const FlowExamples = () => {
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
 					{ExampleFlow.map((flow) => (
 						<Link
-							to={`/applications/${applicationId}/flow/${flow.id}`}
+							to={`/developers/applications/${applicationId}/flow/${flow.id}`}
 							key={flow.id}
 							className="bg-white min-h-[150px] dark:bg-gray-800 dark:hover:bg-gray-700 p-3 rounded-md shadow-md border-[1px] border-gray-400 cursor-pointer hover:shadow-inner transition-all"
 						>

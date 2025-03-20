@@ -1,11 +1,12 @@
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, useAppDispatch } from '@mezon/store-mobile';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
-import { MezonInput } from '../../../componentUI';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
+import { IconCDN } from '../../../constants/icon_cdn';
 import style from '../MenuCustomDm.styles';
 
 const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channelLabel: string }) => {
@@ -56,7 +57,7 @@ const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channel
 						justifyContent: 'center'
 					}}
 				>
-					<Icons.GroupIcon color={baseColor.white} />
+					<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
 				</View>
 			</View>
 			<Text style={styles.labelInput}>{t('groupName')}</Text>

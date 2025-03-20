@@ -6,8 +6,8 @@ import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Images from '../../../../assets/Images';
-import { MezonButton } from '../../../componentUI';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import { MezonButton } from '../../../componentUI/MezonButton';
 import { style } from './styles';
 
 export interface IFriendListItemProps {

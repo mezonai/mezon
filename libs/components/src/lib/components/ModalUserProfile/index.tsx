@@ -126,7 +126,7 @@ const ModalUserProfile = ({
 			sendInviteMessage(content, response.channel_id, channelMode);
 			setContent('');
 			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
-			navigate('/' + directChat);
+			navigate(directChat);
 		}
 	};
 	const handleContent = (e: React.ChangeEvent<HTMLInputElement>) => {

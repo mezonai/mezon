@@ -1,5 +1,5 @@
 import { RTCView } from '@livekit/react-native-webrtc';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
@@ -13,14 +13,16 @@ import {
 import { IMessageTypeCallLog } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { BackHandler, Text, TouchableOpacity, View } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import InCallManager from 'react-native-incall-manager';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import Images from '../../../../assets/Images';
-import { MezonConfirm } from '../../../componentUI';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { useWebRTCCallMobile } from '../../../hooks/useWebRTCCallMobile';
 import { style } from './styles';
 
@@ -38,7 +40,6 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 	const isAnswerCall = route.params?.isAnswerCall;
 	const isFromNative = route.params?.isFromNative;
 	const userProfile = useSelector(selectAllAccount);
-	const [showModalConfirm, setShowModalConfirm] = useState<boolean>(false);
 	const [isShowControl, setIsShowControl] = useState<boolean>(true);
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
 	const isInCall = useSelector(selectIsInCall);
@@ -124,6 +125,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 
 	const onCancelCall = async () => {
 		try {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			await handleEndCall({ isCancelGoBack: false });
 			if (!timeStartConnected?.current) {
 				await dispatch(
@@ -153,17 +155,24 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 						<TouchableOpacity
 							onPress={() => {
-								setShowModalConfirm(true);
+								const data = {
+									children: (
+										<MezonConfirm onConfirm={onCancelCall} title="End Call" confirmText="Yes, End Call">
+											<Text style={styles.titleConfirm}>Are you sure you want to end the call?</Text>
+										</MezonConfirm>
+									)
+								};
+								DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 							}}
 							style={styles.buttonCircle}
 						>
-							<Icons.ChevronSmallLeftIcon />
+							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} />
 						</TouchableOpacity>
 					</View>
 
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 						<TouchableOpacity onPress={toggleSpeaker} style={styles.buttonCircle}>
-							{localMediaControl.speaker ? <Icons.VoiceNormalIcon /> : <Icons.VoiceLowIcon />}
+							{localMediaControl.speaker ? <MezonIconCDN icon={IconCDN.channelVoice} /> : <MezonIconCDN icon={IconCDN.voiceLowIcon} />}
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -205,40 +214,29 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 						>
 							<TouchableOpacity onPress={toggleVideo} style={[styles.menuIcon, localMediaControl?.camera && styles.menuIconActive]}>
 								{localMediaControl?.camera ? (
-									<Icons.VideoIcon width={size.s_24} height={size.s_24} color={themeValue.black} />
+									<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<Icons.VideoSlashIcon width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
 								{localMediaControl?.mic ? (
-									<Icons.MicrophoneIcon width={size.s_24} height={size.s_24} color={themeValue.black} />
+									<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<Icons.MicrophoneDenyIcon width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={() => {}} style={styles.menuIcon}>
-								<Icons.ChatIcon />
+								<MezonIconCDN icon={IconCDN.chatIcon} />
 							</TouchableOpacity>
 
 							<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-								<Icons.PhoneCallIcon />
+								<MezonIconCDN icon={IconCDN.phoneCallIcon} />
 							</TouchableOpacity>
 						</View>
 					</View>
 				</View>
 			)}
-
-			<MezonConfirm
-				visible={showModalConfirm}
-				onVisibleChange={setShowModalConfirm}
-				onConfirm={onCancelCall}
-				title="End Call"
-				confirmText="Yes, End Call"
-				hasBackdrop={true}
-			>
-				<Text style={styles.titleConfirm}>Are you sure you want to end the call?</Text>
-			</MezonConfirm>
 		</View>
 	);
 });

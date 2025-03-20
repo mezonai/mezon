@@ -1,10 +1,11 @@
-import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { MezonAvatar } from '../../../../componentUI';
+import MezonIconCDN from '../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../src/app/constants/icon_cdn';
+import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import { style } from './styles';
 
 interface IUserItem {
@@ -54,7 +55,7 @@ export function UserItem({ userID, onMemberSelect }: IUserItem) {
 						</View>
 					</View>
 					<View style={styles.icon}>
-						<Icons.ChevronSmallRightIcon color={themeValue.text} height={20} width={20} />
+						<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} height={20} width={20} />
 					</View>
 				</View>
 			</View>

@@ -47,6 +47,7 @@ import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
 import { dragAndDropReducer } from './dragAndDrop/dragAndDrop.slice';
 import { E2EE_FEATURE_KEY, e2eeReducer } from './e2ee/e2ee.slice';
+import { emojiRecentReducer } from './emojiSuggestion/emojiRecent.slice';
 import { errorListenerMiddleware } from './errors/errors.listener';
 import { ERRORS_FEATURE_KEY, errorsReducer } from './errors/errors.slice';
 import { eventManagementReducer } from './eventManagement/eventManagement.slice';
@@ -109,6 +110,14 @@ const persistedEmojiSuggestionReducer = persistReducer(
 		storage
 	},
 	emojiSuggestionReducer
+);
+
+const persistedEmojiRecentReducer = persistReducer(
+	{
+		key: 'emojiRecent',
+		storage
+	},
+	emojiRecentReducer
 );
 
 const persistedCatReducer = persistReducer(
@@ -353,6 +362,7 @@ const reducer = {
 	references: referencesReducer,
 	reaction: reactionReducer,
 	suggestionEmoji: persistedEmojiSuggestionReducer,
+	emojiRecent: persistedEmojiRecentReducer,
 	gifs: gifsReducer,
 	gifsStickersEmojis: persistedGifsStickerEmojiReducer,
 	dragAndDrop: dragAndDropReducer,

@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { ENotificationTypes } from '@mezon/utils';
 import React from 'react';
 import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { MezonRadioButton } from '../../../componentUI';
+import MezonRadioButton from '../../../componentUI/MezonRadioButton';
 import { style } from '../NotificationSetting.styles';
 
 interface FilterCheckboxProps {

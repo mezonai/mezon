@@ -1,7 +1,8 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { AttachmentEntity, RootState, selectAllListAttachmentByChannel } from '@mezon/store-mobile';
-import { memo, useCallback, useMemo, useState } from 'react';
-import { Dimensions, FlatList, View } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { DeviceEventEmitter, Dimensions, FlatList, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EmptySearchPage } from '../EmptySearchPage';
 import { ImageListModal } from '../ImageListModal';
@@ -14,29 +15,24 @@ const MediaChannel = memo(({ channelId }: { channelId: string }) => {
 	const styles = style(themeValue);
 	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, channelId));
 	const loadStatus = useSelector((state: RootState) => state?.attachments?.loadingStatus);
-	const [imageSelected, setImageSelected] = useState<AttachmentEntity>();
-	const [visibleImageModal, setVisibleImageModal] = useState<boolean>(false);
 	const widthScreen = Dimensions.get('screen').width;
 	const widthImage = useMemo(() => {
 		return (widthScreen - size.s_40) / 3;
 	}, [widthScreen]);
 
-	const openImage = useCallback(
-		(image: AttachmentEntity) => {
-			setImageSelected(image);
-			setVisibleImageModal(true);
-		},
-		[setVisibleImageModal]
-	);
+	const openImage = useCallback((image: AttachmentEntity) => {
+		const data = {
+			children: <ImageListModal channelId={channelId} imageSelected={image as AttachmentEntity} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	}, []);
 
 	const renderItem = ({ item, index }) => (
 		<View style={{ height: widthImage, width: widthImage, margin: size.s_4 }} key={`${index}_item_media_channel`}>
 			<MediaItem data={item} onPress={openImage} />
 		</View>
 	);
-	const onCloseModalImage = useCallback(() => {
-		setVisibleImageModal(false);
-	}, []);
+
 	return (
 		<View style={styles.wrapper}>
 			{loadStatus === 'loading' && attachments?.length ? (
@@ -56,9 +52,6 @@ const MediaChannel = memo(({ channelId }: { channelId: string }) => {
 					windowSize={5}
 					ListEmptyComponent={<EmptySearchPage />}
 				/>
-			)}
-			{visibleImageModal && (
-				<ImageListModal channelId={channelId} visible={visibleImageModal} onClose={onCloseModalImage} imageSelected={imageSelected} />
 			)}
 		</View>
 	);

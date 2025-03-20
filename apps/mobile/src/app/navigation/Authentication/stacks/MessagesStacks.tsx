@@ -49,7 +49,10 @@ export const MessagesStacks = ({}: any) => {
 				name={APP_SCREEN.MESSAGES.NEW_MESSAGE}
 				component={NewMessageScreen}
 				options={{
-					headerTitle: t('headerTitle.newMessage')
+					headerTitle: t('headerTitle.newMessage'),
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					}
 				}}
 			/>
 			<Stack.Screen

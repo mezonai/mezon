@@ -46,6 +46,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
 	const currentClan = useSelector(selectCurrentClan);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));
+
 	const handleSend = useCallback(
 		(
 			content: IMessageSendPayload,
@@ -142,7 +143,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			)}
 			<MessageBox
 				listMentions={UserMentionList({
-					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parrent_id ?? '') : (channelId ?? ''),
+					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parent_id ?? '') : (channelId ?? ''),
 					channelMode: mode
 				})}
 				onSend={handleSend}

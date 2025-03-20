@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
+import { ActionEmitEvent, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -18,6 +18,8 @@ import { AppState, DeviceEventEmitter, NativeModules, Platform, Text, TouchableO
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
 import { TYPING_DARK_MODE, TYPING_LIGHT_MODE } from '../../../assets/lottie';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 const { SharedPreferences } = NativeModules;
@@ -240,10 +242,10 @@ const CallingModal = () => {
 			</View>
 			<View style={{ gap: size.s_10, flexDirection: 'row' }}>
 				<TouchableOpacity onPress={onDeniedCall} style={[styles.btnControl, styles.btnDenied]}>
-					<Icons.CloseLargeIcon width={size.s_20} height={size.s_20} />
+					<MezonIconCDN icon={IconCDN.closeLargeIcon} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 				<TouchableOpacity onPress={onJoinCall} style={[styles.btnControl, styles.btnAccept]}>
-					<Icons.CheckmarkLargeIcon width={size.s_20} height={size.s_20} />
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 			</View>
 		</View>

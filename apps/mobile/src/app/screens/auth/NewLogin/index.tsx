@@ -2,11 +2,11 @@ import { useAuth } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sentry from '@sentry/react';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import WebView from 'react-native-webview';
-import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
@@ -52,6 +52,7 @@ const NewLoginScreen = () => {
 									});
 								}
 							}
+							dispatch(appActions.setLoadingMainMobile(false));
 						} catch (error) {
 							dispatch(appActions.setLoadingMainMobile(false));
 						}
@@ -67,10 +68,21 @@ const NewLoginScreen = () => {
 
 	return (
 		<View style={styles.supperContainer}>
-			<StatusBarHeight />
 			{authUri && (
 				<View style={styles.webView}>
-					<WebView source={{ uri: authUri }} onShouldStartLoadWithRequest={handleShouldNavigationStateChange} startInLoadingState={true} />
+					<WebView
+						originWhitelist={['*']}
+						style={styles.supperContainer}
+						source={{ uri: authUri }}
+						onShouldStartLoadWithRequest={handleShouldNavigationStateChange}
+						startInLoadingState={true}
+						onError={(error) => {
+							Sentry.captureException('WebviewLogin', { extra: { error } });
+						}}
+						domStorageEnabled={true}
+						iosTimeoutInMilliseconds={120000}
+						androidTimeoutInMilliseconds={120000}
+					/>
 				</View>
 			)}
 		</View>

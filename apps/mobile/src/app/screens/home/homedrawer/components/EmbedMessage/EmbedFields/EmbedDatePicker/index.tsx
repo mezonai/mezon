@@ -4,7 +4,7 @@ import { embedActions, useAppDispatch } from '@mezon/store-mobile';
 import { IMessageDatePicker } from '@mezon/utils';
 import moment from 'moment';
 import { memo, useEffect, useState } from 'react';
-import { MezonDateTimePicker } from '../../../../../../../../app/componentUI';
+import MezonDateTimePicker from '../../../../../../../componentUI/MezonDateTimePicker';
 import { style } from './styles';
 
 type EmbedInputProps = {

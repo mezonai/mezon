@@ -1,11 +1,15 @@
-import { getDayName, getDayWeekName, getDayYearName, getNearTime, Icons } from '@mezon/mobile-components';
+import { getDayName, getDayWeekName, getDayYearName, getNearTime } from '@mezon/mobile-components';
 import { Fonts, useTheme } from '@mezon/mobile-ui';
 import { OptionEvent } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { MezonDateTimePicker, MezonInput, MezonSelect } from '../../../componentUI';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
+import MezonDateTimePicker from '../../../componentUI/MezonDateTimePicker';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
+import MezonSelect from '../../../componentUI/MezonSelect';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { ErrorInput } from '../../ErrorInput';
 import { style } from './styles';
@@ -28,12 +32,12 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 		},
 		headerLeft: () => (
 			<TouchableOpacity style={{ marginLeft: 20 }} onPress={() => navigation.goBack()}>
-				<Icons.ArrowLargeLeftIcon height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 			</TouchableOpacity>
 		),
 		headerRight: () => (
 			<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
-				<Icons.CloseLargeIcon height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 			</TouchableOpacity>
 		)
 	});

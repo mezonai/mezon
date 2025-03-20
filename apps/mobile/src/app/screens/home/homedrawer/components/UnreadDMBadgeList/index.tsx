@@ -1,4 +1,3 @@
-import { UserGroupIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, selectDirectById, selectDirectsUnreadlist, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
@@ -8,6 +7,8 @@ import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../app/navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -44,7 +45,7 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 			case ChannelType.CHANNEL_TYPE_GROUP:
 				return (
 					<View style={styles.groupAvatar}>
-						<UserGroupIcon />
+						<MezonIconCDN icon={IconCDN.userGroupIcon} />
 						{numUnread > 0 && (
 							<View style={styles.badge}>
 								<Text style={styles.badgeText}>{numUnread}</Text>

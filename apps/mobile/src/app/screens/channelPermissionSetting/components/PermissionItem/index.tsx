@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { EPermissionStatus } from '../../types/channelPermission.enum';
 import { IPermissionItemProps } from '../../types/channelPermission.type';
 
@@ -14,19 +15,19 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 
 	const permissionOptionList = [
 		{
-			icon: (color: string) => <Icons.CloseIcon color={color} />,
+			icon: (color: string) => <MezonIconCDN icon={IconCDN.closeIcon} color={color} />,
 			activeBackground: Colors.persianRed,
 			color: Colors.persianRed,
 			type: EPermissionStatus.Deny
 		},
 		{
-			icon: (color: string) => <Icons.SlashIcon height={size.s_16} width={size.s_16} color={color} />,
+			icon: (color: string) => <MezonIconCDN icon={IconCDN.slashIcon} height={size.s_16} width={size.s_16} color={color} />,
 			activeBackground: Colors.outerSpace,
 			color: Colors.outerSpace,
 			type: EPermissionStatus.None
 		},
 		{
-			icon: (color: string) => <Icons.CheckmarkSmallIcon color={color} />,
+			icon: (color: string) => <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={color} />,
 			activeBackground: Colors.jungleGreen,
 			color: Colors.jungleGreen,
 			type: EPermissionStatus.Allow

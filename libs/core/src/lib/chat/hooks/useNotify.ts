@@ -1,16 +1,16 @@
-import { notificationActions, selectAllNotification, selectMessageNotified, useAppDispatch } from '@mezon/store';
+import { notificationActions, selectMessageNotified, useAppDispatch } from '@mezon/store';
+import { NotificationCategory } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 export function useNotification() {
 	const dispatch = useAppDispatch();
-	const notification = useSelector(selectAllNotification);
 	const idMessageNotified = useSelector(selectMessageNotified);
 
 	const deleteNotify = useCallback(
-		(id: string, clanId: string) => {
+		(id: string, category: NotificationCategory) => {
 			const ids = [id];
-			dispatch(notificationActions.deleteNotify({ ids, clanId }));
+			dispatch(notificationActions.deleteNotify({ ids, category }));
 		},
 		[dispatch]
 	);
@@ -24,11 +24,10 @@ export function useNotification() {
 
 	return useMemo(
 		() => ({
-			notification,
 			deleteNotify,
 			setMessageNotifiedId,
 			idMessageNotified
 		}),
-		[notification, deleteNotify, setMessageNotifiedId, idMessageNotified]
+		[deleteNotify, setMessageNotifiedId, idMessageNotified]
 	);
 }

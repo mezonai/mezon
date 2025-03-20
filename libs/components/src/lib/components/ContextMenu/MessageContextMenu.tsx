@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useAppParams, useAuth, useChatReaction, usePermissionChecker, useReference } from '@mezon/core';
+import { useAppParams, useAuth, useChatReaction, useDirect, usePermissionChecker, useReference, useSendInviteMessage } from '@mezon/core';
 import {
 	createEditCanvas,
 	directActions,
@@ -38,6 +38,7 @@ import { Icons } from '@mezon/ui';
 import {
 	AMOUNT_TOKEN,
 	ContextMenuItem,
+	EEventAction,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	EPermission,
@@ -47,7 +48,9 @@ import {
 	ModeResponsive,
 	SHOW_POSITION,
 	SubPanelName,
+	TOKEN_TO_AMOUNT,
 	TypeMessage,
+	formatMoney,
 	handleCopyImage,
 	handleCopyLink,
 	handleOpenLink,
@@ -98,6 +101,7 @@ function MessageContextMenu({
 	openPinMessageModal,
 	openDeleteMessageModal
 }: MessageContextMenuProps) {
+	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -106,6 +110,9 @@ function MessageContextMenu({
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const isClanView = useSelector(selectClanView);
 	const currentTopicId = useSelector(selectCurrentTopicId);
+
+	const { createDirectMessageWithUser } = useDirect();
+	const { sendInviteMessage } = useSendInviteMessage();
 
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(state, isTopic ? currentTopicId : isClanView ? currentChannel?.id : currentDmId, messageId)
@@ -174,7 +181,8 @@ function MessageContextMenu({
 			content,
 			is_default: true,
 			...(id && { id }),
-			title: defaultCanvas?.title || 'Note'
+			title: defaultCanvas?.title || 'Note',
+			status: defaultCanvas ? 0 : EEventAction.CREATED
 		});
 
 		const insertImageToJson = (jsonObject: JsonObject, imageUrl?: string) => {
@@ -484,6 +492,21 @@ function MessageContextMenu({
 		}
 	}, [checkElementIsImage, isClickedEmoji, isClickedSticker]);
 
+	const sendTransactionMessage = useCallback(
+		async (userId: string) => {
+			const response = await createDirectMessageWithUser(userId);
+			if (response.channel_id) {
+				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				sendInviteMessage(
+					`Balance notifications: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
+					response.channel_id,
+					channelMode,
+					TypeMessage.SendToken
+				);
+			}
+		},
+		[createDirectMessageWithUser, sendInviteMessage]
+	);
 	/* eslint-disable no-console */
 	const items = useMemo<ContextMenuItem[]>(() => {
 		const builder = new MenuBuilder();
@@ -497,7 +520,7 @@ function MessageContextMenu({
 			);
 		});
 
-		builder.when(checkPos, (builder) => {
+		builder.when(checkPos && message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID, (builder) => {
 			builder.addMenuItem(
 				'giveAcoffee', // id
 				'Give A Coffee', // label
@@ -527,6 +550,8 @@ function MessageContextMenu({
 								isFocusTopicBox,
 								message?.channel_id
 							);
+
+							await sendTransactionMessage(message.sender_id || '');
 						}
 					} catch (error) {
 						console.error('Failed to give cofffee message', error);
@@ -610,22 +635,22 @@ function MessageContextMenu({
 			);
 		});
 
-		builder.when(checkPos, (builder) => {
-			builder.addMenuItem('apps', 'Apps', () => console.log('apps'), <Icons.RightArrowRightClick defaultSize="w-4 h-4" />);
-		});
+		// builder.when(checkPos, (builder) => {
+		// 	builder.addMenuItem('apps', 'Apps', () => console.log('apps'), <Icons.RightArrowRightClick defaultSize="w-4 h-4" />);
+		// });
 
-		builder.when(checkPos, (builder) => {
-			builder.addMenuItem('markUnread', 'Mark Unread', () => console.log('markUnread'), <Icons.UnreadRightClick defaultSize="w-4 h-4" />);
-		});
+		// builder.when(checkPos, (builder) => {
+		// 	builder.addMenuItem('markUnread', 'Mark Unread', () => console.log('markUnread'), <Icons.UnreadRightClick defaultSize="w-4 h-4" />);
+		// });
 
-		builder.when(checkPos, (builder) => {
-			builder.addMenuItem(
-				'copyMessageLink',
-				'Copy Message Link',
-				() => console.log('copyMessageLink'),
-				<Icons.CopyMessageLinkRightClick defaultSize="w-4 h-4" />
-			);
-		});
+		// builder.when(checkPos, (builder) => {
+		// 	builder.addMenuItem(
+		// 		'copyMessageLink',
+		// 		'Copy Message Link',
+		// 		() => console.log('copyMessageLink'),
+		// 		<Icons.CopyMessageLinkRightClick defaultSize="w-4 h-4" />
+		// 	);
+		// });
 		message?.code !== TypeMessage.Topic &&
 			notAllowedType &&
 			!isTopic &&
@@ -648,36 +673,36 @@ function MessageContextMenu({
 				);
 			});
 
-		builder.when(enableRemoveOneReactionItem, (builder) => {
-			builder.addMenuItem(
-				'removeReactions',
-				'Remove Reactions',
-				() => {
-					console.log('remove reaction');
-				},
-				<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
-			);
-		});
-		builder.when(enableRemoveAllReactionsItem, (builder) => {
-			builder.addMenuItem('removeAllReactions', 'Remove All Reactions', () => {
-				console.log('remove all reaction');
-			});
-		});
+		// builder.when(enableRemoveOneReactionItem, (builder) => {
+		// 	builder.addMenuItem(
+		// 		'removeReactions',
+		// 		'Remove Reactions',
+		// 		() => {
+		// 			console.log('remove reaction');
+		// 		},
+		// 		<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
+		// 	);
+		// });
+		// builder.when(enableRemoveAllReactionsItem, (builder) => {
+		// 	builder.addMenuItem('removeAllReactions', 'Remove All Reactions', () => {
+		// 		console.log('remove all reaction');
+		// 	});
+		// });
 
 		builder.when(enableDelMessageItem, (builder) => {
 			builder.addMenuItem('deleteMessage', 'Delete Message', openDeleteMessageModal, <Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />);
 		});
 
-		builder.when(enableReportMessageItem, (builder) => {
-			builder.addMenuItem(
-				'reportMessage',
-				'Report Message',
-				() => {
-					console.log('report message');
-				},
-				<Icons.ReportMessageRightClick defaultSize="w-4 h-4" />
-			);
-		});
+		// builder.when(enableReportMessageItem, (builder) => {
+		// 	builder.addMenuItem(
+		// 		'reportMessage',
+		// 		'Report Message',
+		// 		() => {
+		// 			console.log('report message');
+		// 		},
+		// 		<Icons.ReportMessageRightClick defaultSize="w-4 h-4" />
+		// 	);
+		// });
 
 		builder.when(enableCopyLinkItem, (builder) => {
 			builder.addMenuItem('copyLink', 'Copy Link', async () => {

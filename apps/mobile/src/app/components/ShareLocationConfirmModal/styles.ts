@@ -1,8 +1,24 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import { Attributes, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
+		main: {
+			flex: 1,
+			width: '100%',
+			height: '100%',
+			alignItems: 'center',
+			justifyContent: 'center'
+		},
+		container: {
+			backgroundColor: colors.secondary,
+			padding: Metrics.size.xl,
+			margin: Metrics.size.l,
+			borderRadius: 10,
+			overflow: 'hidden',
+			width: '90%',
+			zIndex: 100
+		},
 		modalContainer: {
 			backgroundColor: colors.secondaryLight,
 			paddingVertical: size.s_10,
@@ -51,5 +67,13 @@ export const style = (colors: Attributes) =>
 			fontSize: size.label,
 			fontWeight: '400',
 			textAlign: 'center'
+		},
+		backdrop: {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			backgroundColor: 'rgba(0,0,0,0.5)'
 		}
 	});

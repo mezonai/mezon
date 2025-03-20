@@ -1,10 +1,11 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useRef, useState } from 'react';
-import { View } from 'react-native';
-import MezonBottomSheet from '../MezonBottomSheet';
+import { DeviceEventEmitter, View } from 'react-native';
+import { IconCDN } from '../../constants/icon_cdn';
 import MezonFakeInputBox, { IMezonFakeBoxProps } from '../MezonFakeBox';
+import MezonIconCDN from '../MezonIconCDN';
 import MezonOption, { IMezonOptionData } from '../MezonOption';
 import { style } from './styles';
 
@@ -29,22 +30,26 @@ export default function MezonSelect({ data, onChange, ...props }: IMezonSelectPr
 
 	function handlePress() {
 		bottomSheetRef?.current?.present();
+		const dataBottomSheet = {
+			heightFitContent: true,
+			title: props.title,
+			children: (
+				<View style={styles.bsContainer}>
+					<MezonOption data={data} onChange={handleChange} value={currentValue} />
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data: dataBottomSheet });
 	}
 
 	return (
 		<View>
 			<MezonFakeInputBox
 				{...props}
-				postfixIcon={<Icons.ChevronSmallDownIcon height={size.s_20} width={size.s_20} color={themeValue.text} />}
+				postfixIcon={<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />}
 				value={currentContent}
 				onPress={handlePress}
 			/>
-
-			<MezonBottomSheet ref={bottomSheetRef} heightFitContent title={props.title}>
-				<View style={styles.bsContainer}>
-					<MezonOption data={data} onChange={handleChange} value={currentValue} />
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 }

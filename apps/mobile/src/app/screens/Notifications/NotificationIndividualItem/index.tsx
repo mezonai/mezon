@@ -4,7 +4,7 @@ import { selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonAvatar } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { ENotifyBsToShow, NotifyProps } from '../types';
 import { style } from './NotificationIndividualItem.styles';
 

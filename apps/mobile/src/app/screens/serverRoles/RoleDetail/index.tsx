@@ -1,15 +1,18 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons, isEqual } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon, isEqual } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
-import { rolesClanActions, selectRoleByRoleId, useAppDispatch } from '@mezon/store-mobile';
+import { rolesClanActions, selectRoleByRoleId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, FlatList, Keyboard, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, DeviceEventEmitter, FlatList, Keyboard, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonConfirm, MezonInput } from '../../../componentUI';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../components/Common';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import RoleCoLourComponent from '../RoleCoLourComponent/RoleCoLourComponent';
 
@@ -24,31 +27,38 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	const { t } = useTranslation('clanRoles');
 	const [originRoleName, setOriginRoleName] = useState('');
 	const [currentRoleName, setCurrentRoleName] = useState('');
-	const [showModalConfirmSave, setShowModalConfirmSave] = useState(false);
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const { updateRole } = useRoles();
+	const userMaxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
 	const clanRole = useSelector(selectRoleByRoleId(roleId));
-	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
-		EPermission.administrator,
-		EPermission.manageClan,
-		EPermission.clanOwner
-	]);
+	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
+
 	const isNotChange = useMemo(() => {
 		return isEqual(originRoleName, currentRoleName);
 	}, [originRoleName, currentRoleName]);
 
 	const isCanEditRole = useMemo(() => {
 		if (!clanRole) return false;
-		return hasAdminPermission || hasManageClanPermission || isClanOwner;
-	}, [clanRole, hasAdminPermission, hasManageClanPermission, isClanOwner]);
+		return isClanOwner || Number(userMaxPermissionLevel) > Number(clanRole.max_level_permission);
+	}, [clanRole, isClanOwner, userMaxPermissionLevel]);
 
 	const handleBack = useCallback(() => {
 		if (isNotChange) {
 			navigation?.goBack();
 			return;
 		}
-		setShowModalConfirmSave(true);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={() => handleSave()}
+					title={t('roleDetail.confirmSaveTitle')}
+					confirmText={t('roleDetail.yes')}
+					content={t('roleDetail.confirmSaveContent')}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, [isNotChange, navigation]);
 
 	navigation.setOptions({
@@ -78,7 +88,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 			return (
 				<TouchableOpacity onPress={handleBack}>
 					<View style={{ marginLeft: size.s_16 }}>
-						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
 					</View>
 				</TouchableOpacity>
 			);
@@ -86,7 +96,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	});
 
 	const handleSave = async () => {
-		setShowModalConfirmSave(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		const selectedPermissions = clanRole?.permission_list?.permissions.filter((it) => it?.active).map((it) => it?.id);
 		const selectedMembers = clanRole?.role_user_list?.role_users?.map((it) => it?.id);
 		const response = await updateRole(
@@ -99,7 +109,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 			[],
 			[]
 		);
-		if (response) {
+		if (response === true) {
 			Toast.show({
 				type: 'success',
 				props: {
@@ -113,7 +123,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}
@@ -143,7 +153,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 							type: 'success',
 							props: {
 								text2: t('failed'),
-								leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+								leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 							}
 						});
 					}
@@ -233,11 +243,16 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 											<View style={{ flex: 1, flexDirection: 'row', gap: size.s_6 }}>
 												<Text color={themeValue.white}>{item.actionTitle}</Text>
 												{item?.isView && (
-													<Icons.LockIcon color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />
+													<MezonIconCDN
+														icon={IconCDN.lockIcon}
+														color={themeValue.textDisabled}
+														height={size.s_16}
+														width={size.s_16}
+													/>
 												)}
 											</View>
 											<View>
-												<Icons.ChevronSmallRightIcon color={themeValue.text} />
+												<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 											</View>
 										</View>
 									</TouchableOpacity>
@@ -268,15 +283,6 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 						</View>
 					)}
 				</View>
-
-				<MezonConfirm
-					visible={showModalConfirmSave}
-					onVisibleChange={onConfirmModalChange}
-					onConfirm={() => handleSave()}
-					title={t('roleDetail.confirmSaveTitle')}
-					confirmText={t('roleDetail.yes')}
-					content={t('roleDetail.confirmSaveContent')}
-				/>
 			</View>
 		</TouchableWithoutFeedback>
 	);

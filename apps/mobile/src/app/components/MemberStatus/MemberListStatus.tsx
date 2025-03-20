@@ -1,5 +1,4 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -12,12 +11,14 @@ import {
 import { ChannelMembersEntity, UsersClanEntity } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
-import { InviteToChannel } from '../../screens/home/homedrawer/components/InviteToChannel';
+import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
 import { threadDetailContext } from '../ThreadDetail/MenuThreadDetail';
 import { UserInformationBottomSheet } from '../UserInformationBottomSheet';
 import { MemoizedMemberItem } from './MemberItem';
@@ -42,13 +43,18 @@ export const MemberListStatus = React.memo(() => {
 
 	const [selectedUser, setSelectedUser] = useState<ChannelMembersEntity | null>(null);
 	const { t } = useTranslation();
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
 
 	const isDMThread = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
 	}, [currentChannel]);
 	const handleAddOrInviteMembers = useCallback((action: EActionButton) => {
-		if (action === EActionButton.InviteMembers) bottomSheetRef?.current?.present();
+		if (action === EActionButton.InviteMembers) {
+			const data = {
+				snapPoints: ['70%', '90%'],
+				children: <InviteToChannel isUnknownChannel={false} isDMThread={isDMThread} channelId={currentChannel?.channel_id} />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		}
 		if (action === EActionButton.AddMembers) navigateToNewGroupScreen();
 	}, []);
 
@@ -127,7 +133,7 @@ export const MemberListStatus = React.memo(() => {
 			{currentChannel?.type === ChannelType.CHANNEL_TYPE_DM ? (
 				<TouchableOpacity onPress={() => navigateToNewGroupScreen()} style={styles.actionItem}>
 					<View style={[styles.actionIconWrapper]}>
-						<Icons.GroupIcon height={20} width={20} color={baseColor.white} />
+						<MezonIconCDN icon={IconCDN.groupIcon} height={20} width={20} color={baseColor.white} />
 					</View>
 					<View style={{ flex: 1 }}>
 						<Text style={styles.actionTitle}>{t('message:newMessage.newGroup')}</Text>
@@ -135,7 +141,7 @@ export const MemberListStatus = React.memo(() => {
 							{t('message:newMessage.createGroupWith')} {currentChannel?.channel_label}
 						</Text>
 					</View>
-					<Icons.ChevronSmallRightIcon height={15} width={15} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue.text} />
 				</TouchableOpacity>
 			) : null}
 
@@ -148,12 +154,12 @@ export const MemberListStatus = React.memo(() => {
 					<View style={styles.inviteBtn}>
 						<View style={styles.iconNameWrapper}>
 							<View style={styles.iconWrapper}>
-								<Icons.UserPlusIcon height={20} width={20} color={baseColor.white} />
+								<MezonIconCDN icon={IconCDN.userPlusIcon} height={20} width={20} color={baseColor.white} />
 							</View>
 							<Text style={styles.textInvite}>{isDMThread ? EActionButton.AddMembers : EActionButton.InviteMembers}</Text>
 						</View>
 						<View>
-							<Icons.ChevronSmallRightIcon height={15} width={15} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue.text} />
 						</View>
 					</View>
 				</Pressable>
@@ -183,7 +189,6 @@ export const MemberListStatus = React.memo(() => {
 				/>
 			) : null}
 			<UserInformationBottomSheet userId={selectedUser?.user?.id} user={selectedUser} onClose={onClose} currentChannel={currentChannel} />
-			<InviteToChannel isUnknownChannel={false} ref={bottomSheetRef} isDMThread={isDMThread} />
 		</View>
 	);
 });

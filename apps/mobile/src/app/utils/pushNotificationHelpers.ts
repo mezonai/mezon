@@ -234,7 +234,9 @@ const handleOpenTopicDiscustion = async (store: any, topicId: string, channelId:
 	await Promise.all(promises);
 
 	if (navigation) {
-		navigation.navigate(APP_SCREEN.MESSAGES.TOPIC_DISCUSSION);
+		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
+			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
+		});
 	}
 };
 
@@ -369,18 +371,18 @@ export const setupIncomingCall = async (body: string) => {
 			RNCallKeep.endCall(callID);
 			return;
 		}
-		if (Platform.OS === 'ios') {
-			const options = {
-				playSound: true,
-				vibration: true,
-				sound: 'ringing',
-				vibrationPattern: [0, 500, 1000],
-				timeout: 30000
-			};
-			const callID = '6cb67209-4ef9-48c0-a8dc-2cec6cd6261d';
-			RNCallKeep.displayIncomingCall(callID, callID, `${bodyData?.callerName} is calling you`, 'number', true, options);
-			await listRNCallKeep(bodyData);
-		}
+		// if (Platform.OS === 'ios') {
+		// 	const options = {
+		// 		playSound: true,
+		// 		vibration: true,
+		// 		sound: 'ringing',
+		// 		vibrationPattern: [0, 500, 1000],
+		// 		timeout: 30000
+		// 	};
+		// 	const callID = '6cb67209-4ef9-48c0-a8dc-2cec6cd6261d';
+		// 	RNCallKeep.displayIncomingCall(callID, callID, `${bodyData?.callerName} is calling you`, 'number', true, options);
+		// 	await listRNCallKeep(bodyData);
+		// }
 	} catch (error) {
 		console.error('log  => setupIncomingCall', error);
 		/* empty */

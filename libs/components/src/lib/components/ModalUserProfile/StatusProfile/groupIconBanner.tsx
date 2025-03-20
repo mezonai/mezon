@@ -2,7 +2,6 @@ import { useFriends } from '@mezon/core';
 import { ChannelMembersEntity, EStateFriend, selectCurrentUserId, selectTheme, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IUser } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { OpenModalProps } from '..';
@@ -112,12 +111,8 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 							onClick={(e) => handleOnClickButtonFriend(e, index)}
 							key={button.title}
 						>
-							<Tippy
-								className={`whitespace-nowrap ${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}
-								content={button.title}
-							>
-								<span>{button.icon}</span>
-							</Tippy>
+							<span title={button.title}>{button.icon}</span>
+
 							{openModal.openFriend && checkAddFriend === EStateFriend.FRIEND && (
 								<PopupFriend user={user} showPopupLeft={showPopupLeft} />
 							)}
@@ -133,11 +128,9 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 					setOpenModal({ openFriend: false, openOption: !openModal.openOption });
 				}}
 			>
-				<Tippy content="More" className={`whitespace-nowrap ${appearanceTheme === 'light' ? 'tooltipLightMode' : 'tooltip'}`}>
-					<span>
-						<Icons.ThreeDot defaultSize="size-4 iconWhiteImportant" />
-					</span>
-				</Tippy>
+				<span title="More">
+					<Icons.ThreeDot defaultSize="size-4 iconWhiteImportant" />
+				</span>
 				{openModal.openOption && <PopupOption showPopupLeft={showPopupLeft} isSelf={isSelf} />}
 			</div>
 		</>

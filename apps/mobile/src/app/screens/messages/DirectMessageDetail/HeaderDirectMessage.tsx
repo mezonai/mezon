@@ -2,24 +2,24 @@ import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
 import { Icons } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import {
-	MessagesEntity,
 	channelsActions,
-	directActions,
 	directMetaActions,
+	getStore,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
 	selectMemberClanByUserId2,
-	useAppDispatch,
-	useAppSelector
+	useAppDispatch
 } from '@mezon/store-mobile';
 import { TIME_OFFSET, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import ImageNative from '../../../components/ImageNative';
 import { UserStatus } from '../../../components/UserStatus';
+import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
@@ -30,51 +30,37 @@ interface HeaderProps {
 	themeValue: any;
 	directMessageId: string;
 }
-function useChannelSeen(channelId: string) {
+function useChannelSeen(channelId: string, currentDmGroup: any) {
 	const dispatch = useAppDispatch();
-	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const mounted = useRef('');
-
-	const updateChannelSeenState = (channelId: string, lastMessage: MessagesEntity) => {
-		dispatch(directActions.setActiveDirect({ directId: channelId }));
-	};
+	const store = getStore();
 
 	const { markAsReadSeen } = useSeenMessagePool();
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	const refCountWasCalled = useRef<number>(0);
 	useEffect(() => {
-		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-		if (lastMessage) {
-			markAsReadSeen(lastMessage, mode);
-		}
-	}, [lastMessage, channelId, currentDmGroup?.type, markAsReadSeen]);
-
-	useEffect(() => {
-		if (lastMessage) {
-			const timestamp = Date.now() / 1000;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
-			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
-			dispatch(channelsActions.updateChannelBadgeCount({ clanId: '0', channelId: channelId || '', count: 0, isReset: true }));
-			updateChannelSeenState(channelId, lastMessage);
-		}
-	}, [lastMessage]);
-
-	useEffect(() => {
-		if (mounted.current === channelId) {
-			return;
-		}
-		if (lastMessage) {
-			mounted.current = channelId;
-			updateChannelSeenState(channelId, lastMessage);
-		}
-	}, [dispatch, channelId, lastMessage]);
+		return () => {
+			if (currentDmGroup?.type) {
+				const mode =
+					currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+				const lastMessage = selectLastMessageByChannelId(store.getState(), channelId);
+				if (lastMessage && refCountWasCalled.current <= 1) {
+					markAsReadSeen(lastMessage, mode, 0);
+					const timestamp = Date.now() / 1000;
+					dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: timestamp + TIME_OFFSET }));
+					dispatch(directMetaActions.updateLastSeenTime(lastMessage));
+					dispatch(channelsActions.updateChannelBadgeCount({ clanId: '0', channelId: channelId || '', count: 0, isReset: true }));
+					refCountWasCalled.current += 1;
+				}
+			}
+		};
+	}, [channelId, currentDmGroup?.type, markAsReadSeen, dispatch, store]);
 }
 
 const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId }) => {
-	useChannelSeen(directMessageId || '');
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
+	useChannelSeen(directMessageId || '', currentDmGroup);
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
-	const user = useSelector((state) => selectMemberClanByUserId2(state, firstUserId));
+	const user = useSelector((state) => selectMemberClanByUserId2(state, currentDmGroup?.user_id?.[0]));
 	const status = getUserStatusByMetadata(user?.user?.metadata);
 
 	const isModeDM = useMemo(() => {
@@ -83,10 +69,6 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 	const isTypeDMGroup = useMemo(() => {
 		return Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP;
-	}, [currentDmGroup?.type]);
-
-	const dmType = useMemo(() => {
-		return currentDmGroup?.type;
 	}, [currentDmGroup?.type]);
 
 	const dmLabel = useMemo(() => {
@@ -98,11 +80,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		return currentDmGroup?.channel_avatar?.[0];
 	}, [currentDmGroup?.channel_avatar?.[0]]);
 
-	const firstUserId = useMemo(() => {
-		return currentDmGroup?.user_id?.[0];
-	}, [currentDmGroup?.user_id?.[0]]);
-
-	const userStatus = useMemberStatus(isModeDM ? firstUserId : '');
+	const userStatus = useMemberStatus(isModeDM ? currentDmGroup?.user_id?.[0] : '');
 
 	const navigateToThreadDetail = useCallback(() => {
 		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.BOTTOM_SHEET, params: { directMessage: currentDmGroup } });
@@ -120,7 +98,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
 			params: {
-				receiverId: firstUserId,
+				receiverId: currentDmGroup?.user_id?.[0],
 				receiverAvatar: dmAvatar,
 				directMessageId
 			}
@@ -136,31 +114,23 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 	return (
 		<View style={styles.headerWrapper}>
 			<Pressable onPress={handleBack} style={styles.backButton}>
-				<Icons.ArrowLargeLeftIcon color={themeValue.text} height={size.s_20} width={size.s_20} />
+				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
 			</Pressable>
 			<Pressable style={styles.channelTitle} onPress={navigateToThreadDetail}>
 				{isTypeDMGroup ? (
 					<View style={styles.groupAvatar}>
-						<Icons.GroupIcon width={18} height={18} />
+						<MezonIconCDN icon={IconCDN.groupIcon} width={18} height={18} />
 					</View>
 				) : (
 					<View style={styles.avatarWrapper}>
 						{dmAvatar ? (
-							isTabletLandscape ? (
-								<Image
-									source={{
-										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-									}}
-									style={styles.friendAvatar}
+							<View style={styles.friendAvatar}>
+								<ImageNative
+									url={createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })}
+									style={{ width: '100%', height: '100%' }}
+									resizeMode={'cover'}
 								/>
-							) : (
-								<FastImage
-									source={{
-										uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })
-									}}
-									style={styles.friendAvatar}
-								/>
-							)
+							</View>
 						) : (
 							<View style={styles.wrapperTextAvatar}>
 								<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>
@@ -177,9 +147,9 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 						<Icons.Inbox width={size.s_20} height={size.s_20} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				)}
-				{!isTypeDMGroup && !!firstUserId && (
+				{!isTypeDMGroup && !!currentDmGroup?.user_id?.[0] && (
 					<TouchableOpacity style={styles.iconHeader} onPress={goToCall}>
-						<Icons.PhoneCallIcon width={size.s_18} height={size.s_18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 				)}
 			</Pressable>

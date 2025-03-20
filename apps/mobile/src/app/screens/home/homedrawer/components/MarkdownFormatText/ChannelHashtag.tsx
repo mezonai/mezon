@@ -36,7 +36,7 @@ export const ChannelHashtag = ({ channelHashtagId, currentChannelId, mode, hasht
 	if (channel.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 		return `[${channel.channel_label}](#stream${JSON.stringify(dataPress)})`;
 	}
-	if (channel.parrent_id !== '0') {
+	if (channel.parent_id !== '0') {
 		return `[${channel.channel_label}](#thread${JSON.stringify(dataPress)})`;
 	}
 	return channel['channel_id']

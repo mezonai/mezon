@@ -1,6 +1,14 @@
-import { ChannelMessageOpt, ChatWelcome, MessageContextMenuProps, MessageWithUser, OnBoardWelcome, useMessageContextMenu } from '@mezon/components';
+import {
+	ChannelMessageOpt,
+	ChatWelcome,
+	MessageContextMenuProps,
+	MessageWithSystem,
+	MessageWithUser,
+	OnBoardWelcome,
+	useMessageContextMenu
+} from '@mezon/components';
 import { MessagesEntity, selectChannelDraftMessage, selectIdMessageRefEdit, selectOpenEditMessageState, useAppSelector } from '@mezon/store';
-import { FOR_10_MINUTES, TypeMessage } from '@mezon/utils';
+import { FOR_10_MINUTES, ObserveFn, TypeMessage } from '@mezon/utils';
 import { isSameDay } from 'date-fns';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
@@ -24,6 +32,8 @@ export type MessageProps = {
 	previousMessage: MessagesEntity;
 	isTopic?: boolean;
 	canSendMessage: boolean;
+	wrapperClassName?: string;
+	observeIntersectionForLoading?: ObserveFn;
 };
 
 export type MessageRef = {
@@ -51,7 +61,8 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	message,
 	previousMessage,
 	isTopic = false,
-	canSendMessage
+	canSendMessage,
+	observeIntersectionForLoading
 }: Readonly<MessageProps>) => {
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
@@ -99,44 +110,39 @@ export const ChannelMessage: ChannelMessageComponent = ({
 				isDifferentDay={isDifferentDay}
 				hasPermission={isChannelThreadDmGroup || (!isTopic ? !!canSendMessage : true)}
 				isTopic={isTopic}
+				canSendMessage={canSendMessage}
 			/>
 		);
 	}, [message, handleContextMenu, isCombine, mode]);
 
-	return (
-		<>
-			{message.code === TypeMessage.Indicator && mode === ChannelStreamMode.STREAM_MODE_CHANNEL && (
-				<div className="pb-10">
-					<OnBoardWelcome nextMessageId={nextMessageId} />
-				</div>
-			)}
-			{message.isFirst && (
-				<ChatWelcome isPrivate={isPrivate} key={messageId} name={channelLabel} avatarDM={avatarDM} username={username} mode={mode} />
-			)}
+	const isMessageSystem =
+		message?.code === TypeMessage.Welcome ||
+		message?.code === TypeMessage.CreateThread ||
+		message?.code === TypeMessage.CreatePin ||
+		message?.code === TypeMessage.AuditLog;
 
-			{!message.isFirst && (
-				<div
-					className={`fullBoxText relative group ${!isCombine || (mess.code !== TypeMessage.CreatePin && mess.references?.[0]?.message_ref_id) ? 'pt-3' : ''}`}
-				>
-					<MessageWithUser
-						allowDisplayShortProfile={true}
-						message={mess}
-						mode={mode}
-						isEditing={isEditing}
-						isHighlight={isHighlight}
-						popup={popup}
-						onContextMenu={handleContextMenu}
-						isCombine={isCombine}
-						showDivider={isDifferentDay}
-						checkMessageTargetToMoved={checkMessageTargetToMoved}
-						messageReplyHighlight={messageReplyHighlight}
-						isTopic={isTopic}
-					/>
-				</div>
-			)}
-
-			{/* {!isMyMessage && isLastSeen && <UnreadMessageBreak />} */}
-		</>
+	return message.code === TypeMessage.Indicator && mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? (
+		<OnBoardWelcome nextMessageId={nextMessageId} />
+	) : message.isFirst ? (
+		<ChatWelcome isPrivate={isPrivate} key={messageId} name={channelLabel} avatarDM={avatarDM} username={username} mode={mode} />
+	) : isMessageSystem ? (
+		<MessageWithSystem message={mess} mode={mode} popup={popup} onContextMenu={handleContextMenu} showDivider={isDifferentDay} />
+	) : (
+		<MessageWithUser
+			allowDisplayShortProfile={true}
+			message={mess}
+			mode={mode}
+			isEditing={isEditing}
+			isHighlight={isHighlight}
+			popup={popup}
+			onContextMenu={handleContextMenu}
+			isCombine={isCombine}
+			showDivider={isDifferentDay}
+			checkMessageTargetToMoved={checkMessageTargetToMoved}
+			messageReplyHighlight={messageReplyHighlight}
+			isTopic={isTopic}
+			observeIntersectionForLoading={observeIntersectionForLoading}
+		/>
 	);
 };
 
@@ -148,7 +154,9 @@ export const MemorizedChannelMessage = memo(
 		prev.messageReplyHighlight === curr.messageReplyHighlight &&
 		prev.checkMessageTargetToMoved === curr.checkMessageTargetToMoved &&
 		// prev.message.content === curr.message.content &&
-		prev.previousMessage === curr.previousMessage
+		prev.previousMessage?.id === curr.previousMessage?.id &&
+		prev.message?.code === curr.message?.code &&
+		prev.message?.references?.[0]?.message_ref_id === curr.message?.references?.[0]?.message_ref_id
 );
 
 MemorizedChannelMessage.displayName = 'MemorizedChannelMessage';

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
-import { CheckIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -23,9 +23,11 @@ import { TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../../../componentUI';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';
 import { styles } from './styles';
 
@@ -233,7 +235,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 				<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
 					<View style={{ position: 'absolute', left: 0 }}>
 						<TouchableOpacity onPress={() => onClose()}>
-							<Icons.CloseLargeIcon color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
 						</TouchableOpacity>
 					</View>
 					<Text h3 color={themeValue.white}>
@@ -245,7 +247,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 					placeHolder={t('search')}
 					onTextChange={setSearchText}
 					value={searchText}
-					prefixIcon={<Icons.MagnifyingIcon color={themeValue.text} height={20} width={20} />}
+					prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
 					inputWrapperStyle={{ backgroundColor: themeValue.primary, paddingHorizontal: size.s_6 }}
 				/>
 

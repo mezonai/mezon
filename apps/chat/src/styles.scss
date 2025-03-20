@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('../../../libs/assets/src/assets/font/nato-san-gg.css');
-@import 'tippy.js/dist/tippy.css';
+@import 'styles/tooltip.scss';
+@import 'quill/dist/quill.snow.css';
 
 @font-face {
 	font-family: 'gg sans';
@@ -69,6 +69,26 @@
 	font-display: swap;
 }
 
+.contain-layout {
+	contain: layout;
+}
+
+.contain-paint {
+	contain: paint;
+}
+
+.contain-size {
+	contain: size;
+}
+
+.contain-content {
+	contain: content;
+}
+
+.contain-strict {
+	contain: strict;
+}
+
 /* You can add global styles to this file, and also import other style files */
 :root {
 	--white-500: #ffffff;
@@ -98,12 +118,14 @@
 	/* Firefox */
 }
 
-::-webkit-scrollbar {
-	width: 8px;
-}
-
 #channelList {
 	margin-right: 2px;
+}
+
+// fix later
+
+::-webkit-scrollbar {
+	width: 8px;
 }
 
 /* Track */
@@ -133,19 +155,6 @@ body {
 
 .enableSelectText {
 	user-select: text;
-}
-
-//button voice control pannel
-.button {
-	line-height: 0;
-	width: 32px;
-	height: 32px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 4px;
-	position: relative;
-	color: #e1e1e1;
 }
 
 // btn icon voice control pannel
@@ -361,42 +370,11 @@ input:-webkit-autofill:active {
 }
 
 #scrollLoading {
-	width: 100%;
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	scrollbar-width: thin;
-	scrollbar-color: transparent transparent;
-	transition: scrollbar-color 0.3s ease;
-
-	-webkit-overflow-scrolling: touch;
-	// Fix scroll lock on iOS
-	pointer-events: auto;
-
-	&::-webkit-scrollbar-thumb {
-		background-color: transparent;
-		border-radius: 0.375rem;
-		// `box-shadow` prevents repaint on macOS when hovering out of scrollable container
-		box-shadow: 0 0 1px rgba(255, 255, 255, 0.01);
-	}
-
-	&:hover,
-	&:focus,
-	&:focus-within {
-		scrollbar-color: var(--color-scrollbar) transparent;
-
-		&::-webkit-scrollbar-thumb {
-			background-color: var(--color-scrollbar);
-		}
-	}
 }
 
 // css mainChat
-#mainChat:has(#memberList) {
-	[class='editorStyles_mentionSuggestions__-tu0h'] {
-		left: -50px !important;
-	}
-}
 
 .messages-container {
 	display: flex;
@@ -404,6 +382,9 @@ input:-webkit-autofill:active {
 	align-items: center;
 	justify-content: flex-end;
 	height: 100%;
+	contain: content;
+	content-visibility: auto;
+	contain-intrinsic-size: auto 500px;
 	.force-messages-scroll & {
 		margin-top: 100vh !important;
 	}
@@ -450,14 +431,13 @@ input:-webkit-autofill:active {
 		/* Ensure the span behaves inline */
 
 		code {
-			color: #535353;
+			color: #e6e6e6;
 			border: 1px solid #e3e5e8 !important;
 			background-color: #f2f3f5;
 			border-radius: 6px;
 			padding: 3px 6px;
-			font-family: Consolas;
+			font-weight: 400;
 			font-size: 14px;
-			font-weight: 500;
 			display: inline;
 			/* Keep the code inline */
 			white-space: break-spaces;
@@ -479,14 +459,13 @@ input:-webkit-autofill:active {
 		/* Ensure the span behaves inline */
 
 		code {
-			color: #dfdfe0;
+			color: #e6e6e6;
 			border: 1px solid #1e1f22 !important;
 			background-color: #2b2d31;
 			border-radius: 6px;
 			padding: 3px 6px;
-			font-family: Consolas;
+			font-weight: 400;
 			font-size: 14px;
-			font-weight: 500;
 			display: inline;
 			/* Keep the code inline */
 			white-space: nowrap;
@@ -517,10 +496,10 @@ input:-webkit-autofill:active {
 
 			code {
 				font-size: 14px;
-				font-family: Consolas;
+				font-weight: 400;
 				border-radius: 6px;
 				padding: 3px 6px;
-				color: #fff;
+				color: #e6e6e6;
 				display: inline-block;
 				white-space: pre-wrap;
 				word-wrap: break-word;
@@ -543,10 +522,10 @@ input:-webkit-autofill:active {
 
 			code {
 				font-size: 14px;
-				font-family: Consolas;
 				border-radius: 6px;
 				padding: 3px 6px;
 				color: #535353;
+				font-weight: 400;
 				display: inline-block;
 				white-space: pre-wrap;
 				word-wrap: break-word;
@@ -560,7 +539,7 @@ input:-webkit-autofill:active {
 
 	border: 1px solid #1e1f22 !important;
 	background-color: #2b2d31;
-	color: #fff;
+	color: #e6e6e6;
 	padding: 2px;
 	border-radius: 6px;
 	margin-top: 0;
@@ -648,31 +627,6 @@ input:-webkit-autofill:active {
 .thread-scroll {
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	scrollbar-width: thin;
-	scrollbar-color: transparent transparent;
-	transition: scrollbar-color 0.3s ease;
-
-	-webkit-overflow-scrolling: touch;
-	// Fix scroll lock on iOS
-	pointer-events: auto;
-
-	&::-webkit-scrollbar-thumb {
-		background-color: transparent;
-		border-radius: 0.375rem;
-		// `box-shadow` prevents repaint on macOS when hovering out of scrollable container
-		box-shadow: 0 0 1px rgba(255, 255, 255, 0.01);
-	}
-
-	&:hover,
-	&:focus,
-	&:focus-within {
-		scrollbar-color: var(--color-scrollbar) transparent;
-
-		&::-webkit-scrollbar-thumb {
-			background-color: var(--color-scrollbar);
-		}
-	}
 }
 
 // editor-scroll
@@ -979,9 +933,9 @@ input:-webkit-autofill:active {
 	}
 }
 
-.custom-member-list {
-	-ms-overflow-style: none;
-}
+// .custom-member-list {
+// 	-ms-overflow-style: none;
+// }
 
 .error-boundary {
 	overflow: hidden;
@@ -1220,12 +1174,19 @@ input:-webkit-autofill:active {
 	}
 }
 
-.rc-tooltip-inner {
-	background-color: transparent;
-	box-shadow: none;
-	padding: 0;
-}
+.opacity-transition {
+	opacity: 1;
+	transition: opacity 0.15s ease;
 
-.rc-tooltip-placement-top{
-	padding-bottom: 4.5px;
+	&.not-open {
+		opacity: 0;
+	}
+
+	&.not-shown {
+		display: none;
+	}
+
+	&.slow {
+		transition-duration: 0.3s;
+	}
 }

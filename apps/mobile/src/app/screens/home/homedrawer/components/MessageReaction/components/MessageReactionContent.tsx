@@ -1,13 +1,16 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { TrashIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, TrashIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { EmojiDataOptionals, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Pressable, Text, View } from 'react-native';
+import { DeviceEventEmitter, Dimensions, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { FlatList } from 'react-native-gesture-handler';
+import UserProfile from '../../UserProfile';
+import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import { style } from '../styles';
 import { ReactionMember } from './ReactionMember';
 
@@ -16,14 +19,13 @@ interface IMessageReactionContentProps {
 	emojiSelectedId: string | null;
 	userId: string | null;
 	removeEmoji?: (emoji: EmojiDataOptionals) => void;
-	onShowUserInformation?: (userId: string) => void;
 	channelId?: string;
 }
 
 const { width } = Dimensions.get('window');
 
 export const MessageReactionContent = memo((props: IMessageReactionContentProps) => {
-	const { allReactionDataOnOneMessage, emojiSelectedId, channelId, userId, onShowUserInformation, removeEmoji } = props;
+	const { allReactionDataOnOneMessage, emojiSelectedId, channelId, userId, removeEmoji } = props;
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation('message');
@@ -122,12 +124,12 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 						<View>
 							{showConfirmDeleteEmoji ? (
 								<Pressable style={styles.confirmDeleteEmoji} onPress={() => onRemoveEmoji()}>
-									<TrashIcon width={size.s_20} height={size.s_20} />
+									<MezonIconCDN icon={IconCDN.trashIcon} width={size.s_20} height={size.s_20} />
 									<Text style={styles.confirmText}>{t('reactions.removeActions')}</Text>
 								</Pressable>
 							) : (
 								<Pressable onPress={() => setShowConfirmDeleteEmoji(true)}>
-									<TrashIcon width={size.s_20} height={size.s_20} />
+									<MezonIconCDN icon={IconCDN.trashIcon} width={size.s_20} height={size.s_20} />
 								</Pressable>
 							)}
 						</View>
@@ -138,7 +140,17 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 					renderItem={({ item, index }) => {
 						return (
 							<View key={`${index}_${item.sender_id}_allReactionDataOnOneMessage`} style={{ marginBottom: size.s_10 }}>
-								<ReactionMember userId={item.sender_id} channelId={channelId} onSelectUserId={onShowUserInformation} />
+								<ReactionMember
+									userId={item.sender_id}
+									channelId={channelId}
+									onSelectUserId={() => {
+										const data = {
+											snapPoints: ['60%', '90%'],
+											children: <UserProfile userId={item.sender_id} showAction={true} showRole={true} currentChannel={null} />
+										};
+										DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+									}}
+								/>
 							</View>
 						);
 					}}

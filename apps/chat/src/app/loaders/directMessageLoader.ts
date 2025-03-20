@@ -1,5 +1,6 @@
 import { channelsActions, directActions } from '@mezon/store';
 import { notificationService } from '@mezon/utils';
+import { ShouldRevalidateFunction } from 'react-router-dom';
 import { CustomLoaderFunction } from './appLoader';
 
 export const directMessageLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
@@ -19,4 +20,12 @@ export const directMessageLoader: CustomLoaderFunction = async ({ params, dispat
 	notificationService.setCurrentChannelId(directId);
 
 	return null;
+};
+
+export const shouldRevalidateDirect: ShouldRevalidateFunction = (ctx) => {
+	const { currentParams, nextParams } = ctx;
+	const { directId: currentChannelId } = currentParams;
+	const { directId: nextChannelId } = nextParams;
+
+	return currentChannelId !== nextChannelId;
 };

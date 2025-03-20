@@ -1,6 +1,6 @@
 import { ETypeSearch, ICategoryChannelOption } from '@mezon/mobile-components';
 import { ChannelsEntity, DirectEntity, NotiChannelCategorySettingEntity } from '@mezon/store-mobile';
-import { ChannelThreads, IChannel, OptionEvent } from '@mezon/utils';
+import { ChannelThreads, ICategoryChannel, IChannel, OptionEvent } from '@mezon/utils';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -16,6 +16,7 @@ export const APP_SCREEN = {
 	DRAWER_BAR: 'DRAWER_BAR',
 	HOME_DEFAULT: 'HOME_DEFAULT',
 	HOME: 'HOME',
+	VIDEO_DETAIL: 'VIDEO_DETAIL',
 
 	SERVERS: {
 		STACK: 'ROUTES.SERVERS.STACK',
@@ -57,7 +58,8 @@ export const APP_SCREEN = {
 		BOTTOM_SHEET: 'ROUTES.MENU_THREAD.BOTTOM_SHEET',
 		CREATE_THREAD: 'ROUTES.MENU_THREAD.CREATE_THREAD',
 		CREATE_THREAD_FORM_MODAL: 'ROUTES.MENU_THREAD.CREATE_THREAD_FORM_MODAL',
-		MUTE_THREAD_DETAIL_CHANNEL: 'ROUTES.MENU_THREAD.MUTE_THREAD_DETAIL_CHANNEL'
+		MUTE_THREAD_DETAIL_CHANNEL: 'ROUTES.MENU_THREAD.MUTE_THREAD_DETAIL_CHANNEL',
+		MUTE_CATEGORY_DETAIL: 'ROUTES.MENU_THREAD.MUTE_CATEGORY_DETAIL'
 	},
 
 	MENU_CLAN: {
@@ -155,6 +157,7 @@ type MenuThreadStackParamList = {
 	};
 	[APP_SCREEN.MENU_THREAD.CREATE_THREAD_FORM_MODAL]: { channelThreads: ChannelThreads };
 	[APP_SCREEN.MENU_THREAD.MUTE_THREAD_DETAIL_CHANNEL]: { currentChannel: IChannel | DirectEntity; isCurrentChannel: boolean };
+	[APP_SCREEN.MENU_THREAD.MUTE_CATEGORY_DETAIL]: { currentCategory: ICategoryChannel };
 };
 
 export type MenuChannelStackParamList = {

@@ -1,10 +1,11 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useAuth } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { KeyboardAvoidingView, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { IUserProfileValue } from '..';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import BannerAvatar from './components/Banner';
 import DetailInfo from './components/Info';
 import { DirectMessageLogo } from './components/Logo';
@@ -45,7 +46,7 @@ export default function UserProfile({ userProfileValue, setCurrentUserProfileVal
 			/>
 			<View style={styles.btnGroup}>
 				<TouchableOpacity onPress={() => handleHashtagPress()} style={styles.btnIcon}>
-					<Icons.TextIcon width={size.s_16} height={size.s_16} />
+					<MezonIconCDN icon={IconCDN.channelText} width={size.s_16} height={size.s_16} />
 				</TouchableOpacity>
 			</View>
 

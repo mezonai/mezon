@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentClanId } from '@mezon/store-mobile';
 import { useState } from 'react';
@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../componentUI';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 
 type CreateNewRoleScreen = typeof APP_SCREEN.MENU_CLAN.CREATE_NEW_ROLE;
@@ -22,7 +24,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 		headerTitle: t('createNewRole.title'),
 		headerLeft: () => (
 			<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-				<Icons.CloseSmallBoldIcon height={20} width={20} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
 			</Pressable>
 		)
 	});
@@ -32,7 +34,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 	};
 
 	const createNewRole = async () => {
-		const response = (await createRole(currentClanId, currentClanId, roleName, [], [])) as any;
+		const response = (await createRole(currentClanId, roleName, '', [], [])) as any;
 		if (response?.id) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.SETUP_PERMISSIONS);
 			Toast.show({
@@ -48,7 +50,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}

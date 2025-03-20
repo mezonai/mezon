@@ -36,13 +36,11 @@ export const style = (colors: Attributes) =>
 		},
 
 		channelListItemTitle: {
-			fontSize: size.s_15,
-			maxHeight: size.s_20,
+			fontSize: size.medium,
 			fontWeight: '600',
 			marginLeft: size.s_10,
 			color: colors.channelNormal,
-			maxWidth: '80%',
-			overflow: 'hidden'
+			maxWidth: '80%'
 		},
 
 		channelListItemTitleActive: {

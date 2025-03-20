@@ -2,7 +2,6 @@ import { useClanOwner } from '@mezon/core';
 import { RolesClanEntity, selectTheme, selectUserMaxPermissionLevel } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, RoleEveryOne, SlugPermission } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { ApiPermission } from 'mezon-js/api.gen';
 import { useSelector } from 'react-redux';
 
@@ -54,17 +53,13 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								}}
 							>
 								{hasPermissionEdit ? (
-									<Tippy content="Edit" className={`${isLightMode ? 'tooltipLightMode' : 'tooltip'}`}>
-										<span>
-											<Icons.PenEdit className="size-5" />
-										</span>
-									</Tippy>
+									<span title="Edit">
+										<Icons.PenEdit className="size-5" />
+									</span>
 								) : (
-									<Tippy content="View" className={`${isLightMode ? 'tooltipLightMode' : 'tooltip'}`}>
-										<span>
-											<Icons.ViewRole defaultSize="size-5" />
-										</span>
-									</Tippy>
+									<span title="View">
+										<Icons.ViewRole defaultSize="size-5" />
+									</span>
 								)}
 							</div>
 							<div
@@ -79,11 +74,9 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 											() => {}
 								}
 							>
-								<Tippy content="Delete" className={`${isLightMode ? 'tooltipLightMode' : 'tooltip'}`}>
-									<span>
-										<Icons.DeleteMessageRightClick defaultSize="size-5" />
-									</span>
-								</Tippy>
+								<span title="Delete">
+									<Icons.DeleteMessageRightClick defaultSize="size-5" />
+								</span>
 							</div>
 						</div>
 					</td>

@@ -75,7 +75,7 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 				? safeJSONParse(thread.last_sent_message.content || '{}').t
 				: (thread.last_sent_message?.content as any)?.t || '')
 		);
-	}, [message, thread]);
+	}, [checkType, message?.content?.t, thread.last_sent_message]);
 
 	return (
 		<Pressable
@@ -84,15 +84,19 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 			}}
 			style={styles.threadItemWrapper}
 		>
-			<View style={{ flex: 1 }}>
+			<View style={{ flex: 1, flexGrow: 1, flexShrink: 1 }}>
 				<Text style={styles.threadName}>{thread?.channel_label}</Text>
 				<View style={styles.threadContent}>
-					<Text style={styles.textThreadCreateBy}>{username}</Text>
+					<Text numberOfLines={1} style={styles.textThreadCreateBy}>
+						{username}
+					</Text>
 					<Text numberOfLines={1} ellipsizeMode="tail" style={styles.messageContent}>
 						{lastSentMessage}
 					</Text>
 					<Text style={styles.bullet}>•</Text>
-					<Text style={styles.createTime}>{timeMessage}</Text>
+					<Text numberOfLines={1} style={styles.createTime}>
+						{timeMessage}
+					</Text>
 				</View>
 			</View>
 			<AngleRightIcon width={25} height={25} color={themeValue.textDisabled} />

@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
-import { Block, Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	selectAllUserChannel,
@@ -11,14 +11,18 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
+import { isPublicChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonConfirm, MezonSwitch } from '../../../componentUI';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonSwitch from '../../../componentUI/MezonSwitch';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { AddMemberOrRoleBS } from '../components/AddMemberOrRoleBS';
 import { MemberItem } from '../components/MemberItem';
 import { RoleItem } from '../components/RoleItem';
@@ -32,8 +36,6 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 	const [checkClanOwner] = useCheckOwnerForUser();
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('channelSetting');
-	const [visibleModalConfirm, setVisibleModalConfirm] = useState(false);
-	const [isPrivateChannel, setIsPrivateChannel] = useState(false);
 	const bottomSheetRef = useRef<BottomSheetModal>(null);
 	const everyoneRole = useSelector(selectEveryoneRole);
 	const allClanMembers = useSelector(selectAllUserClans);
@@ -68,9 +70,27 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 		];
 	}, [availableMemberList, availableRoleList, t]);
 
-	const onPrivateChannelChange = useCallback((value: boolean) => {
-		setIsPrivateChannel(value);
-		setVisibleModalConfirm(true);
+	const onPrivateChannelChange = useCallback(() => {
+		const isPrivateChannel = !isPublicChannel(channel);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={updateChannel}
+					title={
+						isPrivateChannel
+							? t('channelPermission.warningModal.privateChannelTitle')
+							: t('channelPermission.warningModal.publicChannelTitle')
+					}
+					confirmText={t('channelPermission.warningModal.confirm')}
+					content={
+						isPrivateChannel
+							? t('channelPermission.warningModal.privateChannelContent', { channelLabel: channel?.channel_label })
+							: t('channelPermission.warningModal.publicChannelContent', { channelLabel: channel?.channel_label })
+					}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, []);
 
 	const openBottomSheet = () => {
@@ -78,12 +98,12 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 	};
 
 	const updateChannel = async () => {
-		await setVisibleModalConfirm(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 
 		const response = await dispatch(
 			channelsActions.updateChannelPrivate({
 				channel_id: channel.id,
-				channel_private: isPrivateChannel ? 0 : 1,
+				channel_private: isPublicChannel(channel) ? 1 : 0,
 				user_ids: [userId],
 				role_ids: []
 			})
@@ -93,13 +113,13 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 			type: 'success',
 			props: {
 				text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-				leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+				leadingIcon: isError ? (
+					<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+				) : (
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+				)
 			}
 		});
-	};
-
-	const closeModalConfirm = () => {
-		setIsPrivateChannel(!isPrivateChannel);
 	};
 
 	const renderWhoCanAccessItem = useCallback(
@@ -126,14 +146,9 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 		[channel, themeValue]
 	);
 
-	useEffect(() => {
-		if (channel?.channel_private !== undefined) {
-			setIsPrivateChannel(Boolean(channel?.channel_private));
-		}
-	}, [channel?.channel_private]);
 	return (
 		<View style={{ flex: 1 }}>
-			<TouchableOpacity onPress={() => onPrivateChannelChange(!isPrivateChannel)}>
+			<TouchableOpacity onPress={() => onPrivateChannelChange()}>
 				<View
 					style={{
 						flexDirection: 'row',
@@ -148,7 +163,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 					<View style={{ alignItems: 'center' }}>
 						<Text color={themeValue.text}>{t('channelPermission.privateChannel')}</Text>
 					</View>
-					<MezonSwitch value={isPrivateChannel} onValueChange={onPrivateChannelChange} />
+					<MezonSwitch value={!isPublicChannel(channel)} onValueChange={onPrivateChannelChange} />
 				</View>
 			</TouchableOpacity>
 
@@ -169,10 +184,10 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 							}}
 						>
 							<View style={{ flexDirection: 'row', gap: size.s_14, alignItems: 'center' }}>
-								<Icons.CirclePlusPrimaryIcon color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} color={themeValue.text} />
 								<Text color={themeValue.text}>{t('channelPermission.addMemberAndRoles')}</Text>
 							</View>
-							<Icons.ChevronSmallRightIcon color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 						</View>
 					</TouchableOpacity>
 				</View>
@@ -191,24 +206,6 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				</View>
 			</View>
 
-			<MezonConfirm
-				visible={visibleModalConfirm}
-				onVisibleChange={setVisibleModalConfirm}
-				onConfirm={updateChannel}
-				onCancel={closeModalConfirm}
-				title={
-					isPrivateChannel
-						? t('channelPermission.warningModal.privateChannelTitle')
-						: t('channelPermission.warningModal.publicChannelTitle')
-				}
-				confirmText={t('channelPermission.warningModal.confirm')}
-				content={
-					isPrivateChannel
-						? t('channelPermission.warningModal.privateChannelContent', { channelLabel: channel?.channel_label })
-						: t('channelPermission.warningModal.publicChannelContent', { channelLabel: channel?.channel_label })
-				}
-				hasBackdrop={true}
-			/>
 			<AddMemberOrRoleBS bottomSheetRef={bottomSheetRef} channel={channel} />
 		</View>
 	);

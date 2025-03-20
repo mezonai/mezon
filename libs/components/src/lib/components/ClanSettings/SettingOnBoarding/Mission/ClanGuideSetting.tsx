@@ -151,7 +151,7 @@ const OwnerGreeting = () => {
 						/>
 					</div>
 					<div className="flex font-semibold text-white items-center gap-1">
-						{clanOwner.clan_nick ?? clanOwner.user?.display_name ?? clanOwner.user?.username} <Icons.OwnerIcon />
+						{clanOwner?.clan_nick ?? clanOwner.user?.display_name ?? clanOwner.user?.username} <Icons.OwnerIcon />
 					</div>
 				</div>
 				<div className="text-base text-white">

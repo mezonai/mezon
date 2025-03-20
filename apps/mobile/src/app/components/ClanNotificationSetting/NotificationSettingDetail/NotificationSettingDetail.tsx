@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonOption } from '../../../componentUI';
+import MezonOption from '../../../componentUI/MezonOption';
 import { MuteClanNotificationBS } from '../MuteClanNotificationBS';
 import { style } from './NotificationSettingDetail.styles';
 

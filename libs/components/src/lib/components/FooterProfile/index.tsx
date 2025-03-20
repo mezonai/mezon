@@ -103,7 +103,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const handleCloseModalSendToken = () => {
 		setToken(0);
 		setSelectedUserId('');
-		setNote('send token');
+		setNote('move money');
 		setUserSearchError('');
 		setError('');
 		setSendTokenInputsState({ isSendTokenInputDisabled: false, isUserSelectionDisabled: false });
@@ -115,7 +115,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			const response = await createDirectMessageWithUser(userId);
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(`Tokens sent: ${formatMoney(tokenValue)}₫ | ${note}`, response.channel_id, channelMode, TypeMessage.SendToken);
+				sendInviteMessage(
+					`Balance notifications: ${formatMoney(tokenValue)}₫ | ${note}`,
+					response.channel_id,
+					channelMode,
+					TypeMessage.SendToken
+				);
 			}
 		},
 		[createDirectMessageWithUser, sendInviteMessage]
@@ -128,12 +133,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			return;
 		}
 		if (token <= 0) {
-			setError('Token amount must be greater than zero');
+			setError('Your amount must be greater than zero');
 			return;
 		}
 
 		if (token > Number(tokenInWallet) + Number(getTokenSocket)) {
-			setError('Token amount exceeds wallet balance');
+			setError('Your amount exceeds wallet balance');
 			return;
 		}
 		const tokenEvent: ApiTokenSentEvent = {

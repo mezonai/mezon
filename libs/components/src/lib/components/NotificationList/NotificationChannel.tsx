@@ -1,6 +1,6 @@
 import { useNotification } from '@mezon/core';
 import { channelMetaActions, useAppDispatch } from '@mezon/store';
-import { INotification, TIME_OFFSET, TNotificationChannel } from '@mezon/utils';
+import { INotification, NotificationCategory, TIME_OFFSET, TNotificationChannel } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import NotificationChannelHeader from './NotificationChannelHeader';
 import NotifyMentionItem from './NotifyMentionItem';
@@ -46,7 +46,7 @@ const NotificationChannel = ({ unreadListConverted, isUnreadTab, notification }:
 					timestamp: timestamp + TIME_OFFSET
 				})
 			);
-			deleteNotify(notification.id, notification.content.clan_id ?? '0');
+			deleteNotify(notification.id, notification.category as NotificationCategory);
 		},
 		[deleteNotify, dispatch]
 	);

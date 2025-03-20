@@ -1,13 +1,15 @@
 import { useMyRole } from '@mezon/core';
-import { Icons, isEqual } from '@mezon/mobile-components';
+import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { permissionRoleChannelActions, selectAllPermissionRoleChannel, selectPermissionChannel, useAppDispatch } from '@mezon/store-mobile';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonConfirm } from '../../../componentUI';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../../navigation/ScreenTypes';
 import { PermissionItem } from '../components/PermissionItem';
 import { EOverridePermissionType, EPermissionStatus, ERequestStatus } from '../types/channelPermission.enum';
@@ -23,7 +25,6 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 	const changedChannelPermissionList = useSelector(selectAllPermissionRoleChannel);
 	const [originChannelPermissionValues, setOriginChannelPermissionValues] = useState<IPermissionSetting>();
 	const [currentChannelPermissionValues, setCurrentChannelPermissionValues] = useState<IPermissionSetting>();
-	const [visibleConfirmModal, setVisibleConfirmModal] = useState(false);
 	const { maxPermissionId } = useMyRole();
 
 	const isSettingNotChange = useMemo(() => {
@@ -36,6 +37,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 	}, [type]);
 
 	const saveChannelPermission = async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		const permissionValueList = channelPermissionList?.reduce((acc, permission) => {
 			const { slug, id } = permission;
 			const permissionValue = {
@@ -60,12 +62,13 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			type: 'success',
 			props: {
 				text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-				leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+				leadingIcon: isError ? (
+					<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+				) : (
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+				)
 			}
 		});
-		if (visibleConfirmModal) {
-			navigation.goBack();
-		}
 	};
 
 	const handleBack = useCallback(() => {
@@ -73,7 +76,20 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			navigation.goBack();
 			return;
 		}
-		setVisibleConfirmModal(true);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={saveChannelPermission}
+					onCancel={() => {
+						navigation?.goBack();
+					}}
+					title={t('channelPermission.warningChangeSettingModal.title')}
+					confirmText={t('channelPermission.warningChangeSettingModal.confirm')}
+					content={t('channelPermission.warningChangeSettingModal.content')}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, [navigation, isSettingNotChange]);
 
 	navigation.setOptions({
@@ -100,7 +116,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			return (
 				<TouchableOpacity onPress={handleBack}>
 					<View style={{ marginLeft: size.s_16 }}>
-						<Icons.ArrowLargeLeftIcon color={themeValue.white} height={size.s_22} width={size.s_22} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
 					</View>
 				</TouchableOpacity>
 			);
@@ -176,17 +192,6 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 					})}
 				</View>
 			</ScrollView>
-
-			<MezonConfirm
-				visible={visibleConfirmModal}
-				onVisibleChange={setVisibleConfirmModal}
-				onConfirm={saveChannelPermission}
-				onCancel={() => navigation?.goBack()}
-				title={t('channelPermission.warningChangeSettingModal.title')}
-				confirmText={t('channelPermission.warningChangeSettingModal.confirm')}
-				content={t('channelPermission.warningChangeSettingModal.content')}
-				hasBackdrop={true}
-			/>
 		</View>
 	);
 };

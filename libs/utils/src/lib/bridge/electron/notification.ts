@@ -1,6 +1,7 @@
 import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../../e2ee';
+import { isBackgroundModeActive } from '../../hooks/useBackgroundMode';
 import { electronBridge } from './electron';
 export interface IMessageExtras {
 	link: string; // link for navigating
@@ -42,28 +43,8 @@ export class MezonNotificationService {
 	public static instance: MezonNotificationService;
 	private currentChannelId: string | undefined;
 	private pingTimeout: NodeJS.Timeout | null = null;
-	private isFocusOnApp = false;
 	private previousAppId = 0;
 	private currentUserId: string | null = null;
-
-	private constructor() {
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		if (isElectron()) {
-			window.electron.onWindowFocused(() => {
-				this.isFocusOnApp = true;
-			});
-			window.electron.onWindowBlurred(() => {
-				this.isFocusOnApp = false;
-			});
-		} else {
-			window.onfocus = () => {
-				this.isFocusOnApp = true;
-			};
-			window.onblur = () => {
-				this.isFocusOnApp = false;
-			};
-		}
-	}
 
 	public static getInstance() {
 		if (!MezonNotificationService.instance) {
@@ -75,7 +56,7 @@ export class MezonNotificationService {
 		this.currentUserId = userId;
 	};
 
-	public connect = async (token: string, pushNotiCallback?: (notification: NotificationData) => void) => {
+	public connect = async (token: string) => {
 		const hasPermission = await this.checkNotificationPermission();
 
 		if (!hasPermission) {
@@ -104,22 +85,20 @@ export class MezonNotificationService {
 					this.handlePong();
 					this.startPingMonitoring(token);
 				} else {
+					const isFocus = !isBackgroundModeActive();
 					const msg = objMsg as NotificationData;
 					const { title, message, image } = msg ?? {};
 
 					const { link, e2eemess } = msg?.extras ?? {};
-					if (msg?.channel_id && msg?.channel_id === this.currentChannelId && this.isFocusOnApp) {
+					if (msg?.channel_id && msg?.channel_id === this.currentChannelId && isFocus) {
 						return;
 					}
 					let msgContent = message;
 					if (e2eemess === 'true') {
 						msgContent = await MessageCrypt.mapE2EEcontent(message, this.currentUserId as string, true);
 					}
-					this.pushNotification(title, msgContent, image, link);
-					if (pushNotiCallback) {
-						pushNotiCallback(msg);
-					}
-					//check app update
+
+					this.pushNotification(title, msgContent, image, link, msg);
 					if (isElectron() && msg?.appid && msg.appid !== this.previousAppId) {
 						this.previousAppId = msg.appid;
 						electronBridge.invoke('APP::CHECK_UPDATE');
@@ -163,15 +142,19 @@ export class MezonNotificationService {
 		}
 	}
 
-	private pushNotification(title: string, message: string, image: string, link: string | undefined) {
+	private pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
 		if (isElectron()) {
-			electronBridge.pushNotification(title, {
-				body: message,
-				icon: image ?? '',
-				data: {
-					link: link ?? ''
-				}
-			});
+			electronBridge.pushNotification(
+				title,
+				{
+					body: message,
+					icon: image ?? '',
+					data: {
+						link: link ?? ''
+					}
+				},
+				msg
+			);
 		} else {
 			this.pushNotificationForWeb(title, message, image, link);
 		}

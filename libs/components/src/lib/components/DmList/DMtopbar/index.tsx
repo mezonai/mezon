@@ -288,7 +288,7 @@ const AddMemberToGroupDm = ({ currentDmGroup, appearanceTheme }: { currentDmGrou
 	return (
 		<div onClick={handleOpenAddToGroupModal} ref={rootRef} className="cursor-pointer">
 			{openAddToGroup && (
-				<div className="relative top-4">
+				<div className="relative">
 					<CreateMessageGroup
 						currentDM={currentDmGroup}
 						isOpen={openAddToGroup}

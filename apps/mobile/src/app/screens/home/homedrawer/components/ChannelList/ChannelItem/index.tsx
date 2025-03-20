@@ -17,16 +17,15 @@ interface IChannelItemProps {
 	data: IChannel;
 	isUnRead?: boolean;
 	isActive?: boolean;
-	isFirstThread?: boolean;
 }
 
-function ChannelItem({ onLongPress, onPress, data, isUnRead, isActive, isFirstThread }: IChannelItemProps) {
+function ChannelItem({ onLongPress, onPress, data, isUnRead, isActive }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const numberNotification = data?.count_mess_unread ? data?.count_mess_unread : 0;
 
 	if (data.type === ChannelType.CHANNEL_TYPE_THREAD) {
-		return <ChannelListThreadItem thread={data} isActive={isActive} onPress={onPress} onLongPress={onLongPress} isFirstThread={isFirstThread} />;
+		return <ChannelListThreadItem thread={data} isActive={isActive} onPress={onPress} onLongPress={onLongPress} />;
 	}
 
 	return (
@@ -53,7 +52,10 @@ function ChannelItem({ onLongPress, onPress, data, isUnRead, isActive, isFirstTh
 
 				<ChannelStatusIcon channel={data} isUnRead={isUnRead || Number(numberNotification || 0) > 0} />
 				<EventBadge clanId={data?.clan_id} channelId={data?.channel_id} />
-				<Text style={[styles.channelListItemTitle, (isUnRead || Number(numberNotification || 0) > 0) && styles.channelListItemTitleActive]}>
+				<Text
+					style={[styles.channelListItemTitle, (isUnRead || Number(numberNotification || 0) > 0) && styles.channelListItemTitleActive]}
+					numberOfLines={1}
+				>
 					{data?.channel_label}
 				</Text>
 			</View>

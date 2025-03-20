@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
-import { MezonAvatar } from '../../../../../componentUI';
+import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 
 interface IMemberItemProps {
 	member: UsersClanEntity;
@@ -25,20 +27,25 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 	const { t } = useTranslation('clanRoles');
 	const { updateRole } = useRoles();
 
+	const isDisable = useMemo(() => {
+		return disabled || !isSelectMode;
+	}, [disabled, isSelectMode]);
+
 	const memberName = useMemo(() => {
 		return member?.clan_nick || member?.user?.display_name;
 	}, [member?.user?.display_name, member?.clan_nick]);
 
 	const onPressMemberItem = useCallback(() => {
+		if (isDisable) return;
 		if (isSelectMode) {
 			onSelectChange && onSelectChange(!isSelected, member?.id);
 		}
-	}, [isSelectMode, isSelected, member?.id, onSelectChange]);
+	}, [isDisable, isSelectMode, isSelected, member?.id, onSelectChange]);
 
 	const onDeleteMember = useCallback(async () => {
 		const response = await updateRole(role?.clan_id, role?.id, role?.title, role?.color || '', [], [], [member?.id], []);
 
-		if (response) {
+		if (response === true) {
 			Toast.show({
 				type: 'success',
 				props: {
@@ -51,14 +58,14 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}
 	}, [role, member?.id, updateRole, memberName, t]);
 
 	return (
-		<TouchableOpacity disabled={disabled || !isSelectMode} onPress={onPressMemberItem}>
+		<TouchableOpacity onPress={onPressMemberItem}>
 			<View
 				style={{
 					flexDirection: 'row',
@@ -96,7 +103,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 						/>
 					) : (
 						<TouchableOpacity onPress={onDeleteMember} disabled={disabled}>
-							<Icons.CloseIcon color={disabled ? themeValue.textDisabled : themeValue.white} />
+							<MezonIconCDN icon={IconCDN.closeIcon} color={disabled ? themeValue.textDisabled : themeValue.white} />
 						</TouchableOpacity>
 					)}
 				</View>

@@ -1,7 +1,8 @@
-import { ChatContext, ChatContextProvider, useFriends, useIdleRender } from '@mezon/core';
+import { ChatContext, ChatContextProvider, ColorRoleProvider, useCustomNavigate, useFriends, useIdleRender } from '@mezon/core';
 import {
 	e2eeActions,
 	gifsStickerEmojiActions,
+	handleTopicNotification,
 	selectAllAccount,
 	selectAnyUnreadChannel,
 	selectBadgeCountAllClan,
@@ -17,12 +18,12 @@ import isElectron from 'is-electron';
 import debounce from 'lodash.debounce';
 import { memo, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import ChannelVoice from '../pages/channel/ChannelVoice';
 
 const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
-	const navigate = useNavigate();
+	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
 	const allNotificationReplyMentionAllClan = useSelector(selectBadgeCountAllClan);
@@ -36,8 +37,9 @@ const GlobalEventListener = () => {
 	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
 
 	useEffect(() => {
-		const handleNavigateToPath = (_: unknown, path: string) => {
-			navigate(path);
+		const handleNavigateToPath = (_: unknown, notifi: any) => {
+			navigate(notifi.path);
+			dispatch(handleTopicNotification({ msg: notifi.msg }));
 		};
 		window.electron?.on('navigate-to-path', handleNavigateToPath);
 		return () => {
@@ -139,7 +141,9 @@ const MainLayoutWrapper = () => {
 		<MezonSuspense>
 			<ChatContextProvider>
 				<WebRTCStreamProvider>
-					<MainLayout />
+					<ColorRoleProvider>
+						<MainLayout />
+					</ColorRoleProvider>
 				</WebRTCStreamProvider>
 			</ChatContextProvider>
 		</MezonSuspense>

@@ -1,8 +1,9 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, Text, useTheme } from '@mezon/mobile-ui';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, TextInput, TouchableOpacity, View } from 'react-native';
+import { IconCDN } from '../../constants/icon_cdn';
+import MezonIconCDN from '../MezonIconCDN';
 import { style } from './styles';
 
 interface MezonInputProps {
@@ -52,7 +53,7 @@ export default function MezonSearch({
 	return (
 		<View style={styles.container}>
 			<View style={[styles.inputWrapper, { backgroundColor: hasBackground ? themeValue.primary : themeValue.secondary }]}>
-				<Icons.MagnifyingIcon color={themeValue.text} height={size.s_20} width={size.s_20} />
+				<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
 				<TextInput
 					ref={inputRef}
 					style={styles.input}
@@ -64,7 +65,7 @@ export default function MezonSearch({
 				/>
 				{!!value?.length && (
 					<Pressable onPress={clearTextInput}>
-						<Icons.CircleXIcon height={18} width={18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={18} width={18} color={themeValue.text} />
 					</Pressable>
 				)}
 			</View>

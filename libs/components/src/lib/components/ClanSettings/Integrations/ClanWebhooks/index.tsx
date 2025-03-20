@@ -59,7 +59,7 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 				</>
 			) : (
 				<div className="flex items-center flex-col gap-4">
-					<Image src={`assets/images/empty-webhook.svg`} alt={'logoMezon'} width={48} height={48} className="clan object-cover w-[272px]" />
+					<Image src={`assets/images/empty-webhook.svg`} width={48} height={48} className="clan object-cover w-[272px]" />
 					<div className="font-medium dark:text-[#b5bac1] text-textLightTheme">You have no webhooks!</div>
 					<div
 						onClick={handleAddWebhook}

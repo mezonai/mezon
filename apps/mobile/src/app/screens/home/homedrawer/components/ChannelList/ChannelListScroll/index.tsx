@@ -16,8 +16,7 @@ const ChannelListScroll = ({ flashListRef, data }: IProps) => {
 			if (targetIndex !== -1) {
 				flashListRef.current.scrollToIndex({
 					index: targetIndex,
-					animated: true,
-					viewPosition: 0.5
+					animated: true
 				});
 			} else {
 				console.warn('Channel ID not found in list:', channelId);

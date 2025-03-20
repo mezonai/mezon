@@ -1,7 +1,8 @@
-import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface UserTextInputProps {
@@ -39,7 +40,11 @@ export const TextInputUser: React.FC<UserTextInputProps> = ({ error, touched, la
 				/>
 				{isPass && (
 					<Pressable onPress={() => setShowPass(!showPass)}>
-						{showPass ? <Icons.EyeIcon color={themeValue.text} /> : <Icons.EyeSlashIcon color={themeValue.text} />}
+						{showPass ? (
+							<MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.text} />
+						) : (
+							<MezonIconCDN icon={IconCDN.eyeSlashIcon} color={themeValue.text} />
+						)}
 					</Pressable>
 				)}
 			</View>

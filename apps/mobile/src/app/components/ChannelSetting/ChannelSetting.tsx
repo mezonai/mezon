@@ -1,5 +1,6 @@
-import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import {
+	ActionEmitEvent,
 	BellIcon,
 	CheckIcon,
 	Icons,
@@ -23,13 +24,18 @@ import {
 } from '@mezon/store-mobile';
 import { checkIsThread } from '@mezon/utils';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, IMezonOptionData, MezonConfirm, MezonInput, MezonMenu, MezonOption } from '../../componentUI';
+import MezonConfirm from '../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import MezonInput from '../../componentUI/MezonInput';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonOption from '../../componentUI/MezonOption';
 import { IMezonSliderData } from '../../componentUI/MezonSlider';
+import { IconCDN } from '../../constants/icon_cdn';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 import { AddMemberOrRoleBS } from '../../screens/channelPermissionSetting/components/AddMemberOrRoleBS';
@@ -74,7 +80,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		return channel?.category_name;
 	}, [channel?.category_name]);
 	useBackHardWare();
-	const { dismiss } = useBottomSheetModal();
 	const currentUserId = useSelector(selectCurrentUserId);
 
 	navigation.setOptions({
@@ -134,7 +139,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: isChannel ? t('fields.channelCategory.title') : t('fields.ThreadCategory.title'),
 					expandable: true,
 					previewValue: currentCategoryName,
-					icon: <Icons.FolderPlusIcon color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.forderPlusIcon} color={themeValue.text} />,
 					isShow: isChannel,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -154,7 +159,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.channelPermission.permission'),
 					expandable: true,
-					icon: <Icons.BravePermission color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
 					isShow: isChannel,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -168,7 +173,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.privateChannelInvite.addMember'),
 					expandable: true,
-					icon: <Icons.BravePermission color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
 					isShow: isChannel && !!channel.channel_private,
 					onPress: () => {
 						bottomSheetRef?.current?.present();
@@ -184,17 +189,17 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.channelNotifications.notification'),
 					expandable: true,
-					icon: <BellIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
 				},
 				{
 					title: t('fields.channelNotifications.pinned'),
 					expandable: true,
-					icon: <Icons.PinIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.pinIcon} color={themeValue.text} />
 				},
 				{
 					title: t('fields.channelNotifications.invite'),
 					expandable: true,
-					icon: <LinkIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[]
@@ -206,7 +211,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('fields.channelWebhooks.webhook'),
 					expandable: true,
-					icon: <Icons.WebhookIcon color={themeValue.text} />,
+					icon: <MezonIconCDN icon={IconCDN.webhookIcon} color={themeValue.text} />,
 					isShow: isChannel,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
@@ -225,13 +230,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: isChannel ? t('fields.channelDelete.delete') : t('fields.threadDelete.delete'),
 					textStyle: { color: 'red' },
 					onPress: () => handlePressDeleteChannel(),
-					icon: <TrashIcon color="red" />
+					icon: <MezonIconCDN icon={IconCDN.trashIcon} color="red" />
 				},
 				{
-					title: t('fields.threadLeave.leave'),
+					title: isChannel ? t('fields.channelDelete.leave') : t('fields.threadLeave.leave'),
 					textStyle: { color: 'red' },
 					onPress: () => handlePressLeaveChannel(),
-					icon: <Icons.LeaveGroup color={Colors.textRed} />,
+					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
 					isShow: channel?.creator_id !== currentUserId
 				}
 			] satisfies IMezonMenuItemProps[],
@@ -353,12 +358,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				clanId: channel?.clan_id
 			})
 		);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.HOME);
-		if (channel?.parrent_id !== '0') {
+		if (channel?.parent_id !== '0') {
 			await dispatch(
 				channelsActions.joinChannel({
 					clanId: channel?.clan_id,
-					channelId: channel?.parrent_id,
+					channelId: channel?.parent_id,
 					noFetchMembers: false
 				})
 			);
@@ -366,7 +372,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	}, []);
 
 	const handleJoinChannel = async () => {
-		const channelId = channel?.parrent_id || '';
+		const channelId = channel?.parent_id || '';
 		const clanId = channel?.clan_id || '';
 		const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 		const store = await getStoreAsync();
@@ -380,13 +386,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		await dispatch(
 			threadsActions.leaveThread({
 				clanId: channel?.clan_id || '',
-				channelId: channel?.parrent_id || '',
+				channelId: channel?.parent_id || '',
 				threadId: channel?.id || '',
 				isPrivate: channel.channel_private || 0
 			})
 		);
 		navigation.navigate(APP_SCREEN.HOME);
-		dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		handleJoinChannel();
 	}, []);
 
@@ -395,15 +401,35 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	};
 
 	const handlePressLeaveChannel = () => {
-		setIsVisibleLeaveChannelModal(true);
-	};
-
-	const handleDeleteModalVisibleChange = (visible: boolean) => {
-		setIsVisibleDeleteChannelModal(visible);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={handleConfirmLeaveThread}
+					title={t('confirm.leave.title')}
+					confirmText={t('confirm.leave.confirmText')}
+					content={t('confirm.leave.content', {
+						channelName: channel?.channel_label
+					})}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	};
 
 	const handlePressDeleteChannel = () => {
-		setIsVisibleDeleteChannelModal(true);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={handleDeleteChannel}
+					title={t('confirm.delete.title')}
+					confirmText={t('confirm.delete.confirmText')}
+					content={t('confirm.delete.content', {
+						channelName: channel?.channel_label
+					})}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	};
 
 	return (
@@ -446,28 +472,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			/>
 
 			<MezonMenu menu={bottomMenu} />
-
-			<MezonConfirm
-				visible={isVisibleDeleteChannelModal}
-				onVisibleChange={handleDeleteModalVisibleChange}
-				onConfirm={handleDeleteChannel}
-				title={t('confirm.delete.title')}
-				confirmText={t('confirm.delete.confirmText')}
-				content={t('confirm.delete.content', {
-					channelName: channel?.channel_label
-				})}
-			/>
-
-			<MezonConfirm
-				visible={isVisibleLeaveChannelModal}
-				onVisibleChange={handleLeaveModalVisibleChange}
-				onConfirm={handleConfirmLeaveThread}
-				title={t('confirm.leave.title')}
-				confirmText={t('confirm.leave.confirmText')}
-				content={t('confirm.leave.content', {
-					channelName: channel?.channel_label
-				})}
-			/>
 			<AddMemberOrRoleBS bottomSheetRef={bottomSheetRef} channel={channel} />
 		</ScrollView>
 	);

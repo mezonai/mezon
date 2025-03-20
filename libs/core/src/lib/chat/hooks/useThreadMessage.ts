@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload, uniqueUsers } from '@mezon/utils';
+import { getWebUploadedAttachments, IMessageSendPayload, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
@@ -58,6 +58,12 @@ export function useThreadMessage({ channelId, mode }: UseThreadMessage) {
 				throw new Error('Client is not initialized');
 			}
 
+			let uploadedFiles: ApiMessageAttachment[] = [];
+			// Check if there are attachments
+			if (attachments && attachments.length > 0) {
+				uploadedFiles = await getWebUploadedAttachments({ attachments, channelId, clanId: currentClanId, client, session });
+			}
+
 			await socket.writeChatMessage(
 				currentClanId,
 				thread.channel_id as string,
@@ -65,7 +71,7 @@ export function useThreadMessage({ channelId, mode }: UseThreadMessage) {
 				thread.channel_private === 0,
 				content,
 				mentions,
-				attachments,
+				uploadedFiles,
 				references
 			);
 

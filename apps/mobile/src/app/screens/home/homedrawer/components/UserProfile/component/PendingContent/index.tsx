@@ -1,6 +1,5 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useFriends } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -10,8 +9,9 @@ import { FlatList, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { EFriendState } from '../..';
 import { SeparatorWithLine } from '../../../../../../../components/Common';
-import { MezonAvatar } from '../../../../../../../componentUI';
-
+import MezonAvatar from '../../../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 interface IPendingContentProps {
 	targetUser: FriendsEntity;
 	onClose?: () => void;
@@ -73,7 +73,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 					type: 'success',
 					props: {
 						text2: t('pendingContent.copiedUserName', { username: targetUser?.user?.username }),
-						leadingIcon: <Icons.CopyIcon />
+						leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} />
 					}
 				});
 			},
@@ -100,7 +100,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 				</View>
 
 				<TouchableOpacity onPress={() => onClose()}>
-					<Icons.CloseIcon height={size.s_32} width={size.s_32} />
+					<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_32} width={size.s_32} />
 				</TouchableOpacity>
 			</View>
 			<View style={{ marginHorizontal: size.s_10, backgroundColor: themeValue.secondary, borderRadius: size.s_10 }}>

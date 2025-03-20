@@ -1,8 +1,10 @@
-import { debounce, Icons } from '@mezon/mobile-components';
+import { debounce } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, TextInput, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 type canvasSearchProps = {
@@ -31,7 +33,7 @@ const CanvasSearch = ({ onSearchTextChange }: canvasSearchProps) => {
 
 	return (
 		<View style={styles.searchCanvas}>
-			<Icons.MagnifyingIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+			<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 			<TextInput
 				ref={searchInputRef}
 				placeholder={t('menu.thread.searchCanvas')}
@@ -41,7 +43,7 @@ const CanvasSearch = ({ onSearchTextChange }: canvasSearchProps) => {
 			/>
 			{!!searchText?.length && (
 				<Pressable onPress={clearTextInput}>
-					<Icons.CircleXIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 				</Pressable>
 			)}
 		</View>

@@ -1,7 +1,8 @@
-import { BellIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './EmptyNotification.styles';
 
 const EmptyNotification = () => {
@@ -22,7 +23,7 @@ const EmptyNotification = () => {
 					gap: size.s_10
 				}}
 			>
-				<BellIcon width={size.s_100} height={size.s_100} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.bellIcon} width={size.s_100} height={size.s_100} color={themeValue.text} />
 				<Text style={styles.title}>{t('nothingHere')}</Text>
 				<Text style={styles.description}>{t('comeBackNotify')}</Text>
 			</View>

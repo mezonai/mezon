@@ -1,8 +1,10 @@
-import { ActionEmitEvent, debounce, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, debounce } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, TextInput, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { style } from './styles';
 
 function SearchDmList() {
@@ -31,7 +33,7 @@ function SearchDmList() {
 
 	return (
 		<View style={styles.searchMessage}>
-			<Icons.MagnifyingIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+			<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 			<TextInput
 				ref={searchInputRef}
 				placeholder={t('common:searchPlaceHolder')}
@@ -41,7 +43,7 @@ function SearchDmList() {
 			/>
 			{!!searchText?.length && (
 				<Pressable onPress={clearTextInput}>
-					<Icons.CircleXIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 				</Pressable>
 			)}
 		</View>

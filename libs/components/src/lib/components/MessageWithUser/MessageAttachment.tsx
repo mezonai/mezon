@@ -1,16 +1,42 @@
-import { EMimeTypes, ETypeLinkMedia, IMessageWithUser, isMediaTypeNotSupported, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
+import { getCurrentChatData } from '@mezon/core';
+import {
+	attachmentActions,
+	getStore,
+	selectAllListAttachmentByChannel,
+	selectCurrentChannel,
+	selectCurrentClanId,
+	selectCurrentDM,
+	useAppDispatch
+} from '@mezon/store';
+import {
+	ApiPhoto,
+	EMimeTypes,
+	ETypeLinkMedia,
+	IAttachmentEntity,
+	IImageWindowProps,
+	IMessageWithUser,
+	ObserveFn,
+	SEND_ATTACHMENT_DATA,
+	calculateAlbumLayout,
+	createImgproxyUrl,
+	getAttachmentDataForWindow,
+	isMediaTypeNotSupported
+} from '@mezon/utils';
+import isElectron from 'is-electron';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { memo, useMemo } from 'react';
+import { useCallback } from 'react';
+import Album from './Album';
 import { MessageAudio } from './MessageAudio/MessageAudio';
-import MessageImage from './MessageImage';
 import MessageLinkFile from './MessageLinkFile';
 import MessageVideo from './MessageVideo';
+import Photo from './Photo';
 
 type MessageAttachmentProps = {
 	message: IMessageWithUser;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	mode: ChannelStreamMode;
+	observeIntersectionForLoading?: ObserveFn;
 };
 
 const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMessageWithUser) => {
@@ -61,13 +87,14 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	return { videos, images, documents, audio };
 };
 
-const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMessageWithUser; onContextMenu: any; mode: ChannelStreamMode }> = ({
-	attachments,
-	message,
-	onContextMenu,
-	mode
-}) => {
-	const { videos, images, documents, audio } = useMemo(() => classifyAttachments(attachments, message), [attachments]);
+const Attachments: React.FC<{
+	attachments: ApiMessageAttachment[];
+	message: IMessageWithUser;
+	onContextMenu: any;
+	mode: ChannelStreamMode;
+	observeIntersectionForLoading?: ObserveFn;
+}> = ({ attachments, message, onContextMenu, mode, observeIntersectionForLoading }) => {
+	const { videos, images, documents, audio } = classifyAttachments(attachments, message);
 	return (
 		<>
 			{videos.length > 0 && (
@@ -80,7 +107,15 @@ const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMes
 				</div>
 			)}
 
-			{images.length > 0 && <ImageAlbum images={images} message={message} mode={mode} onContextMenu={onContextMenu} />}
+			{images.length > 0 && (
+				<ImageAlbum
+					observeIntersectionForLoading={observeIntersectionForLoading}
+					images={images}
+					message={message}
+					mode={mode}
+					onContextMenu={onContextMenu}
+				/>
+			)}
 
 			{documents.length > 0 &&
 				documents.map((document, index) => (
@@ -94,129 +129,197 @@ const Attachments: React.FC<{ attachments: ApiMessageAttachment[]; message: IMes
 
 // TODO: refactor component for message lines
 const MessageAttachment = ({ message, onContextMenu, mode }: MessageAttachmentProps) => {
-	const validateAttachment = useMemo(() => {
-		return (message.attachments || []).filter((attachment) => Object.keys(attachment).length !== 0);
-	}, [message.attachments]);
+	const validateAttachment = (message.attachments || []).filter((attachment) => Object.keys(attachment).length !== 0);
 	if (!validateAttachment) return null;
-
 	return <Attachments mode={mode} message={message} attachments={validateAttachment} onContextMenu={onContextMenu} />;
-};
-
-const MAX_WIDTH_ALBUM_IMAGE = 520;
-const NUMBER_IMAGE_ON_ROW = 2;
-const WIDTH_ALBUM_WITH_SPACE = MAX_WIDTH_ALBUM_IMAGE - 8 * (NUMBER_IMAGE_ON_ROW - 1);
-
-const designLayout = (
-	images: (ApiMessageAttachment & {
-		create_time?: string;
-	})[]
-) => {
-	const listImageSize: { width: number; height: number }[] = [];
-
-	if (images.length >= 2) {
-		return designAlbumLayout(images);
-	}
-
-	if (!images[0]?.height || !images[0]?.width) {
-		listImageSize[0] = {
-			height: 150,
-			width: images[0].width || 0
-		};
-		return listImageSize;
-	}
-
-	const aspectRatio = images[0].width / images[0].height;
-	let heightAlonePic = images[0].height;
-	let widthAlonePic = images[0].width;
-
-	if (heightAlonePic >= 275) {
-		heightAlonePic = 275;
-		widthAlonePic = heightAlonePic * aspectRatio;
-	}
-
-	if (widthAlonePic >= 550) {
-		widthAlonePic = 550;
-		heightAlonePic = widthAlonePic / aspectRatio;
-	}
-
-	listImageSize[0] = {
-		height: Math.round(heightAlonePic),
-		width: Math.round(widthAlonePic)
-	};
-
-	return listImageSize;
 };
 
 const ImageAlbum = ({
 	images,
 	message,
 	mode,
-	onContextMenu
+	onContextMenu,
+	observeIntersectionForLoading
 }: {
 	images: (ApiMessageAttachment & { create_time?: string })[];
 	message: IMessageWithUser;
 	mode?: ChannelStreamMode;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
+	observeIntersectionForLoading?: ObserveFn;
 }) => {
-	const listImageSize = designLayout(images);
+	const dispatch = useAppDispatch();
 
-	return (
-		<div className={`flex flex-row justify-start flex-wrap w-full gap-x-2 max-w-[${MAX_WIDTH_ALBUM_IMAGE}px]`}>
-			{images.map((image, index) => {
-				const checkImage = notImplementForGifOrStickerSendFromPanel(image);
-				return (
-					<div key={index} className={`${checkImage ? '' : 'h-auto'} `}>
-						<MessageImage
-							messageId={message.id}
-							mode={mode}
-							attachmentData={image}
-							onContextMenu={onContextMenu}
-							size={listImageSize[index]}
-						/>
-					</div>
-				);
-			})}
-		</div>
-	);
-};
+	const handleClick = useCallback((url?: string) => {
+		// move code from old image view component
+		const state = getStore()?.getState();
+		const currentClanId = selectCurrentClanId(state);
+		const currentDm = selectCurrentDM(state);
+		const currentChannel = selectCurrentChannel(state);
+		const currentChannelId = currentChannel?.id;
+		const currentDmGroupId = currentDm?.id;
+		const attachmentData = images.find((item) => item.url === url);
+		if (!attachmentData) return;
 
-export default memo(MessageAttachment);
+		if (isElectron()) {
+			const currentChatUsersEntities = getCurrentChatData()?.currentChatUsersEntities;
+			const listAttachmentsByChannel = selectAllListAttachmentByChannel(state, currentChannelId || currentDmGroupId || '');
 
-const designAlbumLayout = (images: (ApiMessageAttachment & { create_time?: string })[]): { width: number; height: number }[] => {
-	const listImageSize: { width: number; height: number }[] = [];
+			const currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
+			window.electron.openImageWindow({
+				...attachmentData,
+				url: createImgproxyUrl(attachmentData.url || '', {
+					width: attachmentData.width ? (attachmentData.width > 1600 ? 1600 : attachmentData.width) : 0,
+					height: attachmentData.height ? (attachmentData.height > 900 ? 900 : attachmentData.height) : 0,
+					resizeType: 'fit'
+				}),
+				uploaderData: {
+					name: currentImageUploader?.clan_nick || currentImageUploader?.user?.display_name || currentImageUploader?.user?.username || '',
+					avatar: (currentImageUploader?.clan_avatar || currentImageUploader?.user?.avatar_url) as string
+				},
+				realUrl: attachmentData.url || '',
+				channelImagesData: {
+					channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+					images: [],
+					selectedImageIndex: 0
+				}
+			});
+			if ((currentClanId && currentChannelId) || currentDmGroupId) {
+				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
+				const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
+				if (listAttachmentsByChannel) {
+					const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
+					const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === attachmentData.url);
+					const channelImagesData: IImageWindowProps = {
+						channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+						images: imageListWithUploaderInfo,
+						selectedImageIndex: selectedImageIndex
+					};
 
-	for (let i = 0; i < images.length; i += 2) {
-		if (images[i + 1] && images[i]?.height && images[i + 1]?.height) {
-			const heightPicOne = images[i].height || 0;
-			const heightPicTwo = images[i + 1].height || 0;
+					window.electron.openImageWindow({
+						...attachmentData,
+						url: createImgproxyUrl(attachmentData.url || '', {
+							width: attachmentData.width ? (attachmentData.width > 1600 ? 1600 : attachmentData.width) : 0,
+							height: attachmentData.height ? (attachmentData.height > 900 ? 900 : attachmentData.height) : 0,
+							resizeType: 'fit'
+						}),
+						uploaderData: {
+							name:
+								currentImageUploader?.clan_nick ||
+								currentImageUploader?.user?.display_name ||
+								currentImageUploader?.user?.username ||
+								'',
+							avatar: (currentImageUploader?.clan_avatar || currentImageUploader?.user?.avatar_url) as string
+						},
+						realUrl: attachmentData.url || '',
+						channelImagesData
+					});
+					return;
+				}
+				dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId }))
+					.then((data) => {
+						const attachmentList = data.payload as IAttachmentEntity[];
+						const imageList = attachmentList?.filter((image) => image.filetype?.includes('image'));
+						const imageListWithUploaderInfo = getAttachmentDataForWindow(imageList, currentChatUsersEntities);
+						const selectedImageIndex = imageList.findIndex((image) => image.url === attachmentData.url);
+						return { imageListWithUploaderInfo, selectedImageIndex };
+					})
+					.then(({ imageListWithUploaderInfo, selectedImageIndex }) => {
+						const channelImagesData: IImageWindowProps = {
+							channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+							images: imageListWithUploaderInfo,
+							selectedImageIndex: selectedImageIndex
+						};
+						window.electron.send(SEND_ATTACHMENT_DATA, { ...channelImagesData });
+						window.electron.openImageWindow({
+							...attachmentData,
+							url: createImgproxyUrl(attachmentData.url || '', {
+								width: attachmentData.width ? (attachmentData.width > 1600 ? 1600 : attachmentData.width) : 0,
+								height: attachmentData.height ? (attachmentData.height > 900 ? 900 : attachmentData.height) : 0,
+								resizeType: 'fit'
+							}),
+							uploaderData: {
+								name:
+									currentImageUploader?.clan_nick ||
+									currentImageUploader?.user?.display_name ||
+									currentImageUploader?.user?.username ||
+									'',
+								avatar: (currentImageUploader?.clan_avatar || currentImageUploader?.user?.avatar_url) as string
+							},
+							realUrl: attachmentData.url || '',
+							channelImagesData
+						});
+					});
+			}
 
-			const sameHeight = Math.max(heightPicOne, heightPicTwo);
-
-			const widthPicOneNew = ((images[i].width || 0) * sameHeight) / (images[i].height || 1);
-			const widthPicTwoNew = ((images[i + 1].width || 0) * sameHeight) / (images[i + 1].height || 1);
-
-			const percent = (widthPicOneNew + widthPicTwoNew) / WIDTH_ALBUM_WITH_SPACE;
-
-			listImageSize[i] = {
-				width: Math.round(widthPicOneNew / percent),
-				height: Math.round(sameHeight / percent)
-			};
-			listImageSize[i + 1] = {
-				width: Math.round(widthPicTwoNew / percent),
-				height: Math.round(sameHeight / percent)
-			};
-		} else if (images[i + 1]) {
-			listImageSize[i] = {
-				width: WIDTH_ALBUM_WITH_SPACE / NUMBER_IMAGE_ON_ROW,
-				height: 150
-			};
-		} else {
-			const width = MAX_WIDTH_ALBUM_IMAGE;
-			listImageSize[i] = {
-				width: width,
-				height: Math.round((width * (images[i].height || 1)) / (images[i].width || 1))
-			};
+			return;
 		}
+		dispatch(attachmentActions.setMode(mode));
+		dispatch(
+			attachmentActions.setCurrentAttachment({
+				id: attachmentData.message_id as string,
+				uploader: attachmentData.sender_id,
+				create_time: attachmentData.create_time
+			})
+		);
+
+		dispatch(attachmentActions.setOpenModalAttachment(true));
+		dispatch(attachmentActions.setAttachment(attachmentData.url));
+
+		if ((currentClanId && currentChannelId) || currentDmGroupId) {
+			const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
+			const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
+			dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId }));
+		}
+
+		dispatch(attachmentActions.setMessageId(message.id));
+	}, []);
+
+	if (images.length > 2) {
+		const albumLayout = calculateAlbumLayout(false, true, images, false);
+		return (
+			<div className="w-full">
+				<Album
+					album={images as any}
+					observeIntersection={observeIntersectionForLoading}
+					albumLayout={albumLayout}
+					onClick={handleClick}
+					onContextMenu={onContextMenu}
+				/>
+			</div>
+		);
 	}
-	return listImageSize;
+
+	if (images.length > 0) {
+		const firstImage = images[0];
+		const photoProps = {
+			mediaType: 'photo',
+			id: message.id,
+			url: firstImage?.url,
+			width: firstImage?.width || 0,
+			height: firstImage?.height || 150
+		} as ApiPhoto;
+
+		firstImage?.thumbnail &&
+			(photoProps.thumbnail = {
+				dataUri: firstImage.thumbnail
+			});
+
+		return (
+			<div className="w-full py-1">
+				<Photo
+					id={message.id}
+					key={message.id}
+					photo={photoProps}
+					observeIntersection={observeIntersectionForLoading}
+					onClick={handleClick}
+					isDownloading={false}
+					onContextMenu={onContextMenu}
+				/>
+			</div>
+		);
+	}
+
+	return null;
 };
+
+export default MessageAttachment;

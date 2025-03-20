@@ -1,9 +1,9 @@
-import { useEventManagement, useOnClickOutside, usePermissionChecker } from '@mezon/core';
+import { useAppNavigation, useEventManagement, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import { EventManagementEntity, selectChannelById, selectChannelFirst, selectMemberClanByUserId, selectTheme, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl } from '@mezon/utils';
-import Tippy from '@tippy.js/react';
 import { ChannelType } from 'mezon-js';
+import Tooltip from 'rc-tooltip';
 import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
@@ -30,6 +30,7 @@ export type ItemEventManagementProps = {
 	openModelUpdate?: () => void;
 	onEventUpdateId?: (id: string) => void;
 	textChannelId?: string;
+	onClose: () => void;
 };
 
 const ItemEventManagement = (props: ItemEventManagementProps) => {
@@ -49,7 +50,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		setOpenModalDetail,
 		openModelUpdate,
 		onEventUpdateId,
-		textChannelId
+		textChannelId,
+		onClose
 	} = props;
 	const isPrivateEvent = textChannelId && textChannelId !== '0';
 	const { setChooseEvent, deleteEventManagement } = useEventManagement();
@@ -94,6 +96,16 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		return eventIsUpcomming ? 'text-purple-500' : eventIsOngoing ? 'text-green-500' : 'dark:text-zinc-400 text-colorTextLightMode';
 	}, [event?.event_status]);
 
+	const { toChannelPage, navigate } = useAppNavigation();
+
+	const redirectToVoice = () => {
+		if (channelVoice) {
+			const channelUrl = toChannelPage(channelVoice.channel_id as string, channelVoice.clan_id as string);
+			navigate(channelUrl);
+			onClose();
+		}
+	};
+
 	return (
 		<div
 			className="dark:bg-[#212529] bg-bgModifierHoverLight rounded-lg overflow-hidden"
@@ -123,7 +135,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						{isPrivateEvent && <p className="bg-red-500 text-white rounded-sm px-1 text-center">Private Event</p>}{' '}
 					</div>
 					{event?.creator_id && (
-						<Tippy content={<p style={{ width: 'max-content' }}>{`Created by ${userCreate?.user?.username}`}</p>}>
+						<Tooltip overlay={<p style={{ width: 'max-content' }}>{`Created by ${userCreate?.user?.username}`}</p>}>
 							<div>
 								<AvatarImage
 									alt={userCreate?.user?.username || ''}
@@ -134,7 +146,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									classNameText="text-[9px] pt-[3px]"
 								/>
 							</div>
-						</Tippy>
+						</Tooltip>
 					)}
 				</div>
 				<div className="flex justify-between gap-4 select-text">
@@ -155,13 +167,30 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				}}
 				className="px-4 py-3 flex items-center gap-x-2 justify-between cursor-default"
 			>
-				<div className="flex gap-x-2">
-					{checkOptionVoice && (
-						<a href={`https://meet.google.com/${channelVoice.meeting_code}`} rel="noreferrer" target="_blank" className="flex gap-x-2">
-							<Icons.Speaker />
-							<p>{channelVoice?.channel_label}</p>
-						</a>
-					)}
+				<div
+					className="flex gap-x-2"
+					onClick={(e) => {
+						handleStopPropagation(e);
+					}}
+				>
+					{checkOptionVoice &&
+						(() => {
+							const isGMeet = channelVoice.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE;
+							const linkProps = isGMeet
+								? { href: `https://meet.google.com/${channelVoice.meeting_code}`, rel: 'noreferrer', target: '_blank' }
+								: {
+										onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+											handleStopPropagation(e);
+											redirectToVoice();
+										}
+									};
+							return (
+								<a {...linkProps} className="flex gap-x-2 cursor-pointer">
+									<Icons.Speaker />
+									<p>{channelVoice?.channel_label}</p>
+								</a>
+							);
+						})()}
 					{checkOptionLocation && (
 						<>
 							<Icons.Location />

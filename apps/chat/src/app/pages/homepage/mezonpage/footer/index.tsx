@@ -40,13 +40,7 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 						<div className="flex justify-between gap-[48px] max-lg:flex-col">
 							<div className="flex flex-col gap-[24px] max-w-[320px]">
 								<div className="flex items-center gap-[5px]">
-									<Image
-										src={`assets/images/mezon-logo-black.svg`}
-										alt={'logoMezon'}
-										width={32}
-										height={32}
-										className="aspect-square object-cover"
-									/>
+									<Image src={`assets/images/mezon-logo-black.svg`} width={32} height={32} className="aspect-square object-cover" />
 									<div className="text-[22.15px] leading-[26.58px] font-semibold text-[#FFFFFF]">mezon</div>
 								</div>
 								<div className="text-[16px] leading-[24px] font-normal text-[#8FA7BF]">
@@ -137,10 +131,10 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 							<div className="text-[14px] leading-[20px] font-semibold text-[#F5F5F6]">Get the app</div>
 							<div className="flex flex-col gap-[16px]">
 								<a href="https://apps.apple.com/vn/app/mezon/id6502750046" target="_blank" rel="noreferrer">
-									<Image src={`assets/app-store.svg`} alt={'appStore'} className="max-w-[135px]" />
+									<Image src={`assets/app-store.svg`} className="max-w-[135px]" />
 								</a>
 								<a href="https://play.google.com/store/apps/details?id=com.mezon.mobile" target="_blank" rel="noreferrer">
-									<Image src={`assets/google-play.svg`} alt={'googlePlay'} className="max-w-[135px]" />
+									<Image src={`assets/google-play.svg`} className="max-w-[135px]" />
 								</a>
 								{platform === 'MacOS' ? (
 									<div className="relative inline-block leading-[0px]" ref={dropdownRef}>
@@ -166,7 +160,7 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 									</div>
 								) : platform === 'Linux' ? (
 									<a className="cursor-pointer" href={downloadUrl} target="_blank" rel="noreferrer">
-										<Image src={`assets/linux.svg`} alt={'linux'} className="max-w-[135px]" />
+										<Image src={`assets/linux.svg`} className="max-w-[135px]" />
 									</a>
 								) : (
 									<DropdownButton
@@ -195,13 +189,13 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 					<div className="text-[16px] leading-[24px] font-normal text-[#7C92AF]">© 2024 Mezon. All rights reserved.</div>
 					<div className="flex items-center gap-[24px]">
 						<a href="https://www.linkedin.com/company/nccplus-vietnam" target="_blank" rel="noreferrer">
-							<Image src={`assets/instagram.svg`} alt={'linkedIn'} />
+							<Image src={`assets/instagram.svg`} />
 						</a>
 						<a href="https://www.facebook.com/profile.php?id=61558081847939" target="_blank" rel="noreferrer">
-							<Image src={`assets/facebook.svg`} alt={'facebook'} />
+							<Image src={`assets/facebook.svg`} />
 						</a>
 						<a href="https://github.com/nccasia/mezon-fe" target="_blank" rel="noreferrer">
-							<Image src={`assets/twitter.svg`} alt={'github'} />
+							<Image src={`assets/twitter.svg`} />
 						</a>
 					</div>
 				</div>

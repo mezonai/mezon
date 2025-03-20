@@ -2,8 +2,6 @@ import { captureSentryError } from '@mezon/logger';
 import { ICategory, LoadingStatus, SortChannel, TypeCheck } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js/api.gen';
-import { channelsActions } from '../channels/channels.slice';
-import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 import { RootState } from '../store';
@@ -101,26 +99,6 @@ export const createNewCategory = createAsyncThunk('categories/createCategories',
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createCategoryDesc(mezon.session, body);
 		if (response) {
-			thunkAPI.dispatch(
-				categoriesActions.insertOne({
-					clanId: body.clan_id as string,
-					category: mapCategoryToEntity(response)
-				})
-			);
-			thunkAPI.dispatch(
-				listChannelRenderAction.addCategoryToListRender({
-					clanId: body.clan_id as string,
-					cate: {
-						id: response.category_id as string,
-						channels: [],
-						category_id: response.category_id,
-						category_name: response.category_name,
-						creator_id: response.creator_id,
-						clan_id: body.clan_id as string,
-						category_order: response.category_order
-					}
-				})
-			);
 			return response;
 		} else {
 			return thunkAPI.rejectWithValue([]);
@@ -155,11 +133,6 @@ export const deleteCategory = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.deleteCategoryDesc(mezon.session, categoryId, clanId, categoryLabel);
-			if (response) {
-				thunkAPI.dispatch(categoriesActions.deleteOne({ clanId, categoryId }));
-				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
-				thunkAPI.dispatch(channelsActions.removeRememberChannel({ clanId }));
-			}
 		} catch (error) {
 			captureSentryError(error, 'categories/deleteCategory');
 			return thunkAPI.rejectWithValue(error);
@@ -208,21 +181,6 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		await mezon.client.updateCategory(mezon.session, clanId, request);
-		thunkAPI.dispatch(
-			categoriesActions.updateOne({
-				clanId,
-				category: {
-					id: request.category_id as string,
-					...request
-				}
-			})
-		);
-		thunkAPI.dispatch(
-			listChannelRenderAction.updateCategory({
-				clanId,
-				cate: request
-			})
-		);
 	} catch (error) {
 		captureSentryError(error, 'categories/updateCategory');
 		return thunkAPI.rejectWithValue(error);

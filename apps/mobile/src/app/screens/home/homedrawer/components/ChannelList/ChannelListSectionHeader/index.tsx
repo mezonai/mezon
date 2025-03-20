@@ -1,7 +1,8 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ICategoryChannel } from '@mezon/utils';
 import { Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IChannelListSectionHeaderProps {
@@ -18,11 +19,12 @@ const ChannelListSectionHeader = ({ onPress, title, onLongPress, isCollapsed, ca
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={() => onPress(category)} onLongPress={onLongPress} style={styles.channelListHeader}>
 			<View style={styles.channelListHeaderItem}>
-				<Icons.ChevronSmallDownIcon
-					width={size.s_20}
-					height={size.s_20}
+				<MezonIconCDN
+					icon={IconCDN.chevronDownSmallIcon}
+					height={size.s_18}
+					width={size.s_18}
 					color={themeValue.text}
-					style={[!isCollapsed && { transform: [{ rotate: '-90deg' }] }]}
+					customStyle={[!isCollapsed && { transform: [{ rotate: '-90deg' }] }]}
 				/>
 				<Text style={styles.channelListHeaderItemTitle}>{title}</Text>
 			</View>

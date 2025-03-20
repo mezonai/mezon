@@ -1,5 +1,4 @@
 import { useFriends } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, FriendsEntity, channelUsersActions, directActions, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType, User } from 'mezon-js';
@@ -9,10 +8,12 @@ import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useThrottledCallback } from 'use-debounce';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { EFriendItemAction } from '../../../components/FriendItem';
 import { FriendListByAlphabet } from '../../../components/FriendListByAlphabet';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { UserInformationBottomSheet } from '../../../components/UserInformationBottomSheet';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { style } from './styles';
@@ -110,7 +111,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 				<View style={styles.newGroupContainer}>
 					<View style={styles.headerWrapper}>
 						<Pressable onPress={() => navigation.goBack()}>
-							<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.text} />
 						</Pressable>
 						<View style={styles.screenTitleWrapper}>
 							<Text style={styles.screenTitle}>

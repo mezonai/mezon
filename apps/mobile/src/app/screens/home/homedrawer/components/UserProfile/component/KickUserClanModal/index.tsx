@@ -1,12 +1,13 @@
-import { UserMinus } from '@mezon/mobile-components';
 import { Text, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../../../../../componentUI';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../../../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../../../../../componentUI/MezonInput';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import { style } from './KickUserClanModal.style';
 
 const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEntity; onRemoveUserClan: () => void }) => {
@@ -21,7 +22,7 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 			<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'position'} style={{ flex: 1 }}>
 				<View style={styles.container}>
 					<View style={styles.userMinusIcon}>
-						<UserMinus width={60} height={60} />
+						<MezonIconCDN icon={IconCDN.userMinusIcon} width={60} height={60} />
 					</View>
 					<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
 					<Text style={styles.textError}>

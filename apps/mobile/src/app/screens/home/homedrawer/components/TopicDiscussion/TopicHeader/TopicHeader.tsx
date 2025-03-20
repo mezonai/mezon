@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Text, size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectCurrentTopicInitMessage } from '@mezon/store-mobile';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
@@ -7,7 +7,9 @@ import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonAvatar } from '../../../../../../componentUI';
+import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { MessageAttachment } from '../../MessageAttachment';
 import { RenderTextMarkdownContent } from '../../RenderTextMarkdown';
 import { style } from './styles';
@@ -65,7 +67,7 @@ const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
 		<View style={{ paddingHorizontal: size.s_10, paddingBottom: size.s_14, borderBottomColor: themeValue.secondaryLight, borderBottomWidth: 1 }}>
 			<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<Pressable onPress={handleBack} style={styles.backButton}>
-					<Icons.ArrowLargeLeftIcon color={themeValue.text} height={size.s_20} width={size.s_20} />
+					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
 				</Pressable>
 				<Text style={styles.title}>Topic</Text>
 				<View style={{ width: size.s_50 }} />
@@ -94,8 +96,8 @@ const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
 					{valueTopic?.attachments?.length > 0 && (
 						<MessageAttachment
 							attachments={valueTopic?.attachments || []}
-							senderId={valueTopic?.sender_id}
-							createTime={valueTopic?.create_time}
+							clanId={valueTopic?.clan_id}
+							channelId={valueTopic?.channel_id}
 						/>
 					)}
 				</View>

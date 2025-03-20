@@ -10,13 +10,6 @@ export function useCategory() {
 	const categorizedChannels = useCategorizedChannels();
 	const handleDeleteCategory = useCallback(
 		async ({ category, currenChannel }: { category: ICategoryChannel; currenChannel: IChannel }) => {
-			const toChannelPage = (channelId: string, clanId: string) => {
-				if (channelId) return `/chat/clans/${clanId}/channels/${channelId}`;
-				return `/chat/clans/${clanId}`;
-			};
-			const toMembersPage = (clanId: string) => {
-				return `/chat/clans/${clanId}/member-safety`;
-			};
 			await dispatch(
 				categoriesActions.deleteCategory({
 					clanId: category.clan_id as string,
@@ -24,10 +17,6 @@ export function useCategory() {
 					categoryLabel: category.category_name as string
 				})
 			);
-			if (currenChannel.category_id === category.category_id) {
-				const linkPageMember = toMembersPage(category.clan_id || '');
-				navigate(linkPageMember);
-			}
 		},
 		[categorizedChannels]
 	);
@@ -109,7 +98,7 @@ function sortChannels(channels: IChannel[]): IChannel[] {
 
 	// Use forEach to sort channels
 	channels.forEach((channel) => {
-		if (!channel.parrent_id || channel.parrent_id === '0') {
+		if (!channel.parent_id || channel.parent_id === '0') {
 			sortedChannels.push(channel);
 			addChildren(channel, sortedChannels);
 		}
@@ -117,7 +106,7 @@ function sortChannels(channels: IChannel[]): IChannel[] {
 
 	function addChildren(parent: IChannel, acc: IChannel[]) {
 		channels
-			.filter((child) => child.parrent_id === parent.id)
+			.filter((child) => child.parent_id === parent.id)
 			.forEach((child) => {
 				acc.push(child);
 				addChildren(child, acc);

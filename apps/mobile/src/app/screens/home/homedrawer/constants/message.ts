@@ -80,11 +80,6 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 		// 	type: EMessageActionType.Mention
 		// },
 		{
-			id: 12,
-			title: t('message:actions.copyMessageLink'),
-			type: EMessageActionType.CopyMessageLink
-		},
-		{
 			id: 13,
 			title: t('message:actions.report'),
 			type: EMessageActionType.Report
@@ -93,11 +88,6 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			id: 14,
 			title: t('message:actions.saveImage'),
 			type: EMessageActionType.SaveImage
-		},
-		{
-			id: 15,
-			title: t('message:actions.copyMediaLink'),
-			type: EMessageActionType.CopyMediaLink
 		}
 	];
 };

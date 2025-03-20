@@ -99,14 +99,6 @@ export function useChatSending({ mode, channelOrDirect }: UseChatSendingOptions)
 								topicId: topic?.id as string
 							})
 						);
-						dispatch(
-							messagesActions.updateToBeTopicMessage({
-								channelId: channelIdOrDirectId as string,
-								messageId: initMessageOfTopic?.id as string,
-								topicId: topic.id as string,
-								creatorId: userProfile?.user?.id as string
-							})
-						);
 						return;
 					}
 				}

@@ -1,14 +1,6 @@
-import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
-import { sleep } from '@mezon/utils';
-import { useFocusEffect } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useEffect } from 'react';
-import { DeviceEventEmitter, View } from 'react-native';
-import MessageItemSkeleton from '../../../components/Skeletons/MessageItemSkeleton';
-import ChannelMessageActionListener from './ChannelMessageActionListener';
-import ChannelMessageListener from './ChannelMessageListener';
-import ChannelMessageReactionListener from './ChannelMessageReactionListener';
+import React from 'react';
+import { View } from 'react-native';
 import ChannelMessages from './ChannelMessages';
 
 type ChannelMessagesProps = {
@@ -19,62 +11,56 @@ type ChannelMessagesProps = {
 	mode: ChannelStreamMode;
 	isPublic?: boolean;
 	isDM?: boolean;
-	isDisableLoadMore?: boolean;
-	isDisableActionListener?: boolean;
+	topicChannelId?: string;
 };
 
-const ChannelMessagesWrapper = React.memo(
-	({ channelId, topicId, clanId, mode, isPublic, isDM, isDisableLoadMore, isDisableActionListener = false }: ChannelMessagesProps) => {
-		const [isReadyShowChannelMsg, setIsReadyShowChannelMsg] = React.useState<boolean>(false);
-		const { themeValue } = useTheme();
+const ChannelMessagesWrapper = React.memo(({ channelId, topicId, clanId, mode, isPublic, isDM, topicChannelId }: ChannelMessagesProps) => {
+	// const [isReadyShowChannelMsg, setIsReadyShowChannelMsg] = React.useState<boolean>(false);
+	// const { themeValue } = useTheme();
 
-		useFocusEffect(() => {
-			if (!isReadyShowChannelMsg) {
-				setTimeout(() => {
-					setIsReadyShowChannelMsg(() => true);
-				}, 300);
-			}
-		});
+	// useFocusEffect(() => {
+	// 	if (!isReadyShowChannelMsg) {
+	// 		setTimeout(() => {
+	// 			setIsReadyShowChannelMsg(() => true);
+	// 		}, 50);
+	// 	}
+	// });
 
-		useEffect(() => {
-			const onSwitchChannel = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SWITCH_CHANEL, async (time: number) => {
-				if (time) {
-					setIsReadyShowChannelMsg(() => false);
-					await sleep(time);
-					setIsReadyShowChannelMsg(() => true);
-				} else {
-					setIsReadyShowChannelMsg(() => true);
-				}
-			});
-			return () => {
-				onSwitchChannel.remove();
-			};
-		}, []);
+	// useEffect(() => {
+	// 	const onSwitchChannel = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SWITCH_CHANEL, async (time: number) => {
+	// 		if (time) {
+	// 			setIsReadyShowChannelMsg(() => false);
+	// 			await sleep(time);
+	// 			setIsReadyShowChannelMsg(() => true);
+	// 		} else {
+	// 			setIsReadyShowChannelMsg(() => true);
+	// 		}
+	// 	});
+	// 	return () => {
+	// 		onSwitchChannel.remove();
+	// 	};
+	// }, []);
 
-		if (!isReadyShowChannelMsg)
-			return (
-				<View style={{ flex: 1, backgroundColor: themeValue.primary }}>
-					<MessageItemSkeleton skeletonNumber={8} />
-				</View>
-			);
+	// if (!isReadyShowChannelMsg)
+	// 	return (
+	// 		<View style={{ flex: 1, backgroundColor: themeValue.primary }}>
+	// 			<MessageItemSkeleton skeletonNumber={8} />
+	// 		</View>
+	// 	);
 
-		return (
-			<View style={{ flex: 1 }}>
-				<ChannelMessages
-					channelId={channelId}
-					topicId={topicId}
-					clanId={clanId}
-					mode={mode}
-					isDM={isDM}
-					isPublic={isPublic}
-					isDisableLoadMore={isDisableLoadMore}
-				/>
-				<ChannelMessageListener />
-				{!isDisableActionListener && <ChannelMessageReactionListener />}
-				{!isDisableActionListener && <ChannelMessageActionListener mode={mode} isPublic={isPublic} clanId={clanId} channelId={channelId} />}
-			</View>
-		);
-	}
-);
+	return (
+		<View style={{ flex: 1 }}>
+			<ChannelMessages
+				channelId={channelId}
+				topicId={topicId}
+				clanId={clanId}
+				mode={mode}
+				isDM={isDM}
+				isPublic={isPublic}
+				topicChannelId={topicChannelId}
+			/>
+		</View>
+	);
+});
 
 export default ChannelMessagesWrapper;

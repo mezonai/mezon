@@ -1,7 +1,8 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { memo, useEffect, useState } from 'react';
 import { Keyboard, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 
 export type IProps = {
@@ -32,9 +33,9 @@ function EmojiSwitcher({ mode: _mode, onChange }: IProps) {
 		<View>
 			<TouchableOpacity onPress={onPickerPress}>
 				{mode !== 'emoji' ? (
-					<Icons.ReactionIcon width={size.s_22} height={size.s_22} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_22} height={size.s_22} color={themeValue.text} />
 				) : (
-					<Icons.KeyboardIcon width={size.s_22} height={size.s_22} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.keyboardIcon} width={size.s_22} height={size.s_22} color={themeValue.text} />
 				)}
 			</TouchableOpacity>
 		</View>

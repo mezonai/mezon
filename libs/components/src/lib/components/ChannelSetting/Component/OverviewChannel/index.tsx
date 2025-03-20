@@ -6,10 +6,12 @@ import {
 	IUpdateChannelRequest,
 	IUpdateSystemMessage,
 	selectAppChannelById,
+	selectChannelById,
 	selectClanSystemMessage,
 	selectTheme,
 	updateSystemMessage,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons, Image, InputField, TextArea } from '@mezon/ui';
 import { checkIsThread, IChannel, ValidateSpecialCharacters, ValidateURL } from '@mezon/utils';
@@ -27,12 +29,15 @@ export type OverviewChannelProps = {
 
 const OverviewChannel = (props: OverviewChannelProps) => {
 	const { channel } = props;
+	const realtimeChannel = useSelector((state) => selectChannelById(state, channel.channel_id ?? ''));
 	const appearanceTheme = useSelector(selectTheme);
-	const channelApp = useSelector(selectAppChannelById(channel?.id) || {});
+
+	const channelApp = useAppSelector((state) => selectAppChannelById(state, channel?.id as string));
+
 	const [appUrlInit, setAppUrlInit] = useState(channelApp?.url || '');
 	const [appUrl, setAppUrl] = useState(appUrlInit);
 	const dispatch = useAppDispatch();
-	const [channelLabelInit, setChannelLabelInit] = useState(channel.channel_label || '');
+	const [channelLabelInit, setChannelLabelInit] = useState(realtimeChannel.channel_label || '');
 	const [topicInit, setTopicInit] = useState(channel.topic);
 	const [ageRestrictedInit, setAgeRestrictedInit] = useState(channel.age_restricted);
 	const [e2eeInit, setE2eeInit] = useState(channel.e2ee);
@@ -106,7 +111,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			if (isThread) {
 				await checkDuplicate(checkDuplicateThread, {
 					thread_name: value.trim(),
-					channel_id: channel.parrent_id ?? ''
+					channel_id: channel.parent_id ?? ''
 				});
 			} else {
 				await checkDuplicate(checkDuplicateChannelInCategory, {
@@ -185,7 +190,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			topic: topic,
 			age_restricted: isAgeRestricted,
 			e2ee: isE2ee,
-			parrent_id: channel?.parrent_id,
+			parent_id: channel?.parent_id,
 			channel_private: channel?.channel_private
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));
@@ -405,24 +410,6 @@ const BottomBlock = ({
 				</div>
 			</div>
 
-			<hr className="border-t border-solid dark:border-borderDivider" />
-			<div className="flex flex-col gap-3">
-				<div className="flex justify-between">
-					<div className="font-semibold text-base dark:text-white text-black"> End-to-End Encryption Channel</div>
-					<input
-						className="peer relative h-4 w-8 cursor-pointer appearance-none rounded-lg
-														bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
-														after:bg-slate-500 after:transition-all checked:bg-blue-200 checked:after:left-4 checked:after:bg-blue-500
-														hover:bg-slate-400 after:hover:bg-slate-600 checked:hover:bg-blue-300 checked:after:hover:bg-blue-600
-														focus:outline-none checked:focus:bg-blue-400 checked:after:focus:bg-blue-700 focus-visible:outline-none disabled:cursor-not-allowed
-														disabled:bg-slate-200 disabled:after:bg-slate-300"
-						type="checkbox"
-						checked={isE2ee === 1}
-						onChange={handleCheckboxE2ee}
-					/>
-				</div>
-			</div>
-
 			{!thisIsSystemMessageChannel && (
 				<>
 					<hr className="border-t border-solid dark:border-borderDivider" />
@@ -476,7 +463,7 @@ const BottomBlock = ({
 				<div>New threads will not show in the channel list after being inactive for the specified duration.</div>
 			</div>
 			<div className="flex justify-center pb-10">
-				<Image src={logoImgSrc} alt={'channelSettingLogo'} width={48} height={48} className="object-cover w-[280px]" />
+				<Image src={logoImgSrc} width={48} height={48} className="object-cover w-[280px]" />
 			</div>
 		</div>
 	);

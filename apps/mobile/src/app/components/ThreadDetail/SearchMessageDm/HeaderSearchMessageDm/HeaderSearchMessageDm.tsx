@@ -1,8 +1,10 @@
-import { ArrowLeftIcon, Icons } from '@mezon/mobile-components';
+import { ArrowLeftIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Pressable, TextInput, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './styles';
 
 export default function HeaderSearchMessageDm({ onChangeText }: { onChangeText: (value: string) => void }) {
@@ -34,7 +36,7 @@ export default function HeaderSearchMessageDm({ onChangeText }: { onChangeText: 
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
 				<View style={{ marginRight: size.s_6 }}>
-					<Icons.MagnifyingIcon width={20} height={20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.magnifyingIcon} width={20} height={20} color={themeValue.text} />
 				</View>
 				<TextInput
 					value={textInput}
@@ -46,7 +48,7 @@ export default function HeaderSearchMessageDm({ onChangeText }: { onChangeText: 
 				/>
 				{textInput?.length ? (
 					<Pressable onPress={() => clearTextInput()}>
-						<Icons.CircleXIcon height={18} width={18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={18} width={18} color={themeValue.text} />
 					</Pressable>
 				) : null}
 			</View>

@@ -1,9 +1,12 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
+import { attachmentActions } from '@mezon/store';
+import { useAppDispatch } from '@mezon/store-mobile';
 import { notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
+import { ImageListModal } from '../../../../../components/ImageListModal';
 import { isImage, isVideo } from '../../../../../utils/helpers';
 import { RenderDocumentsChat } from '../RenderDocumentsChat';
 import { RenderImageChat } from '../RenderImageChat';
@@ -13,8 +16,8 @@ import { style } from './styles';
 interface IProps {
 	attachments: ApiMessageAttachment[];
 	onLongPressImage?: () => void;
-	senderId: string;
-	createTime: string;
+	clanId: string;
+	channelId: string;
 }
 const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 	const videos: ApiMessageAttachment[] = [];
@@ -34,10 +37,10 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 	return { videos, images, documents };
 };
 
-export const MessageAttachment = React.memo(({ attachments, onLongPressImage, senderId, createTime }: IProps) => {
+export const MessageAttachment = React.memo(({ attachments, onLongPressImage, clanId, channelId }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-
+	const dispatch = useAppDispatch();
 	const [videos, setVideos] = useState<ApiMessageAttachment[]>([]);
 	const [images, setImages] = useState<ApiMessageAttachment[]>([]);
 	const [documents, setDocuments] = useState<ApiMessageAttachment[]>([]);
@@ -51,14 +54,14 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, se
 	}, [attachments]);
 
 	const onPressImage = useCallback(
-		(image: any) => {
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_IMAGE_DETAIL_MESSAGE_ITEM, {
-				...image,
-				uploader: senderId,
-				create_time: createTime
-			});
+		async (image: any) => {
+			await dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId }));
+			const data = {
+				children: <ImageListModal channelId={channelId} imageSelected={image} />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		},
-		[senderId, createTime]
+		[channelId, clanId, dispatch]
 	);
 
 	const renderDocuments = () => {
@@ -82,7 +85,7 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, se
 			const checkIsVideo = isVideo(document?.url?.toLowerCase());
 
 			if (checkIsVideo) {
-				return <RenderVideoChat key={`${document?.url}_${index}`} videoURL={document.url} />;
+				return <RenderVideoChat key={`${document?.url}_${index}`} videoURL={document.url} onLongPress={onLongPressImage} />;
 			}
 
 			return (
@@ -98,7 +101,8 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, se
 
 	return (
 		<View>
-			{videos?.length > 0 && videos.map((video, index) => <RenderVideoChat key={`${video?.url}_${index}`} videoURL={video?.url} />)}
+			{videos?.length > 0 &&
+				videos.map((video, index) => <RenderVideoChat key={`${video?.url}_${index}`} videoURL={video?.url} onLongPress={onLongPressImage} />)}
 			<View style={styles.gridContainer}>
 				{visibleImages?.length > 0 &&
 					visibleImages?.map((image, index) => {

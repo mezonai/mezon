@@ -7,20 +7,20 @@ import {
 	load,
 	save
 } from '@mezon/mobile-components';
-import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { appActions, channelsActions, clansActions, directActions, messagesActions, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import { useFocusEffect } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
-import { AppState, DeviceEventEmitter, Platform, StatusBar } from 'react-native';
+import { AppState, DeviceEventEmitter, Platform, StatusBar, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
-import SwipeBackContainer from '../../home/homedrawer/SwipeBackContainer';
 import { ChatMessageWrapper } from '../ChatMessageWrapper';
 import HeaderDirectMessage from './HeaderDirectMessage';
 import { style } from './styles';
 
 export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: any; route: any }) => {
-	const { themeValue, themeBasic } = useTheme();
+	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const directMessageId = route.params?.directMessageId as string;
 	const dispatch = useAppDispatch();
@@ -29,6 +29,7 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
 	const isFetchMemberChannelDmRef = useRef(false);
 	const { handleReconnect } = useContext(ChatContext);
+	const appStateRef = useRef(AppState.currentState);
 
 	const dmType = useMemo(() => {
 		return currentDmGroup?.type;
@@ -61,24 +62,22 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 		]);
 	};
 
+	useFocusEffect(() => {
+		if (Platform.OS === 'android') {
+			StatusBar.setBackgroundColor(themeValue.primary);
+		}
+	});
+
 	useEffect(() => {
-		const focusedListener = navigation.addListener('focus', () => {
-			if (Platform.OS === 'android') {
-				StatusBar.setBackgroundColor(themeValue.primary);
-			}
-			StatusBar.setBarStyle(themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content');
-		});
 		const blurListener = navigation.addListener('blur', () => {
 			if (Platform.OS === 'android') {
 				StatusBar.setBackgroundColor(themeValue.secondary);
 			}
-			StatusBar.setBarStyle(themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content');
 		});
 		return () => {
-			focusedListener();
 			blurListener();
 		};
-	}, [navigation, themeBasic, themeValue.primary, themeValue.secondary]);
+	}, [navigation, themeValue.secondary]);
 
 	useEffect(() => {
 		const onMentionHashtagDM = DeviceEventEmitter.addListener(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, ({ isFetchMemberChannelDM }) => {
@@ -120,7 +119,6 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 		async (state: string) => {
 			if (state === 'active') {
 				try {
-					DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: false });
 					handleReconnect('DM detail reconnect attempt');
 					save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
 					dispatch(
@@ -141,36 +139,40 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 						})
 					);
 					save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
-					DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });
 				} catch (error) {
 					dispatch(appActions.setIsFromFCMMobile(false));
 					save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
-					DeviceEventEmitter.emit(ActionEmitEvent.SHOW_SKELETON_CHANNEL_MESSAGE, { isShow: true });
 				}
 			}
 		},
-		[directMessageId, dmType, handleReconnect]
+		[directMessageId, dispatch, dmType, handleReconnect]
 	);
 
 	useEffect(() => {
-		const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
-
+		const appStateSubscription = AppState.addEventListener('change', handleAppStateChangeListener);
 		return () => {
 			appStateSubscription.remove();
 		};
-	}, [directMessageId, dmType, handleAppStateChange]);
+	}, []);
 
-	const handleBack = useCallback(() => {
-		navigation.goBack();
-	}, [navigation]);
+	const handleAppStateChangeListener = useCallback(
+		(nextAppState: typeof AppState.currentState) => {
+			if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+				handleAppStateChange(nextAppState);
+			}
+
+			appStateRef.current = nextAppState;
+		},
+		[handleAppStateChange]
+	);
 
 	return (
-		<SwipeBackContainer handleBack={handleBack}>
+		<View style={{ flex: 1 }}>
 			<StatusBarHeight />
 			<HeaderDirectMessage from={from} styles={styles} themeValue={themeValue} directMessageId={directMessageId} />
 			{directMessageId && (
 				<ChatMessageWrapper directMessageId={directMessageId} isModeDM={Number(dmType) === ChannelType.CHANNEL_TYPE_DM} currentClanId={'0'} />
 			)}
-		</SwipeBackContainer>
+		</View>
 	);
 };

@@ -3,6 +3,8 @@ import { Colors, size } from '@mezon/mobile-ui';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 
 function IconChannel({ channelPrivate, type }: { channelPrivate: number; type }) {
 	const isChannelPrivate = useMemo(() => channelPrivate === ChannelStatusEnum.isPrivate, [channelPrivate]);
@@ -11,34 +13,34 @@ function IconChannel({ channelPrivate, type }: { channelPrivate: number; type })
 		switch (type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return isChannelPrivate ? (
-					<Icons.TextLockIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				) : (
-					<Icons.TextIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.channelText} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				);
 			case ChannelType.CHANNEL_TYPE_THREAD:
 				return isChannelPrivate ? (
-					<Icons.ThreadLockIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.threadLockIcon} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				) : (
-					<Icons.ThreadIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				);
 
 			case ChannelType.CHANNEL_TYPE_GMEET_VOICE:
 				return isChannelPrivate ? (
-					<Icons.VoiceLockIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.channelVoiceLock} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				) : (
-					<Icons.VoiceNormalIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				);
 			case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
 				return isChannelPrivate ? (
-					<Icons.VoiceLockIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.channelVoiceLock} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				) : (
-					<Icons.VoiceNormalIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 				);
 
 			case ChannelType.CHANNEL_TYPE_STREAMING:
-				return <Icons.StreamIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />;
+				return <MezonIconCDN icon={IconCDN.channelStream} width={size.s_20} height={size.s_20} color={Colors.textGray} />;
 			case ChannelType.CHANNEL_TYPE_APP:
-				return <Icons.AppChannelIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />;
+				return <MezonIconCDN icon={IconCDN.channelApp} width={size.s_20} height={size.s_20} color={Colors.textGray} />;
 			case ChannelType.CHANNEL_TYPE_ANNOUNCEMENT:
 				return <Icons.Announcement defaultSize={size.s_20} defaultFill={Colors.textGray} />;
 			case ChannelType.CHANNEL_TYPE_FORUM:

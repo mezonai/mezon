@@ -3,8 +3,8 @@ import { AttachmentEntity } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useEffect, useRef } from 'react';
 import { Animated, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { getAspectRatioSize, useImageResolution } from 'react-native-zoom-toolkit';
+import ImageNative from '../ImageNative';
 import { style } from './styles';
 interface IRenderFooterModalProps {
 	imageSelected?: AttachmentEntity;
@@ -49,10 +49,8 @@ export const RenderFooterModal = memo((props: IRenderFooterModalProps) => {
 		return (
 			<TouchableOpacity onPress={() => handlePress(item)}>
 				<View style={[styles.imageWrapper, isSelected && [styles.imageSelected, { width: imageSize.width }]]}>
-					<FastImage
-						source={{
-							uri: createImgproxyUrl(item?.url ?? '', { width: 50, height: 50, resizeType: 'fit' })
-						}}
+					<ImageNative
+						url={createImgproxyUrl(item?.url ?? '', { width: 50, height: 50, resizeType: 'fit' })}
 						style={[styles.image]}
 						resizeMode={imageSelected ? 'cover' : 'contain'}
 					/>

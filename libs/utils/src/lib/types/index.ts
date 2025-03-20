@@ -4,7 +4,6 @@ import {
 	ChannelStreamMode,
 	ChannelType,
 	HashtagDm,
-	Notification,
 	NotificationType,
 	SFUSignalingFwd,
 	WebrtcSignalingFwd
@@ -23,6 +22,7 @@ import {
 	ApiMessageMention,
 	ApiMessageReaction,
 	ApiMessageRef,
+	ApiNotification,
 	ApiNotificationSetting,
 	ApiNotificationUserChannel,
 	ApiPermission,
@@ -58,6 +58,8 @@ import {
 export * from './base';
 export * from './config';
 export * from './htmlCanvas';
+export * from './media';
+export * from './message';
 export * from './messageLine';
 export * from './mimeTypes';
 export * from './permissions';
@@ -180,7 +182,7 @@ export type IThread = {
 	id?: string | undefined;
 	/// new update
 	clan_id?: string | undefined;
-	parrent_id?: string | undefined;
+	parent_id?: string | undefined;
 	channel_id?: string | undefined;
 	category_id?: string | undefined;
 	type?: number;
@@ -591,6 +593,12 @@ export type IEmoji = {
 	clan_id?: string;
 };
 
+export type IEmojiRecent = {
+	emoji_id?: string;
+	emoji_recents_id?: string;
+	update_time?: string;
+};
+
 export type IChannelUser = ChannelDescription & {
 	id: string;
 	active?: number;
@@ -848,6 +856,12 @@ export enum NotificationCode {
 	NOTIFICATION_TOPIC = -13
 }
 
+export enum NotificationCategory {
+	MENTIONS = 1,
+	MESSAGES = 2,
+	FOR_YOU = 3
+}
+
 export enum ChannelIsNotThread {
 	TRUE = '0'
 }
@@ -875,7 +889,7 @@ export enum ThemeApp {
 	System = 'system'
 }
 
-export interface INotification extends Notification {
+export interface INotification extends ApiNotification {
 	id: string;
 	content?: any;
 }
@@ -920,7 +934,7 @@ export type SearchItemProps = {
 	icon?: string;
 	channelId?: string;
 	channel_private?: number;
-	parrent_id?: string;
+	parent_id?: string;
 	clanId?: string;
 	meeting_code?: string;
 };
@@ -1439,4 +1453,17 @@ export type IvoiceInfo = {
 	clanName: string;
 	channelId: string;
 	channelLabel: string;
+};
+
+export type ImageSourceObject = {
+	filename: string;
+	filetype: string;
+	size: number;
+	url: string;
+};
+
+export type HistoryItem = {
+	valueTextInput: string;
+	content: string;
+	mentionRaw: any[];
 };

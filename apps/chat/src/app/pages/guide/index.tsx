@@ -26,7 +26,7 @@ function GuideMain() {
 				</div>
 				<div className=" flex gap-3 items-end h-28">
 					<div className="text-[32px] font-bold leading-8">
-						{currentClan?.clan_name ?? `${clanOwner.user?.display_name ?? clanOwner.user?.username}'s`} clan
+						{currentClan?.clan_name ?? `${clanOwner?.user?.display_name ?? clanOwner?.user?.username}'s`} clan
 					</div>
 					<div className="relative h-6 w-6">
 						<svg className="absolute" role="img" width="24" height="24" viewBox="0 0 16 15.2">

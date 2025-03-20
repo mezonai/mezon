@@ -3,13 +3,22 @@ import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 	StyleSheet.create({
+		main: {
+			flex: 1,
+			width: '100%',
+			height: '100%',
+			alignItems: 'center',
+			justifyContent: 'center'
+		},
 		container: {
 			backgroundColor: colors.secondary,
 			padding: Metrics.size.xl,
 			margin: Metrics.size.l,
 			borderRadius: 10,
 			overflow: 'hidden',
-			marginHorizontal: isTabletLandscape ? '30%' : 0
+			width: '90%',
+			marginHorizontal: isTabletLandscape ? '30%' : 0,
+			zIndex: 100
 		},
 
 		title: {
@@ -50,5 +59,13 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			color: colors.text,
 			fontSize: Fonts.size.h8,
 			textAlign: 'center'
+		},
+		backdrop: {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			backgroundColor: 'rgba(0,0,0,0.5)'
 		}
 	});

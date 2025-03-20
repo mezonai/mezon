@@ -89,6 +89,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 	}, [message, thread]);
 
 	const handleLinkThread = (channelId: string, clanId: string) => {
+		preventClosePannel.current = false;
 		dispatch(channelsActions.upsertOne({ clanId, channel: thread as ChannelsEntity }));
 		dispatch(appActions.setIsShowCanvas(false));
 		navigate(toChannelPage(channelId, clanId));
@@ -120,6 +121,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 		await dispatch(channelsActions.deleteChannel({ channelId: channelThread?.channel_id as string, clanId: channelThread?.clan_id as string }));
 		await dispatch(threadsActions.remove(channelThread.id));
 		closeConfirmDelete();
+		dispatch(threadsActions.toggleThreadModal());
 		preventClosePannel.current = false;
 	};
 
@@ -139,6 +141,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 
 	const handleOpenConfirmDelete = useCallback(() => {
 		setIsShowPanelChannel(false);
+		dispatch(threadsActions.toggleThreadModal());
 		preventClosePannel.current = true;
 		openConfirmDelete();
 	}, []);

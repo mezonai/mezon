@@ -76,7 +76,7 @@ export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: 
 		});
 
 		if (response) {
-			thunkAPI.dispatch(toastActions.addToast({ message: 'Token sent successfully', type: 'success' }));
+			thunkAPI.dispatch(toastActions.addToast({ message: 'Balance notifications', type: 'success' }));
 			thunkAPI.dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
 			return response;
 		} else {

@@ -1,5 +1,5 @@
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
-import { Icons, OwnerIcon } from '@mezon/mobile-components';
+import { OwnerIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { channelUsersActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
@@ -9,6 +9,8 @@ import { TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { EOverridePermissionType, ERequestStatus } from '../../types/channelPermission.enum';
 import { IMemberItemProps } from '../../types/channelPermission.type';
 
@@ -38,7 +40,11 @@ export const MemberItem = memo(
 				type: 'success',
 				props: {
 					text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
-					leadingIcon: isError ? <Icons.CloseIcon color={Colors.red} /> : <Icons.CheckmarkLargeIcon color={Colors.green} />
+					leadingIcon: isError ? (
+						<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+					) : (
+						<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+					)
 				}
 			});
 		};
@@ -67,11 +73,11 @@ export const MemberItem = memo(
 				);
 			}
 			if (isAdvancedSetting) {
-				return <Icons.ChevronSmallRightIcon color={themeValue.white} />;
+				return <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.white} />;
 			}
 			return (
 				<TouchableOpacity onPress={deleteMember} disabled={disableDeleteButton}>
-					<Icons.CircleXIcon color={disableDeleteButton ? themeValue.textDisabled : themeValue.white} />
+					<MezonIconCDN icon={IconCDN.circleXIcon} color={disableDeleteButton ? themeValue.textDisabled : themeValue.white} />
 				</TouchableOpacity>
 			);
 		};

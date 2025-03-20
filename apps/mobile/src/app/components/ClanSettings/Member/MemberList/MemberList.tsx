@@ -5,7 +5,7 @@ import { UsersClanEntity } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { MezonInput } from '../../../../componentUI';
+import MezonInput from '../../../../componentUI/MezonInput';
 import { normalizeString } from '../../../../utils/helpers';
 import { SeparatorWithLine } from '../../../Common';
 import { UserItem } from '../UserItem';

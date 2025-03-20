@@ -47,7 +47,7 @@ const SystemMessagesManagement = ({
 	useEffect(() => {
 		if (systemMessage && channelsList.length > 0) {
 			const channelsListWithoutVoiceChannel = channelsList.filter(
-				(channel) => channel.clan_id === currentClanId && channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.parrent_id === '0'
+				(channel) => channel.clan_id === currentClanId && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
 			);
 
 			if (Object.keys(systemMessage).length == 0 && currentClanId && channelsListWithoutVoiceChannel) {
@@ -193,10 +193,7 @@ const SystemMessagesManagement = ({
 				className={'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20'}
 			>
 				{channelsList
-					.filter(
-						(channel) =>
-							channel.clan_id === currentClanId && channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.parrent_id === '0'
-					)
+					.filter((channel) => channel.clan_id === currentClanId && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL)
 					.map((channel) =>
 						channel.channel_id !== selectedChannel?.channel_id ? (
 							<Dropdown.Item

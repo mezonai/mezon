@@ -1,6 +1,5 @@
 import { ChatContext } from '@mezon/core';
 import {
-	CloseIcon,
 	debounce,
 	getAttachmentUnique,
 	getUpdateOrAddClanChannelCache,
@@ -27,7 +26,7 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { createUploadFilePath, handleUploadFileMobile, useMezon } from '@mezon/transport';
-import { checkIsThread, createImgproxyUrl, EBacktickType, ILinkOnMessage, isPublicChannel } from '@mezon/utils';
+import { checkIsThread, createImgproxyUrl, EBacktickType, ILinkOnMessage, isPublicChannel, isYouTubeLink } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -38,7 +37,9 @@ import { Image, Video } from 'react-native-compressor';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import { useDispatch, useSelector } from 'react-redux';
-import { MezonAvatar } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { isImage, isVideo } from '../../../utils/helpers';
 import AttachmentFilePreview from '../../home/homedrawer/components/AttachmentFilePreview';
 import SharingSuggestItem from './SharingSuggestItem';
@@ -126,7 +127,7 @@ export const Sharing = ({ data, onClose }) => {
 		);
 		if (matchChannels.length > 0) {
 			const matchIdList = new Set(matchChannels.map((item) => item.channel_id));
-			const resultList = [...DMList, ...data].filter((item) => matchIdList.has(item.parrent_id));
+			const resultList = [...DMList, ...data].filter((item) => matchIdList.has(item.parent_id));
 
 			return [...matchChannels, ...resultList];
 		}
@@ -254,10 +255,11 @@ export const Sharing = ({ data, onClose }) => {
 					i++;
 				}
 				const endIndex = i;
+				const isYoutube = isYouTubeLink(inputString);
 				links.push({
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-expect-error
-					type: EBacktickType.LINK,
+					type: isYoutube ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,
 					s: startIndex,
 					e: endIndex
 				});
@@ -419,7 +421,7 @@ export const Sharing = ({ data, onClose }) => {
 		<View style={styles.wrapper}>
 			<View style={styles.header}>
 				<TouchableOpacity onPress={onClose}>
-					<CloseIcon width={size.s_28} height={size.s_28} />
+					<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_28} height={size.s_28} />
 				</TouchableOpacity>
 				<Text style={styles.titleHeader}>Share</Text>
 				{channelSelected && isAttachmentUploaded ? (
@@ -472,7 +474,7 @@ export const Sharing = ({ data, onClose }) => {
 													style={styles.iconRemoveMedia}
 													onPress={() => removeAttachmentByUrl(media.url ?? '')}
 												>
-													<CloseIcon width={size.s_18} height={size.s_18} />
+													<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} height={size.s_18} />
 												</TouchableOpacity>
 											)}
 
@@ -501,7 +503,7 @@ export const Sharing = ({ data, onClose }) => {
 						/>
 						{!!dataText?.length && (
 							<TouchableOpacity activeOpacity={0.8} onPress={() => setDataText('')} style={styles.iconRightInput}>
-								<CloseIcon width={size.s_18} />
+								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
 							</TouchableOpacity>
 						)}
 					</View>
@@ -544,7 +546,7 @@ export const Sharing = ({ data, onClose }) => {
 								}}
 								style={styles.iconRightInput}
 							>
-								<CloseIcon width={size.s_18} />
+								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
 							</TouchableOpacity>
 						) : (
 							!!searchText?.length && (
@@ -556,7 +558,7 @@ export const Sharing = ({ data, onClose }) => {
 									}}
 									style={styles.iconRightInput}
 								>
-									<CloseIcon width={size.s_18} />
+									<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
 								</TouchableOpacity>
 							)
 						)}

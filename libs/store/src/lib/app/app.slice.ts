@@ -14,7 +14,7 @@ import { voiceActions } from '../voice/voice.slice';
 
 export const APP_FEATURE_KEY = 'app';
 
-interface showSettingFooterProps {
+export interface showSettingFooterProps {
 	status: boolean;
 	initTab: string;
 	profileInitTab: string;

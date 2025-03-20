@@ -30,7 +30,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		}
 
 		const profileResponse = await dispatch(accountActions.getUserProfile());
-		dispatch(fetchApplications({}));
+		await dispatch(fetchApplications({}));
 		if ((profileResponse as unknown as IWithError).error) {
 			throw new Error('Session expired');
 		}
@@ -39,7 +39,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		} as IAuthLoaderData;
 	} catch (error) {
 		const redirectTo = getRedirectTo(initialPath);
-		const redirect = redirectTo ? `/login?redirect=${redirectTo}` : '/login';
+		const redirect = redirectTo ? `/login?redirect=${redirectTo}` : '';
 		return {
 			isLogin: false,
 			redirect: redirect

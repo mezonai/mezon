@@ -2,7 +2,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import { IMessageRatioOption } from '@mezon/utils';
 import { memo } from 'react';
 import { Text, View } from 'react-native';
-import { MezonRadioButton } from '../../../../../../../componentUI';
+import MezonRadioButton from '../../../../../../../componentUI/MezonRadioButton';
 import { style } from './styles';
 
 interface EmbedRadioProps {

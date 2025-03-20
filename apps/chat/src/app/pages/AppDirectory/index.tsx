@@ -66,7 +66,6 @@ const AppDirectory = () => {
 							<div className="logo flex gap-[8px] items-center">
 								<Image
 									src={`assets/images/${appearanceTheme === 'light' ? 'mezon-logo-white.svg' : 'mezon-logo-black.svg'}`}
-									alt={'logoMezon'}
 									width={48}
 									height={48}
 									className="w-10 aspect-square object-cover"
@@ -105,7 +104,6 @@ const AppDirectory = () => {
 						<div className="block1-right w-fit flex flex-col justify-end">
 							<Image
 								src={`assets/images/app-directory-banner.svg`}
-								alt={'app-directory-banner'}
 								width={48}
 								height={48}
 								className="object-cover w-[310px] max-lg:hidden"
@@ -136,7 +134,6 @@ const AppDirectory = () => {
 						<div className="b3-right w-[55%] max-lg:w-full">
 							<Image
 								src={`assets/images/example-app.png`}
-								alt={'example-app'}
 								width={48}
 								height={48}
 								className="object-cover w-full h-full rounded-r-md max-lg:rounded-t-md"

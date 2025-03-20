@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import debounce from 'lodash.debounce';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, TextInput, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 type SearchThreadsProps = {
@@ -41,7 +42,7 @@ export const SearchThreadsBar = ({ onTextChanged, inputValue }: SearchThreadsPro
 			/>
 			{!!searchInput?.length && (
 				<Pressable onPress={clearSearchInput}>
-					<Icons.CircleXIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 				</Pressable>
 			)}
 		</View>

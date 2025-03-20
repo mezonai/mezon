@@ -10,6 +10,7 @@ import {
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
+// check later
 export function useFriends() {
 	const friends = useSelector(selectAllFriends);
 	const currentDM = useSelector(selectDmGroupCurrentId);

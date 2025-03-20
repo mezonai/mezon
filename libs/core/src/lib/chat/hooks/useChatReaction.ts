@@ -2,24 +2,27 @@ import {
 	channelMetaActions,
 	ChannelsEntity,
 	channelUsersActions,
+	getStoreAsync,
 	reactionActions,
+	RootState,
+	selectAllAccount,
 	selectAllChannelMembers,
+	selectAllEmojiRecent,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectDirectById,
 	selectDmGroupCurrentId,
+	selectLastEmojiRecent,
 	selectThreadCurrentChannel,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { EmojiStorage, transformPayloadWriteSocket } from '@mezon/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import { transformPayloadWriteSocket } from '@mezon/utils';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useAuth } from '../../auth/hooks/useAuth';
 export type UseMessageReactionOption = {
 	currentChannelId?: string | null | undefined;
 };
@@ -28,9 +31,11 @@ interface ChatReactionProps {
 	isClanViewMobile?: boolean;
 }
 
+// check and fix it
+
 export function useChatReaction({ isMobile = false, isClanViewMobile = undefined }: ChatReactionProps = {}) {
 	const dispatch = useAppDispatch();
-	const { userId } = useAuth();
+	const userId = useSelector(selectAllAccount)?.user?.id as string;
 	const checkIsClanView = useSelector(selectClanView);
 	const isClanView = isClanViewMobile !== undefined ? isClanViewMobile : checkIsClanView;
 	const directId = useSelector(selectDmGroupCurrentId);
@@ -39,6 +44,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 	const thread = useSelector(selectThreadCurrentChannel);
 	const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const allEmojiRecent = useSelector(selectAllEmojiRecent);
 
 	const currentActive = useMemo(() => {
 		let clanIdActive = '';
@@ -82,7 +88,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		};
 	}, [isClanView, direct?.type, directId, channel?.type, channel?.clan_id, channel?.id, thread?.channel_id, isFocusTopicBox, isFocusThreadBox]);
 	const membersOfChild = useAppSelector((state) => (channel?.id ? selectAllChannelMembers(state, channel?.id as string) : null));
-	const membersOfParent = useAppSelector((state) => (channel?.parrent_id ? selectAllChannelMembers(state, channel?.parrent_id as string) : null));
+	const membersOfParent = useAppSelector((state) => (channel?.parent_id ? selectAllChannelMembers(state, channel?.parent_id as string) : null));
 	const updateChannelUsers = async (currentChannel: ChannelsEntity | null, userIds: string[], clanId: string) => {
 		const timestamp = Date.now() / 1000;
 
@@ -109,15 +115,32 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 	};
 	const addMemberToThread = useCallback(
 		async (userId: string) => {
-			if (channel?.parrent_id === '0' || channel?.parrent_id === '') return;
-			const existingUserIdOfParrent = membersOfParent?.some((member) => member.id === userId);
+			if (channel?.parent_id === '0' || channel?.parent_id === '') return;
+			const existingUserIdOfParent = membersOfParent?.some((member) => member.id === userId);
 			const existingUserIdOfChild = membersOfChild?.some((member) => member.id === userId);
-			if (existingUserIdOfParrent && !existingUserIdOfChild) {
+			if (existingUserIdOfParent && !existingUserIdOfChild) {
 				await updateChannelUsers(channel, [userId], channel?.clan_id as string);
 			}
 		},
 		[channel, membersOfParent, membersOfChild]
 	);
+
+	const emojiRecentId = useCallback(
+		async (emoji_id: string) => {
+			const store = await getStoreAsync();
+			const lastEmojiRecent = selectLastEmojiRecent(store.getState() as unknown as RootState);
+			if (lastEmojiRecent.emoji_id === emoji_id) {
+				return '';
+			}
+			const foundEmoji = allEmojiRecent.find((emoji) => emoji.id === emoji_id) as any;
+			if (foundEmoji) {
+				return foundEmoji.emoji_recents_id;
+			}
+			return '0';
+		},
+		[allEmojiRecent]
+	);
+
 	const reactionMessageDispatch = useCallback(
 		async (
 			id: string,
@@ -132,23 +155,13 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 			isFocusTopicBox?: boolean,
 			channelIdOnMessage?: string
 		) => {
-			if (isMobile) {
-				const emojiLastest: EmojiStorage = {
-					emojiId: emoji_id ?? '',
-					emoji: emoji ?? '',
-					messageId: messageId ?? '',
-					senderId: message_sender_id ?? '',
-					action: action_delete ?? false
-				};
-				saveRecentEmojiMobile(emojiLastest);
-			}
 			isClanView && addMemberToThread(userId || '');
 			const payload = transformPayloadWriteSocket({
 				clanId: currentActive.clanIdActive,
 				isPublicChannel: is_public,
 				isClanView: isClanView as boolean
 			});
-
+			const emoji_recent_id = await emojiRecentId(emoji_id);
 			const payloadDispatchReaction = {
 				id,
 				clanId: currentActive.clanIdActive,
@@ -162,7 +175,8 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				actionDelete: action_delete,
 				isPublic: payload.is_public,
 				userId: userId as string,
-				topic_id: isFocusTopicBox ? channelIdOnMessage : ''
+				topic_id: isFocusTopicBox ? channelIdOnMessage : '',
+				emoji_recent_id: emoji_recent_id
 			};
 
 			return dispatch(reactionActions.writeMessageReaction(payloadDispatchReaction)).unwrap();
@@ -176,25 +190,4 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		}),
 		[reactionMessageDispatch]
 	);
-}
-
-function saveRecentEmojiMobile(emojiLastest: EmojiStorage) {
-	AsyncStorage.getItem('recentEmojis').then((storedEmojis) => {
-		const emojisRecentParse = storedEmojis ? safeJSONParse(storedEmojis) : [];
-
-		const duplicateIndex = emojisRecentParse.findIndex((item: any) => {
-			return item.emoji === emojiLastest.emoji && item.senderId === emojiLastest.senderId;
-		});
-
-		if (emojiLastest.action === true) {
-			if (duplicateIndex !== -1) {
-				emojisRecentParse.splice(duplicateIndex, 1);
-			}
-		} else {
-			if (duplicateIndex === -1) {
-				emojisRecentParse.push(emojiLastest);
-			}
-		}
-		AsyncStorage.setItem('recentEmojis', JSON.stringify(emojisRecentParse));
-	});
 }

@@ -12,7 +12,7 @@ import {
 } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import { ChannelMembersEntity, DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_ID, createImgproxyUrl } from '@mezon/utils';
-import { Tooltip } from 'flowbite-react';
+import Tooltip from 'rc-tooltip';
 import { MouseEvent, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -124,10 +124,9 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						/>
 						<div className="flex flex-col">
 							<p
-								className="text-base font-medium"
+								className="text-base font-medium font-normal"
 								style={{
-									color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR,
-									fontWeight: 'bold'
+									color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR
 								}}
 							>
 								{HighlightMatchBold(displayName, searchQuery)}
@@ -137,10 +136,10 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 					</div>
 				</div>
 				<div className="flex-1 p-1 text-center">
-					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">{clanJoinTime ?? '-'}</span>
+					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-medium uppercase">{clanJoinTime ?? '-'}</span>
 				</div>
 				<div className="flex-1 p-1 text-center">
-					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">
+					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-medium uppercase">
 						{mezonJoinTime ? mezonJoinTime + ' ago' : '-'}
 					</span>
 				</div>
@@ -155,8 +154,12 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 								{userRolesClan.length > 1 && (
 									<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-opacity-50 dark:text-contentTertiary text-colorTextLightMode hoverIconBlackImportant ml-1">
 										<Tooltip
-											content={
-												<div className={'flex flex-col items-start'}>
+											overlay={
+												<div
+													className={
+														'rounded p-1 dark:bg-bgSecondary600 bg-bgLightMode dark:!text-white !text-black flex flex-col items-start'
+													}
+												>
 													{userRolesClan.sortedRoles.slice(1).map((userRole) => (
 														<div className={'my-0.5'} key={userRole.id}>
 															<RoleNameCard roleName={userRole.title || ''} roleColor={userRole.color || ''} />
@@ -164,9 +167,6 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 													))}
 												</div>
 											}
-											trigger={'hover'}
-											style={appearanceTheme === 'light' ? 'light' : 'dark'}
-											className="dark:!text-white !text-black"
 										>
 											<span className="text-xs font-medium px-1 cursor-pointer" style={{ lineHeight: '15px' }}>
 												+{userRolesClan.length - 1}
@@ -180,28 +180,28 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						)}
 						{hasClanPermission && (
 							<Tooltip
-								content={
-									<div className="max-h-52 overflow-y-auto overflow-x-hidden scrollbar-hide">
+								overlay={
+									<div className="rounded p-1 dark:bg-bgSecondary600 bg-bgLightMode max-h-52 overflow-y-auto overflow-x-hidden scrollbar-hide">
 										<div className="flex flex-col gap-1 max-w-72">
 											{<ListOptionRole userId={userId} rolesClanEntity={rolesClanEntity} userRolesClan={userRolesClan} />}
 										</div>
 									</div>
 								}
 								trigger="click"
-								arrow={false}
 								placement="left-start"
 							>
-								<Tooltip content="Add Role">
-									<span className="inline-flex justify-center gap-x-1 w-6 aspect-square items-center rounded dark:bg-bgSecondary600 bg-slate-300 dark:text-contentTertiary text-colorTextLightMode hoverIconBlackImportant ml-1 text-base">
-										+
-									</span>
-								</Tooltip>
+								<span
+									title="Add Role"
+									className="inline-flex justify-center gap-x-1 w-6 aspect-square items-center rounded dark:bg-bgSecondary600 bg-slate-300 dark:text-contentTertiary text-colorTextLightMode hoverIconBlackImportant ml-1 text-base"
+								>
+									+
+								</span>
 							</Tooltip>
 						)}
 					</span>
 				</div>
 				<div className="flex-1 p-1 text-center">
-					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-bold uppercase">Signals</span>
+					<span className="text-xs dark:text-textDarkTheme text-textLightTheme font-medium uppercase">Signals</span>
 				</div>
 			</div>
 			{openModalRemoveMember && (

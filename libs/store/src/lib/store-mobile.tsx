@@ -47,6 +47,7 @@ import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
 import { dragAndDropReducer } from './dragAndDrop/dragAndDrop.slice';
 import { E2EE_FEATURE_KEY, e2eeReducer } from './e2ee/e2ee.slice';
+import { emojiRecentReducer } from './emojiSuggestion/emojiRecent.slice';
 import { errorListenerMiddleware } from './errors/errors.listener';
 import { ERRORS_FEATURE_KEY, errorsReducer } from './errors/errors.slice';
 import { eventManagementReducer } from './eventManagement/eventManagement.slice';
@@ -59,6 +60,7 @@ import { notifiReactMessageReducer } from './notificationSetting/notificationRea
 import { channelCategorySettingReducer, defaultNotificationCategoryReducer } from './notificationSetting/notificationSettingCategory.slice';
 import { notificationSettingReducer } from './notificationSetting/notificationSettingChannel.slice';
 import { defaultNotificationClanReducer } from './notificationSetting/notificationSettingClan.slice';
+import { ONBOARDING_FEATURE_KEY, onboardingReducer } from './onboarding/onboarding.slice';
 import { permissionRoleChannelReducer } from './permissionChannel/permissionRoleChannel.slice';
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
@@ -361,6 +363,23 @@ const persistedVoiceReducer = persistReducer(
 	voiceReducer
 );
 
+const persistedEmojiRecentReducer = persistReducer(
+	{
+		key: 'emojiRecent',
+		storage
+	},
+	emojiRecentReducer
+);
+
+const persistedOnboardingReducer = persistReducer(
+	{
+		key: ONBOARDING_FEATURE_KEY,
+		storage,
+		whitelist: ['keepAnswers', 'answerByClanId']
+	},
+	onboardingReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	account: persistAccountReducer,
@@ -375,7 +394,7 @@ const reducer = {
 	listpermissionroleschannel: persistedPermissionRoleChannelReducer,
 	channelMembers: persistedChannelMembersReducer,
 	listusersbyuserid: persistedListUsersByUserReducer,
-	threads: persistedThreadReducer,
+	threads: threadsReducer,
 	topicdiscussions: persistedTopicReducer,
 	[SEARCH_MESSAGES_FEATURE_KEY]: searchMessageReducer,
 	messages: persistedMessageReducer,
@@ -386,11 +405,11 @@ const reducer = {
 	[POLICIES_FEATURE_KEY]: persistPoliciesReducer,
 	userClanProfile: userClanProfileReducer,
 	friends: friendsReducer,
-	direct: persistedDirectReducer,
+	direct: directReducer,
 	directmeta: directMetaReducer,
 	roleId: roleIdReducer,
 	policiesDefaultSlice: policiesDefaultReducer,
-	[OVERRIDDEN_POLICIES_FEATURE_KEY]: persistOverriddenPoliciesReducer,
+	[OVERRIDDEN_POLICIES_FEATURE_KEY]: overriddenPoliciesReducer,
 	notificationsetting: notificationSettingReducer,
 	pinmessages: persistedPinMsgReducer,
 	defaultnotificationclan: persistedDefaultNotiClanReducer,
@@ -416,6 +435,7 @@ const reducer = {
 	references: referencesReducer,
 	reaction: reactionReducer,
 	suggestionEmoji: persistedEmojiSuggestionReducer,
+	emojiRecent: persistedEmojiRecentReducer,
 	gifs: gifsReducer,
 	gifsStickersEmojis: persistedGifsStickerEmojiReducer,
 	dragAndDrop: dragAndDropReducer,
@@ -429,6 +449,7 @@ const reducer = {
 	settingClanChannel: settingChannelReducer,
 	clanMembersMeta: clanMembersMetaReducer,
 	directmembersmeta: directMembersMetaReducer,
+	[ONBOARDING_FEATURE_KEY]: persistedOnboardingReducer,
 	dmcall: DMCallReducer,
 	[USER_STATUS_API_FEATURE_KEY]: userStatusAPIReducer,
 	[E2EE_FEATURE_KEY]: e2eeReducer,
@@ -450,10 +471,10 @@ export type PreloadedRootState = RootState | undefined;
 // const LIMIT_CHANNEL_CACHE = 10;
 const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
 	// Check if the action is of type 'persist/REHYDRATE' and the key is 'channels'
-	if (action.type === 'persist/REHYDRATE' && action?.key === 'channels') {
-		if (action.payload && action.payload.byClans) {
+	if (action?.type === 'persist/REHYDRATE' && action?.key === 'channels') {
+		if (action?.payload && action?.payload?.byClans) {
 			Object.keys(action.payload.byClans)?.forEach((clanId) => {
-				if (action.payload.byClans[clanId].currentChannelId) {
+				if (action?.payload?.byClans?.[clanId]?.currentChannelId) {
 					delete action.payload.byClans[clanId].currentChannelId;
 				}
 			});

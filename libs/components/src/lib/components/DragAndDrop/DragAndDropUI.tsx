@@ -34,7 +34,7 @@ function DragAndDropUI({ onDrop }: DragAndDropUIProps) {
 			onDragLeave={handleParentDragLeave}
 			onDrop={handleDrop}
 			onDragOver={(e) => e.preventDefault()}
-			className="w-screen h-screen flex justify-center items-center bg-black  bg-opacity-90 absolute top-0 left-0 z-50"
+			className="w-screen h-screen flex justify-center items-center bg-black  bg-opacity-90 fixed top-0 left-0 z-50"
 			onClick={() => setDraggingState(false)}
 		>
 			<div

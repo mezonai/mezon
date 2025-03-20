@@ -1,6 +1,7 @@
 import { useAuth } from '@mezon/core';
 import {
 	ChevronIcon,
+	getAppInfo,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
@@ -48,7 +49,9 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		store.dispatch(authActions.logOut());
+		const [appInfo] = await Promise.all([getAppInfo()]);
+		const { app_platform: platform } = appInfo;
+		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: platform }));
 	};
 
 	//TODO: delete

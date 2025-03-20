@@ -1,14 +1,13 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectClanById, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus } from '@mezon/utils';
-import { useRef } from 'react';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonBottomSheet } from '../../../componentUI';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonButton from '../../../componentUI/MezonButton2';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { EventMenu } from '../EventMenu';
@@ -17,18 +16,20 @@ import { style } from './styles';
 
 interface IEventDetailProps {
 	event: EventManagementEntity;
-	eventDetailRef?: any;
 }
 
-export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
+export function EventDetail({ event }: IEventDetailProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId2(state, event?.creator_id || ''));
 	const clans = useSelector(selectClanById(event?.clan_id || ''));
-	const menuBottomSheet = useRef<BottomSheetModal>(null);
 
 	function handlePress() {
-		menuBottomSheet?.current?.present();
+		const data = {
+			heightFitContent: true,
+			children: <EventMenu event={event} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}
 
 	return (
@@ -41,7 +42,7 @@ export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
 					</View>
 				</View>
 			)}
-			<Text style={styles.title}>{event.title}</Text>
+			<Text style={styles.title}>{event?.title}</Text>
 
 			<View>
 				<View style={styles.mainSection}>
@@ -53,7 +54,7 @@ export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
 					<EventLocation event={event} />
 
 					<View style={styles.inline}>
-						<Icons.BellIcon height={16} width={16} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.bellIcon} height={16} width={16} color={themeValue.text} />
 						<Text style={styles.smallText}>{event?.user_ids?.length}</Text>
 						<Text style={styles.smallText}>{event?.user_ids?.length > 1 ? 'people are interested' : 'person is interested'}</Text>
 					</View>
@@ -71,22 +72,21 @@ export function EventDetail({ event, eventDetailRef }: IEventDetailProps) {
 			<View style={styles.inline}>
 				{/* <MezonButton title="End event" fluid /> */}
 				<MezonButton
-					icon={<Icons.CheckmarkLargeIcon height={16} width={16} color={themeValue.text} />}
+					icon={<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} height={16} width={16} color={themeValue.text} />}
 					title="Interested"
 					fluid
 					border
 					titleStyle={{ color: themeValue.text }}
 				/>
 				{/* <MezonButton title="Start event" fluid type="success" /> */}
-				<MezonButton icon={<Icons.ShareIcon height={20} width={20} color={themeValue.text} />} />
-				<MezonButton icon={<Icons.MoreVerticalIcon height={20} width={20} color={themeValue.text} />} onPress={handlePress} />
+				<MezonButton icon={<MezonIconCDN icon={IconCDN.shareIcon} height={20} width={20} color={themeValue.text} />} />
+				<MezonButton
+					icon={<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={20} width={20} color={themeValue.text} />}
+					onPress={handlePress}
+				/>
 			</View>
 
 			{!!event?.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}
-
-			<MezonBottomSheet ref={menuBottomSheet}>
-				<EventMenu event={event} eventDetailRef={eventDetailRef} />
-			</MezonBottomSheet>
 		</View>
 	);
 }

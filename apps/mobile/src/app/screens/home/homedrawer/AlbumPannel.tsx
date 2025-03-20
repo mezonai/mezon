@@ -1,5 +1,5 @@
-import { ActionEmitEvent, CheckIcon, Icons } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import {
 	Album,
@@ -25,14 +25,9 @@ interface IAlbumProps {
 export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [isShowAlbumList, setIsShowAlbumList] = useState(false);
 	const [albums, setAlbums] = useState<AlbumWithCover[]>([]);
 	const dispatch = useAppDispatch();
 	const timerRef = useRef<any>();
-
-	const handleShowAlbumList = () => {
-		setIsShowAlbumList(!isShowAlbumList);
-	};
 
 	useEffect(() => {
 		checkAndRequestPermissions();
@@ -70,7 +65,10 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 		try {
 			if (Platform.OS === 'android') {
 				if (Platform.Version >= 33) {
-					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasImagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasVideoPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO);
+
+					return hasImagePermission && hasVideoPermission;
 				} else {
 					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 				}
@@ -85,7 +83,6 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 	const handleSelectAlbum = (album: AlbumWithCover) => {
 		onAlbumChange(album?.title);
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_SELECT_ALBUM, album?.title || '');
-		setIsShowAlbumList(false);
 	};
 
 	const requestPermission = async () => {
@@ -99,21 +96,24 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 			try {
 				// For Android 13+ (API 33+)
 				if (Platform.Version >= 33) {
-					const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, {
-						title: 'Photo Library Access',
-						message: 'This app needs access to your photo library.',
-						buttonNeutral: 'Ask Me Later',
-						buttonNegative: 'Cancel',
-						buttonPositive: 'OK'
-					});
+					const granted = await PermissionsAndroid.requestMultiple([
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO
+					]);
 
 					timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
 
-					if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+					if (
+						granted['android.permission.READ_MEDIA_IMAGES'] !== PermissionsAndroid.RESULTS.GRANTED ||
+						granted['android.permission.READ_MEDIA_VIDEO'] !== PermissionsAndroid.RESULTS.GRANTED
+					) {
 						alertOpenSettings();
 					}
 
-					return granted === PermissionsAndroid.RESULTS.GRANTED;
+					return (
+						granted['android.permission.READ_MEDIA_IMAGES'] === PermissionsAndroid.RESULTS.GRANTED &&
+						granted['android.permission.READ_MEDIA_VIDEO'] === PermissionsAndroid.RESULTS.GRANTED
+					);
 				}
 				// For Android 12 and below
 				else {
@@ -174,6 +174,7 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 						const albumPhotos = await CameraRoll.getPhotos({
 							first: 1,
 							assetType: 'All',
+							groupTypes: 'Album',
 							groupName: album?.title
 						});
 
@@ -184,9 +185,16 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 					})
 				);
 
+				const albumsVideos = await CameraRoll.getAlbums({ assetType: 'Videos' });
+
 				const allPhotos = await CameraRoll.getPhotos({
 					first: 1,
 					assetType: 'All'
+				});
+
+				const allVideos = await CameraRoll.getPhotos({
+					first: 1,
+					assetType: 'Videos'
 				});
 
 				const allAlbum = {
@@ -195,7 +203,14 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 					count: albumsWithCovers?.reduce((acc, album) => acc + album?.count, 0) || 0,
 					coverPhoto: allPhotos?.edges?.[0]?.node?.image?.uri || ''
 				} as AlbumWithCover;
-				setAlbums([allAlbum, ...(albumsWithCovers || [])]);
+
+				const videoAlbum = {
+					id: '1',
+					title: 'All Videos',
+					count: albumsVideos?.reduce((acc, album) => acc + album?.count, 0) || 0,
+					coverPhoto: allVideos?.edges?.[0]?.node?.image?.uri || ''
+				} as AlbumWithCover;
+				setAlbums([allAlbum, videoAlbum, ...(albumsWithCovers || [])]);
 			})
 			.catch((err) => {
 				console.error(err);
@@ -225,27 +240,8 @@ export const AlbumPanel = ({ valueAlbum, onAlbumChange }: IAlbumProps) => {
 	};
 
 	return (
-		<View style={styles.albumTitleBar}>
-			<TouchableOpacity style={styles.albumButton} onPress={handleShowAlbumList}>
-				<View style={styles.albumButtonGroup}>
-					<Text style={styles.albumTitle}>{valueAlbum}</Text>
-					{isShowAlbumList ? (
-						<Icons.ChevronSmallUpIcon color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
-					) : (
-						<Icons.ChevronSmallDownIcon color={themeValue.textStrong} height={size.s_16} width={size.s_16} />
-					)}
-				</View>
-			</TouchableOpacity>
-			{isShowAlbumList && (
-				<View style={styles.albumPanel}>
-					<FlatList
-						data={albums}
-						keyExtractor={(item, index) => `album_${item?.id}_${index}`}
-						renderItem={renderItem}
-						ItemSeparatorComponent={() => <View style={styles.albumSeperatedItem} />}
-					/>
-				</View>
-			)}
+		<View style={styles.albumPanel}>
+			<FlatList data={albums} keyExtractor={(item, index) => `album_item_${item?.id}_${index}`} renderItem={renderItem} />
 		</View>
 	);
 };

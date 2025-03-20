@@ -1,16 +1,19 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectAllUserClans, selectRoleByRoleId } from '@mezon/store-mobile';
 import { EPermission, UsersClanEntity } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput } from '../../../componentUI';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../components/Common';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { AddMemberBS } from './components/AddMemberBs';
@@ -69,13 +72,13 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 			if (isEditRoleMode) {
 				return (
 					<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-						<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.textStrong} />
 					</Pressable>
 				);
 			}
 			return (
 				<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-					<Icons.CloseSmallBoldIcon height={20} width={20} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
 				</Pressable>
 			);
 		}
@@ -118,7 +121,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 			[],
 			[]
 		);
-		if (response) {
+		if (response === true) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
 			Toast.show({
 				type: 'success',
@@ -132,7 +135,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}
@@ -192,11 +195,11 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 									justifyContent: 'center'
 								}}
 							>
-								<Icons.CirclePlusPrimaryIcon />
+								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} />
 								<View style={{ flex: 1 }}>
 									<Text color={themeValue.text}>{t('setupMember.addMember')}</Text>
 								</View>
-								<Icons.ChevronSmallRightIcon />
+								<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} />
 							</View>
 						</TouchableOpacity>
 					)}

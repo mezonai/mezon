@@ -1,7 +1,6 @@
-import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
+import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import {
 	ActionEmitEvent,
-	Icons,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	changeClan,
 	getUpdateOrAddClanChannelCache,
@@ -13,17 +12,18 @@ import { selectCurrentClanId } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useRef } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
-import { InviteToChannel } from '../../InviteToChannel';
+import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinChannelVoiceBS.styles';
-function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: React.MutableRefObject<BottomSheetModal>) {
+function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetInviteRef = useRef(null);
 	const { dismiss } = useBottomSheetModal();
 	const { t } = useTranslation(['channelVoice']);
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -71,11 +71,11 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexGrow: 1, flexShrink: 1 }}>
 					<TouchableOpacity
 						onPress={() => {
-							refRBSheet?.current.dismiss();
+							DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 						}}
 						style={styles.buttonCircle}
 					>
-						<Icons.ChevronSmallDownIcon />
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
 					</TouchableOpacity>
 					<Text numberOfLines={2} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
 						{channel?.channel_label}
@@ -83,8 +83,11 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 				</View>
 				<TouchableOpacity
 					onPress={() => {
-						bottomSheetInviteRef.current.present();
-						refRBSheet?.current.dismiss();
+						const data = {
+							snapPoints: ['70%', '90%'],
+							children: <InviteToChannel isUnknownChannel={false} channelId={channel?.channel_id} />
+						};
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					}}
 					style={{
 						backgroundColor: themeValue.tertiary,
@@ -92,7 +95,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 						borderRadius: size.s_22
 					}}
 				>
-					<Icons.UserPlusIcon />
+					<MezonIconCDN icon={IconCDN.userPlusIcon} />
 				</TouchableOpacity>
 			</View>
 			<View style={{ alignItems: 'center', gap: size.s_6, marginTop: size.s_20 }}>
@@ -106,7 +109,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 						backgroundColor: themeValue.tertiary
 					}}
 				>
-					<Icons.VoiceNormalIcon width={size.s_36} height={size.s_36} />
+					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_36} height={size.s_36} />
 				</View>
 				<Text style={styles.text}>{t('joinChannelVoiceBS.channelVoice')}</Text>
 				<Text style={styles.textDisable}>{t('joinChannelVoiceBS.readyTalk')}</Text>
@@ -150,14 +153,13 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }, refRBSheet: Reac
 								borderRadius: size.s_30
 							}}
 						>
-							<Icons.ChatIcon />
+							<MezonIconCDN icon={IconCDN.chatIcon} />
 						</View>
 					</TouchableOpacity>
 				</View>
 			</View>
-			<InviteToChannel isUnknownChannel={false} ref={bottomSheetInviteRef} />
 		</View>
 	);
 }
 
-export default React.forwardRef(JoinChannelVoiceBS);
+export default React.memo(JoinChannelVoiceBS);

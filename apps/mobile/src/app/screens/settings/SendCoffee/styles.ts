@@ -5,12 +5,12 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
 			flex: 1,
-			backgroundColor: colors.secondary
+			backgroundColor: colors.primary
 		},
 		modalContainer: {
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.primary,
 			paddingHorizontal: size.s_10,
 			paddingTop: size.s_20,
 			paddingBottom: size.s_30,
@@ -18,7 +18,7 @@ export const style = (colors: Attributes) =>
 		},
 		form: {
 			flex: 1,
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.primary,
 			borderRadius: size.s_10,
 			paddingHorizontal: size.s_20,
 			paddingVertical: size.s_20,

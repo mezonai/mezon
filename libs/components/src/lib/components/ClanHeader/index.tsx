@@ -106,15 +106,12 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	};
 
 	const handleShowServerSettings = () => {
-		setOpenServerSettings(true);
+		openServerSettingsModal();
 		setIsShowModalPanelClan(false);
 	};
 
 	const closeModalClan = useCallback(() => {
 		setIsShowModalPanelClan(false);
-		if (!hasChildModalRef.current) {
-			setOpenServerSettings(false);
-		}
 	}, []);
 
 	const handleLeaveClan = async () => {
@@ -132,7 +129,7 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	};
 
 	const closeAllModals = useCallback(() => {
-		setOpenServerSettings(false);
+		closeServerSettingsModal();
 		setOpenCreateCate(false);
 		closeNotiSettingModal();
 		dispatch(clansActions.toggleInvitePeople({ status: false }));
@@ -148,10 +145,25 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 		dispatch(settingClanStickerActions.closeModalInChild());
 	}, []);
 
+	const [openServerSettingsModal, closeServerSettingsModal] = useModal(
+		() => (
+			<ClanSetting
+				onClose={() => {
+					closeServerSettingsModal();
+					if (!hasChildModalRef.current) {
+						closeModalClan();
+					}
+				}}
+				initialSetting={canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI}
+			/>
+		),
+		[canManageClan, hasChildModalRef, closeModalClan]
+	);
+
 	return (
 		<>
 			{type === 'direct' ? (
-				<div className="px-3 font-semibold text-white h-heightHeader flex items-center shadow border-b-[1px] dark:border-bgTertiary border-gray-200">
+				<div className="contain-strict px-3 font-semibold text-white h-heightHeader flex items-center shadow border-b-[1px] dark:border-bgTertiary border-gray-200">
 					<input
 						ref={inputRef}
 						placeholder="Find or start a conversation"
@@ -186,8 +198,6 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 					buttonName="Leave Clan"
 				/>
 			)}
-
-			{openServerSettings && <ClanSetting onClose={closeModalClan} initialSetting={canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI} />}
 
 			<ModalCreateCategory openCreateCate={openCreateCate} onClose={onClose} onCreateCategory={handleCreateCate} />
 			<InviteClanModal />

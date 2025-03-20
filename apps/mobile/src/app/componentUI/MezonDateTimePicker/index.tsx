@@ -1,11 +1,9 @@
-import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { getNearTime } from '@mezon/mobile-components';
-import { Colors, ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleProp, Text, View, ViewStyle } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import { ActionEmitEvent, getNearTime } from '@mezon/mobile-components';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { DeviceEventEmitter, StyleProp, Text, View, ViewStyle } from 'react-native';
+// import DatePicker from 'react-native-date-picker';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import MezonBottomSheet from '../MezonBottomSheet';
 import MezonFakeInputBox, { IMezonFakeBoxProps } from '../MezonFakeBox';
 import { style } from './styles';
 
@@ -35,7 +33,6 @@ export default memo(function MezonDateTimePicker({
 }: IMezonDateTimePicker) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
-	const bottomSheetRef = useRef<BottomSheetModalMethods>();
 	const [date, setDate] = useState(value || getNearTime(120));
 	const isModeTime = useMemo(() => mode === 'time', [mode]);
 	const [currentDate, setCurrentDate] = useState(value || getNearTime(120));
@@ -62,11 +59,45 @@ export default memo(function MezonDateTimePicker({
 	}, [error, value]);
 
 	function handleClose() {
-		bottomSheetRef?.current?.dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}
 
+	const contentBottomSheet = () => {
+		return (
+			<View>
+				{error && (
+					<View style={{ backgroundColor: Colors.textRed, marginHorizontal: size.s_20, padding: size.s_10, borderRadius: size.s_8 }}>
+						<Text style={styles.textError}>{error}</Text>
+						<Text style={styles.textError}>{formatDate(new Date())}</Text>
+					</View>
+				)}
+				<View style={styles.bsContainer}>
+					{/*<DatePicker*/}
+					{/*	{...(need24HourFormat && isModeTime ? need24HourFormat : {})}*/}
+					{/*	{...(needLocale && isModeTime ? needLocale : {})}*/}
+					{/*	date={date}*/}
+					{/*	onDateChange={setDate}*/}
+					{/*	mode={mode}*/}
+					{/*	theme={themeBasic === ThemeModeBase.DARK ? 'dark' : 'light'}*/}
+					{/*	{...(maximumDate ? { maximumDate } : {})}*/}
+					{/*/>*/}
+				</View>
+			</View>
+		);
+	};
+
 	function handlePress() {
-		bottomSheetRef?.current?.present();
+		const data = {
+			heightFitContent: true,
+			title: props.title,
+			headerRight: (
+				<TouchableOpacity style={styles.btnHeaderBS} onPress={handleChange}>
+					<Text style={styles.textApply}>Apply</Text>
+				</TouchableOpacity>
+			),
+			children: contentBottomSheet()
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}
 
 	const formatDate = (date) => {
@@ -104,35 +135,6 @@ export default memo(function MezonDateTimePicker({
 				containerStyle={containerStyle}
 				onPress={handlePress}
 			/>
-
-			<MezonBottomSheet
-				ref={bottomSheetRef}
-				heightFitContent
-				title={props.title}
-				headerRight={
-					<TouchableOpacity style={styles.btnHeaderBS} onPress={handleChange}>
-						<Text style={styles.textApply}>Apply</Text>
-					</TouchableOpacity>
-				}
-			>
-				{error && (
-					<View style={{ backgroundColor: Colors.textRed, marginHorizontal: size.s_20, padding: size.s_10, borderRadius: size.s_8 }}>
-						<Text style={styles.textError}>{error}</Text>
-						<Text style={styles.textError}>{formatDate(new Date())}</Text>
-					</View>
-				)}
-				<View style={styles.bsContainer}>
-					<DatePicker
-						{...(need24HourFormat && isModeTime ? need24HourFormat : {})}
-						{...(needLocale && isModeTime ? needLocale : {})}
-						date={date}
-						onDateChange={setDate}
-						mode={mode}
-						theme={themeBasic === ThemeModeBase.DARK ? 'dark' : 'light'}
-						{...(maximumDate ? { maximumDate } : {})}
-					/>
-				</View>
-			</MezonBottomSheet>
 		</View>
 	);
 });

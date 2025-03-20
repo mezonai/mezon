@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { IMezonOptionData, MezonInput, MezonModal, MezonOption } from '../../componentUI';
+import MezonInput from '../../componentUI/MezonInput';
+import { MezonModal } from '../../componentUI/MezonModal';
+import MezonOption, { IMezonOptionData } from '../../componentUI/MezonOption';
 import { ETypeCustomUserStatus } from '../../screens/profile/ProfileScreen';
 import { styles } from './AddStatusUserModal.styles';
 

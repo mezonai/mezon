@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
@@ -6,8 +5,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, MezonMenu, MezonSwitch } from '../../componentUI';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonInput from '../../componentUI/MezonInput2';
+import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonSwitch from '../../componentUI/MezonSwitch';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { validInput } from '../../utils/validate';
 import { style } from './styles';
@@ -41,7 +43,7 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 
 		headerLeft: () => (
 			<Pressable style={{ padding: 20 }} onPress={handleClose}>
-				<Icons.CloseSmallBoldIcon height={size.s_20} width={size.s_20} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.closeSmallBold} height={size.s_20} width={size.s_20} color={themeValue.text} />
 			</Pressable>
 		)
 	});
@@ -70,7 +72,7 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 				{
 					title: t('fields.catePrivate.title'),
 					component: <MezonSwitch />,
-					icon: <Icons.LockIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.lockIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 				}
 			]
 		}

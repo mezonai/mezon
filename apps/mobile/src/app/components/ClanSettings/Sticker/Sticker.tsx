@@ -12,8 +12,8 @@ import { Keyboard, Platform, ScrollView, Text, TouchableWithoutFeedback, View } 
 import { openCropper } from 'react-native-image-crop-picker';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { handleSelectImage, IFile } from '../../../componentUI';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../componentUI/MezonButton2';
+import { handleSelectImage, IFile } from '../../../componentUI/MezonImagePicker';
 import { StickerList } from './StickerList';
 import { style } from './styles';
 
@@ -59,7 +59,7 @@ export function StickerSetting() {
 		if (file) {
 			timerRef.current = setTimeout(
 				async () => {
-					if (file.type === 'image/gif') {
+					if (file.type === 'image/gif' || file.type === 'image/png') {
 						if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 2)) {
 							Toast.show({
 								type: 'error',

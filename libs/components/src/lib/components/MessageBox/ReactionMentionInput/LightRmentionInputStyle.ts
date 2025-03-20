@@ -18,7 +18,7 @@ export default {
 			maxHeight: '350px'
 		},
 		input: {
-			padding: '9px 120px 9px 10px',
+			padding: '9px 120px 9px 9px',
 			border: 'none',
 			outline: 'none',
 			whiteSpace: 'pre-wrap',

@@ -22,6 +22,7 @@ export interface ISession {
 	username?: string;
 	user_id?: string;
 	vars?: object;
+	is_remember?: boolean;
 }
 
 export const initialAuthState: AuthState = {
@@ -83,7 +84,10 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 		return sessionState;
 	}
 
-	const session = await mezon?.refreshSession(sessionState);
+	const session = await mezon?.refreshSession({
+		...sessionState,
+		is_remember: sessionState.is_remember ?? false
+	});
 
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
@@ -92,9 +96,9 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 	return normalizeSession(session);
 });
 
-export const logOut = createAsyncThunk('auth/logOut', async (_, thunkAPI) => {
+export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platform }: { device_id?: string; platform?: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	await mezon?.logOutMezon();
+	await mezon?.logOutMezon(device_id, platform);
 	thunkAPI.dispatch(authActions.setLogout());
 	clearAllMemoizedFunctions();
 	restoreLocalStorage(['persist:auth', 'persist:apps', 'persist:categories']);
@@ -110,15 +114,18 @@ export const createQRLogin = createAsyncThunk('auth/getQRCode', async (_, thunkA
 	return QRlogin;
 });
 
-export const checkLoginRequest = createAsyncThunk('auth/checkLoginRequest', async ({ loginId }: { loginId: string }, thunkAPI) => {
-	const mezon = getMezonCtx(thunkAPI);
+export const checkLoginRequest = createAsyncThunk(
+	'auth/checkLoginRequest',
+	async ({ loginId, isRemember }: { loginId: string; isRemember: boolean }, thunkAPI) => {
+		const mezon = getMezonCtx(thunkAPI);
 
-	const session = await mezon?.checkLoginRequest({ login_id: loginId });
-	if (session) {
-		return normalizeSession(session);
+		const session = await mezon?.checkLoginRequest({ login_id: loginId, is_remember: isRemember });
+		if (session) {
+			return normalizeSession(session);
+		}
+		return null;
 	}
-	return null;
-});
+);
 
 export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', async ({ loginId }: { loginId: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);

@@ -2,7 +2,7 @@ import { size } from '@mezon/mobile-ui';
 import { ClansEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { MezonAvatar } from '../../../../componentUI';
+import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import { styles } from './styles';
 
 type SharingSuggestItemProps = {
@@ -11,7 +11,7 @@ type SharingSuggestItemProps = {
 	onChooseItem: (item: any) => void;
 };
 const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestItemProps) => {
-	const parentChannel = useAppSelector((state) => selectChannelById(state, item?.parrent_id || ''));
+	const parentChannel = useAppSelector((state) => selectChannelById(state, item?.parent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 
 	const handleChooseItem = () => {

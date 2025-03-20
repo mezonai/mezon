@@ -25,7 +25,7 @@ const Header = ({ toggleSideBar }: IHeaderProps) => {
 	const dispatch = useAppDispatch();
 
 	const handleLogout = () => {
-		dispatch(authActions.logOut());
+		dispatch(authActions.logOut({}));
 	};
 
 	const handleClickOutside = (event: MouseEvent) => {
@@ -49,10 +49,9 @@ const Header = ({ toggleSideBar }: IHeaderProps) => {
 				<div onClick={toggleSideBar} className="w-8 hidden max-lg:block">
 					<Icons.MenuBarIcon className="w-full" />
 				</div>
-				<Link to="/applications" className="flex flex-row items-center justify-center gap-[4px]">
+				<Link to="/developers/applications" className="flex flex-row items-center justify-center gap-[4px]">
 					<Image
 						src={`${isDarkMode ? 'assets/images/mezon-logo-black.svg' : 'assets/images/mezon-logo-white.svg'}`}
-						alt={'logoMezon'}
 						width={28}
 						height={28}
 					/>

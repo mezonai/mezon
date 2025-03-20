@@ -1,23 +1,20 @@
-import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useEventManagement } from '@mezon/core';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { EventManagementEntity } from '@mezon/store-mobile';
-import { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
-import { IMezonMenuSectionProps, MezonConfirm } from '../../../componentUI';
-import MezonMenu from '../../../componentUI/MezonMenu';
+import { DeviceEventEmitter, View } from 'react-native';
+import MezonConfirm from '../../../componentUI/MezonConfirm';
+import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
 import styles from './styles';
 
 interface IEventMenuProps {
 	event: EventManagementEntity;
-	eventDetailRef?: any;
 }
 
-export function EventMenu({ event, eventDetailRef }: IEventMenuProps) {
+export function EventMenu({ event }: IEventMenuProps) {
 	const { t } = useTranslation(['eventMenu']);
 	const { deleteEventManagement } = useEventManagement();
-	const { dismiss } = useBottomSheetModal();
-	const [isVisibleCancelEventModal, setIsVisibleCancelEventModal] = useState<boolean>(false);
 
 	const menu: IMezonMenuSectionProps[] = [
 		{
@@ -41,7 +38,17 @@ export function EventMenu({ event, eventDetailRef }: IEventMenuProps) {
 				{
 					title: t('menu.cancelEvent'),
 					onPress: () => {
-						setIsVisibleCancelEventModal(true);
+						const data = {
+							children: (
+								<MezonConfirm
+									onConfirm={handleCancelEventConfirm}
+									title={t('confirm.title')}
+									content={t('confirm.content')}
+									confirmText={t('confirm.title')}
+								/>
+							)
+						};
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 					},
 					textStyle: { color: 'red' }
 				}
@@ -63,24 +70,13 @@ export function EventMenu({ event, eventDetailRef }: IEventMenuProps) {
 	];
 
 	const handleCancelEventConfirm = async () => {
-		await deleteEventManagement(event?.clan_id || '', event?.id || '');
-		eventDetailRef?.current.dismiss();
-		dismiss();
-		setIsVisibleCancelEventModal(false);
+		await deleteEventManagement(event?.clan_id || '', event?.id || '', event?.creator_id || '', event?.title || '');
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 
 	return (
 		<View style={styles.container}>
 			<MezonMenu menu={menu} />
-
-			<MezonConfirm
-				visible={isVisibleCancelEventModal}
-				onVisibleChange={setIsVisibleCancelEventModal}
-				onConfirm={handleCancelEventConfirm}
-				title={t('confirm.title')}
-				content={t('confirm.content')}
-				confirmText={t('confirm.title')}
-			/>
 		</View>
 	);
 }

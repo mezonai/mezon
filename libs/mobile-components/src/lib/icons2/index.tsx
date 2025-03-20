@@ -2137,15 +2137,15 @@ export const Transaction = ({ width = 24, height = 24, color = '#AEAEAE', ...pro
 export const Buzz = ({ width = 24, height = 24, color = '#AEAEAE', ...props }) => {
 	return (
 		<Svg width={width} height={height} fill={color} viewBox="0 0 24 24" {...props}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<Path
 					d="M2 6L3.06051 7.11942C3.58133 7.66918 3.56352 8.53546 3.02055 9.06335L3 9.08333C2.45233 9.61579 2.45233 10.4953 3 11.0278V11.0278C3.54767 11.5602 3.54767 12.4398 3 12.9722V12.9722C2.45233 13.5047 2.45233 14.3842 3 14.9167L3.02055 14.9366C3.56351 15.4645 3.58132 16.3308 3.0605 16.8806L2 18M22 6L20.9395 7.11942C20.4187 7.66918 20.4365 8.53546 20.9794 9.06335L21 9.08333C21.5477 9.61579 21.5477 10.4953 21 11.0278V11.0278C20.4523 11.5602 20.4523 12.4398 21 12.9722V12.9722C21.5477 13.5047 21.5477 14.3842 21 14.9167L20.9795 14.9366C20.4365 15.4645 20.4187 16.3308 20.9395 16.8806L22 18M7 5L7 19C7 20.1046 7.89543 21 9 21H15C16.1046 21 17 20.1046 17 19V5C17 3.89543 16.1046 3 15 3L9 3C7.89543 3 7 3.89543 7 5Z"
 					stroke={color}
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				></Path>
 			</G>
 		</Svg>
@@ -2155,10 +2155,10 @@ export const Buzz = ({ width = 24, height = 24, color = '#AEAEAE', ...props }) =
 export const ShareScreenIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg width={width} height={height} fill={color} viewBox="0 0 28 24" {...props}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
-				<G id="🔍-System-Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+				<G id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
 					<G id="ic_fluent_share_screen_28_filled" fill={color} fill-rule="nonzero">
 						<Path
 							d="M23.75,4.99939 C24.9926,4.99939 26,6.00675 26,7.24939 L26,7.24939 L26,20.75 C26,21.9926 24.9926,23 23.75,23 L23.75,23 L4.25,23 C3.00736,23 2,21.9926 2,20.75 L2,20.75 L2,7.24939 C2,6.00675 3.00736,4.99939 4.25,4.99939 L4.25,4.99939 Z M13.9975,8.62108995 C13.7985,8.62108995 13.6077,8.70032 13.467,8.84113 L10.217,12.0956 C9.92435,12.3887 9.92468,12.8636 10.2178,13.1563 C10.5109,13.449 10.9858,13.4487 11.2784,13.1556 L13.2477,11.1835 L13.2477,18.6285 C13.2477,19.0427 13.5835,19.3785 13.9977,19.3785 C14.4119,19.3785 14.7477,19.0427 14.7477,18.6285 L14.7477,11.1818 L16.7219,13.1559 C17.0148,13.4488 17.4897,13.4488 17.7826,13.1559 C18.0755,12.863 18.0755,12.3882 17.7826,12.0953 L14.5281,8.84076 C14.3873,8.70005 14.1965,8.62108995 13.9975,8.62108995 Z"
@@ -2181,8 +2181,8 @@ export const ShareScreenSlashIcon = ({ width = 24, height = 24, color = 'white',
 export const ArrowSaltIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg viewBox="0 0 20 20" fill={color} width={width} height={height}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<Path
 					fill={color}
@@ -2196,8 +2196,8 @@ export const ArrowSaltIcon = ({ width = 24, height = 24, color = 'white', ...pro
 export const ArrowShrinkIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg viewBox="0 0 20 20" fill={color} width={width} height={height}>
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<Path
 					fill={color}
@@ -2231,8 +2231,8 @@ export const ArrowLeftRightIcon = ({ width = 24, height = 24, color = 'white', .
 export const LoadingIcon = ({ width = 24, height = 24, color = 'white', ...props }) => {
 	return (
 		<Svg width={width} height={height} fill={color} viewBox="0 0 512 511">
-			<G id="SVGRepo_bgCarrier" stroke-width="0"></G>
-			<G id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></G>
+			<G id="SVGRepo_bgCarrier" strokeWidth="0"></G>
+			<G id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></G>
 			<G id="SVGRepo_iconCarrier">
 				<G>
 					<G>
@@ -2250,3 +2250,24 @@ export const LoadingIcon = ({ width = 24, height = 24, color = 'white', ...props
 		</Svg>
 	);
 };
+
+export const ScanQR = ({ width = 24, height = 24, color = 'white', ...props }: SvgProps) => (
+	<Svg width={width} height={height} fill={color} viewBox="0 0 512.000000 512.000000" {...props}>
+		<Path
+			d="M545 5104c-38-8-113-35-165-61-78-38-109-60-176-127s-89-98-127-176C2 4586 0 4568 0 3973c0-316 4-532 10-554 34-122 166-186 303-148 47 13 102 60 130 113 22 40 22 49 27 581l5 540 25 43c15 27 42 54 70 70l45 27 535 5c515 5 537 6 580 26 188 87 169 379-29 434-22 6-238 10-561 9-416 0-540-4-595-15zM3420 5111c-103-32-160-110-160-220 0-98 42-170 124-214 40-22 49-22 581-27l540-5 43-25c27-15 54-42 70-70l27-45 5-540c5-532 5-541 27-581 98-182 379-160 433 35 6 22 10 238 10 554 0 594-2 613-76 765-94 192-263 322-476 366-65 14-159 16-600 15-288 0-534-4-548-8z"
+			transform="matrix(.1 0 0 -.1 0 512)"
+		/>
+		<Path
+			d="M1074 4174c-23-8-58-31-77-51-67-66-67-69-67-625 0-327 4-514 11-542 14-55 59-110 112-139 42-22 43-22 577-22 529 0 535 0 575 22 46 24 75 54 101 103 18 33 19 67 19 570 0 534 0 535-22 577-29 53-84 98-139 112-28 7-214 11-546 10-414 0-510-3-544-15zm786-684v-230h-460v460h460v-230zM2941 4175c-51-16-94-54-124-110-22-40-22-46-22-575s0-535 22-575c24-46 54-75 103-101 33-18 67-19 570-19 534 0 535 0 577 22 53 29 98 84 112 139 7 28 11 214 11 537 0 554-1 561-67 629-66 67-72 68-637 67-394 0-510-3-545-14zm779-685v-230h-460v460h460v-230zM1105 2321c-43-11-76-29-113-64-60-58-62-75-62-633 0-560 0-557 68-627 64-66 73-67 629-67 323 0 509 4 537 11 55 14 110 59 139 112 22 42 22 43 22 577 0 503-1 537-19 570-26 49-55 79-101 103-39 22-48 22-555 24-283 1-528-2-545-6zm755-691v-230h-460v460h460v-230zM2965 2321c-70-18-117-56-151-121-15-28-19-65-22-186-5-203 5-254 67-315 54-55 109-74 193-66 103 9 174 69 198 168 7 29 10 107 8 205-3 168-10 196-62 252-47 52-158 82-231 63zM3665 2321c-105-27-175-117-175-226 0-100 66-194 154-220 61-18 316-20 383-3 32 8 61 25 94 57 39 38 49 56 60 105 25 113-17 212-112 266-41 24-53 25-209 27-91 1-178-2-195-6z"
+			transform="matrix(.1 0 0 -.1 0 512)"
+		/>
+		<Path
+			d="M119 1833c-57-30-92-71-109-132-6-22-10-238-10-554 0-595 2-613 77-767 38-78 60-109 127-176s98-89 176-127C534 2 552 0 1147 0c316 0 532 4 554 10 122 34 186 166 148 303-13 47-60 102-113 130-40 22-49 22-581 27l-540 5-43 25c-27 15-54 42-70 70l-27 45-5 540c-5 532-5 541-27 581-62 117-202 158-324 97zM4796 1845c-47-17-91-57-119-110-22-39-22-51-27-580l-5-540-27-45c-16-28-43-55-70-70l-43-25-540-5c-532-5-541-5-581-27-182-98-160-379 35-433 22-6 238-10 554-10 434 0 530 3 595 16 213 44 382 174 476 366 74 152 76 171 76 765 0 316-4 532-10 554-17 61-52 102-109 132-62 31-139 36-205 12z"
+			transform="matrix(.1 0 0 -.1 0 512)"
+		/>
+		<Path
+			d="M3188 1386c-104-28-158-104-158-219 0-106 33-167 115-210 39-21 53-22 438-25 463-3 477-1 545 72 102 111 73 291-59 366l-44 25-395 2c-298 2-407-1-442-11z"
+			transform="matrix(.1 0 0 -.1 0 512)"
+		/>
+	</Svg>
+);

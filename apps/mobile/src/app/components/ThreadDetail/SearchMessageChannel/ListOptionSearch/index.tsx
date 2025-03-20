@@ -1,7 +1,9 @@
-import { Icons, IOption, ITypeOptionSearch, UserIcon } from '@mezon/mobile-components';
+import { IOption, ITypeOptionSearch } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import OptionSearch from '../OptionSearch';
 import { style } from './ListOptionSearch.styles';
 
@@ -14,13 +16,13 @@ export const searchOptions = [
 		title: ITypeOptionSearch.FROM,
 		content: 'user',
 		value: 'username',
-		icon: <UserIcon color={Colors.textGray} />
+		icon: <MezonIconCDN icon={IconCDN.userIcon} color={Colors.textGray} />
 	},
 	{
 		title: ITypeOptionSearch.MENTIONS,
 		content: 'user',
 		value: 'mention',
-		icon: <Icons.AtIcon color={Colors.textGray} />
+		icon: <MezonIconCDN icon={IconCDN.atIcon} color={Colors.textGray} />
 	}
 	// { title: ITypeOptionSearch.HAS, content: 'link, embed or file', value: 'attachment', icon: <LinkIcon /> },
 	// { title: ITypeOptionSearch.BEFORE, content: 'specific data', value: 'username', icon: <CalendarDayIcon /> },

@@ -1,6 +1,22 @@
-import { scopes } from './Scopes';
+import { IScope } from '..';
 
-const Generator = () => {
+interface IGeneratorProps {
+	initialScopeValues: IScope[];
+	clientScopeValues: IScope[];
+	setClientScopeValues: (value: IScope[]) => void;
+	setHasChange: (value: boolean) => void;
+}
+
+const Generator = ({ initialScopeValues, clientScopeValues, setClientScopeValues, setHasChange }: IGeneratorProps) => {
+	const handleCheckBoxOnChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+		const newArr = [...clientScopeValues];
+		newArr[index] = {
+			...initialScopeValues[index],
+			isChecked: !clientScopeValues[index].isChecked
+		};
+		setClientScopeValues([...newArr]);
+	};
+
 	return (
 		<div className="rounded-md dark:bg-bgSecondary bg-bgLightSecondary p-5 dark:text-textPrimary text-colorTextLightMode flex flex-col gap-5">
 			<div className="flex flex-col gap-2">
@@ -13,28 +29,19 @@ const Generator = () => {
 			<div className="flex flex-col gap-2">
 				<div className="uppercase text-black dark:text-white font-bold text-xs">Scopes</div>
 				<div className="flex flex-wrap dark:bg-bgPrimary bg-bgLightPrimary p-5 rounded-md gap-y-3 gap-5">
-					{scopes.map((item, index) => (
+					{clientScopeValues.map((scope, index) => (
 						<div key={index} className="w-[calc(33.33%_-_20px)] max-xl:w-[calc(50%_-_20px)] max-[962px]:w-full flex gap-2">
 							<div className="w-6 h-6">
-								<input type="checkbox" className="w-6 h-6" />
+								<input
+									onChange={(e) => handleCheckBoxOnChange(e, index)}
+									type="checkbox"
+									className="w-6 h-6"
+									checked={scope.isChecked}
+								/>
 							</div>
-							<div>{item.id}</div>
+							<div>{scope.value}</div>
 						</div>
 					))}
-				</div>
-			</div>
-			<div className="flex flex-col gap-2">
-				<div className="uppercase text-black dark:text-white font-bold text-xs">Generated URL</div>
-				<div className="relative w-full">
-					<input
-						type="text"
-						placeholder="Please select one OAuth2 scope"
-						className="py-2 pl-2 pr-[85px] w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] outline-primary dark:bg-[#1e1f22]"
-						readOnly
-					/>
-					<div className="absolute top-1 right-2 w-[65px] h-[32px] flex justify-center items-center cursor-pointer bg-blue-600 hover:bg-blue-800 transition-colors rounded-sm select-none font-medium text-white">
-						Copy
-					</div>
 				</div>
 			</div>
 		</div>

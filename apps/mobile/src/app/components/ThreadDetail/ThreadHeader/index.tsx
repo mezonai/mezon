@@ -1,15 +1,16 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMemberStatus } from '@mezon/core';
-import { Icons, OverflowMenuHorizontalIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, Icons, OverflowMenuHorizontalIcon } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectDmGroupCurrent, selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import { memo, useContext, useMemo, useRef } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { memo, useContext, useMemo } from 'react';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonAvatar, MezonBottomSheet } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
@@ -22,12 +23,8 @@ export const ThreadHeader = memo(() => {
 	const styles = style(themeValue);
 	const currentChannel = useContext(threadDetailContext);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(currentChannel?.id ?? ''));
-	const bottomSheetMenuCustom = useRef<BottomSheetModal>(null);
 	const isTabletLandscape = useTabletLandscape();
 
-	const snapPointsMenuCustom = useMemo(() => {
-		return [ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type) ? ['25%'] : ['15%'];
-	}, [currentChannel?.type]);
 	const isDMThread = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
 	}, [currentChannel]);
@@ -38,7 +35,11 @@ export const ThreadHeader = memo(() => {
 
 	const navigation = useNavigation<any>();
 	const openMenu = () => {
-		bottomSheetMenuCustom.current?.present();
+		const data = {
+			heightFitContent: true,
+			children: <MenuCustomDm currentChannel={currentChannel} channelLabel={channelLabel} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 	const channelLabel = useMemo(() => {
 		return (currentDmGroup?.channel_label ||
@@ -47,8 +48,8 @@ export const ThreadHeader = memo(() => {
 	}, [currentDmGroup?.channel_label, currentChannel?.channel_label, currentChannel?.usernames]);
 
 	const isChannel = useMemo(() => {
-		return !!currentChannel?.channel_label && !Number(currentChannel?.parrent_id);
-	}, [currentChannel?.channel_label, currentChannel?.parrent_id]);
+		return !!currentChannel?.channel_label && !Number(currentChannel?.parent_id);
+	}, [currentChannel?.channel_label, currentChannel?.parent_id]);
 
 	const handlebackMessageDetail = () => {
 		if (isDMThread && !isTabletLandscape) {
@@ -70,23 +71,23 @@ export const ThreadHeader = memo(() => {
 		}
 		if (isPrivateChannel && isTextOrThreadChannel) {
 			return isChannel ? (
-				<Icons.TextLockIcon width={20} height={20} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.channelTextLock} width={20} height={20} color={themeValue.text} />
 			) : (
-				<Icons.ThreadLockIcon width={20} height={20} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.threadLockIcon} width={20} height={20} color={themeValue.text} />
 			);
 		}
 
 		return isChannel ? (
-			<Icons.TextIcon width={20} height={20} color={themeValue.text} />
+			<MezonIconCDN icon={IconCDN.channelText} width={20} height={20} color={themeValue.text} />
 		) : (
-			<Icons.ThreadIcon width={20} height={20} color={themeValue.text} />
+			<MezonIconCDN icon={IconCDN.threadIcon} width={20} height={20} color={themeValue.text} />
 		);
 	};
 
 	return (
 		<View style={styles.channelLabelWrapper}>
 			<TouchableOpacity style={styles.iconBackHeader} onPress={handlebackMessageDetail}>
-				<Icons.ArrowLargeLeftIcon color={themeValue.text} height={20} width={20} />
+				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} height={20} width={20} />
 			</TouchableOpacity>
 
 			{isDMThread ? (
@@ -94,7 +95,7 @@ export const ThreadHeader = memo(() => {
 					<View>
 						{currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
 							<View style={[styles.groupAvatar, styles.avatarSize]}>
-								<Icons.GroupIcon color={baseColor.white} />
+								<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
 							</View>
 						) : (
 							<MezonAvatar
@@ -122,9 +123,6 @@ export const ThreadHeader = memo(() => {
 					<OverflowMenuHorizontalIcon color={themeValue.white} />
 				</TouchableOpacity>
 			)}
-			<MezonBottomSheet snapPoints={snapPointsMenuCustom} ref={bottomSheetMenuCustom}>
-				<MenuCustomDm currentChannel={currentChannel} channelLabel={channelLabel}></MenuCustomDm>
-			</MezonBottomSheet>
 		</View>
 	);
 });

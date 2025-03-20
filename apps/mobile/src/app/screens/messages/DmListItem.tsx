@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons, PaperclipIcon, STORAGE_MY_USER_ID, convertTimestampToTimeAgo, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, PaperclipIcon, STORAGE_MY_USER_ID, convertTimestampToTimeAgo, load } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { useAppDispatch, useAppSelector } from '@mezon/store';
 import { directActions, selectDirectById, selectIsUnreadDMById } from '@mezon/store-mobile';
@@ -6,9 +6,11 @@ import { IExtendedMessage, createImgproxyUrl, normalizeString } from '@mezon/uti
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Image, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import BuzzBadge from '../../components/BuzzBadge/BuzzBadge';
+import ImageNative from '../../components/ImageNative';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { DmListItemLastMessage } from './DMListItemLastMessage';
@@ -97,6 +99,7 @@ export const DmListItem = React.memo((props: { id: string; navigation: any; onLo
 					<DmListItemLastMessage
 						content={typeof content === 'object' ? content : safeJSONParse(content || '{}')}
 						styleText={{ color: isUnReadChannel && !isYourAccount ? themeValue.white : themeValue.textDisabled }}
+						// code={directMessage.last_sent_message?.content}
 					/>
 				)}
 			</View>
@@ -148,26 +151,18 @@ export const DmListItem = React.memo((props: { id: string; navigation: any; onLo
 		>
 			{isTypeDMGroup ? (
 				<View style={styles.groupAvatar}>
-					<Icons.GroupIcon />
+					<MezonIconCDN icon={IconCDN.groupIcon} />
 				</View>
 			) : (
 				<View style={styles.avatarWrapper}>
 					{directMessage?.channel_avatar?.[0] ? (
-						isTabletLandscape ? (
-							<Image
-								source={{
-									uri: createImgproxyUrl(directMessage?.channel_avatar?.[0] ?? '', { width: 100, height: 100, resizeType: 'fit' })
-								}}
-								style={styles.friendAvatar}
+						<View style={styles.friendAvatar}>
+							<ImageNative
+								url={createImgproxyUrl(directMessage?.channel_avatar?.[0] ?? '', { width: 50, height: 50, resizeType: 'fit' })}
+								style={{ width: '100%', height: '100%' }}
+								resizeMode={'cover'}
 							/>
-						) : (
-							<FastImage
-								source={{
-									uri: createImgproxyUrl(directMessage?.channel_avatar?.[0] ?? '', { width: 100, height: 100, resizeType: 'fit' })
-								}}
-								style={styles.friendAvatar}
-							/>
-						)
+						</View>
 					) : (
 						<View style={styles.wrapperTextAvatar}>
 							<Text style={styles.textAvatar}>

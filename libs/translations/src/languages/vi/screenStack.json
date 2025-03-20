@@ -33,8 +33,8 @@
     "profile": "Cài Đặt Hồ Sơ",
     "account": "Tài Khoản",
     "blockedUsers": "Người Dùng Bị Chặn",
-    "sendToken": "Gửi Token",
-    "withdrawToken": "Rút Token",
+    "sendToken": "Chuyển Khoản",
+    "withdrawToken": "Rút Tiền",
     "historyTransaction": "Lịch sử giao dịch"
   }
 }

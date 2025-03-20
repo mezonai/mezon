@@ -1,19 +1,9 @@
-import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { useCategorizedAllChannels, useMarkAsRead, usePermissionChecker } from '@mezon/core';
-import {
-	ENotificationActive,
-	ENotificationChannelId,
-	Icons,
-	STORAGE_CHANNEL_CURRENT_CACHE,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	getUpdateOrAddClanChannelCache,
-	load,
-	save
-} from '@mezon/mobile-components';
+import { useBottomSheetModal } from '@gorhom/bottom-sheet';
+import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
 import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
-	getStoreAsync,
 	listChannelRenderAction,
 	notificationSettingActions,
 	selectAllChannelsFavorite,
@@ -23,31 +13,33 @@ import {
 	threadsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ChannelThreads, EOverriddenPermission, EPermission, ICategoryChannel, IChannel } from '@mezon/utils';
+import { ChannelThreads, EOverriddenPermission, EPermission, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonConfirm, MezonMenu, reserve } from '../../../../../componentUI';
+import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
+import MezonConfirm from '../../../../../componentUI/MezonConfirm';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
+import NotificationSetting from '../../../../../components/NotificationSetting';
+import InviteToChannel from '../InviteToChannel';
 import { style } from './styles';
 
 interface IChannelMenuProps {
-	inviteRef: MutableRefObject<any>;
 	channel: ChannelThreads;
-	notifySettingRef: MutableRefObject<BottomSheetModal>;
 }
 
 type StackMenuClanScreen = typeof APP_SCREEN.MENU_CHANNEL.STACK;
-export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IChannelMenuProps) {
+export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const { t } = useTranslation(['channelMenu']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	// const { setOpenThreadMessageState } = useReference();
-	const [isShowModalDeleteChannel, setIsShowModalDeleteChannel] = useState(false);
-	const [isShowModalLeaveThread, setIsShowModalLeaveThread] = useState(false);
 	const currentClan = useSelector(selectCurrentClan);
 	const dispatch = useAppDispatch();
 	const [isCanManageThread, isCanManageChannel] = usePermissionChecker(
@@ -55,7 +47,6 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 		channel?.channel_id ?? ''
 	);
 
-	const categorizedChannels = useCategorizedAllChannels();
 	useEffect(() => {
 		dispatch(notificationSettingActions.getNotificationSetting({ channelId: channel?.channel_id }));
 	}, []);
@@ -85,14 +76,14 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 
 	const handleMarkAsRead = useCallback(() => {
 		handleMarkAsReadChannel(channel);
-		dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}, [channel.channel_id, channel?.clan_id]);
 
 	const watchMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.watchMenu.markAsRead'),
 			onPress: () => handleMarkAsRead(),
-			icon: <Icons.EyeIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -100,18 +91,21 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 		{
 			title: t('menu.inviteMenu.invite'),
 			onPress: () => {
-				inviteRef?.current?.present();
-				dismiss();
+				const data = {
+					snapPoints: ['70%', '90%'],
+					children: <InviteToChannel isUnknownChannel={false} channelId={channel?.channel_id} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <Icons.GroupPlusIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />
 		},
 		{
 			title: isFavorite ? t('menu.inviteMenu.unMarkFavorite') : t('menu.inviteMenu.markFavorite'),
 			onPress: () => {
 				isFavorite ? removeFavoriteChannel() : markFavoriteChannel();
-				dismiss();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
-			icon: <Icons.FavoriteFilledIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.favoriteFilledIcon} color={themeValue.textStrong} />
 		}
 		//TODO: update later
 		// {
@@ -166,21 +160,24 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 						params: { currentChannel: channel, isCurrentChannel: false }
 					});
 				}
-				dismiss();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
 			icon: isChannelUnmute ? (
-				<Icons.BellSlashIcon color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 			) : (
-				<Icons.BellIcon width={22} height={22} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
 			)
 		},
 		{
 			title: t('menu.notification.notification'),
 			onPress: () => {
-				notifySettingRef?.current?.present();
-				dismiss();
+				const data = {
+					snapPoints: ['50%'],
+					children: <NotificationSetting channel={channel} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <Icons.ChannelNotificationIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -195,7 +192,7 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 					params: { channelThreads: channel }
 				});
 			},
-			icon: <Icons.ThreadIcon color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -211,20 +208,32 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 					}
 				});
 			},
-			icon: <Icons.SettingsIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
 		},
-		{
-			title: t('menu.organizationMenu.duplicateChannel'),
-			onPress: () => reserve(),
-			icon: <Icons.CopyIcon color={themeValue.textStrong} />,
-			isShow: isCanManageChannel
-		},
+		// {
+		// 	title: t('menu.organizationMenu.duplicateChannel'),
+		// 	onPress: () => reserve(),
+		// 	icon: <Icons.CopyIcon color={themeValue.textStrong} />,
+		// 	isShow: isCanManageChannel
+		// },
 		{
 			title: t('menu.organizationMenu.deleteChannel'),
-			icon: <Icons.CloseSmallBoldIcon color={Colors.textRed} />,
-			onPress: () => {
-				setIsShowModalDeleteChannel(true);
+			icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={Colors.textRed} />,
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: (
+						<MezonConfirm
+							onConfirm={handleConfirmDeleteChannel}
+							title={t('modalConfirm.channel.title', { channelName: channel?.channel_label })}
+							confirmText={t('modalConfirm.channel.confirmText')}
+							content={t('modalConfirm.channel.content')}
+						/>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			textStyle: {
 				color: Colors.textRed
@@ -236,9 +245,21 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 	const manageThreadMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.manageThreadMenu.leaveThread'),
-			icon: <Icons.LeaveGroup color={Colors.textRed} />,
-			onPress: () => {
-				setIsShowModalLeaveThread(true);
+			icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: (
+						<MezonConfirm
+							onConfirm={handleConfirmLeaveThread}
+							title={t('modalConFirmLeaveThread.title')}
+							confirmText={t('modalConFirmLeaveThread.yesButton')}
+							content={t('modalConFirmLeaveThread.textConfirm')}
+						/>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			textStyle: {
 				color: Colors.textRed
@@ -247,21 +268,21 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 		},
 		// {
 		// 	title: t('menu.manageThreadMenu.closeThread'),
-		// 	icon: <Icons.CloseSmallBoldIcon color={themeValue.textStrong} />,
+		// 	icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={themeValue.textStrong} />,
 		// 	onPress: () => reserve(),
 		// 	isShow: isCanManageThread
 		// },
 		// {
 		// 	title: t('menu.manageThreadMenu.lockThread'),
-		// 	icon: <Icons.LockIcon color={themeValue.textStrong} />,
+		// 	icon: <MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.textStrong} />,
 		// 	onPress: () => reserve(),
 		// 	isShow: isCanManageThread
 		// },
 		{
 			title: t('menu.manageThreadMenu.editThread'),
-			icon: <Icons.PencilIcon color={themeValue.textStrong} />,
+			icon: <MezonIconCDN icon={IconCDN.pencilIcon} color={themeValue.textStrong} />,
 			onPress: () => {
-				dismiss();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 					screen: APP_SCREEN.MENU_CHANNEL.SETTINGS,
 					params: {
@@ -273,9 +294,21 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 		},
 		{
 			title: t('menu.manageThreadMenu.deleteThread'),
-			icon: <Icons.TrashIcon color={Colors.textRed} />,
-			onPress: () => {
-				setIsShowModalDeleteChannel(true);
+			icon: <MezonIconCDN icon={IconCDN.trashIcon} color={Colors.textRed} />,
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: (
+						<MezonConfirm
+							onConfirm={handleConfirmDeleteChannel}
+							title={t('modalConfirm.thread.title', { threadName: channel?.channel_label })}
+							confirmText={t('modalConfirm.thread.confirmText')}
+							content={t('modalConfirm.thread.content')}
+						/>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			textStyle: {
 				color: Colors.textRed
@@ -320,58 +353,22 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 		}
 	];
 
-	const handleFocusDefaultChannel = async () => {
-		const firstTextChannel = categorizedChannels.reduce((firstChannel, category) => {
-			if (firstChannel) return firstChannel;
-			const typeThreeChannel = (category as ICategoryChannel)?.channels?.find((channel) => (channel as IChannel)?.type === 3);
-			if (typeThreeChannel) {
-				return typeThreeChannel;
-			} else {
-				return (category as ICategoryChannel)?.channels?.[0];
-			}
-		}, null) as IChannel;
-		if (!firstTextChannel) return;
-		const { clan_id: clanId, channel_id: channelId } = firstTextChannel || {};
-		const store = await getStoreAsync();
-		const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
-		store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false, noCache: true }));
-		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-		const channelsCache = load(STORAGE_CHANNEL_CURRENT_CACHE) || [];
-		if (!channelsCache?.includes(channelId)) {
-			save(STORAGE_CHANNEL_CURRENT_CACHE, [...channelsCache, channelId]);
-		}
-	};
-
 	const handleConfirmDeleteChannel = async () => {
-		handleFocusDefaultChannel();
 		await dispatch(channelsActions.deleteChannel({ channelId: channel?.channel_id || '', clanId: channel?.clan_id || '' }));
-		setIsShowModalDeleteChannel(false);
-		dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 
 	const handleConfirmLeaveThread = useCallback(async () => {
 		await dispatch(
 			threadsActions.leaveThread({
 				clanId: currentClan?.id || '',
-				channelId: channel?.parrent_id || '',
+				channelId: channel?.parent_id || '',
 				threadId: channel?.id || '',
 				isPrivate: channel.channel_private || 0
 			})
 		);
-		dismiss();
-		handleJoinChannel();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	}, []);
-
-	const handleJoinChannel = async () => {
-		const channelId = channel?.parrent_id || '';
-		const clanId = channel?.clan_id || '';
-		const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
-		const store = await getStoreAsync();
-		requestAnimationFrame(async () => {
-			store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false }));
-		});
-		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-	};
 
 	return (
 		<View style={styles.container}>
@@ -385,30 +382,6 @@ export default function ChannelMenu({ channel, inviteRef, notifySettingRef }: IC
 			<View style={{ flex: 1 }}>
 				<MezonMenu menu={isChannel ? mainChannelMenu : mainThreadMenu} />
 			</View>
-
-			<MezonConfirm
-				visible={isShowModalLeaveThread}
-				onVisibleChange={setIsShowModalLeaveThread}
-				onConfirm={handleConfirmLeaveThread}
-				title={t('modalConFirmLeaveThread.title')}
-				confirmText={t('modalConFirmLeaveThread.yesButton')}
-				content={t('modalConFirmLeaveThread.textConfirm')}
-				hasBackdrop={true}
-			/>
-
-			<MezonConfirm
-				visible={isShowModalDeleteChannel}
-				onVisibleChange={setIsShowModalDeleteChannel}
-				onConfirm={handleConfirmDeleteChannel}
-				title={
-					isChannel
-						? t('modalConfirm.channel.title', { channelName: channel?.channel_label })
-						: t('modalConfirm.thread.title', { threadName: channel?.channel_label })
-				}
-				confirmText={isChannel ? t('modalConfirm.channel.confirmText') : t('modalConfirm.thread.confirmText')}
-				content={isChannel ? t('modalConfirm.channel.content') : t('modalConfirm.thread.content')}
-				hasBackdrop={true}
-			/>
 		</View>
 	);
 }

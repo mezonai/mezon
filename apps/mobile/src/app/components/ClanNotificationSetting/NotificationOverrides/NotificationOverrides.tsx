@@ -1,9 +1,11 @@
 import { useCategorizedAllChannels } from '@mezon/core';
-import { EOptionOverridesType, Icons } from '@mezon/mobile-components';
+import { EOptionOverridesType } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { IChannel } from '@mezon/utils';
 import { useMemo, useState } from 'react';
 import { ScrollView, TextInput, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { CategoryChannelItem } from '../CategoryChannelItem';
 import { style } from './NotificationOverrides.styles';
 
@@ -63,7 +65,7 @@ const NotificationOverrides = () => {
 							value={searchText}
 							onChangeText={onTextChange}
 						/>
-						<Icons.MagnifyingIcon width={20} height={20} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.magnifyingIcon} width={20} height={20} color={themeValue.text} />
 					</View>
 				</View>
 				<ScrollView>

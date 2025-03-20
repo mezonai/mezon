@@ -1,5 +1,5 @@
 import { useAccount, useAuth, useClanProfileSetting } from '@mezon/core';
-import { Icons, isEqual } from '@mezon/mobile-components';
+import { isEqual } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	ClansEntity,
@@ -18,8 +18,10 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonTabHeader from '../../../componentUI/MezonTabHeader';
 import MezonTabView from '../../../componentUI/MezonTabView';
+import { IconCDN } from '../../../constants/icon_cdn';
 import ServerProfile from './ServerProfile';
 import UserProfile from './UserProfile';
 import { style } from './styles';
@@ -183,7 +185,11 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		if (currentClanProfileValue?.imgUrl || currentClanProfileValue?.displayName) {
 			try {
 				dispatch(appActions.setLoadingMainMobile(true));
-				const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName?.trim() || username, imgUrl || '');
+				const response = await updateUserClanProfile(
+					selectedClan?.clan_id ?? '',
+					displayName?.trim() || username,
+					imgUrl || userProfile?.user?.avatar_url || ''
+				);
 				dispatch(appActions.setLoadingMainMobile(false));
 				if (response) {
 					Toast.show({
@@ -216,7 +222,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		),
 		headerLeft: () => (
 			<TouchableOpacity onPress={() => handleBack()} style={styles.backArrow}>
-				<Icons.CloseSmallBoldIcon color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.closeSmallBold} color={themeValue.text} />
 			</TouchableOpacity>
 		)
 	});

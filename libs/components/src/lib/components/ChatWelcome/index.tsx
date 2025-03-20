@@ -7,6 +7,7 @@ import {
 	selectFriendStatus,
 	selectIsShowCreateThread,
 	selectMemberClanByUserId,
+	selectThreadCurrentChannel,
 	selectUserIdCurrentDm,
 	useAppSelector
 } from '@mezon/store';
@@ -31,42 +32,51 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const { directId } = useAppParams();
 	const directChannel = useAppSelector((state) => selectDirectById(state, directId));
 	const currentChannel = useSelector(selectCurrentChannel);
-	const selectedChannel = directId ? directChannel : currentChannel;
+	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
+	const selectedChannel =
+		mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP
+			? directChannel
+			: mode === ChannelStreamMode.STREAM_MODE_THREAD
+				? threadCurrentChannel || currentChannel
+				: currentChannel;
+
 	const user = useSelector(selectMemberClanByUserId(selectedChannel?.creator_id as string));
+	const preferredUserName = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 	const classNameSubtext = 'dark:text-zinc-400 text-colorTextLightMode text-sm';
 	const showName = <span className="font-medium">{name || username}</span>;
 
-	const isChannel = mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD;
-	const isChannelThread = mode === ChannelStreamMode.STREAM_MODE_THREAD;
+	const isChannel = mode === ChannelStreamMode.STREAM_MODE_CHANNEL;
+	const isThread = mode === ChannelStreamMode.STREAM_MODE_THREAD;
 	const isDm = mode === ChannelStreamMode.STREAM_MODE_DM;
 	const isDmGroup = mode === ChannelStreamMode.STREAM_MODE_GROUP;
 	const isChatStream = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="space-y-2 px-4 mb-0  flex-1 flex flex-col justify-end">
 				{
 					<>
-						{isChannel &&
-							(isChannelThread ? (
-								<WelcomeChannelThread
-									currentThread={currentChannel}
-									name={name}
-									classNameSubtext={classNameSubtext}
-									username={user?.user?.username}
-									isPrivate={isPrivate}
-								/>
-							) : (
-								<WelComeChannel
-									name={currentChannel?.channel_label}
-									classNameSubtext={classNameSubtext}
-									showName={showName}
-									channelPrivate={Boolean(selectedChannel?.channel_private)}
-									isChatStream={isChatStream}
-								/>
-							))}
+						{isChannel && (
+							<WelComeChannel
+								name={currentChannel?.channel_label}
+								classNameSubtext={classNameSubtext}
+								showName={showName}
+								channelPrivate={Boolean(selectedChannel?.channel_private)}
+								isChatStream={isChatStream}
+							/>
+						)}
+						{isThread && (
+							<WelcomeChannelThread
+								currentThread={currentChannel}
+								name={name}
+								classNameSubtext={classNameSubtext}
+								username={preferredUserName}
+								isPrivate={isPrivate}
+							/>
+						)}
 						{(isDm || isDmGroup) && (
 							<WelComeDm
-								name={name || `${selectedChannel?.creator_name}'s Groups`}
+								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
 								username={username}
 								avatar={avatarDM}
 								classNameSubtext={classNameSubtext}

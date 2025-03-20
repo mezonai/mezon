@@ -1,8 +1,10 @@
-import { DisturbStatusIcon, Icons, IdleStatusIcon, IUserStatusProps, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
+import { IUserStatusProps } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { EUserStatus } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 
 export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_12, customStatus }: IUserStatusProps) => {
 	const { themeValue } = useTheme();
@@ -11,20 +13,20 @@ export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_
 	const onlineStatus = useMemo(() => {
 		switch (customStatus) {
 			case EUserStatus.IDLE:
-				return <IdleStatusIcon width={mobileIconSize} height={mobileIconSize} />;
+				return <MezonIconCDN icon={IconCDN.idleStatusIcon} color="#F0B232" width={mobileIconSize} height={mobileIconSize} />;
 
 			case EUserStatus.DO_NOT_DISTURB:
-				return <DisturbStatusIcon width={mobileIconSize} height={mobileIconSize} />;
+				return <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#F23F43" width={mobileIconSize} height={mobileIconSize} />;
 
 			case EUserStatus.INVISIBLE:
-				return <OfflineStatus width={iconSize} height={iconSize} />;
+				return <MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" width={iconSize} height={iconSize} />;
 
 			default:
-				if (!status?.status) return <OfflineStatus width={iconSize} height={iconSize} />;
+				if (!status?.status) return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#AEAEAE" width={iconSize} height={iconSize} />;
 				if (status?.isMobile) {
-					return <Icons.IconMobileDevice width={mobileIconSize} height={mobileIconSize} />;
+					return <MezonIconCDN icon={IconCDN.mobileDeviceIcon} color="#16A34A" width={mobileIconSize} height={mobileIconSize} />;
 				}
-				return <OnlineStatus width={iconSize} height={iconSize} />;
+				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={iconSize} height={iconSize} />;
 		}
 	}, []);
 

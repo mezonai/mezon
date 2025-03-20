@@ -1,19 +1,15 @@
-import { ControlBarControls, useLocalParticipantPermissions, usePersistentUserChoices } from '@livekit/components-react';
-import {
-	selectShowCamera,
-	selectShowMicrophone,
-	selectShowScreen,
-	selectVoiceFullScreen,
-	selectVoiceJoined,
-	useAppDispatch,
-	voiceActions
-} from '@mezon/store';
+import { ControlBarControls, useLocalParticipant, useLocalParticipantPermissions, usePersistentUserChoices } from '@livekit/components-react';
+import { selectShowCamera, selectShowMicrophone, selectShowScreen, selectVoiceFullScreen, useAppDispatch, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { Track } from 'livekit-client';
+import { useMediaPermissions } from '@mezon/utils';
+
+import isElectron from 'is-electron';
+import { LocalTrackPublication, Track } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
+import { ScreenShareToggleButton } from './TrackToggle/ScreenShareToggleButton';
 import { TrackToggle } from './TrackToggle/TrackToggle';
 interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 	onDeviceError?: (error: { source: Track.Source; error: Error }) => void;
@@ -27,7 +23,8 @@ interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 export function ControlBar({ variation, controls, saveUserChoices = true, onDeviceError, onLeaveRoom, onFullScreen }: ControlBarProps) {
 	const dispatch = useAppDispatch();
 	const isTooLittleSpace = useMediaQuery('max-width: 760px');
-
+	const screenTrackRef = useRef<LocalTrackPublication | null>(null);
+	const isDesktop = isElectron();
 	const defaultVariation = isTooLittleSpace ? 'minimal' : 'verbose';
 	variation ??= defaultVariation;
 
@@ -36,11 +33,11 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 	const showScreen = useSelector(selectShowScreen);
 	const showCamera = useSelector(selectShowCamera);
 	const showMicrophone = useSelector(selectShowMicrophone);
-	const isJoined = useSelector(selectVoiceJoined);
 
 	const isFullScreen = useSelector(selectVoiceFullScreen);
 
 	const localPermissions = useLocalParticipantPermissions();
+	const localParticipant = useLocalParticipant();
 
 	if (!localPermissions) {
 		visibleControls.camera = false;
@@ -67,9 +64,34 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 		(enabled: boolean, isUserInitiated: boolean) => (isUserInitiated ? dispatch(voiceActions.setShowCamera(enabled)) : null),
 		[dispatch]
 	);
+	const publishScreenShare = useCallback(async () => {
+		if (showScreen) {
+			const stream = await getElectronScreenStream();
+			if (!stream) return;
+
+			const videoTrack = stream.getVideoTracks()[0];
+
+			const trackPublication = await localParticipant.localParticipant.publishTrack(videoTrack, {
+				name: 'screen-share',
+				source: Track.Source.ScreenShare
+			});
+
+			screenTrackRef.current = trackPublication;
+		} else {
+			if (screenTrackRef.current?.track) {
+				screenTrackRef.current.track.stop?.();
+				localParticipant.localParticipant.unpublishTrack(screenTrackRef.current.track);
+				screenTrackRef.current = null;
+			}
+		}
+	}, [showScreen]);
+
+	useEffect(() => {
+		publishScreenShare();
+	}, [publishScreenShare]);
 
 	const onScreenShare = useCallback(
-		(enabled: boolean, isUserInitiated: boolean) => {
+		async (enabled: boolean, isUserInitiated: boolean) => {
 			if (enabled) {
 				dispatch(voiceActions.setFullScreen(false));
 			}
@@ -81,27 +103,31 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 		[dispatch]
 	);
 
+	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
+
 	return (
-		<div className="lk-control-bar justify-between !border-none !bg-transparent">
+		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent">
 			<div className="flex justify-start gap-4">
 				<span>
-					<Icons.VoiceSoundControlIcon className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+					<Icons.VoiceSoundControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
 				</span>
 				<span>
-					<Icons.VoiceEmojiControlIcon className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+					<Icons.VoiceEmojiControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
 				</span>
 			</div>
 			<div className="flex justify-center gap-3">
-				{visibleControls.microphone && (
-					<div className="relative">
+				{visibleControls.microphone && hasMicrophoneAccess && (
+					<div className="relative rounded-full">
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							key={+showMicrophone}
 							placement="top"
 							overlay={
-								<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">
+								<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">
 									{showMicrophone ? 'Turn Off Microphone' : 'Turn On Microphone'}
 								</span>
 							}
+							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 							destroyTooltipOnHide
@@ -109,7 +135,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							<TrackToggle
 								key={+showMicrophone}
 								initialState={showMicrophone}
-								className="w-14 h-14 rounded-full flex justify-center items-center"
+								className="w-14 h-14 !rounded-full flex justify-center items-center"
 								source={Track.Source.Microphone}
 								onChange={microphoneOnChange}
 								onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Microphone, error })}
@@ -121,14 +147,16 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 						/>
 					</div>
 				)}
-				{visibleControls.camera && (
-					<div className="relative">
+				{visibleControls.camera && hasCameraAccess && (
+					<div className="relative rounded-full">
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							key={+showCamera}
 							placement="top"
 							overlay={
-								<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">{showCamera ? 'Turn Off Camera' : 'Turn On Camera'}</span>
+								<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">{showCamera ? 'Turn Off Camera' : 'Turn On Camera'}</span>
 							}
+							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 							destroyTooltipOnHide
@@ -136,7 +164,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							<TrackToggle
 								key={+showCamera}
 								initialState={showCamera}
-								className="w-14 h-14 rounded-full flex justify-center items-center"
+								className="w-14 h-14 !rounded-full flex justify-center items-center"
 								source={Track.Source.Camera}
 								onChange={cameraOnChange}
 								onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Camera, error })}
@@ -150,30 +178,38 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				)}
 				{visibleControls.screenShare && browserSupportsScreenSharing && (
 					<Tooltip
+						showArrow={{ className: '!bottom-1' }}
 						key={+showScreen}
 						placement="top"
 						overlay={
-							<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">{showScreen ? 'Stop screen share' : 'Share Your Screen'}</span>
+							<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">{showScreen ? 'Stop screen share' : 'Share Your Screen'}</span>
 						}
+						overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 						overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 						getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 						destroyTooltipOnHide
 					>
-						<TrackToggle
-							key={+showScreen}
-							initialState={showScreen}
-							className="w-14 h-14 rounded-full flex justify-center items-center"
-							source={Track.Source.ScreenShare}
-							captureOptions={{ audio: true, selfBrowserSurface: 'include' }}
-							onChange={onScreenShare}
-							onDeviceError={(error) => onDeviceError?.({ source: Track.Source.ScreenShare, error })}
-						/>
+						{!isDesktop ? (
+							<TrackToggle
+								key={+showScreen}
+								initialState={showScreen}
+								className="w-14 h-14 !rounded-full flex justify-center items-center"
+								source={Track.Source.ScreenShare}
+								captureOptions={{ audio: true, selfBrowserSurface: 'include' }}
+								onChange={onScreenShare}
+								onDeviceError={(error) => onDeviceError?.({ source: Track.Source.ScreenShare, error })}
+							/>
+						) : (
+							<ScreenShareToggleButton className="w-14 h-14 !rounded-full flex justify-center items-center" />
+						)}
 					</Tooltip>
 				)}
 				{visibleControls.leave && (
 					<Tooltip
+						showArrow={{ className: '!bottom-1' }}
 						placement="top"
-						overlay={<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">Disconnect</span>}
+						overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Disconnect</span>}
+						overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 						overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 						getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 					>
@@ -188,36 +224,48 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 			</div>
 			<div className="flex justify-end gap-4">
 				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
 					placement="top"
-					overlay={<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">Pop Out</span>}
+					overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Pop Out</span>}
+					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 					getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 				>
 					<span>
-						<Icons.VoicePopOutIcon className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+						<Icons.VoicePopOutIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
 					</span>
 				</Tooltip>
 				<div onClick={onFullScreen}>
 					{isFullScreen ? (
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							placement="topRight"
-							overlay={<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">Exit Full Screen</span>}
-							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+							align={{
+								offset: [11, -4]
+							}}
+							overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Exit Full Screen</span>}
+							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+							overlayClassName="whitespace-nowrap z-50 !p-0"
 							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 						>
 							<span>
-								<Icons.ExitFullScreen className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+								<Icons.ExitFullScreen className="cursor-pointer hover:text-white text-[#B5BAC1]" />
 							</span>
 						</Tooltip>
 					) : (
 						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
 							placement="topRight"
-							overlay={<span className="bg-[#2B2B2B] p-2 rounded !text-[16px]">Full Screen</span>}
-							overlayClassName="whitespace-nowrap !p-0 !pt-4"
+							align={{
+								offset: [11, -4]
+							}}
+							overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Full Screen</span>}
+							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+							overlayClassName="whitespace-nowrap !p-0"
 							key={Number(isFullScreen)}
 						>
 							<span>
-								<Icons.FullScreen className="cursor-pointer dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+								<Icons.FullScreen className="cursor-pointer hover:text-white text-[#B5BAC1]" />
 							</span>
 						</Tooltip>
 					)}
@@ -268,6 +316,27 @@ function useMediaQuery(query: string): boolean {
 	return matches;
 }
 
-function supportsScreenSharing(): boolean {
+const supportsScreenSharing = () => {
 	return typeof navigator !== 'undefined' && navigator.mediaDevices && !!navigator.mediaDevices.getDisplayMedia;
+};
+
+async function getElectronScreenStream() {
+	if (!isElectron() || !window.electron?.getScreenSources) return null;
+	const sources = await window.electron.getScreenSources();
+	if (!sources.length) return null;
+	try {
+		const stream = await navigator.mediaDevices.getUserMedia({
+			audio: false,
+			video: {
+				mandatory: {
+					chromeMediaSource: 'desktop',
+					chromeMediaSourceId: sources[0].id
+				}
+			} as any
+		});
+		return stream;
+	} catch (error) {
+		console.error('Error getting screen stream:', error);
+		return null;
+	}
 }

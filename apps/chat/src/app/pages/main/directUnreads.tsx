@@ -1,9 +1,10 @@
 import { AvatarImage } from '@mezon/components';
+import { useCustomNavigate } from '@mezon/core';
 import { DMMetaEntity, directActions, directMetaActions, selectDirectById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useMemo } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export type DirectMessUnreadProp = {
 	readonly directMessage: Readonly<DMMetaEntity>;
@@ -13,7 +14,7 @@ export type DirectMessUnreadProp = {
 function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 	const dispatch = useAppDispatch();
 	const direct = useAppSelector((state) => selectDirectById(state, directMessage.id)) || {};
-	const navigate = useNavigate();
+	const navigate = useCustomNavigate();
 	const handleClick = async () => {
 		await dispatch(
 			directActions.joinDirectMessage({
@@ -53,7 +54,11 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 					src={direct.type === ChannelType.CHANNEL_TYPE_DM ? direct?.channel_avatar?.at(0) : 'assets/images/avatar-group.png'}
 				/>
 				{directMessage?.count_mess_unread && (
-					<div className="absolute border-[4px] dark:border-bgPrimary border-white w-[24px] h-[24px] rounded-full bg-colorDanger text-[#fff] font-bold text-[11px] flex items-center justify-center top-7 right-[-6px]">
+					<div
+						className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-0 right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+							directMessage?.count_mess_unread >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
+						}`}
+					>
 						{directMessage?.count_mess_unread >= 100 ? '99+' : directMessage?.count_mess_unread}
 					</div>
 				)}

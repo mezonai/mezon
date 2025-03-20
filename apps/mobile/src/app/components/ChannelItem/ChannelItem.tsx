@@ -1,10 +1,11 @@
-import { Icons, LockIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelUsersEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import IconChannel from '../IconChannel';
 import style from './ChannelItem.styles';
 
@@ -16,7 +17,7 @@ type ChannelItemProps = {
 export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
-	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parrent_id || ''));
+	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 	const styles = style(themeValue);
 	const handleOnPress = () => {
@@ -29,7 +30,7 @@ export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProp
 					<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
 					<View>
 						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6, marginBottom: size.s_2 }}>
-							<Text style={styles.channelName}>{`${channelData?.channel_label} ${parentLabel}`}</Text>
+							<Text style={styles.channelName} numberOfLines={1}>{`${channelData?.channel_label} ${parentLabel}`}</Text>
 						</View>
 						{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 					</View>
@@ -43,14 +44,16 @@ export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProp
 						<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
 						<View>
 							<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6, marginBottom: size.s_2 }}>
-								<Text style={styles.channelName}>{channelData?.channel_label}</Text>
-								<LockIcon width={10} height={10} color={Colors.textGray} />
+								<Text style={styles.channelName} numberOfLines={1}>
+									{channelData?.channel_label}
+								</Text>
+								<MezonIconCDN icon={IconCDN.lockIcon} width={10} height={10} color={Colors.textGray} />
 							</View>
 							{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 						</View>
 					</View>
 					<View style={styles.joinChannelBtn}>
-						<Icons.VoiceNormalIcon width={size.s_20} height={size.s_20} color={Colors.textGray} />
+						<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={Colors.textGray} />
 						<Text style={styles.joinChannelBtnText}>{t('joinChannel')}</Text>
 					</View>
 				</View>

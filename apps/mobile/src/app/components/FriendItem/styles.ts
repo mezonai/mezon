@@ -15,7 +15,8 @@ export const style = (colors: Attributes) =>
 			width: size.s_40,
 			height: size.s_40,
 			borderRadius: 50,
-			overlayColor: colors.secondary
+			overlayColor: colors.secondary,
+			overflow: 'hidden'
 		},
 		friendItemContent: {
 			flexDirection: 'row',

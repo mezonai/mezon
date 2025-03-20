@@ -1,6 +1,6 @@
 import { ToastController } from '@mezon/components';
-import { useEscapeKey } from '@mezon/core';
-import { fcmActions, handleTopicNotification, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
+import { useCustomNavigate, useEscapeKey } from '@mezon/core';
+import { fcmActions, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, MezonUiProvider } from '@mezon/ui';
 import {
 	CLOSE_APP,
@@ -16,7 +16,7 @@ import {
 import isElectron from 'is-electron';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
 import { IAppLoaderData } from '../loaders/appLoader';
 const theme = 'dark';
 
@@ -86,18 +86,8 @@ const TitleBar: React.FC<TitleBarProps> = ({ eventName }) => {
 
 const AppLayout = () => {
 	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
 	const isLogin = useSelector(selectIsLogin);
 	const currentUserId = useSelector(selectAllAccount)?.user?.id;
-	const location = useLocation();
-	const urlParams = new URLSearchParams(location.search);
-	const viewMode = urlParams.get('viewMode');
-	const { redirectTo } = useLoaderData() as IAppLoaderData;
-	useEffect(() => {
-		if (redirectTo) {
-			navigate(redirectTo);
-		}
-	}, [redirectTo, navigate]);
 
 	useEffect(() => {
 		currentUserId && notificationService.setCurrentUserId(currentUserId);
@@ -119,14 +109,35 @@ const AppLayout = () => {
 		)
 			.then((response): void => {
 				const token = (response?.payload as { token: string })?.token;
-				notificationService.connect(token, (msg) => {
-					dispatch(handleTopicNotification({ msg }));
-				});
+				notificationService.connect(token);
 			})
 			.catch((error) => {
 				console.error(error);
 			});
 	}, [isLogin]);
+
+	return (
+		<MezonUiProvider themeName={theme}>
+			<ViewModeHandler />
+			<ToastController />
+			<Outlet />
+		</MezonUiProvider>
+	);
+};
+
+const ViewModeHandler: React.FC = () => {
+	const navigate = useCustomNavigate();
+
+	const location = useLocation();
+	const urlParams = new URLSearchParams(location.search);
+	const viewMode = urlParams.get('viewMode');
+
+	const { redirectTo } = useLoaderData() as IAppLoaderData;
+	useEffect(() => {
+		if (redirectTo) {
+			navigate(redirectTo);
+		}
+	}, [redirectTo, navigate]);
 
 	useEscapeKey(() => {
 		if (isElectron() && viewMode === 'image') {
@@ -134,17 +145,11 @@ const AppLayout = () => {
 		}
 	});
 
-	return (
-		<MezonUiProvider themeName={theme}>
-			<div id="app-layout">
-				{(isWindowsDesktop || isLinuxDesktop) && (
-					<TitleBar eventName={viewMode === 'image' ? IMAGE_WINDOW_TITLE_BAR_ACTION : TITLE_BAR_ACTION} />
-				)}
-				<ToastController />
-				<Outlet />
-			</div>
-		</MezonUiProvider>
-	);
+	if (isWindowsDesktop || isLinuxDesktop) {
+		return <TitleBar eventName={viewMode === 'image' ? IMAGE_WINDOW_TITLE_BAR_ACTION : TITLE_BAR_ACTION} />;
+	}
+
+	return null;
 };
 
 export default AppLayout;

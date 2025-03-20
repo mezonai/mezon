@@ -1,6 +1,5 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNotification } from '@mezon/core';
-import { getUpdateOrAddClanChannelCache, Icons, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import { ActionEmitEvent, getUpdateOrAddClanChannelCache, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -13,20 +12,23 @@ import {
 	notificationActions,
 	RootState,
 	selectCurrentClanId,
-	selectLastNotificationId,
+	selectNotificationClan,
+	selectNotificationForYou,
+	selectNotificationMentions,
 	selectTopicsSort,
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { INotification, NotificationCode, NotificationEntity } from '@mezon/utils';
+import { INotification, NotificationCategory, NotificationEntity, sortNotificationsByDate } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonBottomSheet } from '../../componentUI';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import EmptyNotification from './EmptyNotification';
@@ -35,13 +37,19 @@ import NotificationItemOption from './NotificationItemOption';
 import NotificationOption from './NotificationOption';
 import { style } from './Notifications.styles';
 import SkeletonNotification from './SkeletonNotification';
-import { EActionDataNotify, ENotifyBsToShow } from './types';
+import { ENotifyBsToShow } from './types';
+
+const InboxType = {
+	INDIVIDUAL: 'individual',
+	MESSAGES: 'messages',
+	MENTIONS: 'mentions',
+	TOPICS: 'topics'
+};
 
 const Notifications = () => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const allTopics = useSelector(selectTopicsSort);
-	const { notification, deleteNotify } = useNotification();
+	const { deleteNotify } = useNotification();
 	const [notify, setNotify] = useState<INotification>();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const loadingStatus = useSelector((state: RootState) => state?.notification?.loadingStatus);
@@ -50,18 +58,27 @@ const Notifications = () => {
 	const isTabletLandscape = useTabletLandscape();
 	const { t } = useTranslation(['notification']);
 	const navigation = useNavigation();
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
-	const bottomSheetOptionsRef = useRef<BottomSheetModal>(null);
 	const timeoutRef = useRef(null);
 	const [isLoadMore, setIsLoadMore] = useState(true);
 	const [firstLoading, setFirstLoading] = useState(true);
-	const [selectedTabs, setSelectedTabs] = useState({ individual: true, mention: true, messages: true, topics: true });
+	const [selectedTabs, setSelectedTabs] = useState<string>(InboxType.MENTIONS);
 	const [notificationsFilter, setNotificationsFilter] = useState<NotificationEntity[]>([]);
-	const lastNotificationId = useSelector(selectLastNotificationId);
+	const allNotificationForYou = useSelector(selectNotificationForYou);
+	const allNotificationMentions = useSelector(selectNotificationMentions);
+	const allNotificationClan = useSelector(selectNotificationClan);
+	const getAllTopic = useSelector(selectTopicsSort);
 
-	const mergeNotifications = useMemo(() => {
-		return [...(notification || []), ...(allTopics || [])];
-	}, [allTopics, notification]);
+	const getAllNotificationForYou = useMemo(() => {
+		return sortNotificationsByDate([...allNotificationForYou.data]);
+	}, [allNotificationForYou]);
+
+	const getAllNotificationMentions = useMemo(() => {
+		return sortNotificationsByDate([...allNotificationMentions.data]);
+	}, [allNotificationMentions]);
+
+	const getAllNotificationClan = useMemo(() => {
+		return sortNotificationsByDate([...allNotificationClan.data]);
+	}, [allNotificationClan]);
 
 	useEffect(() => {
 		if (currentClanId && currentClanId !== '0') {
@@ -70,81 +87,56 @@ const Notifications = () => {
 		}
 	}, [currentClanId]);
 
+	useEffect(() => {
+		if (!currentClanId) return;
+
+		let category = null;
+
+		if (selectedTabs === InboxType.INDIVIDUAL) {
+			category = NotificationCategory.FOR_YOU;
+		} else if (selectedTabs === InboxType.MESSAGES) {
+			category = NotificationCategory.MESSAGES;
+		} else if (selectedTabs === InboxType.MENTIONS) {
+			category = NotificationCategory.MENTIONS;
+		}
+
+		if (category) {
+			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category }));
+		}
+	}, [currentClanId, dispatch, selectedTabs]);
+
 	const handleFilterNotify = useCallback(
 		(selectedTabs) => {
-			const sortNotifications = mergeNotifications?.sort((a, b) => {
-				const dateA = new Date(a.create_time || '').getTime();
-				const dateB = new Date(b.create_time || '').getTime();
-				return dateB - dateA;
-			});
-
-			const allTabs = [EActionDataNotify.Individual, EActionDataNotify.Mention, EActionDataNotify.Messages, EActionDataNotify.Topics];
-			const isAllSelected = allTabs.every((tab) => selectedTabs.includes(tab));
-			if (isAllSelected) {
-				setNotificationsFilter(sortNotifications);
-				return;
+			switch (selectedTabs) {
+				case InboxType.INDIVIDUAL:
+					setNotificationsFilter(getAllNotificationForYou);
+					break;
+				case InboxType.MESSAGES:
+					setNotificationsFilter(getAllNotificationClan);
+					break;
+				case InboxType.MENTIONS:
+					setNotificationsFilter(getAllNotificationMentions);
+					break;
+				case InboxType.TOPICS:
+					setNotificationsFilter(getAllTopic);
+					break;
 			}
-
-			const isNotificationIncluded = (notification) => {
-				return selectedTabs.some((tab) => {
-					switch (tab) {
-						case EActionDataNotify.Individual:
-							return (
-								notification?.code !== NotificationCode.USER_REPLIED &&
-								notification?.code !== NotificationCode.USER_MENTIONED &&
-								notification?.code !== NotificationCode.NOTIFICATION_CLAN &&
-								notification?.code
-							);
-						case EActionDataNotify.Mention:
-							return notification?.code === NotificationCode.USER_REPLIED || notification?.code === NotificationCode.USER_MENTIONED;
-						case EActionDataNotify.Messages:
-							return notification?.code === NotificationCode.NOTIFICATION_CLAN;
-						case EActionDataNotify.Topics:
-							return !notification?.code;
-						default:
-							return false;
-					}
-				});
-			};
-
-			const filteredNotifications = sortNotifications.filter(isNotificationIncluded);
-			setNotificationsFilter(filteredNotifications);
 		},
-		[mergeNotifications]
+		[getAllNotificationClan, getAllNotificationForYou, getAllNotificationMentions, getAllTopic]
 	);
 
 	const initLoader = async () => {
 		const store = await getStoreAsync();
-		store.dispatch(notificationActions.fetchListNotification({ clanId: currentClanId }));
+		store.dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
 		store.dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
 	};
 
-	const handleTabChange = (value, isSelected) => {
-		setSelectedTabs((prevState) => ({
-			...prevState,
-			[value]: isSelected
-		}));
-	};
+	const handleTabChange = useCallback((value) => {
+		setSelectedTabs(value);
+	}, []);
 
 	useEffect(() => {
-		const selectedTabKeys = Object.entries(selectedTabs)
-			?.filter(([key, value]) => value)
-			?.map(([key]) => {
-				switch (key) {
-					case EActionDataNotify.Individual:
-						return EActionDataNotify.Individual;
-					case EActionDataNotify.Mention:
-						return EActionDataNotify.Mention;
-					case EActionDataNotify.Messages:
-						return EActionDataNotify.Messages;
-					case EActionDataNotify.Topics:
-						return EActionDataNotify.Topics;
-					default:
-						return null;
-				}
-			})
-			?.filter(Boolean);
-		handleFilterNotify(selectedTabKeys);
+		handleFilterNotify(selectedTabs);
 	}, [selectedTabs, handleFilterNotify]);
 
 	useEffect(() => {
@@ -153,23 +145,26 @@ const Notifications = () => {
 		};
 	}, []);
 
-	const openBottomSheet = useCallback((type: ENotifyBsToShow, notify?: INotification) => {
-		switch (type) {
-			case ENotifyBsToShow.notification:
-				bottomSheetRef.current?.present();
-				break;
-			case ENotifyBsToShow.removeNotification:
-				bottomSheetOptionsRef.current?.present();
-				setNotify(notify);
-				break;
-			default:
-				bottomSheetRef.current?.present();
-				break;
-		}
-	}, []);
+	const openBottomSheet = useCallback(
+		(type: ENotifyBsToShow, notify?: INotification) => {
+			switch (type) {
+				case ENotifyBsToShow.notification:
+					triggerBottomSheetOption();
+					break;
+				case ENotifyBsToShow.removeNotification:
+					triggerRemoveBottomSheet();
+					setNotify(notify);
+					break;
+				default:
+					triggerBottomSheetOption();
+					break;
+			}
+		},
+		[selectedTabs]
+	);
 
 	const handleDeleteNotify = (notify?: INotification) => {
-		notify && deleteNotify(notify.id, currentClanId || '0');
+		notify && deleteNotify(notify.id, NotificationCategory.FOR_YOU);
 		closeBottomSheet();
 	};
 
@@ -182,6 +177,11 @@ const Notifications = () => {
 					promises.push(store.dispatch(directActions.fetchDirectMessage({})));
 					promises.push(store.dispatch(directActions.setDmGroupCurrentId(notify?.content?.channel_id)));
 				} else {
+					if (Number(notify?.content?.topic_id) !== 0) {
+						promises.push(store.dispatch(topicsActions.setCurrentTopicInitMessage(null)));
+						promises.push(store.dispatch(topicsActions.setCurrentTopicId(notify?.content?.topic_id || '')));
+						promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
+					}
 					if (notify?.content?.clan_id !== currentClanId) {
 						promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId: notify?.content?.clan_id })));
 					}
@@ -202,6 +202,10 @@ const Notifications = () => {
 
 				if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: notify?.content?.channel_id });
+				} else if (Number(notify?.content?.topic_id) !== 0) {
+					navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
+						screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
+					});
 				} else {
 					const dataSave = getUpdateOrAddClanChannelCache(notify?.content?.clan_id, notify?.content?.channel_id);
 					save(STORAGE_CLAN_ID, notify?.content?.clan_id);
@@ -232,12 +236,11 @@ const Notifications = () => {
 			const store = await getStoreAsync();
 			await handleNotification(notify, currentClanId, store, navigation);
 		},
-		[currentClanId, navigation, isTabletLandscape]
+		[currentClanId, navigation]
 	);
 
 	const closeBottomSheet = () => {
-		bottomSheetRef.current?.dismiss();
-		bottomSheetOptionsRef.current?.dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
 	const handleGoback = () => {
@@ -247,15 +250,27 @@ const Notifications = () => {
 	const fetchMoreData = useCallback(async () => {
 		setFirstLoading(false);
 		if (isLoadMore) {
+			if (!currentClanId) return;
+
+			let category = null;
+
+			if (selectedTabs === InboxType.INDIVIDUAL) {
+				category = NotificationCategory.FOR_YOU;
+			} else if (selectedTabs === InboxType.MESSAGES) {
+				category = NotificationCategory.MESSAGES;
+			} else if (selectedTabs === InboxType.MENTIONS) {
+				category = NotificationCategory.MENTIONS;
+			}
 			await dispatch(
 				fetchListNotification({
 					clanId: currentClanId || '',
-					notificationId: lastNotificationId
+					category: category,
+					notificationId: ''
 				})
 			);
 			setIsLoadMore(false);
 		}
-	}, [isLoadMore, dispatch, currentClanId, lastNotificationId]);
+	}, [isLoadMore, currentClanId, selectedTabs, dispatch]);
 
 	const ViewLoadMore = () => {
 		return (
@@ -265,20 +280,38 @@ const Notifications = () => {
 		);
 	};
 
+	const triggerBottomSheetOption = useCallback(() => {
+		const data = {
+			heightFitContent: true,
+			title: t('headerTitle'),
+			titleSize: 'md',
+			children: <NotificationOption onChangeTab={handleTabChange} selectedTabs={selectedTabs} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, [handleTabChange, selectedTabs, t]);
+
+	const triggerRemoveBottomSheet = () => {
+		const data = {
+			heightFitContent: true,
+			children: <NotificationItemOption onDelete={() => handleDeleteNotify(notify)} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
+
 	return (
 		<View style={styles.notifications}>
 			<View style={styles.notificationsHeader}>
 				{isTabletLandscape && (
 					<Pressable onPress={handleGoback}>
 						<View style={styles.notificationHeaderIcon}>
-							<Icons.ChevronSmallLeftIcon height={20} width={20} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={20} width={20} color={themeValue.textStrong} />
 						</View>
 					</Pressable>
 				)}
 				<Text style={styles.notificationHeaderTitle}>{t('headerTitle')}</Text>
 				<Pressable onPress={() => openBottomSheet(ENotifyBsToShow.notification)}>
 					<View style={styles.notificationHeaderIcon}>
-						<Icons.MoreHorizontalIcon height={20} width={20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.moreHorizontalIcon} height={20} width={20} color={themeValue.textStrong} />
 					</View>
 				</Pressable>
 			</View>
@@ -295,7 +328,7 @@ const Notifications = () => {
 						paddingBottom: size.s_100 * 2
 					}}
 					estimatedItemSize={200}
-					keyExtractor={(item) => `${item.id}_item_noti`}
+					keyExtractor={(item, index) => `${item.id}_${index}_item_noti`}
 					onEndReached={fetchMoreData}
 					onEndReachedThreshold={0.5}
 					ListFooterComponent={isLoadMore && <ViewLoadMore />}
@@ -303,14 +336,6 @@ const Notifications = () => {
 			) : (
 				<EmptyNotification />
 			)}
-
-			<MezonBottomSheet ref={bottomSheetRef} heightFitContent title={t('headerTitle')} titleSize="md">
-				<NotificationOption onChangeTab={handleTabChange} selectedTabs={selectedTabs} />
-			</MezonBottomSheet>
-
-			<MezonBottomSheet ref={bottomSheetOptionsRef} heightFitContent>
-				<NotificationItemOption onDelete={() => handleDeleteNotify(notify)} />
-			</MezonBottomSheet>
 		</View>
 	);
 };

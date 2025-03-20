@@ -1,5 +1,5 @@
 import { selectEmojiObjSuggestion } from '@mezon/store-mobile';
-import { EBacktickType, IEmojiOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from '@mezon/utils';
+import { EBacktickType, IEmojiOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage, isYouTubeLink } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -87,10 +87,11 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 					e: endindex
 				});
 			} else {
+				const isYouTube = isYouTubeLink(inputString);
 				links.push({
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-expect-error
-					type: EBacktickType.LINK,
+					type: isYouTube ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,
 					s: startindex,
 					e: endindex
 				});

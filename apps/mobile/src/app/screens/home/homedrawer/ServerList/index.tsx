@@ -6,7 +6,7 @@ import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import LogoMezonDark from '../../../../../assets/svg/logoMezonDark.svg';
 import LogoMezonLight from '../../../../../assets/svg/logoMezonLight.svg';
-import { MezonAvatar } from '../../../../componentUI';
+import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import { SeparatorWithLine } from '../../../../components/Common';
 import { APP_SCREEN } from '../../../../navigation/ScreenTypes';
 import { ListClanPopup } from '../components/ListClanPopup';

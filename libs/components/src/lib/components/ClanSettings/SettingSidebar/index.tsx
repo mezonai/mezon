@@ -1,5 +1,5 @@
 import { usePermissionChecker } from '@mezon/core';
-import { authActions, selectActionAuditLog, selectCurrentClan, selectUserAuditLog, useAppDispatch } from '@mezon/store';
+import { authActions, selectActionAuditLog, selectAllAccount, selectCurrentClan, selectUserAuditLog, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { useState } from 'react';
@@ -22,6 +22,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const auditLogFilterAction = useSelector(selectActionAuditLog);
 	const auditLogFilterUser = useSelector(selectUserAuditLog);
 	const navigate = useNavigate();
+	const userProfile = useSelector(selectAllAccount);
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {
 		const filteredListItem = sidebarItem.listItem.filter((item) => {
@@ -40,7 +41,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
 	const handleLogOut = () => {
-		dispatch(authActions.logOut());
+		dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);

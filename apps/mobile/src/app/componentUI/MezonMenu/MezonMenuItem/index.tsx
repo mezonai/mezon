@@ -1,7 +1,8 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ReactNode } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { IconCDN } from '../../../constants/icon_cdn';
+import MezonIconCDN from '../../MezonIconCDN';
 import { style } from './styles';
 
 export interface IMezonMenuItemProps {
@@ -53,7 +54,7 @@ export default function MezonMenuItem({
 					</View>
 					{component}
 					{previewValue && <Text style={styles.previewValue}>{previewValue}</Text>}
-					{expandable && <Icons.ChevronSmallRightIcon height={size.s_18} width={size.s_18} color={themeValue.text} />}
+					{expandable && <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />}
 				</View>
 			</TouchableOpacity>
 		)

@@ -1,6 +1,5 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useFriends, useMemberStatus } from '@mezon/core';
-import { CheckIcon, DisturbStatusIcon, Icons, IdleStatusIcon, OfflineStatus, OnlineStatus } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
@@ -13,15 +12,18 @@ import {
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import moment from 'moment';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
-import { MezonAvatar, MezonButton } from '../../componentUI';
+import MezonAvatar from '../../componentUI/MezonAvatar';
+import { MezonButton } from '../../componentUI/MezonButton';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { AddStatusUserModal } from '../../components/AddStatusUserModal';
 import { CustomStatusUser, EUserStatus } from '../../components/CustomStatusUser';
 import { SendTokenUser } from '../../components/SendTokenUser';
+import { IconCDN } from '../../constants/icon_cdn';
 import { useMixImageColor } from '../../hooks/useMixImageColor';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -40,9 +42,8 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const { friends: allUser } = useFriends();
 	const { color } = useMixImageColor(user?.userProfile?.user?.avatar_url);
 	const { t } = useTranslation('profile');
+	const { t: tUser } = useTranslation('customUserStatus');
 	const [isVisibleAddStatusUserModal, setIsVisibleAddStatusUserModal] = useState<boolean>(false);
-	const userStatusBottomSheetRef = useRef<BottomSheetModal>(null);
-	const userSendTokenBottomSheetRef = useRef<BottomSheetModal>(null);
 	const userCustomStatus = useSelector(selectAccountCustomStatus);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
@@ -54,25 +55,25 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 		switch (userStatus?.status) {
 			case EUserStatus.ONLINE:
 				if (memberStatus?.isMobile) {
-					return <Icons.IconMobileDevice width={mobileIconSize} height={mobileIconSize} />;
+					return <MezonIconCDN icon={IconCDN.mobileDeviceIcon} color="#16A34A" width={mobileIconSize} height={mobileIconSize} />;
 				}
 				return memberStatus?.status ? (
-					<OnlineStatus width={size.s_20} height={size.s_20} />
+					<MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={size.s_20} height={size.s_20} />
 				) : (
-					<OfflineStatus width={size.s_16} height={size.s_16} />
+					<MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" width={size.s_16} height={size.s_16} />
 				);
 
 			case EUserStatus.IDLE:
-				return <IdleStatusIcon width={size.s_20} height={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.idleStatusIcon} color="#F0B232" width={size.s_20} height={size.s_20} />;
 
 			case EUserStatus.DO_NOT_DISTURB:
-				return <DisturbStatusIcon />;
+				return <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#F23F43" />;
 
 			case EUserStatus.INVISIBLE:
-				return <OfflineStatus width={size.s_16} height={size.s_16} />;
+				return <MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" width={size.s_16} height={size.s_16} />;
 
 			default:
-				return <OnlineStatus width={size.s_20} height={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={size.s_20} height={size.s_20} />;
 		}
 	}, [isTabletLandscape, memberStatus, userStatus]);
 
@@ -115,7 +116,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	};
 
 	const handleCustomUserStatus = (customStatus = '', type: ETypeCustomUserStatus, duration?: number, noClearStatus?: boolean) => {
-		userStatusBottomSheetRef?.current?.dismiss();
 		setIsVisibleAddStatusUserModal(false);
 		dispatch(
 			channelMembersActions.updateCustomStatus({
@@ -128,11 +128,26 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	};
 
 	const showUserStatusBottomSheet = () => {
-		userStatusBottomSheetRef?.current?.present();
+		const data = {
+			heightFitContent: true,
+			title: tUser('changeOnlineStatus'),
+			children: (
+				<CustomStatusUser
+					userCustomStatus={userCustomStatus}
+					onPressSetCustomStatus={handlePressSetCustomStatus}
+					handleCustomUserStatus={handleCustomUserStatus}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	const showSendTokenBottomSheet = () => {
-		userSendTokenBottomSheetRef?.current?.present();
+		const data = {
+			heightFitContent: true,
+			children: <SendTokenUser />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	return (
@@ -141,11 +156,11 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={[styles.backgroundListIcon, isTabletLandscape && { justifyContent: 'space-between' }]}>
 					{isTabletLandscape && (
 						<TouchableOpacity style={styles.backgroundSetting} onPress={navigateGoback}>
-							<Icons.ChevronSmallLeftIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 						</TouchableOpacity>
 					)}
 					<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToSettingScreen()}>
-						<Icons.SettingsIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.settingIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				</View>
 
@@ -202,12 +217,12 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 			{isTabletLandscape && (
 				<View style={styles.buttonListLandscape}>
 					<MezonButton viewContainerStyle={styles.button} onPress={() => setIsVisibleAddStatusUserModal(!isVisibleAddStatusUserModal)}>
-						<Icons.ChatIcon height={size.s_20} width={size.s_20} color={'white'} />
+						<MezonIconCDN icon={IconCDN.chatIcon} height={size.s_20} width={size.s_20} color={'white'} />
 						<Text style={styles.whiteText}>{t('addStatus')}</Text>
 					</MezonButton>
 
 					<MezonButton viewContainerStyle={styles.button} onPress={() => navigateToProfileSetting()}>
-						<Icons.PencilIcon height={size.s_18} width={size.s_18} color={'white'} />
+						<MezonIconCDN icon={IconCDN.pencilIcon} height={size.s_18} width={size.s_18} color={'white'} />
 						<Text style={styles.whiteText}>{t('editStatus')}</Text>
 					</MezonButton>
 				</View>
@@ -217,13 +232,15 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={styles.contentContainer}>
 					<TouchableOpacity style={styles.viewInfo} onPress={showUserStatusBottomSheet}>
 						<Text style={styles.textName}>{user?.userProfile?.user?.display_name}</Text>
-						<Icons.ChevronSmallDownIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 					<Text style={styles.text}>{user?.userProfile?.user?.username}</Text>
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}>
 						<CheckIcon width={size.s_14} height={size.s_14} color={Colors.azureBlue} />
 						<TouchableOpacity style={styles.token} onPress={showSendTokenBottomSheet}>
-							<Text style={styles.text}>{`${t('token')} ${formatNumber(Number(tokenInWallet), 'vi-VN', 'VND')}`}</Text>
+							<Text
+								style={styles.text}
+							>{`${t('token')} ${tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}`}</Text>
 						</TouchableOpacity>
 					</View>
 					{userCustomStatus ? (
@@ -235,7 +252,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								<Text style={styles.text}>{userCustomStatus}</Text>
 							</TouchableOpacity>
 							<Pressable onPress={() => handleCustomUserStatus('', ETypeCustomUserStatus.Close)} style={styles.closeBtnUserStatus}>
-								<Icons.CircleXIcon height={size.s_18} width={size.s_18} color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 							</Pressable>
 						</View>
 					) : null}
@@ -245,12 +262,12 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								viewContainerStyle={styles.button}
 								onPress={() => setIsVisibleAddStatusUserModal(!isVisibleAddStatusUserModal)}
 							>
-								<Icons.ChatIcon height={size.s_20} width={size.s_20} color={'white'} />
+								<MezonIconCDN icon={IconCDN.chatIcon} height={size.s_20} width={size.s_20} color={'white'} />
 								<Text style={styles.whiteText}>{t('addStatus')}</Text>
 							</MezonButton>
 
 							<MezonButton viewContainerStyle={styles.button} onPress={() => navigateToProfileSetting()}>
-								<Icons.PencilIcon height={size.s_18} width={size.s_18} color={'white'} />
+								<MezonIconCDN icon={IconCDN.pencilIcon} height={size.s_18} width={size.s_18} color={'white'} />
 								<Text style={styles.whiteText}>{t('editStatus')}</Text>
 							</MezonButton>
 						</View>
@@ -277,10 +294,11 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					<Text style={styles.textTitle}>{t('yourFriend')}</Text>
 
 					<MezonAvatar avatarUrl="" username="" height={size.s_30} width={size.s_30} stacks={firstFriendImageList} />
-					<Icons.ChevronSmallRightIcon
+					<MezonIconCDN
+						icon={IconCDN.chevronSmallRightIcon}
 						width={size.s_18}
 						height={size.s_18}
-						style={{ marginLeft: size.s_4 }}
+						customStyle={{ marginLeft: size.s_4 }}
 						color={themeValue.textStrong}
 					/>
 				</TouchableOpacity>
@@ -293,13 +311,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				}}
 				handleCustomUserStatus={handleCustomUserStatus}
 			/>
-			<CustomStatusUser
-				userCustomStatus={userCustomStatus}
-				onPressSetCustomStatus={handlePressSetCustomStatus}
-				ref={userStatusBottomSheetRef}
-				handleCustomUserStatus={handleCustomUserStatus}
-			/>
-			<SendTokenUser ref={userSendTokenBottomSheetRef} />
 		</View>
 	);
 };

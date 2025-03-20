@@ -5,6 +5,7 @@ import {
 	clansActions,
 	EMarkAsReadType,
 	listChannelRenderAction,
+	listChannelsByUserActions,
 	markAsReadProcessing,
 	RootState,
 	selectChannelsByClanId,
@@ -91,6 +92,17 @@ export function useMarkAsRead() {
 						clanId: channel.clan_id as string
 					})
 				);
+				const threadIds: string[] = [];
+				allThreadsInChannel.map((channel) => {
+					if (channel.threadIds?.length) {
+						threadIds.push(...channel.threadIds);
+					}
+				});
+				if (threadIds.length) {
+					dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadIds));
+				}
+
+				dispatch(listChannelsByUserActions.markAsReadChannel([channel.id, ...threadIds]));
 			} catch (error) {
 				console.error('Failed to mark as read:', error);
 				setStatusMarkAsReadChannel('error');
@@ -130,6 +142,7 @@ export function useMarkAsRead() {
 						categoryId: category.id
 					})
 				);
+				dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 			} catch (error) {
 				console.error('Failed to mark as read:', error);
 				setStatusMarkAsReadCategory('error');
@@ -161,6 +174,7 @@ export function useMarkAsRead() {
 						clanId: clanId
 					})
 				);
+				dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 			} catch (error) {
 				console.error('Failed to mark as read:', error);
 				setStatusMarkAsReadClan('error');

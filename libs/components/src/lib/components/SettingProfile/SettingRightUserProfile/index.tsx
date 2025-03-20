@@ -6,20 +6,22 @@ import {
 	selectCurrentClanId,
 	selectLogoCustom,
 	selectTheme,
+	toastActions,
 	useAppDispatch
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, InputField } from '@mezon/ui';
-import { createImgproxyUrl, fetchAndCreateFiles, fileTypeImage } from '@mezon/utils';
+import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, resizeFileImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { ApiMessageAttachment } from 'mezon-js/dist/api.gen';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Coords } from '../../ChannelLink';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
 import PanelClan from '../../PanelClan';
-import SettingUserClanProfileCard, { Profilesform } from '../SettingUserClanProfileCard';
+import ImageEditor from '../ImageEditor/ImageEditor';
+import PreviewSetting, { Profilesform } from '../SettingUserClanProfileCard';
+import { processImage } from '../helper';
 
 const SettingRightUser = ({
 	onClanProfileClick,
@@ -73,46 +75,80 @@ const SettingRightUser = ({
 		}
 	};
 
-	const handleFile = async (e: any) => {
-		const file = e?.target?.files[0];
-		const sizeImage = file?.size;
-		const session = sessionRef.current;
-		const client = clientRef.current;
+	// Editor Avatar Profile//
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [imageObject, setImageObject] = useState<ImageSourceObject | null>(null);
+	const [imageCropped, setImageCropped] = useState<File | null>(null);
+	const [openModalEditor, closeModalEditor] = useModal(
+		() =>
+			imageObject ? (
+				<ImageEditor setImageCropped={setImageCropped} setImageObject={setImageObject} onClose={closeModalEditor} imageSource={imageObject} />
+			) : null,
+		[imageObject]
+	);
 
-		const files = [
-			{
+	useEffect(() => {
+		if (!imageCropped) return;
+
+		processImage(
+			imageCropped,
+			dispatch,
+			clientRef,
+			sessionRef,
+			currentClanId || '0',
+			userProfile,
+			setUrlImage as any,
+			setImageObject as any,
+			setImageCropped as any,
+			setIsLoading,
+			setOpenModal
+		);
+	}, [imageCropped]);
+
+	const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		if (!fileTypeImage.includes(file.type)) {
+			setOpenModalType(true);
+			return;
+		}
+		if (file.type === fileTypeImage[2]) {
+			if (file.size > MAX_FILE_SIZE_1MB) {
+				dispatch(toastActions.addToastError({ message: 'File size exceeds 1MB limit' }));
+				return;
+			}
+			if (!clientRef.current || !sessionRef.current) {
+				dispatch(toastActions.addToastError({ message: 'Client or session is not initialized' }));
+				return;
+			}
+			setIsLoading(true);
+			const imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+			const attachment = await handleUploadFile(
+				clientRef.current,
+				sessionRef.current,
+				currentClanId || '0',
+				userProfile?.user?.id || '0',
+				imageAvatarResize.name,
+				imageAvatarResize
+			);
+			setUrlImage(attachment?.url || '');
+			setFlags(true);
+			setIsLoading(false);
+		} else {
+			const newImageObject: ImageSourceObject = {
 				filename: file.name,
 				filetype: file.type,
 				size: file.size,
 				url: URL.createObjectURL(file)
-			}
-		] as ApiMessageAttachment[];
-
-		if (!file) return;
-		if (!client || !session) {
-			throw new Error('Client or file is not initialized');
+			};
+			setFlags(true);
+			setImageObject(newImageObject);
+			openModalEditor();
 		}
 
-		const allowedTypes = fileTypeImage;
-		if (!allowedTypes.includes(file.type)) {
-			setOpenModalType(true);
-			e.target.value = null;
-			return;
-		}
-
-		if (sizeImage > 1000000) {
-			setOpenModal(true);
-			e.target.value = null;
-			return;
-		}
-		const createdFiles = await fetchAndCreateFiles(files);
-		handleUploadFile(client, session, currentClanId || '0', currentChannelId || '0', files[0]?.filename || '', createdFiles[0]).then(
-			(attachment: any) => {
-				setUrlImage(attachment.url ?? '');
-			}
-		);
-		setFlags(true);
+		e.target.value = '';
 	};
+
 	const handleClose = () => {
 		setValueDisplayName(currentDisplayName);
 		setEditAboutUser(aboutMe);
@@ -223,10 +259,7 @@ const SettingRightUser = ({
 						<p className="font-semibold tracking-wide text-sm">AVATAR</p>
 						<div className="flex mt-[10px] gap-x-5">
 							<label>
-								<div
-									className="text-white font-medium bg-[#155EEF] hover:bg-blue-500 rounded-[4px] p-[8px] pr-[10px] pl-[10px] cursor-pointer text-[14px]"
-									onChange={(e) => handleFile(e)}
-								>
+								<div className="text-white font-medium bg-[#155EEF] hover:bg-blue-500 rounded-[4px] p-[8px] pr-[10px] pl-[10px] cursor-pointer text-[14px]">
 									Change avatar
 								</div>
 								<input type="file" onChange={(e) => handleFile(e)} className="w-full text-sm text-slate-500 hidden" />
@@ -256,7 +289,10 @@ const SettingRightUser = ({
 						</div>
 					</div>
 
-					<div className="mt-8 flex items-center bg-bgTertiary p-4 rounded justify-between" onContextMenu={handleMouseClick}>
+					<div
+						className="mt-8 flex items-center dark:bg-bgTertiary bg-[#F0F0F0] p-4 rounded justify-between"
+						onContextMenu={handleMouseClick}
+					>
 						<p className="font-semibold tracking-wide text-sm">Direct Message Icon</p>
 						<div className="flex gap-x-5">
 							<label
@@ -286,7 +322,7 @@ const SettingRightUser = ({
 				</div>
 				<div className="flex-1  text-white">
 					<p className="mt-[20px] dark:text-[#CCCCCC] text-black font-semibold tracking-wide text-sm">PREVIEW</p>
-					<SettingUserClanProfileCard profiles={editProfile} isDM={isDM} />
+					<PreviewSetting isLoading={isLoading} profiles={editProfile} isDM={isDM} />
 				</div>
 			</div>
 			{(urlImage !== avatar && flags) ||

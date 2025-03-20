@@ -41,6 +41,10 @@ export const InputSearch: React.FC = () => {
 		if (subPanelActive !== SubPanelName.NONE) {
 			searchInputRef.current?.focus();
 		}
+		if (subPanelActive !== SubPanelName.GIFS) {
+			setClickedTrendingGif(false);
+			setButtonArrowBack(false);
+		}
 	}, [subPanelActive]);
 
 	const onclickBackArrow = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

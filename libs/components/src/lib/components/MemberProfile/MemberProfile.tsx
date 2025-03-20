@@ -1,29 +1,26 @@
-import { useChannelMembersActions } from '@mezon/core';
+import { useChannelMembersActions, useColorsRoleById } from '@mezon/core';
 import {
 	ChannelMembersEntity,
 	notificationSettingActions,
-	RolesClanEntity,
 	selectActivityByUserId,
 	selectAllAccount,
 	selectCurrentChannelId,
 	selectCurrentClan,
 	selectCurrentClanId,
-	selectRolesClanEntities,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
-	ActivitiesType,
 	ACTIVITY_PANEL_HEIGHT,
-	createImgproxyUrl,
-	DEFAULT_ROLE_COLOR,
+	ActivitiesType,
 	EUserStatus,
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
 	MemberProfileType,
 	MouseButton,
 	WIDTH_CHANNEL_LIST_BOX,
-	WIDTH_PANEL_PROFILE
+	WIDTH_PANEL_PROFILE,
+	createImgproxyUrl
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -117,36 +114,8 @@ export function MemberProfile({
 	const dispatch = useAppDispatch();
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const activityByUserId = useSelector(selectActivityByUserId(user?.user?.id || ''));
-	const rolesClanEntity = useSelector(selectRolesClanEntities);
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const userRolesClan = useMemo(() => {
-		const activeRole: Array<RolesClanEntity> = [];
-		let userRoleLength = 0;
-		let highestPermissionRole = null;
-		let maxLevelPermission = 0;
-
-		for (const key in rolesClanEntity) {
-			const role = rolesClanEntity[key];
-			const checkHasRole = role.role_user_list?.role_users?.some((listUser) => listUser.id === user?.user?.id);
-
-			if (checkHasRole) {
-				activeRole.push(role);
-				userRoleLength++;
-
-				if (role.max_level_permission !== undefined && role.max_level_permission > maxLevelPermission) {
-					maxLevelPermission = role.max_level_permission;
-					highestPermissionRole = role;
-				}
-			}
-		}
-
-		return {
-			usersRole: activeRole,
-			length: userRoleLength,
-			highestPermissionRoleColor: highestPermissionRole?.color || activeRole[0]?.color || DEFAULT_ROLE_COLOR
-		};
-	}, [user?.user?.id, rolesClanEntity]);
-
+	const userRolesClan = useColorsRoleById(user?.user?.id as string);
 	const activityNames: { [key: number]: string } = {
 		[ActivitiesType.VISUAL_STUDIO_CODE]: 'Coding',
 		[ActivitiesType.SPOTIFY]: 'Music',
@@ -174,7 +143,8 @@ export function MemberProfile({
 		if (event.button === MouseButton.LEFT) {
 			// handle show profile item
 			const hasActivityPanel = !isFooter && status?.status && activityByUserId;
-			const heightPanel = isDM ? HEIGHT_PANEL_PROFILE_DM : HEIGHT_PANEL_PROFILE + (hasActivityPanel ? ACTIVITY_PANEL_HEIGHT : 0);
+			const heightPanel = isDM ? HEIGHT_PANEL_PROFILE_DM : HEIGHT_PANEL_PROFILE;
+
 			if (window.innerHeight - event.clientY > heightPanel) {
 				setPositionShortUser({
 					top: event.clientY,
@@ -182,7 +152,7 @@ export function MemberProfile({
 				});
 			} else {
 				setPositionShortUser({
-					top: window.innerHeight - heightPanel,
+					top: window.innerHeight - (heightPanel + (hasActivityPanel ? ACTIVITY_PANEL_HEIGHT : 0)),
 					left: window.innerWidth - WIDTH_CHANNEL_LIST_BOX - WIDTH_PANEL_PROFILE
 				});
 			}
@@ -392,32 +362,30 @@ export function MemberProfile({
 					)}
 				</div>
 				<div className="flex flex-col items-start h-full ml-0.5 w-full">
-					<div
-						ref={subNameRef}
-						className={`absolute top-[22px] mr-5 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col items-start justify-start ${isFooter ? 'ml-[2px]' : ''} ${isHideAnimation ? '' : 'group-hover:-translate-y-4'}`}
-					>
-						{!isHideStatus && (
-							<>
-								{customStatus && (isFooter || isListFriend) ? (
-									<span
-										className={`text-[11px] text-left dark:text-contentSecondary text-colorTextLightMode line-clamp-1 ${isFooter ? 'leading-[14px]' : ''}`}
-									>
-										{customStatus}
-									</span>
-								) : (
-									<span
-										className={`text-[11px] dark:text-contentSecondary text-colorTextLightMode ${isFooter ? 'leading-[18px]' : ''}`}
-									>
-										{typeof userStatus === 'string' && userStatus ? userStatus : !status?.status ? 'Offline' : 'Online'}
-									</span>
-								)}
+					{!isHideStatus && (
+						<div
+							ref={subNameRef}
+							className={`absolute top-[22px] mr-5 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col items-start justify-start ${isFooter ? 'ml-[2px]' : ''} ${isHideAnimation ? '' : 'group-hover:-translate-y-4'}`}
+						>
+							{customStatus && (isFooter || isListFriend) ? (
+								<span
+									className={`text-[11px] text-left dark:text-contentSecondary text-colorTextLightMode line-clamp-1 ${isFooter ? 'leading-[14px]' : ''}`}
+								>
+									{customStatus}
+								</span>
+							) : (
+								<span
+									className={`text-[11px] dark:text-contentSecondary text-colorTextLightMode ${isFooter ? 'leading-[18px]' : ''}`}
+								>
+									{typeof userStatus === 'string' && userStatus ? userStatus : !status?.status ? 'Offline' : 'Online'}
+								</span>
+							)}
 
-								<p className="text-[11px] dark:text-contentSecondary text-colorTextLightMode overflow-x-hidden whitespace-nowrap text-ellipsis text-left w-full">
-									{userProfile?.user?.username}
-								</p>
-							</>
-						)}
-					</div>
+							<p className="text-[11px] dark:text-contentSecondary text-colorTextLightMode overflow-x-hidden whitespace-nowrap text-ellipsis text-left w-full">
+								{userProfile?.user?.username}
+							</p>
+						</div>
+					)}
 					{!isHideUserName && (
 						<div className={'h-full flex-col w-full'}>
 							<div className="flex flex-row items-center w-full overflow-x-hidden" style={{ minWidth: `${minWidthNameMain}px` }}>

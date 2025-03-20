@@ -14,7 +14,7 @@ export const USERS_CLANS_FEATURE_KEY = 'usersClan';
  */
 
 export const mapUsersClanToEntity = (UsersClanRes: ClanUserListClanUser) => {
-	const id = (UsersClanRes as unknown as any).user.id;
+	const id = (UsersClanRes as unknown as any)?.user.id;
 	return { ...UsersClanRes, id };
 };
 
@@ -213,7 +213,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 				users.push({
 					id: userProfileId,
 					user: {
-						...userProfile.user,
+						...userProfile?.user,
 						online: true
 					}
 				} as UsersClanEntity);
@@ -221,7 +221,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 				users[userIndex] = {
 					...users[userIndex],
 					user: {
-						...users[userIndex].user,
+						...users[userIndex]?.user,
 						online: true
 					}
 				};
@@ -229,7 +229,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 				users[userIndex] = {
 					...users[userIndex],
 					user: {
-						...users[userIndex].user,
+						...users[userIndex]?.user,
 						online: false
 					}
 				};
@@ -237,10 +237,10 @@ export const selectClanMemberWithStatusIds = createSelector(
 		}
 
 		users.sort((a, b) => {
-			if (a.user?.online === b.user?.online) {
+			if (a?.user?.online === b?.user?.online) {
 				return getName(a).localeCompare(getName(b));
 			}
-			return a.user?.online ? -1 : 1;
+			return a?.user?.online ? -1 : 1;
 		});
 		const firstOfflineIndex = users.findIndex((user) => !user.user?.online);
 		const onlineUsers = firstOfflineIndex === -1 ? users : users?.slice(0, firstOfflineIndex);

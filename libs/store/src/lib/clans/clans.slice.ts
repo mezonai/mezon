@@ -12,7 +12,6 @@ import { defaultNotificationCategoryActions } from '../notificationSetting/notif
 import { defaultNotificationActions } from '../notificationSetting/notificationSettingClan.slice';
 import { policiesActions } from '../policies/policies.slice';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
-import { RootState } from '../store';
 import { usersStreamActions } from '../stream/usersStream.slice';
 import { voiceActions } from '../voice/voice.slice';
 
@@ -208,25 +207,19 @@ export const updateClan = createAsyncThunk(
 	}
 );
 
-export const updateBageClanWS = createAsyncThunk('clans/updateBageClanWS', async ({ channel_id }: { channel_id: string }, thunkAPI) => {
-	const state = thunkAPI.getState() as RootState;
-
-	if (!state) {
-		throw Error('refresh app error: state does not init');
-	}
-
-	const channel = state.channels?.byClans[state.clans?.currentClanId as string]?.entities?.entities?.[channel_id];
-
-	try {
-		const numberNotification = channel?.count_mess_unread ? channel?.count_mess_unread : 0;
-		if (numberNotification && numberNotification > 0) {
-			await thunkAPI.dispatch(clansActions.updateClanBadgeCount({ clanId: channel?.clan_id ?? '', count: numberNotification * -1 }));
+export const updateBageClanWS = createAsyncThunk(
+	'clans/updateBageClanWS',
+	async ({ clan_id, badge_count }: { clan_id: string; badge_count: number }, thunkAPI) => {
+		try {
+			if (badge_count > 0) {
+				await thunkAPI.dispatch(clansActions.updateClanBadgeCount({ clanId: clan_id, count: badge_count * -1 }));
+			}
+		} catch (error) {
+			captureSentryError(error, 'clans/updateBageClanWS');
+			return thunkAPI.rejectWithValue(error);
 		}
-	} catch (error) {
-		captureSentryError(error, 'clans/updateBageClanWS');
-		return thunkAPI.rejectWithValue(error);
 	}
-});
+);
 
 type UpdateLinkUser = {
 	user_name: string;

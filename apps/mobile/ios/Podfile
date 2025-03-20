@@ -1,4 +1,4 @@
-require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 # Resolve react_native_pods.rb with node to allow for hoisting
 # require Pod::Executable.execute_command('node', ['-p',
 #   'require.resolve(
@@ -51,22 +51,16 @@ setup_permissions([
 ])
 
 target 'Mobile' do
-  use_expo_modules!
-  post_integrate do |installer|
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-  end
   config = use_native_modules!
 
   pod 'FirebaseCore', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true;
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'SDWebImage', :modular_headers => true
   pod 'RNFS', :path => '../node_modules/react-native-fs'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
   pod 'RNCallKeep', :path => '../node_modules/react-native-callkeep'
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
   use_react_native!(
     :path => config[:reactNativePath],

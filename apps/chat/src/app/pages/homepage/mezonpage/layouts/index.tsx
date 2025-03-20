@@ -29,7 +29,7 @@ const Layout = memo((props: LayoutProps) => {
 							className="border-[1px] p-[32px] max-lg:pr-[16px] max-lg:pl-[16px] flex flex-col items-center gap-[16px] border-[#4465FF4D] rounded-[12px]"
 							style={{ boxShadow: '0px 4px 90px 16px #22119280 inset' }}
 						>
-							<Image src={`assets/blockchain-intergration.svg`} alt={'blockChainIntergration'} />
+							<Image src={`assets/blockchain-intergration.svg`} />
 							<div className="flex flex-col items-center gap-[20px] text-center">
 								<div
 									className="text-[20px] leading-[30px] font-semibold"
@@ -56,7 +56,7 @@ const Layout = memo((props: LayoutProps) => {
 							className="border-[1px] p-[32px] max-lg:pr-[16px] max-lg:pl-[16px] flex flex-col items-center gap-[16px] border-[#4465FF4D] rounded-[12px]"
 							style={{ boxShadow: '0px 4px 90px 16px #22119280 inset' }}
 						>
-							<Image src={`assets/developer-empowerment.svg`} alt={'developerEmpowerment'} />
+							<Image src={`assets/developer-empowerment.svg`} />
 							<div className="flex flex-col items-center gap-[20px] text-center">
 								<div
 									className="text-[20px] leading-[30px] font-semibold"
@@ -82,7 +82,7 @@ const Layout = memo((props: LayoutProps) => {
 							className="relative border-[1px] p-[32px] max-lg:pr-[16px] max-lg:pl-[16px] flex flex-col items-center gap-[16px] border-[#4465FF4D] rounded-[12px]"
 							style={{ boxShadow: '0px 4px 90px 16px #22119280 inset' }}
 						>
-							<Image src={`assets/vision-for-the-future.svg`} alt={'visionForTheFuture'} />
+							<Image src={`assets/vision-for-the-future.svg`} />
 							<div className="flex flex-col items-center gap-[20px] text-center">
 								<div
 									className="text-[20px] leading-[30px] font-semibold"
@@ -140,7 +140,7 @@ const Layout = memo((props: LayoutProps) => {
 											</>
 										}
 									/>
-									<Image src={`../../../assets/multiple-block.png`} alt={'blockDecentralized'} />
+									<Image src={`../../../assets/multiple-block.png`} />
 								</AnimatedSection>
 								<AnimatedSection
 									delay={300}
@@ -157,11 +157,7 @@ const Layout = memo((props: LayoutProps) => {
 										}
 									/>
 									<div className={`${sideBarIsOpen ? 'unset' : 'relative'} flex flex-col items-center justify-center w-full`}>
-										<Image
-											className="w-full"
-											src={`../../../assets/multiple-conversation-reply.svg`}
-											alt={'conversation reply'}
-										/>
+										<Image className="w-full" src={`../../../assets/multiple-conversation-reply.svg`} />
 									</div>
 								</AnimatedSection>
 							</div>
@@ -192,12 +188,10 @@ const Layout = memo((props: LayoutProps) => {
 									</div>
 									<Image
 										src={`../../../assets/cube.png`}
-										alt={'cube'}
 										className="absolute bottom-[0] right-[0] max-md:bottom-[0] max-md:left-[0] max-md:w-[100px] max-md:h-[100px]"
 									/>
 									<Image
 										src={`../../../assets/sword.png`}
-										alt={'sword'}
 										className="absolute md:top-[25%] right-[0] max-md:bottom-[0] max-md:right-[0] max-md:w-[95px] max-md:h-[95px]"
 									/>
 								</AnimatedSection>

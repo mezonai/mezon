@@ -310,12 +310,10 @@ export const MessageContextMenuProvider = ({
 
 	const shouldRender = useIdleRender();
 
-	if (!shouldRender) return null;
-
 	return (
 		<MessageContextMenuContext.Provider value={value}>
 			{children}
-			{menu}
+			{shouldRender && menu}
 		</MessageContextMenuContext.Provider>
 	);
 };

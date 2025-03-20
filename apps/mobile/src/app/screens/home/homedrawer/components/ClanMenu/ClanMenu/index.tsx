@@ -1,26 +1,27 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
-import { baseColor, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { useTheme } from '@mezon/mobile-ui';
 import { appActions, categoriesActions, selectCurrentClan, selectIsShowEmptyCategory, useAppDispatch } from '@mezon/store-mobile';
-import { EPermission } from '@mezon/utils';
+import { EPermission, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonClanAvatar, MezonMenu, MezonSwitch, reserve } from '../../../../../../componentUI';
+import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import MezonButtonIcon from '../../../../../../componentUI/MezonButtonIcon';
+import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../componentUI/MezonMenu';
+import MezonSwitch from '../../../../../../componentUI/MezonSwitch';
 import DeleteClanModal from '../../../../../../components/DeleteClanModal';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import { EProfileTab } from '../../../../../settings/ProfileSetting';
 import ClanMenuInfo from '../ClanMenuInfo';
 import { style } from './styles';
 
-interface IServerMenuProps {
-	inviteRef: MutableRefObject<any>;
-}
 enum StatusMarkAsReadClan {
 	Error = 'error',
 	Success = 'success',
@@ -28,12 +29,10 @@ enum StatusMarkAsReadClan {
 	Pending = 'pending'
 }
 
-export default function ClanMenu({ inviteRef }: IServerMenuProps) {
+export default function ClanMenu() {
 	const currentClan = useSelector(selectCurrentClan);
 	const { t } = useTranslation(['clanMenu']);
 	const { themeValue } = useTheme();
-	const [isVisibleDeleteModal, setIsVisibleDeleteModal] = useState<boolean>(false);
-	const [isLeaveClan, setIsLeaveClan] = useState<boolean>(false);
 	const styles = style(themeValue);
 
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
@@ -52,12 +51,12 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 		return hasAdminPermission || isClanOwner || hasManageClanPermission;
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 	const handleOpenInvite = () => {
-		inviteRef?.current.present();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL);
 		dismiss();
 	};
 
 	const handleOpenSettings = () => {
-		navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, { screen: APP_SCREEN.MENU_CLAN.SETTINGS, params: { inviteRef: inviteRef } });
+		navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, { screen: APP_SCREEN.MENU_CLAN.SETTINGS });
 		dismiss();
 	};
 
@@ -131,17 +130,26 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 		// 	title: t('menu.optionsMenu.reportServer'),
 		// },
 		{
-			onPress: () => {
-				setIsVisibleDeleteModal(true);
-				setIsLeaveClan(true);
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: <DeleteClanModal isLeaveClan={true} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			isShow: !isClanOwner,
 			title: t('menu.optionsMenu.leaveServer'),
 			textStyle: { color: 'red' }
 		},
 		{
-			onPress: () => {
-				setIsVisibleDeleteModal(true);
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
+				const data = {
+					children: <DeleteClanModal isLeaveClan={false} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			isShow: isClanOwner,
 			title: t('menu.optionsMenu.deleteClan'),
@@ -182,9 +190,9 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 
 	function handleToggleEmptyCategories(value: boolean) {
 		if (value) {
-			dispatch(categoriesActions.setShowEmptyCategory());
+			dispatch(categoriesActions.setShowEmptyCategory(currentClan?.clan_id));
 		} else {
-			dispatch(categoriesActions.setHideEmptyCategory());
+			dispatch(categoriesActions.setHideEmptyCategory(currentClan?.clan_id));
 		}
 		setShowEmptyCategories(value);
 	}
@@ -203,25 +211,25 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 				<ClanMenuInfo clan={currentClan} />
 
 				<ScrollView contentContainerStyle={styles.actionWrapper} horizontal>
-					<MezonButtonIcon
-						title={`18 ${t('actions.boot')}`}
-						icon={<Icons.BoostTier2Icon color={baseColor.purple} />}
-						onPress={() => reserve()}
-					/>
+					{/*<MezonButtonIcon*/}
+					{/*	title={`18 ${t('actions.boot')}`}*/}
+					{/*	icon={<Icons.BoostTier2Icon color={baseColor.purple} />}*/}
+					{/*	onPress={() => reserve()}*/}
+					{/*/>*/}
 					<MezonButtonIcon
 						title={t('actions.invite')}
-						icon={<Icons.GroupPlusIcon color={themeValue.textStrong} />}
+						icon={<MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />}
 						onPress={handleOpenInvite}
 					/>
 					<MezonButtonIcon
 						title={t('actions.notifications')}
-						icon={<Icons.BellIcon color={themeValue.textStrong} />}
+						icon={<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />}
 						onPress={handelOpenNotifications}
 					/>
 
 					<MezonButtonIcon
 						title={t('actions.settings')}
-						icon={<Icons.SettingsIcon color={themeValue.textStrong} />}
+						icon={<MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />}
 						onPress={handleOpenSettings}
 					/>
 				</ScrollView>
@@ -229,13 +237,6 @@ export default function ClanMenu({ inviteRef }: IServerMenuProps) {
 					<MezonMenu menu={menu} marginVertical={0} />
 				</View>
 			</View>
-			<DeleteClanModal
-				isVisibleModal={isVisibleDeleteModal}
-				visibleChange={(isVisible) => {
-					setIsVisibleDeleteModal(isVisible);
-				}}
-				isLeaveClan={isLeaveClan}
-			></DeleteClanModal>
 		</View>
 	);
 }

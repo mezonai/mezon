@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, View } from 'react-native';
 import { IUserProfileValue } from '../../..';
-import { MezonInput } from '../../../../../../componentUI';
+import MezonInput from '../../../../../../componentUI/MezonInput';
 import { style } from './styles';
 
 interface IDetailInfoProps {

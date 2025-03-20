@@ -1,6 +1,6 @@
 import { useAppParams, useNotification } from '@mezon/core';
 import { selectMemberClanByUserId } from '@mezon/store';
-import { INotification, convertTimeString } from '@mezon/utils';
+import { INotification, NotificationCategory, convertTimeString } from '@mezon/utils';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
@@ -35,7 +35,7 @@ function NotificationItem({ notify }: NotifyProps) {
 
 	const handleDeleteNotification = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, notificationId: string) => {
 		event.stopPropagation();
-		deleteNotify(notificationId, clanId ?? '0');
+		deleteNotify(notificationId, notify.category as NotificationCategory);
 	};
 
 	return (

@@ -4,6 +4,8 @@ import { MessagesEntity, messagesActions, selectAllChannelMemberIds, useAppDispa
 import { ETokenMessage, TypeMessage, convertTimeString } from '@mezon/utils';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 export const MessageLineSystem = memo(({ message }: { message: MessagesEntity }) => {
@@ -153,8 +155,12 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 		<View style={[styles.wrapperMessageBox, { marginVertical: size.s_10, paddingLeft: 0 }]}>
 			<View>
 				{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon />}
-				{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
-				{message?.code === TypeMessage.CreatePin && <Icons.PinIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
+				{message?.code === TypeMessage.CreateThread && (
+					<MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
+				)}
+				{message?.code === TypeMessage.CreatePin && (
+					<MezonIconCDN icon={IconCDN.pinIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
+				)}
 				{message?.code === TypeMessage.AuditLog && <Icons.AuditLogIcon width={size.s_24} height={size.s_24} />}
 			</View>
 			<View style={styles.messageSystemBox}>

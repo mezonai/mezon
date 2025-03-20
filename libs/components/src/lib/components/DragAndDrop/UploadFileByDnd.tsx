@@ -1,6 +1,6 @@
 import { useDragAndDrop } from '@mezon/core';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch } from '@mezon/store';
-import { processFile } from '@mezon/utils';
+import { MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { DragEvent } from 'react';
 import { useSelector } from 'react-redux';
@@ -39,10 +39,18 @@ function FileUploadByDnD({ currentId }: FileUploadByDnDOpt) {
 		setDraggingState(false);
 		const files = e.dataTransfer.files;
 		const filesArray = Array.from(files);
-		if (filesArray.length + uploadedAttachmentsInChannel.length > 10) {
-			setOverUploadingState(true);
+		if (filesArray.length + uploadedAttachmentsInChannel.length > MAX_FILE_ATTACHMENTS) {
+			setOverUploadingState(true, UploadLimitReason.COUNT);
 			return;
 		}
+
+		const oversizedFile = filesArray.find((file) => file.size > MAX_FILE_SIZE);
+
+		if (oversizedFile) {
+			setOverUploadingState(true, UploadLimitReason.SIZE);
+			return;
+		}
+
 		const updatedFiles = await Promise.all(filesArray.map(processFile<ApiMessageAttachment>));
 		dispatch(
 			referencesActions.setAtachmentAfterUpload({

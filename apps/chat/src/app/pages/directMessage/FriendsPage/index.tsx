@@ -12,7 +12,6 @@ import {
 } from '@mezon/store';
 import { Button, Icons, Image, InputField } from '@mezon/ui';
 import { isMacDesktop } from '@mezon/utils';
-import isElectron from 'is-electron';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
@@ -81,7 +80,7 @@ const FriendsPage = () => {
 
 	const handleAddFriend = async () => {
 		const checkIsAlreadyFriend = (username: string) => {
-			return friends.some((user) => user.user?.username === username);
+			return friends.some((user) => user?.user?.username === username);
 		};
 		if (requestAddFriend?.usernames?.length && checkIsAlreadyFriend(requestAddFriend.usernames[0])) {
 			setIsAlreadyFriend(true);
@@ -161,8 +160,8 @@ const FriendsPage = () => {
 									{tab.title}
 								</button>
 								{tab.value === 'pending' && quantityPendingRequest !== 0 && (
-									<div className="absolute w-[16px] h-[16px] rounded-full bg-colorDanger text-[#fff] font-bold text-[9px] flex items-center justify-center top-3 right-[5px] pt-[3px]">
-										{quantityPendingRequest}
+									<div className="absolute w-[16px] h-[16px] rounded-full bg-colorDanger text-[#fff] font-bold flex items-center justify-center top-3 right-[5px]">
+										<div className="leading-[9px] text-[9px]">{quantityPendingRequest}</div>
 									</div>
 								)}
 							</div>
@@ -177,7 +176,7 @@ const FriendsPage = () => {
 					</button>
 				</div>
 			</div>
-			<div className={`flex-1 flex w-full h-full ${isElectron() ? 'pb-8' : ''}`}>
+			<div className={`contain-strict flex-1 flex w-full h-full`}>
 				<div className=" flex-1 dark:bg-bgPrimary bg-[#F0F0F0] flex flex-col">
 					{!openModalAddFriend && (
 						<>
@@ -197,7 +196,7 @@ const FriendsPage = () => {
 									{currentTabStatus.toUpperCase()} - {listFriendFilter.length}
 								</span>
 							</div>
-							<div className="pl-8 overflow-hidden flex flex-1 pb-16">
+							<div className="pl-8 overflow-hidden flex flex-1 pb-4">
 								<FriendList listFriendFilter={listFriendFilter} />
 							</div>
 						</>
@@ -232,13 +231,7 @@ const FriendsPage = () => {
 								</div>
 							</div>
 							<div className="flex flex-col items-center gap-7">
-								<Image
-									src={`assets/images/${addFriendImg}`}
-									alt={'logoMezon'}
-									width={48}
-									height={48}
-									className="object-cover w-[376px]"
-								/>
+								<Image src={`assets/images/${addFriendImg}`} width={48} height={48} className="object-cover w-[376px]" />
 								<div className="dark:text-contentTertiary text-textLightTheme">
 									Komuu is waiting on friends. You don't have to, though!
 								</div>
@@ -246,7 +239,7 @@ const FriendsPage = () => {
 						</div>
 					)}
 				</div>
-				<div className="w-[416px] max-w-2/5 dark:bg-bgTertiary bg-bgLightMode lg:flex hidden">
+				<div className="contain-strict w-[416px] max-w-2/5 dark:bg-bgTertiary bg-bgLightMode lg:flex hidden">
 					<ActivityList listFriend={friends} />
 				</div>
 			</div>

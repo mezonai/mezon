@@ -2,10 +2,9 @@ import { useAppNavigation, useEscapeKeyClose } from '@mezon/core';
 import {
 	channelsActions,
 	createNewChannel,
+	selectChannelById,
 	selectCurrentCategory,
-	selectCurrentClanId,
-	selectIsOpenCreateNewChannel,
-	selectLoadingStatus,
+	selectCurrentClan,
 	selectTheme,
 	useAppDispatch,
 	useAppSelector
@@ -31,10 +30,8 @@ export const CreateNewChannelModal = () => {
 	const InputRef = useRef<ChannelNameModalRef>(null);
 	const appUrlInputRef = useRef<ChannelAppUrlModalRef>(null);
 	const [isInputError, setIsInputError] = useState<boolean>(true);
-	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClan = useSelector(selectCurrentClan);
 	const currentCategory = useAppSelector((state) => selectCurrentCategory(state));
-	const isOpenModal = useAppSelector((state) => selectIsOpenCreateNewChannel(state));
-	const isLoading = useSelector(selectLoadingStatus);
 	const [validate, setValidate] = useState(true);
 	const [validateUrl, setValidateUrl] = useState(true);
 	const [channelName, setChannelName] = useState<string>('');
@@ -48,12 +45,7 @@ export const CreateNewChannelModal = () => {
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
-
-	useEffect(() => {
-		if (isLoading === 'loaded') {
-			dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
-		}
-	}, [dispatch, isLoading]);
+	const channelWelcome = useAppSelector((state) => selectChannelById(state, currentClan?.welcome_channel_id as string)) || {};
 
 	const handleSubmit = async () => {
 		if (channelType === -1) {
@@ -81,13 +73,13 @@ export const CreateNewChannelModal = () => {
 		}
 
 		const body: ApiCreateChannelDescRequest = {
-			clan_id: currentClanId?.toString(),
+			clan_id: currentClan?.clan_id,
 			type: channelType,
 			channel_label: channelName,
 			channel_private: isPrivate,
-			category_id: currentCategory?.category_id,
+			category_id: currentCategory?.category_id || channelWelcome?.category_id,
 			...(isAppChannel && { app_url: appUrl }),
-			parrent_id: '0'
+			parent_id: '0'
 		};
 
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
@@ -101,7 +93,7 @@ export const CreateNewChannelModal = () => {
 			typeChannel !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
 			typeChannel !== ChannelType.CHANNEL_TYPE_STREAMING
 		) {
-			const channelPath = toChannelPage(channelID ?? '', currentClanId ?? '');
+			const channelPath = toChannelPage(channelID ?? '', currentClan?.clan_id ?? '');
 			navigate(channelPath);
 		}
 		clearDataAfterCreateNew();
@@ -112,7 +104,7 @@ export const CreateNewChannelModal = () => {
 		setIsErrorName('');
 		setIsErrorAppUrl('');
 		clearDataAfterCreateNew();
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
 	};
 
 	const handleChannelNameChange = (value: string) => {
@@ -169,124 +161,122 @@ export const CreateNewChannelModal = () => {
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	const handleClose = useCallback(() => {
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
-	}, [isOpenModal]);
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
+	}, []);
 	useEscapeKeyClose(modalRef, handleClose);
 
 	return (
-		isOpenModal && (
+		<div
+			ref={modalRef}
+			tabIndex={-1}
+			className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center"
+		>
 			<div
-				ref={modalRef}
-				tabIndex={-1}
-				className="w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center"
+				className={`z-60 w-full h-full sm:w-4/5 sm:max-h-[630px] md:w-[684px] dark:bg-bgPrimary bg-bgLightModeSecond rounded-2xl flex-col justify-start  items-start gap-3 inline-flex relative shadow-lg`}
 			>
-				<div
-					className={`z-60 w-full h-full sm:w-4/5 sm:max-h-[630px] md:w-[684px] dark:bg-bgPrimary bg-bgLightModeSecond rounded-2xl flex-col justify-start  items-start gap-3 inline-flex relative shadow-lg`}
-				>
-					<div className="self-stretch flex-col justify-start items-start flex">
-						<div className="self-stretch px-5 pt-8 flex-col justify-start items-start gap-3 flex">
-							<div className="self-stretch h-14 flex-col justify-center items-start gap-1 flex">
-								<div className="flex flex-col items-start gap-x-2 sm:flex-row sm:items-center w-full relative">
-									<ChannelLableModal labelProp="CREATE A NEW CHANNEL IN" />
-									<span>
-										<p className="self-stretch  text-sm font-bold leading-normal uppercase text-cyan-500">
-											{currentCategory?.category_name}
-										</p>
-									</span>
-									<div className="absolute right-1 top-[-10px]">
-										<button onClick={handleCloseModal} className="hover:text-[#ffffff]">
-											<Icons.Close />
-										</button>
-									</div>
+				<div className="self-stretch flex-col justify-start items-start flex">
+					<div className="self-stretch px-5 pt-8 flex-col justify-start items-start gap-3 flex">
+						<div className="self-stretch h-14 flex-col justify-center items-start gap-1 flex">
+							<div className="flex flex-col items-start gap-x-2 sm:flex-row sm:items-center w-full relative">
+								<ChannelLableModal labelProp="CREATE A NEW CHANNEL IN" />
+								<span>
+									<p className="self-stretch  text-sm font-bold leading-normal uppercase text-cyan-500">
+										{currentCategory?.category_name || channelWelcome?.category_name}
+									</p>
+								</span>
+								<div className="absolute right-1 top-[-10px]">
+									<button onClick={handleCloseModal} className="hover:text-[#ffffff]">
+										<Icons.Close />
+									</button>
 								</div>
-
-								<div className=" dark:text-zinc-400 text-colorTextLightMode text-sm">Kindly set up a channel of your choice.</div>
 							</div>
-							<div className={`flex flex-col gap-3 w-full max-h-[430px] pr-2 overflow-y-scroll`}>
-								<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
-									<ChannelLableModal labelProp="Choose channel's type:" />
-									<div className="Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto">
-										<ChannelTypeComponent
-											type={ChannelType.CHANNEL_TYPE_CHANNEL}
-											onChange={onChangeChannelType}
-											error={isErrorType}
-										/>
-										<ChannelTypeComponent
-											disable={false}
-											type={channelTypeVoice}
-											onChange={onChangeChannelType}
-											error={isErrorType}
-										/>
-										{/* <ChannelTypeComponent
+
+							<div className=" dark:text-zinc-400 text-colorTextLightMode text-sm">Kindly set up a channel of your choice.</div>
+						</div>
+						<div className={`flex flex-col gap-3 w-full max-h-[430px] pr-2 overflow-y-scroll`}>
+							<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
+								<ChannelLableModal labelProp="Choose channel's type:" />
+								<div className="Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto">
+									<ChannelTypeComponent
+										type={ChannelType.CHANNEL_TYPE_CHANNEL}
+										onChange={onChangeChannelType}
+										error={isErrorType}
+									/>
+									<ChannelTypeComponent
+										disable={false}
+										type={channelTypeVoice}
+										onChange={onChangeChannelType}
+										error={isErrorType}
+									/>
+									{/* <ChannelTypeComponent
 										disable={true}
 										type={ChannelType.CHANNEL_TYPE_FORUM}
 										onChange={onChangeChannelType}
 										error={isErrorType}
 									/> */}
-										<ChannelTypeComponent
-											disable={false}
-											type={ChannelType.CHANNEL_TYPE_STREAMING}
-											onChange={onChangeChannelType}
-											error={isErrorType}
-										/>
-										<ChannelTypeComponent
-											disable={false}
-											type={ChannelType.CHANNEL_TYPE_APP}
-											onChange={onChangeChannelType}
-											error={isErrorType}
-										/>
-									</div>
+									<ChannelTypeComponent
+										disable={false}
+										type={ChannelType.CHANNEL_TYPE_STREAMING}
+										onChange={onChangeChannelType}
+										error={isErrorType}
+									/>
+									<ChannelTypeComponent
+										disable={false}
+										type={ChannelType.CHANNEL_TYPE_APP}
+										onChange={onChangeChannelType}
+										error={isErrorType}
+									/>
 								</div>
-								<ChannelNameTextField
-									ref={InputRef}
-									onChange={handleChannelNameChange}
-									onCheckValidate={checkValidate}
-									type={channelType}
-									channelNameProps="What is channel's name?"
-									error={isErrorName}
-									onHandleChangeValue={handleChangeValue}
-									placeholder={"Enter the channel's name"}
-									shouldValidate={true}
-									categoryId={currentCategory?.category_id}
-								/>
-								{channelType === ChannelType.CHANNEL_TYPE_APP && (
-									<div className={'mt-2 w-full'}>
-										<ChannelAppUrlTextField
-											ref={appUrlInputRef}
-											onChange={handleAppUrlChannge}
-											onCheckValidate={checkValidateUrl}
-											onHandleChangeValue={handleChangeValue}
-											channelAppUrlProps="What is app's URL?"
-											error={isErrorAppUrl}
-											placeholder={"Enter the app's URL"}
-											shouldValidate={true}
-										/>
-									</div>
-								)}
-								{channelType === channelTypeVoice && (
-									<div className={'mt-2 w-full'}>
-										<ChannelVoicePlatformField
-											onChange={onChangeChannelTypeVoice}
-											channelVoicePlatformProp="Choose meeting platform:"
-											channelTypeVoiceProp={channelTypeVoice}
-										/>
-									</div>
-								)}
-								{channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
-									channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
-									channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
-										<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps="Is private channel?" />
-									)}
 							</div>
+							<ChannelNameTextField
+								ref={InputRef}
+								onChange={handleChannelNameChange}
+								onCheckValidate={checkValidate}
+								type={channelType}
+								channelNameProps="What is channel's name?"
+								error={isErrorName}
+								onHandleChangeValue={handleChangeValue}
+								placeholder={"Enter the channel's name"}
+								shouldValidate={true}
+								categoryId={currentCategory?.category_id || channelWelcome?.category_id}
+							/>
+							{channelType === ChannelType.CHANNEL_TYPE_APP && (
+								<div className={'mt-2 w-full'}>
+									<ChannelAppUrlTextField
+										ref={appUrlInputRef}
+										onChange={handleAppUrlChannge}
+										onCheckValidate={checkValidateUrl}
+										onHandleChangeValue={handleChangeValue}
+										channelAppUrlProps="What is app's URL?"
+										error={isErrorAppUrl}
+										placeholder={"Enter the app's URL"}
+										shouldValidate={true}
+									/>
+								</div>
+							)}
+							{channelType === channelTypeVoice && (
+								<div className={'mt-2 w-full'}>
+									<ChannelVoicePlatformField
+										onChange={onChangeChannelTypeVoice}
+										channelVoicePlatformProp="Choose meeting platform:"
+										channelTypeVoiceProp={channelTypeVoice}
+									/>
+								</div>
+							)}
+							{channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
+								channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
+								channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
+									<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps="Is private channel?" />
+								)}
 						</div>
 					</div>
-					<CreateChannelButton onClickCancel={handleCloseModal} onClickCreate={handleSubmit} checkInputError={isInputError} />
 				</div>
-				{isErrorType !== '' && <AlertTitleTextWarning description={isErrorType} />}
-				{isErrorName !== '' && <AlertTitleTextWarning description={isErrorName} />}
-				{isAppChannel && isErrorAppUrl !== '' && <AlertTitleTextWarning description={isErrorAppUrl} />}
+				<CreateChannelButton onClickCancel={handleCloseModal} onClickCreate={handleSubmit} checkInputError={isInputError} />
 			</div>
-		)
+			{isErrorType !== '' && <AlertTitleTextWarning description={isErrorType} />}
+			{isErrorName !== '' && <AlertTitleTextWarning description={isErrorName} />}
+			{isAppChannel && isErrorAppUrl !== '' && <AlertTitleTextWarning description={isErrorAppUrl} />}
+		</div>
 	);
 };
 

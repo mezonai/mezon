@@ -4,8 +4,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useMessageParser } from '../../../hooks/useMessageParser';
-import { RenderTextMarkdownContent } from '../../home/homedrawer/components';
 import { MessageAttachment } from '../../home/homedrawer/components/MessageAttachment';
+import { RenderTextMarkdownContent } from '../../home/homedrawer/components/RenderTextMarkdown';
 
 interface IMessageNotificationProps {
 	message: IMessageWithUser;
@@ -25,7 +25,7 @@ const MessageWebhookClan = React.memo(({ message }: IMessageNotificationProps) =
 	return (
 		<View>
 			{attachments?.length ? (
-				<MessageAttachment attachments={message?.attachments || []} senderId={message?.sender_id} createTime={message?.create_time} />
+				<MessageAttachment attachments={message?.attachments || []} clanId={message?.clan_id} channelId={message?.channel_id} />
 			) : null}
 			<View>
 				<RenderTextMarkdownContent

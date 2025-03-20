@@ -4,7 +4,7 @@ import { sleep } from '@mezon/utils';
 import { useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { Chase } from 'react-native-animated-spinkit';
-import { WebView } from 'react-native-webview';
+import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -65,6 +65,7 @@ export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanv
 				source={{
 					uri: uri
 				}}
+				originWhitelist={['*']}
 				style={styles.container}
 				injectedJavaScriptBeforeContentLoaded={injectedJS}
 				javaScriptEnabled={true}

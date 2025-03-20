@@ -2,9 +2,7 @@ import {
 	ActionEmitEvent,
 	BicycleIcon,
 	BowlIcon,
-	GameControllerIcon,
 	HeartIcon,
-	Icons,
 	LeafIcon,
 	ObjectIcon,
 	PenIcon,
@@ -23,7 +21,9 @@ import { DeviceEventEmitter, Platform, Text, TextInput, TouchableOpacity, View }
 import FastImage from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
-import { MezonClanAvatar } from '../../../../../../componentUI';
+import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
@@ -104,12 +104,12 @@ export default function EmojiSelectorContainer({
 				)
 			: [];
 		return [
-			<Icons.ClockIcon color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.clockIcon} color={themeValue.textStrong} />,
 			...clanEmojis,
 			<SmilingFaceIcon height={size.s_24} width={size.s_24} color={themeValue.textStrong} />,
 			<LeafIcon color={themeValue.textStrong} />,
 			<BowlIcon color={themeValue.textStrong} />,
-			<GameControllerIcon color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.gameControllerIcon} color={themeValue.textStrong} />,
 			<BicycleIcon color={themeValue.textStrong} />,
 			<ObjectIcon color={themeValue.textStrong} />,
 			<HeartIcon color={themeValue.textStrong} />,
@@ -190,7 +190,7 @@ export default function EmojiSelectorContainer({
 		>
 			<View style={{ backgroundColor: themeBasic === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>
 				<View style={styles.textInputWrapper}>
-					<Icons.MagnifyingIcon height={18} width={18} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={18} width={18} color={themeValue.text} />
 					<TextInput
 						onFocus={handleBottomSheetExpand}
 						placeholder={t('findThePerfectReaction')}

@@ -1,13 +1,6 @@
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useThreadMessage, useThreads } from '@mezon/core';
-import {
-	ActionEmitEvent,
-	Icons,
-	STORAGE_CLAN_ID,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	getUpdateOrAddClanChannelCache,
-	save
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, save } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
@@ -30,12 +23,15 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonInput, MezonSwitch } from '../../../componentUI';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
+import MezonSwitch from '../../../componentUI/MezonSwitch';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuThreadScreenProps } from '../../../navigation/ScreenTypes';
 import { ChatBox } from '../../../screens/home/homedrawer/ChatBox';
 import MessageItem from '../../../screens/home/homedrawer/MessageItem';
 import PanelKeyboard from '../../../screens/home/homedrawer/PanelKeyboard';
-import { IModeKeyboardPicker } from '../../../screens/home/homedrawer/components';
+import { IModeKeyboardPicker } from '../../../screens/home/homedrawer/components/BottomKeyboardPicker';
 import { EMessageActionType } from '../../../screens/home/homedrawer/enums';
 import { validInput } from '../../../utils/validate';
 import { style } from './CreateThreadForm.style';
@@ -56,7 +52,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 	const { valueThread } = useThreads();
 	const { sendMessageThread } = useThreadMessage({
-		channelId: threadCurrentChannel?.id as string,
+		channelId: '',
 		mode: ChannelStreamMode.STREAM_MODE_THREAD
 	});
 	const panelKeyboardRef = useRef(null);
@@ -77,7 +73,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 				clan_id: currentClanId?.toString(),
 				channel_label: value.nameValueThread,
 				channel_private: value.isPrivate,
-				parrent_id: (channelThreads ? channelThreads?.id : currentChannelId) || '',
+				parent_id: (channelThreads ? channelThreads?.id : currentChannelId) || '',
 				category_id: currentChannel?.category_id,
 				type: ChannelType.CHANNEL_TYPE_THREAD
 			};
@@ -93,7 +89,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 				Alert.alert('Created Thread Failed', "Thread not found or you're not allowed to update");
 			}
 		},
-		[currentChannel, currentChannel?.parrent_id, currentClanId, dispatch]
+		[currentChannel, currentChannel?.parent_id, currentClanId, dispatch]
 	);
 
 	const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -137,7 +133,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 				console.error('Session is not available');
 			}
 		},
-		[createThread, sendMessageThread, sessionUser, currentClanId, dispatch]
+		[sessionUser, createThread, dispatch, currentClanId, sendMessageThread, threadCurrentChannel]
 	);
 
 	useEffect(() => {
@@ -183,7 +179,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 					>
 						<View style={{ margin: size.s_20, flex: 1 }}>
 							<View style={styles.iconContainer}>
-								<Icons.ThreadIcon width={size.s_20} height={size.s_20} color={themeValue.text} />
+								<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
 							</View>
 							<MezonInput
 								label={t('threadName')}

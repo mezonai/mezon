@@ -1,4 +1,4 @@
-import { useAuth, useFriends } from '@mezon/core';
+import { useAuth, useCustomNavigate, useFriends } from '@mezon/core';
 import {
 	channelsActions,
 	clansActions,
@@ -15,12 +15,12 @@ import { ModeResponsive, createImgproxyUrl } from '@mezon/utils';
 import { useCallback, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
 import { Coords } from '../ChannelLink';
 import NavLinkComponent from '../NavLink';
 import PanelClan from '../PanelClan';
 
 const SidebarLogoItem = () => {
+	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 	const appearanceTheme = useSelector(selectTheme);
 	const { userProfile } = useAuth();
@@ -51,42 +51,46 @@ const SidebarLogoItem = () => {
 		openRightClickModal();
 	};
 	const handleClickToJoinClan = () => {
-		console.log('handleClickToJoinClan');
 		dispatch(clansActions.joinClan({ clanId: '0' }));
 	};
 	const { quantityPendingRequest } = useFriends();
 	const logoCustom = useSelector(selectLogoCustom);
 	return (
-		<NavLink
-			to={currentDmId ? `/chat/direct/message/${currentDmId}/${currentDmIType}` : '/chat/direct/friends'}
-			onClick={() => {
-				setModeResponsive(ModeResponsive.MODE_DM);
-			}}
-			draggable="false"
-		>
-			<NavLinkComponent active={!isClanView}>
-				<div onContextMenu={handleMouseClick}>
-					<Image
-						src={
-							logoCustom
-								? createImgproxyUrl(logoCustom, { width: 44, height: 44, resizeType: 'fit' })
-								: `assets/images/${appearanceTheme === 'dark' ? 'mezon-logo-black.svg' : 'mezon-logo-white.svg'}`
-						}
-						alt={'logoMezon'}
-						width={48}
-						height={48}
-						className="clan w-full aspect-square object-cover"
-						onClick={handleClickToJoinClan}
-						draggable="false"
-					/>
-					{quantityPendingRequest !== 0 && (
-						<div className="absolute border-[4px] dark:border-bgPrimary border-[#ffffff] w-[24px] h-[24px] rounded-full bg-colorDanger text-[#fff] font-bold text-[11px] flex items-center justify-center top-7 right-[-6px]">
-							{quantityPendingRequest}
-						</div>
-					)}
+		<div className="relative h-[48px]">
+			<button
+				onClick={() => {
+					setModeResponsive(ModeResponsive.MODE_DM);
+					navigate(currentDmId ? `/chat/direct/message/${currentDmId}/${currentDmIType}` : '/chat/direct/friends');
+				}}
+				draggable="false"
+			>
+				<NavLinkComponent active={!isClanView}>
+					<div onContextMenu={handleMouseClick}>
+						<Image
+							src={
+								logoCustom
+									? createImgproxyUrl(logoCustom, { width: 44, height: 44, resizeType: 'fit' })
+									: `assets/images/${appearanceTheme === 'dark' ? 'mezon-logo-black.svg' : 'mezon-logo-white.svg'}`
+							}
+							width={48}
+							height={48}
+							className="clan w-full aspect-square object-cover"
+							onClick={handleClickToJoinClan}
+							draggable="false"
+						/>
+					</div>
+				</NavLinkComponent>
+			</button>
+			{quantityPendingRequest > 0 ? (
+				<div
+					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-0 right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+						quantityPendingRequest >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
+					}`}
+				>
+					{quantityPendingRequest >= 100 ? '99+' : quantityPendingRequest}
 				</div>
-			</NavLinkComponent>
-		</NavLink>
+			) : null}
+		</div>
 	);
 };
 

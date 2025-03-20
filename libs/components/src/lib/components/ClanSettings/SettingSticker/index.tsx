@@ -45,8 +45,8 @@ const SettingSticker = ({ parentRef }: { parentRef: RefObject<HTMLDivElement> })
 				</div>
 				<div className="flex p-4 dark:bg-bgSecondary bg-bgLightSecondary rounded-lg">
 					<div className="flex-1 w-full flex flex-col">
-						<p className="text-base font-bold">Free Slots</p>
-						<p className="text-xs ">1 of 250 slots available</p>
+						<p className="text-base font-bold">Upload it here!</p>
+						<p className="text-xs ">Let's customize the amazing stickers with your interest</p>
 					</div>
 					<Button label="upload sticker" className="capitalize" onClick={handleOpenModalUpload}></Button>
 				</div>

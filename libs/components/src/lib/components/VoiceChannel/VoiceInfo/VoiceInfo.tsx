@@ -10,7 +10,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ParticipantMeetState } from '@mezon/utils';
+import { ParticipantMeetState, useMediaPermissions } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -56,6 +56,8 @@ const VoiceInfo = React.memo(() => {
 	const showCamera = useSelector(selectShowCamera);
 	const showMicrophone = useSelector(selectShowMicrophone);
 
+	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
+
 	return (
 		<div
 			className={`flex flex-col gap-2 border-b-2 dark:border-borderDefault border-gray-300 px-4 py-2 hover:bg-gray-550/[0.16] shadow-sm transition
@@ -74,39 +76,59 @@ const VoiceInfo = React.memo(() => {
 					</button>
 				</div>
 			</div>
-			<div className="grid grid-cols-4 gap-4">
+			<div className="grid grid-cols-4 gap-4 justify-between">
 				<Tooltip
 					placement="top"
 					overlay={
-						<span className="bg-[#2B2B2B] p-2 !text-[16px] rounded">{showMicrophone ? 'Turn Off Microphone' : 'Turn On Microphone'}</span>
+						hasMicrophoneAccess ? (
+							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">
+								{showMicrophone ? 'Turn Off Microphone' : 'Turn On Microphone'}
+							</span>
+						) : null
 					}
+					showArrow={hasMicrophoneAccess ? { className: '!bottom-1' } : false}
+					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button
-						className="flex justify-center items-center bg-buttonSecondary hover:bg-buttonSecondaryHover p-[6px] rounded-md"
+						className={`flex justify-center items-center p-[6px] rounded-md bg-buttonSecondary
+						${hasMicrophoneAccess ? 'hover:bg-buttonSecondaryHover' : 'opacity-50 cursor-not-allowed'}`}
 						onClick={() => dispatch(voiceActions.setShowMicrophone(!showMicrophone))}
+						disabled={!hasMicrophoneAccess}
 					>
 						{showMicrophone ? <Icons.VoiceMicIcon className="w-4 h-4" /> : <Icons.VoiceMicDisabledIcon className="w-4 h-4" />}
 					</button>
 				</Tooltip>
 				<Tooltip
 					placement="top"
-					overlay={<span className="bg-[#2B2B2B] p-2 !text-[16px] rounded">{showCamera ? 'Turn Off Camera' : 'Turn On Camera'}</span>}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlay={
+						hasCameraAccess ? (
+							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{showCamera ? 'Turn Off Camera' : 'Turn On Camera'}</span>
+						) : null
+					}
+					showArrow={hasCameraAccess ? { className: '!bottom-1' } : false}
+					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button
-						className="flex justify-center items-center bg-buttonSecondary hover:bg-buttonSecondaryHover p-[6px] rounded-md"
+						className={`flex justify-center items-center p-[6px] rounded-md bg-buttonSecondary
+							${hasCameraAccess ? 'hover:bg-buttonSecondaryHover' : 'opacity-50 cursor-not-allowed'}`}
 						onClick={() => dispatch(voiceActions.setShowCamera(!showCamera))}
+						disabled={!hasCameraAccess}
 					>
 						{showCamera ? <Icons.VoiceCameraIcon className="w-4 h-4" /> : <Icons.VoiceCameraDisabledIcon className="w-4 h-4" />}
 					</button>
 				</Tooltip>
 				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
 					placement="top"
-					overlay={<span className="bg-[#2B2B2B] p-2 !text-[16px] rounded">{showScreen ? 'Stop screen share' : 'Share Your Screen'}</span>}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlay={
+						<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{showScreen ? 'Stop screen share' : 'Share Your Screen'}</span>
+					}
+					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button
@@ -117,9 +139,11 @@ const VoiceInfo = React.memo(() => {
 					</button>
 				</Tooltip>
 				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
 					placement="top"
-					overlay={<span className="bg-[#2B2B2B] p-2 !text-[16px] rounded">Disconnect</span>}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+					overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">Disconnect</span>}
+					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 					destroyTooltipOnHide
 				>
 					<button className="flex justify-center items-center bg-[#da373c] hover:bg-[#a12829] p-[6px] rounded-md" onClick={leaveVoice}>

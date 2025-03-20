@@ -70,9 +70,7 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message }: UserRea
 				<div className="flex flex-col justify-center ">
 					<div
 						onClick={(e) => e.stopPropagation()}
-						className={`z-50   w-[18rem]
-						dark:bg-[#28272b] bg-white border-[#28272b] rounded-sm min-h-5 max-h-[25rem]
-				 		${window.innerWidth < 640 ? 'flex flex-col justify-center' : 'p-1 bottom-0'}`}
+						className={`z-50 w-[18rem] dark:bg-bgSecondary600 bg-white border-[#28272b] rounded-sm min-h-5 max-h-[25rem] ${window.innerWidth < 640 ? 'flex flex-col justify-center' : 'p-1 bottom-0'}`}
 					>
 						<PanelHeader emojiId={getEmojiById?.emojiId} emojiName={getEmojiById?.emoji ?? ''} count={count} />
 						<div ref={ref} tabIndex={-1} className="max-h-40 overflow-y-auto hide-scrollbar focus-visible:outline-none">

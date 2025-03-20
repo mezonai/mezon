@@ -23,6 +23,7 @@ export type MezonElectronAPI = {
 		}
 	) => Promise<void>;
 	dowloadImage: (url: string) => Promise<void>;
+	getScreenSources: () => Promise<{ id: string; name: string; thumbnail: string }[]>;
 };
 declare global {
 	interface Window {
@@ -43,4 +44,10 @@ export interface MezonNotificationOptions extends NotificationOptions {
 export interface MezonDownloadFile {
 	url: string;
 	defaultFileName: string;
+}
+
+export interface CloseChannelAppPayload {
+	appId: string;
+	appClanId: string;
+	appChannelId: string;
 }

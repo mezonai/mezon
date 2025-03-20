@@ -33,9 +33,10 @@ function useChannelSeen(channelId: string) {
 		const mode =
 			currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_THREAD;
 		if (lastMessage) {
-			markAsReadSeen(lastMessage, mode);
+			const numberNotification = currentChannel?.count_mess_unread ? currentChannel?.count_mess_unread : 0;
+			markAsReadSeen(lastMessage, mode, numberNotification);
 		}
-	}, [lastMessage, channelId, markAsReadSeen, currentChannel?.type]);
+	}, [lastMessage, channelId, markAsReadSeen, currentChannel?.type, currentChannel?.count_mess_unread]);
 
 	useEffect(() => {
 		if (!statusFetchChannel) return;
@@ -74,7 +75,7 @@ function DrawerListener() {
 		await dispatch(
 			channelMembersActions.fetchChannelMembers({
 				clanId: currentChannel?.clan_id || '',
-				channelId: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parrent_id : currentChannel?.channel_id) || '',
+				channelId: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parent_id : currentChannel?.channel_id) || '',
 				channelType: ChannelType.CHANNEL_TYPE_CHANNEL
 			})
 		);

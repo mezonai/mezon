@@ -1,4 +1,4 @@
-import { useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
+import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { PinMessageEntity, pinMessageActions, selectCurrentChannelId, selectTheme, useAppDispatch } from '@mezon/store';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { RefObject, useRef, useState } from 'react';
@@ -35,14 +35,16 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 	const modalDeleteRef = useRef(null);
 	const [openDeletePinMessage, closeDeletePinMessage] = useModal(() => {
 		return (
-			<ModalDeletePinMess
-				pinMessage={unpinMess?.pinMessage as PinMessageEntity}
-				contentString={unpinMess?.contentString}
-				handlePinMessage={() => handleUnPinMessage(unpinMess?.pinMessage.message_id || '')}
-				closeModal={closeDeletePinMessage}
-				attachments={unpinMess?.attachments as ApiMessageAttachment[]}
-				modalref={modalDeleteRef}
-			/>
+			<ColorRoleProvider>
+				<ModalDeletePinMess
+					pinMessage={unpinMess?.pinMessage as PinMessageEntity}
+					contentString={unpinMess?.contentString}
+					handlePinMessage={() => handleUnPinMessage(unpinMess?.pinMessage.message_id || '')}
+					closeModal={closeDeletePinMessage}
+					attachments={unpinMess?.attachments as ApiMessageAttachment[]}
+					modalref={modalDeleteRef}
+				/>
+			</ColorRoleProvider>
 		);
 	}, [unpinMess]);
 

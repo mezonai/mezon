@@ -14,7 +14,8 @@ import { channelsActions, clansActions, getStoreAsync } from '@mezon/store-mobil
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { MezonInput, MezonModal } from '../../../../../componentUI';
+import MezonInput from '../../../../../componentUI/MezonInput';
+import { MezonModal } from '../../../../../componentUI/MezonModal';
 import { ErrorInput } from '../../../../../components/ErrorInput';
 import { styles } from './JoinClanModal.styles';
 

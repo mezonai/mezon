@@ -1,58 +1,34 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { ReactNode } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { style } from './styles';
 
 interface IMezonConfirmProps {
-	visible?: boolean;
 	title: string;
 	children?: ReactNode;
 	confirmText: string;
 	content?: string;
-	onVisibleChange?: (visible: boolean) => void;
 	onConfirm?: () => void;
 	onCancel?: () => void;
-	hasBackdrop?: boolean;
 }
-export default function MezonConfirm({
-	children,
-	hasBackdrop = true,
-	visible,
-	onVisibleChange,
-	title,
-	confirmText,
-	content,
-	onConfirm,
-	onCancel
-}: IMezonConfirmProps) {
+export default function MezonConfirm({ children, title, confirmText, content, onConfirm, onCancel }: IMezonConfirmProps) {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, isTabletLandscape);
 
 	function handleClose() {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		onCancel && onCancel();
-		onVisibleChange && onVisibleChange(false);
 	}
 
 	function handleConfirm() {
 		onConfirm && onConfirm();
-		onVisibleChange && onVisibleChange(false);
 	}
 
 	return (
-		<Modal
-			isVisible={visible}
-			animationIn={'bounceIn'}
-			animationOut={'bounceOut'}
-			hasBackdrop={hasBackdrop}
-			coverScreen={true}
-			avoidKeyboard={false}
-			onBackdropPress={handleClose}
-			onSwipeComplete={handleClose}
-			backdropColor={'rgba(0,0,0, 0.7)'}
-		>
+		<View style={styles.main}>
 			<View style={styles.container}>
 				<View style={styles.header}>
 					<Text style={styles.title}>{title}</Text>
@@ -69,6 +45,7 @@ export default function MezonConfirm({
 					</TouchableOpacity>
 				</View>
 			</View>
-		</Modal>
+			<TouchableOpacity style={styles.backdrop} onPress={handleClose} />
+		</View>
 	);
 }

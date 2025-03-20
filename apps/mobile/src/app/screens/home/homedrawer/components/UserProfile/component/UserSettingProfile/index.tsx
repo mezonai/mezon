@@ -1,12 +1,13 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { Text, baseColor, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan, selectCurrentClanId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
 import { MezonModal } from '../../../../../../../componentUI/MezonModal';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import KickUserClanModal from '../KickUserClanModal';
 import { ManageUserModal } from '../ManageUserModal';
 import { style } from './UserSettingProfile.style';
@@ -84,28 +85,28 @@ const UserSettingProfile = ({
 			{
 				label: `${EActionSettingUserProfile.Manage}`,
 				value: EActionSettingUserProfile.Manage,
-				icon: <Icons.SettingsIcon color={themeValue.text} width={20} height={20} />,
+				icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.text} width={20} height={20} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission
 			},
 			{
 				label: `${EActionSettingUserProfile.TimeOut}`,
 				value: EActionSettingUserProfile.TimeOut,
-				icon: <Icons.ClockWarningIcon color={themeValue.text} width={20} height={20} />,
+				icon: <MezonIconCDN icon={IconCDN.clockWarningIcon} color={themeValue.text} width={20} height={20} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission && !isItMe
 			},
 			{
 				label: `${EActionSettingUserProfile.Kick}`,
 				value: EActionSettingUserProfile.Kick,
-				icon: <Icons.UserMinusIcon width={20} height={20} color={baseColor.red} />,
+				icon: <MezonIconCDN icon={IconCDN.userMinusIcon} width={20} height={20} color={baseColor.red} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission && !isItMe && !isThatClanOwner
 			},
 			{
 				label: `${EActionSettingUserProfile.Ban}`,
 				value: EActionSettingUserProfile.Ban,
-				icon: <Icons.HammerIcon width={20} height={20} color={baseColor.red} />,
+				icon: <MezonIconCDN icon={IconCDN.hammerIcon} width={20} height={20} color={baseColor.red} />,
 				action: handleSettingUserProfile,
 				isShow: hasAdminPermission && !isItMe
 			}
@@ -116,7 +117,6 @@ const UserSettingProfile = ({
 	const handleRemoveUserClans = useCallback(async () => {
 		if (user) {
 			setVisibleKickUserModal(false);
-			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_INFO_USER_BOTTOM_SHEET, { isHiddenBottomSheet: true });
 			const userIds = [user.user?.id ?? ''];
 			await removeMemberClan({ clanId: currentClanId as string, channelId: user.channelId as string, userIds });
 		}

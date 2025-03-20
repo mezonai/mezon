@@ -3,8 +3,8 @@ import { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
-import { SvgSouces } from '../../../../../../constants/svg';
+import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 
 export const ChannelStatusIcon = ({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {
 	const { themeValue } = useTheme();
@@ -15,62 +15,62 @@ export const ChannelStatusIcon = ({ channel, isUnRead }: { channel: ChannelsEnti
 			{channel?.channel_private === ChannelStatusEnum.isPrivate &&
 				(channel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) &&
 				!isAgeRestrictedChannel && (
-					<FastImage
-						source={{
-							uri: SvgSouces.channelVoiceLock
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
+					<MezonIconCDN
+						icon={IconCDN.channelVoiceLock}
+						height={size.s_18}
+						width={size.s_18}
+						color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 					/>
 				)}
 			{channel?.channel_private === ChannelStatusEnum.isPrivate &&
 				channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 				!isAgeRestrictedChannel && (
-					<FastImage
-						source={{
-							uri: SvgSouces.channelTextLock
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
+					<MezonIconCDN
+						icon={IconCDN.channelTextLock}
+						height={size.s_18}
+						width={size.s_18}
+						color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 					/>
 				)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate &&
 				(channel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
-					<FastImage
-						source={{
-							uri: SvgSouces.channelVoice
-						}}
-						style={{ height: size.s_18, width: size.s_18 }}
+					<MezonIconCDN
+						icon={IconCDN.channelVoice}
+						height={size.s_18}
+						width={size.s_18}
+						color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 					/>
 				)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-				<FastImage
-					source={{
-						uri: SvgSouces.channelText
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
+				<MezonIconCDN
+					icon={IconCDN.channelText}
+					height={size.s_18}
+					width={size.s_18}
+					color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 				/>
 			)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_STREAMING && (
-				<FastImage
-					source={{
-						uri: SvgSouces.channelStream
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
+				<MezonIconCDN
+					icon={IconCDN.channelStream}
+					height={size.s_18}
+					width={size.s_18}
+					color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 				/>
 			)}
 			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_APP && (
-				<FastImage
-					source={{
-						uri: SvgSouces.channelApp
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
+				<MezonIconCDN
+					icon={IconCDN.channelApp}
+					height={size.s_18}
+					width={size.s_18}
+					color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 				/>
 			)}
 			{channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
-				<FastImage
-					source={{
-						uri: SvgSouces.channelTextWarning
-					}}
-					style={{ height: size.s_18, width: size.s_18 }}
+				<MezonIconCDN
+					icon={IconCDN.channelTextWarning}
+					height={size.s_18}
+					width={size.s_18}
+					color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 				/>
 			)}
 		</>

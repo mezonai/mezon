@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonAvatar } from '../../../../../componentUI';
+import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 

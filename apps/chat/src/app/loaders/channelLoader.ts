@@ -9,7 +9,7 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 	if (!channelId || !clanId) {
 		throw new Error('Channel ID null');
 	}
-	await dispatch(channelsActions.addThreadToChannels({ channelId, clanId }));
+	dispatch(channelsActions.addThreadToChannels({ channelId, clanId }));
 	dispatch(channelsActions.joinChannel({ clanId, channelId, noFetchMembers: false, messageId: messageId || '' }));
 	dispatch(channelsActions.setPreviousChannels({ clanId, channelId }));
 	notificationService.setCurrentChannelId(channelId);
@@ -18,17 +18,13 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 	dispatch(topicsActions.setCurrentTopicId(''));
 	dispatch(topicsActions.setFocusTopicBox(false));
 	dispatch(threadsActions.setFocusThreadBox(false));
+	dispatch(threadsActions.hideThreadModal());
 	return null;
 };
 
 export const shouldRevalidateChannel: ShouldRevalidateFunction = (ctx) => {
-	const { currentParams, nextParams, currentUrl, nextUrl } = ctx;
-
-	const currentMessageId = new URL(currentUrl).searchParams.get('messageId');
-	const nextMessageId = new URL(nextUrl).searchParams.get('messageId');
-
+	const { currentParams, nextParams } = ctx;
 	const { channelId: currentChannelId } = currentParams;
 	const { channelId: nextChannelId } = nextParams;
-
-	return currentChannelId !== nextChannelId || currentMessageId !== nextMessageId;
+	return currentChannelId !== nextChannelId;
 };

@@ -1,5 +1,5 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon, CloseIcon, Icons, isEqual } from '@mezon/mobile-components';
+import { CheckIcon, isEqual } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllPermissionsDefault, selectAllRolesClan, selectEveryoneRole, selectRoleByRoleId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -8,8 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { MezonInput, MezonSwitch } from '../../../componentUI';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
+import MezonSwitch from '../../../componentUI/MezonSwitch';
 import { SeparatorWithLine } from '../../../components/Common';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 
@@ -86,7 +89,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 			[],
 			removePermissionList
 		);
-		if (response) {
+		if (response === true) {
 			Toast.show({
 				type: 'success',
 				props: {
@@ -100,7 +103,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}
@@ -125,13 +128,13 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 			if (isEditRoleMode) {
 				return (
 					<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-						<Icons.ArrowLargeLeftIcon height={20} width={20} color={themeValue.textStrong} />
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.textStrong} />
 					</Pressable>
 				);
 			}
 			return (
 				<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-					<Icons.CloseSmallBoldIcon height={20} width={20} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
 				</Pressable>
 			);
 		},
@@ -165,8 +168,8 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 	};
 
 	const handleNextStep = async () => {
-		const response = updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
-		if (response) {
+		const response = await updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
+		if (response === true) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.SETUP_ROLE_MEMBERS);
 			// Toast.show({
 			// 	type: 'success',
@@ -180,7 +183,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}

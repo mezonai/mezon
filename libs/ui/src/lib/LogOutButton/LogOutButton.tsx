@@ -1,14 +1,16 @@
-import { authActions, useAppDispatch } from '@mezon/store';
+import { authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export function LogOutButton() {
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
+	const userProfile = useSelector(selectAllAccount);
 	const handleOpenModal = () => {
 		setOpenModal(true);
 	};
 	const handleLogOut = () => {
-		dispatch(authActions.logOut());
+		dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);

@@ -9,6 +9,7 @@ import {
 	selectCurrentUserId,
 	selectIsElectronDownloading,
 	selectIsElectronUpdateAvailable,
+	selectIsOpenCreateNewChannel,
 	selectIsShowEmptyCategory,
 	selectListChannelRenderByClanId,
 	selectStatusStream,
@@ -28,6 +29,7 @@ import {
 	toggleDisableHover
 } from '@mezon/utils';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { CreateNewChannelModal } from '../CreateChannelModal';
 import { MentionFloatButton } from '../MentionFloatButton';
@@ -38,12 +40,23 @@ import { Events } from './ChannelListComponents';
 import ChannelListItem from './ChannelListItem';
 export type ChannelListProps = { className?: string };
 export type CategoriesState = Record<string, boolean>;
+const clanTopbarEle = 60;
 
 function ChannelList() {
 	const appearanceTheme = useSelector(selectTheme);
+	const isOpenModal = useAppSelector((state) => selectIsOpenCreateNewChannel(state));
+	const [openCreateChannel, closeCreateChannel] = useModal(() => <CreateNewChannelModal />, []);
+
+	useEffect(() => {
+		if (isOpenModal) {
+			openCreateChannel();
+		} else {
+			closeCreateChannel();
+		}
+	}, [isOpenModal]);
+
 	return (
-		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="h-full">
-			<CreateNewChannelModal />
+		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="contain-strict h-full">
 			<hr className="h-[0.08px] w-full dark:border-borderDivider border-white mx-2" />
 			<div className={`flex-1 space-y-[21px] text-gray-300`}>
 				<RowVirtualizerDynamic appearanceTheme={appearanceTheme} />
@@ -114,23 +127,22 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 
 	const items = virtualizer.getVirtualItems();
 
-	const [height, setHeight] = useState(0);
-	const clanTopbarEle = 60;
-
 	const calculateHeight = useCallback(() => {
+		//TODO: check get height after join clan
 		const clanFooterEle = document.getElementById('clan-footer');
 		const totalHeight = clanTopbarEle + (clanFooterEle?.clientHeight || 0) + 2;
 		const outsideHeight = totalHeight;
 		const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
-		setHeight(window.innerHeight - outsideHeight - titleBarHeight);
+		return window.innerHeight - outsideHeight - titleBarHeight;
 	}, []);
+	const [height, setHeight] = useState(calculateHeight());
 
 	useWindowSize(() => {
-		calculateHeight();
+		setHeight(calculateHeight());
 	});
 
 	useEffect(() => {
-		calculateHeight();
+		setHeight(calculateHeight());
 	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
 
 	const findScrollIndex = () => {
@@ -244,7 +256,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 								</div>
 							);
 						} else {
-							if (!(item as IChannel)?.parrent_id || (item as IChannel).parrent_id === '0') {
+							if (!(item as IChannel)?.parent_id || (item as IChannel).parent_id === '0') {
 								return (
 									<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>
 										<ChannelListItem
@@ -262,7 +274,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 											key={item.id}
 											isActive={currentChannelId === item.id}
 											thread={item}
-											isFirstThread={(data[virtualRow.index - 1] as IChannel).parrent_id === '0'}
+											isFirstThread={(data[virtualRow.index - 1] as IChannel).parent_id === '0'}
 										/>
 									</div>
 								);

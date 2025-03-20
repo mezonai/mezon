@@ -38,13 +38,15 @@ const Direct = () => {
 	return (
 		<>
 			<div
-				className={`flex-col  flex w-[272px] dark:bg-bgSecondary bg-bgLightMode relative min-w-widthMenuMobile ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
+				className={`flex-col flex w-[272px] dark:bg-bgSecondary bg-bgLightMode relative min-w-widthMenuMobile ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'max-sm:hidden') : ''}`}
 			>
-				<ClanHeader type={'direct'} />
-				<DirectMessageList />
-				{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
-				{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
-				{isVoiceJoined && <VoiceInfo />}
+				<div className="contain-content">
+					<ClanHeader type={'direct'} />
+					<DirectMessageList />
+					{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
+					{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
+					{isVoiceJoined && <VoiceInfo />}
+				</div>
 				{(isElectronUpdateAvailable || IsElectronDownloading) && <UpdateButton isDownloading={!isElectronUpdateAvailable} />}
 				<div style={{ height: 56, width: '100%' }}>
 					<FooterProfile

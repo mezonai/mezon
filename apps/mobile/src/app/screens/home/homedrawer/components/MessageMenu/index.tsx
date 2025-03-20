@@ -1,5 +1,5 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { ENotificationActive, ENotificationChannelId, Icons, UserMinus } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId, Icons, UserMinus } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -21,12 +21,15 @@ import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
 import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonConfirm, MezonMenu, reserve } from '../../../../../componentUI';
+import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
+import MezonConfirm from '../../../../../componentUI/MezonConfirm';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../../../componentUI/MezonMenu';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -38,7 +41,6 @@ interface IServerMenuProps {
 function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const { t } = useTranslation(['dmMessage']);
 	const { themeValue } = useTheme();
-	const [isVisibleLeaveGroupModal, setIsVisibleLeaveGroupModal] = useState<boolean>(false);
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
@@ -74,7 +76,21 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const leaveGroupMenu: IMezonMenuItemProps[] = [
 		{
 			onPress: () => {
-				setIsVisibleLeaveGroupModal(true);
+				const data = {
+					children: (
+						<MezonConfirm
+							onConfirm={handleLeaveGroupConfirm}
+							title={t('confirm.title', {
+								groupName: messageInfo?.channel_label
+							})}
+							content={t('confirm.content', {
+								groupName: messageInfo?.channel_label
+							})}
+							confirmText={t('confirm.confirmText')}
+						/>
+					)
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			isShow: isGroup,
 			title: lastOne ? t('delete.leaveGroup') : t('menu.leaveGroup'),
@@ -84,19 +100,13 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const profileMenu: IMezonMenuItemProps[] = [
 		{
-			onPress: () => reserve(),
-			title: t('menu.profile'),
-			isShow: !isGroup,
-			icon: <Icons.UserBoxIcon color={baseColor.gray} />
-		},
-		{
 			onPress: async () => {
 				await dispatch(directActions.closeDirectMessage({ channel_id: messageInfo?.channel_id }));
 				dismiss();
 			},
 			title: t('menu.closeDm'),
 			isShow: !isGroup,
-			icon: <UserMinus color={baseColor.gray} />
+			icon: <MezonIconCDN icon={IconCDN.userMinusIcon} color={baseColor.gray} />
 		}
 	];
 
@@ -123,7 +133,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
-			icon: <Icons.EyeIcon color={baseColor.gray} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={baseColor.gray} />
 		}
 	];
 
@@ -161,7 +171,11 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: handleEnableOrDisableE2EE,
 			title: messageInfo?.e2ee ? t('menu.disableE2EE') : t('menu.enableE2EE'),
-			icon: messageInfo?.e2ee ? <Icons.LockUnlockedIcon color={themeValue.textStrong} /> : <Icons.LockIcon color={themeValue.text} />
+			icon: messageInfo?.e2ee ? (
+				<MezonIconCDN icon={IconCDN.lockUnlockIcon} color={themeValue.textStrong} />
+			) : (
+				<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} />
+			)
 		},
 		{
 			title: isDmUnmute ? t('menu.muteConversation') : t('menu.unMuteConversation'),
@@ -177,9 +191,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				dismiss();
 			},
 			icon: isDmUnmute ? (
-				<Icons.BellSlashIcon color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 			) : (
-				<Icons.BellIcon width={22} height={22} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.bellIcon} width={22} height={22} color={themeValue.text} />
 			)
 		}
 		// {
@@ -199,9 +213,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			items: markAsReadMenu
 		},
 		{
-			items: favoriteMenu
-		},
-		{
 			items: optionsMenu
 		}
 	];
@@ -216,8 +227,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		}
 
 		await dispatch(fetchDirectMessage({ noCache: true }));
-		setIsVisibleLeaveGroupModal(false);
-		dismiss();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 
 	return (
@@ -225,7 +235,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			<View style={styles.header}>
 				{isGroup ? (
 					<View style={styles.groupAvatar}>
-						<Icons.GroupIcon />
+						<MezonIconCDN icon={IconCDN.groupIcon} />
 					</View>
 				) : (
 					<View style={styles.avatarWrapper}>
@@ -254,19 +264,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			<View>
 				<MezonMenu menu={menu} />
 			</View>
-
-			<MezonConfirm
-				visible={isVisibleLeaveGroupModal}
-				onConfirm={handleLeaveGroupConfirm}
-				onVisibleChange={setIsVisibleLeaveGroupModal}
-				title={t('confirm.title', {
-					groupName: messageInfo?.channel_label
-				})}
-				content={t('confirm.content', {
-					groupName: messageInfo?.channel_label
-				})}
-				confirmText={t('confirm.confirmText')}
-			/>
 		</View>
 	);
 }

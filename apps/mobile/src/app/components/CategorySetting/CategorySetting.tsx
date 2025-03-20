@@ -1,7 +1,7 @@
 import { useCategorizedAllChannels } from '@mezon/core';
 import {
+	ActionEmitEvent,
 	CheckIcon,
-	Icons,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	getUpdateOrAddClanChannelCache,
@@ -13,12 +13,16 @@ import { Colors, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, channelsActions, getStoreAsync, selectCategoryById, useAppDispatch } from '@mezon/store-mobile';
 import { ICategoryChannel, IChannel } from '@mezon/utils';
 import { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text } from 'react-native';
+import { DeviceEventEmitter, Pressable, ScrollView, Text } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonConfirm, MezonInput } from '../../componentUI';
+import MezonConfirm from '../../componentUI/MezonConfirm';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import MezonInput from '../../componentUI/MezonInput';
+import { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -31,7 +35,6 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 	const categorizedChannels = useCategorizedAllChannels();
 	const { categoryId } = route.params;
 	const category = useSelector((state) => selectCategoryById(state, categoryId || ''));
-	const [isVisibleDeleteCategoryModal, setIsVisibleDeleteCategoryModal] = useState<boolean>(false);
 	const [categorySettingValue, setCategorySettingValue] = useState<string>('');
 	const [currentSettingValue, setCurrentSettingValue] = useState<string>('');
 
@@ -61,7 +64,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 				{
 					title: t('fields.categoryPermission.permission'),
 					expandable: true,
-					icon: <Icons.UserShieldIcon color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.shieldUserIcon} color={themeValue.text} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[]
@@ -159,16 +162,24 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 				categoryLabel: category.category_name as string
 			})
 		);
-
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		handleFocusDefaultChannel();
 	};
 
-	const handleDeleteModalVisibleChange = (visible: boolean) => {
-		setIsVisibleDeleteCategoryModal(visible);
-	};
-
 	const handlePressDeleteCategory = () => {
-		setIsVisibleDeleteCategoryModal(true);
+		const data = {
+			children: (
+				<MezonConfirm
+					onConfirm={handleDeleteCategory}
+					title={t('confirm.delete.title')}
+					confirmText={t('confirm.delete.confirmText')}
+					content={t('confirm.delete.content', {
+						categoryName: category?.category_name
+					})}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	};
 
 	return (
@@ -176,17 +187,6 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 			<MezonInput label={t('fields.categoryName.title')} value={currentSettingValue} onTextChange={handleUpdateValue} />
 
 			{/*<MezonMenu menu={menu} />*/}
-
-			<MezonConfirm
-				visible={isVisibleDeleteCategoryModal}
-				onVisibleChange={handleDeleteModalVisibleChange}
-				onConfirm={handleDeleteCategory}
-				title={t('confirm.delete.title')}
-				confirmText={t('confirm.delete.confirmText')}
-				content={t('confirm.delete.content', {
-					categoryName: category?.category_name
-				})}
-			/>
 		</ScrollView>
 	);
 }

@@ -4,7 +4,7 @@ import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Icons, Image } from '@mezon/ui';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiOnboardingContent } from 'mezon-js/api.gen';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ModalSaveChanges from '../ClanSettingOverview/ModalSaveChanges';
 import GuideItemLayout from './GuideItemLayout';
@@ -31,7 +31,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 	const formOnboarding = useSelector(selectFormOnboarding);
 	const { sessionRef, clientRef } = useMezon();
 
-	const handleCreateOnboarding = useCallback(async () => {
+	const handleCreateOnboarding = async () => {
 		const uploadImageRule = formOnboarding.rules.map((item) => {
 			if (!item.file) {
 				return undefined;
@@ -68,7 +68,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				content: formOnboardingData
 			})
 		);
-	}, [formOnboarding.rules.length, formOnboarding?.task?.length, formOnboarding?.questions]);
+	};
 
 	const checkCreateValidate = useMemo(() => {
 		return formOnboarding.questions.length > 0 || formOnboarding.rules.length > 0 || formOnboarding.task.length > 0;
@@ -141,15 +141,7 @@ const MainIndex = ({ isEnableOnBoarding, toggleEnableStatus, handleGoToPage, onC
 				</div>
 			</div>
 			<GuideItemLayout
-				icon={
-					<Image
-						src={`assets/images/wumpus_addbba.svg`}
-						alt={'wumpus'}
-						width={40}
-						height={40}
-						className="aspect-square object-cover w-[40px]"
-					/>
-				}
+				icon={<Image src={`assets/images/wumpus_addbba.svg`} width={40} height={40} className="aspect-square object-cover w-[40px]" />}
 				title="Recent Updates"
 				description={
 					<div className="font-medium text-sm">

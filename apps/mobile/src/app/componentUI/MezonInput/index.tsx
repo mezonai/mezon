@@ -1,9 +1,10 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { StyleProp, Text, TextInput, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ErrorInput } from '../../components/ErrorInput';
+import { IconCDN } from '../../constants/icon_cdn';
 import { validInput } from '../../utils/validate';
+import MezonIconCDN from '../MezonIconCDN';
 import { style } from './styles';
 
 interface IMezonInputProps {
@@ -109,7 +110,7 @@ export default function MezonInput({
 
 					{!textarea && value?.length > 0 && !disabled && (
 						<TouchableOpacity onPress={handleClearBtn} style={styles.clearBtn}>
-							<Icons.CircleXIcon color={themeValue.white} />
+							<MezonIconCDN icon={IconCDN.circleXIcon} color={themeValue.white} />
 						</TouchableOpacity>
 					)}
 				</View>

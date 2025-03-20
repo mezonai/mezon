@@ -1,7 +1,8 @@
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { SwitchProps, TouchableOpacity, View } from 'react-native';
+import { IconCDN } from '../../constants/icon_cdn';
+import MezonIconCDN from '../MezonIconCDN';
 import { style } from './styles';
 
 interface IMezonSwitch extends SwitchProps {
@@ -34,9 +35,9 @@ export const MezonSwitch = ({ value, onValueChange, iconYesNo, iconOn, iconOff, 
 			<View style={[styles.circle, isEnabled ? styles.circleEnabled : {}]}>
 				{iconYesNo ? (
 					isEnabled ? (
-						<Icons.CheckmarkSmallIcon color={baseColor.blurple} height={22} width={22} />
+						<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.blurple} height={22} width={22} />
 					) : (
-						<Icons.CloseSmallIcon color={themeValue.secondary} height={20} width={20} />
+						<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.secondary} height={20} width={20} />
 					)
 				) : isEnabled ? (
 					iconOn

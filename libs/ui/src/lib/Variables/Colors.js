@@ -21,6 +21,7 @@ module.exports = {
 	bgPrimary1: '#2E3035',
 	bgSecondary: '#2B2D31',
 	bgSecondaryHover: '#282A2E',
+	bgSecondary500: '#232428cc',
 	bgSecondary600: '#232428',
 	bgTertiary: '#1E1F22',
 	bgDisable: '#323232',

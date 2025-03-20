@@ -8,6 +8,7 @@ export const SIZE_PAGE_SEARCH = 25;
 export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
 export const MAX_FILE_NAME_EMOJI = 62;
 export const MAX_FILE_ATTACHMENTS = 100;
+export const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
 export const DEBOUNCE_TYPING_TIME = 700;
 export const TIME_OF_SHOWING_FIRST_POPUP = 1000 * 60 * 5;
 export const KEY_KEYBOARD = { BACKSPACE: 8, TAB: 9, ENTER: 13, ESC: 27, UP: 38, DOWN: 40, RIGHT: 39, LEFT: 27 };
@@ -26,7 +27,7 @@ export const FOR_24_HOURS = 24 * 60 * 60 * 1000;
 export const MUTE = 0;
 export const ACTIVE = 1;
 export const DEFAULT_ID = '0';
-export const LIMIT = 10;
+export const LIMIT = 50;
 
 export const threadError: ThreadError = {
 	name: 'Thread Name is required',
@@ -102,3 +103,30 @@ export const KOMU_CLAN_ID = '1779484504377790464';
 export const WELCOME_CHANNEL_ID = '1827883133219901440';
 
 export const MEZON_MENTIONS_COPY_KEY = 'text/mezon-mentions';
+export enum UploadLimitReason {
+	SIZE = 'size',
+	COUNT = 'count'
+}
+
+export const MAX_FILE_SIZE_1MB = 1 * 1024 * 1024; // 1MB
+
+export enum MiniAppEventType {
+	PONG = 'PONG',
+	PING = 'PING',
+	SEND_TOKEN = 'SEND_TOKEN',
+	GET_CLAN_ROLES = 'GET_CLAN_ROLES',
+	SEND_BOT_ID = 'SEND_BOT_ID',
+	GET_CLAN_USERS = 'GET_CLAN_USERS',
+	JOIN_ROOM = 'JOIN_ROOM',
+	LEAVE_ROOM = 'LEAVE_ROOM',
+	CREATE_VOICE_ROOM = 'CREATE_VOICE_ROOM',
+	CURRENT_USER_INFO = 'CURRENT_USER_INFO',
+	CLAN_ROLES_RESPONSE = 'CLAN_ROLES_RESPONSE',
+	USER_HASH_INFO = 'USER_HASH_INFO',
+	CLAN_USERS_RESPONSE = 'CLAN_USERS_RESPONSE',
+	SEND_TOKEN_RESPONSE_SUCCESS = 'SEND_TOKEN_RESPONSE_SUCCESS',
+	SEND_TOKEN_RESPONSE_FAILED = 'SEND_TOKEN_RESPONSE_FAILED'
+}
+
+export const CREATING_THREAD = 'CREATING_THREAD';
+export const CREATING_TOPIC = 'CREATING_TOPIC';

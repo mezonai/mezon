@@ -1,16 +1,19 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth } from '@mezon/core';
-import { CheckIcon, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { ClansEntity, selectAllClans, selectCurrentClan } from '@mezon/store-mobile';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Dimensions, FlatList, Keyboard, KeyboardAvoidingView, TouchableOpacity, View } from 'react-native';
+import { Alert, DeviceEventEmitter, Dimensions, FlatList, Keyboard, KeyboardAvoidingView, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { IClanProfileValue } from '..';
 import { SeparatorWithLine } from '../../../../../app/components/Common';
-import { MezonBottomSheet, MezonClanAvatar, MezonInput } from '../../../../componentUI';
+import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../../componentUI/MezonInput';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { normalizeString } from '../../../../utils/helpers';
 import BannerAvatar from '../UserProfile/components/Banner';
 import { style } from './styles';
@@ -32,10 +35,6 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 	const currentClan = useSelector(selectCurrentClan);
 	const [selectedClan, setSelectedClan] = useState<ClansEntity>(currentClan);
 	const [searchClanText, setSearchClanText] = useState('');
-
-	const openBottomSheet = () => {
-		bottomSheetDetail.current?.present();
-	};
 
 	const onPressHashtag = () => {
 		Toast.show({
@@ -97,47 +96,13 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 	const filteredClanList = useMemo(() => {
 		return clans?.filter((it) => normalizeString(it?.clan_name)?.includes(normalizeString(searchClanText)));
 	}, [searchClanText, clans]);
-	return (
-		<KeyboardAvoidingView behavior={'position'} style={{ width: Dimensions.get('screen').width }}>
-			<TouchableOpacity onPress={() => openBottomSheet()} style={styles.actionItem}>
-				<View style={[styles.clanAvatarWrapper]}>
-					<MezonClanAvatar image={selectedClan?.logo} alt={selectedClan?.clan_name} />
-				</View>
-				<View style={{ flex: 1 }}>
-					<Text style={styles.clanName}>{selectedClan?.clan_name}</Text>
-				</View>
-				<Icons.ChevronSmallRightIcon height={size.s_15} width={size.s_15} color={themeValue.text} />
-			</TouchableOpacity>
 
-			<BannerAvatar
-				avatar={clanProfileValue?.imgUrl}
-				alt={clanProfileValue?.username}
-				onLoad={handleAvatarChange}
-				defaultAvatar={userProfile?.user?.avatar_url || ''}
-			/>
-
-			<View style={styles.btnGroup}>
-				<TouchableOpacity onPress={() => onPressHashtag()} style={styles.btnIcon}>
-					<Icons.TextIcon width={size.s_16} height={size.s_16} />
-				</TouchableOpacity>
-			</View>
-
-			<View style={styles.clanProfileDetail}>
-				<View style={styles.nameWrapper}>
-					<Text style={styles.displayNameText}>{clanProfileValue?.displayName || clanProfileValue?.username}</Text>
-					<Text style={styles.usernameText}>{clanProfileValue?.username}</Text>
-				</View>
-
-				<MezonInput
-					value={clanProfileValue?.displayName || clanProfileValue?.username}
-					onTextChange={(newValue) => onValueChange({ displayName: newValue })}
-					placeHolder={clanProfileValue?.username}
-					maxCharacter={32}
-					label={t('fields.clanName.label')}
-				/>
-			</View>
-
-			<MezonBottomSheet ref={bottomSheetDetail} title={t('selectAClan')} heightFitContent>
+	const openBottomSheet = () => {
+		bottomSheetDetail.current?.present();
+		const data = {
+			title: t('selectAClan'),
+			heightFitContent: true,
+			children: (
 				<View style={styles.bottomSheetContainer}>
 					<MezonInput value={searchClanText} onTextChange={setSearchClanText} placeHolder={t('searchClanPlaceholder')} />
 					<FlatList
@@ -160,7 +125,50 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 						}}
 					/>
 				</View>
-			</MezonBottomSheet>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
+	return (
+		<KeyboardAvoidingView behavior={'position'} style={{ width: Dimensions.get('screen').width }}>
+			<TouchableOpacity onPress={() => openBottomSheet()} style={styles.actionItem}>
+				<View style={[styles.clanAvatarWrapper]}>
+					<MezonClanAvatar image={selectedClan?.logo} alt={selectedClan?.clan_name} />
+				</View>
+				<View style={{ flex: 1 }}>
+					<Text style={styles.clanName}>{selectedClan?.clan_name}</Text>
+				</View>
+				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={size.s_15} width={size.s_15} color={themeValue.text} />
+			</TouchableOpacity>
+
+			<BannerAvatar
+				avatar={clanProfileValue?.imgUrl}
+				alt={clanProfileValue?.username}
+				onLoad={handleAvatarChange}
+				defaultAvatar={userProfile?.user?.avatar_url || ''}
+			/>
+
+			<View style={styles.btnGroup}>
+				<TouchableOpacity onPress={() => onPressHashtag()} style={styles.btnIcon}>
+					<MezonIconCDN icon={IconCDN.channelText} width={size.s_16} height={size.s_16} />
+				</TouchableOpacity>
+			</View>
+
+			<View style={styles.clanProfileDetail}>
+				<View style={styles.nameWrapper}>
+					<Text style={styles.displayNameText}>{clanProfileValue?.displayName || clanProfileValue?.username}</Text>
+					<Text style={styles.usernameText}>{clanProfileValue?.username}</Text>
+				</View>
+
+				<MezonInput
+					value={clanProfileValue?.displayName || clanProfileValue?.username}
+					onTextChange={(newValue) => onValueChange({ displayName: newValue })}
+					placeHolder={clanProfileValue?.username}
+					maxCharacter={32}
+					label={t('fields.clanName.label')}
+				/>
+			</View>
+
 			<View style={{ height: 250 }} />
 		</KeyboardAvoidingView>
 	);

@@ -102,7 +102,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const [defaultNotifiName, setDefaultNotifiName] = useState('');
 	const defaultNotificationCategory = useSelector(selectDefaultNotificationCategory);
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
-	const isThread = !!channel?.parrent_id && channel?.parrent_id !== '0';
+	const isThread = !!channel?.parent_id && channel?.parent_id !== '0';
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, selectedChannel ?? '')) || {};
 
@@ -147,7 +147,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			threadsActions.leaveThread({
 				clanId: currentClan?.id || '',
 				threadId: selectedChannel || '',
-				channelId: currentChannel.parrent_id || '',
+				channelId: currentChannel.parent_id || '',
 				isPrivate: currentChannel.channel_private || 0
 			})
 		);
@@ -156,7 +156,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		}
 
 		handleCloseModalConfirm();
-		navigate(`/chat/clans/${currentClan?.id}/channels/${currentChannel.parrent_id}`);
+		navigate(`/chat/clans/${currentClan?.id}/channels/${currentChannel.parent_id}`);
 	};
 
 	const [openModelConfirm, closeModelConfirm] = useModal(() => (
@@ -246,14 +246,14 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 
 	useEffect(() => {
 		if (getNotificationChannelSelected?.active === 1 || getNotificationChannelSelected?.id === '0') {
-			if (channel.parrent_id === '0' || !channel.parrent_id) {
+			if (channel.parent_id === '0' || !channel.parent_id) {
 				setNameChildren('Mute Channel');
 			} else {
 				setNameChildren('Mute Thread');
 			}
 			setmutedUntil('');
 		} else {
-			if (channel.parrent_id === '0' || !channel.parrent_id) {
+			if (channel.parent_id === '0' || !channel.parent_id) {
 				setNameChildren('Unmute Channel');
 			} else {
 				setNameChildren('Unmute Thread');
@@ -285,12 +285,12 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			setDefaultNotifiName(notiLabels[defaultNotificationClan.notification_setting_type]);
 		}
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan]);
-
-	const [canManageThread, canManageChannel] = usePermissionChecker(
-		[EOverriddenPermission.manageThread, EPermission.manageChannel],
+	const [hasClanOwnerPermission, hasAdminPermission, canManageThread, canManageChannel] = usePermissionChecker(
+		[EPermission.clanOwner, EPermission.administrator, EOverriddenPermission.manageThread, EPermission.manageChannel],
 		channel?.channel_id ?? ''
 	);
 
+	const hasManageThreadPermission = (canManageThread && channel.creator_id === currentUserId) || hasClanOwnerPermission || hasAdminPermission;
 	const handClosePannel = useCallback(() => {
 		setIsShowPanelChannel(false);
 	}, []);
@@ -359,7 +359,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 					<ItemPanel children="Hide Names" type="checkbox" />
 				</GroupPanels>
 			)}
-			{channel.parrent_id === '0' || !channel.parrent_id ? (
+			{channel.parent_id === '0' || !channel.parent_id ? (
 				<>
 					<GroupPanels>
 						{getNotificationChannelSelected?.active === 1 || getNotificationChannelSelected?.id === '0' ? (
@@ -511,7 +511,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 						)}
 					</GroupPanels>
 
-					{canManageThread && (
+					{hasManageThreadPermission && (
 						<GroupPanels>
 							<ItemPanel onClick={handleEditChannel} children="Edit Thread" />
 							{!isThread && <ItemPanel children="Create Thread" />}

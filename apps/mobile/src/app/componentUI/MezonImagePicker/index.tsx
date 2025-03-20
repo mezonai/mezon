@@ -1,4 +1,4 @@
-import { Icons, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannel } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
@@ -9,7 +9,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { openCropper } from 'react-native-image-crop-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
+import { IconCDN } from '../../constants/icon_cdn';
 import MezonClanAvatar from '../MezonClanAvatar';
+import MezonIconCDN from '../MezonIconCDN';
 import { style as _style } from './styles';
 
 export interface IFile {
@@ -195,7 +197,7 @@ export default memo(
 								penPosition && { top: penPosition.top, bottom: penPosition.bottom, left: penPosition.left, right: penPosition.right }
 							]}
 						>
-							<Icons.PencilIcon height={size.s_12} width={size.s_12} color={themeValue.text} />
+							<MezonIconCDN icon={IconCDN.pencilIcon} height={size.s_12} width={size.s_12} color={themeValue.text} />
 						</View>
 					)}
 				</View>

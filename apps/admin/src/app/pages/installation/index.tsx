@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 const Installation = () => {
 	const { applicationId } = useParams();
-	const linkInstall = window.location.origin + '/install/' + applicationId;
+	const linkInstall = window.location.origin + '/developers/bot/install/' + applicationId;
 	const handleCopyToClipboard = () => {
 		copy(linkInstall);
 	};

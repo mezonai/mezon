@@ -1,4 +1,4 @@
-import { CategoryChannelItemProps, EOptionOverridesType, Icons, notificationType } from '@mezon/mobile-components';
+import { CategoryChannelItemProps, EOptionOverridesType, notificationType } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllchannelCategorySetting } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,8 @@ import React, { useCallback, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './CategoryChannelItem.styles';
 
@@ -43,10 +45,10 @@ export const CategoryChannelItem = React.memo(
 			<TouchableOpacity onPress={navigateToNotificationDetail} style={{ ...styles.categoryItem, ...stylesItem }}>
 				<View style={{ flexDirection: 'row', gap: size.s_10, alignItems: 'center', maxWidth: '80%' }}>
 					{typePreviousIcon === ChannelType.CHANNEL_TYPE_CHANNEL && (
-						<Icons.TextIcon width={16} height={16} color={themeValue.channelNormal} />
+						<MezonIconCDN icon={IconCDN.channelText} width={16} height={16} color={themeValue.channelNormal} />
 					)}
 					{typePreviousIcon === EOptionOverridesType.Category && (
-						<Icons.FolderIcon width={16} height={16} color={themeValue.channelNormal} />
+						<MezonIconCDN icon={IconCDN.forderIcon} width={16} height={16} color={themeValue.channelNormal} />
 					)}
 					<View>
 						{categoryLabel && <Text style={styles.categoryLabel}>{categoryLabel}</Text>}
@@ -56,7 +58,7 @@ export const CategoryChannelItem = React.memo(
 
 				<View style={{ flexDirection: 'row', gap: size.s_10, alignItems: 'center' }}>
 					{notificationStatus && <Text style={styles.customStatus}>{notificationType[notificationStatus]}</Text>}
-					{expandable && <Icons.ChevronSmallRightIcon height={18} width={18} color={themeValue.text} />}
+					{expandable && <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={18} width={18} color={themeValue.text} />}
 				</View>
 			</TouchableOpacity>
 		);

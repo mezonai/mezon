@@ -16,11 +16,17 @@
         "organizationMenu": {
             "title": "",
             "createChannel": "Tạo Channel",
-            "edit": "Chỉnh sửa Thể loại"
+            "edit": "Chỉnh sửa Thể loại",
+            "delete": "Xóa thể loại"
         },
         "devMode": {
             "title": "Chế độ Phát triển",
             "copyServerID": "Sao chép ID Clan"
+        },
+        "modalConfirm": {
+            "title": "Xóa thể loại",
+            "content": "Bạn có chắc muốn xóa thể loại? Thay đổi này không thể hoàn tác",
+            "confirmText": "Xóa"
         }
     },
     "notify": {

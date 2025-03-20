@@ -1,4 +1,4 @@
-import { ActionEmitEvent, CrossIcon, getUpdateOrAddClanChannelCache, Icons, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import { ActionEmitEvent, CrossIcon, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store';
 import { channelsActions, createNewChannel, getStoreAsync, selectCurrentClanId } from '@mezon/store-mobile';
@@ -10,7 +10,12 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import { IMezonMenuSectionProps, MezonInput, MezonMenu, MezonOption, MezonSwitch } from '../../componentUI';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import MezonInput from '../../componentUI/MezonInput';
+import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonOption from '../../componentUI/MezonOption';
+import MezonSwitch from '../../componentUI/MezonSwitch';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { validInput } from '../../utils/validate';
 import { style } from './styles';
@@ -116,7 +121,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 						{
 							title: t('fields.channelPrivate.title'),
 							component: <MezonSwitch onValueChange={setChannelPrivate} />,
-							icon: <Icons.LockIcon color={themeValue.text} height={size.s_20} width={size.s_20} />
+							icon: <MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
 						}
 					]
 				}
@@ -129,19 +134,19 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			title: t('fields.channelType.text.title'),
 			description: t('fields.channelType.text.description'),
 			value: ChannelType.CHANNEL_TYPE_CHANNEL,
-			icon: <Icons.TextIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelText} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 		},
 		{
 			title: t('fields.channelType.voice.title'),
 			description: t('fields.channelType.voice.description'),
 			value: channelTypeVoice,
-			icon: <Icons.VoiceNormalIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelVoice} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 		},
 		{
 			title: t('fields.channelType.stream.title'),
 			description: t('fields.channelType.stream.description'),
 			value: ChannelType.CHANNEL_TYPE_STREAMING,
-			icon: <Icons.StreamIcon height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelStream} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 		}
 	];
 

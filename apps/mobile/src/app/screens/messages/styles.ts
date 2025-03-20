@@ -62,6 +62,12 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			paddingVertical: size.s_6
 		},
 
+		btnAddFriend: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_8
+		},
+
 		addFriendText: {
 			fontSize: isTablet ? size.small : size.medium,
 			color: colors.textStrong
@@ -125,7 +131,8 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			width: size.s_40,
 			height: size.s_40,
 			borderRadius: size.s_20,
-			overlayColor: colors.primary
+			overlayColor: colors.primary,
+			overflow: 'hidden'
 		},
 
 		messageContent: {

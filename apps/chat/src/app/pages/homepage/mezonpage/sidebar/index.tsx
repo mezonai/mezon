@@ -49,13 +49,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 		>
 			<div ref={headerSideBarRef} className="flex items-center justify-between pt-[14px] pr-[16px] pb-[14px] pl-[16px] h-[72px] relative">
 				<Link to={'/mezon'} className="flex gap-[4.92px] items-center">
-					<Image
-						src={`assets/images/mezon-logo-black.svg`}
-						alt={'logoMezon'}
-						width={32}
-						height={32}
-						className="aspect-square object-cover"
-					/>
+					<Image src={`assets/images/mezon-logo-black.svg`} width={32} height={32} className="aspect-square object-cover" />
 					<div className="font-semibold text-[22.15px] leading-[26.58px] tracking-[0.06em] font-['Poppins']">mezon</div>
 				</Link>
 				<Icons.MenuClose className="w-[20px] max-lg:block" onClick={toggleSideBar} />
@@ -94,6 +88,15 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 				>
 					Features
 				</a>
+				<a
+					href={'developers/applications'}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-base hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
+				>
+					Developers
+				</a>
+
 				<Link
 					className="text-center px-[16px] py-[10px] rounded-[8px] bg-[#1024D4] text-[#F4F7F9] font-semibold text-base hover:bg-[#0C1AB2] focus:bg-[#281FB5] whitespace-nowrap"
 					to={'/mezon'}
@@ -106,13 +109,13 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 				<div className="flex flex-col gap-[24px] max-lg:px-[32px]">
 					<div className="flex items-center gap-[24px]">
 						<a href="https://www.linkedin.com/company/nccplus-vietnam" target="_blank" rel="noreferrer" className="cursor-pointer">
-							<Image src={`assets/instagram.svg`} alt={'linkedIn'} />
+							<Image src={`assets/instagram.svg`} />
 						</a>
 						<a href="https://www.facebook.com/profile.php?id=61558081847939" target="_blank" rel="noreferrer" className="cursor-pointer">
-							<Image src={`assets/facebook.svg`} alt={'facebook'} />
+							<Image src={`assets/facebook.svg`} />
 						</a>
 						<a href="https://github.com/nccasia/mezon-fe" target="_blank" rel="noreferrer" className="cursor-pointer">
-							<Image src={`assets/twitter.svg`} alt={'twitter'} />
+							<Image src={`assets/twitter.svg`} />
 						</a>
 					</div>
 					<div className="font-normal text-[16px] leading-[24px] text-[#7C92AF]">© 2024 Mezon. All rights reserved.</div>

@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 
 const marginWidth = Dimensions.get('screen').width * 0.3;
 
-export const style = (colors: Attributes, isTabletLandscape: boolean) =>
+export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 	StyleSheet.create({
 		radioContainer: {
 			flexDirection: 'row',
@@ -23,7 +23,6 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			backgroundColor: Colors.bgViolet
 		},
 		inviteHeader: {
-			backgroundColor: colors.tertiary,
 			padding: 19,
 			width: '100%'
 		},
@@ -163,7 +162,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			height: '100%',
 			overflow: 'hidden',
 			paddingBottom: size.s_10,
-			backgroundColor: colors.tertiary,
+			backgroundColor: colors.primary,
 			borderTopRightRadius: 8,
 			borderTopLeftRadius: 8
 		},

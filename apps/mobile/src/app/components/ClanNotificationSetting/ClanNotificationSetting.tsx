@@ -1,10 +1,14 @@
-import { Icons, optionNotification, PlusIcon } from '@mezon/mobile-components';
+import { optionNotification, PlusIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { defaultNotificationActions, selectCurrentClanId, selectDefaultNotificationClan, useAppDispatch } from '@mezon/store-mobile';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu, MezonOption, MezonSwitch, reserve } from '../../componentUI';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
+import MezonOption from '../../componentUI/MezonOption';
+import MezonSwitch from '../../componentUI/MezonSwitch';
+import { IconCDN } from '../../constants/icon_cdn';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { CategoryChannel } from './CategoryChannel';
@@ -22,7 +26,7 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 	navigation.setOptions({
 		headerLeft: () => (
 			<Pressable style={{ padding: 20 }} onPress={handleClose}>
-				<Icons.CloseSmallBoldIcon height={20} width={20} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
 			</Pressable>
 		)
 	});

@@ -74,7 +74,8 @@ export function sanitizeUrl(url: string): string {
 	if (!url) return '';
 
 	try {
-		const encodedUrl = encodeURI(url);
+		const decodedUrl = decodeURIComponent(url);
+		const encodedUrl = encodeURI(decodedUrl);
 		const parsed = new URL(encodedUrl);
 
 		if (!['http:', 'https:', 'data:'].includes(parsed.protocol)) {

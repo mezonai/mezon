@@ -3,7 +3,7 @@ name: Release Mezon App for Linux
 on:
   release:
     types: [published]
-
+  workflow_dispatch:
 jobs:
   release:
     runs-on: mezon-build-linux

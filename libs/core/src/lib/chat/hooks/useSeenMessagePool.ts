@@ -22,7 +22,8 @@ export function useSeenMessagePool() {
 					clanId: action.clanId,
 					channelId: action.channelId,
 					messageId: action.messageId,
-					mode: action.mode
+					mode: action.mode,
+					badge_count: 0
 				})
 			);
 		});
@@ -51,7 +52,7 @@ export function useSeenMessagePool() {
 	const { isFocusDesktop, isTabVisible } = useWindowFocusState();
 
 	const markAsReadSeen = useCallback(
-		(message: MessagesEntity, mode: number) => {
+		(message: MessagesEntity, mode: number, badge_count: number) => {
 			// if message is sending, do not mark as seen
 			if (message?.isSending) {
 				return;
@@ -62,7 +63,8 @@ export function useSeenMessagePool() {
 					clanId: message?.clan_id || '',
 					channelId: message?.channel_id,
 					messageId: message?.id,
-					mode: mode
+					mode: mode,
+					badge_count
 				})
 			);
 			if ((isFocusDesktop === true && isElectron()) || isTabVisible) {

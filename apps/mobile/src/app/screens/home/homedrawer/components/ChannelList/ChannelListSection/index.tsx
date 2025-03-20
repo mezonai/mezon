@@ -3,9 +3,10 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { categoriesActions, selectCategoryExpandStateByCategoryId, useAppDispatch } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
-import { memo, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { ChannelsPositionRef } from '../../../ChannelList';
+import CategoryMenu from '../../CategoryMenu';
 import { IThreadActiveType } from '../ChannelListItem';
 import ChannelListSectionHeader from '../ChannelListSectionHeader';
 import { style } from './styles';
@@ -33,7 +34,11 @@ const ChannelListSection = memo(({ data, channelsPositionRef }: IChannelListSect
 	);
 
 	const onLongPressHeader = useCallback(() => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_LONG_PRESS_CATEGORY, data);
+		const dataBottomSheet = {
+			heightFitContent: true,
+			children: <CategoryMenu category={data} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data: dataBottomSheet });
 	}, [data]);
 
 	if (!data?.category_name?.trim()) {

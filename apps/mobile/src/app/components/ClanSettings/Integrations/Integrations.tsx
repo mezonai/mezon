@@ -1,5 +1,4 @@
 import { usePermissionChecker } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { fetchWebhooks, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -8,7 +7,9 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { IMezonMenuItemProps, IMezonMenuSectionProps, MezonMenu } from '../../../componentUI';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from '../styles';
 
@@ -34,7 +35,7 @@ export function Integrations() {
 				navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS);
 			},
 			expandable: true,
-			icon: <Icons.WebhookIcon color={themeValue.text} />,
+			icon: <MezonIconCDN icon={IconCDN.webhookIcon} color={themeValue.text} />,
 			description: t('integration.automatedMessage')
 		}
 	];

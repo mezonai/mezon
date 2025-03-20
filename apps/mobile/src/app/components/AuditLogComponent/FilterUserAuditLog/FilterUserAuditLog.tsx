@@ -7,7 +7,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { MezonAvatar, MezonOption } from '../../../componentUI';
+import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonOption from '../../../componentUI/MezonOption';
 import InputSearchAuditLog from '../InputSearchAuditLog/InputSearchAuditLog';
 
 export default function FilterUserAuditLog() {

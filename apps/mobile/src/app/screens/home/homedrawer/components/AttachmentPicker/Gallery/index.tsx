@@ -22,7 +22,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
 import { Camera } from 'react-native-vision-camera';
-import { IFile } from '../../../../../../componentUI';
+import { IFile } from '../../../../../../componentUI/MezonImagePicker';
 import { style } from './styles';
 export const { height } = Dimensions.get('window');
 interface IProps {
@@ -53,7 +53,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		return () => {
 			timerRef?.current && clearTimeout(timerRef.current);
 		};
-	}, [currentAlbums]);
+	}, []);
 
 	const checkAndRequestPermissions = async () => {
 		const hasPermission = await requestPermission();
@@ -83,7 +83,10 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		try {
 			if (Platform.OS === 'android') {
 				if (Platform.Version >= 33) {
-					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasImagePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+					const hasVideoPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO);
+
+					return hasImagePermission && hasVideoPermission;
 				} else {
 					return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
 				}
@@ -106,21 +109,24 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			try {
 				// For Android 13+ (API 33+)
 				if (Platform.Version >= 33) {
-					const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES, {
-						title: 'Photo Library Access',
-						message: 'This app needs access to your photo library.',
-						buttonNeutral: 'Ask Me Later',
-						buttonNegative: 'Cancel',
-						buttonPositive: 'OK'
-					});
+					const granted = await PermissionsAndroid.requestMultiple([
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+						PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO
+					]);
 
 					timerRef.current = setTimeout(() => dispatch(appActions.setIsFromFCMMobile(false)), 2000);
 
-					if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+					if (
+						granted['android.permission.READ_MEDIA_IMAGES'] !== PermissionsAndroid.RESULTS.GRANTED ||
+						granted['android.permission.READ_MEDIA_VIDEO'] !== PermissionsAndroid.RESULTS.GRANTED
+					) {
 						alertOpenSettings();
 					}
 
-					return granted === PermissionsAndroid.RESULTS.GRANTED;
+					return (
+						granted['android.permission.READ_MEDIA_IMAGES'] === PermissionsAndroid.RESULTS.GRANTED &&
+						granted['android.permission.READ_MEDIA_VIDEO'] === PermissionsAndroid.RESULTS.GRANTED
+					);
 				}
 				// For Android 12 and below
 				else {
@@ -178,10 +184,11 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		try {
 			const res = await CameraRoll.getPhotos({
 				first: 30,
-				assetType: 'All',
+				assetType: album === 'All Videos' ? 'Videos' : 'All',
 				...(!!pageInfo && !!after && { after: after }),
 				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
-				groupName: currentAlbums === 'All' ? null : currentAlbums
+				groupTypes: album === 'All' ? 'All' : 'Album',
+				groupName: album === 'All' || album === 'All Videos' ? null : album
 			});
 			setPhotos(after ? [...photos, ...res.edges] : res.edges);
 			setPageInfo(res.page_info);
@@ -194,6 +201,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 
 	useEffect(() => {
 		const showKeyboard = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SELECT_ALBUM, (value) => {
+			loadPhotos(value);
 			setCurrentAlbums(value);
 		});
 		return () => {
@@ -225,7 +233,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				}}
 				disabled={disabled}
 			>
-				<Image source={{ uri: item.node.image.uri, cache: 'force-cache' }} style={styles.imageGallery} />
+				<Image source={{ uri: item.node.image.uri }} style={styles.imageGallery} />
 				{isVideo && (
 					<View style={styles.videoOverlay}>
 						<PlayIcon width={size.s_20} height={size.s_20} />

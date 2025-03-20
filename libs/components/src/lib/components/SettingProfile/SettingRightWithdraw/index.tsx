@@ -82,7 +82,7 @@ const SettingRightWithdraw = ({ onClose }: IWithdrawProp) => {
 							<div className="dark:bg-black bg-[#f0f0f0] mt-[10px]  rounded-lg flex flex-col relative p-3 gap-8 ">
 								<div className="flex items-center flex-row gap-2 flex-1 justify-between ">
 									<div className="flex items-center flex-row gap-2">
-										<p className="text-2xl text-center">{!showCoin ? <span>*******</span> : ` ${totalToken} Token`}</p>
+										<p className="text-2xl text-center">{!showCoin ? <span>*******</span> : ` ${totalToken} ₫`}</p>
 									</div>
 									<button
 										className="text-[15px] bg-gray-600 rounded-[4px] p-[8px] cursor-pointer hover:bg-opacity-80"

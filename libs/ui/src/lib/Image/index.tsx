@@ -1,16 +1,17 @@
-import { Img, ImgProps } from 'react-image';
-
-export type ImageProps = ImgProps & {
+export type ImageProps = {
 	src: string;
-	alt: string;
 	width?: number;
 	height?: number;
 	placeholder?: string;
 	blurdataurl?: string;
+	loading?: 'lazy' | 'eager';
+	onClick?: () => void;
+	className?: string;
+	draggable?: 'true' | 'false';
 };
 
-function Image({ loading = 'lazy', ...rest }: ImageProps) {
-	return <Img {...rest} loading={loading} />;
+function Image({ loading = 'lazy', src, className, draggable, ...rest }: ImageProps) {
+	return <img {...rest} src={src} alt={'image'} loading={loading} className={className} draggable={draggable} />;
 }
 
 export default Image;

@@ -10,7 +10,9 @@ function MemberList() {
 	const currentClanId = useSelector(selectCurrentClanId);
 
 	return (
-		<div className={`self-stretch h-full flex-col justify-start items-start flex gap-[24px] w-full ${closeMenu ? 'pt-20' : 'pt-0'}`}>
+		<div
+			className={`contain-strict self-stretch h-full flex-col justify-start items-start flex gap-[24px] w-full ${closeMenu ? 'pt-20' : 'pt-0'}`}
+		>
 			<div className="w-full">
 				<div className="flex flex-col gap-4 pr-[2px]">
 					<ListMember key={currentClanId} />
