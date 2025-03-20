@@ -181,11 +181,12 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(
 		channelId
 	}) => {
 		const modalRef = useRef<HTMLDivElement>(null);
+		const { height, width } = useWindowSize();
 		const [position, setPosition] = useState({ x: 100, y: 100 });
 		const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
 		const [isDragging, setIsDragging] = useState(false);
 		const [resizeDir, setResizeDir] = useState<string | null>(null);
-		const [bounds, setBounds] = useState({ minX: 0, maxX: 0, minY: 0, maxY: 0 });
+		const [bounds, setBounds] = useState({ minX: 0, maxX: width, minY: 0, maxY: height });
 		const headerHeight = 28;
 		const [isCollapsed, setIsCollapsed] = useState(false);
 		const onCollapseToggle = useCallback(() => {
@@ -202,7 +203,6 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(
 				return !prev;
 			});
 		}, [initialHeight, initialWidth]);
-		const { height, width } = useWindowSize();
 
 		useEffect(() => {
 			const parent = parentRef?.current;
@@ -410,11 +410,9 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(
 					left: `${position.x}px`,
 					top: `${position.y}px`,
 					width: !isCollapsed ? `${size.width}px` : '',
-					height: isCollapsed ? '0px' : `${size.height}px`,
+					height: isCollapsed ? '28px' : `${size.height}px`,
 					display: 'flex',
-					flexDirection: 'column',
-					minWidth: !isCollapsed ? '300px' : '',
-					minHeight: !isCollapsed ? '440px' : ''
+					flexDirection: 'column'
 				}}
 			>
 				{!isCollapsed && <Overlay isFocused={isFocused} onFocus={onFocus} headerHeight={headerHeight} />}
