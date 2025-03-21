@@ -48,7 +48,7 @@ const ScreenSelectionModal = memo(({ onClose }: ScreenSelectionModalProps) => {
 							</div>
 						</div>
 					</div>
-					<div className="dark:bg-[#313339] bg-white h-fit min-h-80 max-h-[80vh]  overflow-y-scroll hide-scrollbar p-4 gap-y-4 flex flex-col contain-layout contain-paint">
+					<div className="dark:bg-[#313339] bg-white h-fit min-h-80 max-h-[80vh]  overflow-y-scroll hide-scrollbar p-4 grid grid-cols-2 gap-5 contain-layout contain-paint">
 						<ScreenListItems onClose={onClose} source={TABS[currentTab].value} />
 					</div>
 				</div>

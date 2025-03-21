@@ -30,7 +30,7 @@ const ScreenItems = memo(({ id, name, thumbnail, onClose }: ScreenItemsProps) =>
 
 	return (
 		<div onClick={() => selectStreamScreen()}>
-			<img src={thumbnail} alt={thumbnail} />
+			<img className="w-40 h-24 object-cover" src={thumbnail} alt={thumbnail} />
 			<p>{name}</p>
 		</div>
 	);
