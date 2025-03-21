@@ -1,5 +1,6 @@
-import { channelsActions, selectAllChannels, selectCurrentClanId, selectMembersClanCount, useAppSelector } from '@mezon/store';
+import { channelsActions, selectAllChannels, selectCurrentChannel, selectCurrentClan, selectMembersClanCount, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { ChannelType } from 'mezon-js';
 import { ReactNode, useEffect } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +12,8 @@ export type OnBoardWelcomeProps = {
 export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 	const numberMemberClan = useAppSelector(selectMembersClanCount);
 	const numberChannel = useSelector(selectAllChannels);
-	const currentClanId = useSelector(selectCurrentClanId);
+	const currentChannel = useSelector(selectCurrentChannel);
+	const currentClan = useSelector(selectCurrentClan);
 
 	const dispatch = useDispatch();
 	const [openInviteClanModal, closeInviteClanModal] = useModal(() => <ModalInvite onClose={closeInviteClanModal} open={true} />);
@@ -26,7 +28,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 		if (numberChannel.length < 1) {
 			return;
 		}
-		dispatch(channelsActions.openCreateNewModalChannel({ isOpen: true, clanId: currentClanId as string }));
+		dispatch(channelsActions.openCreateNewModalChannel({ isOpen: true, clanId: currentClan?.id as string }));
 	};
 
 	useEffect(() => {
@@ -37,10 +39,26 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 
 	return (
 		<div className="w-full p-4 mb-0  flex-1 flex flex-col items-center gap-2">
-			<Onboarditem icon={<Icons.AddPerson />} title="Invite your friends" tick={numberMemberClan > 1} onClick={openInviteClanModal} />
-			<Onboarditem icon={<Icons.Sent />} title="Send your first message" tick={!!nextMessageId} onClick={handleSendMessage} />
-			<Onboarditem icon={<Icons.Download />} title="Download the Mezon App" tick={true} onClick={handleSendMessage} />
-			<Onboarditem icon={<Icons.Hashtag />} title="Create your channel" tick={numberChannel.length > 1} onClick={handleCreateChannel} />
+			{currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
+				<div className="w-[400px] p-4 bg-bgSecondary rounded-lg">
+					{currentClan?.banner ? (
+						<img src={currentClan?.banner} />
+					) : (
+						<div className="w-full h-28 font-bold text-4xl text-bgSecondary500  rounded-lg flex items-center justify-center">
+							<p className="[text-shadow:_0_1px_2px_#ffffff]">App Image</p>
+						</div>
+					)}
+					<p className="font-bold text-white">What do you want to do</p>
+					<AppInfor desc="This is title of App Infor" link="https://www.w3schools.com/TAGs/tryit.asp?filename=tryhtml_link_target" />
+				</div>
+			) : (
+				<>
+					<Onboarditem icon={<Icons.AddPerson />} title="Invite your friends" tick={numberMemberClan > 1} onClick={openInviteClanModal} />
+					<Onboarditem icon={<Icons.Sent />} title="Send your first message" tick={!!nextMessageId} onClick={handleSendMessage} />
+					<Onboarditem icon={<Icons.Download />} title="Download the Mezon App" tick={true} onClick={handleSendMessage} />
+					<Onboarditem icon={<Icons.Hashtag />} title="Create your channel" tick={numberChannel.length > 1} onClick={handleCreateChannel} />
+				</>
+			)}
 		</div>
 	);
 }
@@ -64,6 +82,26 @@ const Onboarditem = ({ icon, title, tick, onClick }: { icon: ReactNode; title: s
 				</div>
 			) : (
 				<Icons.ArrowRight />
+			)}
+		</div>
+	);
+};
+
+const AppInfor = ({ desc, link }: { desc?: string; link?: string }) => {
+	const handleNavigateLink = () => {
+		window.open(link, '_blank');
+	};
+	return (
+		<div className="flex gap-1 text-sm">
+			{desc && (
+				<div className="inline-block break-all">
+					{desc}{' '}
+					{link && (
+						<a className="underline text-blue-600 cursor-pointer break-all" onClick={handleNavigateLink}>
+							{link}
+						</a>
+					)}
+				</div>
 			)}
 		</div>
 	);

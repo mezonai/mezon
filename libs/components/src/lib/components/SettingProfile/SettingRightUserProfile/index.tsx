@@ -122,14 +122,18 @@ const SettingRightUser = ({
 				return;
 			}
 			setIsLoading(true);
-			const imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+
+			let resizeFile = file;
+			if (!file.name.endsWith('.gif')) {
+				resizeFile = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+			}
 			const attachment = await handleUploadFile(
 				clientRef.current,
 				sessionRef.current,
 				currentClanId || '0',
 				userProfile?.user?.id || '0',
-				imageAvatarResize.name,
-				imageAvatarResize
+				resizeFile.name,
+				resizeFile
 			);
 			setUrlImage(attachment?.url || '');
 			setFlags(true);

@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /**
  * Skipped minification because the original files appears to be already minified.
  * Original file: /npm/blurhash@2.0.5/dist/index.js

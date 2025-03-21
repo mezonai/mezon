@@ -1,4 +1,4 @@
-import { useAppNavigation } from '@mezon/core';
+import { useAppNavigation, useWindowSize } from '@mezon/core';
 import { channelAppActions, selectEnableCall, selectEnableMic, selectGetRoomId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -31,10 +31,6 @@ const ModalHeader = memo(({ title, onClose, handleMouseDown, isFocused, clanId, 
 		<div
 			className={`rounded-t-lg px-3 py-1 flex items-center justify-between relative  w-full ${bgColor} ${roundedBottom}`}
 			onMouseDown={handleMouseDown}
-			style={{
-				transition: 'max-width 0.3s ease',
-				maxWidth: isCollapsed ? '240px' : '430px'
-			}}
 		>
 			<span className="text-sm text-white  truncate" style={{ maxWidth: '150px' }}>
 				{title}
@@ -206,43 +202,80 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(
 				return !prev;
 			});
 		}, [initialHeight, initialWidth]);
+		const { height, width } = useWindowSize();
 
 		useEffect(() => {
 			const parent = parentRef?.current;
 			if (!parent) return;
-
 			const updateBounds = () => {
-				const parentRect = parent.getBoundingClientRect();
 				setBounds({
 					minX: 0,
-					maxX: parentRect.width - size.width,
+					maxX: width - size.width,
 					minY: 0,
-					maxY: parentRect.height - size.height - 20
+					maxY: height - size.height
 				});
 			};
 
+			const updatePositon = () => {
+				const isOverHorizontal = position.y + size.height > height;
+				const isOverVertical = position.x + size.width > width;
+
+				const isUnderHorizontal = position.y < 0;
+				const isUnderVertical = position.x < 0;
+
+				if (isOverHorizontal) {
+					setPosition({
+						x: position.x,
+						y: height - size.height
+					});
+				} else if (isUnderHorizontal) {
+					setPosition({
+						x: position.x,
+						y: 0
+					});
+				}
+
+				if (isOverVertical) {
+					setPosition({
+						x: width - size.width,
+						y: position.y
+					});
+				} else if (isUnderVertical) {
+					setPosition({
+						x: 0,
+						y: position.y
+					});
+				}
+
+				if (isOverHorizontal && isOverVertical) {
+					setPosition({
+						x: width - size.width,
+						y: height - size.height
+					});
+				} else if (isUnderHorizontal && isUnderVertical) {
+					setPosition({
+						x: 0,
+						y: 0
+					});
+				}
+			};
+
 			updateBounds();
+			updatePositon();
+			const handleResize = () => {
+				updateBounds();
+				updatePositon();
+			};
 
-			const resizeObserver = new ResizeObserver(updateBounds);
+			window.addEventListener('resize', handleResize);
+			const resizeObserver = new ResizeObserver(handleResize);
 			resizeObserver.observe(parent);
-
 			return () => {
 				resizeObserver.disconnect();
+				window.removeEventListener('resize', handleResize);
 			};
-		}, [parentRef, size]);
-
-		const handleMouseDown = useCallback((e: React.MouseEvent) => {
-			e.preventDefault();
-			setIsDragging(true);
-		}, []);
-
-		const handleResizeMouseDown = useCallback((direction: string) => {
-			return (e: React.MouseEvent) => {
-				e.preventDefault();
-				e.stopPropagation();
-				setResizeDir(direction);
-			};
-		}, []);
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [height, width, size, parentRef.current]);
 
 		const handleMouseMove = useCallback(
 			(e: MouseEvent) => {
@@ -310,6 +343,49 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(
 			[isDragging, resizeDir, bounds, size, position, aspectRatio, parentRef]
 		);
 
+		useEffect(() => {
+			const updateSize = () => {
+				let newWidth = size.width;
+				let newHeight = size.height;
+
+				if (newWidth > width) {
+					newWidth = width;
+				}
+
+				if (newHeight > height) {
+					newHeight = height;
+				}
+
+				if (newWidth > width && newHeight > height) {
+					newWidth = width;
+					newHeight = height;
+				}
+
+				const finalWidth = Math.max(newWidth, initialWidth);
+				const finalHeight = Math.max(newHeight, initialHeight);
+
+				setSize({
+					width: finalWidth,
+					height: finalHeight
+				});
+			};
+			updateSize();
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [width, height]);
+
+		const handleMouseDown = useCallback((e: React.MouseEvent) => {
+			e.preventDefault();
+			setIsDragging(true);
+		}, []);
+
+		const handleResizeMouseDown = useCallback((direction: string) => {
+			return (e: React.MouseEvent) => {
+				e.preventDefault();
+				e.stopPropagation();
+				setResizeDir(direction);
+			};
+		}, []);
+
 		const handleMouseUp = useCallback(() => {
 			setIsDragging(false);
 			setResizeDir(null);
@@ -329,14 +405,16 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(
 			<div
 				onMouseDown={() => onFocus()}
 				ref={modalRef}
-				className={`absolute bg-transparent z-50 shadow-lg rounded-lg ${zIndex} ${isContentStrict}`}
+				className={`absolute bg-transparent shadow-lg rounded-lg ${zIndex} ${isContentStrict}`}
 				style={{
 					left: `${position.x}px`,
 					top: `${position.y}px`,
-					width: `${size.width}px`,
-					height: `${size.height}px`,
+					width: !isCollapsed ? `${size.width}px` : '',
+					height: isCollapsed ? '0px' : `${size.height}px`,
 					display: 'flex',
-					flexDirection: 'column'
+					flexDirection: 'column',
+					minWidth: !isCollapsed ? '300px' : '',
+					minHeight: !isCollapsed ? '440px' : ''
 				}}
 			>
 				{!isCollapsed && <Overlay isFocused={isFocused} onFocus={onFocus} headerHeight={headerHeight} />}

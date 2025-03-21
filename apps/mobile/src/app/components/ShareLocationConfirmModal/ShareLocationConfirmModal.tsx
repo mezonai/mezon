@@ -30,7 +30,6 @@ const ShareLocationConfirmModal = ({ mode, channelId, geoLocation }: { mode: Cha
 		channelOrDirect:
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup
 	});
-	console.log('log  => mode', mode);
 	useEffect(() => {
 		if (geoLocation) {
 			const { latitude, longitude } = geoLocation;
