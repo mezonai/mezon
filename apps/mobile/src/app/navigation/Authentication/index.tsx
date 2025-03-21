@@ -113,7 +113,7 @@ export const Authentication = memo(() => {
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
 							gestureResponseDistance: Dimensions.get('window').width,
-							cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
+							cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
 						}}
 					/>
 					<RootStack.Screen
@@ -126,7 +126,7 @@ export const Authentication = memo(() => {
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
 							gestureResponseDistance: Dimensions.get('window').width,
-							cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter
+							cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
 						}}
 					/>
 					<RootStack.Screen name={APP_SCREEN.SERVERS.STACK} children={(props) => <ServersStacks {...props} />} />

@@ -1,9 +1,11 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { IChannel } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { ActivityIndicator, DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
+import ChannelMenu from '../../ChannelMenu';
 import { ChannelBadgeUnread } from '../ChannelBadgeUnread';
 import { EventBadge } from '../ChannelEventBadge';
 import { StatusVoiceChannel } from '../ChannelListItem';
@@ -12,26 +14,36 @@ import ChannelListThreadItem from '../ChannelListThreadItem';
 import { ChannelStatusIcon } from '../ChannelStatusIcon';
 
 interface IChannelItemProps {
-	onPress: () => void;
-	onLongPress: () => void;
 	data: IChannel;
 	isUnRead?: boolean;
 	isActive?: boolean;
 }
 
-function ChannelItem({ onLongPress, onPress, data, isUnRead, isActive }: IChannelItemProps) {
+function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const numberNotification = data?.count_mess_unread ? data?.count_mess_unread : 0;
 
+	const onPress = useCallback(() => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_ROUTER, { channel: data });
+	}, [data]);
+
+	const onLongPress = useCallback(() => {
+		const dataBottomSheet = {
+			heightFitContent: true,
+			children: <ChannelMenu channel={data} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data: dataBottomSheet });
+	}, [data]);
+
 	if (data.type === ChannelType.CHANNEL_TYPE_THREAD) {
-		return <ChannelListThreadItem thread={data} isActive={isActive} onPress={onPress} onLongPress={onLongPress} />;
+		return <ChannelListThreadItem thread={data} isActive={isActive} onLongPress={onLongPress} />;
 	}
 
 	return (
 		<TouchableOpacity
 			activeOpacity={0.7}
-			onPress={() => onPress()}
+			onPress={onPress}
 			onLongPress={onLongPress}
 			style={[
 				styles.channelListLink,

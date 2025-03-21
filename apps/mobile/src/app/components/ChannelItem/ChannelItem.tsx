@@ -1,9 +1,10 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelUsersEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import IconChannel from '../IconChannel';
@@ -11,17 +12,16 @@ import style from './ChannelItem.styles';
 
 type ChannelItemProps = {
 	channelData?: ChannelUsersEntity;
-	onPress: (channelData: ChannelUsersEntity) => void;
 };
 
-export const ChannelItem = React.memo(({ channelData, onPress }: ChannelItemProps) => {
+export const ChannelItem = React.memo(({ channelData }: ChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
 	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 	const styles = style(themeValue);
 	const handleOnPress = () => {
-		onPress && onPress(channelData);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_ROUTER, { channel: channelData });
 	};
 	return (
 		<TouchableOpacity onPress={handleOnPress} style={{ marginBottom: size.s_20 }}>

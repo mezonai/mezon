@@ -1,6 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,

@@ -48,7 +48,8 @@ export const style = (colors: Attributes) =>
 			paddingVertical: size.s_14,
 			borderBottomColor: colors.border,
 			backgroundColor: colors.secondary,
-			paddingHorizontal: size.s_12
+			paddingHorizontal: size.s_12,
+			zIndex: 10000
 		},
 		wrapperSearch: {
 			flex: 1,

@@ -14,6 +14,7 @@ import ChannelListScroll from '../components/ChannelList/ChannelListScroll';
 import ChannelListSection from '../components/ChannelList/ChannelListSection';
 import ButtonNewUnread from './ButtonNewUnread';
 import { style } from './styles';
+import ChannelRouterListener from "../components/ChannelList/ChannelRouterListener";
 export type ChannelsPositionRef = {
 	current: {
 		[key: number]: {
@@ -50,6 +51,7 @@ const ChannelList = () => {
 
 	const data = useMemo(
 		() => [
+			{ id: 'backgroundHeader' },
 			{ id: 'listHeader' },
 			...(listChannelRender
 				? isShowEmptyCategory
@@ -71,6 +73,8 @@ const ChannelList = () => {
 
 	const renderItem = useCallback(({ item, index }) => {
 		if (index === 0) {
+			return <ChannelListBackground />;
+		} else if (index === 1) {
 			return <ChannelListHeader />;
 		} else if (item.channels) {
 			return <ChannelListSection channelsPositionRef={channelsPositionRef} data={item} />;
@@ -90,6 +94,7 @@ const ChannelList = () => {
 	return (
 		<View style={styles.mainList}>
 			<ChannelListScroll data={data} flashListRef={flashListRef} />
+			<ChannelRouterListener />
 			<FlatList
 				ref={flashListRef}
 				data={data}
@@ -100,13 +105,16 @@ const ChannelList = () => {
 				showsVerticalScrollIndicator={true}
 				initialNumToRender={10}
 				maxToRenderPerBatch={10}
+				updateCellsBatchingPeriod={50}
 				windowSize={10}
-				onEndReachedThreshold={0.7}
+				scrollEventThrottle={16}
 				removeClippedSubviews={Platform.OS === 'android'}
 				keyboardShouldPersistTaps={'handled'}
-				ListHeaderComponent={() => {
-					return <ChannelListBackground />;
+				viewabilityConfig={{
+					itemVisiblePercentThreshold: 50,
+					minimumViewTime: 300
 				}}
+				contentOffset={{ x: 0, y: 0 }}
 				onScrollToIndexFailed={(info) => {
 					if (info?.highestMeasuredFrameIndex) {
 						const wait = new Promise((resolve) => setTimeout(resolve, 200));

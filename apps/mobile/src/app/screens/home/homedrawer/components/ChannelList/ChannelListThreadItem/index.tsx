@@ -1,22 +1,22 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { selectIsUnreadChannelById, useAppSelector } from '@mezon/store-mobile';
 import { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IChannelListThreadItemProps {
-	onPress?: (thread: any) => void;
 	onLongPress?: (thread: ChannelThreads) => void;
 	thread: any;
 	isActive?: boolean;
 }
 
-const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive }: IChannelListThreadItemProps) => {
+const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListThreadItemProps) => {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 
@@ -25,7 +25,7 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive }: IChan
 	const numberNotification = thread?.count_mess_unread ? thread?.count_mess_unread : 0;
 
 	const onPressThreadItem = () => {
-		onPress && onPress(thread);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_ROUTER, { channel: thread });
 	};
 
 	const onLongPressThreadItem = () => {
@@ -36,7 +36,7 @@ const ChannelListThreadItem = ({ onPress, onLongPress, thread, isActive }: IChan
 		<View key={thread.id} style={[styles.channelListLink]}>
 			<View style={[styles.threadItem]}>
 				<View style={{ top: -size.s_20 }}>
-					<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} />
+					<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} color={'#535353'} />
 					{/*hardcode virtual view to connect thread lines */}
 					<View
 						style={{

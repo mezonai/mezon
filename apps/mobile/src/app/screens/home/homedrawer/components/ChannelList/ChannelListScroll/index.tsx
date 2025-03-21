@@ -15,7 +15,7 @@ const ChannelListScroll = ({ flashListRef, data }: IProps) => {
 			const targetIndex = data.findIndex((item) => item.id === channelId);
 			if (targetIndex !== -1) {
 				flashListRef.current.scrollToIndex({
-					index: targetIndex,
+					index: targetIndex - (targetIndex >= 3 ? 3 : 0),
 					animated: true
 				});
 			} else {

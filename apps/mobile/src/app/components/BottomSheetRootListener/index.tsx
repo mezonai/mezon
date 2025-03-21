@@ -35,6 +35,7 @@ const useBottomSheetState = () => {
 	const [headerLeft, setHeaderLeft] = useState<any>(null);
 	const [headerRight, setHeaderRight] = useState<any>(null);
 	const [titleSize, setTitleSize] = useState<string>(null);
+	const [isStickyHeader, setIsStickyHeader] = useState<boolean>(false);
 
 	const clearDataBottomSheet = () => {
 		setSnapPoints(['90%']);
@@ -44,6 +45,7 @@ const useBottomSheetState = () => {
 		setHeaderLeft(null);
 		setHeaderRight(null);
 		setTitleSize(null);
+		setIsStickyHeader(false);
 	};
 
 	return {
@@ -54,6 +56,7 @@ const useBottomSheetState = () => {
 		headerLeft,
 		headerRight,
 		titleSize,
+		isStickyHeader,
 		setSnapPoints,
 		setHeightFitContent,
 		setChildren,
@@ -61,6 +64,7 @@ const useBottomSheetState = () => {
 		setHeaderLeft,
 		setHeaderRight,
 		setTitleSize,
+		setIsStickyHeader,
 		clearDataBottomSheet
 	};
 };
@@ -74,6 +78,7 @@ const BottomSheetRootListener = () => {
 		headerLeft,
 		headerRight,
 		titleSize,
+		isStickyHeader,
 		setSnapPoints,
 		setHeightFitContent,
 		setChildren,
@@ -81,6 +86,7 @@ const BottomSheetRootListener = () => {
 		setHeaderLeft,
 		setHeaderRight,
 		setTitleSize,
+		setIsStickyHeader,
 		clearDataBottomSheet
 	} = useBottomSheetState();
 
@@ -98,7 +104,8 @@ const BottomSheetRootListener = () => {
 		if (data?.title) setTitle(data.title);
 		if (data?.headerLeft) setHeaderLeft(data.headerLeft);
 		if (data?.headerRight) setHeaderRight(data.headerRight);
-		if (data?.setTitleSize) setTitleSize(data.setTitleSize);
+		if (data?.titleSize) setTitleSize(data.titleSize);
+		if (data?.isStickyHeader) setIsStickyHeader(data.isStickyHeader);
 		ref?.current?.present();
 	};
 
@@ -148,7 +155,7 @@ const BottomSheetRootListener = () => {
 			onChange={handleSheetPositionChange}
 		>
 			{renderHeader()}
-			{children && <BottomSheetScrollView>{children}</BottomSheetScrollView>}
+			{children && <BottomSheetScrollView stickyHeaderIndices={isStickyHeader ? [0] : []}>{children}</BottomSheetScrollView>}
 		</OriginalBottomSheet>
 	);
 };
