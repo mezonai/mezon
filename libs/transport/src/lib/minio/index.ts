@@ -195,7 +195,7 @@ export async function uploadFile(
 			if (res.status !== 200) {
 				throw new Error('Failed to upload file to MinIO.');
 			}
-			const url = 'https://cdn.mezon.vn/' + filename;
+			const url = `https://${process.env.NX_BASE_IMG_URL}/` + filename;
 			resolve({
 				filename: originalFilename,
 				url: url,

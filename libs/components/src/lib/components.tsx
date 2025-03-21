@@ -114,5 +114,6 @@ export { AudioAttachment } from './components/ThumbnailAttachmentRender/Thumbnai
 export { default as PrivateThread } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/PrivateThread';
 export { default as ChannelMessageThread } from './components/MessageBox/ReactionMentionInput/ChannelMessageThread';
 export { default as MessageWithSystem } from './components/MessageWithSystem';
+export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
 export * from './components/VoiceChannel';
 export * from './components/virtual-core/useVirtualizer';

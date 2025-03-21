@@ -20,9 +20,9 @@ const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps
 	};
 
 	const webHookAvatars = [
-		'https://cdn.mezon.vn/1787707828677382144/1791037204600983552/1787691797724532700/211_0mezon_logo_white.png',
-		'https://cdn.mezon.vn/1787707828677382144/1791037204600983552/1787691797724532700/211_1mezon_logo_black.png',
-		'https://cdn.mezon.vn/0/1833395573034586112/1787375123666309000/955_0mezon_logo.png'
+		`https://${process.env.NX_BASE_IMG_URL}/1787707828677382144/1791037204600983552/1787691797724532700/211_0mezon_logo_white.png`,
+		`https://${process.env.NX_BASE_IMG_URL}/1787707828677382144/1791037204600983552/1787691797724532700/211_1mezon_logo_black.png`,
+		`https://${process.env.NX_BASE_IMG_URL}/0/1833395573034586112/1787375123666309000/955_0mezon_logo.png`
 	];
 
 	const getRandomAvatar = (): string => {

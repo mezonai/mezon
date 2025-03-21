@@ -10,6 +10,6 @@ export enum EMimeTypes {
 	jpg = 'mage/jpg',
 	webp = 'image/webp',
 	tenor = 'tenor.com',
-	cdnmezon = 'cdn.mezon.vn/stickers',
+	cdnmezon = 'cdn.mezon.ai/stickers',
 	audio = 'audio'
 }

@@ -950,7 +950,8 @@ export enum ActiveDm {
 export enum ETypeMEntion {
 	MENTION = 0,
 	HASHTAG = 1,
-	EMOJI = 2
+	EMOJI = 2,
+	BOLD = 3
 }
 
 export interface IRoleMention {
@@ -1467,3 +1468,9 @@ export type HistoryItem = {
 	content: string;
 	mentionRaw: any[];
 };
+
+export enum SymbolsAndIdsLengthOfMentionValue {
+	MENTION_OR_HASHTAG = 23,
+	EMOJI = 25,
+	BOLD = 4
+}

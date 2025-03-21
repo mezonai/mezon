@@ -853,9 +853,12 @@ type ImgproxyOptions = {
 };
 
 export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptions = { width: 100, height: 100, resizeType: 'fit' }) => {
-	const extension = sourceImageUrl.split('.').pop()?.toLowerCase();
+	//const extension = sourceImageUrl.split('.').pop()?.toLowerCase();
 	if (!sourceImageUrl) return '';
-	if (!sourceImageUrl.startsWith('https://cdn.mezon.vn') || sourceImageUrl.startsWith('https://cdn.mezon.vn/stickers')) {
+	if (
+		!sourceImageUrl.startsWith(`https://${process.env.NX_BASE_IMG_URL}`) ||
+		sourceImageUrl.startsWith(`https://${process.env.NX_BASE_IMG_URL}/stickers`)
+	) {
 		return sourceImageUrl;
 	}
 	const { width, height, resizeType } = options;
@@ -1212,4 +1215,24 @@ export const updateMentionPositions = (mentions: MentionItem[], newValue: string
 	});
 
 	return newMentions;
+};
+
+export const mapChannelToAppEntity = (
+	payload: any
+): {
+	app_id?: string;
+	channel_id?: string;
+	clan_id?: string;
+	id?: string;
+	url?: string;
+} => {
+	const timestamp = Date.now().toString();
+
+	return {
+		app_id: timestamp,
+		channel_id: payload.channel_id,
+		clan_id: payload.clan_id,
+		id: timestamp,
+		url: payload.app_url
+	};
 };

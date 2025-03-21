@@ -1,8 +1,9 @@
+import { ModalInputMessageBuzz } from '@mezon/components';
 import { useChatSending } from '@mezon/core';
 import { ChannelsEntity } from '@mezon/store-mobile';
 import { TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ChannelMessages from './ChannelMessages';
 
 type ChannelMediaProps = {
@@ -43,6 +44,8 @@ type KeyPressListenerProps = {
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 	const { sendMessage } = useChatSending({ channelOrDirect: currentChannel || undefined, mode });
 	const isListenerAttached = useRef(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [messageText, setMessageText] = useState('');
 
 	useEffect(() => {
 		if (isListenerAttached.current) return;
@@ -51,7 +54,7 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 		const handleKeyPress = (event: KeyboardEvent) => {
 			if (event.ctrlKey && (event.key === 'g' || event.key === 'G')) {
 				event.preventDefault();
-				sendMessage({ t: 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+				setIsModalOpen(true);
 			}
 		};
 
@@ -61,7 +64,29 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 			window.removeEventListener('keydown', handleKeyPress);
 			isListenerAttached.current = false;
 		};
-	}, [sendMessage]);
+	}, [isModalOpen]);
 
-	return null;
+	const handleSend = useCallback(() => {
+		if (messageText.trim()) {
+			sendMessage({ t: messageText }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+		}
+		setIsModalOpen(false);
+		setMessageText('');
+	}, [messageText, sendMessage, setIsModalOpen, setMessageText]);
+
+	return (
+		<>
+			{isModalOpen && (
+				<ModalInputMessageBuzz
+					messageText={messageText}
+					setMessageText={setMessageText}
+					onClose={() => {
+						setIsModalOpen(false);
+						setMessageText('');
+					}}
+					onSend={handleSend}
+				/>
+			)}
+		</>
+	);
 };

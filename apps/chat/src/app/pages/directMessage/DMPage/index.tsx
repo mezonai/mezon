@@ -4,6 +4,7 @@ import {
 	FileUploadByDnD,
 	GifStickerEmojiPopup,
 	MemberListGroupChat,
+	ModalInputMessageBuzz,
 	ModalUserProfile,
 	SearchMessageChannelRender
 } from '@mezon/components';
@@ -48,7 +49,7 @@ import {
 import { EmojiPlaces, SubPanelName, TypeMessage, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { DragEvent, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { DragEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ChannelMessages from '../../channel/ChannelMessages';
 import { ChannelTyping } from '../../channel/ChannelTyping';
@@ -109,9 +110,8 @@ function useChannelSeen(channelId: string) {
 }
 
 function DirectSeenListener({ channelId, mode, currentChannel }: { channelId: string; mode: number; currentChannel: DirectEntity }) {
-	KeyPressListener({ currentChannel, mode });
 	useChannelSeen(channelId);
-	return null;
+	return <KeyPressListener currentChannel={currentChannel} mode={mode} />;
 }
 
 const DirectMessage = () => {
@@ -359,6 +359,8 @@ type KeyPressListenerProps = {
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 	const { sendMessage } = useChatSending({ channelOrDirect: currentChannel || undefined, mode });
 	const isListenerAttached = useRef(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [messageText, setMessageText] = useState('');
 
 	useEffect(() => {
 		if (isListenerAttached.current) return;
@@ -367,7 +369,7 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 		const handleKeyPress = (event: KeyboardEvent) => {
 			if (event.ctrlKey && (event.key === 'g' || event.key === 'G')) {
 				event.preventDefault();
-				sendMessage({ t: 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+				setIsModalOpen(true);
 			}
 		};
 
@@ -377,9 +379,31 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 			window.removeEventListener('keydown', handleKeyPress);
 			isListenerAttached.current = false;
 		};
-	}, [sendMessage]);
+	}, [isModalOpen]);
 
-	return null;
+	const handleSend = useCallback(() => {
+		if (messageText.trim()) {
+			sendMessage({ t: messageText }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+		}
+		setIsModalOpen(false);
+		setMessageText('');
+	}, [messageText, sendMessage, setIsModalOpen, setMessageText]);
+
+	return (
+		<>
+			{isModalOpen && (
+				<ModalInputMessageBuzz
+					messageText={messageText}
+					setMessageText={setMessageText}
+					onClose={() => {
+						setIsModalOpen(false);
+						setMessageText('');
+					}}
+					onSend={handleSend}
+				/>
+			)}
+		</>
+	);
 };
 
 export default memo(DirectMessage);

@@ -17,7 +17,7 @@ import { style } from './styles';
 // @ts-expect-error
 import BG_CALLING from './bgCalling.png';
 
-const AVATAR_DEFAULT = 'https://cdn.mezon.vn/1775731152322039808/1820659489792069632/mezon_logo.png';
+const AVATAR_DEFAULT = `https://${process.env.NX_BASE_IMG_URL}/1775731152322039808/1820659489792069632/mezon_logo.png`;
 const { FullScreenNotificationIncomingCall, SharedPreferences } = NativeModules;
 const IncomingHomeScreen = memo((props: any) => {
 	const { themeValue } = useTheme();

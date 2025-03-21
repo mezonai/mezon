@@ -7,6 +7,7 @@ import {
 	ICategory,
 	IChannel,
 	LoadingStatus,
+	mapChannelToAppEntity,
 	ModeResponsive,
 	RequestInput,
 	TypeCheck
@@ -908,11 +909,9 @@ export const channelsSlice = createSlice({
 		createChannelSocket: (state, action: PayloadAction<ChannelCreatedEvent>) => {
 			const payload = action.payload;
 			const clanId = payload.clan_id;
-
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
-
 			if (payload.parent_id !== '0' && payload.channel_private !== 1) {
 				const channel = mapChannelToEntity({
 					...payload,
@@ -926,6 +925,14 @@ export const channelsSlice = createSlice({
 					type: payload.channel_type
 				});
 				channelsAdapter.addOne(state.byClans[clanId].entities, channel);
+				// if type app update to => appChannelList
+				if (payload.channel_type === ChannelType.CHANNEL_TYPE_APP) {
+					const appMapped = mapChannelToAppEntity(payload);
+					if (!state.byClans[clanId].appChannelsList) {
+						state.byClans[clanId].appChannelsList = {};
+					}
+					state.byClans[clanId].appChannelsList[appMapped.channel_id as string] = appMapped;
+				}
 			}
 		},
 

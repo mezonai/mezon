@@ -57,6 +57,8 @@ import {
 import {
 	CHANNEL_INPUT_ID,
 	ChannelMembersEntity,
+	EBacktickType,
+	ETypeMEntion,
 	GENERAL_INPUT_ID,
 	HistoryItem,
 	IEmojiOnMessage,
@@ -83,6 +85,7 @@ import {
 	generateMentionItems,
 	getDisplayMention,
 	getMarkupInsertIndex,
+	handleBoldShortCut,
 	insertStringAt,
 	parseHtmlAsFormattedText,
 	parsePastedMentionData,
@@ -127,6 +130,7 @@ type ChannelsMentionProps = {
 };
 
 export const MentionReactInput = memo((props: MentionReactInputProps): ReactElement => {
+	const editorRef = useRef<HTMLInputElement | null>(null);
 	const appStore = useStore();
 	const channels = useSelector(selectAllChannels);
 	const rolesClan = useSelector(selectAllRolesClan);
@@ -268,6 +272,10 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			}
 		}
 
+		if ((ctrlKey || metaKey) && (key === 'b' || key === 'B')) {
+			handleBoldShortCut({ editorRef: editorRef, request: request, setRequestInput });
+		}
+
 		switch (key) {
 			case 'Enter': {
 				if (shiftKey || isComposing) {
@@ -285,7 +293,6 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 		}
 	};
 
-	const editorRef = useRef<HTMLInputElement | null>(null);
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 
 	const closeMenu = useSelector(selectCloseMenu);
@@ -315,12 +322,25 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 			const checkedRequest = request ? request : emptyRequest;
 			const { text, entities } = parseHtmlAsFormattedText(hasToken ? checkedRequest.content : checkedRequest.content.trim());
 			const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
+
+			const boldMarkdownArr: IMarkdownOnMessage[] = [];
+
+			checkedRequest?.mentionRaw?.forEach((mention) => {
+				if (mention.childIndex === ETypeMEntion.BOLD) {
+					boldMarkdownArr.push({
+						type: EBacktickType.BOLD,
+						s: mention.plainTextIndex,
+						e: mention.plainTextIndex + mention.display.length
+					});
+				}
+			});
+
 			const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(mk, mentionList, hashtagList, emojiList, text);
 			const payload = {
 				t: text,
 				hg: adjustedHashtagPos as IHashtagOnMessage[],
 				ej: adjustedEmojiPos as IEmojiOnMessage[],
-				mk
+				mk: [...mk, ...boldMarkdownArr]
 			};
 
 			const addMentionToPayload = addMention(payload, adjustedMentionsPos);
@@ -968,6 +988,16 @@ export const MentionReactInput = memo((props: MentionReactInputProps): ReactElem
 					}}
 					className="dark:bg-[#3B416B] bg-bgLightModeButton"
 					appendSpaceOnAdd={true}
+				/>
+				<Mention
+					trigger="**"
+					markup="**__display__**"
+					data={[]}
+					displayTransform={(id: any, display: any) => {
+						return `${display}`;
+					}}
+					className="dark:!text-white !text-black"
+					style={{ WebkitTextStroke: 1, WebkitTextStrokeColor: appearanceTheme === 'dark' ? 'white' : 'black' }}
 				/>
 			</MentionsInput>
 			{isShowEmojiPicker && (

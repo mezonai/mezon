@@ -26,15 +26,15 @@ function MezonPage() {
 
 	const downloadUrl: string = useMemo(() => {
 		if (platform === 'MacOS') {
-			return `https://cdn.mezon.vn/release/mezon-${version}-mac-arm64.dmg`;
+			return `https://${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-arm64.dmg`;
 		} else if (platform === 'Linux') {
-			return `https://cdn.mezon.vn/release/mezon-${version}-linux-amd64.deb`;
+			return `https://${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`;
 		}
-		return `https://cdn.mezon.vn/release/mezon-${version}-win-x64.exe`;
+		return `https://${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
 	}, [platform, version]);
 
-	const universalUrl = `https://cdn.mezon.vn/release/mezon-${version}-mac-x64.dmg`;
-	const portableUrl = `https://cdn.mezon.vn/release/mezon-${version}-win-x64-portable.exe`;
+	const universalUrl = `https://${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-x64.dmg`;
+	const portableUrl = `https://${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
 	const microsoftStoreUrl = `https://apps.microsoft.com/detail/9pf25lf1fj17?hl=en-US&gl=VN`;
 
 	const updateBackgroundImage = () => {

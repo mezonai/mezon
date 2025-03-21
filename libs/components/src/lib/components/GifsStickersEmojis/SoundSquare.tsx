@@ -46,7 +46,7 @@ const sounds = [
 		id: '1',
 		filename: 'fail-sound-effect.mp3',
 		size: 64503,
-		url: 'https://cdn.mezon.vn/soundboard/meme/fail-sound-effect.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/fail-sound-effect.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -56,7 +56,7 @@ const sounds = [
 		id: '2',
 		filename: 'huh_.mp3',
 		size: 130430,
-		url: 'https://cdn.mezon.vn/soundboard/meme/huh_.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/huh_.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -66,7 +66,7 @@ const sounds = [
 		id: '3',
 		filename: 'dun-dun-dun-sound-effect-brass_8nFBc.mp3',
 		size: 101189,
-		url: 'https://cdn.mezon.vn/soundboard/meme/dun-dun-dun-sound-effect-brass_8nFBccR.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/dun-dun-dun-sound-effect-brass_8nFBccR.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -76,7 +76,7 @@ const sounds = [
 		id: '4',
 		filename: 'oh-my-god-meme.mp3',
 		size: 303744,
-		url: 'https://cdn.mezon.vn/soundboard/meme/oh-my-god-meme.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/oh-my-god-meme.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -86,7 +86,7 @@ const sounds = [
 		id: '5',
 		filename: 'nani-meme-sound-effect.mp3',
 		size: 49780,
-		url: 'https://cdn.mezon.vn/soundboard/meme/nani-meme-sound-effect.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/nani-meme-sound-effect.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -96,7 +96,7 @@ const sounds = [
 		id: '6',
 		filename: 'bruh.mp3',
 		size: 284194,
-		url: 'https://cdn.mezon.vn/soundboard/meme/bruh.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/bruh.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	// SYSTEM SOUNDS
@@ -108,7 +108,7 @@ const sounds = [
 		id: '7',
 		filename: 'shocked-sound-effect.mp3',
 		size: 343658,
-		url: 'https://cdn.mezon.vn/soundboard/meme/shocked-sound-effect.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/shocked-sound-effect.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -118,7 +118,7 @@ const sounds = [
 		id: '8',
 		filename: 'anime-wow-sound-effect-mp3cut.mp3',
 		size: 326558,
-		url: 'https://cdn.mezon.vn/soundboard/meme/anime-wow-sound-effect-mp3cut.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/anime-wow-sound-effect-mp3cut.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -128,7 +128,7 @@ const sounds = [
 		id: '9',
 		filename: 'directed-by-robert-b.mp3',
 		size: 107519,
-		url: 'https://cdn.mezon.vn/soundboard/meme/directed-by-robert-b.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/directed-by-robert-b.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -138,7 +138,7 @@ const sounds = [
 		id: '10',
 		filename: 'punch-gaming-sound.mp3',
 		size: 107519,
-		url: 'https://cdn.mezon.vn/soundboard/meme/punch-gaming-sound.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/punch-gaming-sound.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -148,7 +148,7 @@ const sounds = [
 		id: '11',
 		filename: 'vine-boom-sound.mp3',
 		size: 340902,
-		url: 'https://cdn.mezon.vn/soundboard/meme/vine-boom-sound.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/vine-boom-sound.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -158,7 +158,7 @@ const sounds = [
 		id: '12',
 		filename: 'run.mp3',
 		size: 93308,
-		url: 'https://cdn.mezon.vn/soundboard/meme/run.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/run.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -168,7 +168,7 @@ const sounds = [
 		id: '13',
 		filename: 'among-us-role-reveal-sound.mp3',
 		size: 112695,
-		url: 'https://cdn.mezon.vn/soundboard/meme/among-us-role-reveal-sound.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/among-us-role-reveal-sound.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -178,7 +178,7 @@ const sounds = [
 		id: '14',
 		filename: 'meme_fail.mp3',
 		size: 151822,
-		url: 'https://cdn.mezon.vn/soundboard/meme/meme_fail.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/meme_fail.mp3`,
 		filetype: 'audio/mpeg'
 	},
 
@@ -190,7 +190,7 @@ const sounds = [
 		id: '15',
 		filename: 'error_sound.mp3',
 		size: 304211,
-		url: 'https://cdn.mezon.vn/soundboard/meme/error_sound.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/error_sound.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -200,7 +200,7 @@ const sounds = [
 		id: '16',
 		filename: 'emotional_damage_meme.mp3',
 		size: 151822,
-		url: 'https://cdn.mezon.vn/soundboard/meme/emotional_damage_meme.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/emotional_damage_meme.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -210,7 +210,7 @@ const sounds = [
 		id: '17',
 		filename: 'are_you_crazy.mp3',
 		size: 132363,
-		url: 'https://cdn.mezon.vn/soundboard/meme/are_you_crazy.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/are_you_crazy.mp3`,
 		filetype: 'audio/mpeg'
 	},
 	{
@@ -220,7 +220,7 @@ const sounds = [
 		id: '18',
 		filename: 'sad_violin.mp3',
 		size: 361889,
-		url: 'https://cdn.mezon.vn/soundboard/meme/sad_violin.mp3',
+		url: `https://${process.env.NX_BASE_IMG_URL}/soundboard/meme/sad_violin.mp3`,
 		filetype: 'audio/mpeg'
 	}
 ];

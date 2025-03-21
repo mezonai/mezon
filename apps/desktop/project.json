@@ -14,7 +14,7 @@
       "publish": [
         {
           "provider": "generic",
-          "url": "https://cdn.mezon.vn/release/"
+          "url": "https://cdn.mezon.ai/release/"
         }
       ],
       "asarUnpack": [
@@ -33,7 +33,7 @@
         "publish": [
           {
             "provider": "generic",
-            "url": "https://cdn.mezon.vn/release/"
+            "url": "https://cdn.mezon.ai/release/"
           }
         ],
         "identity": "Tien Pham (E9Y2J54ZH3)",
@@ -61,7 +61,7 @@
         "publish": [
           {
             "provider": "generic",
-            "url": "https://cdn.mezon.vn/release/"
+            "url": "https://cdn.mezon.ai/release/"
           }
         ]
       },
@@ -106,7 +106,7 @@
         "publish": [
           {
             "provider": "generic",
-            "url": "https://cdn.mezon.vn/release/"
+            "url": "https://cdn.mezon.ai/release/"
           }
         ]
       },
@@ -177,7 +177,7 @@
           "publish": [
             {
               "provider": "generic",
-              "url": "https://cdn.mezon.vn/release/"
+              "url": "https://cdn.mezon.ai/release/"
             }
           ],
           "identity": "Tien Pham (E9Y2J54ZH3)",
@@ -205,7 +205,7 @@
           "publish": [
             {
               "provider": "generic",
-              "url": "https://cdn.mezon.vn/release/"
+              "url": "https://cdn.mezon.ai/release/"
             }
           ]
         },
@@ -251,7 +251,7 @@
           "publish": [
             {
               "provider": "generic",
-              "url": "https://cdn.mezon.vn/release/"
+              "url": "https://cdn.mezon.ai/release/"
             }
           ]
         }
@@ -276,7 +276,7 @@
           "publish": [
             {
               "provider": "generic",
-              "url": "https://cdn.mezon.vn/release/"
+              "url": "https://cdn.mezon.ai/release/"
             }
           ],
           "identity": "Tien Pham (E9Y2J54ZH3)",
@@ -304,7 +304,7 @@
           "publish": [
             {
               "provider": "generic",
-              "url": "https://cdn.mezon.vn/release/"
+              "url": "https://cdn.mezon.ai/release/"
             }
           ]
         },
@@ -349,7 +349,7 @@
           "publish": [
             {
               "provider": "generic",
-              "url": "https://cdn.mezon.vn/release/"
+              "url": "https://cdn.mezon.ai/release/"
             }
           ]
         }
