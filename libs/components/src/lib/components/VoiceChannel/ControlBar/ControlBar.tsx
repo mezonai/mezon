@@ -13,7 +13,7 @@ import { Icons } from '@mezon/ui';
 import { useMediaPermissions } from '@mezon/utils';
 
 import isElectron from 'is-electron';
-import { LocalTrackPublication, Track, VideoPresets } from 'livekit-client';
+import { LocalTrackPublication, Track, videoCodecs, VideoPresets } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -113,7 +113,13 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				const trackPublication = await localParticipant.localParticipant.publishTrack(videoTrack, {
 					name: 'screen-share',
 					source: Track.Source.ScreenShare,
-					videoSimulcastLayers: [VideoPresets.h1080]
+					videoSimulcastLayers: [VideoPresets.h1080, VideoPresets.h720, VideoPresets.h540],
+					videoCodec: videoCodecs[2],
+					simulcast: false,
+					videoEncoding: {
+						maxBitrate: 5000000,
+						maxFramerate: 30
+					}
 				});
 				const audioStream = await getAudioScreenStream();
 				if (audioStream) {
@@ -411,18 +417,6 @@ async function getAudioScreenStream() {
 			},
 			video: false
 		});
-		// const devices = await navigator.mediaDevices.getUserMedia({
-		// 	audio: {
-		// 		noiseSuppression: true,
-		// 		echoCancellation: true,
-		// 		sampleRate: 48000, // 44100, 48000, 96000
-		// 		channelCount: 2,
-		// 		autoGainControl: true,
-		// 		sampleSize: 24 // 8, 16, 24, 32
-		// 		// voiceIsolation: true
-		// 	},
-		// 	video: false
-		// });
 
 		return devices;
 	} catch (error) {
