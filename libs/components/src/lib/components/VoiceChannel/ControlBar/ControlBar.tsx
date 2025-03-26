@@ -117,8 +117,8 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 					videoCodec: videoCodecs[2],
 					simulcast: false,
 					videoEncoding: {
-						maxBitrate: 5000000,
-						maxFramerate: 30
+						maxBitrate: 3000000,
+						maxFramerate: 24
 					}
 				});
 				// const audioStream = await getAudioScreenStream();
