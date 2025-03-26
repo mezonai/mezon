@@ -29,7 +29,7 @@ import { useWebRTCCall } from '@mezon/core';
 import { IMessageTypeCallLog, createImgproxyUrl, isMacDesktop, sleep } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
 import { ChannelType, WebrtcSignalingType } from 'mezon-js';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
 import DeviceSelector from './DeviceSelector';
@@ -39,6 +39,8 @@ type DmCallingProps = {
 	readonly dmGroupId?: Readonly<string>;
 	directId: string;
 };
+
+// DmCalling check later
 const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: boolean) => void }, DmCallingProps>(({ dmGroupId, directId }, ref) => {
 	const dispatch = useAppDispatch();
 	const currentDmGroup = useSelector(selectDmGroupCurrent(dmGroupId ?? ''));
@@ -450,4 +452,4 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	);
 });
 
-export default DmCalling;
+export default memo(DmCalling);

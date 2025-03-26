@@ -15,7 +15,7 @@ import {
 } from '@mezon/store';
 import { EPermission } from '@mezon/utils';
 import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -35,7 +35,7 @@ export type ClanHeaderProps = {
 	bannerImage?: string;
 };
 
-function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
+function ClanHeader({ name, type }: ClanHeaderProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const modalRef = useRef<HTMLDivElement | null>(null);
 	const dispatch = useAppDispatch();
@@ -205,7 +205,9 @@ function ClanHeader({ name, type, bannerImage }: ClanHeaderProps) {
 	);
 }
 
-export default ClanHeader;
+export default React.memo(ClanHeader, (prevProps, nextProps) => {
+	return prevProps.name === nextProps.name && prevProps.type === nextProps.type;
+});
 
 const InviteClanModal: React.FC = () => {
 	const dispatch = useDispatch();

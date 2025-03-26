@@ -8,7 +8,6 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
 import { ChannelMembersEntity, MemberProfileType } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
@@ -125,10 +124,10 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 				/>
 			) : null}
 			<button
-				className={`group-hover/itemListDm:opacity-100 opacity-0 absolute right-2 text-gray-500 hover:text-red-500 ${isTypeDMGroup ? 'top-[22px]' : 'top-[18px]'}`}
+				className={`group-hover/itemListDm:opacity-100 opacity-0 absolute right-2 text-gray-500 text-2xl hover:text-red-500 top-[6px]`}
 				onClick={(e) => handleCloseClick(e)}
 			>
-				<Icons.Close defaultSize="size-3" />
+				&times;
 			</button>
 		</div>
 	);

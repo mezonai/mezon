@@ -19,6 +19,7 @@ import {
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectCurrentClanId,
+	selectMemberClanByUserId2,
 	selectOpenThreadMessageState,
 	selectSession,
 	selectTheme,
@@ -61,6 +62,7 @@ const ThreadBox = () => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const sessionUser = useSelector(selectSession);
+	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId2(state, sessionUser?.user_id as string));
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 	const currentInputChannelId = threadCurrentChannel?.channel_id || CREATING_THREAD;
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(currentInputChannelId);
@@ -343,7 +345,7 @@ const ThreadBox = () => {
 							className="h-10 p-[10px] dark:bg-bgTertiary bg-bgTextarea dark:text-white text-colorTextLightMode text-base outline-none rounded-md placeholder:text-sm"
 						/>
 						{!openThreadMessageState && <PrivateThread title="Private Thread" label="Only people you invite and moderators can see" />}
-						{valueThread && openThreadMessageState && <ChannelMessageThread message={valueThread} />}
+						{valueThread && openThreadMessageState && <ChannelMessageThread user={currentClanUser} message={valueThread} />}
 					</div>
 				</div>
 			)}

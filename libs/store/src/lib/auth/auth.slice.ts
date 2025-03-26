@@ -1,7 +1,8 @@
+import { captureSentryError } from '@mezon/logger';
 import { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Session } from 'mezon-js';
-import { ensureClientAsync, getMezonCtx, restoreLocalStorage } from '../helpers';
+import { ensureClientAsync, ensureSession, getMezonCtx, restoreLocalStorage } from '../helpers';
 import { clearAllMemoizedFunctions } from '../memoize';
 export const AUTH_FEATURE_KEY = 'auth';
 
@@ -10,6 +11,7 @@ export interface AuthState {
 	error?: string | null;
 	session?: ISession | null;
 	isLogin?: boolean;
+	isRegistering?: LoadingStatus;
 }
 
 export interface ISession {
@@ -28,7 +30,8 @@ export interface ISession {
 export const initialAuthState: AuthState = {
 	loadingStatus: 'not loaded',
 	session: null,
-	isLogin: false
+	isLogin: false,
+	isRegistering: 'not loaded'
 };
 
 function normalizeSession(session: Session): ISession {
@@ -132,6 +135,28 @@ export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', 
 	return null;
 });
 
+export const registrationPassword = createAsyncThunk(
+	`auth/registrationPassword`,
+	async ({ email, password }: { email: string; password: string }, thunkAPI) => {
+		if (!email || !password || !email.trim() || !password.trim()) {
+			return thunkAPI.rejectWithValue('Invalid input');
+		}
+
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.registrationPassword(mezon.session, email, password);
+
+			if (!response) {
+				return thunkAPI.rejectWithValue('Failed to register password');
+			}
+			return response;
+		} catch (error) {
+			captureSentryError(error, `auth/registrationPassword`);
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const authSlice = createSlice({
 	name: AUTH_FEATURE_KEY,
 	initialState: initialAuthState,
@@ -213,6 +238,17 @@ export const authSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
+		builder
+			.addCase(registrationPassword.pending, (state) => {
+				state.isRegistering = 'loading';
+			})
+			.addCase(registrationPassword.fulfilled, (state, action) => {
+				state.isRegistering = 'loaded';
+			})
+			.addCase(registrationPassword.rejected, (state, action) => {
+				state.isRegistering = 'error';
+				state.error = action.error.message;
+			});
 	}
 });
 
@@ -229,7 +265,8 @@ export const authActions = {
 	createQRLogin,
 	checkLoginRequest,
 	confirmLoginRequest,
-	logOut
+	logOut,
+	registrationPassword
 };
 
 export const getAuthState = (rootState: { [AUTH_FEATURE_KEY]: AuthState }): AuthState => rootState[AUTH_FEATURE_KEY];
@@ -241,3 +278,5 @@ export const selectAuthIsLoaded = createSelector(getAuthState, (state: AuthState
 export const selectIsLogin = createSelector(getAuthState, (state: AuthState) => state.isLogin);
 
 export const selectSession = createSelector(getAuthState, (state: AuthState) => state.session);
+
+export const selectRegisteringStatus = createSelector(getAuthState, (state: AuthState) => state.isRegistering);

@@ -9,6 +9,7 @@ import { memoizeAndTrack } from '../memoize';
 
 export const FRIEND_FEATURE_KEY = 'friends';
 const LIST_FRIEND_CACHED_TIME = 1000 * 60 * 60;
+const LIMIT_FRIEND = 1000;
 
 export interface FriendsEntity extends Friend {
 	id: string;
@@ -63,9 +64,9 @@ type fetchListFriendsArgs = {
 export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', async ({ noCache }: fetchListFriendsArgs, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
 	if (noCache) {
-		fetchListFriendsCached.delete(mezon, -1, 100, '');
+		fetchListFriendsCached.delete(mezon, -1, LIMIT_FRIEND, '');
 	}
-	const response = await fetchListFriendsCached(mezon, -1, 100, '');
+	const response = await fetchListFriendsCached(mezon, -1, LIMIT_FRIEND, '');
 	if (!response.friends) {
 		return [];
 	}

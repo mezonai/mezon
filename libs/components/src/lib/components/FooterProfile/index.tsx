@@ -296,4 +296,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	);
 }
 
-export default memo(FooterProfile);
+export default memo(FooterProfile, (prevProps, nextProps) => {
+	return (
+		prevProps.name === nextProps.name &&
+		prevProps.status === nextProps.status &&
+		prevProps.avatar === nextProps.avatar &&
+		prevProps.userId === nextProps.userId &&
+		prevProps.isDM === nextProps.isDM
+	);
+});

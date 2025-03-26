@@ -1,4 +1,4 @@
-import { useAppNavigation, useAuth, useEscapeKeyClose, useMenu, useOnClickOutside } from '@mezon/core';
+import { useAppNavigation, useAuth, useMenu } from '@mezon/core';
 import {
 	appActions,
 	selectCanvasEntityById,
@@ -71,9 +71,6 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 		setIsShowPanelCanvas(false);
 	}, []);
 
-	useEscapeKeyClose(panelRef, handClosePannel);
-	useOnClickOutside(panelRef, handClosePannel);
-
 	const isAgeRestrictedChannel = useMemo(() => {
 		return channel?.age_restricted === 1;
 	}, [channel?.age_restricted]);
@@ -132,6 +129,8 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 							channelId={currentChannel?.channel_id}
 							clanId={currentClanId || ''}
 							canvasId={currentCanvasId || ''}
+							handClosePannel={handClosePannel}
+							parentRef={panelRef}
 						/>
 					)}
 				</div>

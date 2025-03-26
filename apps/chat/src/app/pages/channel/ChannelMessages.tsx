@@ -20,6 +20,7 @@ import {
 	selectIsMessageIdExist,
 	selectLastMessageByChannelId,
 	selectLatestMessageId,
+	selectMemberClanByUserId2,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId2,
 	selectMessageIsLoading,
@@ -88,6 +89,81 @@ const SCROLL_DEBOUNCE = 200;
 
 const runDebouncedForScroll = debounce((cb) => cb(), SCROLL_DEBOUNCE, false);
 
+const DMMessageWrapper = ({ channelId, children }: { channelId: string; children: React.ReactNode }) => {
+	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, true));
+	const defaultRoles = useMemo(() => [], []);
+	return (
+		<MessageContextMenuProvider channelId={channelId} allRolesInClan={defaultRoles} allUserIdsInChannel={getMemberIds}>
+			{children}
+		</MessageContextMenuProvider>
+	);
+};
+
+const ClanMessageWrapper = ({
+	channelId,
+	isThreadBox,
+	isTopicBox,
+	userIdsFromThreadBox,
+	userIdsFromTopicBox,
+	children
+}: {
+	channelId: string;
+	isThreadBox?: boolean;
+	isTopicBox?: boolean;
+	userIdsFromThreadBox?: string[];
+	userIdsFromTopicBox?: string[] | ChannelMembersEntity[];
+	children: React.ReactNode;
+}) => {
+	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, false));
+	const allUserIdsInChannel = isThreadBox ? userIdsFromThreadBox : isTopicBox ? userIdsFromTopicBox : getMemberIds;
+
+	const prevUsersRef = useRef<string[] | ChannelMembersEntity[] | undefined>(undefined);
+
+	const users = useMemo(() => {
+		if (!allUserIdsInChannel) return allUserIdsInChannel;
+		if (prevUsersRef.current && prevUsersRef.current.length === allUserIdsInChannel.length) {
+			const currentIds = Array.isArray(allUserIdsInChannel)
+				? allUserIdsInChannel.map((item) => (typeof item === 'string' ? item : item.id))
+				: [];
+
+			const prevIds = Array.isArray(prevUsersRef.current)
+				? prevUsersRef.current.map((item) => (typeof item === 'string' ? item : item.id))
+				: [];
+
+			const currentSet = new Set(currentIds);
+			const prevSet = new Set(prevIds);
+			if (currentSet.size === prevSet.size && Array.from(currentSet).every((id) => prevSet.has(id))) {
+				return prevUsersRef.current;
+			}
+		}
+		prevUsersRef.current = allUserIdsInChannel;
+		return allUserIdsInChannel;
+	}, [allUserIdsInChannel]);
+
+	const rolesData = useSelector(selectAllRoleIds);
+	const prevRolesRef = useRef<string[] | undefined>(undefined);
+
+	const allRolesInClan = useMemo(() => {
+		if (!rolesData) return rolesData;
+		if (prevRolesRef.current && prevRolesRef.current.length === rolesData.length) {
+			const currentSet = new Set(rolesData);
+			const prevSet = new Set(prevRolesRef.current);
+
+			if (currentSet.size === prevSet.size && Array.from(currentSet).every((id) => prevSet.has(id))) {
+				return prevRolesRef.current;
+			}
+		}
+		prevRolesRef.current = rolesData;
+		return rolesData;
+	}, [rolesData]);
+
+	return (
+		<MessageContextMenuProvider channelId={channelId} allRolesInClan={allRolesInClan} allUserIdsInChannel={users}>
+			{children}
+		</MessageContextMenuProvider>
+	);
+};
+
 function ChannelMessages({
 	clanId,
 	channelId,
@@ -108,9 +184,6 @@ function ChannelMessages({
 	const messageIds = useAppSelector((state) => selectMessageIdsByChannelId2(state, channelId));
 	const idMessageNotified = useSelector(selectMessageNotified);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, isDM));
-	const allUserIdsInChannel = isThreadBox ? userIdsFromThreadBox : isTopicBox ? userIdsFromTopicBox : getMemberIds;
-	const allRolesInClan = useSelector(selectAllRoleIds);
 	const dataReferences = useSelector(selectDataReferences(channelId ?? ''));
 	const lastMessageId = lastMessage?.id;
 	const lastMessageUnreadId = useAppSelector((state) => selectUnreadMessageIdByChannelId(state, channelId as string));
@@ -292,35 +365,73 @@ function ChannelMessages({
 
 	return (
 		<>
-			<MessageContextMenuProvider channelId={channelId} allRolesInClan={allRolesInClan} allUserIdsInChannel={allUserIdsInChannel}>
-				<ChatMessageList
-					key={channelId}
-					messageIds={messageIds}
-					chatRef={chatRef}
-					userActiveScroll={userActiveScroll}
-					appearanceTheme={appearanceTheme}
-					lastMessageId={lastMessageId as string}
-					dataReferences={dataReferences}
-					idMessageNotified={idMessageNotified}
-					lastMessageUnreadId={lastMessageUnreadId as string}
-					avatarDM={avatarDM}
-					username={username}
+			{isDM ? (
+				<DMMessageWrapper channelId={channelId}>
+					<ChatMessageList
+						key={channelId}
+						messageIds={messageIds}
+						chatRef={chatRef}
+						userActiveScroll={userActiveScroll}
+						appearanceTheme={appearanceTheme}
+						lastMessageId={lastMessageId as string}
+						dataReferences={dataReferences}
+						idMessageNotified={idMessageNotified}
+						lastMessageUnreadId={lastMessageUnreadId as string}
+						avatarDM={avatarDM}
+						username={username}
+						channelId={channelId}
+						topicId={topicId}
+						mode={mode}
+						channelLabel={channelLabel}
+						onChange={handleOnChange}
+						isTopic={isTopicBox}
+						skipCalculateScroll={skipCalculateScroll}
+						anchorIdRef={anchorIdRef}
+						anchorTopRef={anchorTopRef}
+						setAnchor={setAnchor}
+						isPrivate={isPrivate}
+						clanId={clanId}
+						onScrollDownToggle={handleScrollDownVisibilityChange}
+						onNotchToggle={setIsNotchShown}
+					/>
+				</DMMessageWrapper>
+			) : (
+				<ClanMessageWrapper
 					channelId={channelId}
-					topicId={topicId}
-					mode={mode}
-					channelLabel={channelLabel}
-					onChange={handleOnChange}
-					isTopic={isTopicBox}
-					skipCalculateScroll={skipCalculateScroll}
-					anchorIdRef={anchorIdRef}
-					anchorTopRef={anchorTopRef}
-					setAnchor={setAnchor}
-					isPrivate={isPrivate}
-					clanId={clanId}
-					onScrollDownToggle={handleScrollDownVisibilityChange}
-					onNotchToggle={setIsNotchShown}
-				/>
-			</MessageContextMenuProvider>
+					isThreadBox={isThreadBox}
+					isTopicBox={isTopicBox}
+					userIdsFromThreadBox={userIdsFromThreadBox}
+					userIdsFromTopicBox={userIdsFromTopicBox}
+				>
+					<ChatMessageList
+						key={channelId}
+						messageIds={messageIds}
+						chatRef={chatRef}
+						userActiveScroll={userActiveScroll}
+						appearanceTheme={appearanceTheme}
+						lastMessageId={lastMessageId as string}
+						dataReferences={dataReferences}
+						idMessageNotified={idMessageNotified}
+						lastMessageUnreadId={lastMessageUnreadId as string}
+						avatarDM={avatarDM}
+						username={username}
+						channelId={channelId}
+						topicId={topicId}
+						mode={mode}
+						channelLabel={channelLabel}
+						onChange={handleOnChange}
+						isTopic={isTopicBox}
+						skipCalculateScroll={skipCalculateScroll}
+						anchorIdRef={anchorIdRef}
+						anchorTopRef={anchorTopRef}
+						setAnchor={setAnchor}
+						isPrivate={isPrivate}
+						clanId={clanId}
+						onScrollDownToggle={handleScrollDownVisibilityChange}
+						onNotchToggle={setIsNotchShown}
+					/>
+				</ClanMessageWrapper>
+			)}
 			<ScrollDownButton channelId={channelId} clanId={clanId} messageIds={messageIds} chatRef={chatRef} />
 		</>
 	);
@@ -481,6 +592,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 	}) => {
 		const dispatch = useAppDispatch();
 		const userId = useSelector(selectAllAccount)?.user?.id;
+		const currentClanUser = useAppSelector((state) => selectMemberClanByUserId2(state, userId as string));
 		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 		const idMessageToJump = useSelector(selectIdMessageToJump);
 		const entities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, channelId));
@@ -846,6 +958,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						isTopic={isTopic}
 						canSendMessage={canSendMessage}
 						observeIntersectionForLoading={observeIntersectionForLoading}
+						user={currentClanUser}
 					/>
 				);
 			});
@@ -907,6 +1020,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 										allowDisplayShortProfile={true}
 										message={convertedFirstMsgOfThisTopic}
 										mode={mode}
+										user={currentClanUser}
 									/>
 								</div>
 							</div>

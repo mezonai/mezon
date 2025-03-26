@@ -1,14 +1,16 @@
-import { messagesActions, reactionActions, referencesActions } from '@mezon/store';
+import { messagesActions, referencesActions } from '@mezon/store';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+/**
+ * @deprecated don't use it
+ */
 export const useEscapeKey = (handler: () => void, options: Partial<{ preventEvent: boolean }> = {}) => {
 	const dispatch = useDispatch();
 	useEffect(() => {
 		const { preventEvent } = options;
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
-				dispatch(messagesActions.setIdMessageToJump(null));
 				dispatch(messagesActions.setOpenOptionMessageState(false));
 				dispatch(
 					referencesActions.setDataReferences({
@@ -16,8 +18,6 @@ export const useEscapeKey = (handler: () => void, options: Partial<{ preventEven
 						dataReferences: { has_attachment: false, channel_id: '', mode: 0, channel_label: '' }
 					})
 				);
-				dispatch(reactionActions.setMessageMatchWithRef(false));
-
 				handler();
 			}
 		};

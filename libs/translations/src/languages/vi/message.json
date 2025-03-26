@@ -101,5 +101,10 @@
     "callBack": "Gọi lại",
     "incomingCall": "Cuộc gọi đến",
     "outGoingCall": "Cuộc gọi đi"
+  },
+  "buzz": {
+    "confirmText": "Gửi",
+    "description": "Nhập nội dung buzz",
+    "cancel": "Hủy"
   }
 }

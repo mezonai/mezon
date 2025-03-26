@@ -162,6 +162,8 @@ const ClanLayout = () => {
 					<TopicDiscussionMain />
 				</div>
 			)}
+
+			{/* update later */}
 			<Setting isDM={false} />
 
 			<ClanEffects

@@ -101,5 +101,10 @@
         "callBack": "Call back",
         "incomingCall": "Incoming call",
         "outGoingCall": "Outgoing call"
+    },
+    "buzz": {
+        "confirmText": "Send",
+        "description": "Enter your message buzz",
+        "cancel": "Cancel"
     }
 }

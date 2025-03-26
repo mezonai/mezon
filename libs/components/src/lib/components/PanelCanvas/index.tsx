@@ -1,5 +1,6 @@
+import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { appActions, canvasAPIActions, useAppDispatch } from '@mezon/store';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { Coords } from '../ChannelLink';
 import GroupPanels from '../PanelChannel/GroupPanels';
 import ItemPanel from '../PanelChannel/ItemPanel';
@@ -9,9 +10,11 @@ interface IPanelCanvasProps {
 	channelId?: string;
 	clanId?: string;
 	canvasId?: string;
+	handClosePannel: () => void;
+	parentRef: RefObject<HTMLDivElement>;
 }
 
-const PanelCanvas: React.FC<IPanelCanvasProps> = ({ coords, channelId, clanId, canvasId }) => {
+const PanelCanvas: React.FC<IPanelCanvasProps> = ({ coords, channelId, clanId, canvasId, handClosePannel, parentRef }) => {
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [positionTop, setPositionTop] = useState(false);
 	const dispatch = useAppDispatch();
@@ -35,6 +38,9 @@ const PanelCanvas: React.FC<IPanelCanvasProps> = ({ coords, channelId, clanId, c
 			dispatch(appActions.setIsShowCanvas(false));
 		}
 	};
+
+	useEscapeKeyClose(parentRef, handClosePannel);
+	useOnClickOutside(parentRef, handClosePannel);
 
 	return (
 		<div

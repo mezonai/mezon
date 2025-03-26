@@ -6517,13 +6517,7 @@ export function MetaMaskIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function InfoIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			className="mx-auto  text-orange-400 w-20 h-20 dark:text-orange-400"
-			aria-hidden="true"
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 20 20"
-		>
+		<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" {...props}>
 			<path
 				stroke="currentColor"
 				strokeLinecap="round"

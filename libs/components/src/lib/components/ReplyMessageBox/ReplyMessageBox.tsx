@@ -1,4 +1,4 @@
-import { useShowName } from '@mezon/core';
+import { getShowName } from '@mezon/core';
 import { referencesActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { blankReferenceObj } from '@mezon/utils';
@@ -14,7 +14,7 @@ type MessageReplyProps = {
 
 export function ReplyMessageBox({ channelId, dataReferences, className }: MessageReplyProps) {
 	const dispatch = useDispatch();
-	const nameShowed = useShowName(
+	const nameShowed = getShowName(
 		dataReferences.message_sender_clan_nick ?? '',
 		dataReferences.message_sender_display_name ?? '',
 		dataReferences.message_sender_username ?? '',

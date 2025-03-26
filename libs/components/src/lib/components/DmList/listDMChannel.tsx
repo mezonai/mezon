@@ -5,8 +5,7 @@ import {
 	selectIsElectronUpdateAvailable,
 	selectIsInCall,
 	selectStatusStream,
-	selectVoiceJoined,
-	useAppDispatch
+	selectVoiceJoined
 } from '@mezon/store';
 import { isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,7 +22,6 @@ const heightAroundComponent = 230;
 const heightAppUpdate = 40;
 const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
 const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
-	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { directId: currentDmGroupId } = useAppParams();
 	const { setStatusMenu } = useMenu();

@@ -1,14 +1,15 @@
-import { IMessageWithUser, TypeMessage } from '@mezon/utils';
+import { IMessageWithUser, TypeMessage, UsersClanEntity } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import MessageWithSystem from '../../MessageWithSystem';
 import MessageWithUser from '../../MessageWithUser';
 
 type ChannelMessageThreadProps = {
 	message: IMessageWithUser;
+	user: UsersClanEntity;
 };
 
 const ChannelMessageThread = (props: ChannelMessageThreadProps) => {
-	const { message } = props;
+	const { message, user } = props;
 
 	const isMessageSystem =
 		message?.code === TypeMessage.Welcome ||
@@ -26,6 +27,7 @@ const ChannelMessageThread = (props: ChannelMessageThreadProps) => {
 					mode={ChannelStreamMode.STREAM_MODE_THREAD}
 					isMention={true}
 					isShowFull={true}
+					user={user}
 				/>
 			)}
 		</div>

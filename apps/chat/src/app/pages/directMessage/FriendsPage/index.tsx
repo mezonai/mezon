@@ -1,4 +1,4 @@
-import { useEscapeKey, useFriends, useMenu } from '@mezon/core';
+import { useEscapeKeyClose, useFriends, useMenu } from '@mezon/core';
 import {
 	FriendsEntity,
 	channelsActions,
@@ -12,7 +12,7 @@ import {
 } from '@mezon/store';
 import { Button, Icons, Image, InputField } from '@mezon/ui';
 import { isMacDesktop } from '@mezon/utils';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
 import FriendList from './FriendsList';
@@ -249,9 +249,10 @@ const FriendsPage = () => {
 };
 
 const RequestFailedPopup = ({ togglePopup }: { togglePopup: () => void }) => {
-	useEscapeKey(togglePopup);
+	const modalRef = useRef<HTMLDivElement>(null);
+	useEscapeKeyClose(modalRef, togglePopup);
 	return (
-		<div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
+		<div ref={modalRef} tabIndex={-1} className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
 			<div onClick={togglePopup} className="fixed inset-0 bg-black opacity-50" />
 			<div className="relative z-10 w-[440px] text-center">
 				<div className="dark:bg-[#313338] bg-white dark:text-[#dbdee1] text-textLightTheme px-4 py-5 flex flex-col gap-5 items-center rounded-t-md">

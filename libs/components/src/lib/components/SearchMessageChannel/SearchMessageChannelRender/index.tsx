@@ -3,14 +3,16 @@ import {
 	messagesActions,
 	SearchMessageEntity,
 	searchMessagesActions,
+	selectAllAccount,
 	selectAllChannelMemberIds,
 	selectAllRoleIds,
 	selectChannelById,
+	selectMemberClanByUserId2,
 	selectTheme,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { convertSearchMessage, IMessageWithUser, SIZE_PAGE_SEARCH } from '@mezon/utils';
+import { convertSearchMessage, IMessageWithUser, SIZE_PAGE_SEARCH, UsersClanEntity } from '@mezon/utils';
 import { Pagination } from 'flowbite-react';
 import { ChannelMessage, ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
@@ -35,6 +37,8 @@ type GroupedMessages = {
 
 const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, channelId, isDm }: searchMessagesProps) => {
 	const dispatch = useAppDispatch();
+	const userId = useSelector(selectAllAccount)?.user?.id;
+	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId2(state, userId as string));
 	const allRolesInClan = useSelector(selectAllRoleIds);
 	const memberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, isDm));
 	const messageContainerRef = useRef<HTMLDivElement>(null);
@@ -97,6 +101,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 														key={searchMessage.message_id}
 														searchChannel={searchChannel}
 														searchMessage={searchMessage}
+														user={currentClanUser}
 													/>
 												))}
 											</div>
@@ -146,9 +151,10 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 interface ISearchedItemProps {
 	searchMessage: SearchMessageEntity;
 	searchChannel: ChannelsEntity;
+	user: UsersClanEntity;
 }
 
-const SearchedItem = ({ searchMessage, searchChannel }: ISearchedItemProps) => {
+const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps) => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
@@ -183,6 +189,7 @@ const SearchedItem = ({ searchMessage, searchChannel }: ISearchedItemProps) => {
 						: ChannelStreamMode.STREAM_MODE_CHANNEL
 				}
 				isSearchMessage={true}
+				user={user}
 			/>
 		</div>
 	);

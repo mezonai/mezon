@@ -3,6 +3,7 @@ import { IClan, LIMIT_CLAN_ITEM, LoadingStatus, TypeCheck } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType, ClanUpdatedEvent } from 'mezon-js';
 import { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
@@ -64,31 +65,34 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 	'clans/changeCurrentClan',
 	async ({ clanId, noCache = false }: ChangeCurrentClanArgs, thunkAPI) => {
 		try {
-			thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
-			thunkAPI.dispatch(clansActions.setCurrentClanId(clanId));
-			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId }));
-			thunkAPI.dispatch(rolesClanActions.fetchRolesClan({ clanId }));
-			thunkAPI.dispatch(eventManagementActions.fetchEventManagement({ clanId }));
-			thunkAPI.dispatch(policiesActions.fetchPermissionsUser({ clanId }));
-			thunkAPI.dispatch(policiesActions.fetchPermission());
-			thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId }));
-			thunkAPI.dispatch(defaultNotificationActions.getDefaultNotificationClan({ clanId: clanId }));
-			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
-			thunkAPI.dispatch(channelsActions.setStatusChannelFetch(clanId));
-			thunkAPI.dispatch(
-				voiceActions.fetchVoiceChannelMembers({
-					clanId: clanId ?? '',
-					channelId: '',
-					channelType: ChannelType.CHANNEL_TYPE_GMEET_VOICE
-				})
-			);
-			thunkAPI.dispatch(
-				usersStreamActions.fetchStreamChannelMembers({
-					clanId: clanId ?? '',
-					channelId: '',
-					channelType: ChannelType.CHANNEL_TYPE_STREAMING
-				})
-			);
+			batch(() => {
+				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId));
+				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
+				thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
+
+				thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId }));
+				thunkAPI.dispatch(rolesClanActions.fetchRolesClan({ clanId }));
+				thunkAPI.dispatch(eventManagementActions.fetchEventManagement({ clanId }));
+				thunkAPI.dispatch(policiesActions.fetchPermissionsUser({ clanId }));
+				thunkAPI.dispatch(policiesActions.fetchPermission());
+				thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId }));
+				thunkAPI.dispatch(defaultNotificationActions.getDefaultNotificationClan({ clanId: clanId }));
+				thunkAPI.dispatch(channelsActions.setStatusChannelFetch(clanId));
+				thunkAPI.dispatch(
+					voiceActions.fetchVoiceChannelMembers({
+						clanId: clanId ?? '',
+						channelId: '',
+						channelType: ChannelType.CHANNEL_TYPE_GMEET_VOICE
+					})
+				);
+				thunkAPI.dispatch(
+					usersStreamActions.fetchStreamChannelMembers({
+						clanId: clanId ?? '',
+						channelId: '',
+						channelType: ChannelType.CHANNEL_TYPE_STREAMING
+					})
+				);
+			});
 		} catch (error) {
 			captureSentryError(error, 'clans/changeCurrentClan');
 			return thunkAPI.rejectWithValue(error);

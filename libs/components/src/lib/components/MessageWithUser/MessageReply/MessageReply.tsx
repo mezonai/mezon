@@ -1,4 +1,4 @@
-import { useShowName, useUserById } from '@mezon/core';
+import { getShowName, useUserById } from '@mezon/core';
 import { messagesActions, selectClanView, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageWithUser, createImgproxyUrl } from '@mezon/utils';
@@ -40,7 +40,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isA
 
 	const markUpOnReplyParent = useRef<HTMLDivElement | null>(null);
 
-	const nameShowed = useShowName(
+	const nameShowed = getShowName(
 		message?.references?.[0]?.message_sender_clan_nick ?? '',
 		message?.references?.[0]?.message_sender_display_name ?? '',
 		messageUsernameSenderRef ?? '',

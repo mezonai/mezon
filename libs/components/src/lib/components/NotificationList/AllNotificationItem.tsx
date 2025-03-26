@@ -1,4 +1,4 @@
-import { useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useShowName } from '@mezon/core';
+import { getShowName, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification } from '@mezon/core';
 import { messagesActions, selectChannelById, selectClanById, selectMemberDMByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
@@ -17,7 +17,7 @@ import { AvatarImage } from '../AvatarImage/AvatarImage';
 import MessageAttachment from '../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../MessageWithUser/MessageLine';
 import MessageReply from '../MessageWithUser/MessageReply/MessageReply';
-import usePendingNames from '../MessageWithUser/usePendingNames';
+import getPendingNames from '../MessageWithUser/usePendingNames';
 export type NotifyMentionProps = {
 	readonly notify: INotification;
 };
@@ -223,7 +223,7 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 	const clanNick = message?.clan_nick;
 	const displayName = message?.display_name;
 	const userRolesClan = useColorsRoleById(message?.sender_id);
-	const { pendingClannick, pendingDisplayName, pendingUserName } = usePendingNames(
+	const { pendingClannick, pendingDisplayName, pendingUserName } = getPendingNames(
 		message,
 		clanNick ?? '',
 		displayName ?? '',
@@ -233,7 +233,7 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 		message?.username ?? ''
 	);
 
-	const nameShowed = useShowName(
+	const nameShowed = getShowName(
 		clanNick ? clanNick : (pendingClannick ?? ''),
 		displayName ? displayName : (pendingDisplayName ?? ''),
 		usernameSender ? usernameSender : (pendingUserName ?? ''),

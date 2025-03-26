@@ -370,7 +370,7 @@ export function RedDot() {
 	);
 }
 
-export function HelpButton({ isLightMode }: { isLightMode?: boolean }) {
+export const HelpButton = memo(({ isLightMode }: { isLightMode?: boolean }) => {
 	const { navigate } = useAppNavigation();
 	return (
 		<div className="relative leading-5 h-5">
@@ -379,7 +379,7 @@ export function HelpButton({ isLightMode }: { isLightMode?: boolean }) {
 			</button>
 		</div>
 	);
-}
+});
 
 function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 	const dispatch = useDispatch();

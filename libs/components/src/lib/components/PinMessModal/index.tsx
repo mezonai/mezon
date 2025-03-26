@@ -1,6 +1,8 @@
 import { ColorRoleProvider, useEscapeKeyClose } from '@mezon/core';
+import { selectAllAccount, selectMemberClanByUserId2, useAppSelector } from '@mezon/store';
 import { IMessageWithUser, KEY_KEYBOARD } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import MessageWithUser from '../MessageWithUser';
 
 type ModalAddPinMessProps = {
@@ -12,6 +14,8 @@ type ModalAddPinMessProps = {
 };
 export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 	const { mess, channelLabel, closeModal, handlePinMessage, mode } = props;
+	const userId = useSelector(selectAllAccount)?.user?.id;
+	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId2(state, userId as string));
 
 	const handlePinMessageAndCloseModal = () => {
 		handlePinMessage();
@@ -56,6 +60,7 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 								mode={mode}
 								isMention={true}
 								isShowFull={true}
+								user={currentClanUser}
 							/>
 						</ColorRoleProvider>
 					</div>

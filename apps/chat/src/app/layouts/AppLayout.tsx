@@ -1,5 +1,5 @@
 import { ToastController } from '@mezon/components';
-import { useCustomNavigate, useEscapeKey } from '@mezon/core';
+import { useCustomNavigate } from '@mezon/core';
 import { fcmActions, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, MezonUiProvider } from '@mezon/ui';
 import {
@@ -139,11 +139,21 @@ const ViewModeHandler: React.FC = () => {
 		}
 	}, [redirectTo, navigate]);
 
-	useEscapeKey(() => {
+	useEffect(() => {
 		if (isElectron() && viewMode === 'image') {
-			window.electron.send(IMAGE_WINDOW_TITLE_BAR_ACTION, CLOSE_APP);
+			const handleKeyDown = (event: KeyboardEvent) => {
+				if (event.key === 'Escape') {
+					window.electron.send(IMAGE_WINDOW_TITLE_BAR_ACTION, CLOSE_APP);
+				}
+			};
+
+			document.addEventListener('keydown', handleKeyDown);
+
+			return () => {
+				document.removeEventListener('keydown', handleKeyDown);
+			};
 		}
-	});
+	}, [viewMode]);
 
 	if (isWindowsDesktop || isLinuxDesktop) {
 		return <TitleBar eventName={viewMode === 'image' ? IMAGE_WINDOW_TITLE_BAR_ACTION : TITLE_BAR_ACTION} />;

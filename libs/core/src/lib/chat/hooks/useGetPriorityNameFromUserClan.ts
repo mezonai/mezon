@@ -1,7 +1,7 @@
 import { selectMemberClanByUserId } from '@mezon/store';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useShowName } from './useShowName';
+import { getShowName } from './useShowName';
 
 export const useGetPriorityNameFromUserClan = (senderId: string) => {
 	const isAnonymous = useMemo(() => senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID, [senderId]);
@@ -28,7 +28,7 @@ export const useGetPriorityNameFromUserClan = (senderId: string) => {
 		return userClan?.user?.avatar_url;
 	}, [userClan?.user?.avatar_url]);
 
-	const namePriority = useShowName(clanNick ?? '', displayName ?? '', usernameSender ?? '', senderId);
+	const namePriority = getShowName(clanNick ?? '', displayName ?? '', usernameSender ?? '', senderId);
 
 	const priorityAvatar = useMemo(() => {
 		return clanAvatar ? clanAvatar : generalAvatar;

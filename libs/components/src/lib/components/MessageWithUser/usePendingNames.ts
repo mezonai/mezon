@@ -1,6 +1,6 @@
 import { IMessageWithUser } from '@mezon/utils';
 
-const usePendingName = (isMe: boolean | undefined, messageUsername: string | undefined, nameFromMemList: string, nameFromMessage: string) => {
+const getPendingName = (isMe: boolean | undefined, messageUsername: string | undefined, nameFromMemList: string, nameFromMessage: string) => {
 	if (isMe && !messageUsername) {
 		return nameFromMemList;
 	} else {
@@ -8,7 +8,7 @@ const usePendingName = (isMe: boolean | undefined, messageUsername: string | und
 	}
 };
 
-const usePendingNames = (
+const getPendingNames = (
 	message: IMessageWithUser,
 	clanNickFromMemList?: string,
 	displayNameFromMemList?: string,
@@ -21,11 +21,11 @@ const usePendingNames = (
 	clanAvatarFromMemList?: string,
 	clanAvatarFormMessage?: string
 ) => {
-	const pendingClannick = usePendingName(message.isMe, message.username, clanNickFromMemList ?? '', userClanNicknameFromMessage ?? '');
-	const pendingDisplayName = usePendingName(message.isMe, message.username, displayNameFromMemList ?? '', userDisplayNameFromMessage ?? '');
-	const pendingUserName = usePendingName(message.isMe, message.username, usernameFromMemList ?? '', usernameFromMessage ?? '');
-	const pendingUserAvatar = usePendingName(message.isMe, message.username, avatarFromMemberList ?? '', avatarFromMessage ?? '');
-	const pendingClanAvatar = usePendingName(message.isMe, message.username, clanAvatarFromMemList ?? '', clanAvatarFormMessage ?? '');
+	const pendingClannick = getPendingName(message.isMe, message.username, clanNickFromMemList ?? '', userClanNicknameFromMessage ?? '');
+	const pendingDisplayName = getPendingName(message.isMe, message.username, displayNameFromMemList ?? '', userDisplayNameFromMessage ?? '');
+	const pendingUserName = getPendingName(message.isMe, message.username, usernameFromMemList ?? '', usernameFromMessage ?? '');
+	const pendingUserAvatar = getPendingName(message.isMe, message.username, avatarFromMemberList ?? '', avatarFromMessage ?? '');
+	const pendingClanAvatar = getPendingName(message.isMe, message.username, clanAvatarFromMemList ?? '', clanAvatarFormMessage ?? '');
 
 	return {
 		pendingClannick,
@@ -36,4 +36,4 @@ const usePendingNames = (
 	};
 };
 
-export default usePendingNames;
+export default getPendingNames;

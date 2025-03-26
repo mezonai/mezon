@@ -1,7 +1,7 @@
-import { useColorsRoleById, useShowName } from '@mezon/core';
+import { getShowName, useColorsRoleById } from '@mezon/core';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import usePendingNames from './usePendingNames';
+import getPendingNames from './usePendingNames';
 
 type IMessageHeadProps = {
 	message: IMessageWithUser;
@@ -16,7 +16,7 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 	const clanNick = message?.clan_nick;
 	const displayName = message?.display_name;
 	const userRolesClan = useColorsRoleById(message?.sender_id);
-	const { pendingClannick, pendingDisplayName, pendingUserName } = usePendingNames(
+	const { pendingClannick, pendingDisplayName, pendingUserName } = getPendingNames(
 		message,
 		clanNick ?? '',
 		displayName ?? '',
@@ -26,7 +26,7 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 		message?.username ?? ''
 	);
 
-	const nameShowed = useShowName(
+	const nameShowed = getShowName(
 		clanNick ? clanNick : (pendingClannick ?? ''),
 		displayName ? displayName : (pendingDisplayName ?? ''),
 		usernameSender ? usernameSender : (pendingUserName ?? ''),

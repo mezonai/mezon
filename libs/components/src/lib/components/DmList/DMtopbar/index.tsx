@@ -28,7 +28,7 @@ import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, IMessageTypeCallLog, isMacDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useSelector } from 'react-redux';
 import { HelpButton } from '../../ChannelTopbar';
@@ -246,40 +246,43 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 	);
 }
 
-function PinButton({ isLightMode, mode }: { isLightMode: boolean; mode?: number }) {
-	const dispatch = useAppDispatch();
-	const currentDm = useSelector(selectCurrentDM);
-	const isShowPinBadge = useAppSelector((state) => selectIsShowPinBadgeByDmId(state, currentDm?.id as string));
-	const isShowPinMessage = useSelector(selectIsPinModalVisible);
-	const threadRef = useRef<HTMLDivElement>(null);
+const PinButton = memo(
+	({ isLightMode, mode }: { isLightMode: boolean; mode?: number }) => {
+		const dispatch = useAppDispatch();
+		const currentDm = useSelector(selectCurrentDM);
+		const isShowPinBadge = useAppSelector((state) => selectIsShowPinBadgeByDmId(state, currentDm?.id as string));
+		const isShowPinMessage = useSelector(selectIsPinModalVisible);
+		const threadRef = useRef<HTMLDivElement>(null);
 
-	const handleShowPinMessage = async () => {
-		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentDm?.id as string }));
-		dispatch(pinMessageActions.togglePinModal());
-		if (isShowPinBadge) {
-			dispatch(directActions.setShowPinBadgeOfDM({ dmId: currentDm?.id as string, isShow: false }));
-		}
-	};
+		const handleShowPinMessage = async () => {
+			await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentDm?.id as string }));
+			dispatch(pinMessageActions.togglePinModal());
+			if (isShowPinBadge) {
+				dispatch(directActions.setShowPinBadgeOfDM({ dmId: currentDm?.id as string, isShow: false }));
+			}
+		};
 
-	return (
-		<div className="relative leading-5 size-6" ref={threadRef}>
-			<button
-				title="Pinned Messages"
-				className="focus-visible:outline-none relative"
-				onClick={handleShowPinMessage}
-				onContextMenu={(e) => e.preventDefault()}
-			>
-				<Icons.PinRight isWhite={isShowPinMessage} />
-				{isShowPinBadge && (
-					<div className="bg-red-500 size-2 absolute rounded-full bottom-0 right-0 border-[3px] dark:border-bgPrimary border-bgLightPrimary box-content" />
-				)}
-			</button>
-			{isShowPinMessage && <PinnedMessages mode={mode} onClose={handleShowPinMessage} rootRef={threadRef} />}
-		</div>
-	);
-}
+		return (
+			<div className="relative leading-5 size-6" ref={threadRef}>
+				<button
+					title="Pinned Messages"
+					className="focus-visible:outline-none relative"
+					onClick={handleShowPinMessage}
+					onContextMenu={(e) => e.preventDefault()}
+				>
+					<Icons.PinRight isWhite={isShowPinMessage} />
+					{isShowPinBadge && (
+						<div className="bg-red-500 size-2 absolute rounded-full bottom-0 right-0 border-[3px] dark:border-bgPrimary border-bgLightPrimary box-content" />
+					)}
+				</button>
+				{isShowPinMessage && <PinnedMessages mode={mode} onClose={handleShowPinMessage} rootRef={threadRef} />}
+			</div>
+		);
+	},
+	() => true
+);
 
-const AddMemberToGroupDm = ({ currentDmGroup, appearanceTheme }: { currentDmGroup: DirectEntity; appearanceTheme: string }) => {
+const AddMemberToGroupDm = memo(({ currentDmGroup, appearanceTheme }: { currentDmGroup: DirectEntity; appearanceTheme: string }) => {
 	const [openAddToGroup, setOpenAddToGroup] = useState<boolean>(false);
 	const handleOpenAddToGroupModal = () => {
 		setOpenAddToGroup(!openAddToGroup);
@@ -303,7 +306,7 @@ const AddMemberToGroupDm = ({ currentDmGroup, appearanceTheme }: { currentDmGrou
 			</span>
 		</div>
 	);
-};
+});
 
 DmTopbar.Skeleton = () => {
 	return (

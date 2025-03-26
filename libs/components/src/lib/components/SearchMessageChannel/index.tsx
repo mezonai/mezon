@@ -246,11 +246,13 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 	}, [channelId, currentClanId, currentPage, debouncedFetchSearchMessages, fetchSearchMessages, search]);
 
 	useEffect(() => {
-		document.addEventListener('click', handleOutsideClick);
-		return () => {
-			document.removeEventListener('click', handleOutsideClick);
-		};
-	}, [handleOutsideClick]);
+		if (isShowSearchMessageModal) {
+			document.addEventListener('click', handleOutsideClick);
+			return () => {
+				document.removeEventListener('click', handleOutsideClick);
+			};
+		}
+	}, [isShowSearchMessageModal, handleOutsideClick]);
 
 	const handleSearchUserMention = useCallback(
 		(search: string, callback: any) => {
@@ -412,4 +414,6 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 	);
 };
 
-export default memo(SearchMessageChannel);
+export default memo(SearchMessageChannel, (prevProps, nextProps) => {
+	return prevProps.mode === nextProps.mode;
+});

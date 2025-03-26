@@ -1,5 +1,12 @@
 import { ColorRoleProvider, useChatSending, useCurrentInbox, useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
-import { selectCurrentTopicId, selectOpenEditMessageState, topicsActions } from '@mezon/store';
+import {
+	selectAllAccount,
+	selectCurrentTopicId,
+	selectMemberClanByUserId2,
+	selectOpenEditMessageState,
+	topicsActions,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageWithUser, TypeMessage } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
@@ -22,6 +29,8 @@ type ModalDeleteMessProps = {
 
 const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const { mess, closeModal, mode, isRemoveAttachmentNoContent, attachmentData, isRemoveAttachmentAction = false, isTopic } = props;
+	const userId = useSelector(selectAllAccount)?.user?.id;
+	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId2(state, userId as string));
 	const dispatch = useDispatch();
 	const current = useCurrentInbox() || undefined;
 	const modalRef = useRef<HTMLDivElement>(null);
@@ -130,6 +139,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 									mode={mode}
 									isMention={true}
 									isShowFull={true}
+									user={currentClanUser}
 								/>
 							)}
 						</ColorRoleProvider>

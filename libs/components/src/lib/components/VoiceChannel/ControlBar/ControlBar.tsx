@@ -121,16 +121,16 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 						maxFramerate: 30
 					}
 				});
-				const audioStream = await getAudioScreenStream();
-				if (audioStream) {
-					const audioTrack = audioStream.getAudioTracks()[0];
-					audioScreenTrackRef.current = await localParticipant.localParticipant.publishTrack(audioTrack, {
-						name: 'screen-share-audio',
-						source: Track.Source.ScreenShareAudio,
-						dtx: true,
-						red: true
-					});
-				}
+				// const audioStream = await getAudioScreenStream();
+				// if (audioStream !== null || audioStream !== undefined) {
+				// 	const audioTrack = audioStream?.getAudioTracks()[0];
+				// 	if (audioTrack) {
+				// 		audioScreenTrackRef.current = await localParticipant.localParticipant.publishTrack(audioTrack, {
+				// 			name: 'screen-share-audio',
+				// 			source: Track.Source.ScreenShareAudio
+				// 		});
+				// 	}
+				// }
 
 				screenTrackRef.current = trackPublication;
 			} catch (error) {
@@ -399,13 +399,10 @@ const supportsScreenSharing = () => {
 async function getAudioScreenStream() {
 	if (!isElectron() || !window.electron) return null;
 	try {
-		const devicess = await navigator.mediaDevices.enumerateDevices();
-		const outputDevice = devicess.find((device) => device.kind === 'audiooutput');
-		const devices = await navigator.mediaDevices.getUserMedia({
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		const outputDevice = devices.find((device) => device.kind === 'audiooutput');
+		const device = await navigator.mediaDevices.getUserMedia({
 			audio: {
-				// deviceId: {
-				// 	exact: window.electron.getAudioInputDeviceId()
-				// },
 				deviceId: { exact: outputDevice?.deviceId },
 				// noiseSuppression: true,
 				echoCancellation: true,
@@ -417,8 +414,7 @@ async function getAudioScreenStream() {
 			},
 			video: false
 		});
-
-		return devices;
+		return device;
 	} catch (error) {
 		console.error('Error getting screen stream:', error);
 		return null;

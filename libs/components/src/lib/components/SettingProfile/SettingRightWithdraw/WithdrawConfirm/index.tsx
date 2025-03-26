@@ -30,7 +30,7 @@ const WithdrawConfirm = ({ onClose, onHandelConfirm, isLoading, address, coin }:
 						<Icons.Close defaultSize="size-4" />
 					</button>
 					<div className="p-4 md:p-5 text-center gap-6 flex flex-col ">
-						<Icons.InfoIcon />
+						<Icons.InfoIcon className="mx-auto  text-orange-400 w-20 h-20 dark:text-orange-400" />
 						<div className="flex flex-col gap-4 ">
 							<p className="text-orange-400 font-semibold text-[16px] text-start ">Risk Warning:</p>
 							<div className="flex flex-col justify-start">

@@ -1,7 +1,11 @@
 import { useAuth } from '@mezon/core';
+import { authActions, selectRegisteringStatus, useAppDispatch } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useEffect, useState } from 'react';
+import { useModal } from 'react-modal-hook';
+import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
+import SetPassword from '../Setting Password';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 
 type SettingAccountProps = {
@@ -10,10 +14,11 @@ type SettingAccountProps = {
 };
 
 const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) => {
+	const dispatch = useAppDispatch();
 	const { userProfile } = useAuth();
 	const urlImg = userProfile?.user?.avatar_url;
 	const checkUrl = urlImg === undefined || urlImg === '';
-
+	const isLoadingUpdatePassword = useSelector(selectRegisteringStatus);
 	const [color, setColor] = useState<string>('#323232');
 
 	const handleClick = () => {
@@ -30,6 +35,30 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 
 		getColor();
 	}, [checkUrl, urlImg]);
+
+	const email = `${userProfile?.user?.username}@ncc.asia`;
+	const [openSetPassWordModal, closeSetPasswordModal] = useModal(() => {
+		return (
+			<SetPassword
+				onClose={closeSetPasswordModal}
+				isLoading={isLoadingUpdatePassword}
+				initialEmail={email}
+				onSubmit={async (data) => {
+					await dispatch(authActions.registrationPassword(data));
+				}}
+			/>
+		);
+	}, [isLoadingUpdatePassword]);
+
+	const handleOpenSetPassword = () => {
+		openSetPassWordModal();
+	};
+
+	useEffect(() => {
+		if (isLoadingUpdatePassword !== 'loading') {
+			closeSetPasswordModal();
+		}
+	}, [isLoadingUpdatePassword]);
 
 	return (
 		<div
@@ -74,6 +103,20 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 						</div>
 						<div className="bg-zinc-600 h-fit rounded px-4 py-2 cursor-pointer hover:bg-opacity-80 text-white" onClick={handleClick}>
 							Edit
+						</div>
+					</div>
+				</div>
+				<div className="rounded-md dark:bg-bgSecondary bg-bgLightModeSecond m-4 p-4">
+					<div className="flex justify-between items-center">
+						<div>
+							<h4 className="uppercase font-bold text-xs dark:text-zinc-400 text-textLightTheme mb-1">Password</h4>
+							<p>Password</p>
+						</div>
+						<div
+							className="bg-zinc-600 h-fit rounded px-4 py-2 cursor-pointer hover:bg-opacity-80 text-white"
+							onClick={handleOpenSetPassword}
+						>
+							Set Password
 						</div>
 					</div>
 				</div>

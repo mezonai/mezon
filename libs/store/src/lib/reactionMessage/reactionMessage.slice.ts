@@ -257,9 +257,6 @@ export const reactionSlice = createSlice({
 				state.computedMessageReactions[combinedId] = combineMessageReactions(state, combinedId);
 			}
 		},
-		setMessageMatchWithRef(state, action) {
-			state.messageMatchWithRef = action.payload;
-		},
 		setPositionOfSmileButton(state, action) {
 			state.positionOfSmileButton = action.payload;
 		},
@@ -382,8 +379,6 @@ export const selectReactionBottomState = createSelector(getReactionState, (state
 export const selectReactionBottomStateResponsive = createSelector(getReactionState, (state: ReactionState) => state.reactionBottomStateResponsive);
 
 export const selectReactionRightState = createSelector(getReactionState, (state: ReactionState) => state.reactionRightState);
-
-export const selectMessageMatchWithRef = createSelector(getReactionState, (state: ReactionState) => state.messageMatchWithRef);
 
 export const selectPositionEmojiButtonSmile = createSelector(getReactionState, (state: ReactionState) => state.positionOfSmileButton);
 
