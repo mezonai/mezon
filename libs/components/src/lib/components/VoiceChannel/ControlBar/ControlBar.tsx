@@ -118,7 +118,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 					simulcast: false,
 					videoEncoding: {
 						maxBitrate: 3000000,
-						maxFramerate: 24
+						maxFramerate: 16
 					}
 				});
 				// const audioStream = await getAudioScreenStream();
