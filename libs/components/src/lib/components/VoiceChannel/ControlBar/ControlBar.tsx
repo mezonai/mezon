@@ -13,7 +13,7 @@ import { Icons } from '@mezon/ui';
 import { useMediaPermissions } from '@mezon/utils';
 
 import isElectron from 'is-electron';
-import { LocalTrackPublication, Track, videoCodecs, VideoPresets } from 'livekit-client';
+import { LocalTrackPublication, ScreenSharePresets, Track, videoCodecs } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -113,13 +113,9 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				const trackPublication = await localParticipant.localParticipant.publishTrack(videoTrack, {
 					name: 'screen-share',
 					source: Track.Source.ScreenShare,
-					videoSimulcastLayers: [VideoPresets.h1080, VideoPresets.h720, VideoPresets.h540],
-					videoCodec: videoCodecs[2],
-					simulcast: false,
-					videoEncoding: {
-						maxBitrate: 3000000,
-						maxFramerate: 16
-					}
+					videoSimulcastLayers: [ScreenSharePresets.h1080fps15, ScreenSharePresets.h720fps15, ScreenSharePresets.h360fps15],
+					videoCodec: videoCodecs[0],
+					simulcast: false
 				});
 				// const audioStream = await getAudioScreenStream();
 				// if (audioStream !== null || audioStream !== undefined) {
