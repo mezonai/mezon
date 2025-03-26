@@ -57,15 +57,11 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const removeLastFile = mess.content.t === '' && mess.attachments?.length === 1;
 
 	const handleDeleteMessage = async () => {
-		if (!mess?.content?.tp) {
-			await deleteSendMessage(mess.id);
-			setIsLoading(false);
-			return;
-		}
+		await deleteSendMessage(mess.id);
+		setIsLoading(false);
 
+		// Close the topic when its initial message is deleted
 		if (mess.content.tp === currentTopicId) {
-			await deleteSendMessage(mess.id);
-			setIsLoading(false);
 			dispatch(topicsActions.setCurrentTopicId(''));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
 		}
