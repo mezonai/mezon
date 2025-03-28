@@ -31,7 +31,6 @@ import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { useSelector } from 'react-redux';
-import { HelpButton } from '../../ChannelTopbar';
 import PinnedMessages from '../../ChannelTopbar/TopBarComponents/PinnedMessages';
 import { MemberProfile } from '../../MemberProfile';
 import SearchMessageChannel from '../../SearchMessageChannel';
@@ -214,13 +213,6 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 										: ChannelStreamMode.STREAM_MODE_GROUP
 								}
 							/>
-							<div
-								className={`gap-4 relative flex  w-fit h-8 justify-center items-center left-[345px] ssm:left-auto ssm:right-0`}
-								id="inBox"
-							>
-								{/* <InboxButton /> */}
-								<HelpButton />
-							</div>
 						</div>
 					</div>
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
