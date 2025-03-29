@@ -227,6 +227,10 @@ export const selectGmeetVoice = createSelector(selectAllChannelsByUser, (hashtag
 	hashtags.filter((hashtag) => hashtag.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE)
 );
 
+export const selectAppChannel = createSelector(selectAllChannelsByUser, (hashtags) =>
+	hashtags.filter((hashtag) => hashtag.type === ChannelType.CHANNEL_TYPE_APP)
+);
+
 export const selectAllInfoChannels = createSelector(selectAllChannelsByUser, (channels = []) =>
 	channels?.map(({ channel_id, channel_label, channel_private, clan_name, clan_id, type, parent_id, meeting_code, id }) => ({
 		channel_id,

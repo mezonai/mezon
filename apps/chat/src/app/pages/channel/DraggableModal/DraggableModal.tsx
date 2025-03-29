@@ -5,7 +5,6 @@ import {
 	channelsActions,
 	getStore,
 	selectAppChannelsList,
-	selectAppChannelsListShowOnPopUp,
 	selectAppFocusedChannel,
 	selectChannelById,
 	selectCheckAppFocused,
@@ -118,7 +117,7 @@ const DraggableModalTabs: React.FC<DraggableModalTabsProps> = ({
 			</div>
 			<div className={`flex items-center flex-1 overflow-x-auto scrollbar-hide h-[${COLLAPSED_SIZE.height}px]`}>
 				{appChannelList.map((app) => (
-					<DraggableModalTabItem key={app.app_id} app={app} handleFocused={handleFocused} handleOnCloseCallback={handleOnCloseCallback} />
+					<DraggableModalTabItem key={app?.app_id} app={app} handleFocused={handleFocused} handleOnCloseCallback={handleOnCloseCallback} />
 				))}
 				<div className="w-[60px] h-[48px] justify-center bg-transparent flex items-center">
 					{' '}
@@ -160,7 +159,7 @@ interface DraggableModalTabItemProps {
 const DraggableModalTabItem: React.FC<DraggableModalTabItemProps> = ({ app, handleFocused, handleOnCloseCallback }) => {
 	const dispatch = useDispatch();
 	const store = getStore();
-	const isFocused = selectCheckAppFocused(store.getState(), app?.channel_id as string);
+	const isFocused = selectCheckAppFocused(store.getState(), app?.clan_id as string, app?.channel_id as string);
 	const channel = selectChannelById(store.getState(), app?.channel_id as string);
 	const roomId = useAppSelector((state) => selectGetRoomId(state, app?.channel_id));
 	const isJoinVoice = useSelector(selectEnableCall);
@@ -239,7 +238,7 @@ const ModalContent: React.FC<ModalContentProps> = memo(({ isCollapsed, appChanne
 	return (
 		<div className="relative w-full h-full">
 			{appChannelList?.map((appChannel) => {
-				const isFocused = selectCheckAppFocused(store.getState(), appChannel.channel_id as string);
+				const isFocused = selectCheckAppFocused(store.getState(), appChannel?.clan_id as string, appChannel?.channel_id as string);
 
 				return (
 					<div
@@ -258,7 +257,8 @@ const ModalContent: React.FC<ModalContentProps> = memo(({ isCollapsed, appChanne
 });
 
 const BlankChannelComponent: React.FC = () => {
-	const appsList = useSelector(selectAppChannelsList);
+	const appsList = useAppSelector((state) => selectAppChannelsList(state, ''));
+
 	const dispatch = useDispatch();
 	const store = getStore();
 
@@ -328,13 +328,15 @@ const ResizeHandles: React.FC<ResizeHandlesProps> = memo(({ handleResizeMouseDow
 ));
 
 interface DraggableModalProps {
-	initialWidth?: number;
-	initialHeight?: number;
-	aspectRatio?: number | null;
+	isVisible?: boolean;
+	clanId?: string;
+	appChannelList?: ApiChannelAppResponseExtend[];
 }
 
-const DraggableModal: React.FC<DraggableModalProps> = memo(() => {
-	const appChannelList = useSelector(selectAppChannelsListShowOnPopUp);
+const DraggableModal: React.FC<DraggableModalProps> = memo(({ isVisible, clanId, appChannelList }) => {
+	console.log('appChannelList :', appChannelList);
+	// const appChannelList = useAppSelector((state: RootState) => selectAppChannelsListShowOnPopUp(state, clanId as string));
+	// const appChannelList = useAppSelector((state) => selectAppChannelsListShowOnPopUp(state));
 	const isShowModal = appChannelList && appChannelList.length > 0;
 
 	const [isCollapsed, setIsCollapsed] = useState(false);
@@ -462,7 +464,7 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(() => {
 			window.removeEventListener('mouseup', handleMouseUp);
 		};
 	}, [handleMouseMove, handleMouseUp]);
-
+	const modalStyle = isVisible ? {} : { opacity: 0, visibility: 'hidden' as const, pointerEvents: 'none' as const };
 	return (
 		isShowModal && (
 			<div className="relative">
@@ -470,6 +472,7 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(() => {
 					ref={modalElementRef}
 					className="absolute bg-[#212121] shadow-lg rounded-xl contain-strict z-50"
 					style={{
+						// ...modalStyle,
 						left: `${modalPosition.x}px`,
 						top: `${modalPosition.y}px`,
 						width: `${modalSize.width}px`,

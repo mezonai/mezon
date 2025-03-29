@@ -26,6 +26,7 @@ import {
 	selectAllChannelMemberIds,
 	selectAllClans,
 	selectAllRoleIds,
+	selectAppChannel,
 	selectAudioBusyTone,
 	selectAudioDialTone,
 	selectAudioEndTone,
@@ -276,9 +277,36 @@ function MyApp() {
 		dispatch(e2eeActions.setOpenModalE2ee(false));
 	};
 
+	// const allAppChannelList2 = useSelector(selectAllAppChannelsListShowOnPopUp);
+	// const allAppChannelList = useSelector(selectAllAppChannelsList);
+	const allAppChannelList = useSelector(selectAppChannel).map((app) => ({
+		...app,
+		url: 'https://vua-tieng-viet.nccsoft.vn/' // Đảm bảo mỗi app có `app_url`
+	}));
+	console.log('allAppChannelList :11', allAppChannelList);
+	// console.log('allAppChannelList3 :', allAppChannelList3);
+
+	// console.log('allAppChannelList2 :', allAppChannelList2);
+	const groupedByClan = allAppChannelList.reduce<Record<string, typeof allAppChannelList>>((acc, item) => {
+		if (!item.clan_id) return acc;
+
+		if (!acc[item.clan_id]) {
+			acc[item.clan_id] = [];
+		}
+
+		// Giữ nguyên item và đảm bảo url được giữ lại
+		acc[item.clan_id].push({
+			...item
+		});
+
+		return acc;
+	}, {});
+
 	return (
 		<div className="relative overflow-hidden w-full h-full">
-			<DraggableModal />
+			{Object.entries(groupedByClan).map(([clanId, apps]) => (
+				<DraggableModal clanId={clanId} key={clanId} isVisible={clanId === currentClanId} appChannelList={apps} />
+			))}
 			<MemoizedErrorModals />
 
 			<div
