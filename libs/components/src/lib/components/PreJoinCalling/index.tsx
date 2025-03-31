@@ -1,6 +1,6 @@
 'use client';
 
-import { createExternalMezonMeet, useAppDispatch } from '@mezon/store';
+import { generateMeetTokenExternal, useAppDispatch } from '@mezon/store';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -127,8 +127,8 @@ export default function PreJoinCalling() {
 
 	// Handle Join Meeting
 	const joinMeeting = useCallback(async () => {
-		await dispatch(createExternalMezonMeet());
-	}, [dispatch]);
+		const result = await dispatch(generateMeetTokenExternal({ token: meetingId as string, displayName: username as string }));
+	}, [dispatch, username]);
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">

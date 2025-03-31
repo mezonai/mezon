@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
 import { HandleParticipantMeetStateEvent } from 'mezon-js';
-import { ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
+import { ensureClientAsync, ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
 
 type generateMeetTokenPayload = {
 	channelId: string;
@@ -65,22 +65,11 @@ export const handleParticipantVoiceState = createAsyncThunk(
 	}
 );
 
-export const createExternalMezonMeet = createAsyncThunk('meet/createExternalMezonMeet', async (_, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createExternalMezonMeet(mezon.session);
-		return response;
-	} catch (error) {
-		captureSentryError(error, 'meet/createExternalMezonMeet');
-		return thunkAPI.rejectWithValue(error);
-	}
-});
-
 export const generateMeetTokenExternal = createAsyncThunk(
 	'meet/generateMeetTokenExternal',
 	async ({ token, displayName }: { token: string; displayName?: string }, thunkAPI) => {
 		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 			const response = await mezon.client.generateMeetTokenExternal(token, displayName);
 			return response;
 		} catch (error) {
