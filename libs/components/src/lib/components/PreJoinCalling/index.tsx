@@ -1,7 +1,7 @@
 'use client';
 
 import { createExternalMezonMeet, useAppDispatch } from '@mezon/store';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 export default function PreJoinCalling() {
@@ -46,7 +46,7 @@ export default function PreJoinCalling() {
 	}, []);
 
 	// Toggle Camera
-	const toggleCamera = async () => {
+	const toggleCamera = useCallback(async () => {
 		if (cameraOn) {
 			if (streamRef.current) {
 				streamRef.current.getTracks().forEach((track) => track.stop());
@@ -70,72 +70,51 @@ export default function PreJoinCalling() {
 				setError('Failed to access camera. Please check your permissions and try again.');
 			}
 		}
-	};
+	}, [cameraOn]);
 
 	// Toggle Microphone
-	const toggleMic = async () => {
-		if (micOn) {
-			// Turn off microphone
-			setMicOn(false);
 
-			// Stop the animation frame
+	const toggleMic = useCallback(async () => {
+		if (micOn) {
+			setMicOn(false);
 			if (animationFrameRef.current) {
 				cancelAnimationFrame(animationFrameRef.current);
 				animationFrameRef.current = null;
 			}
-
-			// Stop the microphone stream
 			if (micStreamRef.current) {
 				micStreamRef.current.getTracks().forEach((track) => track.stop());
 				micStreamRef.current = null;
 			}
-
-			// Close the audio context
 			if (audioContextRef.current) {
 				audioContextRef.current.close();
 				audioContextRef.current = null;
 				analyserRef.current = null;
 			}
-
 			setAudioLevel(0);
 		} else {
-			// Turn on microphone
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 				micStreamRef.current = stream;
-
-				// Create audio context and analyzer
 				const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 				audioContextRef.current = audioContext;
-
 				const analyser = audioContext.createAnalyser();
 				analyserRef.current = analyser;
-
 				const source = audioContext.createMediaStreamSource(stream);
 				source.connect(analyser);
-
 				analyser.fftSize = 32;
 				const bufferLength = analyser.frequencyBinCount;
 				const dataArray = new Uint8Array(bufferLength);
-
-				// Start monitoring audio levels
 				const updateAudioLevel = () => {
 					if (!analyserRef.current) return;
-
 					analyserRef.current.getByteFrequencyData(dataArray);
 					const sum = dataArray.reduce((acc, val) => acc + val, 0);
 					const avg = sum / bufferLength;
-					const normalizedLevel = Math.min(avg / 128, 1); // Normalize to 0-1
-
+					const normalizedLevel = Math.min(avg / 128, 1);
 					setAudioLevel(normalizedLevel);
-
-					// Only continue if mic is still on
 					if (micStreamRef.current && micStreamRef.current.active) {
 						animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
 					}
 				};
-
-				// Start the animation
 				updateAudioLevel();
 				setMicOn(true);
 				setError(null);
@@ -144,13 +123,12 @@ export default function PreJoinCalling() {
 				setError('Failed to access microphone. Please check your permissions and try again.');
 			}
 		}
-	};
+	}, [micOn]);
 
 	// Handle Join Meeting
-	const joinMeeting = async () => {
-		// await dispatch(generateMeetTokenExternal({ token: meetingId as string, displayName: username || 'Guest' }));
+	const joinMeeting = useCallback(async () => {
 		await dispatch(createExternalMezonMeet());
-	};
+	}, [dispatch]);
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
