@@ -236,7 +236,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				mentionRaw: []
 			};
 			const checkedRequest = request ? request : emptyRequest;
-			const { text, entities } = parseHtmlAsFormattedText(hasToken ? checkedRequest.content : checkedRequest.content.trim());
+			const { text, entities, removedNewlineCount } = parseHtmlAsFormattedText(
+				hasToken ? checkedRequest.content : checkedRequest.content.trim()
+			);
 			const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
 
 			const boldMarkdownArr: IMarkdownOnMessage[] = [];
@@ -251,7 +253,14 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				}
 			});
 
-			const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(mk, mentionList, hashtagList, emojiList, text);
+			const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(
+				mk,
+				mentionList,
+				hashtagList,
+				emojiList,
+				text,
+				removedNewlineCount
+			);
 			const payload = {
 				t: text,
 				hg: adjustedHashtagPos as IHashtagOnMessage[],
