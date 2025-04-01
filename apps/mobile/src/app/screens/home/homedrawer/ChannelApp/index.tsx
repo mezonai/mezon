@@ -66,33 +66,37 @@ const ChannelAppScreen = ({ channelId }) => {
     })();
 	true;
 	(function() {
-	setTimeout(() => {
-    let element = document.querySelector("#mainChat > div > div > div.flex-shrink > div.flex.gap-2 > div:nth-child(1)");
-    if (element) {
+	document.addEventListener('message', function(event) {
+	  		if (event.data === 'onHandleLoadend') {
+				setTimeout(() => {
+				let element = document.querySelector("#mainChat > div > div > div.flex-shrink > div.flex.gap-2 > div:nth-child(1)");
+				if (element) {
       element.click();
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        id: element.id,
-        innerText: element.innerText,
-        classList: Array.from(element.classList)
-      }));
-    } else {
+				window.ReactNativeWebView.postMessage(JSON.stringify({
+					id: element.id,
+					innerText: element.innerText,
+					classList: Array.from(element.classList)
+				}));
+				} else {
       window.ReactNativeWebView.postMessage(JSON.stringify({ error: "Không tìm thấy #mainChat" }));
-    }
-  }, 1000);
-  setTimeout(() => {
-    const element = document.querySelector("#main-layout > div.relative > div.relative > div > div.flex > div > button:nth-child(2)");
+				}
+			}, 1000);
+			setTimeout(() => {
+				const element = document.querySelector("#main-layout > div.relative > div.relative > div > div.flex > div > button:nth-child(2)");
 
-    if (element && element.title === "Enter Full Screen") {
-      element.click();
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        id: element.id,
-        innerText: element.innerText,
-        classList: Array.from(element.classList)
-      }));
-    } else {
+				if (element && element.title === "Enter Full Screen") {
+				element.click();
+				window.ReactNativeWebView.postMessage(JSON.stringify({
+					id: element.id,
+					innerText: element.innerText,
+					classList: Array.from(element.classList)
+				}));
+				} else {
       window.ReactNativeWebView.postMessage(JSON.stringify({ error: "Không tìm thấy #mainChat" }));
-    }
-  }, 1000);
+				}
+			}, 2000);
+			}
+      });
 	})();
 	true;
   `;
@@ -100,6 +104,7 @@ const ChannelAppScreen = ({ channelId }) => {
 	const handlePing = useCallback(() => {
 		const message = JSON.stringify({ eventType: MiniAppEventType.CURRENT_USER_INFO, eventData: userProfile });
 		webviewRef?.current?.postMessage(message);
+		webviewRef?.current?.postMessage('onHandleLoadend');
 	}, [userProfile]);
 
 	const closeChannelApp = () => {
@@ -150,8 +155,9 @@ const ChannelAppScreen = ({ channelId }) => {
 				javaScriptEnabled={true}
 				nestedScrollEnabled={true}
 				onLoadEnd={async () => {
+					await sleep(1000);
 					handlePing();
-					await sleep(2000);
+					await sleep(3000);
 					setLoading(false);
 				}}
 			/>

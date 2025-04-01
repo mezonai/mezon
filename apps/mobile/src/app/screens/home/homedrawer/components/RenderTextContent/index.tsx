@@ -28,7 +28,6 @@ export const renderTextContent = (text: string) => {
 
 	const renderTextWithMention = (text: string, matchesMention: RegExpMatchArray) => {
 		const parts = text
-			?.trim()
 			?.split(mentionRegexSplit)
 			?.filter(Boolean)
 			?.filter((i) => i !== '@' && i !== '#');

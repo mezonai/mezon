@@ -16,7 +16,7 @@ export const MessageAudioUI: React.FC<AudioUIProps> = ({ isPlaying, currentTime,
 		<hr className="opacity-0 w-full" />
 		<div
 			className={`inline-flex items-center justify-between gap-3 bg-bgSelectItem text-white rounded-full py-1.5 pl-1.5 pr-3.5
-		${posInPopUp ? 'w-50 items-end rounded-none rounded-t-md w-full' : 'w-60'}`}
+		${posInPopUp ? 'w-50 items-end rounded-none rounded-t-md w-full' : 'w-[31%]'}`}
 		>
 			<button
 				onClick={togglePlay}

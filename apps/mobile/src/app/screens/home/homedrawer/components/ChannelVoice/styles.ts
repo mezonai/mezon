@@ -85,10 +85,13 @@ export const style = (colors: Attributes) =>
 			height: '100%'
 		},
 		text: { fontSize: size.s_20, fontWeight: '600', color: colors.text },
-		roomViewcontainer: {
+		roomViewContainer: {
 			flex: 1,
 			alignItems: 'stretch',
 			justifyContent: 'center'
+		},
+		roomViewContainerPiP: {
+			justifyContent: 'flex-start'
 		},
 		participantView: {
 			flex: 1,

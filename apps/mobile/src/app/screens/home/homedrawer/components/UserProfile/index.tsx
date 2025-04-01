@@ -268,7 +268,11 @@ const UserProfile = React.memo(
 							height={size.s_80}
 							avatarUrl={
 								!isDM
-									? (messageAvatar ?? userById?.clan_avatar ?? userById?.user?.avatar_url)
+									? (messageAvatar ??
+										userById?.clan_avatar ??
+										userById?.user?.avatar_url ??
+										user?.user?.avatar_url ??
+										user?.avatar_url)
 									: (userById?.user?.avatar_url ?? user?.user?.avatar_url ?? user?.avatar_url ?? messageAvatar)
 							}
 							username={user?.user?.username}

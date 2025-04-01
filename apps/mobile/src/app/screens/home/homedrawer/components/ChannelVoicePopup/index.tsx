@@ -6,7 +6,9 @@ import {
 	handleParticipantVoiceState,
 	selectChannelById2,
 	selectClanById,
+	selectIsPiPMode,
 	useAppDispatch,
+	useAppSelector,
 	voiceActions
 } from '@mezon/store-mobile';
 import { ParticipantMeetState } from '@mezon/utils';
@@ -28,6 +30,7 @@ const ChannelVoicePopup = () => {
 	const [token, setToken] = useState<string | null>(null);
 	const channel = useSelector((state) => selectChannelById2(state, channelId));
 	const clan = useSelector(selectClanById(clanId));
+	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const { userProfile } = useAuth();
 
 	const panResponder = useRef(
@@ -172,7 +175,7 @@ const ChannelVoicePopup = () => {
 	if (!voicePlay) return null;
 	return (
 		<Animated.View
-			{...(!isAnimationComplete ? panResponder.panHandlers : {})}
+			{...(!isAnimationComplete && !isPiPMode ? panResponder.panHandlers : {})}
 			style={[
 				pan?.getLayout(),
 				{
@@ -186,7 +189,7 @@ const ChannelVoicePopup = () => {
 				clanId={clanId}
 				token={token}
 				serverUrl={serverUrl}
-				isAnimationComplete={isAnimationComplete}
+				isAnimationComplete={isPiPMode ? true : isAnimationComplete}
 				onPressMinimizeRoom={handlePressMinimizeRoom}
 			/>
 		</Animated.View>

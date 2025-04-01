@@ -337,6 +337,8 @@ export const fetchMessages = createAsyncThunk(
 			const firstMessage = response.messages[response.messages.length - 1];
 			if (firstMessage?.code === EMessageCode.FIRST_MESSAGE) {
 				thunkAPI.dispatch(messagesActions.setFirstMessageId({ channelId: chlId, firstMessageId: firstMessage.id }));
+			} else {
+				thunkAPI.dispatch(messagesActions.setFirstMessageId({ channelId: chlId, firstMessageId: null }));
 			}
 
 			let lastSentMessage = (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader) || response.last_sent_message;
@@ -896,7 +898,7 @@ export const messagesSlice = createSlice({
 		setMessageParams: (state, action: PayloadAction<SetCursorChannelArgs>) => {
 			state.paramEntries[action.payload.channelId] = action.payload.param;
 		},
-		setFirstMessageId: (state, action: PayloadAction<{ channelId: string; firstMessageId: string }>) => {
+		setFirstMessageId: (state, action: PayloadAction<{ channelId: string; firstMessageId: string | null }>) => {
 			state.firstMessageId[action.payload.channelId] = action.payload.firstMessageId;
 		},
 		setIdMessageToJump(state, action) {

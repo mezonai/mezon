@@ -130,6 +130,7 @@
         android:showWhenLocked="false"
         android:turnScreenOn="true"
         android:theme="@style/AppTheme"
+        android:supportsPictureInPicture="true"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

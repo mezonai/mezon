@@ -10,7 +10,7 @@ import {
 	save
 } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { clansActions, selectVoiceInfo, useAppDispatch } from '@mezon/store-mobile';
+import { clansActions, selectIsPiPMode, selectVoiceInfo, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { Track, createLocalAudioTrack, createLocalVideoTrack } from 'livekit-client';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -50,6 +50,7 @@ const RoomView = ({
 	const { isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled, localParticipant } = useLocalParticipant();
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
+	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 
 	useEffect(() => {
 		localParticipant.setCameraEnabled(false);
@@ -193,28 +194,36 @@ const RoomView = ({
 
 	if (focusedScreenShare) {
 		return (
-			<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-				<View style={{ height: 3 * size.s_100, width: '100%', alignSelf: 'center', marginBottom: '30%' }}>
+			<View
+				style={
+					isPiPMode
+						? { width: '100%', flex: 1, alignItems: 'flex-start' }
+						: { width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }
+				}
+			>
+				<View style={{ height: (isPiPMode ? 2 : 3) * size.s_100, width: '100%' }}>
 					<ResumableZoom>
-						<View style={{ height: 3 * size.s_100, width: marginWidth, alignSelf: 'center' }}>
+						<View style={{ height: (isPiPMode ? 2 : 3) * size.s_100, width: marginWidth }}>
 							<VideoTrack
 								trackRef={focusedScreenShare}
-								objectFit="contain"
-								style={{ height: 3 * size.s_100, width: '100%', alignSelf: 'center' }}
+								objectFit={isPiPMode ? 'cover' : 'contain'}
+								style={{ height: (isPiPMode ? 2 : 3) * size.s_100, width: '100%' }}
 							/>
 						</View>
 					</ResumableZoom>
 				</View>
-				<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
-					<Icons.ArrowShrinkIcon height={size.s_16} />
-				</TouchableOpacity>
-				<RenderControlBar />
+				{!isPiPMode && (
+					<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
+						<Icons.ArrowShrinkIcon height={size.s_16} />
+					</TouchableOpacity>
+				)}
+				{!isPiPMode && <RenderControlBar />}
 			</View>
 		);
 	}
 
 	return (
-		<View style={styles.roomViewcontainer}>
+		<View style={[styles.roomViewContainer, isPiPMode && styles.roomViewContainerPiP]}>
 			{!isAnimationComplete ? (
 				<FocusedScreenPopup sortedParticipants={sortedParticipants} tracks={tracks} localParticipant={localParticipant} />
 			) : (

@@ -71,10 +71,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		handleEndCall,
 		toggleAudio,
 		toggleVideo,
+		toggleScreenShare,
 		handleSignalingMessage,
 		handleOtherCall,
 		localVideoRef,
 		remoteVideoRef,
+		localScreenVideoRef,
+		remoteScreenVideoRef,
 		changeAudioInputDevice,
 		changeAudioOutputDevice,
 		currentInputDevice,
@@ -152,6 +155,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	}));
 
 	const handleShowShareScreenToggle = () => {
+		toggleScreenShare();
 		dispatch(DMCallActions.setIsShowShareScreen(!isShowShareScreen));
 	};
 

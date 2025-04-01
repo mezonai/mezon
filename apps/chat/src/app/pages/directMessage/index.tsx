@@ -1,5 +1,4 @@
-import { ClanHeader, DirectMessageList, FooterProfile, StreamInfo, UpdateButton, VoiceInfo } from '@mezon/components';
-import { useAuth } from '@mezon/core';
+import { ClanHeader, DirectMessageList, StreamInfo, UpdateButton, VoiceInfo } from '@mezon/components';
 import {
 	clansActions,
 	selectCloseMenu,
@@ -18,7 +17,6 @@ import { MainContentDirect } from './MainContentDirect';
 
 const Direct = () => {
 	const dispatch = useDispatch();
-	const { userProfile } = useAuth();
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
@@ -48,15 +46,6 @@ const Direct = () => {
 					{isVoiceJoined && <VoiceInfo />}
 				</div>
 				{(isElectronUpdateAvailable || IsElectronDownloading) && <UpdateButton isDownloading={!isElectronUpdateAvailable} />}
-				<div style={{ height: 56, width: '100%' }}>
-					<FooterProfile
-						name={userProfile?.user?.display_name || userProfile?.user?.username || ''}
-						status={userProfile?.user?.online}
-						avatar={userProfile?.user?.avatar_url || ''}
-						userId={userProfile?.user?.id}
-						isDM={true}
-					/>
-				</div>
 			</div>
 			<MainContentDirect />
 			<Setting isDM={true} />

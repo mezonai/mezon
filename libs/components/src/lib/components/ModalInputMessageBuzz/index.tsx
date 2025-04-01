@@ -121,6 +121,7 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ inputRequ
 						mode={mode}
 						buzzInputRequest={inputRequest}
 						setBuzzInputRequest={setInputRequest}
+						toggleEmojiPanel={toggleEmojiPanel}
 					/>
 				</div>
 			)}

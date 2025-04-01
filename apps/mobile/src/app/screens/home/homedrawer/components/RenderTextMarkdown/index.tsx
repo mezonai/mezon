@@ -76,7 +76,7 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 			color: colors.text,
 			paddingVertical: size.s_10,
 			borderColor: colors.secondary,
-			fontSize: size.medium,
+			fontSize: size.h7,
 			lineHeight: size.s_22,
 			paddingHorizontal: size.s_10
 		},
@@ -88,7 +88,7 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 		},
 		fence: {
 			color: colors.text,
-			width: codeBlockMaxWidth,
+			maxWidth: codeBlockMaxWidth,
 			backgroundColor: colors.secondaryLight,
 			borderColor: colors.black,
 			borderRadius: size.s_4,

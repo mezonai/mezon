@@ -1,5 +1,6 @@
 import { load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { selectSignalingDataByUserId, useAppSelector } from '@mezon/store-mobile';
+import { WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useMemo } from 'react';
 import { View } from 'react-native';
 import CallingModal from '../CallingModal';

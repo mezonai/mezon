@@ -292,16 +292,21 @@ const BlankChannelComponent: React.FC = () => {
 					const channel = selectChannelById(store.getState(), app.channel_id as string);
 
 					return (
-						<div key={app.channel_id} className="flex flex-col items-center">
-							<button
-								onClick={() => onClickAppItem(app as ApiChannelAppResponseExtend)}
-								className="w-16 h-16 flex items-center justify-center bg-gray-700 text-white rounded-full hover:bg-gray-600 transition-all duration-200"
-								title={app.url || 'Unnamed App'}
-							>
-								🌐
-							</button>
-							<span>{channel?.channel_label || 'Unknown'}</span>
-						</div>
+						// eslint-disable-next-line react/jsx-no-useless-fragment
+						<>
+							{channel && (
+								<div key={app.channel_id} className="flex flex-col items-center w-[100px]">
+									<button
+										onClick={() => onClickAppItem(app as ApiChannelAppResponseExtend)}
+										className="w-16 h-16 flex items-center justify-center bg-gray-700 text-white rounded-full hover:bg-gray-600 transition-all duration-200"
+										title={channel?.channel_label}
+									>
+										🌐
+									</button>
+									<span className="max-w-[100px] truncate overflow-hidden whitespace-nowrap">{channel?.channel_label}</span>
+								</div>
+							)}
+						</>
 					);
 				})}
 			</div>

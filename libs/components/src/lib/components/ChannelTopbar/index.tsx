@@ -53,7 +53,8 @@ export type ChannelTopbarProps = {
 	isChannelPath?: boolean;
 };
 
-const ChannelTopbar = memo(({ channel, mode }: ChannelTopbarProps) => {
+const ChannelTopbar = memo(({ mode }: ChannelTopbarProps) => {
+	const channel = useSelector(selectCurrentChannel);
 	const isChannelVoice = channel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE;
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
@@ -73,7 +74,7 @@ const ChannelTopbar = memo(({ channel, mode }: ChannelTopbarProps) => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`${isMacDesktop ? 'draggable-area' : ''} max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center  flex-shrink ${isChannelVoice ? 'bg-black' : 'dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary'} ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`${isMacDesktop ? 'draggable-area' : ''} max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink ${isChannelVoice ? 'bg-black' : 'dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary'} ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			{isChannelVoice ? (
 				<TopBarChannelVoice channel={channel} />

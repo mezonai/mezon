@@ -56,7 +56,7 @@ export function useRoles() {
 					removePermissionIds,
 					clanId,
 					maxPermissionId: maxPermissionId,
-					roleIcon: roleIcon || ''
+					roleIcon
 				})
 			);
 			await dispatch(rolesClanActions.fetchRolesClan({ clanId, noCache: true }));

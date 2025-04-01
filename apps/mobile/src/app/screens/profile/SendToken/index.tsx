@@ -320,7 +320,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 						<Text style={styles.username}>
 							{/*eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
 							{/*@ts-expect-error*/}
-							{jsonObject?.receiver_name ? jsonObject?.receiver_name || 'KOMU' : selectedUser?.username}
+							{jsonObject?.receiver_id ? jsonObject?.receiver_name || 'KOMU' : selectedUser?.username}
 						</Text>
 					</TouchableOpacity>
 				</View>

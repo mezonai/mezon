@@ -29,6 +29,7 @@ const ReviewModal = (props: ReviewModalProps) => {
 				textChannelId={contentSubmit?.textChannelId}
 				address={contentSubmit?.address}
 				onClose={onClose}
+				isPrivate={contentSubmit.isPrivate}
 			/>
 			<div className="mt-8">
 				<h3 className="text-center font-semibold text-xl">Here's a preview of your event.</h3>

@@ -24,9 +24,17 @@ export type GifStickerEmojiPopupOptions = {
 	channelOrDirect?: ApiChannelDescription;
 	buzzInputRequest?: RequestInput;
 	setBuzzInputRequest?: (value: RequestInput) => void;
+	toggleEmojiPanel?: () => void;
 };
 
-export const GifStickerEmojiPopup = ({ emojiAction, mode, channelOrDirect, buzzInputRequest, setBuzzInputRequest }: GifStickerEmojiPopupOptions) => {
+export const GifStickerEmojiPopup = ({
+	emojiAction,
+	mode,
+	channelOrDirect,
+	buzzInputRequest,
+	setBuzzInputRequest,
+	toggleEmojiPanel
+}: GifStickerEmojiPopupOptions) => {
 	const { subPanelActive, setSubPanelActive, setValueInputSearch } = useGifsStickersEmoji();
 	const idMessageRefReaction = useSelector(selectIdMessageRefReaction);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -114,6 +122,7 @@ export const GifStickerEmojiPopup = ({ emojiAction, mode, channelOrDirect, buzzI
 					emojiAction={emojiAction}
 					buzzInputRequest={buzzInputRequest}
 					setBuzzInputRequest={setBuzzInputRequest}
+					toggleEmojiPanel={toggleEmojiPanel}
 				/>
 			</div>
 		</div>
@@ -159,7 +168,8 @@ const ContentPanel = React.memo(
 		idMessageRefReaction,
 		emojiAction,
 		buzzInputRequest,
-		setBuzzInputRequest
+		setBuzzInputRequest,
+		toggleEmojiPanel
 	}: {
 		subPanelActive: SubPanelName;
 		channelOrDirect?: ApiChannelDescription;
@@ -172,6 +182,7 @@ const ContentPanel = React.memo(
 		emojiAction?: EmojiPlaces;
 		buzzInputRequest?: RequestInput;
 		setBuzzInputRequest?: (value: RequestInput) => void;
+		toggleEmojiPanel?: () => void;
 	}) => {
 		const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 		const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
@@ -215,6 +226,7 @@ const ContentPanel = React.memo(
 						emojiAction={emojiAction}
 						buzzInputRequest={buzzInputRequest}
 						setBuzzInputRequest={setBuzzInputRequest}
+						toggleEmojiPanel={toggleEmojiPanel}
 					/>
 				</div>
 			);

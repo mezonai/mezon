@@ -206,7 +206,7 @@ export const updateRole = createAsyncThunk(
 			removePermissionIds,
 			clanId,
 			maxPermissionId,
-			roleIcon = ''
+			roleIcon
 		}: UpdateRolePayload,
 		thunkAPI
 	) => {

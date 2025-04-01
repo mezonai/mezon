@@ -46,11 +46,22 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 			}
 		}
 
-		userRoles.sort((a, b) => {
-			const aPermission = a.max_level_permission ?? 0;
-			const bPermission = b.max_level_permission ?? 0;
-			return bPermission - aPermission;
-		});
+		userRoles
+			.map((role, index) => ({ ...role, originalIndex: index }))
+			.sort((a, b) => {
+				// If both roles have 'order_role', sort by its value
+				if (a.order_role !== undefined && b.order_role !== undefined) {
+					return a.order_role - b.order_role;
+				}
+
+				// If neither role has 'order_role', maintain their original order
+				if (a.order_role === undefined && b.order_role === undefined) {
+					return a.originalIndex - b.originalIndex;
+				}
+
+				// If only one role has 'order_role', prioritize it
+				return a.order_role !== undefined ? -1 : 1;
+			});
 
 		return {
 			usersRole: activeRole,

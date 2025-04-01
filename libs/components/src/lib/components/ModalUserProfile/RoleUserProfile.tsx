@@ -194,6 +194,7 @@ const AddRolesComp = ({
 							onClick={() => addRole(role.id)}
 						>
 							<div className="size-3 min-w-3 rounded-full" style={{ backgroundColor: role.color || DEFAULT_ROLE_COLOR }}></div>
+							{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
 							{role.title}
 						</div>
 					))

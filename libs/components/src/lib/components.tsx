@@ -111,8 +111,14 @@ export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 
 export { default as PrivateThread } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/PrivateThread';
+export { default as Topbar } from './components/ChannelTopbar/topbar';
 export { default as ChannelMessageThread } from './components/MessageBox/ReactionMentionInput/ChannelMessageThread';
 export { default as MessageWithSystem } from './components/MessageWithSystem';
 export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
+export { default as PreJoinCalling } from './components/PreJoinCalling';
 export * from './components/VoiceChannel';
 export * from './components/virtual-core/useVirtualizer';
+
+export * from './components/PreJoinCalling/ControlButton';
+export * from './components/PreJoinCalling/JoinForm';
+export * from './components/PreJoinCalling/VideoPreview';

@@ -1,7 +1,7 @@
 import { TouchableOpacity, TouchableWithoutFeedback } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending, useGifsStickersEmoji } from '@mezon/core';
-import { debounce } from '@mezon/mobile-components';
+import { debounce, isEmpty } from '@mezon/mobile-components';
 import { Colors, Fonts, size, useTheme } from '@mezon/mobile-ui';
 import {
 	getStoreAsync,
@@ -132,9 +132,9 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		}
 
 		if (type === 'gif') {
-			handleSend({ t: '' }, [], [{ url: data }], [messageRef]);
+			handleSend({ t: '' }, [], [{ url: data }], isEmpty(messageRef) ? [] : [messageRef]);
 		} else if (type === 'sticker') {
-			handleSend({ t: '' }, [], [{ url: data?.url, filetype: 'image/gif', filename: data?.id }], [messageRef]);
+			handleSend({ t: '' }, [], [{ url: data?.url, filetype: 'image/gif', filename: data?.id }], isEmpty(messageRef) ? [] : [messageRef]);
 		} else {
 			/* empty */
 		}

@@ -40,6 +40,7 @@ export type EmojiCustomPanelOptions = {
 	isClanView: boolean;
 	buzzInputRequest?: RequestInput;
 	setBuzzInputRequest?: (value: RequestInput) => void;
+	toggleEmojiPanel?: () => void;
 };
 
 const searchEmojis = (emojis: IEmoji[], searchTerm: string) => {
@@ -48,7 +49,7 @@ const searchEmojis = (emojis: IEmoji[], searchTerm: string) => {
 };
 
 function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
-	const { buzzInputRequest, setBuzzInputRequest } = props;
+	const { buzzInputRequest, setBuzzInputRequest, toggleEmojiPanel } = props;
 	const dispatch = useDispatch();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentThread = useSelector(selectCurrentThread);
@@ -160,6 +161,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 						valueTextInput: (buzzInputRequest?.valueTextInput ?? '') + `::[${emojiPicked}](${emojiId})`
 					});
 				}
+				if (toggleEmojiPanel) {
+					toggleEmojiPanel();
+				}
 			}
 		},
 		[
@@ -177,8 +181,11 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			addEmojiState,
 			setSuggestionEmojiObjPicked,
 			shiftPressedState,
-			buzzInputRequest,
-			setBuzzInputRequest
+			buzzInputRequest?.content,
+			buzzInputRequest?.mentionRaw,
+			buzzInputRequest?.valueTextInput,
+			setBuzzInputRequest,
+			toggleEmojiPanel
 		]
 	);
 

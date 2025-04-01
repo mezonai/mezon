@@ -9,7 +9,6 @@ import {
 	pinMessageActions,
 	selectCloseMenu,
 	selectCurrentDM,
-	selectDmGroupCurrent,
 	selectIsInCall,
 	selectIsPinModalVisible,
 	selectIsShowMemberListDM,
@@ -72,7 +71,7 @@ export const decompress = async (compressedStr: string, encoding = 'gzip' as Com
 
 function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps) {
 	const dispatch = useAppDispatch();
-	const currentDmGroup = useSelector(selectDmGroupCurrent(dmGroupId ?? ''));
+	const currentDmGroup = useSelector(selectCurrentDM);
 
 	const metadata = useMemo(() => {
 		if (typeof currentDmGroup?.metadata?.at(0) === 'string') {
@@ -142,99 +141,91 @@ function DmTopbar({ dmGroupId, isHaveCallInChannel = false }: ChannelTopbarProps
 	const isLightMode = appearanceTheme === 'light';
 
 	return (
-		<>
-			{/* {!isHaveCallInChannel && ( */}
-			<div
-				className={`flex h-heightTopBar p-3 min-w-0 items-center dark:bg-bgPrimary bg-bgLightPrimary shadow border-b-[1px] dark:border-bgTertiary border-bgLightTertiary flex-shrink ${isMacDesktop ? 'draggable-area' : ''}`}
-			>
-				<div className="sbm:justify-start justify-between items-center gap-1 flex w-full">
-					<div className={`flex flex-row gap-1 items-center flex-1 ${isMacDesktop ? 'app-region-drag' : ''}`}>
-						<div onClick={() => setStatusMenu(true)} className={`mx-6 ${closeMenu && !statusMenu ? '' : 'hidden'}`} role="button">
-							<Icons.OpenMenu defaultSize={`w-5 h-5`} />
-						</div>
-						<MemberProfile
-							numberCharacterCollapse={22}
-							avatar={
-								Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP
-									? 'assets/images/avatar-group.png'
-									: (currentDmGroup?.channel_avatar?.at(0) ?? '')
-							}
-							name={currentDmGroup?.channel_label ?? ''}
-							status={{ status: currentDmGroup?.is_online?.some(Boolean), isMobile: false }}
-							isHideStatus={true}
-							isHideIconStatus={Boolean(currentDmGroup?.user_id && currentDmGroup.user_id.length >= 2)}
-							key={currentDmGroup?.channel_id}
-							isHiddenAvatarPanel={true}
-							metaDataDM={metadata}
-						/>
-						<LabelDm dmGroupId={dmGroupId || ''} currentDmGroup={currentDmGroup} />
+		<div className={`flex h-heightTopBar w-full items-center justify-between flex-shrink ${isMacDesktop ? 'draggable-area' : ''}`}>
+			<div className="sbm:justify-start justify-between items-center gap-1 flex w-full">
+				<div className={`flex flex-row gap-1 items-center flex-1 ${isMacDesktop ? 'app-region-drag' : ''}`}>
+					<div onClick={() => setStatusMenu(true)} className={`mx-6 ${closeMenu && !statusMenu ? '' : 'hidden'}`} role="button">
+						<Icons.OpenMenu defaultSize={`w-5 h-5`} />
 					</div>
-
-					<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">
-						<div className=" items-center gap-2 flex">
-							<div className="justify-start items-center gap-[15px] flex">
-								<button title="Start voice call" onClick={() => handleStartCall()}>
-									<span>
-										<Icons.IconPhoneDM
-											className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
-										/>
-									</span>
-								</button>
-								<button title="Start Video Call" onClick={() => handleStartCall(true)}>
-									<span>
-										<Icons.IconMeetDM
-											className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
-										/>
-									</span>
-								</button>
-								<div>
-									<PinButton mode={mode} isLightMode={isLightMode} />
-								</div>
-								<AddMemberToGroupDm currentDmGroup={currentDmGroup} appearanceTheme={appearanceTheme} />
-								{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-									<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}>
-										<span>
-											<Icons.MemberList isWhite={isShowMemberListDM} />
-										</span>
-									</button>
-								)}
-								{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
-									<button title="Show User Profile" onClick={() => setIsUseProfileDM(!isUseProfileDM)}>
-										<span>
-											<Icons.IconUserProfileDM isWhite={isUseProfileDM} />
-										</span>
-									</button>
-								)}
-							</div>
-							<SearchMessageChannel
-								mode={
-									currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-										? ChannelStreamMode.STREAM_MODE_DM
-										: ChannelStreamMode.STREAM_MODE_GROUP
-								}
-							/>
-						</div>
-					</div>
-					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-						<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)} className="sbm:hidden">
-							<span>
-								<Icons.MemberList isWhite={isShowMemberListDM} />
-							</span>
-						</button>
-					)}
-					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
-						<button title="Show User Profile" onClick={() => setIsUseProfileDM(!isUseProfileDM)} className="sbm:hidden">
-							<span>
-								<Icons.IconUserProfileDM isWhite={isUseProfileDM} />
-							</span>
-						</button>
-					)}
+					<MemberProfile
+						numberCharacterCollapse={22}
+						avatar={
+							Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP
+								? 'assets/images/avatar-group.png'
+								: (currentDmGroup?.channel_avatar?.at(0) ?? '')
+						}
+						name={currentDmGroup?.channel_label ?? ''}
+						status={{ status: currentDmGroup?.is_online?.some(Boolean), isMobile: false }}
+						isHideStatus={true}
+						isHideIconStatus={Boolean(currentDmGroup?.user_id && currentDmGroup.user_id.length >= 2)}
+						key={currentDmGroup?.channel_id}
+						isHiddenAvatarPanel={true}
+						metaDataDM={metadata}
+					/>
+					<LabelDm dmGroupId={dmGroupId || ''} currentDmGroup={currentDmGroup} />
 				</div>
+
+				<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">
+					<div className=" items-center gap-2 flex">
+						<div className="justify-start items-center gap-[15px] flex">
+							<button title="Start voice call" onClick={() => handleStartCall()}>
+								<span>
+									<Icons.IconPhoneDM
+										className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
+									/>
+								</span>
+							</button>
+							<button title="Start Video Call" onClick={() => handleStartCall(true)}>
+								<span>
+									<Icons.IconMeetDM
+										className={`dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode`}
+									/>
+								</span>
+							</button>
+							<div>
+								<PinButton mode={mode} isLightMode={isLightMode} />
+							</div>
+							<AddMemberToGroupDm currentDmGroup={currentDmGroup} appearanceTheme={appearanceTheme} />
+							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
+								<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}>
+									<span>
+										<Icons.MemberList isWhite={isShowMemberListDM} />
+									</span>
+								</button>
+							)}
+							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
+								<button title="Show User Profile" onClick={() => setIsUseProfileDM(!isUseProfileDM)}>
+									<span>
+										<Icons.IconUserProfileDM isWhite={isUseProfileDM} />
+									</span>
+								</button>
+							)}
+						</div>
+						<SearchMessageChannel
+							mode={
+								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
+									? ChannelStreamMode.STREAM_MODE_DM
+									: ChannelStreamMode.STREAM_MODE_GROUP
+							}
+						/>
+					</div>
+				</div>
+				{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
+					<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)} className="sbm:hidden">
+						<span>
+							<Icons.MemberList isWhite={isShowMemberListDM} />
+						</span>
+					</button>
+				)}
+				{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
+					<button title="Show User Profile" onClick={() => setIsUseProfileDM(!isUseProfileDM)} className="sbm:hidden">
+						<span>
+							<Icons.IconUserProfileDM isWhite={isUseProfileDM} />
+						</span>
+					</button>
+				)}
 			</div>
-			{/* )
-			} */}
-			{/* <DmCalling ref={dmCallingRef} dmGroupId={dmGroupId} /> */}
-		</>
+		</div>
 	);
 }
 

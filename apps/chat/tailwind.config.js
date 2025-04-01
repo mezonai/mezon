@@ -4,6 +4,7 @@ const Colors = require('../../libs/ui/src/lib/Variables/Colors');
 const topBarHeight = '60px';
 const chatBoxHeight = '52px';
 const chatBoxHeightThread = '60px';
+const profileFooterHeight = '56px';
 const clanWidth = '72px';
 const channelListWidth = '272px';
 const memberWidth = '245px';
@@ -23,6 +24,7 @@ const heightWithoutTopBar = `calc(100dvh - ${topBarHeight})`;
 const heightWithoutTopBarMobile = `calc(100dvh)`;
 const heightCallDm = `calc(100% - 240px)`;
 const messageViewChatDM = `calc(100dvh - 60px)`;
+const heighChannelList = `calc(100dvh - ${profileFooterHeight})`
 
 const plugin = require('tailwindcss/plugin');
 
@@ -82,7 +84,8 @@ module.exports = {
         450: '450px',
         "4/5": "80%",
         "9/10": "90%",
-        widthTitleBar: '100%'
+        widthTitleBar: '100%',
+        widthChannelList: channelListWidth
       },
       height: {
         heightMessageViewChat: heightMessageViewChat,
@@ -103,7 +106,8 @@ module.exports = {
         heightTitleBarMessageViewChatDM: `calc(${heightMessageViewChatDM} - ${titleBarHeight})`,
         heightTitleBarMessageViewChatThread: `calc(${heightMessageViewChatThread} - ${titleBarHeight})`,
         heightTitleBarWithoutTopBar: `calc(${heightWithoutTopBar} - ${titleBarHeight})`,
-        heightTitleBarWithoutTopBarMobile: `calc(${heightWithoutTopBarMobile} - ${titleBarHeight})`
+        heightTitleBarWithoutTopBarMobile: `calc(${heightWithoutTopBarMobile} - ${titleBarHeight})`,
+        heightChannelList : heighChannelList
       },
 
       maxWidth: {

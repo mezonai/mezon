@@ -1,5 +1,5 @@
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload, processText } from '@mezon/utils';
+import { EBacktickType, IMessageSendPayload, processText } from '@mezon/utils';
 import React, { useMemo } from 'react';
 
 export function useSendInviteMessage() {
@@ -9,11 +9,21 @@ export function useSendInviteMessage() {
 	const sendInviteMessage = React.useCallback(
 		async (url: string, channel_id: string, channelMode: number, code?: number) => {
 			const { links, markdowns } = processText(url);
+			const linkInMk: { type: EBacktickType; e?: number; s?: number }[] = [];
+
+			links.forEach((link) => {
+				const item = {
+					type: EBacktickType.LINK,
+					e: link?.e,
+					s: link?.s
+				};
+				linkInMk.push(item);
+			});
 
 			const content: IMessageSendPayload = {
 				t: url,
 				lk: links,
-				mk: markdowns
+				mk: [...markdowns, ...linkInMk]
 			};
 
 			const session = sessionRef.current;

@@ -1,7 +1,7 @@
 import { VideoTrack } from '@livekit/react-native';
 import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { useAppSelector } from '@mezon/store';
+import { selectIsPiPMode, useAppSelector } from '@mezon/store';
 import { selectMemberClanByUserName } from '@mezon/store-mobile';
 import { Track } from 'livekit-client';
 import React, { useMemo } from 'react';
@@ -18,6 +18,7 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 	const styles = style(themeValue);
 	const username = participant.identity;
 	const member = useAppSelector((state) => selectMemberClanByUserName(state, username));
+	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const voiceUsername = member?.clan_nick || member?.user?.display_name || username;
 	const avatar = useMemo(() => {
 		return member?.clan_avatar || member?.user?.avatar_url || 'assets/images/mezon-logo-white.svg';
@@ -36,7 +37,6 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 	};
 
 	const isLoading = !member;
-
 	return (
 		<>
 			{screenTrackRef && (
@@ -45,27 +45,32 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 					style={[
 						styles.userView,
 						!isGridLayout ? { width: '100%', height: size.s_150 + size.s_100 } : { width: '48%', height: size.s_150 },
-						isTabletLandscape && { height: size.s_150 + size.s_100 }
+						isTabletLandscape && { height: size.s_150 + size.s_100 },
+						isPiPMode && { height: size.s_150, width: size.s_150 + size.s_50 }
 					]}
 				>
-					<VideoTrack trackRef={screenTrackRef} style={styles.participantView} />
-					<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
-						<Icons.ShareScreenIcon height={size.s_14} />
-						<Text
-							numberOfLines={1}
-							ellipsizeMode="tail"
-							style={[styles.subTitle, isParticipantFocused ? { width: '100%' } : { width: '48%' }]}
-						>
-							{voiceUsername} {isParticipantFocused && `(Share Screen)`}
-						</Text>
-					</View>
-					<View style={styles.focusIcon}>
-						{isParticipantFocused ? (
-							<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_14} />
-						) : (
-							<Icons.ArrowSaltIcon height={size.s_14} />
-						)}
-					</View>
+					<VideoTrack objectFit={isPiPMode ? 'cover' : 'contain'} trackRef={screenTrackRef} style={styles.participantView} />
+					{!isPiPMode && (
+						<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
+							<Icons.ShareScreenIcon height={size.s_14} />
+							<Text
+								numberOfLines={1}
+								ellipsizeMode="tail"
+								style={[styles.subTitle, isParticipantFocused ? { width: '100%' } : { width: '48%' }]}
+							>
+								{voiceUsername} {isParticipantFocused && `(Share Screen)`}
+							</Text>
+						</View>
+					)}
+					{!isPiPMode && (
+						<View style={styles.focusIcon}>
+							{isParticipantFocused ? (
+								<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_14} />
+							) : (
+								<Icons.ArrowSaltIcon height={size.s_14} />
+							)}
+						</View>
+					)}
 				</TouchableOpacity>
 			)}
 
@@ -74,7 +79,8 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 					style={[
 						styles.userView,
 						isGridLayout && { width: '48%', height: size.s_150 },
-						isTabletLandscape && { height: size.s_150 + size.s_100 }
+						isTabletLandscape && { height: size.s_150 + size.s_100 },
+						isPiPMode && { height: size.s_60 * 2, width: size.s_100 }
 					]}
 				>
 					<VideoTrack trackRef={videoTrackRef} style={styles.participantView} />
@@ -94,7 +100,8 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 					style={[
 						styles.userView,
 						isGridLayout && { width: '48%', height: size.s_150 },
-						isTabletLandscape && { height: size.s_150 + size.s_100 }
+						isTabletLandscape && { height: size.s_150 + size.s_100 },
+						isPiPMode && { height: size.s_60 * 2, width: size.s_100 }
 					]}
 				>
 					<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: size.s_10 }}>
@@ -104,14 +111,20 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 							<MezonAvatar width={size.s_50} height={size.s_50} username={voiceUsername} avatarUrl={avatar} />
 						)}
 					</View>
-					<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
-						{participant.isMicrophoneEnabled ? (
-							<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
-						) : (
-							<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
-						)}
-						{isLoading ? <Icons.LoadingIcon width={24} height={24} /> : <Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>}
-					</View>
+					{!isPiPMode && (
+						<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
+							{participant.isMicrophoneEnabled ? (
+								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
+							) : (
+								<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
+							)}
+							{isLoading ? (
+								<Icons.LoadingIcon width={24} height={24} />
+							) : (
+								<Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>
+							)}
+						</View>
+					)}
 				</View>
 			)}
 		</>
@@ -120,6 +133,7 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 
 const ParticipantScreen = ({ sortedParticipants, tracks, isFocusedScreen, setFocusedScreenShare }) => {
 	const isTabletLandscape = useTabletLandscape();
+	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 
 	const videoTrackCount = sortedParticipants.reduce((count, participant) => {
 		if (participant.isScreenShareEnabled) count += 1;
@@ -128,15 +142,21 @@ const ParticipantScreen = ({ sortedParticipants, tracks, isFocusedScreen, setFoc
 		return count;
 	}, 0);
 
-	const isGridLayout = videoTrackCount >= 3;
+	const isGridLayout = videoTrackCount >= 3 || isPiPMode;
 
 	return (
 		<View style={{ marginBottom: isTabletLandscape ? '5%' : '30%' }}>
 			<ScrollView
-				style={{ marginHorizontal: size.s_10 }}
+				style={{ marginHorizontal: isPiPMode ? 0 : size.s_10 }}
 				contentContainerStyle={
 					isGridLayout
-						? { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: size.s_10, alignItems: 'center' }
+						? {
+								flexDirection: 'row',
+								flexWrap: 'wrap',
+								justifyContent: isPiPMode ? 'flex-start' : 'center',
+								gap: size.s_10,
+								alignItems: isPiPMode ? 'flex-start' : 'center'
+							}
 						: { gap: size.s_10 }
 				}
 			>

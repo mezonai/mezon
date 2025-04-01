@@ -2,7 +2,8 @@ import { captureSentryError } from '@mezon/logger';
 import { IChannelMember, IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
-import { ensureSession, getMezonCtx } from '../helpers';
+import { ApiGenerateMeetTokenResponse } from 'mezon-js/api.gen';
+import { ensureClientAsync, ensureSession, getMezonCtx } from '../helpers';
 import { RootState } from '../store';
 
 export const VOICE_FEATURE_KEY = 'voice';
@@ -29,6 +30,9 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	token: string;
 	stream: MediaStream | null | undefined;
 	showSelectScreenModal: boolean;
+	externalToken: string | undefined;
+	joinCallExtStatus: LoadingStatus;
+	isPiPMode?: boolean;
 }
 
 export const voiceAdapter = createEntityAdapter<VoiceEntity>();
@@ -73,6 +77,20 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 	}
 );
 
+export const generateMeetTokenExternal = createAsyncThunk(
+	'meet/generateMeetTokenExternal',
+	async ({ token, displayName }: { token: string; displayName?: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			const response = await mezon.client.generateMeetTokenExternal(token, displayName);
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'meet/generateMeetTokenExternal');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
@@ -87,7 +105,9 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	isJoined: false,
 	token: '',
 	stream: null,
-	showSelectScreenModal: false
+	showSelectScreenModal: false,
+	externalToken: undefined,
+	joinCallExtStatus: 'not loaded'
 });
 
 export const voiceSlice = createSlice({
@@ -147,6 +167,22 @@ export const voiceSlice = createSlice({
 			state.isJoined = false;
 			state.token = '';
 			state.stream = null;
+		},
+		resetExternalCall: (state) => {
+			state.showMicrophone = false;
+			state.showCamera = false;
+			state.showScreen = false;
+			state.voiceConnectionState = false;
+			state.voiceInfo = null;
+			state.fullScreen = false;
+			state.isJoined = false;
+			state.externalToken = undefined;
+			state.stream = null;
+			state.joinCallExtStatus = 'not loaded';
+		},
+
+		setPiPModeMobile: (state, action) => {
+			state.isPiPMode = action.payload;
 		}
 		// ...
 	},
@@ -161,6 +197,18 @@ export const voiceSlice = createSlice({
 			})
 			.addCase(fetchVoiceChannelMembers.rejected, (state: VoiceState, action) => {
 				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			});
+		builder
+			.addCase(generateMeetTokenExternal.pending, (state: VoiceState) => {
+				state.joinCallExtStatus = 'loading';
+			})
+			.addCase(generateMeetTokenExternal.fulfilled, (state: VoiceState, action: PayloadAction<ApiGenerateMeetTokenResponse>) => {
+				state.externalToken = action.payload.token;
+				state.joinCallExtStatus = 'loaded';
+			})
+			.addCase(generateMeetTokenExternal.rejected, (state: VoiceState, action) => {
+				state.joinCallExtStatus = 'error';
 				state.error = action.error.message;
 			});
 	}
@@ -242,3 +290,8 @@ export const selectShowSelectScreenModal = createSelector(getVoiceState, (state)
 export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 
 export const selectVoiceConnectionState = createSelector(getVoiceState, (state) => state.voiceConnectionState);
+
+///
+export const selectJoinCallExtStatus = createSelector(getVoiceState, (state) => state.joinCallExtStatus);
+export const selectExternalToken = createSelector(getVoiceState, (state) => state.externalToken);
+export const selectIsPiPMode = createSelector(getVoiceState, (state) => state.isPiPMode);

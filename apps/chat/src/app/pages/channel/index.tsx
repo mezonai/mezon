@@ -90,7 +90,7 @@ function useChannelSeen(channelId: string) {
 				: ChannelStreamMode.STREAM_MODE_THREAD;
 		const store = getStore();
 		const state = store.getState() as RootState;
-		const badgeCountClan = state.clans.entities[currentChannel.clan_id as string].badge_count || 0;
+		const badgeCountClan = state.clans.entities[currentChannel.clan_id as string]?.badge_count || 0;
 		markAsReadSeen(lastMessage, mode, badgeCountClan);
 	};
 	useEffect(() => {
@@ -170,7 +170,7 @@ const WindowFocus = () => {
 				: ChannelStreamMode.STREAM_MODE_THREAD;
 		const store = getStore();
 		const state = store.getState() as RootState;
-		const badgeCountClan = state.clans.entities[currentChannel?.clan_id as string].badge_count || 0;
+		const badgeCountClan = state.clans.entities[currentChannel?.clan_id as string]?.badge_count || 0;
 		markAsReadSeen(lastMessage, mode, badgeCountClan);
 	};
 	const readMessage = useCallback(() => {
@@ -421,7 +421,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				>
 					{!isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && (
 						<div
-							className={`flex flex-col flex-1 min-w-60 pb-[10px] ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+							className={`flex flex-col flex-1 min-w-60 ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 						>
 							<div
 								className={`relative overflow-y-auto  ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink`}
