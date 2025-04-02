@@ -6,6 +6,7 @@ import {
 	selectShowSelectScreenModal,
 	selectStreamScreen,
 	selectVoiceFullScreen,
+	selectVoiceOpenPopOut,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
@@ -48,6 +49,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 	const showMicrophone = useSelector(selectShowMicrophone);
 
 	const isFullScreen = useSelector(selectVoiceFullScreen);
+	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
 	const isShowSelectScreenModal = useSelector(selectShowSelectScreenModal);
 	const localPermissions = useLocalParticipantPermissions();
 	const localParticipant = useLocalParticipant();
@@ -171,6 +173,25 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 
 	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
 
+	let popoutWindow: Window | null = null;
+
+	const togglePopout = () => {
+		if (popoutWindow && !popoutWindow.closed) {
+			popoutWindow.close();
+			popoutWindow = null;
+			dispatch(voiceActions.setOpenPopOut(false));
+		} else {
+			popoutWindow = window.open('/popout', 'LiveKitPopout', 'width=800,height=600,left=100,top=100');
+			if (!popoutWindow) {
+				console.error('Pop-up window blocked!');
+			} else {
+				dispatch(voiceActions.setOpenPopOut(true));
+			}
+		}
+	};
+
+	const livekitRoomId = isOpenPopOut ? 'livekitRoomPopOut' : 'livekitRoom';
+
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent">
 			<div className="flex justify-start gap-4">
@@ -195,7 +216,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							}
 							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
-							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
+							getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
 							destroyTooltipOnHide
 						>
 							<TrackToggle
@@ -224,7 +245,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							}
 							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
-							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
+							getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
 							destroyTooltipOnHide
 						>
 							<TrackToggle
@@ -252,7 +273,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 						}
 						overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 						overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
-						getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
+						getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
 						destroyTooltipOnHide
 					>
 						{!isDesktop ? (
@@ -280,7 +301,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 						overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Disconnect</span>}
 						overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 						overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
-						getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
+						getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
 					>
 						<div
 							onClick={onLeaveRoom}
@@ -292,18 +313,35 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 				)}
 			</div>
 			<div className="flex justify-end gap-4">
-				<Tooltip
-					showArrow={{ className: '!bottom-1' }}
-					placement="top"
-					overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Pop Out</span>}
-					overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
-					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
-					getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
-				>
-					<span>
-						<Icons.VoicePopOutIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
-					</span>
-				</Tooltip>
+				<div onClick={togglePopout}>
+					{isOpenPopOut ? (
+						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
+							placement="top"
+							overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Return To App</span>}
+							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+							getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
+						>
+							<span>
+								<Icons.VoicePopOutIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
+							</span>
+						</Tooltip>
+					) : (
+						<Tooltip
+							showArrow={{ className: '!bottom-1' }}
+							placement="top"
+							overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Pop Out</span>}
+							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+							overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
+							getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
+						>
+							<span>
+								<Icons.VoicePopOutIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
+							</span>
+						</Tooltip>
+					)}
+				</div>
 				<div onClick={onFullScreen}>
 					{isFullScreen ? (
 						<Tooltip
@@ -315,7 +353,7 @@ export function ControlBar({ variation, controls, saveUserChoices = true, onDevi
 							overlay={<span className="bg-[#2B2B2B] rounded p-[6px] text-[14px]">Exit Full Screen</span>}
 							overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
 							overlayClassName="whitespace-nowrap z-50 !p-0"
-							getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
+							getTooltipContainer={() => document.getElementById(livekitRoomId) || document.body}
 						>
 							<span>
 								<Icons.ExitFullScreen className="cursor-pointer hover:text-white text-[#B5BAC1]" />

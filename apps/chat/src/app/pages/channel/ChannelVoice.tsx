@@ -30,6 +30,7 @@ const ChannelVoice = memo(
 	() => {
 		const isJoined = useSelector(selectVoiceJoined);
 		const token = useSelector(selectTokenJoinVoice);
+		// console.log('token: ', token);
 		const voiceInfo = useSelector(selectVoiceInfo);
 		const [loading, setLoading] = useState<boolean>(false);
 		const dispatch = useAppDispatch();
@@ -136,7 +137,10 @@ const ChannelVoice = memo(
 		return (
 			<div
 				className={`${!isChannelMezonVoice || showModalEvent || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
-				style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
+				style={{
+					width: window.innerWidth <= 480 ? '100%' : 'calc(100% - 72px - 272px)',
+					height: window.innerWidth <= 480 ? '100%' : isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%'
+				}}
 			>
 				{token === '' || !serverUrl ? (
 					<PreJoinVoiceChannel
@@ -165,7 +169,11 @@ const ChannelVoice = memo(
 							serverUrl={serverUrl}
 							data-lk-theme="default"
 						>
-							<MyVideoConference channel={currentChannel || undefined} onLeaveRoom={handleLeaveRoom} onFullScreen={handleFullScreen} />
+							<MyVideoConference
+								channelLabel={currentChannel?.channel_label as string}
+								onLeaveRoom={handleLeaveRoom}
+								onFullScreen={handleFullScreen}
+							/>
 						</LiveKitRoom>
 					</>
 				)}

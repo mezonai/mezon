@@ -30,6 +30,7 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	stream: MediaStream | null | undefined;
 	showSelectScreenModal: boolean;
 	isPiPMode?: boolean;
+	openPopOut: boolean;
 }
 
 export const voiceAdapter = createEntityAdapter<VoiceEntity>();
@@ -88,7 +89,8 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	isJoined: false,
 	token: '',
 	stream: null,
-	showSelectScreenModal: false
+	showSelectScreenModal: false,
+	openPopOut: false
 });
 
 export const voiceSlice = createSlice({
@@ -138,6 +140,9 @@ export const voiceSlice = createSlice({
 		setFullScreen: (state, action: PayloadAction<boolean>) => {
 			state.fullScreen = action.payload;
 		},
+		setOpenPopOut: (state, action: PayloadAction<boolean>) => {
+			state.openPopOut = action.payload;
+		},
 		resetVoiceSettings: (state) => {
 			state.showMicrophone = false;
 			state.showCamera = false;
@@ -148,11 +153,11 @@ export const voiceSlice = createSlice({
 			state.isJoined = false;
 			state.token = '';
 			state.stream = null;
+			state.openPopOut = false;
 		},
 		setPiPModeMobile: (state, action) => {
 			state.isPiPMode = action.payload;
 		}
-		// ...
 	},
 	extraReducers: (builder) => {
 		builder
@@ -233,6 +238,8 @@ export const selectShowScreen = createSelector(getVoiceState, (state) => state.s
 export const selectStatusCall = createSelector(getVoiceState, (state) => state.statusCall);
 
 export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => state.fullScreen);
+
+export const selectVoiceOpenPopOut = createSelector(getVoiceState, (state) => state.openPopOut);
 
 const selectChannelId = (_: RootState, channelId: string) => channelId;
 

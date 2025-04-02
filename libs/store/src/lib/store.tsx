@@ -302,7 +302,7 @@ const persistedVoiceReducer = persistReducer(
 	{
 		key: VOICE_FEATURE_KEY,
 		storage,
-		whitelist: ['voiceInfo']
+		whitelist: ['voiceInfo', 'openPopOut', 'token', 'showMicrophone', 'showCamera', 'showScreen']
 	},
 	voiceReducer
 );

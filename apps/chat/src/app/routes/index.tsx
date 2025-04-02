@@ -24,6 +24,8 @@ import DMRoutes from './DMRoutes';
 import { Canvas } from '@mezon/components';
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
+/* eslint-disable-next-line */
+import Popout from 'libs/components/src/lib/components/VoiceChannel/PopOut/VoicePopOut';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import CanvasLayout from '../layouts/CanvasLayout';
 import ChannelLayout from '../layouts/ChannelLayout';
@@ -93,6 +95,10 @@ export const Routes = memo(() => {
 							{
 								path: 'login/callback',
 								element: <LoginCallback />
+							},
+							{
+								path: 'popout',
+								element: <Popout />
 							},
 							{
 								path: 'logout/callback',
