@@ -90,7 +90,7 @@ function useChannelSeen(channelId: string) {
 				: ChannelStreamMode.STREAM_MODE_THREAD;
 		const store = getStore();
 		const state = store.getState() as RootState;
-		const badgeCountClan = state.clans.entities[currentChannel.clan_id as string].badge_count || 0;
+		const badgeCountClan = state.clans.entities[currentChannel.clan_id as string]?.badge_count || 0;
 		markAsReadSeen(lastMessage, mode, badgeCountClan);
 	};
 	useEffect(() => {
@@ -170,7 +170,7 @@ const WindowFocus = () => {
 				: ChannelStreamMode.STREAM_MODE_THREAD;
 		const store = getStore();
 		const state = store.getState() as RootState;
-		const badgeCountClan = state.clans.entities[currentChannel?.clan_id as string].badge_count || 0;
+		const badgeCountClan = state.clans.entities[currentChannel?.clan_id as string]?.badge_count || 0;
 		markAsReadSeen(lastMessage, mode, badgeCountClan);
 	};
 	const readMessage = useCallback(() => {

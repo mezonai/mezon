@@ -119,15 +119,13 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 								)
 							)}
 							<div className="lk-participant-placeholder !bg-bgIconLight">
-								{member && (
-									<AvatarImage
-										alt={username || ''}
-										username={username}
-										className="w-20 h-20"
-										srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 320, height: 320, resizeType: 'fit' })}
-										src={avatar}
-									/>
-								)}
+								<AvatarImage
+									alt={username || ''}
+									username={username}
+									className="w-20 h-20"
+									srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 320, height: 320, resizeType: 'fit' })}
+									src={avatar}
+								/>
 							</div>
 							<div className="lk-participant-metadata overflow-hidden">
 								<div className="lk-participant-metadata-item flex w-full justify-between gap-1 !bg-transparent">

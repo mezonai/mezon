@@ -144,7 +144,7 @@ const BottomSheetRootListener = () => {
 	return (
 		<OriginalBottomSheet
 			ref={ref}
-			snapPoints={snapPoints}
+			snapPoints={heightFitContent ? null : snapPoints}
 			index={0}
 			animateOnMount
 			backgroundStyle={styles.backgroundStyle}

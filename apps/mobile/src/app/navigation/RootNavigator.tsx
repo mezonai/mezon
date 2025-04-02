@@ -4,7 +4,7 @@ import { useMezon } from '@mezon/transport';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { memo, useMemo } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ChatContextProvider } from '@mezon/core';
+import { ChatContextProvider, EmojiSuggestionProvider } from '@mezon/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
 import { StatusBar } from 'react-native';
@@ -96,7 +96,9 @@ const RootNavigation = (props) => {
 				<ChatContextProvider>
 					<WebRTCStreamProvider>
 						<DeviceProvider>
-							<NavigationMain {...props} />
+							<EmojiSuggestionProvider isMobile={true}>
+								<NavigationMain {...props} />
+							</EmojiSuggestionProvider>
 						</DeviceProvider>
 					</WebRTCStreamProvider>
 				</ChatContextProvider>

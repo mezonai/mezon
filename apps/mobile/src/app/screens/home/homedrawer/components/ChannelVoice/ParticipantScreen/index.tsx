@@ -155,7 +155,7 @@ const ParticipantScreen = ({ sortedParticipants, tracks, isFocusedScreen, setFoc
 								flexWrap: 'wrap',
 								justifyContent: isPiPMode ? 'flex-start' : 'center',
 								gap: size.s_10,
-								alignItems: isPiPMode ? 'flex-start' : 'center',
+								alignItems: isPiPMode ? 'flex-start' : 'center'
 							}
 						: { gap: size.s_10 }
 				}

@@ -11,6 +11,7 @@ export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
 
 export interface EventManagementEntity extends IEventManagement {
 	id: string;
+	isPrivate?: boolean;
 }
 
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
@@ -35,7 +36,8 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 		...eventRes,
 		id: eventRes.id || '',
 		channel_id: eventRes.channel_id === '0' || eventRes.channel_id === '' ? '' : eventRes.channel_id,
-		channel_voice_id: eventRes.channel_voice_id === '0' || eventRes.channel_voice_id === '' ? '' : eventRes.channel_voice_id
+		channel_voice_id: eventRes.channel_voice_id === '0' || eventRes.channel_voice_id === '' ? '' : eventRes.channel_voice_id,
+		isPrivate: eventRes.is_private
 	};
 };
 
@@ -107,7 +109,19 @@ export type EventManagementOnGogoing = {
 export const fetchCreateEventManagement = createAsyncThunk(
 	'CreatEventManagement/fetchCreateEventManagement',
 	async (
-		{ clan_id, channel_voice_id, address, title, start_time, end_time, description, logo, channel_id, repeat_type }: ApiCreateEventRequest,
+		{
+			clan_id,
+			channel_voice_id,
+			address,
+			title,
+			start_time,
+			end_time,
+			description,
+			logo,
+			channel_id,
+			repeat_type,
+			is_private = false
+		}: ApiCreateEventRequest,
 		thunkAPI
 	) => {
 		try {
@@ -122,7 +136,8 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				description: description || '',
 				logo: logo || '',
 				channel_id: channel_id,
-				repeat_type: repeat_type || ERepeatType.DOES_NOT_REPEAT
+				repeat_type: repeat_type || ERepeatType.DOES_NOT_REPEAT,
+				is_private: is_private
 			};
 			const response = await mezon.client.createEvent(mezon.session, body);
 

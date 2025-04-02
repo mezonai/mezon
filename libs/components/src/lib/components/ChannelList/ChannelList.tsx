@@ -27,6 +27,7 @@ import {
 	isLinuxDesktop,
 	isWindowsDesktop,
 	toggleDisableHover,
+	useSyncEffect,
 	useWindowSize
 } from '@mezon/utils';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -41,7 +42,7 @@ import { Events } from './ChannelListComponents';
 import ChannelListItem from './ChannelListItem';
 export type ChannelListProps = { className?: string };
 export type CategoriesState = Record<string, boolean>;
-const clanTopbarEle = 60;
+const clanTopbarEle = 50;
 
 function ChannelList() {
 	const appearanceTheme = useSelector(selectTheme);
@@ -87,6 +88,13 @@ const ChannelBannerAndEvents = memo(({ currentClan }: { currentClan: ClansEntity
 
 const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: string }) => {
 	const currentClan = useSelector(selectCurrentClan);
+	const [showFullList, setShowFullList] = useState(false);
+	useSyncEffect(() => {
+		if (showFullList) {
+			setShowFullList(false);
+		}
+	}, [currentClan]);
+
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const streamPlay = useSelector(selectStatusStream);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
@@ -100,33 +108,6 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 	const firstChannelWithBadgeCount = useMemo(() => {
 		return listChannelRender?.find((item) => (item as IChannel)?.count_mess_unread && ((item as IChannel)?.count_mess_unread || 0) > 0) || null;
 	}, [listChannelRender]);
-
-	const data = useMemo(
-		() => [
-			{ type: 'bannerAndEvents' },
-			...(listChannelRender
-				? isShowEmptyCategory
-					? listChannelRender
-					: listChannelRender.filter(
-							(item) =>
-								((item as ICategoryChannel).channels && (item as ICategoryChannel).channels.length > 0) ||
-								(item as ICategoryChannel).channels === undefined
-						)
-				: [])
-		],
-		[listChannelRender, isShowEmptyCategory]
-	) as ICategoryChannel[];
-	const currentChannelId = useSelector(selectCurrentChannelId);
-
-	const parentRef = useRef<HTMLDivElement>(null);
-	const count = data.length;
-	const virtualizer = useVirtualizer({
-		count,
-		getScrollElement: () => parentRef.current,
-		estimateSize: () => 45
-	});
-
-	const items = virtualizer.getVirtualItems();
 
 	const calculateHeight = useCallback(() => {
 		//TODO: check get height after join clan
@@ -142,9 +123,52 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 		setHeight(calculateHeight());
 	});
 
+	const data = useMemo(() => {
+		const filteredChannels = listChannelRender
+			? isShowEmptyCategory
+				? listChannelRender
+				: listChannelRender.filter(
+						(item) =>
+							((item as ICategoryChannel).channels && (item as ICategoryChannel).channels.length > 0) ||
+							(item as ICategoryChannel).channels === undefined
+					)
+			: [];
+
+		const countItems = Math.round(height / 36);
+
+		const limitedChannels =
+			!showFullList && filteredChannels.length > 20 ? filteredChannels.slice(0, countItems > 20 ? countItems : 20) : filteredChannels;
+		return [{ type: 'bannerAndEvents' }, ...limitedChannels];
+	}, [listChannelRender, isShowEmptyCategory, showFullList]) as ICategoryChannel[];
+
 	useEffect(() => {
 		setHeight(calculateHeight());
 	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
+
+	useEffect(() => {
+		const idleCallback = window.requestIdleCallback(
+			() => {
+				setShowFullList(true);
+			},
+			{ timeout: 3000 }
+		);
+
+		return () => {
+			window.cancelIdleCallback(idleCallback);
+		};
+	}, [listChannelRender]);
+
+	const currentChannelId = useSelector(selectCurrentChannelId);
+
+	const parentRef = useRef<HTMLDivElement>(null);
+	const count = data.length;
+	const virtualizer = useVirtualizer({
+		count,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => 36
+	});
+
+	const items = virtualizer.getVirtualItems();
 
 	const findScrollIndex = () => {
 		const channelId = firstChannelWithBadgeCount?.id;

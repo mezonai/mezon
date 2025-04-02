@@ -97,11 +97,6 @@
 	--background-modifier-accent: #ff0000;
 	--bg-overlay-chat: #141415;
 	--background-primary: var(--white-500);
-	--color-scrollbar: rgba(90, 90, 90, 0.3);
-}
-
-.dark {
-	--color-scrollbar: #151515;
 }
 
 /* Your styles goes here. */
@@ -128,21 +123,9 @@
 	width: 8px;
 }
 
-/* Track */
-::-webkit-scrollbar-track {
-	background: #2b2d31;
-	border-radius: 5px;
-}
-
-/* Handle */
 ::-webkit-scrollbar-thumb {
-	background: #1a1b1e;
+	background: pink;
 	border-radius: 5px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-	background: #1a1b1e;
 }
 
 html,
@@ -607,7 +590,7 @@ input:-webkit-autofill:active {
 }
 
 .pre::-webkit-scrollbar-thumb:hover {
-	background: #151515;
+	background: #787881;
 }
 
 // thread-scroll
@@ -624,7 +607,7 @@ input:-webkit-autofill:active {
 }
 
 .thread-scroll:hover::-webkit-scrollbar-thumb {
-	background: #151515;
+	background: #787881;
 }
 
 .thread-scroll {
@@ -640,10 +623,6 @@ input:-webkit-autofill:active {
 }
 
 .attachment-scroll::-webkit-scrollbar-track {
-	background: #2b2d31;
-}
-
-.message-channel-scroll::-webkit-scrollbar-thumb {
 	background: #2b2d31;
 }
 

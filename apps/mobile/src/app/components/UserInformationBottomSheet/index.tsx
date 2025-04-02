@@ -45,6 +45,9 @@ export const UserInformationBottomSheet = React.memo((props: IUserInformationBot
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		}
+		return () => {
+			onClose();
+		};
 	}, [userId, user]);
 	return <View />;
 });

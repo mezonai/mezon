@@ -1303,37 +1303,44 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				);
 				if (channelUpdated.channel_private !== undefined && channelUpdated.channel_private !== 0) {
 					const channel = { ...channelUpdated, type: channelUpdated.channel_type, id: channelUpdated.channel_id as string, clan_name: '' };
+					const cleanData: Record<string, string | number | boolean> = {};
 
-					if (channelUpdated.creator_id === userId) {
+					Object.keys(channelUpdated).forEach((key) => {
+						if (
+							channelUpdated[key as keyof ChannelUpdatedEvent] !== undefined &&
+							channelUpdated[key as keyof ChannelUpdatedEvent] !== ''
+						) {
+							cleanData[key] = channelUpdated[key as keyof ChannelUpdatedEvent];
+						}
+					});
+
+					dispatch(
+						channelsActions.update({
+							clanId: channelUpdated.clan_id,
+							update: {
+								id: channelUpdated.channel_id,
+								changes: { ...cleanData }
+							}
+						})
+					);
+					dispatch(listChannelsByUserActions.upsertOne({ ...channel }));
+					if (channel.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 						dispatch(
-							channelsActions.update({
-								clanId: channelUpdated.clan_id,
-								update: {
-									id: channelUpdated.channel_id,
-									changes: { ...channelUpdated }
-								}
+							listChannelRenderAction.addThreadToListRender({
+								clanId: channel.clan_id,
+								channel: { id: channelUpdated.channel_id, ...channelUpdated }
 							})
 						);
-					} else {
-						dispatch(listChannelsByUserActions.upsertOne({ ...channel }));
-						if (channel.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
+					}
+
+					if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
+						if (channel.parent_id) {
 							dispatch(
-								listChannelRenderAction.addThreadToListRender({
-									clanId: channel.clan_id,
-									channel: { id: channelUpdated.channel_id, ...channelUpdated }
+								threadsActions.updateActiveCodeThread({
+									channelId: channel.channel_id || '',
+									activeCode: ThreadStatus.joined
 								})
 							);
-						}
-
-						if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
-							if (channel.parent_id) {
-								dispatch(
-									threadsActions.updateActiveCodeThread({
-										channelId: channel.channel_id || '',
-										activeCode: ThreadStatus.joined
-									})
-								);
-							}
 						}
 					}
 				} else {

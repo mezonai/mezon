@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 export * from './attachmentThumb';
 export * from './iconInEmojiPanel';
 export * from './iconRightClick';
@@ -6907,9 +6908,9 @@ export function VoiceEmojiControlIcon(props: React.HTMLAttributes<SVGElement>) {
 		>
 			<path
 				fill="currentColor"
-				fill-rule="evenodd"
+				fillRule="evenodd"
 				d="M12 23a11 11 0 1 0 0-22 11 11 0 0 0 0 22ZM6.5 13a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm11 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm-9.8 1.17a1 1 0 0 1 1.39.27 3.5 3.5 0 0 0 5.82 0 1 1 0 0 1 1.66 1.12 5.5 5.5 0 0 1-9.14 0 1 1 0 0 1 .27-1.4Z"
-				clip-rule="evenodd"
+				clipRule="evenodd"
 				className=""
 			></path>
 		</svg>
@@ -6936,9 +6937,9 @@ export function VoiceSoundControlIcon(props: React.HTMLAttributes<SVGElement>) {
 			></path>
 			<path
 				fill="currentColor"
-				fill-rule="evenodd"
+				fillRule="evenodd"
 				d="M15.14 20.14c1.78-1.78.7-5.75-2.42-8.86-3.11-3.12-7.08-4.2-8.86-2.42A3.13 3.13 0 0 0 3 11V11l-1.16 8.92a2 2 0 0 0 2.24 2.24L13 21c.86-.04 1.6-.32 2.14-.86Zm-1.3-3.4a9.61 9.61 0 0 0-2.53-4.05 9.61 9.61 0 0 0-4.05-2.53c-1.27-.35-1.82-.05-1.99.11-.16.17-.46.72-.11 2a9.61 9.61 0 0 0 2.53 4.04 9.61 9.61 0 0 0 4.05 2.53c1.27.35 1.82.05 1.99-.11.16-.17.46-.72.11-2Z"
-				clip-rule="evenodd"
+				clipRule="evenodd"
 				className=""
 			></path>
 			<path
@@ -7141,5 +7142,41 @@ export function SvgQualityUnknownIcon() {
 				<path d="M0 11.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-4Zm6-5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-9Zm6-6a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V.5Z" />
 			</g>
 		</svg>
+	);
+}
+
+export function UserAvatarIcon(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24" {...props}>
+			<circle cx="12" cy="8" r="5" />
+			<path d="M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21" />
+		</svg>
+	);
+}
+interface AudioLevelCircleProps {
+	audioLevel: number;
+	children: React.ReactNode;
+	isActive: boolean;
+}
+
+export function AudioLevelCircle({ audioLevel, children, isActive }: AudioLevelCircleProps) {
+	return (
+		<div className="relative flex items-center justify-center">
+			<svg aria-hidden="true" role="img" viewBox="0 0 100 100" className="absolute w-[56px] h-[56px]">
+				<circle
+					cx="50"
+					cy="50"
+					r="46"
+					fill="none"
+					stroke={isActive ? 'rgba(99, 102, 241, 0.6)' : 'transparent'}
+					strokeWidth="8"
+					strokeDasharray={`${audioLevel * 290} 290`}
+					strokeDashoffset="0"
+					transform="rotate(-90 50 50)"
+				/>
+			</svg>
+
+			<div className="z-10">{children}</div>
+		</div>
 	);
 }

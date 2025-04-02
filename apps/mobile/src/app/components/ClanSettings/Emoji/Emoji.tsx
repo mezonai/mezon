@@ -1,9 +1,10 @@
-import { handleUploadEmoticonMobile, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, createEmojiSetting, selectCurrentClanId, selectEmojiByClanId, useAppDispatch } from '@mezon/store-mobile';
-import { useMezon } from '@mezon/transport';
+import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG, MAX_FILE_NAME_EMOJI } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
+import { Buffer as BufferMobile } from 'buffer';
 import { ApiClanEmojiCreateRequest, ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,13 +83,16 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 							compressImageQuality: QUALITY_IMAGE_UPLOAD,
 							...(typeof width === 'number' && { width: width, height: width })
 						});
+
+						const arrayBuffer = BufferMobile.from(croppedFile.data, 'base64');
+
 						const uploadImagePayload = {
-							name: file.fileName,
+							name: croppedFile.filename,
 							size: croppedFile.size,
 							type: croppedFile.mime,
 							uri: croppedFile.path,
 							fileData: croppedFile.data
-						} as IFile;
+						} as unknown as File;
 
 						if (Number(croppedFile.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 4)) {
 							Toast.show({
@@ -107,7 +111,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 						const id = Snowflake.generate();
 						const path = 'emojis/' + id + '.webp';
 
-						handleUploadEmoticonMobile(client, session, path, uploadImagePayload)
+						handleUploadEmoticon(client, session, path, uploadImagePayload, true, arrayBuffer)
 							.then(async (attachment: ApiMessageAttachment) => {
 								const request: ApiClanEmojiCreateRequest = {
 									id: id,

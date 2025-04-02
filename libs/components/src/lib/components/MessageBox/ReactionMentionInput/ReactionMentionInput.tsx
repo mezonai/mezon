@@ -218,6 +218,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const handleSend = useCallback(
 		(anonymousMessage?: boolean) => {
+			//TODO: break logic send width thread box, channel, topic box, dm
+			if (props.isThread && !nameValueThread?.trim() && !props.isTopic && !threadCurrentChannel) {
+				dispatch(threadsActions.setNameThreadError(threadError.name));
+				return;
+			}
+
 			const store = getStore();
 			const rolesClan = selectAllRolesClan(store.getState());
 			const { mentionList, hashtagList, emojiList, usersNotExistingInThread } = processMention(
@@ -1013,9 +1019,7 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 	const currTopicId = useSelector(selectCurrentTopicId);
 	const dataReferences = useSelector(selectDataReferences(currentChannelId ?? ''));
 	const dataReferencesTopic = useSelector(selectDataReferences(currTopicId ?? ''));
-	const { setRequestInput } = useMessageValue(
-		props.isThread || props.isTopic ? currentChannelId + String(props.isThread || props.isTopic) : (currentChannelId as string)
-	);
+	const { setRequestInput } = useMessageValue();
 	const request = useAppSelector((state) =>
 		selectRequestByChannelId(
 			state,
@@ -1074,7 +1078,7 @@ const DMReactionInput = memo((props: DMReactionInputProps) => {
 	const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
 	const [mentionWidth, setMentionWidth] = useState('');
 
-	const { setRequestInput } = useMessageValue(props.currentChannelId || '');
+	const { setRequestInput } = useMessageValue();
 	const request = useAppSelector((state) => selectRequestByChannelId(state, props.currentChannelId as string));
 
 	const isDm = props.mode === ChannelStreamMode.STREAM_MODE_DM;

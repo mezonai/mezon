@@ -609,12 +609,14 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const isViewportNewest = true;
 		const isUnread = true;
 		const isReady = useRef(false);
-		useSyncEffect(() => {
-			isReady.current = false;
-			setTimeout(() => {
+		useEffect(() => {
+			if (messageIds?.length > 0) {
 				isReady.current = true;
-			}, 100);
-		}, [channelId]);
+			}
+			return () => {
+				isReady.current = false;
+			};
+		}, [messageIds]);
 
 		const [forceRender, setForceRender] = useState<boolean>(false);
 
@@ -650,9 +652,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			onNotchToggle,
 			isReady.current,
 			(event: { direction: LoadMoreDirection }) => {
-				if (event.direction === LoadMoreDirection.Backwards) {
-					setLoadingDirection(ELoadMoreDirection.top);
-				} else if (event.direction === LoadMoreDirection.Forwards) {
+				if (event.direction === LoadMoreDirection.Forwards) {
 					setLoadingDirection(ELoadMoreDirection.bottom);
 				}
 				onChange(event.direction);
@@ -677,7 +677,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		// useSyncEffect(() => {
 		// 	memoFocusingIdRef.current = focusingId;
 		// }, [focusingId]);
-
 		const handleScroll = useLastCallback(() => {
 			if (isScrollTopJustUpdatedRef.current) {
 				isScrollTopJustUpdatedRef.current = false;
@@ -689,7 +688,14 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			if (!container) {
 				return;
 			}
+
 			runDebouncedForScroll(() => {
+				if (userActiveScroll.current && container.scrollTop < 1000) {
+					const skeletonElement = container.querySelector('#msg-loading-top');
+					if (skeletonElement && !isLoading && messageIds.length > 0) {
+						onChange(LoadMoreDirection.Backwards);
+					}
+				}
 				scrollOffsetRef.current = container.scrollHeight - container.scrollTop;
 				dispatch(
 					channelsActions.setScrollOffset({
@@ -699,7 +705,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				);
 			});
 		});
-
 		useSyncEffect(() => {
 			const container = chatRef.current;
 			if (!container) return;
@@ -981,7 +986,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 		return (
-			<div className="w-full h-full relative messages-container select-text">
+			<div className="w-full h-full relative messages-container select-text dark:bg-bgPrimary bg-bgLightPrimary">
 				<div
 					onScroll={handleScroll}
 					onWheelCapture={() => {
@@ -1001,7 +1006,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					className={classNames([
 						'thread-scroll',
 						'w-full',
-						'dark:bg-bgPrimary bg-bgLightPrimary',
 						{
 							customScrollLightMode: appearanceTheme === 'light'
 						}
@@ -1009,7 +1013,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				>
 					<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end">
 						{isTopic && convertedFirstMsgOfThisTopic && (
-							<div className="sticky top-0 z-[1] dark:bg-bgPrimary bg-bgLightPrimary">
+							<div className="sticky top-0 z-[1]">
 								<div
 									className={`fullBoxText relative group ${convertedFirstMsgOfThisTopic?.references?.[0]?.message_ref_id ? 'pt-3' : ''}`}
 								>
@@ -1031,8 +1035,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
 
 						{userActiveScroll.current && loadingDirection === ELoadMoreDirection.bottom && isLoading && (
-							<div className="py-2">
-								<MessageSkeleton count={3} imageFrequency={0.5} randomKey={`top-${messageIds[0] || ''}`} />
+							<div id="msg-loading-top" className="py-2">
+								<MessageSkeleton imageFrequency={0.5} randomKey={`top-${messageIds[0] || ''}`} />
 							</div>
 						)}
 
@@ -1081,7 +1085,6 @@ const LoadingSkeletonMessages = memo(
 		channelId,
 		topicId,
 		isTopic,
-		count = 3,
 		imageFrequency = 0.5
 	}: {
 		messageId?: string;
@@ -1096,26 +1099,21 @@ const LoadingSkeletonMessages = memo(
 		if (!hasMoreTop || isTopic) return null;
 		return (
 			<div className="py-2">
-				<MessageSkeleton count={count} imageFrequency={imageFrequency} randomKey={`top-${messageId || ''}`} />
+				<MessageSkeleton imageFrequency={imageFrequency} randomKey={`top-${messageId || ''}`} />
 			</div>
 		);
 	}
 );
 
 export const MessageSkeleton = memo(
-	function MessageSkeleton({ count = 3, className, imageFrequency = 0.4, randomKey }: MessageSkeletonProps) {
+	function MessageSkeleton({ className, imageFrequency = 0.4, randomKey }: MessageSkeletonProps) {
 		return (
-			<div className={buildClassName('flex flex-col px-4 py-2', className)}>
-				{Array.from({ length: count }).map((_, index) => {
-					const hasImage = Math.random() < imageFrequency;
-					const imageWidth = Math.floor(Math.random() * 200) + 200;
-					const imageHeight = Math.floor(Math.random() * 150) + 150;
-
-					const isWideImage = Math.random() > 0.7;
-					const wideImageWidth = Math.floor(Math.random() * 300) + 300; // 300-600px
+			<div style={{ width: '60%', height: '1000px', overflow: 'hidden' }} className={buildClassName('flex flex-col px-4 py-2', className)}>
+				{Array.from({ length: 5 }).map((_, index) => {
+					const imageWidth = Math.floor(Math.random() * 200) + 100;
 
 					return (
-						<div key={index} className="flex items-start gap-3">
+						<div key={`${randomKey}-${index}`} className="flex items-start gap-3 pb-4">
 							<div className="rounded-full dark:bg-skeleton-dark bg-skeleton-white h-10 w-10 flex-shrink-0" />
 
 							<div className="flex-1 py-2">
@@ -1124,36 +1122,60 @@ export const MessageSkeleton = memo(
 									<div className="h-3 dark:bg-skeleton-dark bg-skeleton-white rounded w-16" />
 								</div>
 
-								<div className="flex items-center gap-2">
+								<div className="flex gap-2">
 									<div
 										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
 										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
 									/>
-									{Math.random() > 0.5 && (
-										<div
-											className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
-											style={{ width: `${Math.floor(Math.random() * 50) + 30}%` }}
-										/>
-									)}
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
 								</div>
 
-								{hasImage && (
+								<div className="flex gap-2 pt-2">
 									<div
-										className="dark:bg-skeleton-dark bg-skeleton-white rounded-md mt-2"
-										style={{
-											width: isWideImage ? wideImageWidth : imageWidth,
-											height: isWideImage ? wideImageWidth * 0.6 : imageHeight,
-											maxWidth: '100%'
-										}}
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
 									/>
-								)}
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+									<div
+										className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded"
+										style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+									/>
+								</div>
 
-								{Math.random() > 0.6 && (
-									<div className="flex gap-2 mt-2">
-										<div className="h-6 dark:bg-skeleton-dark bg-skeleton-white rounded w-12" />
-										{Math.random() > 0.5 && <div className="h-6 dark:bg-skeleton-dark bg-skeleton-white rounded w-12" />}
-									</div>
-								)}
+								<div
+									className="dark:bg-skeleton-dark bg-skeleton-white rounded-md mt-2"
+									style={{
+										width: imageWidth,
+										height: 120,
+										maxWidth: '100%'
+									}}
+								/>
 							</div>
 						</div>
 					);

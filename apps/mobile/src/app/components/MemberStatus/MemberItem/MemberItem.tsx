@@ -3,7 +3,7 @@ import { STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
 import { ChannelMembersEntity, DirectEntity, selectCurrentClan } from '@mezon/store-mobile';
 import { IChannel, UsersClanEntity } from '@mezon/utils';
 import { memo, useMemo } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
 
@@ -43,8 +43,7 @@ export function MemberItem({ user, isOffline, onPress, currentChannel, isDMThrea
 		return user?.user?.id === userId;
 	}, [user?.user?.id, userId]);
 	return (
-		<TouchableOpacity
-			activeOpacity={0.8}
+		<Pressable
 			onPress={() => {
 				onPress(user);
 			}}
@@ -60,6 +59,6 @@ export function MemberItem({ user, isOffline, onPress, currentChannel, isDMThrea
 				creatorDMId={currentChannel?.creator_id}
 				isDMThread={isDMThread}
 			/>
-		</TouchableOpacity>
+		</Pressable>
 	);
 }

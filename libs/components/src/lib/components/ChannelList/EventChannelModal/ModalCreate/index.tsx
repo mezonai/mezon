@@ -64,7 +64,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
 		textChannelId: currentEvent ? currentEvent.channel_id || '' : '',
-		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT
+		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
+		isPrivate: Boolean(currentEvent?.isPrivate)
 	});
 
 	const [buttonWork, setButtonWork] = useState(true);
@@ -77,6 +78,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 	const isExistChannelVoice = Boolean(currentEvent?.channel_voice_id);
 	const isExistAddress = Boolean(currentEvent?.address);
+	const isExistPrivateEvent = currentEvent?.isPrivate;
 
 	useEffect(() => {
 		if (currentEvent && eventChannel) {
@@ -89,12 +91,16 @@ const ModalCreate = (props: ModalCreateProps) => {
 	}, [currentEvent, eventChannel]);
 
 	const choiceSpeaker = useMemo(() => {
-		return (isExistChannelVoice || option === OptionEvent.OPTION_SPEAKER) && option !== OptionEvent.OPTION_LOCATION;
-	}, [isExistChannelVoice, option]);
+		return option === OptionEvent.OPTION_SPEAKER || (!option && isExistChannelVoice && !isExistAddress && !isExistPrivateEvent);
+	}, [isExistChannelVoice, isExistAddress, isExistPrivateEvent, option]);
 
 	const choiceLocation = useMemo(() => {
-		return (isExistAddress || option === OptionEvent.OPTION_LOCATION) && option !== OptionEvent.OPTION_SPEAKER;
-	}, [isExistAddress, option]);
+		return option === OptionEvent.OPTION_LOCATION || (!option && isExistAddress && !isExistChannelVoice && !isExistPrivateEvent);
+	}, [isExistChannelVoice, isExistAddress, isExistPrivateEvent, option]);
+
+	const choicePrivateEvent = useMemo(() => {
+		return option === OptionEvent.PRIVATE_EVENT || (!option && isExistPrivateEvent && !isExistChannelVoice && !isExistAddress);
+	}, [isExistChannelVoice, isExistAddress, isExistPrivateEvent, option]);
 
 	const handleNext = (currentModal: number) => {
 		if (buttonWork && currentModal < tabs.length - 1 && !errorTime && !errorOption) {
@@ -131,6 +137,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const handleSubmit = useCallback(async () => {
 		const voice = choiceSpeaker ? contentSubmit.voiceChannel : '';
 		const address = choiceLocation ? contentSubmit.address : '';
+		const privateEvent = choicePrivateEvent ? contentSubmit.isPrivate : false;
 
 		const timeValueStart = handleTimeISO(contentSubmit.selectedDateStart, contentSubmit.timeStart);
 		const timeValueEnd = handleTimeISO(contentSubmit.selectedDateEnd, contentSubmit.timeEnd);
@@ -145,7 +152,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 			contentSubmit.description,
 			contentSubmit.logo,
 			contentSubmit.textChannelId as string,
-			contentSubmit.repeatType as ERepeatType
+			contentSubmit.repeatType as ERepeatType,
+			privateEvent as boolean
 		);
 
 		hanldeCloseModal();
@@ -262,32 +270,32 @@ const ModalCreate = (props: ModalCreateProps) => {
 			<div className="flex gap-x-4 mb-4">
 				<HeaderEventCreate tabs={tabs} currentModal={currentModal} onHandleTab={(num: number) => handleCurrentModal(num)} />
 			</div>
-			<div>
-				{currentModal === Tabs_Option.LOCATION && (
-					<LocationModal
-						onClose={onClose}
-						contentSubmit={contentSubmit}
-						choiceSpeaker={choiceSpeaker}
-						choiceLocation={choiceLocation}
-						voicesChannel={voicesChannel}
-						handleOption={handleOption}
-						setContentSubmit={setContentSubmit}
-						textChannels={textChannels}
-					/>
-				)}
-				{currentModal === Tabs_Option.EVENT_INFO && (
-					<EventInfoModal
-						onClose={onClose}
-						contentSubmit={contentSubmit}
-						choiceLocation={choiceLocation}
-						timeStartDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.start_time || '') : defaultTimeStart}
-						timeEndDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.end_time || '') : defaultTimeEnd}
-						setContentSubmit={setContentSubmit}
-						setErrorTime={(status: boolean) => setErrorTime(status)}
-					/>
-				)}
-				{currentModal === Tabs_Option.REVIEW && <ReviewModal onClose={onClose} contentSubmit={contentSubmit} option={option} />}
-			</div>
+
+			{currentModal === Tabs_Option.LOCATION && (
+				<LocationModal
+					onClose={onClose}
+					contentSubmit={contentSubmit}
+					choiceSpeaker={choiceSpeaker}
+					choiceLocation={choiceLocation}
+					voicesChannel={voicesChannel}
+					handleOption={handleOption}
+					setContentSubmit={setContentSubmit}
+					textChannels={textChannels}
+					choicePrivateEvent={choicePrivateEvent}
+				/>
+			)}
+			{currentModal === Tabs_Option.EVENT_INFO && (
+				<EventInfoModal
+					onClose={onClose}
+					contentSubmit={contentSubmit}
+					choiceLocation={choiceLocation}
+					timeStartDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.start_time || '') : defaultTimeStart}
+					timeEndDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.end_time || '') : defaultTimeEnd}
+					setContentSubmit={setContentSubmit}
+					setErrorTime={(status: boolean) => setErrorTime(status)}
+				/>
+			)}
+			{currentModal === Tabs_Option.REVIEW && <ReviewModal onClose={onClose} contentSubmit={contentSubmit} option={option} />}
 			<div className="flex justify-between mt-4 w-full text-white">
 				<button
 					className={`py-2 text-[#84ADFF] font-bold ${(currentModal === Tabs_Option.LOCATION || errorTime) && 'hidden'}`}

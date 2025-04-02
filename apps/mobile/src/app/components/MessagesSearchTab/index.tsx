@@ -15,7 +15,8 @@ import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useContext, useMemo, useState } from 'react';
-import { ActivityIndicator, Keyboard, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Text, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageItem from '../../screens/home/homedrawer/MessageItem';
@@ -133,9 +134,9 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 	};
 
 	const renderMessageItem = (message: MessagesEntity, index: number) => (
-		<TouchableOpacity onPress={() => handleJumpMessage(message)} key={`${message?.id}_${index}`} style={styles.messageItem}>
+		<Pressable onPress={() => handleJumpMessage(message)} key={`${message?.id}_msg_search_${index}`} style={styles.messageItem}>
 			<MessageItem message={message} messageId={message.id} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} preventAction isSearchTab={true} />
-		</TouchableOpacity>
+		</Pressable>
 	);
 
 	const renderGroupItem = ({ item }) => (

@@ -17,7 +17,7 @@ const useMiniAppEventListener = (
 	const miniAppRef = useRef<HTMLIFrameElement | null>(null);
 
 	useEffect(() => {
-		if (!appChannel?.url) return;
+		if (!appChannel?.app_url) return;
 
 		const compareHost = (url1: string, url2: string) => {
 			try {
@@ -30,7 +30,7 @@ const useMiniAppEventListener = (
 		};
 
 		const handleMessage = async (event: MessageEvent) => {
-			if (!appChannel?.url || !compareHost(event.origin, appChannel.url)) return;
+			if (!appChannel?.app_url || !compareHost(event.origin, appChannel.app_url)) return;
 
 			const eventData = safeJSONParse(event.data ?? '{}') || {};
 			const { eventType } = eventData;
@@ -40,11 +40,11 @@ const useMiniAppEventListener = (
 				case MiniAppEventType.PING:
 					miniAppRef.current?.contentWindow?.postMessage(
 						JSON.stringify({ eventType: MiniAppEventType.PONG, eventData: { message: MiniAppEventType.PONG } }),
-						appChannel.url
+						appChannel.app_url
 					);
 					miniAppRef.current?.contentWindow?.postMessage(
 						JSON.stringify({ eventType: MiniAppEventType.CURRENT_USER_INFO, eventData: userProfile as ApiAccount }),
-						appChannel.url
+						appChannel.app_url
 					);
 					break;
 				case MiniAppEventType.SEND_TOKEN:
@@ -65,7 +65,7 @@ const useMiniAppEventListener = (
 				case MiniAppEventType.GET_CLAN_ROLES:
 					miniAppRef.current?.contentWindow?.postMessage(
 						JSON.stringify({ eventType: MiniAppEventType.CLAN_ROLES_RESPONSE, eventData: allRolesInClan }),
-						appChannel.url
+						appChannel.app_url
 					);
 					break;
 				case MiniAppEventType.SEND_BOT_ID:
@@ -75,13 +75,13 @@ const useMiniAppEventListener = (
 					const hashData = await getUserHashInfo(appId);
 					miniAppRef.current?.contentWindow?.postMessage(
 						JSON.stringify({ eventType: MiniAppEventType.USER_HASH_INFO, eventData: { message: hashData } }),
-						appChannel.url
+						appChannel.app_url
 					);
 					break;
 				case MiniAppEventType.GET_CLAN_USERS:
 					miniAppRef.current?.contentWindow?.postMessage(
 						JSON.stringify({ eventType: MiniAppEventType.CLAN_USERS_RESPONSE, eventData: userChannels }),
-						appChannel.url
+						appChannel.app_url
 					);
 					break;
 				case MiniAppEventType.JOIN_ROOM:
@@ -105,7 +105,7 @@ const useMiniAppEventListener = (
 
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
-	}, [appChannel?.url, userProfile, allRolesInClan, userChannels, dispatch]);
+	}, [appChannel?.app_url, userProfile, allRolesInClan, userChannels, dispatch]);
 
 	return { miniAppRef };
 };

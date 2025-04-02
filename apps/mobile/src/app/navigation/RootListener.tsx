@@ -4,6 +4,7 @@ import {
 	acitvitiesActions,
 	appActions,
 	authActions,
+	channelsActions,
 	clansActions,
 	directActions,
 	emojiSuggestionActions,
@@ -120,7 +121,8 @@ const RootListener = () => {
 						channelId: '',
 						channelType: ChannelType.CHANNEL_TYPE_GMEET_VOICE || ChannelType.CHANNEL_TYPE_MEZON_VOICE
 					})
-				)
+				),
+				dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true, isMobile: true })),
 			];
 			await Promise.all(promise);
 			return null;

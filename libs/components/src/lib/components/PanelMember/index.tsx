@@ -135,7 +135,7 @@ const PanelMember = ({
 	const { toDmGroupPageFromMainApp } = useAppNavigation();
 	const navigate = useNavigate();
 	const { createDirectMessageWithUser } = useDirect();
-	const { setRequestInput } = useMessageValue(currentChannel?.channel_id);
+	const { setRequestInput } = useMessageValue();
 	const request = useAppSelector((state) => selectRequestByChannelId(state, currentChannel?.channel_id as string));
 
 	const displayMentionName = useMemo(() => {

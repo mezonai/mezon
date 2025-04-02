@@ -140,7 +140,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 				return null;
 			}
 		},
-		[dispatch, appChannel?.url]
+		[dispatch, appChannel?.app_url]
 	);
 
 	const { miniAppRef } = useMiniAppEventListener(appChannel, allRolesInClan, userChannels, userProfile, getUserHashInfo);
@@ -151,12 +151,12 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		if (sendTokenEvent?.status === TOKEN_SUCCESS_STATUS) {
 			miniAppRef.current?.contentWindow?.postMessage(
 				JSON.stringify({ eventType: MiniAppEventType.SEND_TOKEN_RESPONSE_SUCCESS, eventData: infoSendToken?.sender_id }),
-				appChannel.url ?? ''
+				appChannel.app_url ?? ''
 			);
 		} else if (sendTokenEvent?.status === TOKEN_FAILED_STATUS) {
 			miniAppRef.current?.contentWindow?.postMessage(
 				JSON.stringify({ eventType: MiniAppEventType.SEND_TOKEN_RESPONSE_FAILED, eventData: infoSendToken?.sender_id }),
-				appChannel.url ?? ''
+				appChannel.app_url ?? ''
 			);
 		}
 	};
@@ -192,7 +192,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 	);
 
 	useEffect(() => {
-		if (!appChannel?.url) return;
+		if (!appChannel?.app_url) return;
 		setLoading(true);
 
 		const joinRoom = async () => {
@@ -208,14 +208,14 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		joinRoom();
 	}, [appChannel, participantMeetState]);
 
-	return appChannel?.url ? (
+	return appChannel?.app_url ? (
 		<div className="relative w-full h-full rounded-b-lg">
 			<div className="w-full h-full">
 				<iframe
 					allow="clipboard-read; clipboard-write; camera"
 					ref={miniAppRef}
-					title={appChannel?.url}
-					src={`${appChannel?.url}#${miniAppDataHash}`}
+					title={appChannel?.app_url}
+					src={`${appChannel?.app_url}#${miniAppDataHash}`}
 					className="w-full h-full rounded-b-lg"
 				/>
 			</div>

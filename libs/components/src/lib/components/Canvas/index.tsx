@@ -91,7 +91,7 @@ const Canvas = () => {
 	};
 
 	return (
-		<div className="w-full h-[calc(100vh-60px)] max-w-[80%]">
+		<div className="w-full h-[calc(100vh-50px)] max-w-[80%]">
 			<textarea
 				ref={textAreaRef}
 				placeholder="Your canvas title"

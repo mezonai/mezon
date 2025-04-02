@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById2, selectIsPiPMode, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
 import { useKeepAwake } from '@sayem314/react-native-keep-awake';
 import React, { useEffect, useState } from 'react';
-import { AppState, Dimensions, NativeModules, Text, TouchableOpacity, View } from 'react-native';
+import { AppState, Dimensions, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
@@ -56,7 +56,11 @@ function ChannelVoice({
 	useEffect(() => {
 		const subscription = AppState.addEventListener('change', (state) => {
 			if (state === 'background') {
-				NativeModules.PipModule.enablePipMode();
+				if (Platform.OS === 'android') {
+					NativeModules.PipModule.enablePipMode();
+				} else {
+					// 	do something for ios
+				}
 				dispatch(voiceActions.setPiPModeMobile(true));
 			} else {
 				dispatch(voiceActions.setPiPModeMobile(false));
@@ -66,7 +70,7 @@ function ChannelVoice({
 			dispatch(voiceActions.setPiPModeMobile(false));
 			subscription.remove();
 		};
-	}, []);
+	}, [dispatch]);
 
 	return (
 		<View>

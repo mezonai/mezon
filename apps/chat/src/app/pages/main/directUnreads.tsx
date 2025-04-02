@@ -45,7 +45,7 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 					draggable="false"
 					alt={direct.usernames?.toString() ?? ''}
 					username={direct.usernames?.toString() ?? ''}
-					className="min-w-12 min-h-12 max-w-12 max-h-12"
+					className="w-[40px] h-[40px]"
 					srcImgProxy={
 						direct.type === ChannelType.CHANNEL_TYPE_DM
 							? createImgproxyUrl(direct?.channel_avatar?.at(0) ?? '', { width: 300, height: 300, resizeType: 'fit' })
@@ -55,7 +55,7 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 				/>
 				{directMessage?.count_mess_unread && (
 					<div
-						className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-0 right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+						className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-1px] right-[-2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
 							directMessage?.count_mess_unread >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 						}`}
 					>

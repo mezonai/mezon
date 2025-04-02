@@ -1,3 +1,4 @@
+import { useEmojiSuggestionContext } from '@mezon/core';
 import {
 	ActionEmitEvent,
 	BicycleIcon,
@@ -8,8 +9,7 @@ import {
 	PenIcon,
 	RibbonIcon,
 	SmilingFaceIcon,
-	debounce,
-	useGetEmojis
+	debounce
 } from '@mezon/mobile-components';
 import { Colors, Metrics, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
@@ -81,7 +81,7 @@ export default function EmojiSelectorContainer({
 	handleBottomSheetCollapse
 }: EmojiSelectorContainerProps) {
 	const currentClan = useAppSelector(selectCurrentClan);
-	const { categoriesEmoji, categoryEmoji, emojis } = useGetEmojis(currentClan?.clan_id || '0');
+	const { categoryEmoji, categoriesEmoji, emojis } = useEmojiSuggestionContext();
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const [selectedCategory, setSelectedCategory] = useState<string>('');

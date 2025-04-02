@@ -58,8 +58,9 @@ export const inviteUser = createAsyncThunk('invite/inviteUser', async ({ inviteI
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.inviteUser(mezon.session, inviteId);
-		if (!response) {
-			return thunkAPI.rejectWithValue([]);
+		if (!response?.clan_id) {
+			captureSentryError('Can not join clan', 'invite/inviteUser');
+			return thunkAPI.rejectWithValue('Can not join clan');
 		}
 		return response as ApiInviteUserRes;
 	} catch (error) {

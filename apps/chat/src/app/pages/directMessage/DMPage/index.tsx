@@ -196,7 +196,7 @@ const DirectMessage = () => {
 		<>
 			{draggingState && <FileUploadByDnD currentId={currentDmGroup?.channel_id ?? ''} />}
 			<div
-				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible relative mt-[60px]`}
+				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible relative mt-[50px]`}
 				onDragEnter={handleDragEnter}
 			>
 				<div
@@ -294,7 +294,7 @@ const DirectMessage = () => {
 					</div>
 					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
 						<div
-							className={`contain-strict dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_60px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
+							className={`contain-strict dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_50px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
 						>
 							<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
 						</div>

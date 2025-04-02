@@ -22,13 +22,7 @@ function NavLinkComponent({ active, children }: NavLinkProps) {
 				></div>
 			</div>
 
-			<div
-				onClick={setTurnOffThreadMessage}
-				className={`
-            ${
-				active ? '[clip-path:inset(0_round_12px)]' : '[clip-path:circle(50%)] hover:[clip-path:inset(0_round_12px)]'
-			} flex items-center justify-center w-12 h-12 overflow-hidden`}
-			>
+			<div onClick={setTurnOffThreadMessage} className={`flex items-center justify-center w-12 h-12 overflow-hidden`}>
 				{children}
 			</div>
 		</div>

@@ -94,7 +94,7 @@ const ChannelAppScreen = ({ channelId }) => {
 				} else {
       window.ReactNativeWebView.postMessage(JSON.stringify({ error: "Không tìm thấy #mainChat" }));
 				}
-			}, 1000);
+			}, 2000);
 			}
       });
 	})();
@@ -155,8 +155,9 @@ const ChannelAppScreen = ({ channelId }) => {
 				javaScriptEnabled={true}
 				nestedScrollEnabled={true}
 				onLoadEnd={async () => {
-					await sleep(2000);
+					await sleep(1000);
 					handlePing();
+					await sleep(3000);
 					setLoading(false);
 				}}
 			/>

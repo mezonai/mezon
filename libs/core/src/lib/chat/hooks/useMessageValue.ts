@@ -2,7 +2,7 @@ import { channelsActions, getStore, selectCurrentChannel, selectDmGroupCurrentId
 import { ModeResponsive, RequestInput } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 
-export function useMessageValue(channelId?: string) {
+export function useMessageValue() {
 	const dispatch = useAppDispatch();
 	const setRequestInput = useCallback((request: RequestInput, isThread?: boolean) => {
 		const store = getStore();

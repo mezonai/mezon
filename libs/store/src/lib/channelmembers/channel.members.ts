@@ -413,6 +413,19 @@ export const selectMemberCustomStatusById = createSelector(
 	}
 );
 
+export const selectMemberCustomStatusById2 = createSelector(
+	[
+		getUsersClanState,
+		(state: RootState, userId: string) => {
+			return userId;
+		}
+	],
+	(usersClanState, userId) => {
+		const userClan = usersClanState.entities[userId];
+		return (userClan?.user?.metadata as any)?.status || '';
+	}
+);
+
 export const selectGrouplMembers = createSelector(
 	[selectDirectById, selectAllAccount, (state, groupId: string) => groupId],
 	(group, currentUser, groupId) => {
@@ -505,7 +518,7 @@ export const selectAllChannelMembers = createSelector(
 	(channelMembers, usersClanState, directs, payload) => {
 		const [channelId, isPrivate, isDm, parentId] = payload.split(',');
 
-		let membersOfChannel: ChannelMembersEntity[] = [];
+		const membersOfChannel: ChannelMembersEntity[] = [];
 		if (isDm) return directs || [];
 
 		if (!usersClanState?.ids?.length) return membersOfChannel;
@@ -515,13 +528,41 @@ export const selectAllChannelMembers = createSelector(
 		if (!members?.ids) return membersOfChannel;
 		const ids = members.ids || [];
 
-		membersOfChannel = ids.map((id) => ({
+		return ids.map((id) => ({
 			...usersClanState.entities[id],
 			channelId,
 			userChannelId: channelId
 		}));
+	}
+);
+export const selectAllChannelMembers2 = createSelector(
+	[
+		selectMemberIdsByChannelId,
+		getUsersClanState,
+		(state: RootState, channelId: string) => {
+			const currentClanId = state.clans?.currentClanId;
+			const channel = state?.channels?.byClans?.[currentClanId as string]?.entities?.entities?.[channelId];
+			const isPrivate = channel?.channel_private;
+			const parentId = channel?.parent_id;
+			return `${channelId},${isPrivate},${parentId}`;
+		}
+	],
+	(channelMembers, usersClanState, payload) => {
+		const [channelId, isPrivate, parentId] = payload.split(',');
+		const membersOfChannel: ChannelMembersEntity[] = [];
 
-		return membersOfChannel;
+		if (!usersClanState?.ids?.length) return membersOfChannel;
+
+		const members = isPrivate === '1' || (parentId !== '0' && parentId !== '') ? { ids: channelMembers } : usersClanState;
+
+		if (!members?.ids) return membersOfChannel;
+		const ids = members.ids || [];
+
+		return ids.map((id) => ({
+			...usersClanState.entities[id],
+			channelId,
+			userChannelId: channelId
+		}));
 	}
 );
 

@@ -23,7 +23,7 @@ const Topbar = memo(({ channel, mode }: ChannelTopbarProps) => {
 	});
 	return (
 		<div
-			className={`${isFriendPath ? 'hidden' : ''} ${isMacDesktop ? 'draggable-area' : ''} dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment flex-shrink fixed right-0 z-50`}
+			className={`${isFriendPath ? 'hidden' : ''} ${isMacDesktop ? 'draggable-area' : ''} dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment flex-shrink fixed right-0 z-10`}
 		>
 			{currentClanId === '0' ? <DmTopbar /> : <ChannelTopbar />}
 		</div>

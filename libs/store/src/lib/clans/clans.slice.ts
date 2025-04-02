@@ -66,6 +66,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 	async ({ clanId, noCache = false }: ChangeCurrentClanArgs, thunkAPI) => {
 		try {
 			batch(() => {
+				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
 				thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
 

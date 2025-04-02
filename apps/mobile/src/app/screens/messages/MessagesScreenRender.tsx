@@ -29,7 +29,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 
 	const handleLongPress = useCallback((directMessage: DirectEntity) => {
 		const data = {
-			snapPoints: ['40%', '70%'],
+			heightFitContent: true,
 			children: <MessageMenu messageInfo={directMessage} />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });

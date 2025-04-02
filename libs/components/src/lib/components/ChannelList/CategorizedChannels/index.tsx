@@ -169,7 +169,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 			<div className="flex flex-row px-2 relative gap-1" onMouseDown={handleMouseClick} ref={panelRef} role={'button'}>
 				<button
 					onClick={handleToggleCategory}
-					className="dark:text-channelTextLabel text-colorTextLightMode flex items-center px-0.5 w-full font-title tracking-wide dark:hover:text-gray-100 hover:text-black uppercase text-sm font-semibold"
+					className="dark:text-channelTextLabel text-colorTextLightMode flex items-center px-0.5 w-full font-title tracking-wide dark:hover:text-gray-100 hover:text-black uppercase text-sm font-medium"
 				>
 					{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}
 					<span className="one-line">{category.category_name}</span>

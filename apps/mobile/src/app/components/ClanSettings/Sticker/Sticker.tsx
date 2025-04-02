@@ -1,10 +1,11 @@
-import { handleUploadEmoticonMobile, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
+import { QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { createSticker, useAppDispatch } from '@mezon/store';
 import { selectCurrentClanId, selectStickerByClanId } from '@mezon/store-mobile';
-import { useMezon } from '@mezon/transport';
+import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
+import { Buffer as BufferMobile } from 'buffer';
 import { ApiClanStickerAddRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ import { openCropper } from 'react-native-image-crop-picker';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../componentUI/MezonButton2';
-import { handleSelectImage, IFile } from '../../../componentUI/MezonImagePicker';
+import { IFile, handleSelectImage } from '../../../componentUI/MezonImagePicker';
 import { StickerList } from './StickerList';
 import { style } from './styles';
 
@@ -43,9 +44,11 @@ export function StickerSetting() {
 			throw new Error('Client or file is not initialized');
 		}
 
+		const arrayBuffer = BufferMobile.from(file?.fileData, 'base64');
+
 		const id = Snowflake.generate();
 		const path = 'stickers/' + id + '.webp';
-		const attachment = await handleUploadEmoticonMobile(client, session, path, file);
+		const attachment = await handleUploadEmoticon(client, session, path, file as unknown as File, true, arrayBuffer);
 
 		return {
 			id,

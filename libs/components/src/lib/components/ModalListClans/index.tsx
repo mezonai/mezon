@@ -51,7 +51,7 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 	};
 
 	return (
-		<div onContextMenu={handleMouseClick} className="relative h-[48px]">
+		<div onContextMenu={handleMouseClick} className="relative h-[40px]">
 			<button onClick={handleClick} draggable="false">
 				<NavLinkComponent active={active}>
 					{option.logo ? (
@@ -59,13 +59,12 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 							draggable="false"
 							src={createImgproxyUrl(option.logo ?? '', { width: 100, height: 100, resizeType: 'fit' }) || ''}
 							placeholder="blur"
-							width={48}
 							blurdataurl={option.logo}
-							className="min-w-12 min-h-12 object-cover clan"
+							className="w-[40px] h-[40px] object-cover rounded-lg clan"
 						/>
 					) : (
 						option.clan_name && (
-							<div className="w-[48px] h-[48px] dark:bg-bgSecondary bg-bgLightMode rounded-full flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[20px] clan">
+							<div className="w-[40px] h-[40px] dark:bg-bgSecondary bg-bgLightMode rounded-lg flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[20px] clan">
 								{(option.clan_name || '').charAt(0).toUpperCase()}
 							</div>
 						)
@@ -74,7 +73,7 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 			</button>
 			{badgeCountClan > 0 ? (
 				<div
-					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-0 right-[-4px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[2px] right-[2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
 						badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 					}`}
 				>

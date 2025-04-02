@@ -7,6 +7,7 @@ import {
 	selectChannelById,
 	selectChannelFirst,
 	selectMemberClanByUserId,
+	toastActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -42,6 +43,7 @@ export type ItemEventManagementProps = {
 	onEventUpdateId?: (id: string) => void;
 	textChannelId?: string;
 	onClose: () => void;
+	isPrivate?: boolean;
 };
 
 const ItemEventManagement = (props: ItemEventManagementProps) => {
@@ -59,9 +61,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		openModelUpdate,
 		onEventUpdateId,
 		textChannelId,
-		onClose
+		onClose,
+		isPrivate
 	} = props;
-	const isPrivateEvent = textChannelId && textChannelId !== '0';
+	const isNonPublicEvent = textChannelId && textChannelId !== '0';
+	const isPrivateEvent = (event?.isPrivate && !isNonPublicEvent) || (event?.is_private && !isNonPublicEvent) || (isPrivate && !isNonPublicEvent);
 	const dispatch = useAppDispatch();
 	const channelFirst = useSelector(selectChannelFirst);
 	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
@@ -81,8 +85,27 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		distanceToBottom: 0
 	});
 
+	const [copied, setCopied] = useState(false);
 	const eventIsUpcomming = event?.event_status === EEventStatus.UPCOMING;
 	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
+	const externalLink = event?.meet_room?.external_link;
+	const privateRoomLink = `https://${process.env.NX_CHAT_APP_API_HOST}${externalLink}`;
+	const hasLink = Boolean(externalLink);
+	const handleCopyLink = useCallback(() => {
+		navigator.clipboard
+			.writeText(privateRoomLink)
+			.then(() => {
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
+			})
+			.catch((err) => {
+				dispatch(toastActions.addToastError({ message: err?.message || 'Failed to copy link.' }));
+			});
+	}, [privateRoomLink]);
+
+	const handleOpenLink = useCallback(() => {
+		window.open(privateRoomLink, '_blank', 'noopener,noreferrer');
+	}, [privateRoomLink]);
 
 	const handleStopPropagation = (e: any) => {
 		e.stopPropagation();
@@ -162,6 +185,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									? 'Event is taking place!'
 									: timeFomat(event?.start_time || start)}
 						</p>
+						{isNonPublicEvent && <p className="bg-orange-500 text-white rounded-sm px-1 text-center">Non-Public Event</p>}{' '}
 						{isPrivateEvent && <p className="bg-red-500 text-white rounded-sm px-1 text-center">Private Event</p>}{' '}
 					</div>
 					{event?.creator_id && (
@@ -233,6 +257,16 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							<p className="hover:underline text-slate-400">{channelFirst.channel_label}</p>
 						</>
 					)}
+					{isPrivateEvent && (
+						<a
+							href={privateRoomLink}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex gap-x-2 cursor-pointer text-blue-500 underline"
+						>
+							{event?.meet_room?.room_name}
+						</a>
+					)}
 				</div>
 
 				{event && (
@@ -279,13 +313,29 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				)}
 			</div>
 			<div className="flex gap-x-2 mx-4 mb-2">
-				{textChannelId && textChannelId !== '0' && (
-					<span className="flex flex-row">
-						<p className="text-slate-400">
-							{`The audience consists of members from ${isThread ? 'thread: ' : 'channel: '}`}
-							<strong className="text-slate-100">{textChannel.channel_label}</strong>
-						</p>
+				{isPrivateEvent ? (
+					<span className="flex flex-row items-center gap-2">
+						<p className="text-slate-400">Only invited members can join.</p>
+						{hasLink && (
+							<>
+								<button onClick={handleOpenLink} className="text-blue-500 hover:underline">
+									Open Link
+								</button>
+								<button onClick={handleCopyLink} className="text-blue-500 hover:underline">
+									{copied ? 'Copied!' : 'Copy Link'}
+								</button>
+							</>
+						)}
 					</span>
+				) : (
+					isNonPublicEvent && (
+						<span className="flex flex-row">
+							<p className="text-slate-400">
+								{`The audience consists of members from ${isThread ? 'thread: ' : 'channel: '}`}
+								<strong className="text-slate-100">{textChannel.channel_label}</strong>
+							</p>
+						</span>
+					)
 				)}
 			</div>
 			{openPanel && (

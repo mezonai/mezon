@@ -1,7 +1,6 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo } from 'react';
 import getPendingNames from './usePendingNames';
 
 type IMessageHeadProps = {
@@ -77,14 +76,11 @@ export const ClanMessageHead = (props: Omit<IMessageHeadProps, 'isDM'>) => {
 	return <BaseMessageHead {...props} isDM={false} userRolesClan={userRolesClan} />;
 };
 
-const MessageHead = memo(
-	(props: IMessageHeadProps) => {
-		if (props.isDM || props.mode === ChannelStreamMode.STREAM_MODE_DM || props.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-			return <DMMessageHead {...props} />;
-		}
-		return <ClanMessageHead {...props} />;
-	},
-	(prev, curr) => prev.message === curr.message
-);
+const MessageHead = (props: IMessageHeadProps) => {
+	if (props.isDM || props.mode === ChannelStreamMode.STREAM_MODE_DM || props.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+		return <DMMessageHead {...props} />;
+	}
+	return <ClanMessageHead {...props} />;
+};
 
 export default MessageHead;

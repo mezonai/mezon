@@ -21,7 +21,7 @@ import ClansRoutes from './ClanRoutes';
 import DMRoutes from './DMRoutes';
 
 // Pages
-import { Canvas } from '@mezon/components';
+import { Canvas, PreJoinCalling } from '@mezon/components';
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
 /* eslint-disable-next-line */
@@ -103,6 +103,10 @@ export const Routes = memo(() => {
 							{
 								path: 'logout/callback',
 								element: <LogoutCallback />
+							},
+							{
+								path: 'meeting/:code',
+								element: <PreJoinCalling />
 							},
 							isElectron()
 								? {

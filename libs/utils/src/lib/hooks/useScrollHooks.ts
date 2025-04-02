@@ -14,7 +14,7 @@ export enum LoadMoreDirection {
 
 // update later
 
-export const MESSAGE_LIST_SENSITIVE_AREA = 750;
+export const MESSAGE_LIST_SENSITIVE_AREA = 1500;
 
 const FAB_THRESHOLD = 50;
 const NOTCH_THRESHOLD = 1; // Notch has zero height so we at least need a 1px margin to intersect
@@ -68,6 +68,9 @@ export function useScrollHooks(
 		if (!container || !fabTrigger) return;
 
 		const { offsetHeight, scrollHeight, scrollTop } = container;
+
+		if (scrollTop === 0) return;
+
 		const fabOffsetTop = fabTrigger.offsetTop;
 		const scrollBottom = Math.round(fabOffsetTop - scrollTop - offsetHeight);
 		const isNearBottom = scrollBottom <= FAB_THRESHOLD;
