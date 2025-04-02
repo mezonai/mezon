@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 export function useMediaPermissions() {
 	const [hasCameraAccess, setHasCameraAccess] = useState<boolean | null>(null);
 	const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState<boolean | null>(null);
+	const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+	const [microphoneStream, setMicrophoneStream] = useState<MediaStream | null>(null);
 
 	useEffect(() => {
 		const checkPermissions = async () => {
@@ -25,5 +27,38 @@ export function useMediaPermissions() {
 		checkPermissions();
 	}, []);
 
-	return { hasCameraAccess, hasMicrophoneAccess };
+	const requestCameraAccess = async () => {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+			setCameraStream(stream);
+			setHasCameraAccess(true);
+			return stream;
+		} catch (error) {
+			console.error('Camera access denied:', error);
+			setHasCameraAccess(false);
+			return null;
+		}
+	};
+
+	const requestMicrophoneAccess = async () => {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+			setMicrophoneStream(stream);
+			setHasMicrophoneAccess(true);
+			return stream;
+		} catch (error) {
+			console.error('Microphone access denied:', error);
+			setHasMicrophoneAccess(false);
+			return null;
+		}
+	};
+
+	return {
+		hasCameraAccess,
+		hasMicrophoneAccess,
+		requestCameraAccess,
+		requestMicrophoneAccess,
+		cameraStream,
+		microphoneStream
+	};
 }

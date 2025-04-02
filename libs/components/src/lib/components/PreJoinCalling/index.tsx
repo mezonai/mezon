@@ -146,8 +146,12 @@ export default function PreJoinCalling() {
 		}
 	}, [micOn]);
 
+	const { requestCameraAccess, requestMicrophoneAccess } = useMediaPermissions();
+
 	// Handle Join Meeting
 	const joinMeeting = useCallback(async () => {
+		requestCameraAccess();
+		requestMicrophoneAccess();
 		if (!username.trim()) {
 			setError('Please enter your name before joining the meeting.');
 			return;
@@ -176,7 +180,6 @@ export default function PreJoinCalling() {
 	const handleLeaveRoom = useCallback(async () => {
 		dispatch(voiceActions.resetExternalCall());
 	}, [dispatch]);
-	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
 
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
@@ -218,25 +221,21 @@ export default function PreJoinCalling() {
 								{/* Controls */}
 								<div className="w-full flex items-center justify-center gap-8">
 									{/* Camera Toggle */}
-									{hasCameraAccess && (
-										<ControlButton
-											onClick={toggleCamera}
-											isActive={cameraOn}
-											label={cameraOn ? 'Camera on' : 'Camera off'}
-											icon={cameraOn ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
-										/>
-									)}
+									<ControlButton
+										onClick={toggleCamera}
+										isActive={cameraOn}
+										label={cameraOn ? 'Camera on' : 'Camera off'}
+										icon={cameraOn ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
+									/>
 
 									{/* Microphone Toggle */}
-									{hasMicrophoneAccess && (
-										<ControlButton
-											onClick={toggleMic}
-											isActive={micOn}
-											label={micOn ? 'Mic on' : 'Mic off'}
-											audioLevel={micOn ? audioLevel : undefined}
-											icon={micOn ? <Icons.VoiceMicIcon scale={1.3} /> : <Icons.VoiceMicDisabledIcon scale={1.3} />}
-										/>
-									)}
+									<ControlButton
+										onClick={toggleMic}
+										isActive={micOn}
+										label={micOn ? 'Mic on' : 'Mic off'}
+										audioLevel={micOn ? audioLevel : undefined}
+										icon={micOn ? <Icons.VoiceMicIcon scale={1.3} /> : <Icons.VoiceMicDisabledIcon scale={1.3} />}
+									/>
 								</div>
 							</div>
 						</div>
