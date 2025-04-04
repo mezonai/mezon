@@ -49,6 +49,7 @@ export const baseColor = {
 	green: '#42a869',
 	gray: '#949AA4',
 	flamingo: '#f23f43',
+	orange: '#F97316',
 	bgButtonPrimary: '#5865F2',
 	bgButtonSecondary: '#4E5057',
 	bgSuccess: '#16A34A',
