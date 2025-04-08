@@ -112,7 +112,6 @@ const Popout: React.FC = () => {
 	};
 
 	useEffect(() => {
-		console.log('12345');
 		handleJoinRoom();
 	}, []);
 
