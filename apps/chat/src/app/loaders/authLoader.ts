@@ -4,12 +4,14 @@ import {
 	authActions,
 	clansActions,
 	directActions,
+	emojiRecentActions,
 	friendsActions,
+	getStore,
 	listChannelsByUserActions,
-	listUsersByUserActions
+	listUsersByUserActions,
+	selectVoiceOpenPopOut
 } from '@mezon/store';
 import { IWithError, sleep } from '@mezon/utils';
-import { emojiRecentActions } from 'libs/store/src/lib/emojiSuggestion/emojiRecent.slice';
 import { CustomLoaderFunction } from './appLoader';
 
 export interface IAuthLoaderData {
@@ -65,6 +67,8 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 };
 
 export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
+	const store = getStore();
+	const isOpenVoicePopout = selectVoiceOpenPopOut(store.getState());
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
