@@ -16,7 +16,7 @@ export const SendTokenUser = forwardRef(() => {
 		() => [
 			{
 				onPress: () => {
-					navigation.navigate(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.SEND_TOKEN });
+					navigation.push(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.SEND_TOKEN });
 					dismiss();
 				},
 				title: t('settingStack.sendToken'),

@@ -1,4 +1,4 @@
-import { AudioSession, LiveKitRoom, TrackReference } from '@livekit/react-native';
+import { AndroidAudioTypePresets, AudioSession, LiveKitRoom, TrackReference } from '@livekit/react-native';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById2, selectIsPiPMode, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
 import { useKeepAwake } from '@sayem314/react-native-keep-awake';
@@ -46,8 +46,13 @@ function ChannelVoice({
 	}, []);
 
 	const startAudioCall = async () => {
-		InCallManager.start({ media: 'audio' });
+		await AudioSession.configureAudio({
+			android: {
+				audioTypeOptions: AndroidAudioTypePresets.communication
+			}
+		});
 		await AudioSession.startAudioSession();
+		InCallManager.start({ media: 'audio' });
 	};
 
 	const stopAudioCall = async () => {

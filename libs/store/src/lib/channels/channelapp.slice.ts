@@ -41,7 +41,7 @@ export const initialChannelAppState: ChannelAppState = {
 	roomId: {},
 	clanId: null,
 	roomToken: undefined,
-	enableMic: false,
+	enableMic: true,
 	enableVideo: false,
 	enableCall: false,
 	channelId: null,

@@ -6,6 +6,8 @@ import React
 @objc(CustomImageViewIOS)
 class CustomImageViewIOS: UIView {
   private let imageView = UIImageView()
+  private var retryCount = 0
+  private let maxRetryCount = 3
 
   @objc var source: NSDictionary? {
     didSet {
@@ -43,7 +45,6 @@ class CustomImageViewIOS: UIView {
     imageView.contentMode = .scaleAspectFill
     addSubview(imageView)
 
-    // Make imageView fill the container view
     imageView.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
       imageView.topAnchor.constraint(equalTo: topAnchor),
@@ -60,7 +61,6 @@ class CustomImageViewIOS: UIView {
     }
 
     if uri.hasPrefix("asset://") {
-      // Handle local assets
       let assetName = String(uri.dropFirst(8))
       if let image = UIImage(named: assetName) {
         imageView.image = image
@@ -69,14 +69,30 @@ class CustomImageViewIOS: UIView {
         imageView.image = nil
       }
     } else if let url = URL(string: uri) {
-      // Use SDWebImage for caching and loading remote images
       imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
       imageView.sd_setImage(
         with: url,
         placeholderImage: nil,
         options: [.progressiveLoad, .refreshCached],
-        completed: nil
+        completed: { [weak self] (image, error, cacheType, imageURL) in
+          if let error = error {
+            print("Failed to load image: \(error.localizedDescription)")
+            self?.retryLoadImage()
+          } else {
+            self?.retryCount = 0
+          }
+        }
       )
+    }
+  }
+
+  private func retryLoadImage() {
+    if retryCount < maxRetryCount {
+      retryCount += 1
+      print("Retrying to load image, attempt \(retryCount)")
+      loadImage()
+    } else {
+      print("Max retry attempts reached")
     }
   }
 }

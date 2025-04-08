@@ -212,7 +212,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 
 	const handleConfirmSuccessful = () => {
 		setShowConfirmModal(false);
-		navigation.pop(2);
+		navigation.replace(APP_SCREEN.BOTTOM_BAR);
 	};
 
 	const handleOpenBottomSheet = () => {

@@ -224,7 +224,7 @@ const UserProfile = React.memo(
 				note: t('userAction.transferFunds'),
 				canEdit: true
 			});
-			navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
+			navigation.push(APP_SCREEN.SETTINGS.STACK, {
 				screen: APP_SCREEN.SETTINGS.SEND_TOKEN,
 				params: {
 					formValue: payload

@@ -32,10 +32,12 @@
   <style>
     :root {
       --splash-background: rgba(240, 240, 240, 0.95);
+      --splash-text-color: rgb(78, 80, 87);
     }
 
     html.dark {
       --splash-background: rgba(0, 0, 0, 0.8);
+      --splash-text-color: #E6E6E6;
     }
 
     .splash-screen {
@@ -53,6 +55,7 @@
       outline: none;
       background-color: var(--splash-background);
       font-family: sans-serif;
+      color: var(--splash-text-color);
     }
   </style>
 
@@ -68,23 +71,7 @@
 <body>
   <div id="splash-screen" class="splash-screen">
     <div>
-      <svg width="40px" height="40px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-        version="1.1" id="Layer_1" x="0px" y="0px" style="enableBackground:new 0 0 595.28 841.89;" xml:space="preserve"
-        viewBox="69.96 139.03 468.28 466.17">
-        <style type="text/css">
-          .st0 {
-            fill: #CC1FC9;
-          }
-
-          .st1 {
-            fill: #E399C3;
-          }
-        </style>
-        <path class="st0"
-          d="M83.98,377.69c1.1-125.83,100.99-226.95,227.46-226.72c125.68,0.22,226.91,99.47,226.8,227.02  c-0.11,129.55-102.46,227.5-227.15,227.21C182.57,604.89,85.03,503.08,83.98,377.69z M312.48,187.09  c-106.14-1.2-191.04,85.07-191.39,189.54c-0.36,105.8,86.56,190.6,190.4,190.77c101.54,0.16,192.19-83.84,190.1-194.44  C499.7,272.54,416.77,186.76,312.48,187.09z" />
-        <path class="st1"
-          d="M347.42,147.98c-82.52-11.58-154.52,9.75-210.71,72.12c-56.15,62.33-70.24,136.08-49.81,217  c-26.16-56.54-24.97-141.21,24.48-209.03C162.47,158.02,254.29,120.74,347.42,147.98z" />
-      </svg>
+      Loading ...
     </div>
   </div>
   <div id="root"></div>
