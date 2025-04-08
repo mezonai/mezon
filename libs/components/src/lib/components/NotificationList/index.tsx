@@ -6,6 +6,7 @@ import {
 	selectNotificationClan,
 	selectNotificationForYou,
 	selectNotificationMentions,
+	selectTheme,
 	selectTopicsSort,
 	useAppDispatch
 } from '@mezon/store';
@@ -41,7 +42,7 @@ const tabDataNotify = [
 function NotificationList({ rootRef }: NotificationProps) {
 	const currentClan = useSelector(selectCurrentClan);
 	const dispatch = useAppDispatch();
-
+	const appearanceTheme = useSelector(selectTheme);
 	const [currentTabNotify, setCurrentTabNotify] = useState(InboxType.MENTIONS);
 	const handleChangeTab = (valueTab: string) => {
 		setCurrentTabNotify(valueTab);
@@ -150,11 +151,13 @@ function NotificationList({ rootRef }: NotificationProps) {
 					</div>
 				</div>
 
-				<div className="dark:bg-bgSecondary bg-bgLightSecondary flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto">
+				<div
+					className={`dark:bg-bgSecondary bg-bgLightSecondary flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+				>
 					{currentTabNotify === InboxType.INDIVIDUAL && (
 						<div
 							ref={listRefForYou}
-							className="max-w-[600px] max-h-heightInBox overflow-y-auto"
+							className={`max-w-[600px] max-h-heightInBox overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 							onScroll={handleScroll(NotificationCategory.FOR_YOU, allNotificationForYou?.lastId)}
 						>
 							{getAllNotificationForYou.length > 0 ? (
@@ -170,7 +173,7 @@ function NotificationList({ rootRef }: NotificationProps) {
 					{currentTabNotify === InboxType.MENTIONS && (
 						<div
 							ref={listRefMentions}
-							className="max-w-[600px] max-h-heightInBox overflow-y-auto"
+							className={`max-w-[600px] max-h-heightInBox overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 							onScroll={handleScroll(NotificationCategory.MENTIONS, allNotificationMentions?.lastId)}
 						>
 							{getAllNotificationMentions.length > 0 ? (
@@ -186,7 +189,7 @@ function NotificationList({ rootRef }: NotificationProps) {
 					{currentTabNotify === InboxType.MESSAGES && (
 						<div
 							ref={listRefMessages}
-							className="max-w-[600px] max-h-heightInBox overflow-y-auto"
+							className={`max-w-[600px] max-h-heightInBox overflow-y-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 							onScroll={handleScroll(NotificationCategory.MESSAGES, allNotificationClan?.lastId)}
 						>
 							{getAllNotificationClan.length > 0 ? (

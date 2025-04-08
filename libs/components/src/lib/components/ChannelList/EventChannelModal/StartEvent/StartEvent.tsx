@@ -32,11 +32,11 @@ export const StartEventModal = (props: StartEventModalProps) => {
 						</h4>
 					</div>
 					<div className="w-[0.1px] h-4 bg-gray-400"></div>
-					<div className="bg-primary px-2 py-1 rounded-md text-white font-medium" onClick={onOpenCreate}>
+					<div className="bg-primary px-2 py-1 rounded-md text-white font-medium cursor-pointer" onClick={onOpenCreate}>
 						Create Event
 					</div>
 				</div>
-				<span className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+				<span className="text-5xl leading-3 dark:hover:text-white hover:text-black cursor-pointer" onClick={onClose}>
 					×
 				</span>
 			</div>

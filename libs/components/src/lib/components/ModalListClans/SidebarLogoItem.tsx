@@ -72,7 +72,7 @@ const SidebarLogoItem = () => {
 									? createImgproxyUrl(logoCustom, { width: 40, height: 40, resizeType: 'fit' })
 									: `assets/images/${appearanceTheme === 'dark' ? 'mezon-logo-black.svg' : 'mezon-logo-white.svg'}`
 							}
-							className="clan w-[40px] h-[40px] aspect-square object-cover"
+							className="rounded-lg clan w-[40px] h-[40px] aspect-square object-cover"
 							onClick={handleClickToJoinClan}
 							draggable="false"
 						/>
@@ -81,7 +81,7 @@ const SidebarLogoItem = () => {
 			</button>
 			{quantityPendingRequest > 0 ? (
 				<div
-					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[2px] right-[2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-5px] right-[2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
 						quantityPendingRequest >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 					}`}
 				>

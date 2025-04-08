@@ -86,7 +86,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 					{groupedMessages.length > 0 ? (
 						<div
 							ref={messageContainerRef}
-							className={`flex flex-col flex-1 h-full p-4 bg-bgLightSecondary dark:bg-bgSecondary max-h-[calc(100vh_-_120px)] overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
+							className={`flex flex-col flex-1 h-full p-4 bg-bgLightSecondary dark:bg-bgSecondary max-h-[calc(100vh_-_120px)] overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 						>
 							<div className="flex flex-col flex-1 gap-[20px]">
 								{groupedMessages.map((group, groupIndex) => {

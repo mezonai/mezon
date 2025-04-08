@@ -1035,7 +1035,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
 
 						{userActiveScroll.current && loadingDirection === ELoadMoreDirection.bottom && isLoading && (
-							<div id="msg-loading-top" className="py-2">
+							<div className="py-2">
 								<MessageSkeleton imageFrequency={0.5} randomKey={`top-${messageIds[0] || ''}`} />
 							</div>
 						)}
@@ -1098,7 +1098,7 @@ const LoadingSkeletonMessages = memo(
 		// hasMoreTop topic check backend alway return true
 		if (!hasMoreTop || isTopic) return null;
 		return (
-			<div className="py-2">
+			<div id="msg-loading-top" className="py-2">
 				<MessageSkeleton imageFrequency={imageFrequency} randomKey={`top-${messageId || ''}`} />
 			</div>
 		);

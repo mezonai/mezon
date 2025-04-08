@@ -261,7 +261,7 @@ export interface IEmbedProps {
 	description?: string;
 	thumbnail?: { url: string };
 	fields?: IFieldEmbed[];
-	image?: { url: string };
+	image?: { url: string; width?: number; height?: number };
 	timestamp?: string;
 	footer?: { text: string; icon_url?: string };
 }

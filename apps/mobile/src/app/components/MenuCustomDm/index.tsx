@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IChannel } from '@mezon/utils';
+import { IChannel, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
@@ -41,7 +41,9 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			expandable: false,
 			icon: <MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
 			textStyle: styles.label,
-			onPress: () => {
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
 				const data = {
 					snapPoints: ['70%'],
 					children: <CustomGroupDm dmGroupId={currentChannel?.id} channelLabel={channelLabel} />
@@ -54,7 +56,9 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			expandable: false,
 			icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_22} height={size.s_22} color={themeValue.text} />,
 			textStyle: styles.label,
-			onPress: () => {
+			onPress: async () => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				await sleep(500);
 				const data = {
 					children: (
 						<MezonConfirm
@@ -92,6 +96,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 					onPress: async () => {
 						await dispatch(directActions.closeDirectMessage({ channel_id: currentChannel?.channel_id }));
 						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 					}
 				}
 			]
@@ -106,8 +111,8 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			return;
 		}
 		await dispatch(fetchDirectMessage({ noCache: true }));
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 
 	return (

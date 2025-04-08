@@ -299,12 +299,16 @@ export const RenderTextMarkdownContent = ({
 			case ETokenMessage.EMOJIS: {
 				const srcEmoji = getSrcEmoji(element.emojiid);
 				textParts.push(
-					<ImageNative
-						key={`emoji-${index}`}
-						url={srcEmoji}
-						style={isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage}
-						resizeMode={'contain'}
-					/>
+					<View style={!isOnlyContainEmoji && markdownStyles(themeValue).emojiInMessageContain}>
+						<ImageNative
+							key={`emoji-${index}`}
+							url={srcEmoji}
+							style={
+								isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage
+							}
+							resizeMode={'contain'}
+						/>
+					</View>
 				);
 				break;
 			}

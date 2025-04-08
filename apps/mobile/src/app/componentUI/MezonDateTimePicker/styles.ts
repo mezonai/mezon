@@ -23,7 +23,6 @@ export const style = (colors: Attributes) =>
 		},
 
 		bsContainer: {
-			minHeight: size.s_150 * 2,
 			paddingHorizontal: Metrics.size.xl,
 			flexDirection: 'row',
 			justifyContent: 'center'

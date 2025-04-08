@@ -9,9 +9,9 @@ export const style = (colors: Attributes) =>
 		},
 
 		clanIcon: {
-			height: size.s_48,
-			width: size.s_48,
-			borderRadius: size.s_48,
+			height: size.s_42,
+			width: size.s_42,
+			borderRadius: size.s_42,
 			overflow: 'hidden',
 			alignItems: 'center',
 			justifyContent: 'center',
@@ -25,9 +25,9 @@ export const style = (colors: Attributes) =>
 		},
 
 		logoClan: {
-			height: size.s_48,
-			width: size.s_48,
-			borderRadius: size.s_48,
+			height: size.s_42,
+			width: size.s_42,
+			borderRadius: size.s_42,
 			overflow: 'hidden'
 		},
 

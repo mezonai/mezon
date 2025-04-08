@@ -97,7 +97,7 @@ function MezonPage() {
 		<div
 			className="relative bg-[#0B0E2D] select-text"
 			style={{
-				fontFamily: 'Inter'
+				fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial'
 			}}
 		>
 			<div
@@ -114,10 +114,13 @@ function MezonPage() {
 						style={backgroundImageStyle}
 					>
 						<div className="flex flex-col items-center justify-center gap-[24px] m-auto text-center w-full max-w-full md:max-w-[662px]">
-							<h1 className="tracking-[-.02em] text-center text-[60px] max-md:text-[36px] font-black leading-[72px] max-md:leading-[48px] font-semibold font-['Poppins'] text-[#F4F7F9] max-md:text-textDarkTheme">
-								The Live, Work, and Play Platform.
+							<h1
+								style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial' }}
+								className="tracking-[-.02em] text-center text-[60px] max-md:text-[36px] leading-[72px] max-md:leading-[48px] text-[#F4F7F9] max-md:text-textDarkTheme"
+							>
+								The Live, Work, and Play Platform – the best Discord alternative.
 							</h1>
-							<div className="text-[20px] text-[#C2D5DF] text-center leading-[30px] font-normal hidden md:block">
+							<div className="text-[20px] text-[#C2D5DF] text-center leading-[30px] hidden md:block">
 								<div>Mezon is great for playing games and chilling with friends, </div>
 								<div>or even building a worldwide community.</div>
 								<div>Customize your own space to talk, play, and hang out.</div>
@@ -236,7 +239,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({ platform, icon, 
 							<Icons.Microsoft className="w-[34px] h-[34px] max-md:w-[22px] max-md:h-[22px]" />
 							<div>
 								<div className="text-xs max-md:text-[9px]">Get it from</div>
-								<div className="font-semibold max-md:text-[12px] leading-[20px] max-md:leading-[13px]">CDN Url</div>
+								<div className="max-md:text-[12px] leading-[20px] max-md:leading-[13px]">CDN Url</div>
 							</div>
 						</div>
 					</div>
@@ -259,7 +262,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({ platform, icon, 
 							<Icons.CDNIcon className="w-[29px] h-[29px] max-md:w-[20px] max-md:h-[20px]" />
 							<div>
 								<div className="text-xs max-md:text-[9px]">Get it from</div>
-								<div className="font-semibold max-md:text-[12px] leading-[20px] max-md:leading-[13px]">CDN Url</div>
+								<div className="max-md:text-[12px] leading-[20px] max-md:leading-[13px]">CDN Url</div>
 							</div>
 						</div>
 					</div>

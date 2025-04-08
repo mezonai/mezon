@@ -49,7 +49,7 @@ const useMiniAppEventListener = (
 					break;
 				case MiniAppEventType.SEND_TOKEN:
 					// eslint-disable-next-line no-case-declarations
-					const { amount, note, receiver_id, extra_attribute } = (eventData.eventData || {}) as any;
+					const { amount, note, receiver_id, extra_attribute, receiver_name } = (eventData.eventData || {}) as any;
 					dispatch(
 						giveCoffeeActions.setInfoSendToken({
 							sender_id: userProfile?.user?.id,
@@ -57,7 +57,8 @@ const useMiniAppEventListener = (
 							receiver_id,
 							amount,
 							note,
-							extra_attribute
+							extra_attribute,
+							receiver_name: receiver_name
 						})
 					);
 					dispatch(giveCoffeeActions.setShowModalSendToken(true));

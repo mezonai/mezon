@@ -676,3 +676,8 @@ export const selectChannelMemberByUserIds = createSelector(
 		return members as ChannelMembersEntity[];
 	}
 );
+
+export const selectAllMembersInClan = createSelector([getUsersClanState], (usersClanState) => {
+	if (!usersClanState?.entities) return [];
+	return Object.values(usersClanState.entities);
+});

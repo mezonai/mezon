@@ -139,7 +139,7 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		markAsReadChannel: (state, action: PayloadAction<string[]>) => {
 			const updateList = action.payload.map((id) => {
-				const last_sent_message = state.entities[id].last_sent_message;
+				const last_sent_message = state.entities[id]?.last_sent_message;
 				return {
 					id: id,
 					changes: {

@@ -17,9 +17,9 @@ export const style = (colors: Attributes) =>
 		},
 		groupAvatar: {
 			backgroundColor: Colors.orange,
-			width: size.s_48,
-			height: size.s_48,
-			borderRadius: size.s_48,
+			width: size.s_42,
+			height: size.s_42,
+			borderRadius: size.s_42,
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
@@ -45,14 +45,14 @@ export const style = (colors: Attributes) =>
 			marginTop: size.s_10
 		},
 		avatarWrapper: {
-			borderRadius: size.s_48,
+			borderRadius: size.s_42,
 			backgroundColor: colors.colorAvatarDefault,
-			height: size.s_48,
-			width: size.s_48
+			height: size.s_42,
+			width: size.s_42
 		},
 		wrapperTextAvatar: {
-			width: size.s_48,
-			height: size.s_48,
+			width: size.s_42,
+			height: size.s_42,
 			justifyContent: 'center',
 			alignItems: 'center'
 		},

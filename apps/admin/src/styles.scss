@@ -2,7 +2,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('../../../libs/assets/src/assets/font/nato-san-gg.css');
 
 @font-face {
 	font-family: 'gg sans';
@@ -40,14 +39,6 @@
 	font-family: 'gg sans';
 	src: url('./assets/fonts/ggsans-ExtraBold.woff2') format('woff2');
 	font-weight: bold;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Noto Sans';
-	src: url('./assets/fonts/NotoSans-Medium.woff2') format('woff2');
-	font-weight: 500;
 	font-style: normal;
 	font-display: swap;
 }
@@ -346,7 +337,7 @@ input:-webkit-autofill:active {
 .message-container {
 	&.is-sending {
 		opacity: 0.6;
-    pointer-events: none;
+		pointer-events: none;
 	}
 
 	&.is-error {
@@ -682,7 +673,7 @@ input:-webkit-autofill:active {
 
 .hidden-submit-field {
 	.ui.form {
-		.ui.button[type="submit"] {
+		.ui.button[type='submit'] {
 			display: none;
 		}
 	}
@@ -692,26 +683,26 @@ input:-webkit-autofill:active {
 	}
 }
 
-@media(max-width: 924px) {
-	.applicationItemLargeSort{
+@media (max-width: 924px) {
+	.applicationItemLargeSort {
 		width: 23%;
 	}
 }
 
-@media(max-width: 705px) {
-	.applicationItemLargeSort{
+@media (max-width: 705px) {
+	.applicationItemLargeSort {
 		width: 31%;
 	}
 }
 
-@media(max-width: 686px) {
-	.applicationItemLargeSort{
+@media (max-width: 686px) {
+	.applicationItemLargeSort {
 		width: 48%;
 	}
 }
 
-@media(max-width: 486px) {
-	.applicationItemLargeSort{
+@media (max-width: 486px) {
+	.applicationItemLargeSort {
 		width: 100%;
 	}
 }
@@ -719,32 +710,32 @@ input:-webkit-autofill:active {
 .applicationItemSmallSort {
 }
 
-@media(max-width: 888px) {
-	.applicationItemSmallSort{
+@media (max-width: 888px) {
+	.applicationItemSmallSort {
 		width: 19%;
 	}
 }
 
-@media(max-width: 748px) {
-	.applicationItemSmallSort{
+@media (max-width: 748px) {
+	.applicationItemSmallSort {
 		width: 23%;
 	}
 }
 
-@media(max-width: 608px) {
-	.applicationItemSmallSort{
+@media (max-width: 608px) {
+	.applicationItemSmallSort {
 		width: 31%;
 	}
 }
 
-@media(max-width: 468px) {
-	.applicationItemSmallSort{
+@media (max-width: 468px) {
+	.applicationItemSmallSort {
 		width: 48%;
 	}
 }
 
-@media(max-width: 328px) {
-	.applicationItemSmallSort{
+@media (max-width: 328px) {
+	.applicationItemSmallSort {
 		width: 100%;
 	}
 }

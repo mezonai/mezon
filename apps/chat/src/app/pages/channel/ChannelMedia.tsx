@@ -1,8 +1,9 @@
 import { ModalInputMessageBuzz } from '@mezon/components';
-import { ChannelsEntity } from '@mezon/store-mobile';
-import { RequestInput } from '@mezon/utils';
+import { EmojiSuggestionProvider } from '@mezon/core';
+import { ChannelsEntity } from '@mezon/store';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { useModal } from 'react-modal-hook';
 import ChannelMessages from './ChannelMessages';
 
 type ChannelMediaProps = {
@@ -42,8 +43,6 @@ type KeyPressListenerProps = {
 
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 	const isListenerAttached = useRef(false);
-	const [modalIsOpen, setModalIsOpen] = useState(false);
-	const [inputRequest, setInputRequest] = useState<RequestInput>({ content: '', mentionRaw: [], valueTextInput: '' });
 
 	useEffect(() => {
 		if (isListenerAttached.current) return;
@@ -52,7 +51,7 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 		const handleKeyPress = (event: KeyboardEvent) => {
 			if (event.ctrlKey && (event.key === 'g' || event.key === 'G')) {
 				event.preventDefault();
-				setModalIsOpen(true);
+				openModalBuzz();
 			}
 		};
 
@@ -62,19 +61,16 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 			window.removeEventListener('keydown', handleKeyPress);
 			isListenerAttached.current = false;
 		};
-	}, [modalIsOpen]);
+	}, []);
 
-	return (
-		<div>
-			{modalIsOpen && (
-				<ModalInputMessageBuzz
-					inputRequest={inputRequest}
-					setInputRequest={setInputRequest}
-					currentChannel={currentChannel}
-					mode={mode}
-					setModalIsOpen={setModalIsOpen}
-				/>
-			)}
-		</div>
+	const [openModalBuzz, closeModalBuzz] = useModal(
+		() => (
+			<EmojiSuggestionProvider>
+				<ModalInputMessageBuzz currentChannel={currentChannel} mode={mode} closeBuzzModal={closeModalBuzz} />
+			</EmojiSuggestionProvider>
+		),
+		[currentChannel]
 	);
+
+	return null;
 };

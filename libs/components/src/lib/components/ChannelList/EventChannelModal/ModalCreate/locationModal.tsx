@@ -20,6 +20,10 @@ export type LocationModalProps = {
 	handleOption: (optionEvent: string) => void;
 	setContentSubmit: React.Dispatch<React.SetStateAction<ContenSubmitEventProps>>;
 	onClose: () => void;
+	isEditEventAction?: boolean;
+	isClanEvent?: boolean;
+	isChannelEvent?: boolean;
+	isPrivateEvent?: boolean;
 };
 
 type OptionType = {
@@ -30,9 +34,26 @@ type OptionType = {
 type FilterOptionType = (option: FilterOptionOption<OptionType>, inputValue: string) => boolean;
 
 const LocationModal = (props: LocationModalProps) => {
-	const { handleOption, voicesChannel, contentSubmit, setContentSubmit, choiceLocation, choiceSpeaker, textChannels, onClose, choicePrivateEvent } =
-		props;
+	const {
+		handleOption,
+		voicesChannel,
+		contentSubmit,
+		setContentSubmit,
+		choiceLocation,
+		choiceSpeaker,
+		textChannels,
+		onClose,
+		choicePrivateEvent,
+		isEditEventAction = false,
+		isClanEvent = false,
+		isChannelEvent = false,
+		isPrivateEvent = false
+	} = props;
 	const [errorVoice, setErrorVoice] = useState(false);
+
+	const displaySelectAudiences = (!isEditEventAction && !choicePrivateEvent) || (isEditEventAction && isChannelEvent);
+	const displaySelectPrivate = !isEditEventAction || (isEditEventAction && isPrivateEvent);
+	const displaySelectVoiceOrLocation = !isEditEventAction || (isEditEventAction && !isPrivateEvent);
 
 	const handleChangeVoice = (selectedOption: any) => {
 		setContentSubmit({
@@ -81,7 +102,6 @@ const LocationModal = (props: LocationModalProps) => {
 		},
 		[setContentSubmit]
 	);
-
 	const [isClear, setIsClear] = useState<boolean>(false);
 	const handleClearAudience = () => {
 		setIsClear(true);
@@ -128,8 +148,8 @@ const LocationModal = (props: LocationModalProps) => {
 		() => (isClear ? undefined : optionsTextChannel.find((option) => option.value === contentSubmit.textChannelId)),
 		[isClear, optionsTextChannel, contentSubmit.textChannelId]
 	);
+	const showClearButton = selectedOption && !isEditEventAction ? true : false;
 
-	const showClearButton = selectedOption ? true : false;
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	const memoizedFilterOption = useMemo<FilterOptionType>(() => (option, inputValue) => filterOptionReactSelect(option, inputValue), []);
@@ -141,66 +161,78 @@ const LocationModal = (props: LocationModalProps) => {
 				<p className="text-slate-400 text-center">So no one gets lost on where to go.</p>
 			</div>
 			<div className={`flex flex-col mb-4 ${errorVoice ? 'gap-y-2' : 'gap-y-4'}`}>
-				<label
-					className={`w-full rounded flex justify-between items-center p-2 ${errorVoice ? 'bg-transparent opacity-80' : 'dark:bg-[#2B2D31] bg-bgLightModeButton'}`}
-					htmlFor="Speaker"
-				>
-					<div className="flex items-center gap-x-2">
-						<Icons.Speaker />
-						<div>
-							<h4 className={`font-semibold ${choiceSpeaker ? 'dark:text-white text-black' : 'text-slate-400'}`}>Voice Channel</h4>
-							<p className={choiceSpeaker ? 'dark:text-white text-black' : 'text-slate-400'}>
-								Hang out with voice, video, Screen Share and Go Live.
-							</p>
+				{displaySelectVoiceOrLocation && (
+					<label
+						className={`w-full rounded flex justify-between items-center p-2 ${errorVoice ? 'bg-transparent opacity-80' : 'dark:bg-[#2B2D31] bg-bgLightModeButton'}`}
+						htmlFor="Speaker"
+					>
+						<div className="flex items-center gap-x-2">
+							<Icons.Speaker />
+							<div>
+								<h4 className={`font-semibold ${choiceSpeaker ? 'dark:text-white text-black' : 'text-slate-400'}`}>Voice Channel</h4>
+								<p className={choiceSpeaker ? 'dark:text-white text-black' : 'text-slate-400'}>
+									Hang out with voice, video, Screen Share and Go Live.
+								</p>
+							</div>
 						</div>
-					</div>
 
-					<Radio
-						checked={choiceSpeaker}
-						id="Speaker"
-						value="Speaker"
-						className="relative disabled:bg-slate-500  float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
-						onChange={voicesChannel.length > 0 ? () => handleOption(OptionEvent.OPTION_SPEAKER) : () => {}}
-					/>
-				</label>
-				<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor="Hashtag">
-					<div className="flex items-center gap-x-2">
-						<Icons.Location />
-						<div>
-							<h4 className={`font-semibold ${choiceLocation ? 'dark:text-white text-black' : 'text-slate-400'}`}>Somewhere Else</h4>
-							<p className={choiceLocation ? 'dark:text-white text-black' : 'text-slate-400'}>
-								Text channel, external link or in-person location.
-							</p>
+						<Radio
+							checked={choiceSpeaker}
+							id="Speaker"
+							value="Speaker"
+							className="focus:outline-none focus:ring-0"
+							onChange={voicesChannel.length > 0 ? () => handleOption(OptionEvent.OPTION_SPEAKER) : () => {}}
+						/>
+					</label>
+				)}
+
+				{displaySelectVoiceOrLocation && (
+					<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor="Hashtag">
+						<div className="flex items-center gap-x-2">
+							<Icons.Location />
+							<div>
+								<h4 className={`font-semibold ${choiceLocation ? 'dark:text-white text-black' : 'text-slate-400'}`}>
+									Somewhere Else
+								</h4>
+								<p className={choiceLocation ? 'dark:text-white text-black' : 'text-slate-400'}>
+									Text channel, external link or in-person location.
+								</p>
+							</div>
 						</div>
-					</div>
 
-					<Radio
-						checked={choiceLocation}
-						id="Hashtag"
-						value="Hashtag"
-						className="relative disabled:bg-slate-500  float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
-						onChange={() => handleOption(OptionEvent.OPTION_LOCATION)}
-					/>
-				</label>
-				<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor="Private">
-					<div className="flex items-center gap-x-2">
-						<Icons.SpeakerLocked />
-						<div>
-							<h4 className={`font-semibold ${choicePrivateEvent ? 'dark:text-white text-black' : 'text-slate-400'}`}>
-								Create Private Event
-							</h4>
-							<p className={choicePrivateEvent ? 'dark:text-white text-black' : 'text-slate-400'}>Invite-only voice & video room!</p>
+						<Radio
+							checked={choiceLocation}
+							id="Hashtag"
+							value="Hashtag"
+							className="focus:outline-none focus:ring-0"
+							onChange={() => handleOption(OptionEvent.OPTION_LOCATION)}
+						/>
+					</label>
+				)}
+
+				{displaySelectPrivate && (
+					<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor="Private">
+						<div className="flex items-center gap-x-2">
+							<Icons.SpeakerLocked />
+							<div>
+								<h4 className={`font-semibold ${choicePrivateEvent ? 'dark:text-white text-black' : 'text-slate-400'}`}>
+									Create Private Event
+								</h4>
+								<p className={choicePrivateEvent ? 'dark:text-white text-black' : 'text-slate-400'}>
+									Invite-only voice & video room!
+								</p>
+							</div>
 						</div>
-					</div>
 
-					<Radio
-						checked={choicePrivateEvent}
-						id="Private"
-						value="Private"
-						className="relative disabled:bg-slate-500  float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
-						onChange={onChangePrivateEvent}
-					/>
-				</label>
+						<Radio
+							checked={choicePrivateEvent}
+							id="Private"
+							value="Private"
+							className="focus:outline-none focus:ring-0"
+							onChange={onChangePrivateEvent}
+						/>
+					</label>
+				)}
 			</div>
 			{choiceSpeaker && (
 				<Select
@@ -225,7 +257,7 @@ const LocationModal = (props: LocationModalProps) => {
 					/>
 				</div>
 			)}
-			{choicePrivateEvent ? null : (
+			{displaySelectAudiences && (
 				<>
 					<div className="flex flex-col mb-2 mt-3">
 						<h3 className="text-xl text-center font-semibold dark:text-white text-black ">Who are audiences?</h3>
@@ -240,7 +272,6 @@ const LocationModal = (props: LocationModalProps) => {
 						placeholder="Search channels..."
 						filterOption={memoizedFilterOption}
 					/>
-
 					{showClearButton && (
 						<div className="flex justify-end mt-1">
 							<button onClick={handleClearAudience} className="text-blue-500 hover:underline">

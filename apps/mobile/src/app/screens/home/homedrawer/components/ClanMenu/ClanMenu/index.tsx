@@ -19,6 +19,7 @@ import MezonSwitch from '../../../../../../componentUI/MezonSwitch';
 import DeleteClanModal from '../../../../../../components/DeleteClanModal';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import { EProfileTab } from '../../../../../settings/ProfileSetting';
+import InviteToChannel from '../../InviteToChannel';
 import ClanMenuInfo from '../ClanMenuInfo';
 import { style } from './styles';
 
@@ -51,8 +52,11 @@ export default function ClanMenu() {
 		return hasAdminPermission || isClanOwner || hasManageClanPermission;
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 	const handleOpenInvite = () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_INVITE_CHANNEL);
-		dismiss();
+		const data = {
+			snapPoints: ['70%', '90%'],
+			children: <InviteToChannel isUnknownChannel={false} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	const handleOpenSettings = () => {

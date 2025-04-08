@@ -40,7 +40,25 @@ export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanv
 		}
 	})();
 	true;
+	(function() {
+      var style = document.createElement('style');
+      style.innerHTML = \`
+        .h-heightTopBar {
+          display: none !important;
+        }
+		.w-[72px] {
+		width: 72px;
+		display: none;
+		}
+      \`;
+      document.head.appendChild(style);
+    })();
+	true;
   `;
+
+	const onMessage = (event) => {
+		console.error('Received message from WebView:', event?.nativeEvent?.data);
+	};
 
 	return (
 		<View style={styles.container}>
@@ -68,10 +86,12 @@ export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanv
 				originWhitelist={['*']}
 				style={styles.container}
 				injectedJavaScriptBeforeContentLoaded={injectedJS}
+				injectedJavaScript={injectedJS}
 				javaScriptEnabled={true}
+				onMessage={onMessage}
 				nestedScrollEnabled={true}
 				onLoadEnd={async () => {
-					await sleep(500);
+					await sleep(1000);
 					setLoading(false);
 				}}
 			/>

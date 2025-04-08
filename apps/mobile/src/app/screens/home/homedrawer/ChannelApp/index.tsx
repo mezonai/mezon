@@ -66,8 +66,6 @@ const ChannelAppScreen = ({ channelId }) => {
     })();
 	true;
 	(function() {
-	document.addEventListener('message', function(event) {
-	  		if (event.data === 'onHandleLoadend') {
 				setTimeout(() => {
 				let element = document.querySelector("#mainChat > div > div > div.flex-shrink > div.flex.gap-2 > div:nth-child(1)");
 				if (element) {
@@ -80,7 +78,7 @@ const ChannelAppScreen = ({ channelId }) => {
 				} else {
       window.ReactNativeWebView.postMessage(JSON.stringify({ error: "Không tìm thấy #mainChat" }));
 				}
-			}, 1000);
+			}, 3000);
 			setTimeout(() => {
 				const element = document.querySelector("#main-layout > div.relative > div.relative > div > div.flex > div > button:nth-child(2)");
 
@@ -94,9 +92,7 @@ const ChannelAppScreen = ({ channelId }) => {
 				} else {
       window.ReactNativeWebView.postMessage(JSON.stringify({ error: "Không tìm thấy #mainChat" }));
 				}
-			}, 2000);
-			}
-      });
+			}, 1000);
 	})();
 	true;
   `;
@@ -105,7 +101,7 @@ const ChannelAppScreen = ({ channelId }) => {
 		const message = JSON.stringify({ eventType: MiniAppEventType.CURRENT_USER_INFO, eventData: userProfile });
 		webviewRef?.current?.postMessage(message);
 		webviewRef?.current?.postMessage('onHandleLoadend');
-	}, [userProfile]);
+	}, [userProfile, webviewRef?.current]);
 
 	const closeChannelApp = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -114,7 +110,9 @@ const ChannelAppScreen = ({ channelId }) => {
 	const reloadChannelApp = () => {
 		webviewRef?.current?.reload();
 	};
-
+	const onMessage = (event) => {
+		console.error('Received message from WebView:', event?.nativeEvent?.data);
+	};
 	return (
 		<View style={styles.container}>
 			{loading && (
@@ -153,11 +151,11 @@ const ChannelAppScreen = ({ channelId }) => {
 				injectedJavaScriptBeforeContentLoaded={injectedJS}
 				injectedJavaScript={injectedDataJS}
 				javaScriptEnabled={true}
+				onMessage={onMessage}
 				nestedScrollEnabled={true}
 				onLoadEnd={async () => {
-					await sleep(1000);
 					handlePing();
-					await sleep(3000);
+					await sleep(4000);
 					setLoading(false);
 				}}
 			/>

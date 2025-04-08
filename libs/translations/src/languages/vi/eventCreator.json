@@ -21,7 +21,8 @@
             "title": "Khán giả là ai?",
             "description": "Chọn thành viên trong kênh đã chỉ định.",
             "channel": "Khán giả bao gồm các thành viên từ {{channel}}: "
-        }
+        },
+        "isPrivate": "Chỉ những người được mời mới có thể tham gia"
     },
     "fields": {
         "channelType": {
@@ -32,6 +33,10 @@
             "somewhere": {
                 "title": "Nơi khác",
                 "description": "Kênh văn bản, liên kết bên ngoài hoặc địa điểm trực tiếp."
+            },
+            "privateEvent": {
+                "title": "Tạo sự kiện riêng tư",
+                "description": "Phòng thoại và video chỉ dành cho người được mời!"
             }
         },
         "channel": {

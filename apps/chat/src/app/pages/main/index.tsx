@@ -73,6 +73,27 @@ import { MainContent } from './MainContent';
 import PopupQuickMess from './PopupQuickMess';
 import DirectUnread from './directUnreads';
 
+const DraggableModalList = memo(({ currentClanId }: { currentClanId: string }) => {
+	const allChannelApp = useSelector(selectAllAppChannelsListShowOnPopUp);
+	const groupedByClan = useMemo(() => {
+		if (!allChannelApp) return {};
+		return allChannelApp?.reduce<Record<string, typeof allChannelApp>>((acc, item) => {
+			if (item.clan_id) {
+				(acc[item.clan_id] ||= []).push(item);
+			}
+			return acc;
+		}, {});
+	}, [allChannelApp]);
+
+	return (
+		<>
+			{Object.entries(groupedByClan).map(([clanId, apps]) => (
+				<DraggableModal appChannelList={apps} key={clanId} inVisible={clanId !== currentClanId} />
+			))}
+		</>
+	);
+});
+
 function MyApp() {
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -279,22 +300,9 @@ function MyApp() {
 		dispatch(e2eeActions.setOpenModalE2ee(false));
 	};
 
-	const allChannelApp = useSelector(selectAllAppChannelsListShowOnPopUp);
-
-	const groupedByClan = useMemo(() => {
-		return allChannelApp.reduce<Record<string, typeof allChannelApp>>((acc, item) => {
-			if (item.clan_id) {
-				(acc[item.clan_id] ||= []).push(item);
-			}
-			return acc;
-		}, {});
-	}, [allChannelApp]);
-
 	return (
 		<div className="relative overflow-hidden w-full h-full">
-			{Object.entries(groupedByClan).map(([clanId, apps]) => (
-				<DraggableModal appChannelList={apps} key={clanId} inVisible={clanId !== currentClanId} />
-			))}
+			<DraggableModalList currentClanId={currentClanId as string} />
 
 			<MemoizedErrorModals />
 
@@ -305,7 +313,7 @@ function MyApp() {
 				{previewMode && <PreviewOnboardingMode />}
 				{openPopupForward && <ForwardMessageModal openModal={openPopupForward} />}
 				<SidebarMenu openCreateClanModal={openCreateClanModal} />
-				<Topbar />
+				<Topbar isHidden={currentClanId !== '0' ? !currentChannel?.id : !directId} />
 				<MainContent />
 
 				<FooterProfile

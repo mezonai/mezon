@@ -23,7 +23,6 @@ import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonInput from '../../componentUI/MezonInput';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonOption from '../../componentUI/MezonOption';
-import { IMezonSliderData } from '../../componentUI/MezonSlider';
 import { IconCDN } from '../../constants/icon_cdn';
 import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
@@ -48,8 +47,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	const dispatch = useAppDispatch();
 	const channel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const isChannel = !checkIsThread(channel);
-	const [isVisibleDeleteChannelModal, setIsVisibleDeleteChannelModal] = useState<boolean>(false);
-	const [isVisibleLeaveChannelModal, setIsVisibleLeaveChannelModal] = useState<boolean>(false);
 	const [isCheckValid, setIsCheckValid] = useState<boolean>(true);
 	const [isCheckDuplicateNameChannel, setIsCheckDuplicateNameChannel] = useState<boolean>(false);
 	const channelsClan = useSelector(selectAllChannels);
@@ -121,27 +118,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		});
 	};
 
-	const categoryMenu = useMemo(
-		() =>
-			[
-				{
-					title: isChannel ? t('fields.channelCategory.title') : t('fields.ThreadCategory.title'),
-					expandable: true,
-					previewValue: currentCategoryName,
-					icon: <MezonIconCDN icon={IconCDN.forderPlusIcon} color={themeValue.text} />,
-					isShow: isChannel,
-					onPress: () => {
-						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
-							screen: APP_SCREEN.MENU_CHANNEL.CHANGE_CATEGORY,
-							params: {
-								channel
-							}
-						});
-					}
-				}
-			] satisfies IMezonMenuItemProps[],
-		[currentCategoryName]
-	);
 	const permissionMenu = useMemo(
 		() =>
 			[
@@ -167,28 +143,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					onPress: () => {
 						bottomSheetRef?.current?.present();
 					}
-				}
-			] satisfies IMezonMenuItemProps[],
-		[]
-	);
-
-	const notificationMenu = useMemo(
-		() =>
-			[
-				{
-					title: t('fields.channelNotifications.notification'),
-					expandable: true,
-					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
-				},
-				{
-					title: t('fields.channelNotifications.pinned'),
-					expandable: true,
-					icon: <MezonIconCDN icon={IconCDN.pinIcon} color={themeValue.text} />
-				},
-				{
-					title: t('fields.channelNotifications.invite'),
-					expandable: true,
-					icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[]
@@ -273,73 +227,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		[]
 	);
 
-	const slowModeOptions = useMemo(
-		() =>
-			[
-				{
-					value: 0,
-					name: t('fields.channelSlowMode.slowModeOff')
-				},
-				{
-					value: 1,
-					name: t('fields.channelSlowMode._5seconds')
-				},
-				{
-					value: 2,
-					name: t('fields.channelSlowMode._10seconds')
-				},
-				{
-					value: 3,
-					name: t('fields.channelSlowMode._15seconds')
-				},
-				{
-					value: 4,
-					name: t('fields.channelSlowMode._30seconds')
-				},
-				{
-					value: 5,
-					name: t('fields.channelSlowMode._1minute')
-				},
-				{
-					value: 6,
-					name: t('fields.channelSlowMode._1minute')
-				},
-				{
-					value: 7,
-					name: t('fields.channelSlowMode._2minutes')
-				},
-				{
-					value: 8,
-					name: t('fields.channelSlowMode._5minutes')
-				},
-				{
-					value: 9,
-					name: t('fields.channelSlowMode._10minutes')
-				},
-				{
-					value: 10,
-					name: t('fields.channelSlowMode._15minutes')
-				},
-				{
-					value: 11,
-					name: t('fields.channelSlowMode._30minutes')
-				},
-				{
-					value: 12,
-					name: t('fields.channelSlowMode._1hour')
-				},
-				{
-					value: 13,
-					name: t('fields.channelSlowMode._2hours')
-				},
-				{
-					value: 14,
-					name: t('fields.channelSlowMode._6hours')
-				}
-			] satisfies IMezonSliderData,
-		[]
-	);
-
 	const handleDeleteChannel = useCallback(async () => {
 		await dispatch(
 			channelsActions.deleteChannel({
@@ -384,10 +271,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		handleJoinChannel();
 	}, []);
-
-	const handleLeaveModalVisibleChange = (visible: boolean) => {
-		setIsVisibleLeaveChannelModal(visible);
-	};
 
 	const handlePressLeaveChannel = () => {
 		const data = {

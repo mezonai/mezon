@@ -46,7 +46,7 @@ export const CreateNewChannelModal = () => {
 	const { toChannelPage } = useAppNavigation();
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
 	const channelWelcome = useAppSelector((state) => selectChannelById(state, currentClan?.welcome_channel_id as string)) || {};
-
+	const appearanceTheme = useSelector(selectTheme);
 	const handleSubmit = async () => {
 		if (channelType === -1) {
 			setIsErrorType("Channel's type is required");
@@ -193,10 +193,14 @@ export const CreateNewChannelModal = () => {
 
 							<div className=" dark:text-zinc-400 text-colorTextLightMode text-sm">Kindly set up a channel of your choice.</div>
 						</div>
-						<div className={`flex flex-col gap-3 w-full max-h-[430px] pr-2 overflow-y-scroll`}>
+						<div
+							className={`flex flex-col gap-3 w-full max-h-[430px] pr-2 overflow-y-scroll ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+						>
 							<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
 								<ChannelLableModal labelProp="Choose channel's type:" />
-								<div className="Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto">
+								<div
+									className={`Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+								>
 									<ChannelTypeComponent
 										type={ChannelType.CHANNEL_TYPE_CHANNEL}
 										onChange={onChangeChannelType}

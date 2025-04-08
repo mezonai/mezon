@@ -1,14 +1,18 @@
-import { size, useTheme } from '@mezon/mobile-ui';
-import { EventManagementEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
-import { EEventStatus, createImgproxyUrl } from '@mezon/utils';
-import { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useAuth } from '@mezon/core';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { EventManagementEntity, addUserEvent, deleteUserEvent, selectMemberClanByUserId2, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { EEventStatus, createImgproxyUrl, sleep } from '@mezon/utils';
+import { ApiUserEventRequest } from 'mezon-js/api.gen';
+import React, { useEffect, useMemo, useState } from 'react';
+import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonButton from '../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
+import { ShareEventModal } from '../EventShare';
 import { EventTime } from '../EventTime';
 import { style } from './styles';
 
@@ -23,6 +27,9 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId2(state, event?.creator_id || ''));
+	const { userId } = useAuth();
+	const [isInterested, setIsInterested] = useState<boolean>(false);
+	const dispatch = useAppDispatch();
 
 	const eventStatus = useMemo(() => {
 		if (event?.event_status) {
@@ -50,6 +57,38 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 		onPress && onPress();
 	}
 
+	useEffect(() => {
+		if (userId && event?.user_ids) {
+			setIsInterested(event.user_ids.includes(userId));
+		}
+	}, [userId, event]);
+
+	const handleToggleUserEvent = () => {
+		if (!event?.id) return;
+
+		const request: ApiUserEventRequest = {
+			clan_id: event.clan_id,
+			event_id: event.id
+		};
+
+		if (isInterested) {
+			dispatch(deleteUserEvent(request));
+		} else {
+			dispatch(addUserEvent(request));
+		}
+
+		setIsInterested(!isInterested);
+	};
+
+	const handleShareEvent = async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		await sleep(500);
+		const data = {
+			children: <ShareEventModal event={event} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	};
+
 	return (
 		<Pressable onPress={handlePress}>
 			<View style={styles.container}>
@@ -72,7 +111,15 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 					</View>
 				</View>
 
-				{!!event?.channel_id && event.channel_id !== '0' && (
+				{!!event?.channel_id && event.channel_id !== '0' && !event?.isPrivate && (
+					<View style={styles.privateArea}>
+						<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
+							<Text style={styles.privateText}>Non Public Event</Text>
+						</View>
+					</View>
+				)}
+
+				{event?.isPrivate && (
 					<View style={styles.privateArea}>
 						<View style={styles.privatePanel}>
 							<Text style={styles.privateText}>Private Event</Text>
@@ -89,12 +136,24 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 				{showActions && (
 					<View style={styles.inline}>
 						<MezonButton
-							icon={<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />}
-							title="Interested"
+							icon={
+								isInterested ? (
+									<MezonIconCDN icon={IconCDN.bellSlashIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+								) : (
+									<MezonIconCDN icon={IconCDN.bellIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+								)
+							}
+							title={isInterested ? 'UnInterested' : 'Interested'}
 							fluid
 							border
+							onPress={handleToggleUserEvent}
 						/>
-						<MezonButton icon={<MezonIconCDN icon={IconCDN.shareIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />} />
+						{!event?.address && (
+							<MezonButton
+								icon={<MezonIconCDN icon={IconCDN.shareIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />}
+								onPress={handleShareEvent}
+							/>
+						)}
 					</View>
 				)}
 				{!!event.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}

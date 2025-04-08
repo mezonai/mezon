@@ -3,12 +3,14 @@ import { selectCurrentChannelId, selectCurrentClanId, selectTheme } from '@mezon
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { TextArea, TimePicker } from '@mezon/ui';
 import { ContenSubmitEventProps, ERepeatType, fileTypeImage } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalError';
 import { checkError } from '../eventHelper';
+
+const DatePickerWrapper = lazy(() => import('./DatePickerWrapper'));
+
+const DatePickerPlaceholder = () => <div className="w-full h-[38px] bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>;
 
 export type EventInfoModalProps = {
 	contentSubmit: ContenSubmitEventProps;
@@ -204,14 +206,16 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						Start Date
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
 					</h3>
-					<DatePicker
-						className="dark:bg-black bg-bgModifierHoverLight dark:text-white text-black p-2 rounded outline-none w-full"
-						wrapperClassName="w-full"
-						selected={contentSubmit.selectedDateStart}
-						onChange={handleDateChangeStart}
-						dateFormat="dd/MM/yyyy"
-						minDate={new Date()}
-					/>
+					<Suspense fallback={<DatePickerPlaceholder />}>
+						<DatePickerWrapper
+							className="dark:bg-black bg-bgModifierHoverLight dark:text-white text-black p-2 rounded outline-none w-full"
+							wrapperClassName="w-full"
+							selected={contentSubmit.selectedDateStart}
+							onChange={handleDateChangeStart}
+							dateFormat="dd/MM/yyyy"
+							minDate={new Date()}
+						/>
+					</Suspense>
 				</div>
 				<div className="w-1/2">
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
@@ -227,14 +231,16 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						End Date
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
 					</h3>
-					<DatePicker
-						className="dark:bg-black bg-bgModifierHoverLight dark:text-white text-black p-2 rounded outline-none w-full"
-						wrapperClassName="w-full"
-						selected={contentSubmit.selectedDateEnd}
-						onChange={handleDateChangeEnd}
-						dateFormat="dd/MM/yyyy"
-						minDate={contentSubmit.selectedDateStart}
-					/>
+					<Suspense fallback={<DatePickerPlaceholder />}>
+						<DatePickerWrapper
+							className="dark:bg-black bg-bgModifierHoverLight dark:text-white text-black p-2 rounded outline-none w-full"
+							wrapperClassName="w-full"
+							selected={contentSubmit.selectedDateEnd}
+							onChange={handleDateChangeEnd}
+							dateFormat="dd/MM/yyyy"
+							minDate={contentSubmit.selectedDateStart}
+						/>
+					</Suspense>
 				</div>
 				<div className="w-1/2">
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
@@ -248,7 +254,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				<h3 className="uppercase text-[11px] font-semibold">Event Frequency</h3>
 				<select
 					name="frequency"
-					className="block w-full dark:bg-black bg-bgModifierHoverLight dark:text-white text-black border dark:border-black rounded p-2 font-normal text-sm tracking-wide outline-none border-none"
+					className={`block w-full dark:bg-black bg-bgModifierHoverLight dark:text-white text-black border dark:border-black rounded p-2 font-normal text-sm tracking-wide outline-none border-none ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 					value={selectedFrequency}
 					onChange={handleFrequencyChange}
 				>

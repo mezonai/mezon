@@ -17,12 +17,20 @@ export const style = (colors: Attributes) =>
 			backgroundColor: baseColor.gray
 		},
 		textLink: { color: Colors.textLink, marginBottom: size.s_6 },
-		boxLink: { backgroundColor: Colors?.bgCharcoal, width: '100%', padding: size.s_10, borderRadius: size.s_10 },
+		boxLink: {
+			backgroundColor: Colors?.bgCharcoal,
+			maxWidth: '100%',
+			alignSelf: 'flex-start',
+			padding: size.s_10,
+			paddingHorizontal: size.s_16,
+			borderRadius: size.s_10
+		},
 		title: {
 			color: Colors?.textGray,
-			fontSize: size.medium,
+			fontSize: size.h7,
 			fontWeight: '600',
-			marginBottom: size.s_10
+			marginBottom: size.s_10,
+			alignSelf: 'flex-start'
 		},
 		container: { flexDirection: 'row', gap: size.s_10, marginBottom: size.s_16, alignItems: 'center' },
 		clanName: { color: Colors?.white, fontSize: size.label, fontWeight: '600' },
@@ -32,7 +40,7 @@ export const style = (colors: Attributes) =>
 		textContent: { color: colors.text, fontSize: size.label, fontWeight: '400' },
 		inviteClanBtn: {
 			padding: size.s_10,
-			width: '100%',
+			maxWidth: '100%',
 			backgroundColor: Colors.bgButton,
 			borderRadius: size.s_10
 		},

@@ -7,7 +7,7 @@ import {
 	usePinnedTracks,
 	useTracks
 } from '@livekit/components-react';
-import { selectCurrentClan, topicsActions, useAppDispatch } from '@mezon/store';
+import { ChannelsEntity, selectCurrentClan, topicsActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { Participant, RoomEvent, Track, TrackPublication } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
@@ -25,12 +25,13 @@ interface MyVideoConferenceProps {
 	channelLabel: string;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
+	isExternalCalling?: boolean;
+	channel?: ChannelsEntity;
 }
 
-export function MyVideoConference({ channelLabel, onLeaveRoom, onFullScreen }: MyVideoConferenceProps) {
+export function MyVideoConference({ channel, onLeaveRoom, onFullScreen, isExternalCalling = false }: MyVideoConferenceProps) {
 	const lastAutoFocusedScreenShareTrack = useRef<TrackReferenceOrPlaceholder | null>(null);
 	const [isFocused, setIsFocused] = useState<boolean>(false);
-
 	const tracks = useTracks(
 		[
 			{ source: Track.Source.Camera, withPlaceholder: true },
@@ -132,7 +133,6 @@ export function MyVideoConference({ channelLabel, onLeaveRoom, onFullScreen }: M
 	}, []);
 
 	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
-
 	return (
 		<div className="lk-video-conference">
 			<LayoutContextProvider value={layoutContext}>
@@ -140,16 +140,16 @@ export function MyVideoConference({ channelLabel, onLeaveRoom, onFullScreen }: M
 					{!focusTrack ? (
 						<div className="lk-grid-layout-wrapper !h-full !py-[68px]">
 							<GridLayout tracks={tracks}>
-								<ParticipantTile />
+								<ParticipantTile isExtCalling={isExternalCalling} />
 							</GridLayout>
 						</div>
 					) : (
 						<div className={`lk-focus-layout-wrapper !h-full  ${isShowMember ? '!py-[68px]' : ''}`}>
 							<FocusLayoutContainer isShowMember={isShowMember}>
-								{focusTrack && <FocusLayout trackRef={focusTrack} />}
+								{focusTrack && <FocusLayout trackRef={focusTrack} isExtCalling={isExternalCalling} />}
 								{isShowMember && (
 									<CarouselLayout tracks={tracks}>
-										<ParticipantTile />
+										<ParticipantTile isExtCalling={isExternalCalling} />
 									</CarouselLayout>
 								)}
 							</FocusLayoutContainer>
@@ -191,27 +191,36 @@ export function MyVideoConference({ channelLabel, onLeaveRoom, onFullScreen }: M
 						<div className="w-full h-[68px] flex justify-between items-center p-2 !pr-5">
 							<div className="flex justify-start gap-2">
 								<span>
-									<Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />
+									{!isExternalCalling ? (
+										<Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />
+									) : (
+										<Icons.SpeakerLocked defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />
+									)}
 								</span>
-								<p className={`text-base font-semibold cursor-default one-line text-contentTertiary`}>{channelLabel}</p>
+								<p className={`text-base font-semibold cursor-default one-line text-contentTertiary`}>
+									{channel?.channel_label ?? 'Private Room'}
+								</p>
 							</div>
 							<div className="flex justify-start gap-4">
-								<div className="relative leading-5 h-5" ref={inboxRef}>
-									<button
-										title="Inbox"
-										className="focus-visible:outline-none"
-										onClick={handleShowInbox}
-										onContextMenu={(e) => e.preventDefault()}
-									>
-										<Icons.Inbox
-											isWhite={isShowInbox}
-											defaultFill="text-contentTertiary"
-											className="hover:text-white text-[#B5BAC1]"
-										/>
-										{(currentClan?.badge_count ?? 0) > 0 && <RedDot />}
-									</button>
-									{isShowInbox && <NotificationList rootRef={inboxRef} />}
-								</div>
+								{!isExternalCalling && (
+									<div className="relative leading-5 h-5" ref={inboxRef}>
+										<button
+											title="Inbox"
+											className="focus-visible:outline-none"
+											onClick={handleShowInbox}
+											onContextMenu={(e) => e.preventDefault()}
+										>
+											<Icons.Inbox
+												isWhite={isShowInbox}
+												defaultFill="text-contentTertiary"
+												className="hover:text-white text-[#B5BAC1]"
+											/>
+											{(currentClan?.badge_count ?? 0) > 0 && <RedDot />}
+										</button>
+										{isShowInbox && <NotificationList rootRef={inboxRef} />}
+									</div>
+								)}
+
 								<Tooltip
 									showArrow={{ className: '!top-[6px]' }}
 									key={+focusTrack}
@@ -240,7 +249,7 @@ export function MyVideoConference({ channelLabel, onLeaveRoom, onFullScreen }: M
 							isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
 						}`}
 					>
-						<ControlBar onLeaveRoom={onLeaveRoom} onFullScreen={onFullScreen} />
+						<ControlBar isExternalCalling={isExternalCalling} onLeaveRoom={onLeaveRoom} onFullScreen={onFullScreen} />
 					</div>
 				</div>
 			</LayoutContextProvider>

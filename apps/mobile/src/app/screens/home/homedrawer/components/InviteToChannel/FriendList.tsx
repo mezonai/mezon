@@ -1,11 +1,10 @@
 import { useDMInvite, useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
-import { Colors, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, selectCurrentClanId } from '@mezon/store-mobile';
-import { useMezon } from '@mezon/transport';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { DirectEntity, fetchSystemMessageByClanId, selectClanSystemMessage, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -35,7 +34,6 @@ interface IInviteToChannelIconProp {
 
 export const FriendList = React.memo(
 	({ isUnknownChannel, expiredTimeSelected, isDMThread = false, isKeyboardVisible, openEditLinkModal, channelId }: IInviteToChannelProp) => {
-		const [currentInviteLink, setCurrentInviteLink] = useState('');
 		const [searchUserText, setSearchUserText] = useState('');
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
@@ -46,7 +44,9 @@ export const FriendList = React.memo(
 		const { createDirectMessageWithUser } = useDirect();
 		const { sendInviteMessage } = useSendInviteMessage();
 		const [sentIdList, setSentIdList] = useState<string[]>([]);
-		const mezon = useMezon();
+		const welcomeChannel = useSelector(selectClanSystemMessage);
+		const dispatch = useAppDispatch();
+		const currentInviteLinkRef = useRef('');
 
 		const userInviteList = useMemo(() => {
 			if (listDMInvite?.length) {
@@ -56,7 +56,7 @@ export const FriendList = React.memo(
 		}, [searchUserText, listDMInvite, listUserInvite]);
 
 		const addInviteLinkToClipboard = useCallback(() => {
-			Clipboard.setString(currentInviteLink);
+			Clipboard.setString(currentInviteLinkRef?.current);
 			Toast.show({
 				type: 'success',
 				props: {
@@ -64,29 +64,7 @@ export const FriendList = React.memo(
 					leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={Colors.textLink} />
 				}
 			});
-		}, [currentInviteLink, t]);
-
-		const sendToDM = async (dataSend: { text: string }, channelSelected: DirectEntity) => {
-			await mezon.socketRef.current.writeChatMessage(
-				'0',
-				channelSelected.id,
-				Number(channelSelected?.user_id?.length) === 1 ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP,
-				false,
-				{
-					t: dataSend.text,
-					lk: [
-						{
-							e: dataSend.text.length,
-							lk: dataSend.text,
-							s: 0
-						}
-					]
-				},
-				[],
-				[],
-				[]
-			);
-		};
+		}, [currentInviteLinkRef?.current, t]);
 
 		const directMessageWithUser = async (userId: string) => {
 			const response = await createDirectMessageWithUser(userId);
@@ -98,7 +76,7 @@ export const FriendList = React.memo(
 				if (Number(response.type) === ChannelType.CHANNEL_TYPE_GROUP) {
 					channelMode = ChannelStreamMode.STREAM_MODE_GROUP;
 				}
-				sendInviteMessage(currentInviteLink, response.channel_id, channelMode);
+				sendInviteMessage(currentInviteLinkRef?.current, response.channel_id, channelMode);
 			}
 		};
 
@@ -110,39 +88,48 @@ export const FriendList = React.memo(
 			}
 
 			if (directParamId && dmGroup) {
-				sendToDM({ text: currentInviteLink }, dmGroup);
+				let channelMode = 0;
+				if (type === ChannelType.CHANNEL_TYPE_DM) {
+					channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				}
+				if (type === ChannelType.CHANNEL_TYPE_GROUP) {
+					channelMode = ChannelStreamMode.STREAM_MODE_GROUP;
+				}
+				sendInviteMessage(currentInviteLinkRef?.current, directParamId, channelMode);
 				setSentIdList([...sentIdList, dmGroup?.id]);
 				return;
 			}
 		};
 
 		const fetchInviteLink = async () => {
-			const response = await createLinkInviteUser(currentClanId ?? '', channelId ?? '', 10);
-			if (!response) {
+			const response = await createLinkInviteUser(currentClanId ?? '', channelId ? channelId : welcomeChannel?.channel_id, 10);
+			if (!response || !response?.invite_link) {
 				return;
 			}
-			setCurrentInviteLink(process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/' + response.invite_link);
+			currentInviteLinkRef.current = process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/' + response.invite_link;
 		};
+
+		const fetchSystemMessage = async () => {
+			if (!currentClanId) return;
+			await dispatch(fetchSystemMessageByClanId(currentClanId));
+		};
+
+		useEffect(() => {
+			fetchSystemMessage();
+		}, [currentClanId]);
 
 		useEffect(() => {
 			if (currentClanId && currentClanId !== '0') {
 				fetchInviteLink();
 			}
-		}, [currentClanId, channelId]);
-
-		const showUpdating = () => {
-			Toast.show({
-				type: 'info',
-				text1: 'Coming soon'
-			});
-		};
+		}, [currentClanId, channelId, welcomeChannel?.channel_id]);
 
 		const inviteToChannelIconList = useMemo(() => {
 			const iconList: IInviteToChannelIconProp[] = [
 				{
 					title: t('iconTitle.shareInvite'),
 					icon: <MezonIconCDN icon={IconCDN.shareIcon} color={themeValue.text} />,
-					onPress: () => showUpdating()
+					onPress: () => addInviteLinkToClipboard()
 				},
 				{
 					title: t('iconTitle.copyLink'),
@@ -152,17 +139,17 @@ export const FriendList = React.memo(
 				{
 					title: t('iconTitle.youtube'),
 					icon: <MezonIconCDN icon={IconCDN.brandYoutubeIcon} color={themeValue.text} />,
-					onPress: () => showUpdating()
+					onPress: () => addInviteLinkToClipboard()
 				},
 				{
 					title: t('iconTitle.facebook'),
 					icon: <MezonIconCDN icon={IconCDN.brandFacebookIcon} color={themeValue.text} />,
-					onPress: () => showUpdating()
+					onPress: () => addInviteLinkToClipboard()
 				},
 				{
 					title: t('iconTitle.twitter'),
 					icon: <MezonIconCDN icon={IconCDN.brandTwitterIcon} color={themeValue.text} />,
-					onPress: () => showUpdating()
+					onPress: () => addInviteLinkToClipboard()
 				}
 			];
 			return iconList;
@@ -220,11 +207,12 @@ export const FriendList = React.memo(
 							ItemSeparatorComponent={() => {
 								return <SeparatorWithLine style={{ backgroundColor: themeValue.border }} />;
 							}}
+							estimatedItemSize={size.s_60}
 							style={styles.inviteList}
-							renderItem={({ item }) => {
+							renderItem={({ item, index }) => {
 								return (
 									<FriendListItem
-										key={item?.id}
+										key={`friend_item_${item?.id}_${index}`}
 										dmGroup={item}
 										user={item}
 										onPress={handleSendInVite}

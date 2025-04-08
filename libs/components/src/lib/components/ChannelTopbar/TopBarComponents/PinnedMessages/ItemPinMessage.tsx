@@ -1,6 +1,6 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { PinMessageEntity, messagesActions, selectCurrentClanId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { convertTimeString } from '@mezon/utils';
+import { IMessageWithUser, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -24,7 +24,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-
+	const pinMessageAttachments = safeJSONParse(pinMessage?.attachment || '[]');
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
 			dispatch(
@@ -94,7 +94,12 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							isSearchMessage={true} // to correct size youtube emmbed
 						/>
 					</div>
-					{(message?.attachments?.length as number) > 0 && <MessageAttachment mode={mode as ChannelStreamMode} message={message} />}
+					{pinMessageAttachments.length && (
+						<MessageAttachment
+							mode={mode as ChannelStreamMode}
+							message={{ ...pinMessage, attachments: pinMessageAttachments } as IMessageWithUser}
+						/>
+					)}
 				</div>
 			</div>
 			<div className="absolute h-fit flex gap-x-2 items-center opacity-0 right-2 top-2 group-hover/item-pinMess:opacity-100">

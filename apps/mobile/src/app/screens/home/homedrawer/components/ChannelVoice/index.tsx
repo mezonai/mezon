@@ -38,15 +38,22 @@ function ChannelVoice({
 	useKeepAwake();
 
 	useEffect(() => {
-		const start = async () => {
-			await AudioSession.startAudioSession();
-		};
+		startAudioCall();
 
-		start();
 		return () => {
-			AudioSession.stopAudioSession();
+			stopAudioCall();
 		};
 	}, []);
+
+	const startAudioCall = async () => {
+		InCallManager.start({ media: 'audio' });
+		await AudioSession.startAudioSession();
+	};
+
+	const stopAudioCall = async () => {
+		InCallManager.stop();
+		await AudioSession.stopAudioSession();
+	};
 
 	const onToggleSpeaker = async () => {
 		InCallManager.setSpeakerphoneOn(!isSpeakerOn);
@@ -98,9 +105,9 @@ function ChannelVoice({
 								style={[styles.buttonCircle, isSpeakerOn && styles.buttonCircleActive]}
 							>
 								<MezonIconCDN
-									icon={IconCDN.channelVoice}
+									icon={isSpeakerOn ? IconCDN.channelVoice : IconCDN.voiceLowIcon}
 									height={size.s_17}
-									width={size.s_17}
+									width={isSpeakerOn ? size.s_17 : size.s_20}
 									color={isSpeakerOn ? themeValue.border : themeValue.white}
 								/>
 							</TouchableOpacity>

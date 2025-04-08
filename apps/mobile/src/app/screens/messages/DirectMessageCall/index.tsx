@@ -169,10 +169,15 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} />
 						</TouchableOpacity>
 					</View>
-
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
-						<TouchableOpacity onPress={toggleSpeaker} style={styles.buttonCircle}>
-							{localMediaControl.speaker ? <MezonIconCDN icon={IconCDN.channelVoice} /> : <MezonIconCDN icon={IconCDN.voiceLowIcon} />}
+						<TouchableOpacity
+							onPress={toggleSpeaker}
+							style={[styles.buttonCircle, localMediaControl.speaker && styles.buttonCircleActive]}
+						>
+							<MezonIconCDN
+								icon={localMediaControl.speaker ? IconCDN.channelVoice : IconCDN.voiceLowIcon}
+								color={localMediaControl.speaker ? themeValue.border : themeValue.white}
+							/>
 						</TouchableOpacity>
 					</View>
 				</View>

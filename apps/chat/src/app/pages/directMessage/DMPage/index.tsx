@@ -7,7 +7,7 @@ import {
 	ModalUserProfile,
 	SearchMessageChannelRender
 } from '@mezon/components';
-import { useApp, useAuth, useDragAndDrop, useGifsStickersEmoji, useSearchMessages, useSeenMessagePool } from '@mezon/core';
+import { EmojiSuggestionProvider, useApp, useAuth, useDragAndDrop, useGifsStickersEmoji, useSearchMessages, useSeenMessagePool } from '@mezon/core';
 import {
 	DirectEntity,
 	MessagesEntity,
@@ -28,6 +28,7 @@ import {
 	selectIsShowMemberListDM,
 	selectIsUseProfileDM,
 	selectLastMessageByChannelId,
+	selectLastSeenMessageStateByChannelId,
 	selectPositionEmojiButtonSmile,
 	selectPreviousChannels,
 	selectReactionTopState,
@@ -36,9 +37,10 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { EmojiPlaces, RequestInput, SubPanelName, isBackgroundModeActive, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { EmojiPlaces, SubPanelName, isBackgroundModeActive, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { DragEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DragEvent, memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ChannelMessages from '../../channel/ChannelMessages';
 import { ChannelTyping } from '../../channel/ChannelTyping';
@@ -46,6 +48,7 @@ import { ChannelTyping } from '../../channel/ChannelTyping';
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
+	const lastMessageState = useSelector((state) => selectLastSeenMessageStateByChannelId(state, channelId as string));
 	const mounted = useRef('');
 
 	const isFocus = !isBackgroundModeActive();
@@ -61,11 +64,16 @@ function useChannelSeen(channelId: string) {
 	const { markAsReadSeen } = useSeenMessagePool();
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
 	useEffect(() => {
+		if (!lastMessage || !lastMessageState) return;
 		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-		if (lastMessage) {
+		if (
+			lastMessage?.create_time_seconds &&
+			lastMessageState?.timestamp_seconds &&
+			lastMessage?.create_time_seconds >= lastMessageState?.timestamp_seconds
+		) {
 			markAsReadSeen(lastMessage, mode, 0);
 		}
-	}, [lastMessage, channelId]);
+	}, [lastMessage, channelId, currentDmGroup?.type, lastMessageState, markAsReadSeen]);
 	useEffect(() => {
 		if (previousChannels.at(1)) {
 			const timestamp = Date.now() / 1000;
@@ -345,8 +353,6 @@ type KeyPressListenerProps = {
 
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 	const isListenerAttached = useRef(false);
-	const [modalIsOpen, setModalIsOpen] = useState(false);
-	const [inputRequest, setInputRequest] = useState<RequestInput>({ content: '', mentionRaw: [], valueTextInput: '' });
 
 	useEffect(() => {
 		if (isListenerAttached.current) return;
@@ -355,7 +361,7 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 		const handleKeyPress = (event: KeyboardEvent) => {
 			if (event.ctrlKey && (event.key === 'g' || event.key === 'G')) {
 				event.preventDefault();
-				setModalIsOpen(true);
+				openModalBuzz();
 			}
 		};
 
@@ -365,21 +371,17 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 			window.removeEventListener('keydown', handleKeyPress);
 			isListenerAttached.current = false;
 		};
-	}, [modalIsOpen]);
+	}, []);
 
-	return (
-		<div>
-			{modalIsOpen && (
-				<ModalInputMessageBuzz
-					inputRequest={inputRequest}
-					setInputRequest={setInputRequest}
-					currentChannel={currentChannel}
-					mode={mode}
-					setModalIsOpen={setModalIsOpen}
-				/>
-			)}
-		</div>
+	const [openModalBuzz, closeModalBuzz] = useModal(
+		() => (
+			<EmojiSuggestionProvider>
+				<ModalInputMessageBuzz currentChannel={currentChannel} mode={mode} closeBuzzModal={closeModalBuzz} />
+			</EmojiSuggestionProvider>
+		),
+		[currentChannel]
 	);
-};
 
+	return null;
+};
 export default memo(DirectMessage);

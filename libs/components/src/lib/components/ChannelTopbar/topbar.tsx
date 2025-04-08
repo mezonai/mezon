@@ -1,11 +1,8 @@
+import { ChannelTopbar } from '@mezon/components';
 import { usePathMatch } from '@mezon/core';
-import { selectCurrentClanId } from '@mezon/store';
-import { IChannel, isMacDesktop } from '@mezon/utils';
+import { IChannel } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo } from 'react';
-import { useSelector } from 'react-redux';
-import ChannelTopbar from '.';
-import DmTopbar from '../DmList/DMtopbar';
 
 export type ChannelTopbarProps = {
 	readonly channel?: Readonly<IChannel> | null;
@@ -13,19 +10,18 @@ export type ChannelTopbarProps = {
 	mode?: ChannelStreamMode;
 	isMemberPath?: boolean;
 	isChannelPath?: boolean;
+	isHidden?: boolean;
 };
 
-const Topbar = memo(({ channel, mode }: ChannelTopbarProps) => {
-	const currentClanId = useSelector(selectCurrentClanId);
-	const friendPath = `/chat/direct/friends`;
+const Topbar = memo(({ isHidden = false }: { isHidden?: boolean }) => {
 	const { isFriendPath } = usePathMatch({
-		isFriendPath: friendPath
+		isFriendPath: `/chat/direct/friends`
 	});
 	return (
 		<div
-			className={`${isFriendPath ? 'hidden' : ''} ${isMacDesktop ? 'draggable-area' : ''} dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment flex-shrink fixed right-0 z-10`}
+			className={`${isFriendPath || isHidden ? 'hidden' : ''} dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment flex-shrink fixed right-0 z-10`}
 		>
-			{currentClanId === '0' ? <DmTopbar /> : <ChannelTopbar />}
+			<ChannelTopbar />
 		</div>
 	);
 });

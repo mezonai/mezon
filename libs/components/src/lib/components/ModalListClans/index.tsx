@@ -73,7 +73,7 @@ const SidebarClanItem = ({ option, linkClan, active }: SidebarClanItemProps) => 
 			</button>
 			{badgeCountClan > 0 ? (
 				<div
-					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[2px] right-[2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
+					className={`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-5px] right-[2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
 						badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 					}`}
 				>

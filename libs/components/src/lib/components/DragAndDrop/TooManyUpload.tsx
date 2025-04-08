@@ -13,8 +13,8 @@ const TooManyUpload = ({ togglePopup, limitReason }: ITooManyUploadProps) => {
 	const { title, content } = useMemo(() => {
 		if (limitReason === UploadLimitReason.COUNT) {
 			return {
-				title: 'Too many uploads!',
-				content: `You can only upload ${MAX_FILE_ATTACHMENTS} files at a time!`
+				title: 'Upload limit exceeded!',
+				content: `You can only upload up to ${MAX_FILE_ATTACHMENTS} files at a time.`
 			};
 		}
 		return {

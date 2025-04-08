@@ -1,7 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import { EEventAction, EEventStatus, ERepeatType, IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiEventManagement, ApiUserEventRequest } from 'mezon-js/api.gen';
+import { ApiEventManagement, ApiGenerateMezonMeetResponse, ApiUserEventRequest } from 'mezon-js/api.gen';
 import { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
@@ -11,7 +11,6 @@ export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
 
 export interface EventManagementEntity extends IEventManagement {
 	id: string;
-	isPrivate?: boolean;
 }
 
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
@@ -36,8 +35,7 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 		...eventRes,
 		id: eventRes.id || '',
 		channel_id: eventRes.channel_id === '0' || eventRes.channel_id === '' ? '' : eventRes.channel_id,
-		channel_voice_id: eventRes.channel_voice_id === '0' || eventRes.channel_voice_id === '' ? '' : eventRes.channel_voice_id,
-		isPrivate: eventRes.is_private
+		channel_voice_id: eventRes.channel_voice_id === '0' || eventRes.channel_voice_id === '' ? '' : eventRes.channel_voice_id
 	};
 };
 
@@ -248,6 +246,7 @@ export interface EventManagementState {
 	ongoingEvent: EventManagementOnGogoing | null;
 	showModalDetailEvent?: boolean;
 	showModalEvent?: boolean;
+	privateMeetingRooms?: Record<string, ApiGenerateMezonMeetResponse>[] | null;
 }
 
 export const initialEventManagementState: EventManagementState = {
@@ -258,7 +257,8 @@ export const initialEventManagementState: EventManagementState = {
 	ongoingEvent: null,
 	creatingStatus: 'not loaded',
 	showModalDetailEvent: false,
-	showModalEvent: false
+	showModalEvent: false,
+	privateMeetingRooms: null
 };
 
 export const eventManagementSlice = createSlice({
@@ -289,6 +289,9 @@ export const eventManagementSlice = createSlice({
 				return;
 			}
 			eventManagementAdapter.removeOne(state.byClans[action.payload.clan_id].entities, event_id);
+			if (state.privateMeetingRooms) {
+				state.privateMeetingRooms = state.privateMeetingRooms.filter((record) => !(event_id in record));
+			}
 		},
 		updateEventStatus: (state, action) => {
 			const { event_id, event_status } = action.payload;
@@ -411,9 +414,20 @@ export const eventManagementSlice = createSlice({
 				state.creatingStatus = 'loading';
 				state.error = null;
 			})
-			.addCase(fetchCreateEventManagement.fulfilled, (state) => {
+			.addCase(fetchCreateEventManagement.fulfilled, (state, action) => {
 				state.creatingStatus = 'loaded';
 				state.error = null;
+				const event = action.payload;
+
+				if (event?.is_private && event?.meet_room) {
+					if (!state.privateMeetingRooms) {
+						state.privateMeetingRooms = [];
+					}
+					const hasEvents = state.privateMeetingRooms.some((record) => record[event.id as string]);
+					if (!hasEvents) {
+						state.privateMeetingRooms.push({ [event?.id as string]: event?.meet_room });
+					}
+				}
 			})
 			.addCase(fetchCreateEventManagement.rejected, (state, action) => {
 				state.creatingStatus = 'error';
@@ -488,5 +502,14 @@ export const selectEventById = createSelector(
 	(events, { clanId, eventId }) => {
 		const event = events.byClans[clanId]?.entities.entities[eventId];
 		return event;
+	}
+);
+
+export const selectMeetRoomByEventId = createSelector(
+	[(state: RootState) => state.eventmanagement, (state: RootState, eventId: string) => eventId],
+	(event, eventId) => {
+		if (!event.privateMeetingRooms) return null;
+		const record = event.privateMeetingRooms.find((record) => record[eventId]);
+		return record ? record[eventId] : null;
 	}
 );

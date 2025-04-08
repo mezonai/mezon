@@ -1,7 +1,19 @@
+import { useAuth, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
-import { EventManagementEntity, selectClanById, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
-import { EEventStatus } from '@mezon/utils';
+import { size, useTheme } from '@mezon/mobile-ui';
+import {
+	EventManagementEntity,
+	addUserEvent,
+	deleteUserEvent,
+	selectClanById,
+	selectMemberClanByUserId2,
+	selectUserMaxPermissionLevel,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
+import { EEventStatus, EPermission, sleep } from '@mezon/utils';
+import { ApiUserEventRequest } from 'mezon-js/api.gen';
+import { useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
@@ -11,6 +23,7 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { EventMenu } from '../EventMenu';
+import { ShareEventModal } from '../EventShare';
 import { EventTime } from '../EventTime';
 import { style } from './styles';
 
@@ -23,6 +36,27 @@ export function EventDetail({ event }: IEventDetailProps) {
 	const styles = style(themeValue);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId2(state, event?.creator_id || ''));
 	const clans = useSelector(selectClanById(event?.clan_id || ''));
+	const { userId, userProfile } = useAuth();
+	const [isInterested, setIsInterested] = useState<boolean>(false);
+	const [isClanOwner, hasClanPermission, hasAdminPermission] = usePermissionChecker([
+		EPermission.clanOwner,
+		EPermission.manageClan,
+		EPermission.administrator
+	]);
+	const userMaxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
+
+	const canModifyEvent = useMemo(() => {
+		if (isClanOwner || hasClanPermission || hasAdminPermission) {
+			return true;
+		}
+		const isEventICreated = event?.creator_id === userProfile?.user?.id;
+		if (isEventICreated) {
+			return true;
+		}
+
+		return Number(userMaxPermissionLevel) > Number(event?.max_permission);
+	}, [event?.creator_id, event?.max_permission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
+	const dispatch = useAppDispatch();
 
 	function handlePress() {
 		const data = {
@@ -31,6 +65,38 @@ export function EventDetail({ event }: IEventDetailProps) {
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}
+
+	const handleShareEvent = async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		await sleep(500);
+		const data = {
+			children: <ShareEventModal event={event} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	};
+
+	useEffect(() => {
+		if (userId && event?.user_ids) {
+			setIsInterested(event.user_ids.includes(userId));
+		}
+	}, [userId, event]);
+
+	const handleToggleUserEvent = () => {
+		if (!event?.id) return;
+
+		const request: ApiUserEventRequest = {
+			clan_id: event.clan_id,
+			event_id: event.id
+		};
+
+		if (isInterested) {
+			dispatch(deleteUserEvent(request));
+		} else {
+			dispatch(addUserEvent(request));
+		}
+
+		setIsInterested(!isInterested);
+	};
 
 	return (
 		<View style={styles.container}>
@@ -72,18 +138,29 @@ export function EventDetail({ event }: IEventDetailProps) {
 			<View style={styles.inline}>
 				{/* <MezonButton title="End event" fluid /> */}
 				<MezonButton
-					icon={<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} height={16} width={16} color={themeValue.text} />}
-					title="Interested"
+					icon={
+						isInterested ? (
+							<MezonIconCDN icon={IconCDN.bellSlashIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+						) : (
+							<MezonIconCDN icon={IconCDN.bellIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+						)
+					}
+					title={isInterested ? 'UnInterested' : 'Interested'}
 					fluid
 					border
-					titleStyle={{ color: themeValue.text }}
+					onPress={handleToggleUserEvent}
 				/>
 				{/* <MezonButton title="Start event" fluid type="success" /> */}
-				<MezonButton icon={<MezonIconCDN icon={IconCDN.shareIcon} height={20} width={20} color={themeValue.text} />} />
 				<MezonButton
-					icon={<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={20} width={20} color={themeValue.text} />}
-					onPress={handlePress}
+					onPress={handleShareEvent}
+					icon={<MezonIconCDN icon={IconCDN.shareIcon} height={20} width={20} color={themeValue.text} />}
 				/>
+				{canModifyEvent && (
+					<MezonButton
+						icon={<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={20} width={20} color={themeValue.text} />}
+						onPress={handlePress}
+					/>
+				)}
 			</View>
 
 			{!!event?.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}

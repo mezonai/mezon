@@ -1,4 +1,3 @@
-import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
@@ -17,7 +16,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
 import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
@@ -45,6 +44,11 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const currentClan = useSelector(selectCurrentClan);
+
+	const dismiss = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+	};
+
 	useEffect(() => {
 		dispatch(notificationSettingActions.getNotificationSetting({ channelId: messageInfo?.channel_id }));
 	}, []);
@@ -63,8 +67,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		);
 	}, [getNotificationChannelSelected]);
 
-	const { dismiss } = useBottomSheetModal();
-
 	const isGroup = useMemo(() => {
 		return Number(messageInfo?.type) === ChannelType.CHANNEL_TYPE_GROUP;
 	}, [messageInfo?.type]);
@@ -75,7 +77,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const leaveGroupMenu: IMezonMenuItemProps[] = [
 		{
-			onPress: () => {
+			onPress: async () => {
+				dismiss();
+				await sleep(500);
 				const data = {
 					children: (
 						<MezonConfirm

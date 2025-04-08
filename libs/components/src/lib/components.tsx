@@ -10,7 +10,6 @@ export { default as ClanHeader } from './components/ClanHeader';
 export { default as ModalCreateClan } from './components/CreateClanModal';
 export { default as DeleteClanModal } from './components/DeleteClanModal';
 export { default as DirectMessageList } from './components/DmList';
-export { default as DmTopbar } from './components/DmList/DMtopbar';
 export { default as MemberListGroupChat } from './components/DmList/MemberListGroupChat';
 export { default as DirectMessageBox } from './components/DmList/MessageBoxDM';
 export { default as EmojiPickerComp } from './components/EmojiPicker';

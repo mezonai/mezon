@@ -3,8 +3,6 @@
 @tailwind utilities;
 
 @import 'styles/tooltip.scss';
-@import 'quill/dist/quill.snow.css';
-
 @font-face {
 	font-family: 'gg sans';
 	src: url('./assets/fonts/ggsans-Normal.woff2') format('woff2');
@@ -42,30 +40,6 @@
 	src: url('./assets/fonts/ggsans-ExtraBold.woff2') format('woff2');
 	font-weight: bold;
 	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Noto Sans';
-	src: url('./assets/fonts/NotoSans-Medium.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Poppins';
-	font-style: normal;
-	font-weight: normal;
-	src: url('./assets//fonts/Poppins-Regular.woff2') format('woff2');
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Inter';
-	font-style: normal;
-	font-weight: normal;
-	src: url('./assets//fonts/Inter-Regular.woff2') format('woff2');
 	font-display: swap;
 }
 
@@ -118,13 +92,34 @@
 }
 
 // fix later
+.app-scroll {
+	overflow-y: scroll;
+}
 
-::-webkit-scrollbar {
+.app-scroll::-webkit-scrollbar {
 	width: 8px;
 }
 
-::-webkit-scrollbar-thumb {
-	background: pink;
+.app-scroll::-webkit-scrollbar-thumb {
+	background: #1a1b1e;
+	border-radius: 5px;
+}
+
+#editorReactMentionChannel::-webkit-scrollbar {
+	width: 4px;
+}
+
+#editorReactMentionChannel::-webkit-scrollbar-thumb {
+	background: #1a1b1e;
+	border-radius: 5px;
+}
+
+#react-select-3-listbox::-webkit-scrollbar {
+	width: 8px;
+}
+
+#react-select-3-listbox::-webkit-scrollbar-thumb {
+	background: #1a1b1e;
 	border-radius: 5px;
 }
 
@@ -604,6 +599,11 @@ input:-webkit-autofill:active {
 
 .thread-scroll::-webkit-scrollbar-thumb {
 	background: transparent;
+	border-radius: 5px;
+}
+
+.thread-scroll.show-scroll::-webkit-scrollbar-thumb {
+	background: #787881;
 }
 
 .thread-scroll:hover::-webkit-scrollbar-thumb {
@@ -618,8 +618,14 @@ input:-webkit-autofill:active {
 // editor-scroll
 
 // attachment-scroll-dark
+
+.attachment-scroll::-webkit-scrollbar-thumb {
+	background: #787881;
+	border-radius: 5px;
+}
+
 .attachment-scroll::-webkit-scrollbar {
-	height: 8px;
+	height: 5px;
 }
 
 .attachment-scroll::-webkit-scrollbar-track {
@@ -628,7 +634,7 @@ input:-webkit-autofill:active {
 
 // attachment-scroll-light
 .attachment-scroll-light::-webkit-scrollbar {
-	height: 8px;
+	height: 5px;
 }
 
 .attachment-scroll-light::-webkit-scrollbar-track {

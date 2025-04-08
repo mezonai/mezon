@@ -19,7 +19,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 	const myUser = useAuth();
 	const { createEventManagement } = useEventManagement();
 	const { currentClanId } = useClans();
-	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, onGoBack } = route.params || {};
+	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, isPrivate, onGoBack } = route.params || {};
 
 	navigation.setOptions({
 		headerTitle: t('screens.eventPreview.headerTitle'),
@@ -58,7 +58,8 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				description,
 				'',
 				eventChannelId,
-				frequency
+				frequency,
+				isPrivate
 			);
 		} else {
 			await createEventManagement(
@@ -71,7 +72,8 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				description,
 				'',
 				eventChannelId,
-				frequency
+				frequency,
+				isPrivate
 			);
 		}
 		onGoBack?.();
@@ -91,7 +93,8 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 						creator_id: myUser.userId,
 						title: title,
 						description: description,
-						channel_id: eventChannelId
+						channel_id: eventChannelId,
+						isPrivate: isPrivate
 					}}
 					showActions={false}
 					start={startTime.toISOString()}

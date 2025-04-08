@@ -1,5 +1,4 @@
 import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
-import ChannelMessages from './ChannelMessages';
 
 export default function ChannelIndex() {
 	return (
@@ -8,12 +7,8 @@ export default function ChannelIndex() {
 				<div className="flex flex-col flex-1 w-full h-full">
 					<div
 						className={`overflow-y-auto bg-transparent max-w-widthMessageViewChat overflow-x-hidden ${isWindowsDesktop || isLinuxDesktop ? ' max-h-heightTitleBarMessageViewChat h-heightTitleBarMessageViewChat' : ' max-h-heightMessageViewChat h-heightMessageViewChat'}`}
-					>
-						<ChannelMessages.Skeleton />
-					</div>
-					<div className="flex-shrink-0 flex flex-col bg-transparent h-auto">
-						<ChannelMessages.Skeleton />
-					</div>
+					></div>
+					<div className="flex-shrink-0 flex flex-col bg-transparent h-auto"></div>
 				</div>
 			</div>
 		</div>

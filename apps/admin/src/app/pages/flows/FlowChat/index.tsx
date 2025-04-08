@@ -1,5 +1,5 @@
 import { useAuth } from '@mezon/core';
-import { selectAppDetail } from '@mezon/store-mobile';
+import { selectAppDetail } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';

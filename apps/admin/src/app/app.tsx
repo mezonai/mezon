@@ -1,6 +1,5 @@
 import { initStore, MezonStoreProvider } from '@mezon/store';
 import { CreateMezonClientOptions, MezonContextProvider, useMezon } from '@mezon/transport';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect, useMemo } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
@@ -84,11 +83,9 @@ function AppWrapper() {
 	}, []);
 
 	return (
-		<GoogleOAuthProvider clientId={process.env.NX_CHAT_APP_GOOGLE_CLIENT_ID as string}>
-			<MezonContextProvider mezon={mezon} connect={true}>
-				<App />
-			</MezonContextProvider>
-		</GoogleOAuthProvider>
+		<MezonContextProvider mezon={mezon} connect={true}>
+			<App />
+		</MezonContextProvider>
 	);
 }
 

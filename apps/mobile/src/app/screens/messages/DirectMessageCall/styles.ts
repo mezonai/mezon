@@ -26,6 +26,9 @@ export const style = (colors: Attributes) =>
 			padding: size.s_8,
 			borderRadius: size.s_22
 		},
+		buttonCircleActive: {
+			backgroundColor: colors.text
+		},
 		card: {
 			flex: 1,
 			margin: size.s_10,

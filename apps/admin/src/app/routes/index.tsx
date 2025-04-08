@@ -17,7 +17,6 @@ import Flows from '../pages/flows';
 import Flow from '../pages/flows/Flow';
 import InitialRoutes from './InititalRoutes';
 
-const Login = loadable(() => import('../pages/login'));
 const ApplicationsPage = loadable(() => import('../pages/applications'));
 const TeamsPage = loadable(() => import('../pages/teams'));
 const DocsPage = loadable(() => import('../pages/docs'));

@@ -1,3 +1,4 @@
+//TODO: recheck
 import { ToastController } from '@mezon/components';
 import { useCustomNavigate } from '@mezon/core';
 import { fcmActions, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
@@ -33,6 +34,7 @@ const TitleBar: React.FC<TitleBarProps> = ({ eventName }) => {
 	}, []);
 
 	const handleMaximize = () => {
+		window.dispatchEvent(new Event('resize'));
 		window.electron.send(eventName, MAXIMIZE_WINDOW);
 	};
 
@@ -47,9 +49,7 @@ const TitleBar: React.FC<TitleBarProps> = ({ eventName }) => {
 	return (
 		<header id="titlebar" className={`dark:bg-bgTertiary bg-bgLightTertiary`} onDoubleClick={handleDoubleClick}>
 			<div id="drag-region">
-				<div className="dark:text-white text-colorTextLightMode ml-3 text-[15.15px] leading-[26.58px] font-semibold text-[#FFFFFF]">
-					Mezon
-				</div>
+				<div className="dark:text-white ml-3 text-[15.15px] leading-[26.58px] font-semibold text-[#FFFFFF]">Mezon</div>
 				<div id="window-controls">
 					<div
 						className="button window-hover cursor-pointer dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton"

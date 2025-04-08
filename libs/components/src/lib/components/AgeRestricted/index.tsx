@@ -3,7 +3,6 @@ import { selectCurrentChannelId, selectCurrentClanId } from '@mezon/store';
 import { Modal } from 'flowbite-react';
 import { safeJSONParse } from 'mezon-js';
 import { useState } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useSelector } from 'react-redux';
 
 const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void }) => {

@@ -4,11 +4,20 @@
     "declaration": true,
     "composite": true,
     "outDir": "../../dist/out-tsc",
+    "baseUrl": "../../",
+    "paths": {
+      "@mezon/*": ["libs/*/src/index.ts"],
+      "@mezon/transport/*": ["libs/transport/src/*"],
+      "@mezon/utils/*": ["libs/utils/src/*"]
+    },
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
-    ]
+    ],
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "preserveSymlinks": true
   },
   "exclude": [
     "jest.config.ts",
@@ -21,5 +30,14 @@
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "../core/src/lib/auth/hooks/useMemberStatus.ts", "../../apps/chat/src/app/pages/channel/MessageContextMenu.tsx", "../core/src/lib/chat/hooks/useShowName.ts", "../core/src/lib/chat/hooks/useOnScreen.ts"]
+  "include": [
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "../core/src/**/*.ts",
+    "../core/src/**/*.tsx",
+    "../ui/src/**/*.ts",
+    "../ui/src/**/*.tsx"
+  ]
 }

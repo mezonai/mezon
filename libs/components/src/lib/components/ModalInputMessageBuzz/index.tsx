@@ -11,15 +11,14 @@ import lightMentionsInputStyle from './LightRmentionInputStyle';
 import darkMentionsInputStyle from './RmentionInputStyle';
 
 type ModalInputMessageBuzzProps = {
-	inputRequest: RequestInput;
-	setInputRequest: (value: RequestInput) => void;
 	currentChannel: DirectEntity | null;
 	mode: number;
-	setModalIsOpen: (value: boolean) => void;
+	closeBuzzModal: () => void;
 };
 
-const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ inputRequest, setInputRequest, currentChannel, mode, setModalIsOpen }) => {
+const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentChannel, mode, closeBuzzModal }) => {
 	const { sendMessage } = useChatSending({ channelOrDirect: currentChannel || undefined, mode });
+	const [inputRequest, setInputRequest] = useState<RequestInput>({ content: '', mentionRaw: [], valueTextInput: '' });
 	const panelRef = useRef(null);
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 	const emojiRef = useRef<HTMLDivElement | null>(null);
@@ -49,9 +48,9 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ inputRequ
 	}, []);
 
 	const handleClosePopup = useCallback(() => {
-		setModalIsOpen(false);
+		closeBuzzModal();
 		setInputRequest({ content: '', mentionRaw: [], valueTextInput: '' });
-	}, [setInputRequest, setModalIsOpen]);
+	}, [setInputRequest, closeBuzzModal]);
 
 	const { emojis } = useEmojiSuggestionContext();
 	const queryEmojis = (query: string, callback: (data: any[]) => void) => {

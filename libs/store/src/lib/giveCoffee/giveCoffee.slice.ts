@@ -14,13 +14,16 @@ export interface GiveCoffeeEntity {
 	id: string; // Primary ID
 }
 
+export interface ISendTokenDetailType extends ApiTokenSentEvent {
+	receiver_name?: string;
+}
 export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	showModalSendToken: boolean;
 	tokenSocket: Record<string, ApiGiveCoffeeEvent>;
 	tokenUpdate: Record<string, number>;
-	infoSendToken: ApiTokenSentEvent | null;
+	infoSendToken: ISendTokenDetailType | null;
 	sendTokenEvent: {
 		tokenEvent: ApiTokenSentEvent;
 		status: string;
@@ -97,7 +100,7 @@ export const giveCoffeeSlice = createSlice({
 		setShowModalSendToken: (state, action: PayloadAction<boolean>) => {
 			state.showModalSendToken = action.payload;
 		},
-		setInfoSendToken: (state, action: PayloadAction<ApiTokenSentEvent | null>) => {
+		setInfoSendToken: (state, action: PayloadAction<ISendTokenDetailType | null>) => {
 			state.infoSendToken = action.payload;
 		},
 		setSendTokenEvent: (state, action) => {

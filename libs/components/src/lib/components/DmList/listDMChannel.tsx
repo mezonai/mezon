@@ -18,7 +18,7 @@ type ListDMChannelProps = {
 	listDM: string[];
 };
 
-const heightAroundComponent = 230;
+const heightAroundComponent = 220;
 const heightAppUpdate = 40;
 const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
 const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
@@ -75,7 +75,7 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 	return (
 		<div
 			ref={parentRef}
-			className={`thread-scroll`}
+			className={`thread-scroll show-scroll`}
 			style={{
 				height: height,
 				overflow: 'auto'

@@ -1,4 +1,4 @@
-import { AttachmentTypeUpload, IMessage, PreSendAttachment } from '@mezon/utils';
+import { AttachmentTypeUpload, IMessage, MAX_FILE_ATTACHMENTS, PreSendAttachment } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiMessageRef } from 'mezon-js/api.gen';
 
@@ -75,14 +75,17 @@ export const referencesSlice = createSlice({
 				return;
 			}
 
-			if (!state.attachmentAfterUpload[channelId] && files?.length <= 10) {
+			if (!state.attachmentAfterUpload[channelId] && files?.length <= MAX_FILE_ATTACHMENTS) {
 				state.attachmentAfterUpload[channelId] = {
 					channelId: channelId,
 					files: files
 				};
 			} else {
-				// eslint-disable-next-line prettier/prettier
-				if (files && files.length > 0 && state.attachmentAfterUpload[channelId].files.length + files.length <= 10) {
+				if (
+					files &&
+					files.length > 0 &&
+					(state.attachmentAfterUpload[channelId]?.files?.length || 0) + files?.length <= MAX_FILE_ATTACHMENTS
+				) {
 					state.attachmentAfterUpload[channelId].files = [...state.attachmentAfterUpload[channelId].files, ...files];
 				}
 			}

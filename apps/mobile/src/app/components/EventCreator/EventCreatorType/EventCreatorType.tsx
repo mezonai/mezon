@@ -77,6 +77,15 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					icon: <MezonIconCDN icon={IconCDN.locationIcon} color={themeValue.text} />
+				},
+				{
+					title: t('fields.channelType.privateEvent.title'),
+					description: t('fields.channelType.privateEvent.description'),
+					value: OptionEvent.PRIVATE_EVENT,
+					textStyle: {
+						fontWeight: 'bold'
+					},
+					icon: <MezonIconCDN icon={IconCDN.channelVoiceLock} color={themeValue.text} />
 				}
 			] satisfies IMezonOptionData,
 		[]
@@ -146,6 +155,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 			channelId: eventType === OptionEvent.OPTION_SPEAKER ? channelID : null,
 			location: eventType === OptionEvent.OPTION_LOCATION ? location : null,
 			eventChannelId: eventChannel?.channel_id || '',
+			isPrivate: eventType === OptionEvent.PRIVATE_EVENT,
 			onGoBack
 		});
 	}
@@ -201,18 +211,22 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 					<Text style={styles.bottomDescription}>{t('screens.eventType.description')}</Text>
 
-					<View style={styles.headerSection}>
-						<Text style={styles.title}>{t('screens.channelSelection.title')}</Text>
-						<Text style={styles.subtitle}>{t('screens.channelSelection.description')}</Text>
-					</View>
-
-					<TouchableOpacity style={styles.fakeInput} onPress={handleOpenSelectChannel}>
-						{!!eventChannel && channelIcon(eventChannel?.type, eventChannel?.channel_private === ChannelStatusEnum.isPrivate)}
-						<Text style={styles.inputValue}>{eventChannel?.channel_label || t('fields.channel.title')} </Text>
-						<View style={styles.chevronDownIcon}>
-							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+					{eventType !== OptionEvent.PRIVATE_EVENT && (
+						<View style={styles.headerSection}>
+							<Text style={styles.title}>{t('screens.channelSelection.title')}</Text>
+							<Text style={styles.subtitle}>{t('screens.channelSelection.description')}</Text>
 						</View>
-					</TouchableOpacity>
+					)}
+
+					{eventType !== OptionEvent.PRIVATE_EVENT && (
+						<TouchableOpacity style={styles.fakeInput} onPress={handleOpenSelectChannel}>
+							{!!eventChannel && channelIcon(eventChannel?.type, eventChannel?.channel_private === ChannelStatusEnum.isPrivate)}
+							<Text style={styles.inputValue}>{eventChannel?.channel_label || t('fields.channel.title')} </Text>
+							<View style={styles.chevronDownIcon}>
+								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+							</View>
+						</TouchableOpacity>
+					)}
 				</ScrollView>
 			</View>
 

@@ -44,14 +44,14 @@ export const ActionRow = React.memo(() => {
 			title: 'Search',
 			action: () => {
 				if (isChannelDm) {
-					navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+					navigation.push(APP_SCREEN.MENU_CHANNEL.STACK, {
 						screen: APP_SCREEN.MENU_CHANNEL.SEARCH_MESSAGE_DM,
 						params: {
 							currentChannel
 						}
 					});
 				} else {
-					navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+					navigation.push(APP_SCREEN.MENU_CHANNEL.STACK, {
 						screen: APP_SCREEN.MENU_CHANNEL.SEARCH_MESSAGE_CHANNEL,
 						params: {
 							typeSearch: ETypeSearch.SearchChannel,
@@ -87,7 +87,7 @@ export const ActionRow = React.memo(() => {
 		{
 			title: 'Settings',
 			action: () => {
-				navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+				navigation.push(APP_SCREEN.MENU_CHANNEL.STACK, {
 					screen: APP_SCREEN.MENU_CHANNEL.SETTINGS,
 					params: {
 						channelId: currentChannel?.channel_id

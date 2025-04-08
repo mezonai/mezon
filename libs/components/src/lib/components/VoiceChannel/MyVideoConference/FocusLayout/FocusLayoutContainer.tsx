@@ -17,8 +17,9 @@ export function FocusLayoutContainer({ children, isShowMember, ...props }: Focus
 export interface FocusLayoutProps extends React.HTMLAttributes<HTMLElement> {
 	trackRef?: TrackReferenceOrPlaceholder;
 	onParticipantClick?: (evt: ParticipantClickEvent) => void;
+	isExtCalling?: boolean;
 }
 
-export function FocusLayout({ trackRef, ...htmlProps }: FocusLayoutProps) {
-	return <ParticipantTile trackRef={trackRef} {...htmlProps} />;
+export function FocusLayout({ trackRef, isExtCalling = false, ...htmlProps }: FocusLayoutProps) {
+	return <ParticipantTile isExtCalling={isExtCalling} trackRef={trackRef} {...htmlProps} />;
 }

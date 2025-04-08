@@ -1,5 +1,4 @@
 import { MezonContextValue } from '@mezon/transport';
-import storage from '@react-native-async-storage/async-storage';
 import { Middleware, ThunkDispatch, UnknownAction, configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTransform, persistReducer, persistStore } from 'redux-persist';
@@ -77,6 +76,9 @@ import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { USER_STATUS_API_FEATURE_KEY, userStatusAPIReducer } from './userstatus/userstatusAPI.slice';
 import { VOICE_FEATURE_KEY, voiceReducer } from './voice/voice.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
+// import storage from '@react-native-async-storage/async-storage';
+const storage = {} as any; // ignore in web
+
 const persistedReducer = persistReducer(
 	{
 		key: 'auth',
@@ -536,12 +538,12 @@ export const getStoreAsync = async () => {
 			const interval = setInterval(() => {
 				if (storeCreated) {
 					clearInterval(interval);
-					resolve(storeInstance);
+					resolve(storeInstance as Store);
 				}
 			}, 100);
 		});
 	}
-	return storeInstance;
+	return storeInstance as Store;
 };
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();

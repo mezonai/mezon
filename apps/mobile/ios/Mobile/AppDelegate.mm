@@ -9,6 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "RNFBMessagingModule.h"
 #import <React/RCTRootView.h>
+#import <AVKit/AVKit.h>
 
 @implementation AppDelegate
 

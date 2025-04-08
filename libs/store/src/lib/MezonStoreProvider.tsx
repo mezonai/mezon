@@ -2,8 +2,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import { Persistor } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-import { RootState } from './store';
-import { RootState as RootStateMobile } from './store-mobile';
+import { RootState, RootState as RootStateMobile } from './store';
 
 type Props = {
 	readonly children: React.ReactNode;

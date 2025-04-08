@@ -1,4 +1,6 @@
+import { selectTheme } from '@mezon/store';
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 type TimePickerProps = {
 	name: string;
@@ -7,6 +9,7 @@ type TimePickerProps = {
 };
 
 function TimePicker(props: TimePickerProps) {
+	const appearanceTheme = useSelector(selectTheme);
 	const { name, value, handleChangeTime } = props;
 	// if value is H:MM => HH:MM
 	const formattedValue = useMemo(() => {
@@ -34,7 +37,7 @@ function TimePicker(props: TimePickerProps) {
 		<select
 			name={name}
 			onChange={handleChangeTime}
-			className="block w-full dark:bg-black bg-bgModifierHoverLight dark:text-white text-black border dark:border-black rounded p-2 font-normal text-sm tracking-wide outline-none border-none"
+			className={`block w-full dark:bg-black bg-bgModifierHoverLight dark:text-white text-black border dark:border-black rounded p-2 font-normal text-sm tracking-wide outline-none border-none ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 			value={formattedValue}
 		>
 			{renderOptions}

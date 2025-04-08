@@ -4,9 +4,10 @@ import { memo, useEffect, useRef } from 'react';
 interface VideoPreviewProps {
 	cameraOn: boolean;
 	stream: MediaStream | null;
+	avatarExist?: string;
 }
 
-const VideoPreview = memo(({ cameraOn, stream }: VideoPreviewProps) => {
+const VideoPreview = memo(({ cameraOn, stream, avatarExist }: VideoPreviewProps) => {
 	const videoRef = useRef<HTMLVideoElement | null>(null);
 
 	useEffect(() => {
@@ -21,7 +22,12 @@ const VideoPreview = memo(({ cameraOn, stream }: VideoPreviewProps) => {
 			{!cameraOn && (
 				<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
 					<div className="w-24 h-24 bg-zinc-700 rounded-full flex items-center justify-center">
-						<Icons.UserAvatarIcon className="w-12 h-12 text-white" />
+						{avatarExist ? (
+							// eslint-disable-next-line jsx-a11y/alt-text
+							<img src={avatarExist} className="rounded-full"></img>
+						) : (
+							<Icons.UserAvatarIcon className="w-12 h-12 text-white" />
+						)}
 					</div>
 				</div>
 			)}

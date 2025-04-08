@@ -21,7 +21,8 @@
             "title": "Who are aidiences?",
             "description": "Choose members in the specified channel.",
             "channel": "The audience consists of members from {{channel}}: "
-        }
+        },
+        "isPrivate": "Only invited members can join"
     },
     "fields": {
         "channelType": {
@@ -32,6 +33,10 @@
             "somewhere": {
                 "title": "Somewhere else",
                 "description": "Text channel, external link, or in-person location."
+            },
+            "privateEvent": {
+                "title": "Create Private Event",
+                "description": "Invite-only voice & video room!"
             }
         },
         "channel": {

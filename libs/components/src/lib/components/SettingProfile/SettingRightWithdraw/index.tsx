@@ -5,7 +5,7 @@ import { safeJSONParse } from 'mezon-js';
 import { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import HistoriesWithdraw from './HistoriesWithdraw';
-import WithDrawModal from './WithdrawModal';
+import LazyWithdrawModal from './LazyWithdrawModal';
 
 interface IWithdrawProp {
 	onClose: () => void;
@@ -65,7 +65,9 @@ const SettingRightWithdraw = ({ onClose }: IWithdrawProp) => {
 				</div>
 
 				<div className="flex gap-8 flex-1 z-0 py-5 px-3 dark:bg-bgPrimary bg-white">
-					{openModalWithdraw && <WithDrawModal userId={userId} onClose={closeModal} totalToken={totalToken} onRefetch={handleRefetch} />}
+					{openModalWithdraw && (
+						<LazyWithdrawModal userId={userId} onClose={closeModal} totalToken={totalToken} onRefetch={handleRefetch} />
+					)}
 					<div className="flex flex-1 flex-col gap-8">
 						<div className="flex z-0 gap-x-8 flex-col ">
 							<div className="flex gap-2">

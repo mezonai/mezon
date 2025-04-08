@@ -4,24 +4,24 @@ import {
 	ApiChannelMessageHeaderWithChannel,
 	BuzzArgs,
 	ChannelThreads,
-	checkIsThread,
 	ICategory,
 	IChannel,
 	LoadingStatus,
-	mapChannelToAppEntity,
 	ModeResponsive,
 	RequestInput,
-	TypeCheck
+	TypeCheck,
+	checkIsThread,
+	mapChannelToAppEntity
 } from '@mezon/utils';
 import {
-	createAsyncThunk,
-	createEntityAdapter,
-	createSelector,
-	createSlice,
 	EntityState,
 	GetThunkAPI,
 	PayloadAction,
-	Update
+	Update,
+	createAsyncThunk,
+	createEntityAdapter,
+	createSelector,
+	createSlice
 } from '@reduxjs/toolkit';
 import isEqual from 'lodash.isequal';
 import { ChannelCreatedEvent, ChannelDeletedEvent, ChannelType, ChannelUpdatedEvent } from 'mezon-js';
@@ -33,11 +33,11 @@ import {
 	ApiCreateChannelDescRequest,
 	ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
-import { categoriesActions, FetchCategoriesPayload } from '../categories/categories.slice';
+import { FetchCategoriesPayload, categoriesActions } from '../categories/categories.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { clansActions } from '../clans/clans.slice';
-import { ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
+import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 import { messagesActions } from '../messages/messages.slice';
 import { notifiReactMessageActions } from '../notificationSetting/notificationReactMessage.slice';
@@ -48,13 +48,13 @@ import { reactionActions } from '../reactionMessage/reactionMessage.slice';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
 import { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
-import { channelMetaActions, ChannelMetaEntity, enableMute } from './channelmeta.slice';
 import {
 	LIST_CHANNELS_USER_FEATURE_KEY,
-	listChannelsByUserActions,
 	ListChannelsByUserState,
+	listChannelsByUserActions,
 	selectEntitiesChannelsByUser
 } from './channelUser.slice';
+import { ChannelMetaEntity, channelMetaActions, enableMute } from './channelmeta.slice';
 import { listChannelRenderAction } from './listChannelRender.slice';
 
 const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 60;
@@ -1700,6 +1700,8 @@ export const selectShowScrollDownButton = createSelector(
 	[getChannelsState, (state, channelId) => channelId],
 	(state, channelId) => state.showScrollDownButton?.[channelId] ?? 0
 );
-export const selectAllAppChannelsListShowOnPopUp = createSelector([getChannelsState], (state) =>
-	Object.values(state.byClans).flatMap((clan) => clan.appChannelsListShowOnPopUp || [])
-);
+
+export const selectAllAppChannelsListShowOnPopUp = createSelector(getChannelsState, (state) => {
+	const data = Object.values(state.byClans).flatMap((clan) => clan.appChannelsListShowOnPopUp);
+	return data?.length ? data : null;
+});

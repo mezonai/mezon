@@ -6,6 +6,7 @@ import {
 	eventManagementActions,
 	selectChannelById,
 	selectChannelFirst,
+	selectMeetRoomByEventId,
 	selectMemberClanByUserId,
 	toastActions,
 	useAppDispatch,
@@ -17,9 +18,11 @@ import { ChannelType } from 'mezon-js';
 import { ApiUserEventRequest } from 'mezon-js/api.gen';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import { Coords } from '../../../ChannelLink';
+import ModalInvite from '../../../ListMemberInvite/modalInvite';
 import { timeFomat } from '../timeFomatEvent';
 import ModalDelEvent from './modalDelEvent';
 import ModalShareEvent from './modalShareEvent';
@@ -64,8 +67,10 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		onClose,
 		isPrivate
 	} = props;
-	const isNonPublicEvent = textChannelId && textChannelId !== '0';
-	const isPrivateEvent = (event?.isPrivate && !isNonPublicEvent) || (event?.is_private && !isNonPublicEvent) || (isPrivate && !isNonPublicEvent);
+	const isChannelEvent = textChannelId && textChannelId !== '0';
+	const isPrivateEvent = !isChannelEvent && ((!isReviewEvent && event?.is_private) || (isReviewEvent && isPrivate));
+	const isClanEvent = !isChannelEvent && ((!isReviewEvent && !event?.is_private) || (isReviewEvent && !isPrivate));
+
 	const dispatch = useAppDispatch();
 	const channelFirst = useSelector(selectChannelFirst);
 	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
@@ -85,11 +90,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		distanceToBottom: 0
 	});
 
+	const getPrivateMeetingRoom = useAppSelector((state) => selectMeetRoomByEventId(state, event?.id as string));
 	const [copied, setCopied] = useState(false);
 	const eventIsUpcomming = event?.event_status === EEventStatus.UPCOMING;
 	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
-	const externalLink = event?.meet_room?.external_link;
-	const privateRoomLink = `https://${process.env.NX_CHAT_APP_API_HOST}${externalLink}`;
+	const externalLink = event?.meet_room?.external_link || getPrivateMeetingRoom?.external_link;
+	const privateRoomLink = `${process.env.NX_CHAT_APP_REDIRECT_URI}${externalLink}`;
 	const hasLink = Boolean(externalLink);
 	const handleCopyLink = useCallback(() => {
 		navigator.clipboard
@@ -106,6 +112,14 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const handleOpenLink = useCallback(() => {
 		window.open(privateRoomLink, '_blank', 'noopener,noreferrer');
 	}, [privateRoomLink]);
+
+	const [openInviteClanModal, closeInviteClanModal] = useModal(() => (
+		<ModalInvite onClose={closeInviteClanModal} open={true} isInviteExternalCalling={true} privateRoomLink={privateRoomLink} />
+	));
+
+	const handleInvite = useCallback(() => {
+		openInviteClanModal();
+	}, []);
 
 	const handleStopPropagation = (e: any) => {
 		e.stopPropagation();
@@ -185,8 +199,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									? 'Event is taking place!'
 									: timeFomat(event?.start_time || start)}
 						</p>
-						{isNonPublicEvent && <p className="bg-orange-500 text-white rounded-sm px-1 text-center">Non-Public Event</p>}{' '}
-						{isPrivateEvent && <p className="bg-red-500 text-white rounded-sm px-1 text-center">Private Event</p>}{' '}
+						{isClanEvent && <p className="bg-blue-500 text-white rounded-sm px-1 text-center">Clan Event</p>}
+						{isChannelEvent && <p className="bg-orange-500 text-white rounded-sm px-1 text-center">Channel Event</p>}
+						{isPrivateEvent && <p className="bg-red-500 text-white rounded-sm px-1 text-center">Private Event</p>}
 					</div>
 					{event?.creator_id && (
 						<Tooltip overlay={<p style={{ width: 'max-content' }}>{`Created by ${userCreate?.user?.username}`}</p>}>
@@ -228,6 +243,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					}}
 				>
 					{checkOptionVoice &&
+						!isPrivateEvent &&
 						(() => {
 							const isGMeet = channelVoice.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE;
 							const linkProps = isGMeet
@@ -258,14 +274,21 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						</>
 					)}
 					{isPrivateEvent && (
-						<a
-							href={privateRoomLink}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="flex gap-x-2 cursor-pointer text-blue-500 underline"
-						>
-							{event?.meet_room?.room_name}
-						</a>
+						<div className="flex gap-x-2 items-center">
+							<Icons.SpeakerLocked />
+							{privateRoomLink ? (
+								<a
+									href={privateRoomLink}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="cursor-pointer whitespace-normal break-words"
+								>
+									Private Room
+								</a>
+							) : (
+								<span className="text-gray-400 whitespace-normal break-words cursor-not-allowed">Private Room</span>
+							)}
+						</div>
 					)}
 				</div>
 
@@ -304,7 +327,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								className="flex items-center gap-x-1 rounded px-4 py-2 dark:bg-zinc-600 bg-[#6d6f78] hover:bg-opacity-80 font-medium text-white"
 							>
 								{isInterested ? <Icons.MuteBell defaultSize="size-4 text-white" /> : <Icons.Bell className="size-4 text-white" />}
-								{event.user_ids?.length} {isInterested ? 'UnInterested' : 'Interested'}
+								<span className="whitespace-nowrap">
+									{event.user_ids?.length} {isInterested ? 'UnInterested' : 'Interested'}
+								</span>
 							</button>
 						) : (
 							<></>
@@ -324,20 +349,26 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								<button onClick={handleCopyLink} className="text-blue-500 hover:underline">
 									{copied ? 'Copied!' : 'Copy Link'}
 								</button>
+								<button onClick={handleInvite} className="text-blue-500 hover:underline">
+									Invite
+								</button>
 							</>
 						)}
 					</span>
-				) : (
-					isNonPublicEvent && (
-						<span className="flex flex-row">
-							<p className="text-slate-400">
-								{`The audience consists of members from ${isThread ? 'thread: ' : 'channel: '}`}
-								<strong className="text-slate-100">{textChannel.channel_label}</strong>
-							</p>
-						</span>
-					)
-				)}
+				) : isChannelEvent ? (
+					<span className="flex flex-row">
+						<p className="text-slate-400">
+							{`The audience consists of members from ${isThread ? 'thread: ' : 'channel: '}`}
+							<strong className="text-slate-100">{textChannel.channel_label}</strong>
+						</p>
+					</span>
+				) : isClanEvent ? (
+					<span className="flex flex-row">
+						<p className="text-slate-400">This event is open to everyone in the clan.</p>
+					</span>
+				) : null}
 			</div>
+
 			{openPanel && (
 				<PanelEventItem
 					event={event}

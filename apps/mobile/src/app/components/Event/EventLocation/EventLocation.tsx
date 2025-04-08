@@ -29,6 +29,9 @@ export function EventLocation({ event }: IEventLocation) {
 		} else if (channelVoice?.meeting_code && channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			dismiss();
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, channelVoice);
+		} else {
+			const urlPrivateVoice = `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meet_room?.external_link}`;
+			await Linking.openURL(urlPrivateVoice);
 		}
 	};
 
@@ -37,7 +40,7 @@ export function EventLocation({ event }: IEventLocation) {
 			{option === OptionEvent.OPTION_SPEAKER && (
 				<TouchableOpacity style={styles.inline} onPress={joinVoiceChannel}>
 					<MezonIconCDN icon={IconCDN.channelVoice} height={16} width={16} color={themeValue.textStrong} />
-					<Text style={styles.smallText}>{channelVoice?.channel_label}</Text>
+					<Text style={styles.smallText}>{channelVoice?.channel_label || event?.meet_room?.room_name}</Text>
 				</TouchableOpacity>
 			)}
 

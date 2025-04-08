@@ -89,9 +89,15 @@ const ChannelBannerAndEvents = memo(({ currentClan }: { currentClan: ClansEntity
 const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: string }) => {
 	const currentClan = useSelector(selectCurrentClan);
 	const [showFullList, setShowFullList] = useState(false);
+	const prevClanIdRef = useRef<string | null>(null);
+
 	useSyncEffect(() => {
-		if (showFullList) {
-			setShowFullList(false);
+		const currentClanId = currentClan?.clan_id ?? null;
+		if (prevClanIdRef.current !== currentClanId) {
+			prevClanIdRef.current = currentClanId;
+			if (showFullList) {
+				setShowFullList(false);
+			}
 		}
 	}, [currentClan]);
 
@@ -217,12 +223,12 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 		[hasAdminPermission, hasClanPermission, hasChannelManagePermission, isClanOwner]
 	);
 
-	const handleScrollChannelIntoView = useCallback(() => {
+	const handleScrollChannelIntoView = () => {
 		const { index, currentScrollIndex, currentScrollPosition, targetScrollPosition } = findScrollIndex();
 		if (currentScrollIndex === -1 || targetScrollPosition !== currentScrollPosition) {
 			virtualizer.scrollToIndex(index, { align: 'center' });
 		}
-	}, [firstChannelWithBadgeCount]);
+	};
 
 	const isChannelRefOutOfViewport = () => {
 		const { currentScrollIndex } = findScrollIndex();

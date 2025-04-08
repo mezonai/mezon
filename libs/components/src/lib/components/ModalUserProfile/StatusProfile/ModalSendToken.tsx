@@ -1,4 +1,4 @@
-import { DirectEntity, selectAllDirectMessages, selectAllUserClans } from '@mezon/store';
+import { DirectEntity, ISendTokenDetailType, selectAllDirectMessages, selectAllUserClans } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
 import { Button, Label, Modal } from 'flowbite-react';
@@ -24,6 +24,7 @@ type ModalSendTokenProps = {
 		isSendTokenInputDisabled: boolean;
 		isUserSelectionDisabled: boolean;
 	};
+	infoSendToken?: ISendTokenDetailType | null;
 };
 
 const ModalSendToken = ({
@@ -39,13 +40,14 @@ const ModalSendToken = ({
 	userId,
 	selectedUserId,
 	note,
-	sendTokenInputsState
+	sendTokenInputsState,
+	infoSendToken
 }: ModalSendTokenProps) => {
 	const usersClan = useSelector(selectAllUserClans);
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const listDM = dmGroupChatList.filter((groupChat) => groupChat.type === ChannelType.CHANNEL_TYPE_DM);
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const [searchTerm, setSearchTerm] = useState('');
+	const [searchTerm, setSearchTerm] = useState(infoSendToken?.receiver_name || '');
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [tokenNumber, setTokenNumber] = useState('');
 	const [noteSendToken, setNoteSendToken] = useState('');

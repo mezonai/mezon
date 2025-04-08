@@ -11,9 +11,12 @@ import {
 	selectTitle
 } from '@mezon/store';
 import { EEventAction } from '@mezon/utils';
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import CanvasContent from './CanvasContent';
+
+const CanvasContent = lazy(() => import('./CanvasContent'));
+
+const CanvasContentPlaceholder = () => <div className="w-full h-[calc(100vh-120px)] animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>;
 
 const Canvas = () => {
 	const dispatch = useDispatch();
@@ -103,13 +106,15 @@ const Canvas = () => {
 				className="w-full px-4 py-2 mt-[25px] bg-inherit focus:outline-none text-[28px] resize-none leading-[34px] font-bold text-inherit"
 			/>
 			<div className="w-full">
-				<CanvasContent
-					key={idCanvas}
-					idCanvas={idCanvas || ''}
-					isLightMode={appearanceTheme === 'light'}
-					content={content || ''}
-					isEditAndDelCanvas={isEditAndDelCanvas}
-				/>
+				<Suspense fallback={<CanvasContentPlaceholder />}>
+					<CanvasContent
+						key={idCanvas}
+						idCanvas={idCanvas || ''}
+						isLightMode={appearanceTheme === 'light'}
+						content={content || ''}
+						isEditAndDelCanvas={isEditAndDelCanvas}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);

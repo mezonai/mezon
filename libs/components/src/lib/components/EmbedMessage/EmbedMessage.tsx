@@ -23,7 +23,7 @@ export default function EmbedMessage({ embed, message_id, senderId }: { embed: I
 					<div>{thumbnail && <EmbedThumbnail url={thumbnail.url} />}</div>
 				</div>
 
-				{image && <EmbedImage url={image.url} />}
+				{image && <EmbedImage url={image.url} width={image.width} height={image.height} />}
 				{(footer || timestamp) && <EmbedFooter {...footer} timestamp={timestamp} />}
 			</div>
 		</div>

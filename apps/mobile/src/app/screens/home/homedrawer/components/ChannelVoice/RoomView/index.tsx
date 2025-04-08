@@ -53,9 +53,15 @@ const RoomView = ({
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 
 	useEffect(() => {
-		localParticipant.setCameraEnabled(false);
-		localParticipant.setMicrophoneEnabled(false);
+		if (localParticipant) {
+			loadLocalDefaults();
+		}
 	}, [localParticipant]);
+
+	const loadLocalDefaults = async () => {
+		await localParticipant.setCameraEnabled(false);
+		await localParticipant.setMicrophoneEnabled(false);
+	};
 
 	const sortedParticipants = [...participants].sort((a, b) => (b.isScreenShareEnabled ? 1 : 0) - (a.isScreenShareEnabled ? 1 : 0));
 

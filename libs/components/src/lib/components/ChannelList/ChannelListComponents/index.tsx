@@ -12,13 +12,11 @@ import {
 	selectOnboardingMode,
 	selectOngoingEvent,
 	selectProcessingByClan,
-	selectShowNumEvent,
-	selectTheme,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, EPermission } from '@mezon/utils';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -26,15 +24,12 @@ import EventModal from '../EventChannelModal';
 
 export const Events = memo(() => {
 	const ongoingEvent = useSelector(selectOngoingEvent);
-	const [openModalDetail, setOpenModalDetail] = useState(false);
 	const previewMode = useSelector(selectOnboardingMode);
 	const { setClanShowNumEvent } = useClans();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClan = useSelector(selectCurrentClan);
-	const showNumEvent = useSelector(selectShowNumEvent(currentClanId || ''));
 	const onboardingByClan = useSelector((state) => selectOnboardingByClan(state, currentClanId as string));
 	const [checkAdminPermission] = usePermissionChecker([EPermission.administrator]);
-	const appearanceTheme = useSelector(selectTheme);
 
 	const { numberEventManagement, numberEventUpcoming } = useEventManagementQuantity();
 	const closeModal = () => {
@@ -50,7 +45,6 @@ export const Events = memo(() => {
 
 	const handleOpenDetail = () => {
 		openEventModal();
-		setOpenModalDetail(true);
 	};
 
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;

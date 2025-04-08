@@ -108,8 +108,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="com.supersami.foregroundservice.ForegroundService" android:foregroundServiceType="camera|microphone|mediaPlayback" />
-        <service android:name="com.supersami.foregroundservice.ForegroundServiceTask" />
         <receiver
             android:name=".CustomFirebaseMessagingReceiver"
             android:enabled="true"

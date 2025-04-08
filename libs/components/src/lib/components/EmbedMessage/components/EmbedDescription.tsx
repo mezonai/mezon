@@ -25,7 +25,11 @@ export function EmbedDescription({ description }: EmbedDescriptionProps) {
 			const contentInElement = text?.substring(s, e);
 
 			if (lastindex < s) {
-				formattedContent.push(<p key={`plain-${lastindex}`}>{text?.slice(lastindex, s) ?? ''}</p>);
+				formattedContent.push(
+					<p key={`plain-${lastindex}`} className="whitespace-pre-line">
+						{text?.slice(lastindex, s) ?? ''}
+					</p>
+				);
 			}
 
 			if (element.kindOf === ETokenMessage.MARKDOWNS) {
@@ -48,7 +52,11 @@ export function EmbedDescription({ description }: EmbedDescriptionProps) {
 		});
 
 		if (text && lastindex < text?.length) {
-			formattedContent.push(<p key={`plain-${lastindex}-end`}>{text.slice(lastindex)}</p>);
+			formattedContent.push(
+				<p key={`plain-${lastindex}-end`} className="whitespace-pre-line">
+					{text.slice(lastindex)}
+				</p>
+			);
 		}
 
 		return formattedContent;

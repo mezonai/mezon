@@ -15,6 +15,7 @@ import {
 	selectShowModalCustomStatus,
 	selectShowModalFooterProfile,
 	selectShowModalSendToken,
+	selectStatusMenu,
 	selectTheme,
 	selectUpdateToken,
 	selectVoiceJoined,
@@ -235,9 +236,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
-
+	const statusMenu = useSelector(selectStatusMenu);
 	return (
-		<div className="fixed bottom-0 left-[72px] min-h-14 w-widthChannelList" id="clan-footer">
+		<div
+			className={`fixed bottom-0 left-[72px] min-h-14 w-widthChannelList z-10 ${statusMenu ? '!w-[calc(100vw_-_72px)] sbm:!w-widthChannelList' : 'hidden'} sbm:block `}
+			id="clan-footer"
+		>
 			{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 			{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
 			{isVoiceJoined && <VoiceInfo />}
@@ -250,7 +254,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			 w-full group focus-visible:outline-none footer-profile ${appearanceTheme === 'light' && 'lightMode'}`}
 			>
 				<div
-					className={`footer-profile h-10 flex-1 flex pl-2 items-center hover:bg-bgHoverMember rounded-lg ${appearanceTheme === 'light' && 'lightMode'}`}
+					className={`footer-profile h-10 flex-1 flex pl-2 items-center dark:hover:bg-bgHoverMember hover:bg-bgLightSecondary rounded-md ${appearanceTheme === 'light' && 'lightMode'}`}
 					onClick={handleClickFooterProfile}
 				>
 					<div className="cursor-pointer flex items-center gap-3 relative ">
@@ -265,11 +269,9 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 						<div className="absolute bottom-1 left-6">
 							<UserStatusIcon status={userCustomStatus?.user_status} />
 						</div>
-						<div className="flex flex-col ">
-							<p className="text-base font-normal">{name}</p>
-							<p className="text-[11px] text-left dark:text-contentSecondary text-colorTextLightMode line-clamp-1 leading-[14px]">
-								{customStatus}
-							</p>
+						<div className="flex flex-col dark:text-contentSecondary text-colorTextLightMode  ">
+							<p className="text-base font-medium max-w-40 truncate dark:text-contentSecondary text-black">{name}</p>
+							<p className="text-[11px] text-left line-clamp-1 leading-[14px]">{customStatus}</p>
 						</div>
 					</div>
 					{showModalFooterProfile && (
@@ -321,6 +323,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 					userId={myProfile.userId as string}
 					note={note}
 					sendTokenInputsState={sendTokenInputsState}
+					infoSendToken={infoSendToken}
 				/>
 			)}
 		</div>

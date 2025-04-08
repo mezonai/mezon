@@ -238,7 +238,7 @@ const ChannelLinkComponent = ({
 			onContextMenu={handleMouseClick}
 			id={channel.channel_id}
 			role="button"
-			className={`relative group ${showWhiteDot ? 'before:content-[""] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute dark:before:bg-channelActiveColor before:bg-channelActiveLightColor before:top-3' : ''}`}
+			className={`relative group z-10 dark:bg-bgSecondary bg-bgLightSecondary ${showWhiteDot ? 'before:content-[""] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute dark:before:bg-channelActiveColor before:bg-channelActiveLightColor before:top-3' : ''}`}
 		>
 			{channelType === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? (
 				<span

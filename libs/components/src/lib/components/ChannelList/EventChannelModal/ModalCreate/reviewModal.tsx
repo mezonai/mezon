@@ -1,4 +1,5 @@
 import { useEscapeKeyClose } from '@mezon/core';
+import { EventManagementEntity } from '@mezon/store';
 import { ContenSubmitEventProps } from '@mezon/utils';
 import { useMemo, useRef } from 'react';
 import { handleTimeISO } from '../timeFomatEvent';
@@ -8,12 +9,14 @@ export type ReviewModalProps = {
 	contentSubmit: ContenSubmitEventProps;
 	option: string;
 	onClose: () => void;
+	event?: EventManagementEntity | undefined;
 };
 
 const ReviewModal = (props: ReviewModalProps) => {
-	const { option, contentSubmit, onClose } = props;
+	const { option, contentSubmit, onClose, event } = props;
 	const time = useMemo(() => handleTimeISO(contentSubmit.selectedDateStart, contentSubmit.timeStart), []);
 	const modalRef = useRef<HTMLDivElement>(null);
+
 	useEscapeKeyClose(modalRef, onClose);
 	return (
 		<div ref={modalRef} className="dark:text-white text-black">
@@ -30,6 +33,7 @@ const ReviewModal = (props: ReviewModalProps) => {
 				address={contentSubmit?.address}
 				onClose={onClose}
 				isPrivate={contentSubmit.isPrivate}
+				event={event}
 			/>
 			<div className="mt-8">
 				<h3 className="text-center font-semibold text-xl">Here's a preview of your event.</h3>
