@@ -361,6 +361,7 @@ export const eventManagementSlice = createSlice({
 				channel_voice_id: normalizedVoiceChannelId,
 				event_status,
 				user_ids: [action.payload.creator_id],
+				is_private: action.payload.is_private,
 				...restPayload
 			});
 		},

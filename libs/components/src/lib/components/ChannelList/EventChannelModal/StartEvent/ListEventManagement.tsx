@@ -16,6 +16,7 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 	const userId = useSelector(selectAllAccount)?.user?.id;
 
 	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
+	console.log('allEventManagement: ', allEventManagement);
 	return allEventManagement
 		.filter(
 			(event) =>

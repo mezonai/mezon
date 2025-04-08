@@ -67,9 +67,15 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		onClose,
 		isPrivate
 	} = props;
+	console.log('event: ', event);
 	const isChannelEvent = textChannelId && textChannelId !== '0';
 	const isPrivateEvent = !isChannelEvent && ((!isReviewEvent && event?.is_private) || (isReviewEvent && isPrivate));
 	const isClanEvent = !isChannelEvent && ((!isReviewEvent && !event?.is_private) || (isReviewEvent && !isPrivate));
+	console.log('isPrivate: ', isPrivate);
+	console.log('isReviewEvent: ', isReviewEvent);
+	console.log('event: ', event);
+	console.log('isReviewEvent: ', isReviewEvent);
+	console.log('!isChannelEvent: ', !isChannelEvent);
 
 	const dispatch = useAppDispatch();
 	const channelFirst = useSelector(selectChannelFirst);
