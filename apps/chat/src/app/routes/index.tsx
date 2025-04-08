@@ -17,6 +17,7 @@ import { appActions, useAppDispatch } from '@mezon/store';
 import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
 import { inviteLoader, shouldRevalidateInvite } from '../loaders/inviteLoader';
 
+import { Popout } from '@mezon/components';
 import { useLoading } from '../app';
 import CanvasRoutes from './CanvasRoutes';
 import ClansRoutes from './ClanRoutes';
@@ -154,6 +155,15 @@ export const Routes = memo(() => {
 							</Suspense>
 						),
 						loader: loaderWithStore(authLoader)
+					},
+					{
+						path: 'popout',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<Popout />
+							</Suspense>
+						),
+						loader: loaderWithStore(appLoader)
 					},
 					isElectron()
 						? {

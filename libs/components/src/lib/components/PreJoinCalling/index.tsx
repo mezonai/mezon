@@ -337,7 +337,7 @@ export default function PreJoinCalling() {
 					data-lk-theme="default"
 					className="h-full"
 				>
-					<MyVideoConference isExternalCalling={true} channel={undefined} onLeaveRoom={handleLeaveRoom} onFullScreen={handleFullScreen} />
+					<MyVideoConference isExternalCalling={true} onLeaveRoom={handleLeaveRoom} onFullScreen={handleFullScreen} />
 				</LiveKitRoom>
 			) : (
 				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">

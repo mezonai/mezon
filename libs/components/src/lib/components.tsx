@@ -121,3 +121,5 @@ export * from './components/virtual-core/useVirtualizer';
 export * from './components/PreJoinCalling/ControlButton';
 export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
+
+export { default as Popout } from './components/VoiceChannel/PopOut/VoicePopOut';

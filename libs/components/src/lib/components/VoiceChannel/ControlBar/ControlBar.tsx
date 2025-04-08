@@ -6,12 +6,14 @@ import {
 	selectShowSelectScreenModal,
 	selectStreamScreen,
 	selectVoiceFullScreen,
+	selectVoiceOpenPopOut,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useMediaPermissions } from '@mezon/utils';
 
+import { Button } from 'flowbite-react';
 import isElectron from 'is-electron';
 import { LocalTrackPublication, Track } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
@@ -28,6 +30,7 @@ interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 	controls?: ControlBarControls;
 	saveUserChoices?: boolean;
 	onLeaveRoom: () => void;
+	handleJoinRoom?: () => void;
 	onFullScreen: () => void;
 	isExternalCalling?: boolean;
 }
@@ -38,6 +41,7 @@ export function ControlBar({
 	saveUserChoices = true,
 	onDeviceError,
 	onLeaveRoom,
+	handleJoinRoom,
 	onFullScreen,
 	isExternalCalling
 }: ControlBarProps) {
@@ -179,6 +183,65 @@ export function ControlBar({
 	);
 
 	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
+	const [isPopout, setIsPopout] = useState(false);
+	const [popupWindow, setPopupWindow] = useState<Window | null>(null);
+	const isOpenPopout = useSelector(selectVoiceOpenPopOut);
+
+	useEffect(() => {
+		if (!popupWindow) return;
+
+		// Check if popup is closed
+		const checkPopupInterval = setInterval(() => {
+			if (popupWindow.closed) {
+				clearInterval(checkPopupInterval);
+				setPopupWindow(null);
+				setIsPopout(false);
+				// Update Redux state when popup is closed
+				dispatch(voiceActions.setOpenPopOut(false));
+			}
+		}, 500);
+
+		// Listen for messages from popup
+		const handleMessage = (event: MessageEvent) => {
+			if (event.data && event.data.type === 'POPUP_CLOSED') {
+				setPopupWindow(null);
+				setIsPopout(false);
+				dispatch(voiceActions.setOpenPopOut(false));
+			}
+		};
+
+		window.addEventListener('message', handleMessage);
+
+		// Clean up
+		return () => {
+			clearInterval(checkPopupInterval);
+			window.removeEventListener('message', handleMessage);
+		};
+	}, [popupWindow, dispatch, isOpenPopout]);
+
+	const togglePopout = () => {
+		handleJoinRoom?.();
+		if (isPopout) {
+			if (popupWindow && !popupWindow.closed) {
+				popupWindow.close();
+			}
+			setPopupWindow(null);
+			setIsPopout(false);
+			dispatch(voiceActions.setOpenPopOut(false));
+		} else {
+			const popup = window.open('/popout', 'VideoConference', 'width=800,height=600,resizable=yes');
+
+			if (popup) {
+				setPopupWindow(popup);
+				setIsPopout(true);
+				dispatch(voiceActions.setOpenPopOut(true));
+				popup.focus();
+			} else {
+				dispatch(voiceActions.setOpenPopOut(false));
+				alert('Popup was blocked. Please allow popups for this site.');
+			}
+		}
+	};
 
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent">
@@ -310,9 +373,12 @@ export function ControlBar({
 						overlayClassName="whitespace-nowrap z-50 !p-0 !pt-4"
 						getTooltipContainer={() => document.getElementById('livekitRoom') || document.body}
 					>
-						<span>
+						{/* <span>
 							<Icons.VoicePopOutIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
-						</span>
+						</span> */}
+						<Button onClick={togglePopout} className="mb-6 bg-blue-600 hover:bg-blue-700">
+							{isPopout ? 'Return to Page' : 'Pop Out'}
+						</Button>
 					</Tooltip>
 				)}
 
