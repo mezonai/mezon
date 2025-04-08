@@ -17,6 +17,7 @@ import {
 	selectVoiceFullScreen,
 	selectVoiceInfo,
 	selectVoiceJoined,
+	selectVoiceOpenPopOut,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
@@ -133,6 +134,7 @@ const ChannelVoice = memo(
 		const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
 		const showModalEvent = useSelector(selectShowModelEvent);
 		const { channelId } = useAppParams();
+		const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
 
 		return (
 			<div
@@ -158,23 +160,25 @@ const ChannelVoice = memo(
 							handleJoinRoom={handleJoinRoom}
 							isCurrentChannel={isShow}
 						/>
-						<LiveKitRoom
-							ref={containerRef}
-							id="livekitRoom"
-							key={token}
-							className={`${!isShow ? 'hidden' : ''} ${isVoiceFullScreen ? '!fixed !inset-0 !z-50 !w-screen !h-screen' : ''}`}
-							audio={showMicrophone}
-							video={showCamera}
-							token={token}
-							serverUrl={serverUrl}
-							data-lk-theme="default"
-						>
-							<MyVideoConference
-								channelLabel={currentChannel?.channel_label as string}
-								onLeaveRoom={handleLeaveRoom}
-								onFullScreen={handleFullScreen}
-							/>
-						</LiveKitRoom>
+						{!isOpenPopOut && (
+							<LiveKitRoom
+								ref={containerRef}
+								id="livekitRoom"
+								key={token}
+								className={`${!isShow ? 'hidden' : ''} ${isVoiceFullScreen ? '!fixed !inset-0 !z-50 !w-screen !h-screen' : ''}`}
+								audio={showMicrophone}
+								video={showCamera}
+								token={token}
+								serverUrl={serverUrl}
+								data-lk-theme="default"
+							>
+								<MyVideoConference
+									channelLabel={currentChannel?.channel_label as string}
+									onLeaveRoom={handleLeaveRoom}
+									onFullScreen={handleFullScreen}
+								/>
+							</LiveKitRoom>
+						)}
 					</>
 				)}
 			</div>

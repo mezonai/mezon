@@ -17,13 +17,14 @@ import {
 	useMaybeTrackRefContext,
 	useParticipantTile
 } from '@livekit/components-react';
-import { selectMemberClanByUserName, useAppSelector } from '@mezon/store';
+import { selectCurrentClanId, selectMemberClanByUserName, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import type { Participant } from 'livekit-client';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
 import React, { PropsWithChildren, forwardRef, useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import { FocusToggle } from './FocusToggle';
 
@@ -104,8 +105,9 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 
 	const member = useAppSelector((state) => selectMemberClanByUserName(state, usernameString));
 
-	const voiceUsername = member?.clan_nick || usernameString;
+	const currentClan = useSelector(selectCurrentClanId);
 
+	const voiceUsername = member?.clan_nick || usernameString;
 	const avatar = useMemo(() => {
 		return member?.clan_avatar || member?.user?.avatar_url || null;
 	}, [member]);

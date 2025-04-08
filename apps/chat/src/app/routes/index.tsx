@@ -105,6 +105,20 @@ export const Routes = memo(() => {
 		dispatch(appActions.setInitialPath(window.location.pathname));
 	}, [dispatch]);
 
+	const combinedLoader = async (props: any) => {
+		try {
+			// Run authLoader first to check authentication
+			await loaderWithStore(authLoader)(props);
+
+			// After authentication is successful, run appLoader
+			return await loaderWithStore(appLoader)(props);
+		} catch (error) {
+			// Handle errors (e.g., redirect if authentication fails)
+			console.error('Error during combined loader:', error);
+			throw error; // You could handle this error by redirecting or displaying a fallback UI
+		}
+	};
+
 	const routes = useMemo(() => {
 		return (isElectron() ? createHashRouter : createBrowserRouter)([
 			{
@@ -163,7 +177,7 @@ export const Routes = memo(() => {
 								<Popout />
 							</Suspense>
 						),
-						loader: loaderWithStore(appLoader)
+						loader: loaderWithStore(authLoader)
 					},
 					isElectron()
 						? {
