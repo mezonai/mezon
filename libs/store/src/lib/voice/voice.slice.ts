@@ -107,7 +107,7 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	token: '',
 	stream: null,
 	showSelectScreenModal: false,
-	openPopOut: false
+	openPopOut: false,
 	externalToken: undefined,
 	joinCallExtStatus: 'not loaded'
 });
