@@ -3,6 +3,7 @@ import log from 'electron-log/main';
 import fs from 'fs';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { join } from 'path';
 import App from './app/app';
 import {
 	ACTION_SHOW_IMAGE,
@@ -13,6 +14,7 @@ import {
 	MAXIMIZE_WINDOW,
 	MINIMIZE_WINDOW,
 	NAVIGATE_TO_URL,
+	OPEN_MEET_POPOUT,
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
@@ -234,7 +236,37 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 		}
 	}
 });
+/////////////
+ipcMain.handle(OPEN_MEET_POPOUT, (event, url) => {
+	// Create a new BrowserWindow
+	let popoutWindow = new BrowserWindow({
+		autoHideMenuBar: true,
+		// frame: false,
+		// transparent: true,
+		// show: false,
+		// backgroundColor: '#00000000',
+		webPreferences: {
+			nodeIntegration: false,
+			// contextIsolation: true,
+			preload: join(__dirname, 'main.preload.js')
+		},
+		minWidth: 200, // Minimum window size
+		minHeight: 200,
+		resizable: true, // Allow resizing
+		movable: true // Allow moving
+		// hasShadow: true
+	});
 
+	popoutWindow.loadURL(url);
+
+	popoutWindow.once('ready-to-show', () => {
+		popoutWindow.show();
+	});
+
+	popoutWindow.on('closed', () => {
+		popoutWindow = null;
+	});
+});
 // handle setup events as quickly as possible
 Main.initialize();
 

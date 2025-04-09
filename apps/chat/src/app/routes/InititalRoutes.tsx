@@ -1,4 +1,4 @@
-import { selectIsLogin } from '@mezon/store';
+import { selectIsLogin, selectVoiceOpenPopOut } from '@mezon/store';
 import { useSelector } from 'react-redux';
 
 import isElectron from 'is-electron';
@@ -7,6 +7,8 @@ import { Navigate } from 'react-router-dom';
 
 const InitialRoutes = () => {
 	const isLogin = useSelector(selectIsLogin);
+	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
+
 	const STATE = React.useMemo(() => {
 		const randomState = Math.random().toString(36).substring(2, 15);
 		sessionStorage.setItem('oauth_state', randomState);
@@ -22,6 +24,8 @@ const InitialRoutes = () => {
 		const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
 		const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
 		window.location.replace(authUrl);
+	} else if (isLogin && isElectron() && isOpenPopOut) {
+		return <Navigate to="/popout" replace />;
 	} else {
 		return <Navigate to="/chat/direct/friends" replace />;
 	}

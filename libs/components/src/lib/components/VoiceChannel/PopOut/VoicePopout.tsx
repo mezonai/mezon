@@ -48,7 +48,7 @@ const VoicePopout: React.FC = () => {
 
 		dispatch(voiceActions.resetVoiceSettings());
 		await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
-		if (window.location.pathname === '/popout') {
+		if (window.location.pathname === '/popout' || window.location.pathname === '/login') {
 			dispatch(voiceActions.setOpenPopOut(false));
 			window.close();
 			return;

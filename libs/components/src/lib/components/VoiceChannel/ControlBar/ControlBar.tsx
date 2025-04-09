@@ -181,31 +181,33 @@ export function ControlBar({
 	);
 
 	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
-	let popoutWindow: Window | null = null;
-
 	const togglePopout = () => {
-		if (window.location.pathname === '/popout') {
-			dispatch(voiceActions.setOpenPopOut(false));
-			window.close();
-			return;
-		}
-
-		popoutWindow = window.open('/popout', 'LiveKitPopout', 'width=800,height=600,left=100,top=100');
-
-		if (!popoutWindow) {
-			console.error('Pop-up window blocked!');
-			return;
-		}
-
-		dispatch(voiceActions.setOpenPopOut(true));
-
-		const checkIfClosed = setInterval(() => {
-			if (popoutWindow?.closed) {
-				clearInterval(checkIfClosed);
-				popoutWindow = null;
+		dispatch(voiceActions.setOpenPopOut(!isOpenPopOut));
+		if (isDesktop) {
+			const baseUrl = `${process.env.NX_CHAT_APP_REDIRECT_URI}/login`;
+			window.electron.openMeetPopout(baseUrl as string);
+		} else {
+			if (window.location.pathname === '/popout') {
 				dispatch(voiceActions.setOpenPopOut(false));
+				window.close();
+				return;
 			}
-		}, 500);
+
+			const popoutUrl = '/popout';
+			const popoutWindow = window.open(popoutUrl, 'LiveKitPopout', 'width=800,height=600,left=100,top=100');
+
+			if (!popoutWindow) {
+				console.error('Pop-up window blocked!');
+				return;
+			}
+
+			const checkIfClosed = setInterval(() => {
+				if (popoutWindow?.closed) {
+					clearInterval(checkIfClosed);
+					dispatch(voiceActions.setOpenPopOut(false));
+				}
+			}, 500);
+		}
 	};
 
 	const livekitRoomId = isOpenPopOut ? 'livekitRoomPopOut' : 'livekitRoom';

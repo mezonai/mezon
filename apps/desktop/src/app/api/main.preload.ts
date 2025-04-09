@@ -3,6 +3,7 @@ import {
 	ACTION_SHOW_IMAGE,
 	GET_APP_VERSION,
 	GET_DEVICE_ID,
+	OPEN_MEET_POPOUT,
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
@@ -36,6 +37,10 @@ contextBridge.exposeInMainWorld('electron', {
 
 	openImageWindow: (props: any, options?: Electron.BrowserWindowConstructorOptions, params?: Record<string, string>) => {
 		return ipcRenderer.invoke(OPEN_NEW_WINDOW, props, options, params);
+	},
+
+	openMeetPopout: (url: string) => {
+		return ipcRenderer.invoke(OPEN_MEET_POPOUT, url);
 	},
 
 	handleActionShowImage: (action: string, url: any) => {
