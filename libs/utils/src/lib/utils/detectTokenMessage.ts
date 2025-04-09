@@ -226,7 +226,8 @@ export const generateNewPlaintext = (updatedItems: INewPosMarkdown[], plaintext:
 export const adjustTokenPositions = (
 	filteredTokens: (IMentionOnMessage | IHashtagOnMessage | IEmojiOnMessage)[],
 	markers: INewPosMarkdown[],
-	isCrease = false // Mặc định là false
+	isCrease = false, // Mặc định là false
+	removedNewlineCount?: number
 ) => {
 	const combined = [...filteredTokens, ...markers].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
@@ -236,8 +237,12 @@ export const adjustTokenPositions = (
 			lastAccumulated = item.accumulatedMarkerTotal ?? lastAccumulated;
 			return item;
 		} else {
-			const adjustedS = isCrease ? (item.s ?? 0) + lastAccumulated : (item.s ?? 0) - lastAccumulated;
-			const adjustedE = isCrease ? (item.e ?? 0) + lastAccumulated : (item.e ?? 0) - lastAccumulated;
+			const adjustedS = isCrease
+				? (item.s ?? 0) + lastAccumulated - (removedNewlineCount || 0)
+				: (item.s ?? 0) - lastAccumulated - (removedNewlineCount || 0);
+			const adjustedE = isCrease
+				? (item.e ?? 0) + lastAccumulated - (removedNewlineCount || 0)
+				: (item.e ?? 0) - lastAccumulated - (removedNewlineCount || 0);
 
 			return {
 				...item,
@@ -260,7 +265,8 @@ export const adjustPos = (
 	mentionList: IMentionOnMessage[],
 	hashtagList: IHashtagOnMessage[],
 	emojiList: IEmojiOnMessage[],
-	text: string
+	text: string,
+	removedNewlineCount?: number
 ) => {
 	const markdownHasPrefix = getMarkdownPrefixItems(mk ?? []); // get markdown has prefix as: pre/code/bold
 	// add validate
@@ -281,9 +287,15 @@ export const adjustPos = (
 	const outsidePrefixHashtag = filterTokensOutsideMarkdown(hashtagList, accumulateNumber);
 	const outsidePrefixEmoji = filterTokensOutsideMarkdown(emojiList, accumulateNumber);
 	// result updated
-	const adjustedMentionsPos = shouldBeAdjustMentionPos ? adjustTokenPositions(outsidePrefixMention ?? [], accumulateNumber) : outsidePrefixMention;
-	const adjustedHashtagPos = shouldBeAdjustHashtagPos ? adjustTokenPositions(outsidePrefixHashtag ?? [], accumulateNumber) : outsidePrefixHashtag;
-	const adjustedEmojiPos = shouldBeAdjustEmojiPos ? adjustTokenPositions(outsidePrefixEmoji ?? [], accumulateNumber) : outsidePrefixEmoji;
+	const adjustedMentionsPos = shouldBeAdjustMentionPos
+		? adjustTokenPositions(outsidePrefixMention ?? [], accumulateNumber, false, removedNewlineCount)
+		: outsidePrefixMention;
+	const adjustedHashtagPos = shouldBeAdjustHashtagPos
+		? adjustTokenPositions(outsidePrefixHashtag ?? [], accumulateNumber, false, removedNewlineCount)
+		: outsidePrefixHashtag;
+	const adjustedEmojiPos = shouldBeAdjustEmojiPos
+		? adjustTokenPositions(outsidePrefixEmoji ?? [], accumulateNumber, false, removedNewlineCount)
+		: outsidePrefixEmoji;
 
 	return {
 		adjustedMentionsPos,

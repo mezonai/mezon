@@ -45,6 +45,7 @@ export type ApiMessageEntity = ApiMessageEntityDefault | ApiMessageEntityPre | A
 export interface ApiFormattedText {
 	text: string;
 	entities?: ApiMessageEntity[];
+	removedNewlineCount?: number;
 }
 
 export const ENTITY_CLASS_BY_NODE_NAME: Record<string, ApiMessageEntityTypes> = {
@@ -86,7 +87,7 @@ export function escapeHtml(html: string) {
 
 export function parseHtmlAsFormattedText(html: string): ApiFormattedText {
 	const fragment = document.createElement('div');
-	fragment.innerHTML = parseMarkdown(escapeHtml(parseMarkdownLinks(html)));
+	fragment.innerHTML = parseMarkdown(escapeHtml(parseMarkdownLinks(html))).parsedHtml;
 
 	fixImageContent(fragment);
 	const text = fragment.innerText;
@@ -123,7 +124,8 @@ export function parseHtmlAsFormattedText(html: string): ApiFormattedText {
 
 	return {
 		text,
-		entities: entities.length ? entities : undefined
+		entities: entities.length ? entities : undefined,
+		removedNewlineCount: parseMarkdown(escapeHtml(parseMarkdownLinks(html))).removedNewlineCount
 	};
 }
 
@@ -141,8 +143,23 @@ export function fixImageContent(fragment: HTMLDivElement) {
 
 function parseMarkdown(html: string) {
 	let parsedHtml = html.slice(0);
+	let removedNewlineCount = 0;
 
-	// Define a regex to match mentions
+	// trim and count removed newlines (\n, \r)
+	// at the start and end of content inside triple backticks (```).
+	const trimPreformattedText = (_: string, content: string) => {
+		const originalLength = content.length;
+
+		// Remove all leading and trailing newlines (\n, \r)
+		const trimmedContent = content.replace(/^[\n\r]+|[\n\r]+$/g, '');
+
+		// Calculate the number of removed newline characters
+		const removed = originalLength - trimmedContent.length;
+		removedNewlineCount += removed;
+
+		// Return the trimmed content wrapped in a <pre> tag
+		return `<pre>${trimmedContent}</pre>`;
+	};
 
 	// Strip redundant nbsp's
 	parsedHtml = parsedHtml.replace(/&nbsp;/g, ' ');
@@ -157,9 +174,8 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
-	// Pre
-	parsedHtml = parsedHtml.replace(/^`{3}[\n\r]?(.*?)[\n\r]?`{3}/gms, '<pre>$1</pre>');
-	parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
+	// Preformatted text handling
+	parsedHtml = parsedHtml.replace(/[`]{3}([\s\S]+?)[`]{3}/g, trimPreformattedText);
 
 	// Code
 	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(code|pre)>)/g, '<code>$2</code>');
@@ -167,7 +183,7 @@ function parseMarkdown(html: string) {
 	// Process bold markdown, but skip mentions
 	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[*]{2}([^*\n]+)[*]{2}(?![^<]*<\/(code|pre)>)/g, '<b>$2</b>');
 
-	return parsedHtml;
+	return { parsedHtml, removedNewlineCount };
 }
 
 const LINK_TEMPLATE =
