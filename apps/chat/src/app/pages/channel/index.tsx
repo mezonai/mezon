@@ -437,7 +437,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 					{!isShowCanvas && isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
 						<div
-							className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
+							className={`flex flex-1 justify-center overflow-y-scroll overflow-x-hidden  ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'thread-scroll'}`}
 						>
 							<AgeRestricted closeAgeRestricted={closeAgeRestricted} />
 						</div>
