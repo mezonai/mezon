@@ -35,12 +35,11 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 		if (props?.channelId && messageActionNeedToResolve) {
 			setMessageActionNeedToResolve(null);
 		}
-	}, [props?.channelId]);
+	}, [messageActionNeedToResolve, props?.channelId]);
 
 	useEffect(() => {
 		const showKeyboard = DeviceEventEmitter.addListener(ActionEmitEvent.SHOW_KEYBOARD, (value) => {
 			//NOTE: trigger from message action 'MessageItemBS and MessageItem component'
-			setMessageActionNeedToResolve(value);
 			if (value?.type === EMessageActionType.EditMessage) {
 				saveMessageActionNeedToResolve(value);
 			} else {
