@@ -4,6 +4,7 @@ import {
 	GET_APP_VERSION,
 	GET_DEVICE_ID,
 	OPEN_NEW_WINDOW,
+	OPEN_POPUP_VOICE_CALL,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_BADGE_COUNT
@@ -41,5 +42,8 @@ contextBridge.exposeInMainWorld('electron', {
 	handleActionShowImage: (action: string, url: any) => {
 		return ipcRenderer.invoke(ACTION_SHOW_IMAGE, { payload: { action, fileURL: url } });
 	},
-	getScreenSources: (source: string) => ipcRenderer.invoke(REQUEST_PERMISSION_SCREEN, source)
+	getScreenSources: (source: string) => ipcRenderer.invoke(REQUEST_PERMISSION_SCREEN, source),
+	openPopoutVideoCall: (port) => {
+		return ipcRenderer.postMessage(OPEN_POPUP_VOICE_CALL, null, port);
+	}
 });

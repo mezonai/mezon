@@ -14,6 +14,7 @@ import {
 	MINIMIZE_WINDOW,
 	NAVIGATE_TO_URL,
 	OPEN_NEW_WINDOW,
+	OPEN_POPUP_VOICE_CALL,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	TITLE_BAR_ACTION,
@@ -23,6 +24,7 @@ import ElectronEvents from './app/events/electron.events';
 import SquirrelEvents from './app/events/squirrel.events';
 import updateImagePopup from './assets/image-window/update_window_image';
 import openImagePopup from './assets/image-window/window_image';
+import openVoiceWindow from './assets/voice-window/window_voice';
 import { environment } from './environments/environment';
 export type ImageWindowProps = {
 	attachmentData: ApiMessageAttachment & { create_time?: string };
@@ -190,6 +192,12 @@ ipcMain.handle(OPEN_NEW_WINDOW, (event, props: any, _options?: Electron.BrowserW
 	ipcMain.on(IMAGE_WINDOW_TITLE_BAR_ACTION, (event, action, _data) => {
 		handleWindowAction(newWindow, action);
 	});
+});
+
+ipcMain.on(OPEN_POPUP_VOICE_CALL, (event, props: any) => {
+	console.log('event: ', event);
+	console.log('props: ', props);
+	const popoutWindow = openVoiceWindow(event, App.mainWindow);
 });
 
 ipcMain.on(TITLE_BAR_ACTION, (event, action, _data) => {

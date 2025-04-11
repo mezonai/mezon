@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Popout Video</title>
+</head>
+
+<body>
+  <video autoplay muted playsinline style="width: 100%; height: 100%;"></video>
+
+  <script>
+    window.onmessage = (event) => {
+      const port = event.ports[0];
+
+      port.onmessage = (msgEvent) => {
+        const track = msgEvent.data;
+        const stream = new MediaStream([track]);
+
+        const video = document.querySelector('video');
+        video.srcObject = stream;
+        video.play();
+      };
+
+      // Let the opener know we're ready
+      port.postMessage('ready');
+    };
+  </script>
+</body>
+
+</html>

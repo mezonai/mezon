@@ -192,14 +192,29 @@ export function ControlBar({
 	let popoutWindow: Window | null = null;
 	const screenShareTracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
 	const togglePopout = useCallback(() => {
+		(window as any).sharedTracks = {
+			screenShare: screenShareTracks[0]
+		};
+		if (isElectron()) {
+			const screenTrack = screenShareTracks[0];
+			const channel = new MessageChannel();
+
+			channel.port1.onmessage = (event) => {
+				if (event.data === 'ready') {
+					channel.port1.postMessage(screenTrack);
+				}
+			};
+
+			window.electron.openPopoutVideoCall([channel.port2]);
+
+			return;
+		}
+
 		if (window.location.pathname === '/popout') {
 			dispatch(voiceActions.setOpenPopOut(false));
 			window.close();
 			return;
 		}
-		(window as any).sharedTracks = {
-			screenShare: screenShareTracks[0]
-		};
 		popoutWindow = window.open('/popout', 'LiveKitPopout', 'width=800,height=600,left=100,top=100');
 
 		if (popoutWindow) {
