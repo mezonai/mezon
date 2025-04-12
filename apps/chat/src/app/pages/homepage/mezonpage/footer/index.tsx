@@ -87,7 +87,7 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 										target="_blank"
 										rel="noreferrer"
 									>
-										Developer API Intergration
+										Developer API Integration
 									</a>
 								</div>
 								<div className="flex flex-col gap-[12px]">
