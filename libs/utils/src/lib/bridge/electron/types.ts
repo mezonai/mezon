@@ -38,7 +38,11 @@ export interface IElectronBridge {
 }
 
 export interface MezonNotificationOptions extends NotificationOptions {
-	data: { link: string };
+	data: {
+		link: string;
+		channelId?: string;
+	};
+	tag?: string;
 }
 
 export interface MezonDownloadFile {

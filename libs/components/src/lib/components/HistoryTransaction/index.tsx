@@ -62,7 +62,7 @@ const HistoryTransaction = ({ onClose }: IProps) => {
 						<div>
 							<h4 className="font-bold text-base">History Transaction</h4>
 						</div>
-						<span className="text-3xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+						<span className="cursor-pointer text-3xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
 							×
 						</span>
 					</div>

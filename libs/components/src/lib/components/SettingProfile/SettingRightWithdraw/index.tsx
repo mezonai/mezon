@@ -58,7 +58,7 @@ const SettingRightWithdraw = ({ onClose }: IWithdrawProp) => {
 					<div className="dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black flex justify-between items-center p-4">
 						<h4 className="font-bold text-base">Withdraw</h4>
 
-						<span className="text-3xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+						<span className="cursor-pointer text-3xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
 							×
 						</span>
 					</div>

@@ -25,6 +25,7 @@ export class ElectronBridge implements IElectronBridge {
 
 	private hasListeners = false;
 	private handlers?: Record<string, ElectronBridgeHandler>;
+	private activeNotifications = new Map<string, Notification>();
 
 	private constructor() {
 		// private constructor to prevent instantiation
@@ -70,21 +71,76 @@ export class ElectronBridge implements IElectronBridge {
 	}
 
 	public pushNotification(title: string, options: MezonNotificationOptions, msg?: NotificationData) {
-		const notification = new Notification(title, options);
+		const channelId = msg?.channel_id || '';
+
+		if (!this.bridge) {
+			this.showWebNotification(title, options, channelId, msg);
+			return;
+		}
+
+		if (channelId) {
+			const existingNotification = this.activeNotifications.get(channelId);
+
+			if (existingNotification) {
+				existingNotification.close();
+				this.activeNotifications.delete(channelId);
+			}
+		}
+
+		const notification = new Notification(title, {
+			...options,
+			silent: channelId ? this.activeNotifications.has(channelId) : false
+		});
+
 		notification.onclick = () => {
 			const link = options.data?.link;
 			if (!link) {
 				return;
 			}
-			const notificationUrl = new URL(link);
-			const currentPath = window.location.pathname;
-			const path = notificationUrl.pathname;
-			const isSubPath = currentPath.endsWith(path);
 
-			if (path) {
-				this.bridge?.send(NAVIGATE_TO_URL, { path: path, msg: msg }, isSubPath);
+			if (this.bridge) {
+				this.bridge.send(NAVIGATE_TO_URL, { path: link, msg: msg });
+			} else {
+				const existingWindow = window.open('', '_self');
+				if (existingWindow) {
+					existingWindow.focus();
+					window.location.href = link;
+				}
 			}
 		};
+
+		if (channelId) {
+			this.activeNotifications.set(channelId, notification);
+
+			notification.onclose = () => {
+				this.activeNotifications.delete(channelId);
+			};
+		}
+	}
+
+	private showWebNotification(title: string, options: NotificationOptions, channelId?: string, msg?: NotificationData) {
+		const notification = new Notification(title, options);
+
+		notification.onclick = () => {
+			const link = (options as any).data?.link;
+			if (!link) {
+				return;
+			}
+
+			const existingWindow = window.open('', '_self');
+			if (existingWindow) {
+				existingWindow.focus();
+				window.location.href = link;
+			}
+		};
+
+		if (channelId) {
+			this.activeNotifications.set(channelId, notification);
+
+			notification.onclose = () => {
+				this.activeNotifications.delete(channelId);
+			};
+		}
 	}
 
 	private setupSenderId() {

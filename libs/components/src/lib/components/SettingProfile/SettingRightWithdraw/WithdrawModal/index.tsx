@@ -99,10 +99,9 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			}
 		};
 	}, [connected, sdk]);
-	if (!sdk || !provider) {
-		return;
-	}
+
 	const getContract = async () => {
+		if (!provider) return;
 		const ethersProvider = new BrowserProvider(provider);
 		const signer = await ethersProvider.getSigner();
 		return new Contract(CONTRACT_ADDRESS, MEZON_TREASURY_ABI, signer);
@@ -249,7 +248,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			if (!signature) return;
 			const contract = await getContract();
 			const amount = ethers.parseUnits(formData.amount.toString(), 18);
-			const networkVersion = await provider.getNetworkVersion();
+			const networkVersion = await provider?.getNetworkVersion();
 			if (Number(networkVersion) !== Number(chainId)) {
 				try {
 					await switchNetwork(chainId);
@@ -260,7 +259,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			}
 
 			try {
-				const res = await contract.withdraw(requestId, amount, signature);
+				const res = await contract?.withdraw(requestId, amount, signature);
 
 				postHash(res.hash, requestId);
 				const currentWallet = safeJSONParse(userProfile?.wallet ?? '{}');
@@ -325,7 +324,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 					<div className="dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black flex justify-between items-center p-4">
 						<h4 className="font-bold text-base">Withdraw</h4>
 
-						<span className="text-3xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
+						<span className="cursor-pointer text-3xl leading-3 dark:hover:text-white hover:text-black" onClick={onClose}>
 							×
 						</span>
 					</div>

@@ -38,8 +38,18 @@ const GlobalEventListener = () => {
 
 	useEffect(() => {
 		const handleNavigateToPath = (_: unknown, notifi: any) => {
-			navigate(notifi.path);
-			dispatch(handleTopicNotification({ msg: notifi.msg }));
+			try {
+				if (notifi?.msg && notifi?.path) {
+					const notificationUrl = new URL(notifi.path);
+					navigate(notificationUrl.pathname);
+					dispatch(handleTopicNotification({ msg: notifi.msg }));
+				} else if (typeof notifi === 'string') {
+					const notificationUrl = new URL(notifi);
+					navigate(notificationUrl.pathname);
+				}
+			} catch {
+				// ignore
+			}
 		};
 		window.electron?.on('navigate-to-path', handleNavigateToPath);
 		return () => {

@@ -3,6 +3,7 @@ import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../../e2ee';
 import { isBackgroundModeActive } from '../../hooks/useBackgroundMode';
 import { electronBridge } from './electron';
+
 export interface IMessageExtras {
 	link: string; // link for navigating
 	e2eemess: string;
@@ -45,6 +46,7 @@ export class MezonNotificationService {
 	private pingTimeout: NodeJS.Timeout | null = null;
 	private previousAppId = 0;
 	private currentUserId: string | null = null;
+	private activeNotifications: Map<string, Notification> = new Map();
 
 	public static getInstance() {
 		if (!MezonNotificationService.instance) {
@@ -143,6 +145,30 @@ export class MezonNotificationService {
 	}
 
 	private pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
+		if (!msg?.channel_id) {
+			this.showNotification(title, message, image, link, msg);
+			return;
+		}
+
+		if (isElectron()) {
+			electronBridge.pushNotification(
+				title,
+				{
+					body: message,
+					icon: image ?? '',
+					tag: msg.channel_id,
+					data: {
+						link: link ?? ''
+					}
+				},
+				msg
+			);
+		} else {
+			this.pushNotificationForWeb(title, message, image, link, msg.channel_id);
+		}
+	}
+
+	private showNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
 		if (isElectron()) {
 			electronBridge.pushNotification(
 				title,
@@ -156,23 +182,49 @@ export class MezonNotificationService {
 				msg
 			);
 		} else {
-			this.pushNotificationForWeb(title, message, image, link);
+			const notification = new Notification(title, {
+				body: message,
+				icon: image ?? '',
+				data: {
+					link: link ?? ''
+				}
+			});
+
+			this.setupNotificationClickHandler(notification, link);
 		}
 	}
 
-	private pushNotificationForWeb(title: string, message: string, image: string, link: string | undefined) {
+	private pushNotificationForWeb(title: string, message: string, image: string, link: string | undefined, channelId: string) {
 		if (!('Notification' in window)) {
 			console.warn('This browser does not support desktop notification');
 			return;
 		}
-		const notification = new Notification(title, {
+
+		this.createWebNotification(title, message, image, link, channelId);
+	}
+
+	private createWebNotification(title: string, message: string, image: string, link: string | undefined, channelId: string) {
+		const notificationOptions = {
 			body: message,
 			icon: image ?? '',
+			tag: channelId,
+			silent: this.activeNotifications.has(channelId),
+			renotify: this.activeNotifications.has(channelId),
 			data: {
-				link: link ?? ''
+				link: link ?? '',
+				channelId
 			}
-		});
+		} as NotificationOptions;
 
+		const notification = new Notification(title, notificationOptions);
+		this.activeNotifications.set(channelId, notification);
+		this.setupNotificationClickHandler(notification, link);
+		notification.onclose = () => {
+			this.activeNotifications.delete(channelId);
+		};
+	}
+
+	private setupNotificationClickHandler(notification: Notification, link: string | undefined) {
 		notification.onclick = (event) => {
 			event.preventDefault();
 			if (!link) {
