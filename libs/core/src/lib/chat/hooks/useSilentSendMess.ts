@@ -13,7 +13,7 @@ export function useSilentSendMess() {
 				user_ids: [userId],
 				clan_id: '0'
 			};
-			const response = await dispatch(directActions.createNewDirectMessage(bodyCreateDm));
+			const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDm }));
 			const resPayload = response.payload as ApiCreateChannelDescRequest;
 
 			return resPayload;

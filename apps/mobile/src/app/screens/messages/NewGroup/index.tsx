@@ -92,7 +92,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 			return;
 		}
 
-		const response = await dispatch(directActions.createNewDirectMessage(bodyCreateDmGroup));
+		const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDmGroup }));
 		const resPayload = response.payload as ApiCreateChannelDescRequest;
 		if (resPayload.channel_id) {
 			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: resPayload.channel_id, from: APP_SCREEN.MESSAGES.NEW_GROUP });

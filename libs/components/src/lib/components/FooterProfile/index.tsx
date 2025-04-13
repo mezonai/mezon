@@ -136,7 +136,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 
 	const sendNotificationMessage = useCallback(
 		async (userId: string, tokenValue: number, note: string) => {
-			const response = await createDirectMessageWithUser(userId);
+			const response = await createDirectMessageWithUser(userId, true);
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(

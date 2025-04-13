@@ -40,34 +40,39 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription) => {
 	return { ...channelRes, id: channelRes.channel_id || '' };
 };
 
-export const createNewDirectMessage = createAsyncThunk('direct/createNewDirectMessage', async (body: ApiCreateChannelDescRequest, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createChannelDesc(mezon.session, body);
-		if (response) {
-			thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
-			thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
-			await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
-			if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
-				await thunkAPI.dispatch(
-					channelsActions.joinChat({
-						clanId: '0',
-						channelId: response.channel_id as string,
-						channelType: response.type as number,
-						isPublic: false
-					})
-				);
+export const createNewDirectMessage = createAsyncThunk(
+	'direct/createNewDirectMessage',
+	async ({ body, isDisableSetCurrentDM = false }: { body: ApiCreateChannelDescRequest; isDisableSetCurrentDM?: boolean }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.createChannelDesc(mezon.session, body);
+			if (response) {
+				if (!isDisableSetCurrentDM) {
+					thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
+					thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
+					await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+				}
+				if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
+					await thunkAPI.dispatch(
+						channelsActions.joinChat({
+							clanId: '0',
+							channelId: response.channel_id as string,
+							channelType: response.type as number,
+							isPublic: false
+						})
+					);
+				}
+				return response;
+			} else {
+				captureSentryError('no response', 'direct/createNewDirectMessage');
+				return thunkAPI.rejectWithValue('no reponse');
 			}
-			return response;
-		} else {
-			captureSentryError('no response', 'direct/createNewDirectMessage');
-			return thunkAPI.rejectWithValue('no reponse');
+		} catch (error) {
+			captureSentryError(error, 'direct/createNewDirectMessage');
+			return thunkAPI.rejectWithValue(error);
 		}
-	} catch (error) {
-		captureSentryError(error, 'direct/createNewDirectMessage');
-		return thunkAPI.rejectWithValue(error);
 	}
-});
+);
 
 export const closeDirectMessage = createAsyncThunk('direct/closeDirectMessage', async (body: ApiDeleteChannelDescRequest, thunkAPI) => {
 	try {
