@@ -90,7 +90,7 @@ const MessageItem = React.memo(
 				replyTo: senderDisplayName
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, payload);
-		}, []);
+		}, [message]);
 		//check
 
 		const hasIncludeMention = userId

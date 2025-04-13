@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-const CachedImageWithRetryIOS = ({ source, retryCount = 3, style, ...props }) => {
+const CachedImageWithRetryIOS = ({ source, retryCount = 5, style, ...props }) => {
 	const [currentSource, setCurrentSource] = useState(source);
 	const [retriesLeft, setRetriesLeft] = useState(retryCount);
 	const [key, setKey] = useState(Date.now());
@@ -23,7 +23,7 @@ const CachedImageWithRetryIOS = ({ source, retryCount = 3, style, ...props }) =>
 				setTimeout(() => {
 					setRetriesLeft(retriesLeft - 1);
 					setKey(Date.now());
-				}, 500);
+				}, 1000);
 			} else {
 				setLoading(false);
 			}

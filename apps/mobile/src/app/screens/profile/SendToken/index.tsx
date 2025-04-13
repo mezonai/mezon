@@ -69,7 +69,8 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const { sendInviteMessage } = useSendInviteMessage();
 	const [successTime, setSuccessTime] = useState('');
 	const [fileShared, setFileShared] = useState<any>();
-	const viewToSnapshotRef = useRef();
+	const viewToSnapshotRef = useRef<ViewShot>(null);
+	const [disableButton, setDisableButton] = useState<boolean>(false);
 	const friendList: FriendsEntity[] = useMemo(() => {
 		return friends?.filter((user) => user.state === 0) || [];
 	}, [friends]);
@@ -159,6 +160,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 				return;
 			}
 			store.dispatch(appActions.setLoadingMainMobile(true));
+			setDisableButton(true);
 
 			const tokenEvent: ApiTokenSentEvent = {
 				sender_id: userProfile?.user?.id || '',
@@ -176,6 +178,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 					type: 'error',
 					text1: t('toast.error.anErrorOccurred')
 				});
+				setDisableButton(false);
 			} else {
 				if (directMessageId) {
 					sendInviteMessage(
@@ -206,6 +209,12 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 				setShowConfirmModal(true);
 			}
 		} catch (err) {
+			Toast.show({
+				type: 'error',
+				text1: t('toast.error.anErrorOccurred')
+			});
+			setDisableButton(false);
+		} finally {
 			store.dispatch(appActions.setLoadingMainMobile(false));
 		}
 	};
@@ -354,7 +363,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 					</View>
 				</View>
 			</ScrollView>
-			<Pressable style={styles.button} onPress={sendToken}>
+			<Pressable style={styles.button} onPress={sendToken} disabled={disableButton}>
 				<Text style={styles.buttonTitle}>{t('sendToken')}</Text>
 			</Pressable>
 			<Modal

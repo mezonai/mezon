@@ -52,6 +52,7 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 			setSelectedClan(clan);
 			onSelectedClan(clan);
 			bottomSheetDetail.current?.close();
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			return;
 		}
 
@@ -101,7 +102,7 @@ export default function ServerProfile({ clanProfileValue, isClanProfileNotChange
 		bottomSheetDetail.current?.present();
 		const data = {
 			title: t('selectAClan'),
-			heightFitContent: true,
+			snapPoint: ['80%'],
 			children: (
 				<View style={styles.bottomSheetContainer}>
 					<MezonInput value={searchClanText} onTextChange={setSearchClanText} placeHolder={t('searchClanPlaceholder')} />
