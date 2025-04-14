@@ -99,7 +99,6 @@ import {
 	TOKEN_TO_AMOUNT,
 	ThreadStatus,
 	TypeMessage,
-	electronBridge,
 	isBackgroundModeActive
 } from '@mezon/utils';
 import isElectron from 'is-electron';
@@ -1582,12 +1581,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			const title = 'Funds Transferred:';
 			const body = `+${(AMOUNT_TOKEN.TEN_TOKENS * TOKEN_TO_AMOUNT.ONE_THOUNSAND).toLocaleString('vi-VN')}vnđ from ${prioritizedName}`;
 
-			electronBridge.pushNotification(title, {
-				body: body,
-				icon: prioritizedAvatar,
-				data: {
-					link: ''
-				}
+			return new Notification(title, {
+				body,
+				icon: prioritizedAvatar ?? ''
 			});
 		}
 	}, []);

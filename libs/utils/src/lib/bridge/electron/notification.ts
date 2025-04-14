@@ -3,7 +3,6 @@ import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../../e2ee';
 import { isBackgroundModeActive } from '../../hooks/useBackgroundMode';
 import { electronBridge } from './electron';
-
 export interface IMessageExtras {
 	link: string; // link for navigating
 	e2eemess: string;
@@ -46,6 +45,8 @@ export class MezonNotificationService {
 	private pingTimeout: NodeJS.Timeout | null = null;
 	private previousAppId = 0;
 	private currentUserId: string | null = null;
+
+	// Track active notifications by channel ID
 	private activeNotifications: Map<string, Notification> = new Map();
 
 	public static getInstance() {
@@ -144,100 +145,46 @@ export class MezonNotificationService {
 		}
 	}
 
-	private pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
-		if (!msg?.channel_id) {
-			this.showNotification(title, message, image, link, msg);
-			return;
-		}
-
-		if (isElectron()) {
-			electronBridge.pushNotification(
-				title,
-				{
-					body: message,
-					icon: image ?? '',
-					tag: msg.channel_id,
-					data: {
-						link: link ?? ''
-					}
-				},
-				msg
-			);
-		} else {
-			this.pushNotificationForWeb(title, message, image, link, msg.channel_id);
-		}
-	}
-
-	private showNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
-		if (isElectron()) {
-			electronBridge.pushNotification(
-				title,
-				{
-					body: message,
-					icon: image ?? '',
-					data: {
-						link: link ?? ''
-					}
-				},
-				msg
-			);
-		} else {
-			const notification = new Notification(title, {
-				body: message,
-				icon: image ?? '',
-				data: {
-					link: link ?? ''
-				}
-			});
-
-			this.setupNotificationClickHandler(notification, link);
-		}
-	}
-
-	private pushNotificationForWeb(title: string, message: string, image: string, link: string | undefined, channelId: string) {
+	public pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
 		if (!('Notification' in window)) {
 			console.warn('This browser does not support desktop notification');
 			return;
 		}
 
-		this.createWebNotification(title, message, image, link, channelId);
-	}
+		const channelId = msg?.channel_id;
+		if (channelId && this.activeNotifications.has(channelId)) {
+			const previousNotification = this.activeNotifications.get(channelId);
+			previousNotification?.close();
+		}
 
-	private createWebNotification(title: string, message: string, image: string, link: string | undefined, channelId: string) {
-		const notificationOptions = {
+		const notification = new Notification(title, {
 			body: message,
 			icon: image ?? '',
-			tag: channelId,
-			silent: this.activeNotifications.has(channelId),
-			renotify: this.activeNotifications.has(channelId),
 			data: {
-				link: link ?? '',
-				channelId
-			}
-		} as NotificationOptions;
+				link: link ?? ''
+			},
+			tag: channelId
+		});
 
-		const notification = new Notification(title, notificationOptions);
-		this.activeNotifications.set(channelId, notification);
-		this.setupNotificationClickHandler(notification, link);
-		notification.onclose = () => {
-			this.activeNotifications.delete(channelId);
-		};
-	}
+		if (channelId) {
+			this.activeNotifications.set(channelId, notification);
+		}
 
-	private setupNotificationClickHandler(notification: Notification, link: string | undefined) {
 		notification.onclick = (event) => {
 			event.preventDefault();
 			if (!link) {
 				return;
 			}
 			const existingWindow = window.open('', '_self');
+
 			if (existingWindow) {
 				existingWindow.focus();
 				const notificationUrl = new URL(link);
 				const path = notificationUrl.pathname;
+				const fromTopic = msg?.extras?.topicId && msg?.extras?.topicId !== '0';
 				window.dispatchEvent(
 					new CustomEvent('mezon:navigate', {
-						detail: { url: path }
+						detail: { url: path, msg: fromTopic ? msg : null }
 					})
 				);
 			} else {

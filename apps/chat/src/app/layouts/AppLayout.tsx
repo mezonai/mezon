@@ -1,7 +1,7 @@
 //TODO: recheck
 import { ToastController } from '@mezon/components';
 import { useCustomNavigate } from '@mezon/core';
-import { fcmActions, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
+import { fcmActions, handleTopicNotification, selectAllAccount, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, MezonUiProvider } from '@mezon/ui';
 import {
 	CLOSE_APP,
@@ -120,6 +120,9 @@ const AppLayout = () => {
 		const handleCustomNavigation = (event: CustomEvent) => {
 			if (event.detail && event.detail.url) {
 				navigate(event.detail.url);
+				if (event.detail?.msg) {
+					dispatch(handleTopicNotification({ msg: event.detail?.msg }));
+				}
 			}
 		};
 

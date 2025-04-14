@@ -2,7 +2,6 @@ import { ChatContext, ChatContextProvider, ColorRoleProvider, useCustomNavigate,
 import {
 	e2eeActions,
 	gifsStickerEmojiActions,
-	handleTopicNotification,
 	selectAllAccount,
 	selectAnyUnreadChannel,
 	selectBadgeCountAllClan,
@@ -35,27 +34,6 @@ const GlobalEventListener = () => {
 	const { quantityPendingRequest } = useFriends();
 
 	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
-
-	useEffect(() => {
-		const handleNavigateToPath = (_: unknown, notifi: any) => {
-			try {
-				if (notifi?.msg && notifi?.path) {
-					const notificationUrl = new URL(notifi.path);
-					navigate(notificationUrl.pathname);
-					dispatch(handleTopicNotification({ msg: notifi.msg }));
-				} else if (typeof notifi === 'string') {
-					const notificationUrl = new URL(notifi);
-					navigate(notificationUrl.pathname);
-				}
-			} catch {
-				// ignore
-			}
-		};
-		window.electron?.on('navigate-to-path', handleNavigateToPath);
-		return () => {
-			window.electron?.removeListener('navigate-to-path', handleNavigateToPath);
-		};
-	}, [navigate]);
 
 	useEffect(() => {
 		const reconnectSocket = debounce(() => {

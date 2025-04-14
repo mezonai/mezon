@@ -12,7 +12,6 @@ import {
 	IMAGE_WINDOW_TITLE_BAR_ACTION,
 	MAXIMIZE_WINDOW,
 	MINIMIZE_WINDOW,
-	NAVIGATE_TO_URL,
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
@@ -24,6 +23,7 @@ import SquirrelEvents from './app/events/squirrel.events';
 import updateImagePopup from './assets/image-window/update_window_image';
 import openImagePopup from './assets/image-window/window_image';
 import { environment } from './environments/environment';
+
 export type ImageWindowProps = {
 	attachmentData: ApiMessageAttachment & { create_time?: string };
 	messageId: string;
@@ -107,17 +107,6 @@ ipcMain.handle(REQUEST_PERMISSION_SCREEN, async (_event, source) => {
 
 ipcMain.handle(SENDER_ID, () => {
 	return environment.senderId;
-});
-
-ipcMain.on(NAVIGATE_TO_URL, async (event, path, isSubPath) => {
-	if (App.mainWindow) {
-		App.mainWindow.webContents.send('navigate-to-path', path);
-
-		if (!App.mainWindow.isVisible()) {
-			App.mainWindow.show();
-		}
-		App.mainWindow.focus();
-	}
 });
 
 const handleWindowAction = async (window: BrowserWindow, action: string) => {
