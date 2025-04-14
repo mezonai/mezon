@@ -496,7 +496,7 @@ function MessageContextMenu({
 
 	const sendTransactionMessage = useCallback(
 		async (userId: string) => {
-			const response = await createDirectMessageWithUser(userId, true);
+			const response = await createDirectMessageWithUser(userId);
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(

@@ -388,6 +388,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					}
 
 					if (mess.isMe) {
+						// Mark as read if isMe send token
+						if (mess.code === TypeMessage.SendToken) {
+							dispatch(
+								messagesActions.updateLastSeenMessage({
+									clanId: mess?.clan_id || '',
+									channelId: mess?.channel_id,
+									messageId: mess?.id,
+									mode: mess.mode,
+									badge_count: 0
+								})
+							);
+						}
 						dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: message.channel_id, timestamp }));
 					}
 				} else {

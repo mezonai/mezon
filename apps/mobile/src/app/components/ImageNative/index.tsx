@@ -7,6 +7,7 @@ interface CustomImageProps extends ViewProps {
 	url: string;
 	resizeMode?: 'cover' | 'contain' | 'center';
 	style?: any;
+	urlOriginal?: string;
 }
 
 // interface CustomImageIOSProps extends ViewProps {
@@ -18,12 +19,20 @@ interface CustomImageProps extends ViewProps {
 const CustomImageView = requireNativeComponent<CustomImageProps>('CustomImageView');
 // const CustomImageViewIOS = requireNativeComponent<CustomImageIOSProps>('CustomImageViewIOS');
 
-const ImageNative = ({ url, style, resizeMode }: CustomImageProps) => {
+const ImageNative = ({ url, urlOriginal, style, resizeMode }: CustomImageProps) => {
 	try {
 		if (Platform.OS === 'android') {
 			return <CustomImageView url={url?.toString()} resizeMode={resizeMode} style={style} />;
 		} else {
-			return <CachedImageWithRetryIOS source={{ uri: url?.toString() }} style={style} retryCount={3} resizeMode={resizeMode} />;
+			return (
+				<CachedImageWithRetryIOS
+					source={{ uri: url?.toString() }}
+					urlOriginal={urlOriginal}
+					style={style}
+					retryCount={3}
+					resizeMode={resizeMode}
+				/>
+			);
 		}
 	} catch (error) {
 		Sentry.captureException(error);

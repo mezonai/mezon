@@ -42,16 +42,14 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription) => {
 
 export const createNewDirectMessage = createAsyncThunk(
 	'direct/createNewDirectMessage',
-	async ({ body, isDisableSetCurrentDM = false }: { body: ApiCreateChannelDescRequest; isDisableSetCurrentDM?: boolean }, thunkAPI) => {
+	async ({ body }: { body: ApiCreateChannelDescRequest }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 			if (response) {
-				if (!isDisableSetCurrentDM) {
-					thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
-					thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
-					await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
-				}
+				thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
+				thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
+				await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
 				if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
 					await thunkAPI.dispatch(
 						channelsActions.joinChat({

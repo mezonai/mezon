@@ -218,12 +218,12 @@ export const CreateNewChannelModal = () => {
 										onChange={onChangeChannelType}
 										error={isErrorType}
 									/>
-									<ChannelTypeComponent
+									{/* <ChannelTypeComponent
 										disable={false}
 										type={ChannelType.CHANNEL_TYPE_APP}
 										onChange={onChangeChannelType}
 										error={isErrorType}
-									/>
+									/> */}
 								</div>
 							</div>
 							<ChannelNameTextField

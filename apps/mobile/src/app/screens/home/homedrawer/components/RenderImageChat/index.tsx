@@ -2,7 +2,7 @@ import { Metrics, size, useTheme } from '@mezon/mobile-ui';
 import { EMimeTypes, createImgproxyUrl } from '@mezon/utils';
 import * as Sentry from '@sentry/react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { getAspectRatioSize, useImageResolution } from 'react-native-zoom-toolkit';
 import ImageNative from '../../../../../components/ImageNative';
@@ -21,6 +21,7 @@ type ImageProps = {
 
 type RenderImageProps = {
 	image: ImageProps;
+	imageOriginal: ImageProps;
 	index: number;
 	disable?: boolean;
 	onPress: (image: ImageProps) => void;
@@ -38,12 +39,38 @@ type ImageSize = {
 type ImageProxyResult = {
 	isProxyImage: boolean;
 	url: string;
+	urlOriginal?: string;
+};
+
+const calculateImageSize = (imageWidth: number, imageHeight: number) => {
+	const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+	const screenAspectRatio = screenWidth / screenHeight;
+	const imageAspectRatio = imageWidth / imageHeight;
+
+	let calculatedWidth = screenWidth;
+	let calculatedHeight = screenHeight;
+
+	if (imageAspectRatio > screenAspectRatio) {
+		// Image is wider than the screen
+		calculatedWidth = screenWidth;
+		calculatedHeight = screenWidth / imageAspectRatio;
+	} else {
+		// Image is taller than the screen
+		calculatedHeight = screenHeight;
+		calculatedWidth = screenHeight * imageAspectRatio;
+	}
+
+	return {
+		width: Math.round(calculatedWidth * 0.8),
+		height: Math.round(calculatedHeight * 0.8)
+	};
 };
 
 const RenderImageChat = React.memo(({ image, index, disable, onPress, onLongPress, isMultiple = false, remainingImagesCount }: RenderImageProps) => {
 	const isTabletLandscape = useTabletLandscape();
 	const [loadError, setLoadError] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
+	const [imageOriginal, setImageOriginal] = useState<ImageProps | null>(null);
 	const MAX_RETRY_COUNT = 2;
 
 	const handleImageError = useCallback(
@@ -64,7 +91,7 @@ const RenderImageChat = React.memo(({ image, index, disable, onPress, onLongPres
 				setRetryCount((prev) => prev + 1);
 				setLoadError(false);
 			} else {
-				setLoadError(true);
+				setImageOriginal(image);
 			}
 		},
 		[image, retryCount]
@@ -82,6 +109,7 @@ const RenderImageChat = React.memo(({ image, index, disable, onPress, onLongPres
 	return (
 		<ImageRenderer
 			image={image}
+			imageOriginal={imageOriginal}
 			imageSize={imageSize}
 			index={index}
 			disable={disable}
@@ -116,6 +144,7 @@ const getImageSize = ({ url, height, width }: { url?: string; height?: number; w
 const ImageRenderer = React.memo(
 	({
 		image,
+		imageOriginal,
 		imageSize,
 		index,
 		disable,
@@ -133,7 +162,7 @@ const ImageRenderer = React.memo(
 	}) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const { resolution } = useImageResolution({ uri: image.url });
+		const { resolution } = useImageResolution({ uri: imageOriginal?.url ?? image?.url });
 
 		const aspectRatio = (resolution?.width || 1) / (resolution?.height || 1);
 		const dynamicImageSize = imageSize?.width
@@ -172,8 +201,8 @@ const ImageRenderer = React.memo(
 		}, [dynamicImageSize, imageSize, isMultiple, isUploading]);
 
 		const imageProxyObj = useMemo((): ImageProxyResult => {
-			if (!image.url) {
-				return { isProxyImage: false, url: '' };
+			if (!image.url || imageOriginal?.url) {
+				return { isProxyImage: false, url: imageOriginal?.url ?? '' };
 			}
 
 			const isSpecialFormat = ['image/gif', 'image/webp', 'gif', 'webp'].includes(image.filetype) || image?.url?.includes(EMimeTypes.tenor);
@@ -188,12 +217,14 @@ const ImageRenderer = React.memo(
 			return {
 				isProxyImage: true,
 				url: createImgproxyUrl(image?.url ?? '', {
-					width: Math.round(image?.width * 0.6) || 500,
-					height: Math.round(image?.height * 0.6) || 500,
+					...calculateImageSize(image?.width || 500, image?.height || 500),
 					resizeType: 'fit'
-				}) as string
+				}) as string,
+				urlOriginal: image.url
 			};
 		}, [image?.filetype, image?.height, image?.url, image?.width]);
+		console.log('log  => image', image);
+		console.log('log  => calculateImageSize', calculateImageSize(300, 300));
 
 		if (!image.url) {
 			return null;
@@ -218,7 +249,12 @@ const ImageRenderer = React.memo(
 				style={containerStyle}
 			>
 				{imageProxyObj?.isProxyImage ? (
-					<ImageNative url={imageProxyObj?.url} resizeMode={isMultiple ? 'cover' : 'contain'} style={{ width: '100%', height: '100%' }} />
+					<ImageNative
+						url={imageProxyObj?.url}
+						urlOriginal={image?.url}
+						resizeMode={isMultiple ? 'cover' : 'contain'}
+						style={{ width: '100%', height: '100%' }}
+					/>
 				) : (
 					<FastImage
 						source={{

@@ -213,7 +213,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 						TypeMessage.SendToken
 					);
 				} else {
-					const response = await createDirectMessageWithUser(message?.user?.id, true);
+					const response = await createDirectMessageWithUser(message?.user?.id);
 					if (response?.channel_id) {
 						sendInviteMessage(
 							`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,

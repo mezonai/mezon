@@ -10,14 +10,14 @@ type UseDirectParams = {
 export function useDirect({ autoFetch = false }: UseDirectParams = { autoFetch: false }) {
 	const dispatch = useAppDispatch();
 	const createDirectMessageWithUser = useCallback(
-		async (userId: string, isDisableSetCurrentDM?: boolean) => {
+		async (userId: string) => {
 			const bodyCreateDm: ApiCreateChannelDescRequest = {
 				type: ChannelType.CHANNEL_TYPE_DM,
 				channel_private: 1,
 				user_ids: [userId],
 				clan_id: '0'
 			};
-			const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDm, isDisableSetCurrentDM }));
+			const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDm }));
 			const resPayload = response.payload as ApiCreateChannelDescRequest;
 
 			return resPayload;
