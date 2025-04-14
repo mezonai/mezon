@@ -7,7 +7,7 @@ import {
 	UPDATE_AVAILABLE,
 	UPDATE_ERROR
 } from './constants';
-import { NotificationData } from './notification';
+import { NotificationData, SHOW_NOTIFICATION } from './notification';
 import { ElectronBridgeHandler, IElectronBridge, MezonDownloadFile, MezonElectronAPI, MezonNotificationOptions } from './types';
 
 export class ElectronBridge implements IElectronBridge {
@@ -68,7 +68,11 @@ export class ElectronBridge implements IElectronBridge {
 		this.bridge.on(ACTIVE_WINDOW, this.listenerHandlers[ACTIVE_WINDOW]);
 	}
 
-	public pushNotification(title: string, options: MezonNotificationOptions, msg?: NotificationData) {}
+	public pushNotification(title: string, options: MezonNotificationOptions, msg?: NotificationData) {
+		if (this.bridge.send) {
+			this.bridge.send(SHOW_NOTIFICATION, { title, options, msg });
+		}
+	}
 
 	private setupSenderId() {
 		this.bridge.senderId(SENDER_ID).then((senderId: string) => {

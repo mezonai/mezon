@@ -45,7 +45,12 @@ import AttachmentFilePreview from '../../home/homedrawer/components/AttachmentFi
 import SharingSuggestItem from './SharingSuggestItem';
 import { styles } from './styles';
 
-export const Sharing = ({ data, onClose }) => {
+interface ISharing {
+	data: any;
+	onClose?: (isSend?: boolean) => void;
+}
+
+export const Sharing = ({ data, onClose }: ISharing) => {
 	const listDM = useSelector(selectDirectsOpenlist);
 	const listChannels = useSelector(selectAllChannelsByUser);
 	const clans = useAppSelector((state) => selectClansEntities(state));
@@ -272,7 +277,7 @@ export const Sharing = ({ data, onClose }) => {
 			await sendToGroup(dataSend);
 		}
 		setIsLoading(false);
-		onClose();
+		onClose(true);
 	};
 
 	const getSizeImage = async (media: any) => {
@@ -416,7 +421,7 @@ export const Sharing = ({ data, onClose }) => {
 		<View style={styles.wrapper}>
 			<StatusBarHeight />
 			<View style={styles.header}>
-				<TouchableOpacity onPress={onClose}>
+				<TouchableOpacity onPress={() => onClose()}>
 					<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_28} height={size.s_28} />
 				</TouchableOpacity>
 				<Text style={styles.titleHeader}>Share</Text>

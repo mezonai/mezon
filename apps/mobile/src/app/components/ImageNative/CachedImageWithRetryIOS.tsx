@@ -12,10 +12,10 @@ interface ICachedImageWithRetryIOSProps {
 }
 
 const extractOriginalUrl = (url: string): string | null => {
-	if (url.includes(process.env.NX_IMGPROXY_BASE_URL) && url.includes(process.env.NX_BASE_IMG_URL)) {
-		const parts = url.split('/plain/');
-		if (parts.length > 1 && parts[1].startsWith(process.env.NX_BASE_IMG_URL)) {
-			return parts[1].split('@')[0];
+	if (url?.includes?.(process.env.NX_IMGPROXY_BASE_URL) && url?.includes?.(process.env.NX_BASE_IMG_URL)) {
+		const parts = url?.split?.('/plain/');
+		if (parts?.length > 1 && parts?.[1]?.startsWith(process.env.NX_BASE_IMG_URL)) {
+			return parts?.[1]?.split?.('@')?.[0];
 		}
 	}
 	return null;

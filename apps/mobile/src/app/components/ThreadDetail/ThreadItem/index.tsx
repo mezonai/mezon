@@ -72,7 +72,7 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 		return (
 			(message?.content?.t as string) ??
 			(thread.last_sent_message && checkType
-				? safeJSONParse(thread.last_sent_message.content || '{}').t
+				? safeJSONParse(thread.last_sent_message.content || '{}')?.t
 				: (thread.last_sent_message?.content as any)?.t || '')
 		);
 	}, [checkType, message?.content?.t, thread.last_sent_message]);

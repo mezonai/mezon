@@ -35,6 +35,8 @@ export interface IElectronBridge {
 	initListeners: (handlers: Record<string, ElectronBridgeHandler>) => void;
 	removeAllListeners: () => void;
 	setBadgeCount: (badgeCount: number | null) => void;
+	invoke: (channel: string, data?: MezonDownloadFile) => Promise<MezonDownloadFile>;
+	pushNotification: (title: string, options: MezonNotificationOptions, msg?: any) => void;
 }
 
 export interface MezonNotificationOptions extends NotificationOptions {

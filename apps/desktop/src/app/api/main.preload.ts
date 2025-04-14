@@ -3,6 +3,7 @@ import {
 	ACTION_SHOW_IMAGE,
 	GET_APP_VERSION,
 	GET_DEVICE_ID,
+	NOTIFICATION_CLICKED,
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
@@ -31,6 +32,9 @@ contextBridge.exposeInMainWorld('electron', {
 	},
 	onWindowFocused: (callback: () => void) => {
 		ipcRenderer.on('window-focused', callback);
+	},
+	onNotificationClick: (callback: (data: any) => void) => {
+		ipcRenderer.on(NOTIFICATION_CLICKED, (_, data) => callback(data));
 	},
 	invoke: (channel, data) => ipcRenderer.invoke(channel, data),
 

@@ -61,8 +61,8 @@ const calculateImageSize = (imageWidth: number, imageHeight: number) => {
 	}
 
 	return {
-		width: Math.round(calculatedWidth * 0.8),
-		height: Math.round(calculatedHeight * 0.8)
+		width: Math.round(calculatedWidth * 0.9),
+		height: Math.round(calculatedHeight * 0.9)
 	};
 };
 
@@ -223,8 +223,6 @@ const ImageRenderer = React.memo(
 				urlOriginal: image.url
 			};
 		}, [image?.filetype, image?.height, image?.url, image?.width]);
-		console.log('log  => image', image);
-		console.log('log  => calculateImageSize', calculateImageSize(300, 300));
 
 		if (!image.url) {
 			return null;

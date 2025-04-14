@@ -47,6 +47,28 @@ const AppInitializer = () => {
 	const dispatch = useDispatch();
 	const { setIsShowSettingFooterStatus } = useSettingFooter();
 	const { setUserActivity } = useActivities();
+
+	useEffect(() => {
+		if (isElectron() && isLogin) {
+			const handleNotificationClick = (_: any, data: any) => {
+				if (data?.link) {
+					const notificationUrl = new URL(data.link);
+					const path = notificationUrl.pathname;
+					const fromTopic = data.msg?.extras?.topicId && data.msg?.extras?.topicId !== '0';
+					window.dispatchEvent(
+						new CustomEvent('mezon:navigate', {
+							detail: { url: path, msg: fromTopic ? data.msg : null }
+						})
+					);
+				}
+			};
+			window.electron.on('APP::NOTIFICATION_CLICKED', handleNotificationClick);
+			return () => {
+				window.electron.removeListener('APP::NOTIFICATION_CLICKED', handleNotificationClick);
+			};
+		}
+	}, [isLogin]);
+
 	if (isElectron()) {
 		if (isLogin) {
 			electronBridge?.initListeners({

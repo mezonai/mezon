@@ -233,7 +233,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				}}
 				disabled={disabled}
 			>
-				<Image source={{ uri: item.node.image.uri }} style={styles.imageGallery} />
+				<Image source={{ uri: item.node.image.uri + '?thumbnail=true&quality=low' }} style={styles.imageGallery} />
 				{isVideo && (
 					<View style={styles.videoOverlay}>
 						<PlayIcon width={size.s_20} height={size.s_20} />
@@ -341,9 +341,21 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		<View style={{ flex: 1 }}>
 			<FlatList
 				data={[{ isUseCamera: true }, ...photos]}
-				renderItem={renderItem}
-				keyExtractor={(item, index) => `${index.toString()}_gallery`}
 				numColumns={3}
+				renderItem={renderItem}
+				keyExtractor={(item, index) => `${index.toString()}_gallery_${item?.node?.id}`}
+				initialNumToRender={10}
+				maxToRenderPerBatch={10}
+				updateCellsBatchingPeriod={50}
+				windowSize={10}
+				scrollEventThrottle={16}
+				removeClippedSubviews={true}
+				viewabilityConfig={{
+					itemVisiblePercentThreshold: 50,
+					minimumViewTime: 300
+				}}
+				contentOffset={{ x: 0, y: 0 }}
+				disableVirtualization
 				style={{
 					maxHeight: height * 0.8
 				}}

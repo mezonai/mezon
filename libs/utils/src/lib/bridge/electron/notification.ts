@@ -3,6 +3,10 @@ import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../../e2ee';
 import { isBackgroundModeActive } from '../../hooks/useBackgroundMode';
 import { electronBridge } from './electron';
+import { MezonNotificationOptions } from './types';
+
+export const SHOW_NOTIFICATION = 'APP::SHOW_NOTIFICATION';
+
 export interface IMessageExtras {
 	link: string; // link for navigating
 	e2eemess: string;
@@ -146,6 +150,22 @@ export class MezonNotificationService {
 	}
 
 	public pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
+		if (isElectron()) {
+			const options: MezonNotificationOptions = {
+				body: message,
+				icon: image ?? '',
+				data: {
+					link: link ?? '',
+					channelId: msg?.channel_id
+				},
+				tag: msg?.channel_id
+			};
+
+			electronBridge.pushNotification(title, options, msg);
+			return;
+		}
+
+		// Web notification handling
 		if (!('Notification' in window)) {
 			console.warn('This browser does not support desktop notification');
 			return;
