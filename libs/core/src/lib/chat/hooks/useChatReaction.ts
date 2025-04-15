@@ -18,7 +18,7 @@ import {
 	selectThreadCurrentChannel,
 	useAppDispatch,
 	useAppSelector
-} from '@mezon/store';
+} from '@mezon/store-mobile';
 import { transformPayloadWriteSocket } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';

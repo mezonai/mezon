@@ -1,20 +1,11 @@
-import {
-	messagesActions,
-	selectAllAccount,
-	selectAnonymousMode,
-	selectCurrentTopicId,
-	selectCurrentTopicInitMessage,
-	selectMemberClanByUserId2,
-	topicsActions,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { messagesActions, selectAllAccount, selectAnonymousMode, selectMemberClanByUserId2, useAppDispatch, useAppSelector } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { IMessageSendPayload } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
-import React, { useCallback, useMemo } from 'react';
+import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+// import { useProcessLink } from './useProcessLink';
 
 export type UseChatSendingOptions = {
 	mode: number;
@@ -28,7 +19,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 	const getClanId = channelOrDirect?.clan_id;
 	const isPublic = !channelOrDirect?.channel_private;
 	const channelIdOrDirectId = channelOrDirect?.channel_id;
-	const currentTopicId = useSelector(selectCurrentTopicId);
+	// const currentTopicId = useSelector(selectCurrentTopicId);
 
 	const userProfile = useSelector(selectAllAccount);
 
@@ -50,21 +41,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 
 	const currentUserId = userProfile?.user?.id || '';
 	const anonymousMode = useSelector(selectAnonymousMode);
-	const initMessageOfTopic = useSelector(selectCurrentTopicInitMessage);
+	// const initMessageOfTopic = useSelector(selectCurrentTopicInitMessage);
 	const { clientRef, sessionRef, socketRef } = useMezon();
-
-	const createTopic = useCallback(async () => {
-		const body: ApiSdTopicRequest = {
-			clan_id: getClanId as string,
-			channel_id: channelIdOrDirectId as string,
-			message_id: initMessageOfTopic?.id as string
-		};
-
-		const topic = (await dispatch(topicsActions.createTopic(body))).payload as ApiSdTopic;
-		dispatch(topicsActions.setCurrentTopicId(topic.id || ''));
-		return topic;
-	}, [channelIdOrDirectId, dispatch, getClanId, initMessageOfTopic?.id]);
-
 	const sendMessage = React.useCallback(
 		async (
 			content: IMessageSendPayload,
@@ -76,50 +54,50 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			isMobile?: boolean,
 			code?: number
 		) => {
-			if (fromTopic) {
-				if (!currentTopicId) {
-					const topic = (await createTopic()) as ApiSdTopic;
-					if (topic) {
-						dispatch(
-							topicsActions.handleSendTopic({
-								clanId: getClanId as string,
-								channelId: channelIdOrDirectId as string,
-								mode: mode,
-								anonymous: false,
-								attachments: attachments,
-								code: 0,
-								content: content,
-								isMobile: isMobile,
-								isPublic: isPublic,
-								mentionEveryone: mentionEveryone,
-								mentions: mentions,
-								references: references,
-								topicId: topic?.id as string
-							})
-						);
-						return;
-					}
-				}
-
-				dispatch(
-					topicsActions.handleSendTopic({
-						clanId: getClanId as string,
-						channelId: channelIdOrDirectId as string,
-						mode: mode,
-						anonymous: false,
-						attachments: attachments,
-						code: 0,
-						content: content,
-						isMobile: isMobile,
-						isPublic: isPublic,
-						mentionEveryone: mentionEveryone,
-						mentions: mentions,
-						references: references,
-						topicId: currentTopicId as string
-					})
-				);
-				return;
-			}
+			// if (fromTopic) {
+			// 	if (!currentTopicId) {
+			// 		const topic = (await createTopic()) as ApiSdTopic;
+			// 		if (topic) {
+			// 			dispatch(
+			// 				topicsActions.handleSendTopic({
+			// 					clanId: getClanId as string,
+			// 					channelId: channelIdOrDirectId as string,
+			// 					mode: mode,
+			// 					anonymous: false,
+			// 					attachments: attachments,
+			// 					code: 0,
+			// 					content: content,
+			// 					isMobile: isMobile,
+			// 					isPublic: isPublic,
+			// 					mentionEveryone: mentionEveryone,
+			// 					mentions: mentions,
+			// 					references: references,
+			// 					topicId: topic?.id as string
+			// 				})
+			// 			);
+			// 			return;
+			// 		}
+			// 	}
+			//
+			// 	dispatch(
+			// 		topicsActions.handleSendTopic({
+			// 			clanId: getClanId as string,
+			// 			channelId: channelIdOrDirectId as string,
+			// 			mode: mode,
+			// 			anonymous: false,
+			// 			attachments: attachments,
+			// 			code: 0,
+			// 			content: content,
+			// 			isMobile: isMobile,
+			// 			isPublic: isPublic,
+			// 			mentionEveryone: mentionEveryone,
+			// 			mentions: mentions,
+			// 			references: references,
+			// 			topicId: currentTopicId as string
+			// 		})
+			// 	);
+			// 	return;
+			// }
 			await dispatch(
 				messagesActions.sendMessage({
 					channelId: channelIdOrDirectId ?? '',
@@ -141,7 +119,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			);
 		},
 		[
-			fromTopic,
+			// fromTopic,
 			dispatch,
 			channelIdOrDirectId,
 			getClanId,
@@ -150,8 +128,10 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			currentUserId,
 			priorityAvatar,
 			priorityNameToShow,
-			currentTopicId,
-			createTopic
+			// currentTopicId,
+			// createTopic,
+			// initMessageOfTopic?.id,
+			userProfile?.user?.id
 		]
 	);
 
@@ -203,9 +183,9 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				topic_id,
 				!!isTopic
 			);
-			if (topic_id && !isTopic) {
-				dispatch(topicsActions.updateInitMessage({ content: trimContent, mentions: mentions }));
-			}
+			// if (topic_id && !isTopic) {
+			// 	dispatch(topicsActions.updateInitMessage({ content: trimContent, mentions: mentions }));
+			// }
 		},
 		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]
 	);

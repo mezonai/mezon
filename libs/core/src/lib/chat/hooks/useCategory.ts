@@ -2,11 +2,11 @@ import { categoriesActions, selectAllCategories, selectCategoryIdSortChannel, se
 import { ICategoryChannel, IChannel } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 export function useCategory() {
 	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const categorizedChannels = useCategorizedChannels();
 	const handleDeleteCategory = useCallback(
 		async ({ category, currenChannel }: { category: ICategoryChannel; currenChannel: IChannel }) => {

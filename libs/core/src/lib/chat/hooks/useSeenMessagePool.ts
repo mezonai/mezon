@@ -5,9 +5,8 @@
 // push action into cache, keep the payload with the latest create time
 // set timeout to 1 second, if no new action comes in, send the latest action to clan
 
-import { channelMetaActions, directMetaActions, messagesActions, MessagesEntity, seenMessagePool, useAppDispatch } from '@mezon/store';
-import { IMessage, isBackgroundModeActive, TIME_OFFSET } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { messagesActions, MessagesEntity, seenMessagePool, useAppDispatch } from '@mezon/store';
+import { IMessage } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 
 export function useSeenMessagePool() {
@@ -47,7 +46,6 @@ export function useSeenMessagePool() {
 			mode: message.mode as number
 		});
 	}, []);
-	const isFocus = !isBackgroundModeActive();
 
 	const markAsReadSeen = useCallback(
 		(message: MessagesEntity, mode: number, badge_count: number) => {
@@ -65,22 +63,8 @@ export function useSeenMessagePool() {
 					badge_count
 				})
 			);
-			if (isFocus) {
-				const timestamp = Date.now() / 1000;
-				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) {
-					dispatch(
-						channelMetaActions.setChannelLastSeenTimestamp({
-							channelId: message?.channel_id,
-							timestamp: timestamp + TIME_OFFSET
-						})
-					);
-				}
-				if (mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM) {
-					dispatch(directMetaActions.updateLastSeenTime(message));
-				}
-			}
 		},
-		[isFocus]
+		[dispatch]
 	);
 
 	return useMemo(

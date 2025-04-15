@@ -304,7 +304,7 @@ const MessageItem = React.memo(
 								<View style={message?.content?.fwd ? { borderLeftWidth: 2, borderColor: 'gray', paddingLeft: 10 } : undefined}>
 									{!!message?.content?.fwd && (
 										<Text style={styles.forward}>
-											<Entypo name="forward" size={15} /> Forwarded
+											<Entypo name="forward" size={15} color={themeValue.text} /> Forwarded
 										</Text>
 									)}
 									<View style={{ opacity: message.isError || message?.isErrorRetry ? 0.6 : 1 }}>

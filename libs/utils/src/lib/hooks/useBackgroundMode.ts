@@ -6,21 +6,21 @@ import useLastCallback from './useLastCallback';
 const blurCallbacks = createCallbackManager();
 const focusCallbacks = createCallbackManager();
 
-let isFocused = document.hasFocus();
+const isFocused = true;
 
-window.addEventListener('blur', () => {
-	if (!isFocused) {
-		return;
-	}
+// window.addEventListener('blur', () => {
+// 	if (!isFocused) {
+// 		return;
+// 	}
+//
+// 	isFocused = false;
+// 	blurCallbacks.runCallbacks();
+// });
 
-	isFocused = false;
-	blurCallbacks.runCallbacks();
-});
-
-window.addEventListener('focus', () => {
-	isFocused = true;
-	focusCallbacks.runCallbacks();
-});
+// window.addEventListener('focus', () => {
+// 	isFocused = true;
+// 	focusCallbacks.runCallbacks();
+// });
 
 export function useBackgroundMode(onBlur?: AnyToVoidFunction, onFocus?: AnyToVoidFunction, isDisabled = false) {
 	const lastOnBlur = useLastCallback(onBlur);

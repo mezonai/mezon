@@ -1,4 +1,4 @@
-export * from './lib/app/hooks/useAppNavigation';
+// export * from './lib/app/hooks/useAppNavigation';
 export * from './lib/app/hooks/useAppParams';
 export * from './lib/app/hooks/useMessages';
 export * from './lib/auth/hooks/useAuth';

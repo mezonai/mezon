@@ -5,7 +5,7 @@ import { ApiConfirmLoginRequest, ApiLoginIDResponse } from 'mezon-js/dist/api.ge
 import React, { useCallback } from 'react';
 import { CreateMezonClientOptions, createClient as createMezonClient } from '../mezon';
 
-const MAX_WEBSOCKET_FAILS = 8;
+const MAX_WEBSOCKET_FAILS = 20;
 const MIN_WEBSOCKET_RETRY_TIME = 3000;
 const MAX_WEBSOCKET_RETRY_TIME = 300000;
 const JITTER_RANGE = 2000;
@@ -131,7 +131,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				return session;
 			}
 
-			const session2 = await socketRef.current.connect(session, true, isFromMobile ? '1' : '0');
+			const session2 = await socketRef.current.connect(session, true, '1');
 			sessionRef.current = session2;
 
 			return session;
@@ -217,7 +217,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				return newSession;
 			}
 
-			const session2 = await socketRef.current.connect(newSession, true, isFromMobile ? '1' : '0');
+			const session2 = await socketRef.current.connect(newSession, true, '1');
 			sessionRef.current = session2;
 			return newSession;
 		},
@@ -226,6 +226,18 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 	const abortControllerRef = React.useRef<AbortController | null>(null);
 	const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
+
+	let timeSuccess: any;
+
+	const isMoreThanOneMinutePast = (time: any) => {
+		if (!time) {
+			return false;
+		}
+
+		const currentTime = new Date();
+		const differenceInMilliseconds = currentTime.getTime() - time.getTime();
+		return differenceInMilliseconds >= 20000;
+	};
 
 	const reconnect = React.useCallback(
 		async (clanId: string) => {
@@ -243,23 +255,22 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				return Promise.resolve(null);
 			}
 
-			if (abortControllerRef.current) {
-				abortControllerRef.current.abort();
-			}
+			// if (abortControllerRef.current) {
+			// 	abortControllerRef.current.abort();
+			// }
 
-			abortControllerRef.current = new AbortController();
-			const signal = abortControllerRef.current.signal;
+			// abortControllerRef.current = new AbortController();
+			// const signal = abortControllerRef.current.signal;
 
 			// eslint-disable-next-line no-async-promise-executor
 			return new Promise(async (resolve, reject) => {
 				let failCount = 0;
-
-				signal.addEventListener('abort', () => {
-					if (timeoutIdRef.current) {
-						clearTimeout(timeoutIdRef.current);
-						return resolve('RECONNECTING');
-					}
-				});
+				// signal.addEventListener('abort', () => {
+				// if (timeoutIdRef.current) {
+				// 	clearTimeout(timeoutIdRef.current);
+				// 	return resolve('RECONNECTING');
+				// }
+				// });
 
 				const retry = async () => {
 					if (failCount >= MAX_WEBSOCKET_FAILS) {
@@ -275,17 +286,17 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 							newSession || session,
 							true,
 							isFromMobile ? '1' : '0',
-							DefaultSocket.DefaultConnectTimeoutMs,
-							signal
+							DefaultSocket.DefaultConnectTimeoutMs
 						);
 						await socket.joinClanChat(clanId);
+						// timeSuccess = new Date();
 						socketRef.current = socket;
 						sessionRef.current = recsession;
 						return resolve(socket);
 					} catch (error) {
 						failCount++;
 						const retryTime = isFromMobile
-							? 0
+							? 1500
 							: Math.min(MIN_WEBSOCKET_RETRY_TIME * Math.pow(2, failCount), MAX_WEBSOCKET_RETRY_TIME) + Math.random() * JITTER_RANGE;
 						await new Promise((res) => {
 							timeoutIdRef.current = setTimeout(res, retryTime);
@@ -298,7 +309,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				!socketRef.current?.isOpen() && (await retry());
 			});
 		},
-		[createSocket, isFromMobile]
+		[createSocket, socketRef.current, isFromMobile]
 	);
 
 	const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -311,7 +322,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			return new Promise((resolve, reject) => {
 				timeoutRef.current = setTimeout(() => {
 					reconnect(clanId).then(resolve).catch(reject);
-				}, 500);
+				}, 200);
 			});
 		},
 		[reconnect]

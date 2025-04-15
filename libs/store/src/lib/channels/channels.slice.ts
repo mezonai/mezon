@@ -206,13 +206,11 @@ export const joinChannel = createAsyncThunk(
 			thunkAPI.dispatch(notifiReactMessageActions.getNotifiReactMessage({ channelId }));
 			thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: clanId ?? '', channelId: channelId }));
 
-			const state = thunkAPI.getState() as RootState;
+			// const state = thunkAPI.getState() as RootState;
 
-			if (!state.messages?.idMessageToJump?.id) {
-				thunkAPI.dispatch(
-					messagesActions.fetchMessages({ clanId: clanId, channelId, isFetchingLatestMessages: true, isClearMessage, noCache })
-				);
-			}
+			// if (!state.messages?.idMessageToJump?.id) {
+			thunkAPI.dispatch(messagesActions.fetchMessages({ clanId: clanId, channelId, isFetchingLatestMessages: true, isClearMessage, noCache }));
+			// }
 
 			const channel = selectChannelById(getChannelsRootState(thunkAPI), channelId);
 
@@ -268,7 +266,7 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 				const isPublic = checkIsThread(response as ChannelsEntity) ? false : !response.channel_private;
 				thunkAPI.dispatch(
 					channelsActions.joinChat({
-						clanId: response.clan_id as string,
+						clanId: response.clan_id || (body?.clan_id as string),
 						channelId: response.channel_id as string,
 						channelType: response.type as number,
 						isPublic: isPublic
@@ -653,8 +651,8 @@ export const fetchChannels = createAsyncThunk(
 			}));
 
 			const [favorChannels, listCategory] = await Promise.all([
-				thunkAPI.dispatch(fetchListFavoriteChannel({ clanId, noCache: Boolean(noCache) })),
-				thunkAPI.dispatch(categoriesActions.fetchCategories({ clanId, noCache: Boolean(noCache) }))
+				thunkAPI.dispatch(fetchListFavoriteChannel({ clanId, noCache: true })),
+				thunkAPI.dispatch(categoriesActions.fetchCategories({ clanId, noCache: true }))
 			]);
 
 			thunkAPI.dispatch(
@@ -1055,9 +1053,9 @@ export const channelsSlice = createSlice({
 					state.byClans[clanId] = getInitialClanState();
 				}
 				state.byClans[clanId].idChannelSelected[clanId] = channelId;
-				const rememberChannel = JSON.parse(localStorage.getItem('remember_channel') || '{}');
-				rememberChannel[clanId] = channelId;
-				localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
+				// const rememberChannel = JSON.parse(localStorage.getItem('remember_channel') || '{}');
+				// rememberChannel[clanId] = channelId;
+				// localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
 			}
 		},
 
@@ -1065,7 +1063,7 @@ export const channelsSlice = createSlice({
 			const { clanId } = action.payload;
 			if (state.byClans[clanId]) {
 				delete state.byClans[clanId].idChannelSelected[clanId];
-				localStorage.setItem('remember_channel', JSON.stringify(state.byClans[clanId].idChannelSelected));
+				// localStorage.setItem('remember_channel', JSON.stringify(state.byClans[clanId].idChannelSelected));
 			}
 		},
 
@@ -1300,9 +1298,11 @@ export const channelsSlice = createSlice({
 				fetchChannels.fulfilled,
 				(state: ChannelsState, action: PayloadAction<{ channels: ChannelsEntity[]; clanId: string; fromCache?: boolean }>) => {
 					state.loadingStatus = 'loaded';
-					state.byClans[action.payload.clanId].fetchChannelSuccess = true;
+					if (state.byClans?.[action.payload.clanId]) state.byClans[action.payload.clanId].fetchChannelSuccess = true;
 					if (action.payload.fromCache) return;
-					channelsAdapter.setAll(state.byClans[action.payload.clanId].entities, action.payload.channels);
+					if (state.byClans[action.payload.clanId]?.entities) {
+						channelsAdapter.setAll(state.byClans[action.payload.clanId].entities, action.payload.channels);
+					}
 				}
 			)
 			.addCase(fetchChannels.rejected, (state: ChannelsState, action) => {

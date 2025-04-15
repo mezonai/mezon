@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 
 export function usePathMatch(paths: { [key: string]: string }) {
-	const currentURL = useLocation().pathname;
+	const currentURL = '';
 	return useMemo(() => {
 		const matches: { [key: string]: boolean } = {};
 		for (const key in paths) {

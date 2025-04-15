@@ -1,5 +1,5 @@
 import { throttle } from './schedulers';
-import { IS_IOS } from './windowEnvironment';
+// import { IS_IOS } from './windowEnvironment';
 
 type IDimensions = {
 	width: number;
@@ -29,20 +29,20 @@ const handleOrientationChange = throttle(
 	false
 );
 
-window.addEventListener('orientationchange', handleOrientationChange);
-if (IS_IOS) {
-	window.visualViewport!.addEventListener('resize', handleResize);
-} else {
-	window.addEventListener('resize', handleResize);
-}
+// window.addEventListener('orientationchange', handleOrientationChange);
+// if (IS_IOS) {
+// 	window.visualViewport!.addEventListener('resize', handleResize);
+// } else {
+// 	window.addEventListener('resize', handleResize);
+// }
 
 export function updateSizes(): IDimensions {
-	let height: number;
-	if (IS_IOS) {
-		height = window.visualViewport!.height + window.visualViewport!.pageTop;
-	} else {
-		height = window.innerHeight;
-	}
+	// let height: number;
+	// if (IS_IOS) {
+	// 	height = window.visualViewport!.height + window.visualViewport!.pageTop;
+	// } else {
+	// 	height = window.innerHeight;
+	// }
 
 	// requestMutation(() => {
 	// 	const vh = height * 0.01;
