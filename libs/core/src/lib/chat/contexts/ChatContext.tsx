@@ -33,7 +33,6 @@ import {
 	emojiSuggestionActions,
 	eventManagementActions,
 	friendsActions,
-	getDmEntityByChannelId,
 	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -200,7 +199,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				const currentUserId = selectCurrentUserId(state);
 				const hasJoinSoundEffect = memberList.some((member) => member.user_id === currentUserId) || currentUserId === voice.user_id;
 
-				if (voiceChannel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
+				if (voiceChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
 					const joinSoundElement = document.createElement('audio');
 					joinSoundElement.src = 'assets/audio/joincallsound.mp3';
 					joinSoundElement.preload = 'auto';
@@ -348,17 +347,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 				dispatch(messagesActions.addNewMessage(mess));
 				if (mess.mode === ChannelStreamMode.STREAM_MODE_DM || mess.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-					const senderIsMe = userId === mess.sender_id;
 					const newDm = await dispatch(directActions.addDirectByMessageWS(mess)).unwrap();
-					const dmItemInChannelState = await dispatch(getDmEntityByChannelId({ channelId: mess.channel_id })).unwrap();
-					if (!dmItemInChannelState.active) {
-						if (senderIsMe) {
-							const partnerId = dmItemInChannelState?.user_id?.[0] || '';
-							await createDirectMessageWithUser(partnerId);
-						} else {
-							await createDirectMessageWithUser(mess.sender_id);
-						}
-					}
 					!newDm && dispatch(directMetaActions.updateDMSocket(message));
 					const isClanView = selectClanView(store.getState());
 

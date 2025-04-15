@@ -14,18 +14,23 @@ import {
 	RootState,
 	emojiSuggestionActions,
 	getStore,
+	referencesActions,
 	selectAllChannels,
 	selectAllHashtagDm,
+	selectCurrentChannel,
 	threadsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { IHashtagOnMessage, IMentionOnMessage, MIN_THRESHOLD_CHARS, MentionDataProps } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
+import { useMezon } from '@mezon/transport';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Platform, TextInput, View } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
+import RNFS from 'react-native-fs';
+import { useSelector } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
@@ -106,11 +111,14 @@ export const ChatBoxBottomBar = memo(
 		const [isShowAttachControl, setIsShowAttachControl] = useState<boolean>(false);
 		const [isFocus, setIsFocus] = useState<boolean>(false);
 		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<IModeKeyboardPicker>('text');
+		const currentChannel = useSelector(selectCurrentChannel);
 
 		const navigation = useNavigation<any>();
 		const inputRef = useRef<TextInput>();
 		const cursorPositionRef = useRef(0);
 		const currentTextInput = useRef('');
+		const convertRef = useRef(false);
+		const { sessionRef, clientRef } = useMezon();
 		useEffect(() => {
 			const eventDataMention = DeviceEventEmitter.addListener(
 				ActionEmitEvent.ON_SET_LIST_MENTION_DATA,
@@ -234,9 +242,13 @@ export const ChatBoxBottomBar = memo(
 			if (!text) return;
 
 			if (text?.length > MIN_THRESHOLD_CHARS) {
-				setText('');
+				if (convertRef.current) {
+					return;
+				}
+				convertRef.current = true;
 				currentTextInput.current = '';
-				// await onConvertToFiles(text);
+				await onConvertToFiles(text);
+				setText('');
 				return;
 			}
 
@@ -360,33 +372,44 @@ export const ChatBoxBottomBar = memo(
 			[messageActionNeedToResolve?.targetMessage?.sender_id, onDeleteMessageActionNeedToResolve]
 		);
 
-		// const onConvertToFiles = useCallback(async (content: string) => {
-		// 	try {
-		// 		if (content?.length > MIN_THRESHOLD_CHARS) {
-		// 			const fileTxtSaved = await writeTextToFile(content);
-		// 			const session = sessionRef.current;
-		// 			const client = clientRef.current;
-		//
-		// 			if (!client || !session || !currentChannel.channel_id) {
-		// 				console.log('Client is not initialized');
-		// 			}
-		// 			handleUploadFileMobile(client, session, currentChannel.clan_id, currentChannel.channel_id, fileTxtSaved.name, fileTxtSaved)
-		// 				.then((attachment) => {
-		// 					handleFinishUpload(attachment);
-		// 					return 'handled';
-		// 				})
-		// 				.catch((err) => {
-		// 					console.log('err', err);
-		// 					return 'not-handled';
-		// 				});
-		// 		}
-		// 	} catch (e) {
-		// 		console.log('err', e);
-		// 	}
-		// }, []);
+		const onConvertToFiles = useCallback(
+			async (content: string) => {
+				try {
+					if (content?.length > MIN_THRESHOLD_CHARS) {
+						const fileTxtSaved = await writeTextToFile(content);
+						const session = sessionRef.current;
+						const client = clientRef.current;
+
+						if (!client || !session || !currentChannel.channel_id) {
+							return;
+						}
+
+						await dispatch(
+							referencesActions.setAtachmentAfterUpload({
+								channelId: currentChannel?.id,
+								files: [
+									{
+										filename: fileTxtSaved.name,
+										url: fileTxtSaved.uri,
+										filetype: fileTxtSaved.type,
+										size: fileTxtSaved.size as number
+									}
+								]
+							})
+						);
+					}
+				} catch (e) {
+					console.log('err', e);
+				} finally {
+					convertRef.current = false;
+				}
+			},
+			[clientRef, currentChannel.channel_id, currentChannel?.id, dispatch, sessionRef]
+		);
 
 		// const handleFinishUpload = useCallback(
 		// 	(attachment: ApiMessageAttachment) => {
+		// 		console.log('finish attach');
 		// 		typeConverts.map((typeConvert) => {
 		// 			if (typeConvert.type === attachment.filetype) {
 		// 				return (attachment.filetype = typeConvert.typeConvert);
@@ -409,35 +432,38 @@ export const ChatBoxBottomBar = memo(
 		// 	[channelId, dispatch]
 		// );
 
-		// const writeTextToFile = async (text: string) => {
-		// 	// Define the path to the file
-		// 	const now = Date.now();
-		// 	const filename = now + '.txt';
-		// 	const path = RNFS.DocumentDirectoryPath + `/${filename}`;
-		//
-		// 	// Write the text to the file
-		// 	await RNFS.writeFile(path, text, 'utf8')
-		// 		.then((success) => {
-		// 			//console.log('FILE WRITTEN!');
-		// 		})
-		// 		.catch((err) => {
-		// 			console.log(err.message);
-		// 		});
-		//
-		// 	// Read the file to get its base64 representation
-		// 	const fileData = await RNFS.readFile(path, 'base64');
-		//
-		// 	// Create the file object
-		// 	const fileFormat: IFile = {
-		// 		uri: path,
-		// 		name: filename,
-		// 		type: 'text/plain',
-		// 		size: (await RNFS.stat(path)).size.toString(),
-		// 		fileData: fileData
-		// 	};
-		//
-		// 	return fileFormat;
-		// };
+		const writeTextToFile = useCallback(
+			async (text: string) => {
+				// Define the path to the file
+				const now = Date.now();
+				const filename = now + '.txt';
+				const path = RNFS.DocumentDirectoryPath + `/${filename}`;
+
+				// Write the text to the file
+				await RNFS.writeFile(path, text, 'utf8')
+					.then((success) => {
+						//console.log('FILE WRITTEN!');
+					})
+					.catch((err) => {
+						console.log(err.message);
+					});
+
+				// Read the file to get its base64 representation
+				const fileData = await RNFS.readFile(path, 'base64');
+
+				// Create the file object
+				const fileFormat: IFile = {
+					uri: path,
+					name: filename,
+					type: 'text/plain',
+					size: (await RNFS.stat(path)).size.toString(),
+					fileData: fileData
+				};
+
+				return fileFormat;
+			},
+			[dispatch]
+		);
 
 		const resetInput = () => {
 			setIsFocus(false);

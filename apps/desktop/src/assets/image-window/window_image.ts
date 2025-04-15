@@ -136,7 +136,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
   </div>
   <div class="bottom-bar">
     <div class="sender-info">
-      <img id="userAvatar" src="${escapeHtml(imageData.uploaderData.avatar)}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px;">
+      <img id="userAvatar" src="${escapeHtml(imageData.uploaderData.avatar)}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">
       <div>
         <div id="username" class="username" style="font-weight: bold;">${escapeHtml(imageData.uploaderData.name)}</div>
         <div id="timestamp" class="timestamp" style="font-size: 0.8em; color: #ccc;">${escapeHtml(formatDateTime(imageData.create_time))}</div>

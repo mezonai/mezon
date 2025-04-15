@@ -1,5 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { sleep } from '@mezon/utils';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { style } from './styles';
 
@@ -41,13 +42,18 @@ export default function MezonSlideOption({ data, onChange, height = 90, width = 
 		}
 	};
 
-	useEffect(() => {
+	const scrollToInitialIndex = useCallback(async () => {
+		await sleep(300);
 		const finalIndex = initialIndex >= 0 ? initialIndex : 0;
 		ref?.current?.scrollTo({
 			x: finalIndex * width,
 			animated: false
 		});
-	}, [padding]);
+	}, [initialIndex, width]);
+
+	useEffect(() => {
+		scrollToInitialIndex();
+	}, [initialIndex, scrollToInitialIndex]);
 
 	function handlePressItem(index: number) {
 		ref?.current?.scrollTo({

@@ -17,6 +17,7 @@ import com.livekit.reactnative.audio.AudioType
 import com.mezon.mobile.FullScreenNotificationIncomingCallPackage
 import com.mezon.mobile.CustomImageViewPackage
 import com.mezon.mobile.PiPPackage
+import com.mezon.mobile.VideoThumbnailPackage;
 
 class MainApplication : Application(), ReactApplication {
 
@@ -29,6 +30,7 @@ class MainApplication : Application(), ReactApplication {
               add(CustomImageViewPackage())
               add(SharedPreferencesPackage())
               add(PiPPackage())
+              add(VideoThumbnailPackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"

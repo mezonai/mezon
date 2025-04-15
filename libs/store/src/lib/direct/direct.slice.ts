@@ -42,14 +42,22 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription) => {
 
 export const createNewDirectMessage = createAsyncThunk(
 	'direct/createNewDirectMessage',
-	async ({ body }: { body: ApiCreateChannelDescRequest }, thunkAPI) => {
+	async ({ body, username, avatar }: { body: ApiCreateChannelDescRequest; username?: string; avatar?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 			if (response) {
 				thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
 				thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
-				await thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+				thunkAPI.dispatch(
+					directActions.upsertOne({
+						id: response.channel_id || '',
+						...response,
+						usernames: username ? [username] : [],
+						channel_label: username,
+						channel_avatar: avatar ? [avatar] : ['']
+					})
+				);
 				if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
 					await thunkAPI.dispatch(
 						channelsActions.joinChat({
@@ -341,11 +349,13 @@ export const addDirectByMessageWS = createAsyncThunk('direct/addDirectByMessageW
 		const state = thunkAPI.getState() as RootState;
 		const existingDirect = selectDirectById(state, message.channel_id);
 
+		const directEntity = mapMessageToConversation(message);
 		if (!existingDirect) {
-			const directEntity = mapMessageToConversation(message);
 			thunkAPI.dispatch(directActions.upsertOne(directEntity));
 			thunkAPI.dispatch(directMetaActions.upsertOne(directEntity as DMMetaEntity));
 			return directEntity;
+		} else {
+			thunkAPI.dispatch(directActions.updateMoreData(directEntity));
 		}
 
 		return null;
@@ -621,6 +631,19 @@ export const directSlice = createSlice({
 					id: action.payload.channelId,
 					changes: {
 						count_mess_unread: 0
+					}
+				});
+			}
+		},
+		updateMoreData: (state, action: PayloadAction<DirectEntity>) => {
+			const data = action.payload;
+			const currentData = state.entities[data.channel_id || ''];
+			if (currentData) {
+				directAdapter.updateOne(state, {
+					id: data.channel_id || '',
+					changes: {
+						...data,
+						...currentData
 					}
 				});
 			}

@@ -28,9 +28,21 @@ module.exports = composePlugins(
 
     config.resolve = config.resolve || {};
     config.resolve.fallback = { "fs": false };
-
+    const customConfig = {
+      devServer: {
+        historyApiFallback: {
+          rewrites: [
+            {
+              from: /^\/\.well-known\/apple-app-site-association$/,
+              to: '/.well-known/apple-app-site-association.json',
+            },
+          ],
+        },
+      },
+    };
     return merge(config, {
-      ignoreWarnings: [/Failed to parse source map/]
+      ignoreWarnings: [/Failed to parse source map/],
+     ...customConfig
     });
   },
 );

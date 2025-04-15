@@ -1020,7 +1020,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						'w-full',
 						{
 							customScrollLightMode: appearanceTheme === 'light'
-						}
+						},
+						'scroll-big'
 					])}
 				>
 					<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end">

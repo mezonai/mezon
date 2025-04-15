@@ -46,13 +46,17 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 		[]
 	);
 
+	const themeIndex = useMemo(() => {
+		return themeOptions.findIndex((t) => t.value === themeBasic);
+	}, []);
+
 	function handleThemeChange(value: string) {
 		setTheme(value as ThemeMode);
 	}
 
 	return (
 		<View style={styles.container}>
-			<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeOptions.findIndex((t) => t.value === themeBasic)} />
+			<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeIndex} />
 		</View>
 	);
 }

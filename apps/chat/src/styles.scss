@@ -419,7 +419,7 @@ input:-webkit-autofill:active {
 		/* Ensure the span behaves inline */
 
 		code {
-			color: #e6e6e6;
+			color: #535353;
 			border: 1px solid #e3e5e8 !important;
 			background-color: #f2f3f5;
 			border-radius: 6px;
@@ -598,6 +598,9 @@ input:-webkit-autofill:active {
 // thread-scroll
 .thread-scroll::-webkit-scrollbar {
 	width: 4px;
+}
+.scroll-big::-webkit-scrollbar {
+	width: 6px;
 }
 
 .thread-scroll::-webkit-scrollbar-track {
@@ -1196,4 +1199,8 @@ input:-webkit-autofill:active {
 
 .bg-skeleton-dark {
 	background: oklab(0.9 0 0 / 0.12);
+}
+
+.lk-participant-media-video[data-lk-local-participant='false'] {
+	transform: rotateY(180deg) !important;
 }
