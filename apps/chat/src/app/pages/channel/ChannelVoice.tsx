@@ -103,6 +103,30 @@ const ChannelVoice = memo(
 			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
 		}, [dispatch, voiceInfo]);
 
+		useEffect(() => {
+			const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+				if (isJoined && voiceInfo?.clanId && voiceInfo?.channelId) {
+					dispatch(voiceActions.resetVoiceSettings());
+					dispatch(
+						handleParticipantVoiceState({
+							clan_id: voiceInfo.clanId,
+							channel_id: voiceInfo.channelId,
+							display_name: userProfile?.user?.display_name ?? '',
+							state: ParticipantMeetState.LEAVE
+						})
+					);
+					event.preventDefault();
+					event.returnValue = '';
+				}
+			};
+
+			window.addEventListener('beforeunload', handleBeforeUnload);
+
+			return () => {
+				window.removeEventListener('beforeunload', handleBeforeUnload);
+			};
+		}, [isJoined, voiceInfo, userProfile, dispatch]);
+
 		const handleFullScreen = useCallback(() => {
 			if (!containerRef.current) return;
 

@@ -218,21 +218,9 @@ type fetchMessageChannelPayload = {
 
 const MESSAGE_LIST_SLICE = 100;
 
-function findClosestIndex(sourceIds: string[], offsetId: string) {
-	if (offsetId < sourceIds[0]) {
-		return 0;
-	}
-
-	if (offsetId > sourceIds[sourceIds.length - 1]) {
-		return sourceIds.length - 1;
-	}
-
-	return sourceIds.findIndex((id, i) => id === offsetId || (id < offsetId && sourceIds[i + 1] > offsetId));
-}
-
 function getViewportSlice(sourceIds: string[], offsetId: string | undefined, direction: Direction_Mode) {
 	const { length } = sourceIds;
-	const index = offsetId ? findClosestIndex(sourceIds, offsetId) : -1;
+	const index = offsetId ? sourceIds.findIndex((id, i) => id === offsetId) : -1;
 	const isBackwards = direction === Direction_Mode.BEFORE_TIMESTAMP;
 	const isAround = direction === Direction_Mode.AROUND_TIMESTAMP;
 	const indexForDirection = isBackwards ? index : index + 1 || length;

@@ -7,6 +7,9 @@ interface BackgroundEffectsMenuProps {
 	participant: LocalParticipant;
 }
 
+const darkGradientBackgroundUrl =
+	'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiM4MDgwODAiLz4KPC9zdmc+';
+
 export const BackgroundEffectsMenu: React.FC<BackgroundEffectsMenuProps> = ({ participant }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeEffect, setActiveEffect] = useState<'none' | 'blur' | 'background'>('none');
@@ -15,9 +18,6 @@ export const BackgroundEffectsMenu: React.FC<BackgroundEffectsMenuProps> = ({ pa
 
 	const blurProcessorRef = useRef<any>(null);
 	const bgProcessorRef = useRef<any>(null);
-
-	const darkGradientBackgroundUrl =
-		'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiM4MDgwODAiLz4KPC9zdmc+';
 
 	useEffect(() => {
 		blurProcessorRef.current = BackgroundBlur(10, { delegate: 'GPU' });

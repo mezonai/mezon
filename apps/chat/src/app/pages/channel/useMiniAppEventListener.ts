@@ -1,4 +1,4 @@
-import { channelAppActions, getStore, giveCoffeeActions, RolesClanEntity, selectAllChannels, useAppDispatch } from '@mezon/store';
+import { channelAppActions, getStore, giveCoffeeActions, RolesClanEntity, selectAllChannels, selectCurrentClan, useAppDispatch } from '@mezon/store';
 import { ChannelMembersEntity, MiniAppEventType } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { ApiAccount, ApiChannelAppResponse } from 'mezon-js/api.gen';
@@ -104,6 +104,23 @@ const useMiniAppEventListener = (
 					const channels = selectAllChannels(store.getState());
 					miniAppRef.current?.contentWindow?.postMessage(
 						JSON.stringify({ eventType: MiniAppEventType.CHANNELS_RESPONSE, eventData: channels }),
+						appChannel.app_url
+					);
+					break;
+				}
+				case MiniAppEventType.GET_CHANNEL: {
+					miniAppRef.current?.contentWindow?.postMessage(
+						JSON.stringify({ eventType: MiniAppEventType.CHANNELS_RESPONSE, eventData: appChannel }),
+						appChannel.app_url
+					);
+					break;
+				}
+
+				case MiniAppEventType.GET_CLAN: {
+					const store = getStore();
+					const clan = selectCurrentClan(store.getState());
+					miniAppRef.current?.contentWindow?.postMessage(
+						JSON.stringify({ eventType: MiniAppEventType.CHANNELS_RESPONSE, eventData: clan }),
 						appChannel.app_url
 					);
 					break;

@@ -169,14 +169,14 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 												}}
 												show={'muted'}
 											></TrackMutedIndicator>
-											<span className="truncate whitespace-nowrap">{voiceUsername}</span>
+											<span className="truncate whitespace-nowrap py-0.5">{voiceUsername}</span>
 										</div>
 									) : (
 										<div className="flex min-w-0 items-center overflow-hidden gap-1 bg-[#00000080] p-[5px] rounded-md">
 											<span>
 												<ScreenShareIcon />
 											</span>
-											<span className="truncate whitespace-nowrap">{voiceUsername}&apos;s screen</span>
+											<span className="truncate whitespace-nowrap py-0.5">{voiceUsername}&apos;s screen</span>
 										</div>
 									)}
 									<ConnectionQualityIndicator />

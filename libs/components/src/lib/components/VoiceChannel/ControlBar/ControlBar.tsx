@@ -295,7 +295,9 @@ export function ControlBar({
 							kind="videoinput"
 							onActiveDeviceChange={(_kind, deviceId) => saveVideoInputDeviceId(deviceId ?? 'default')}
 						/>
-						{showCamera && <BackgroundEffectsMenu participant={localParticipant.localParticipant} />}
+						{showCamera && typeof window !== 'undefined' && 'MediaStreamTrackGenerator' in window && (
+							<BackgroundEffectsMenu participant={localParticipant.localParticipant} />
+						)}
 					</div>
 				)}
 				{visibleControls.screenShare && browserSupportsScreenSharing && (
