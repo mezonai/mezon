@@ -127,7 +127,6 @@ export const listChannelRenderSlice = createSlice({
 				state.listChannelRender[clanId][indexUpdate] = {
 					...state.listChannelRender[clanId][indexUpdate],
 					channel_label: dataUpdate.channel_label || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_label,
-					app_url: dataUpdate.app_url || (state.listChannelRender[clanId][indexUpdate] as IChannel).app_url,
 					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
 					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
 					age_restricted: dataUpdate.age_restricted,

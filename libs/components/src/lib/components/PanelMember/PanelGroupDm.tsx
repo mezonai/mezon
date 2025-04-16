@@ -1,5 +1,6 @@
 import { useAppNavigation, useAppParams, useMarkAsRead } from '@mezon/core';
 import {
+	IUpdateChannelRequest,
 	SetMuteNotificationPayload,
 	SetNotificationPayload,
 	channelsActions,
@@ -17,7 +18,7 @@ import {
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { format } from 'date-fns';
 import { Dropdown } from 'flowbite-react';
-import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ModalConfirm from '../ModalConfirm';
@@ -144,11 +145,11 @@ const PanelGroupDM = ({ isDmGroupOwner, dmGroupId, lastOne }: PanelGroupDMPProps
 
 	const handleEnableE2ee = useCallback(async (directId?: string, e2ee?: number) => {
 		if (!directId) return;
-		const updateChannel: ApiUpdateChannelDescRequest = {
+		const updateChannel: IUpdateChannelRequest = {
 			channel_id: directId,
 			channel_label: '',
 			category_id: channel.category_id,
-			app_url: channel.app_url,
+			app_id: channel.app_id || '',
 			e2ee: !channel.e2ee ? 1 : 0
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));

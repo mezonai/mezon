@@ -36,7 +36,7 @@ function ApplicationsPage() {
 							onClick={toggleCreatePopup}
 							className="text-[15px] py-[10px] px-[16px] text-white bg-[#5865F2] hover:bg-[#4752c4] cursor-pointer rounded-sm text-nowrap"
 						>
-							New Application
+							New Application or Bot
 						</div>
 					</div>
 					<div className="text-[20px] dark:text-textSecondary mt-4">
@@ -171,35 +171,43 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 		navigate(id);
 	};
 
-	return (
+	const applications = appListForDisplaying.filter((app) => app.app_url && app.app_url.trim() !== '');
+	const bots = appListForDisplaying.filter((app) => !app.app_url || app.app_url.trim() === '');
+
+	const renderAppList = (items: ApiApp[], title: string) => (
 		<div className="flex flex-col gap-5">
-			<div className="text-[20px]">My Applications</div>
+			<div className="text-[20px]">{title}</div>
 			<div className="flex flex-wrap gap-2 gap-y-2 w-full">
-				{appListForDisplaying &&
-					appListForDisplaying.map((value, index) => (
-						<div
-							onClick={() => goToAppDetailPage(value.id as string)}
-							key={index}
-							className={`relative p-[10px] rounded-md cursor-pointer hover:-translate-y-2 duration-200 hover:shadow-2xl ${isSmallSizeSort ? 'w-[128px] applicationItemSmallSort' : 'w-[206px] applicationItemLargeSort'} ${value.is_shadow ? 'dark:bg-[#474a51] dark:hover:bg-[#393a40] bg-[#c6ccd2] hover:bg-[#adaeaf]' : 'dark:bg-[#2b2d31] dark:hover:bg-[#1e1f22] bg-bgLightModeSecond hover:bg-[#e3e5e8]'}`}
-						>
-							{value.is_shadow && (
-								<div className="w-fit p-[6px] rounded-full dark:bg-bgLightPrimary bg-bgPrimary top-1 left-1 absolute">
-									<Icons.ShadowBotIcon className="w-6 dark:text-textPrimaryLight text-textPrimary" />
-								</div>
-							)}
-							{value.applogo ? (
-								<img src={value.applogo} alt="" className="aspect-square object-cover rounded-md w-full" />
-							) : (
-								<div className={`dark:bg-[#111214] bg-white aspect-square flex justify-center items-center rounded-md w-full`}>
-									{value.appname?.charAt(0).toUpperCase()}
-								</div>
-							)}
-							<div className="w-full text-center truncate">{value.appname}</div>
-						</div>
-					))}
+				{items.map((value, index) => (
+					<div
+						onClick={() => goToAppDetailPage(value.id as string)}
+						key={index}
+						className={`relative p-[10px] rounded-md cursor-pointer hover:-translate-y-2 duration-200 hover:shadow-2xl ${isSmallSizeSort ? 'w-[128px] applicationItemSmallSort' : 'w-[206px] applicationItemLargeSort'} ${value.is_shadow ? 'dark:bg-[#474a51] dark:hover:bg-[#393a40] bg-[#c6ccd2] hover:bg-[#adaeaf]' : 'dark:bg-[#2b2d31] dark:hover:bg-[#1e1f22] bg-bgLightModeSecond hover:bg-[#e3e5e8]'}`}
+					>
+						{value.is_shadow && (
+							<div className="w-fit p-[6px] rounded-full dark:bg-bgLightPrimary bg-bgPrimary top-1 left-1 absolute">
+								<Icons.ShadowBotIcon className="w-6 dark:text-textPrimaryLight text-textPrimary" />
+							</div>
+						)}
+						{value.applogo ? (
+							<img src={value.applogo} alt="" className="aspect-square object-cover rounded-md w-full" />
+						) : (
+							<div className={`dark:bg-[#111214] bg-white aspect-square flex justify-center items-center rounded-md w-full`}>
+								{value.appname?.charAt(0).toUpperCase()}
+							</div>
+						)}
+						<div className="w-full text-center truncate">{value.appname}</div>
+					</div>
+				))}
 			</div>
 		</div>
 	);
-};
 
+	return (
+		<div className="flex flex-col gap-8">
+			{applications.length > 0 && renderAppList(applications, 'My Applications')}
+			{bots.length > 0 && renderAppList(bots, 'My Bots')}
+		</div>
+	);
+};
 export default ApplicationsPage;

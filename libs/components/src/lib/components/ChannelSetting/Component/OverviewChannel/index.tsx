@@ -180,17 +180,18 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		setAgeRestrictedInit(isAgeRestricted);
 		setE2eeInit(isE2ee);
 
-		const updateChannel: IUpdateChannelRequest = {
+		const updateChannel = {
 			channel_id: channel.channel_id || '',
 			channel_label: updatedChannelLabel,
 			category_id: channel.category_id,
 			app_url: updatedAppUrl,
+			app_id: channel.app_id || '',
 			topic: topic,
 			age_restricted: isAgeRestricted,
 			e2ee: isE2ee,
 			parent_id: channel?.parent_id,
 			channel_private: channel?.channel_private
-		};
+		} as IUpdateChannelRequest;
 		await dispatch(channelsActions.updateChannel(updateChannel));
 	}, [channelLabel, channelLabelInit, appUrl, appUrlInit, topic, channel, isCheckForSystemMsg, dispatch, isAgeRestricted, isE2ee]);
 
@@ -383,8 +384,8 @@ const BottomBlock = ({
 					</Dropdown>
 				</div>
 				<div>
-					Members will be restricted to sending one message and creating one thread per specified interval, unless they have ‘Manage
-					Channel’ or ‘Manage Messages’ permissions.
+					Members will be restricted to sending one message and creating one thread per specified interval, unless they have 'Manage
+					Channel' or 'Manage Messages' permissions.
 				</div>
 			</div>
 			<hr className="border-t border-solid dark:border-borderDivider" />
@@ -428,8 +429,8 @@ const BottomBlock = ({
 							/>
 						</div>
 						<div>
-							Post messages that reach clans outside your own. Users can opt in to ‘Following’ this channel, so select posts you
-							‘Publish’ from here will appear directly in their own clans. Announcement channels will not receive messages from other
+							Post messages that reach clans outside your own. Users can opt in to 'Following' this channel, so select posts you
+							'Publish' from here will appear directly in their own clans. Announcement channels will not receive messages from other
 							Announcement channels.
 						</div>
 					</div>

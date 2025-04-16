@@ -28,7 +28,8 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 		return (
 			props?.data?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ||
 			props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
-			props?.data?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
+			props?.data?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ||
+			props?.data?.type === ChannelType.CHANNEL_TYPE_APP
 		);
 	}, [props?.data?.type]);
 	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, props?.data?.threadIds || []));

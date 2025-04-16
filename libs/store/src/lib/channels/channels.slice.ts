@@ -331,13 +331,13 @@ export interface IUpdateChannelRequest {
 	channel_id: string;
 	channel_label: string | undefined;
 	category_id: string | undefined;
-	app_url: string | undefined;
 	e2ee?: number;
 	topic?: string;
 	age_restricted?: number;
 	parent_id?: string;
 	channel_private?: number;
 	category_name?: string;
+	app_id: string;
 }
 
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {

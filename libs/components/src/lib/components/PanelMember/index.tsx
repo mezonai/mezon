@@ -14,6 +14,7 @@ import {
 } from '@mezon/core';
 import {
 	EStateFriend,
+	IUpdateChannelRequest,
 	SetMuteNotificationPayload,
 	SetNotificationPayload,
 	channelUsersActions,
@@ -35,7 +36,7 @@ import {
 import { ChannelMembersEntity, EPermission, EUserSettings, FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { format } from 'date-fns';
 import { Dropdown } from 'flowbite-react';
-import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MentionItem } from 'react-mentions';
 import { useSelector } from 'react-redux';
@@ -227,11 +228,11 @@ const PanelMember = ({
 			return;
 		}
 		if (!directId) return;
-		const updateChannel: ApiUpdateChannelDescRequest = {
+		const updateChannel: IUpdateChannelRequest = {
 			channel_id: directId,
 			channel_label: '',
 			category_id: currentDmGroup.category_id,
-			app_url: currentDmGroup.app_url,
+			app_id: currentDmGroup.app_id || '',
 			e2ee: !currentDmGroup.e2ee ? 1 : 0
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));

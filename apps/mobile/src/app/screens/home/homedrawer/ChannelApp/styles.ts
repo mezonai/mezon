@@ -1,5 +1,5 @@
 import { Attributes, size } from '@mezon/mobile-ui';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 
 const height = Dimensions.get('window').height;
 export const style = (colors: Attributes) =>
@@ -31,7 +31,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			flexDirection: 'row',
 			gap: size.s_2,
-			top: size.s_6,
+			top: Platform.OS === 'ios' ? size.s_50 : size.s_10,
 			left: size.s_10,
 			zIndex: 1000
 		},

@@ -82,7 +82,7 @@ export const getApplicationDetail = createAsyncThunk('adminApplication/getApplic
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.getApp(mezon.session, appId);
 		thunkAPI.dispatch(setCurrentAppId(appId));
-		return response;
+		return response.app_url ? response : thunkAPI.rejectWithValue('No app_url');
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/getApplicationDetail');
 		return thunkAPI.rejectWithValue(error);

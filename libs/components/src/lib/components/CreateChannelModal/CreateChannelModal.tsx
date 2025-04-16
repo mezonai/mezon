@@ -2,6 +2,8 @@ import { useAppNavigation, useEscapeKeyClose } from '@mezon/core';
 import {
 	channelsActions,
 	createNewChannel,
+	fetchApplications,
+	selectAllApps,
 	selectChannelById,
 	selectCurrentCategory,
 	selectCurrentClan,
@@ -12,7 +14,7 @@ import {
 import { AlertTitleTextWarning, Icons } from '@mezon/ui';
 import { ValidateURL } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -33,9 +35,8 @@ export const CreateNewChannelModal = () => {
 	const currentClan = useSelector(selectCurrentClan);
 	const currentCategory = useAppSelector((state) => selectCurrentCategory(state));
 	const [validate, setValidate] = useState(true);
-	const [validateUrl, setValidateUrl] = useState(true);
 	const [channelName, setChannelName] = useState<string>('');
-	const [appUrl, setAppUrl] = useState<string>('');
+	const [selectedApp, setSelectedApp] = useState<ApiApp | null>(null);
 	const [isErrorType, setIsErrorType] = useState<string>('');
 	const [isErrorName, setIsErrorName] = useState<string>('');
 	const [isErrorAppUrl, setIsErrorAppUrl] = useState<string>('');
@@ -47,23 +48,30 @@ export const CreateNewChannelModal = () => {
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
 	const channelWelcome = useAppSelector((state) => selectChannelById(state, currentClan?.welcome_channel_id as string)) || {};
 	const appearanceTheme = useSelector(selectTheme);
+	const allApps = useAppSelector(selectAllApps);
+
+	useEffect(() => {
+		if (isAppChannel) {
+			dispatch(fetchApplications({}));
+		}
+	}, [isAppChannel, dispatch]);
+
+	const handleAppSelect = (app: ApiApp) => {
+		setSelectedApp(app);
+		setIsErrorAppUrl('');
+	};
 	const handleSubmit = async () => {
 		if (channelType === -1) {
 			setIsErrorType("Channel's type is required");
 			return;
 		}
-		if (channelName === '') {
+		if (channelType !== ChannelType.CHANNEL_TYPE_APP && channelName === '') {
 			setIsErrorName("Channel's name is required");
 			return;
 		}
 
-		if (isAppChannel && appUrl === '') {
-			setIsErrorAppUrl("Channel's app url is required");
-			return;
-		}
-
-		if (isAppChannel && !validateUrl) {
-			setIsErrorAppUrl('Please enter a valid channel app url');
+		if (isAppChannel && !selectedApp) {
+			setIsErrorAppUrl('Please select an application');
 			return;
 		}
 
@@ -78,7 +86,7 @@ export const CreateNewChannelModal = () => {
 			channel_label: channelName,
 			channel_private: isPrivate,
 			category_id: currentCategory?.category_id || channelWelcome?.category_id,
-			...(isAppChannel && { app_url: appUrl }),
+			...(isAppChannel && selectedApp && { app_id: selectedApp.id }),
 			parent_id: '0'
 		};
 
@@ -112,17 +120,8 @@ export const CreateNewChannelModal = () => {
 		setChannelName(value);
 	};
 
-	const handleAppUrlChannge = (value: string) => {
-		setIsErrorAppUrl('');
-		setAppUrl(value);
-	};
-
 	const checkValidate = (check: boolean) => {
 		setValidate(check);
-	};
-
-	const checkValidateUrl = (check: boolean) => {
-		setValidateUrl(check);
 	};
 
 	const onChangeChannelType = (value: number) => {
@@ -141,10 +140,10 @@ export const CreateNewChannelModal = () => {
 
 	const clearDataAfterCreateNew = () => {
 		setChannelName('');
-		setAppUrl('');
 		setChannelType(-1);
 		setChannelTypeVoice(ChannelType.CHANNEL_TYPE_MEZON_VOICE);
 		setIsPrivate(0);
+		setSelectedApp(null);
 	};
 
 	const handleChangeValue = useCallback(() => {
@@ -226,30 +225,54 @@ export const CreateNewChannelModal = () => {
 									/> */}
 								</div>
 							</div>
-							<ChannelNameTextField
-								ref={InputRef}
-								onChange={handleChannelNameChange}
-								onCheckValidate={checkValidate}
-								type={channelType}
-								channelNameProps="What is channel's name?"
-								error={isErrorName}
-								onHandleChangeValue={handleChangeValue}
-								placeholder={"Enter the channel's name"}
-								shouldValidate={true}
-								categoryId={currentCategory?.category_id || channelWelcome?.category_id}
-							/>
+							{channelType !== ChannelType.CHANNEL_TYPE_APP && (
+								<ChannelNameTextField
+									ref={InputRef}
+									onChange={handleChannelNameChange}
+									onCheckValidate={checkValidate}
+									type={channelType}
+									channelNameProps="What is channel's name?"
+									error={isErrorName}
+									onHandleChangeValue={handleChangeValue}
+									placeholder={"Enter the channel's name"}
+									shouldValidate={true}
+									categoryId={currentCategory?.category_id || channelWelcome?.category_id}
+								/>
+							)}
 							{channelType === ChannelType.CHANNEL_TYPE_APP && (
 								<div className={'mt-2 w-full'}>
-									<ChannelAppUrlTextField
-										ref={appUrlInputRef}
-										onChange={handleAppUrlChannge}
-										onCheckValidate={checkValidateUrl}
-										onHandleChangeValue={handleChangeValue}
-										channelAppUrlProps="What is app's URL?"
-										error={isErrorAppUrl}
-										placeholder={"Enter the app's URL"}
-										shouldValidate={true}
-									/>
+									<div className="Frame408 self-stretch flex-col justify-start items-start gap-2 flex mt-1">
+										<ChannelLableModal labelProp="Select an application:" />
+										<Dropdown
+											placement={'bottom-start'}
+											label={''}
+											renderTrigger={() => (
+												<div className="w-full h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm dark:bg-bgInputDark bg-bgLightModeThird border dark:text-textPrimary text-textPrimaryLight">
+													<div className={'dark:text-textPrimary text-textPrimary400 flex flex-row items-center'}>
+														<p>{selectedApp?.appname || 'Choose an application'}</p>
+													</div>
+													<div>
+														<Icons.ArrowDownFill />
+													</div>
+												</div>
+											)}
+											className={
+												'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20'
+											}
+										>
+											{allApps.apps?.map((app) => (
+												<Dropdown.Item
+													key={app.id}
+													className="flex flex-row items-center dark:text-textPrimary text-textPrimaryLight rounded-sm dark:hover:bg-bgModifierHover hover:bg-bgIconDark text-sm w-full py-2 px-4 text-left cursor-pointer"
+													onClick={() => handleAppSelect(app)}
+												>
+													<p className="uppercase dark:text-textSecondary text-textSecondary800 font-semibold">
+														{app.appname}
+													</p>
+												</Dropdown.Item>
+											))}
+										</Dropdown>
+									</div>
 								</div>
 							)}
 							{channelType === channelTypeVoice && (
@@ -284,6 +307,8 @@ interface ChannelAppUrlModalProps {
 	error?: string;
 	placeholder: string;
 	shouldValidate: boolean;
+	value?: string;
+	disabled?: boolean;
 }
 
 type ChannelAppUrlModalRef = {
@@ -291,7 +316,7 @@ type ChannelAppUrlModalRef = {
 };
 
 const ChannelAppUrlTextField = forwardRef<ChannelAppUrlModalRef, ChannelAppUrlModalProps>((props, ref) => {
-	const { channelAppUrlProps, onChange, onCheckValidate, onHandleChangeValue, error, placeholder, shouldValidate } = props;
+	const { channelAppUrlProps, onChange, onCheckValidate, onHandleChangeValue, error, placeholder, shouldValidate, value, disabled } = props;
 	const [checkValidate, setCheckValidate] = useState(true);
 	const [checkAppUrlChannel, setCheckAppUrlChannel] = useState(true);
 	const theme = useAppSelector(selectTheme);
@@ -344,6 +369,8 @@ const ChannelAppUrlTextField = forwardRef<ChannelAppUrlModalRef, ChannelAppUrlMo
 							className="Input grow shrink basis-0 h-10 outline-none dark:bg-neutral-950 bg-white dark:text-white text-black text-sm font-normal placeholder-[#AEAEAE]"
 							onChange={handleInputChange}
 							placeholder={placeholder}
+							value={value}
+							disabled={disabled}
 						/>
 					</div>
 				</div>

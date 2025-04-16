@@ -2,8 +2,8 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { getAuthState } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
-import { useEffect, useRef, useState } from 'react';
-import { Dimensions, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { Wave } from 'react-native-animated-spinkit';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
@@ -19,22 +19,6 @@ const ChannelAppScreen = ({ navigation, route }) => {
 	const session = JSON.stringify(authState.session);
 	const [loading, setLoading] = useState(true);
 	const webviewRef = useRef<WebView>(null);
-	const [orientation, setOrientation] = useState<'Portrait' | 'Landscape'>('Portrait');
-	const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
-
-	useEffect(() => {
-		const handleOrientationChange = () => {
-			const { width, height } = Dimensions.get('window');
-			setOrientation(width > height ? 'Landscape' : 'Portrait');
-		};
-		const subscription = Dimensions.addEventListener('change', handleOrientationChange);
-
-		handleOrientationChange();
-
-		return () => {
-			subscription?.remove();
-		};
-	}, []);
 
 	const uri = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/apps-mobile/${paramsRoute?.clanId}/${paramsRoute?.channelId}`;
 	const injectedJS = `
@@ -88,9 +72,9 @@ const ChannelAppScreen = ({ navigation, route }) => {
 	true;
   `;
 
-	const reloadChannelApp = () => {
-		webviewRef?.current?.reload();
-	};
+	// const reloadChannelApp = () => {
+	// 	webviewRef?.current?.reload();
+	// };
 	const onMessage = (event) => {
 		console.error('Received message from WebView:', event?.nativeEvent?.data);
 	};
@@ -111,7 +95,7 @@ const ChannelAppScreen = ({ navigation, route }) => {
 	};
 
 	return (
-		<Modal style={styles.container} visible={true}>
+		<Modal style={styles.container} visible={true} supportedOrientations={['portrait', 'landscape']}>
 			{loading && (
 				<View
 					style={{

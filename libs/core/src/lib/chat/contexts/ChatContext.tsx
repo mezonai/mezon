@@ -1067,7 +1067,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					channel_private: channelCreated.channel_private,
 					type: channelCreated.channel_type,
 					status: channelCreated.status,
-					app_url: channelCreated.app_url,
+					app_id: channelCreated.app_id,
 					clan_id: channelCreated.clan_id
 				};
 				dispatch(listChannelRenderAction.addThreadToListRender({ clanId: channelCreated?.clan_id as string, channel: thread }));
@@ -1369,7 +1369,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					dispatch(channelsActions.updateChannelSocket(channelUpdated));
 					dispatch(listChannelsByUserActions.upsertOne({ id: channelUpdated.channel_id, ...channelUpdated }));
 				}
-				if (channelUpdated.app_url) {
+				if (channelUpdated.app_id) {
 					dispatch(
 						channelsActions.updateAppChannel({
 							clanId: channelUpdated.clan_id,

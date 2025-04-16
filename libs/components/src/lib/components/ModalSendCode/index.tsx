@@ -4,6 +4,7 @@ import {
 	clansActions,
 	clearAllMemoizedFunctions,
 	e2eeActions,
+	IUpdateChannelRequest,
 	messagesActions,
 	selectDirectById,
 	selectDirectMesIdE2ee,
@@ -15,7 +16,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
-import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -239,11 +239,11 @@ const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { p
 
 	const handleEnableE2ee = useCallback(async (directId?: string, e2ee?: number) => {
 		if (!directId) return;
-		const updateChannel: ApiUpdateChannelDescRequest = {
+		const updateChannel: IUpdateChannelRequest = {
 			channel_id: directId,
 			channel_label: '',
 			category_id: currentDmGroup.category_id,
-			app_url: currentDmGroup.app_url,
+			app_id: currentDmGroup.app_id || '',
 			e2ee: !currentDmGroup.e2ee ? 1 : 0
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));

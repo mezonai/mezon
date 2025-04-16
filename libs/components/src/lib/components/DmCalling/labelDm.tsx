@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
-import { DirectEntity, channelsActions, useAppDispatch } from '@mezon/store';
+import { DirectEntity, IUpdateChannelRequest, channelsActions, useAppDispatch } from '@mezon/store';
 import { MouseButton, ValidateSpecialCharacters } from '@mezon/utils';
-import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Coords } from '../ChannelLink';
 import PanelMember from '../PanelMember';
@@ -62,11 +62,11 @@ const LabelDm = (props: LabelDmProps) => {
 	};
 
 	const handleSave = async () => {
-		const updateChannel: ApiUpdateChannelDescRequest = {
+		const updateChannel: IUpdateChannelRequest = {
 			channel_id: dmGroupId || '',
 			channel_label: label,
 			category_id: '0',
-			app_url: ''
+			app_id: ''
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));
 	};

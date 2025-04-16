@@ -84,40 +84,6 @@ export const HeaderModal = memo((props: HeaderModalProps) => {
 				</a>
 			</p>
 			<hr className="h-[0.08px] w-full dark:border-borderDivider border-contentTertiary my-4"></hr>
-			<div className="space-y-3 ">
-				<p className="text-xs font-bold dark:text-textSecondary text-textSecondary800 uppercase mb-2 text-left">
-					This will allow the developer of test2 to:
-				</p>
-				<div className="flex gap-x-2">
-					<div className="bg-colorSuccess rounded-full w-fit p-1">
-						<Icons.IconTick defaultSize="size-4" />
-					</div>
-					<p className="font-medium dark:text-colorWhiteSecond text-contentTertiary">Create commands</p>
-				</div>
-				{!isModalTry ? (
-					<div className="flex gap-x-2">
-						<div className="bg-borderDividerLight rounded-full w-fit p-1">
-							<Icons.Close defaultSize="size-4" />
-						</div>
-						<p className="font-medium dark:text-colorWhiteSecond text-contentTertiary">Paint a happy little tree</p>
-					</div>
-				) : (
-					<>
-						<div className="flex gap-x-2">
-							<div className="bg-colorSuccess rounded-full w-fit p-1">
-								<Icons.IconTick defaultSize="size-4" />
-							</div>
-							<p className="font-medium dark:text-colorWhiteSecond text-contentTertiary">Send you direct messages</p>
-						</div>
-						<div className="flex gap-x-2">
-							<div className="bg-borderDividerLight rounded-full w-fit p-1">
-								<Icons.Close defaultSize="size-4" />
-							</div>
-							<p className="font-medium dark:text-colorWhiteSecond text-contentTertiary">Bake a cake</p>
-						</div>
-					</>
-				)}
-			</div>
 		</div>
 	);
 });
@@ -204,7 +170,7 @@ type ModalAskProps = {
 };
 
 export const ModalAsk = memo((props: ModalAskProps) => {
-	const { handelBack = () => {}, handleAddBot, handleOpenModal = () => {} } = props;
+	const { handelBack = () => { }, handleAddBot, handleOpenModal = () => { } } = props;
 	return (
 		<div className="dark:bg-bgSecondary bg-bgLightTertiary flex justify-between items-center p-4">
 			<button onClick={handelBack} className="hover:underline text-sm ml-4 font-medium dark:text-colorWhiteSecond text-colorTextLightMode">
