@@ -31,6 +31,8 @@ const AppLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layout
 const GuessLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/GuessLayout'));
 const MainLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/MainLayout'));
 const CanvasLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/CanvasLayout'));
+const AssetLinkLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/AssetLinkLayout'));
+const AppleAppSiteAssociationLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/AppleAppSiteAssociationLayout'));
 const ChannelLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/ChannelLayout'));
 const ClanLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/ClanLayout'));
 const ClanIndex = lazy(() => import(/* webpackChunkName: "clan-index" */ '../pages/clan/ClanIndex'));
@@ -129,6 +131,22 @@ export const Routes = memo(() => {
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
 								<InitialRoutes />
+							</Suspense>
+						)
+					},
+					{
+						path: '/.well-known/assetlinks.json',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<AssetLinkLayout />
+							</Suspense>
+						)
+					},
+					{
+						path: '/.well-known/apple-app-site-association.json',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<AppleAppSiteAssociationLayout />
 							</Suspense>
 						)
 					},
