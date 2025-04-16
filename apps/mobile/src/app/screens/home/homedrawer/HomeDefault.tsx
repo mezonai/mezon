@@ -78,7 +78,7 @@ const HomeDefault = React.memo(
 					isPublic={isPublicChannel}
 					mode={isThread ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 				/>
-				{isChannelApp && <ChannelAppHotbar channelId={channelId} />}
+				{isChannelApp && <ChannelAppHotbar channelId={channelId} clanId={clanId} />}
 				<ChatBox
 					channelId={channelId}
 					mode={isThread ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}

@@ -76,7 +76,7 @@ import { toastListenerMiddleware } from './toasts/toasts.listener';
 import { TOASTS_FEATURE_KEY, toastsReducer } from './toasts/toasts.slice';
 import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { USER_STATUS_API_FEATURE_KEY, userStatusAPIReducer } from './userstatus/userstatusAPI.slice';
-import { VOICE_FEATURE_KEY, voiceReducer } from './voice/voice.slice';
+import { voiceReducer } from './voice/voice.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
 
 const persistedReducer = persistReducer(
@@ -299,15 +299,6 @@ const persistedOnboardingReducer = persistReducer(
 	onboardingReducer
 );
 
-const persistedVoiceReducer = persistReducer(
-	{
-		key: VOICE_FEATURE_KEY,
-		storage,
-		whitelist: ['voiceInfo', 'openPopOut', 'token', 'showMicrophone', 'showCamera', 'showScreen']
-	},
-	voiceReducer
-);
-
 const persistedChannelAppReducer = persistReducer(
 	{
 		key: CHANNEL_APP,
@@ -366,7 +357,7 @@ const reducer = {
 	isshow: IsShowReducer,
 	forwardmessage: popupForwardReducer,
 	notification: notificationReducer,
-	voice: persistedVoiceReducer,
+	voice: voiceReducer,
 	usersstream: usersStreamReducer,
 	videostream: videoStreamReducer,
 	channelApp: persistedChannelAppReducer,

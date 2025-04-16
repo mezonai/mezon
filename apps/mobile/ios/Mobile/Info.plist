@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>RTCAppGroupIdentifier</key>
-	<string>group.mezon.mobile.ScreenBroadcast</string>
-	<key>RTCScreenSharingExtension</key>
-	<string>mezon.mobile.ScreenBroadcast</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
@@ -86,6 +82,10 @@
 	<string>Mezon app needs access to the photo library to select and send images in messages</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<string>Allow Mezon to select photos so that they can be sent in the chat</string>
+	<key>RTCAppGroupIdentifier</key>
+	<string>group.mezon.mobile.ScreenBroadcast</string>
+	<key>RTCScreenSharingExtension</key>
+	<string>mezon.mobile.ScreenBroadcast</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

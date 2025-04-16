@@ -124,7 +124,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		E94D0A4D2DA66F2700D84EF2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		E94D0A4D2DA66F2700D84EF2 /* Exceptions for "ScreenBroadcast" folder in "ScreenBroadcast" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -134,7 +134,18 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E94D0A442DA66F2700D84EF2 /* ScreenBroadcast */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E94D0A4D2DA66F2700D84EF2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ScreenBroadcast; sourceTree = "<group>"; };
+		E94D0A442DA66F2700D84EF2 /* ScreenBroadcast */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E94D0A4D2DA66F2700D84EF2 /* Exceptions for "ScreenBroadcast" folder in "ScreenBroadcast" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = ScreenBroadcast;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -940,7 +951,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.32;
+				MARKETING_VERSION = 1.2.35;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -950,7 +961,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = mezon.mobile;
 				PRODUCT_NAME = Mobile;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mezon mobile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "mezon mobile";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1120,7 +1131,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.32;
+				MARKETING_VERSION = 1.2.35;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

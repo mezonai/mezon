@@ -27,6 +27,7 @@ const RenderAudioChat = React.memo(
 
 		useEffect(() => {
 			InCallManager.setSpeakerphoneOn(true);
+			InCallManager.setForceSpeakerphoneOn(true);
 		}, []);
 
 		useEffect(() => {

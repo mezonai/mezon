@@ -1,27 +1,26 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { useCallback, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import ChannelAppScreen from './ChannelApp';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
 type channelAppHotBarProps = {
 	channelId: string;
+	clanId: string;
 };
 
-const ChannelAppHotbar = ({ channelId }: channelAppHotBarProps) => {
+const ChannelAppHotbar = ({ channelId, clanId }: channelAppHotBarProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [isShowChannelApp, setIsShowChannelApp] = useState<boolean>(false);
-	const openChannelApp = useCallback(() => {
-		setIsShowChannelApp(true);
-	}, []);
-	const closeChannelApp = useCallback(() => {
-		setIsShowChannelApp(false);
-	}, []);
+	const navigation = useNavigation<any>();
 
-	if (isShowChannelApp) {
-		return <ChannelAppScreen channelId={channelId} closeChannelApp={closeChannelApp} />;
-	}
+	const openChannelApp = useCallback(async () => {
+		navigation.navigate(APP_SCREEN.CHANNEL_APP, {
+			channelId: channelId,
+			clanId: clanId
+		});
+	}, [channelId, clanId]);
 
 	return (
 		<View

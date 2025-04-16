@@ -1,7 +1,7 @@
 import { size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import Video from 'react-native-video';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -12,28 +12,19 @@ export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 	const videoURL = route?.params?.videoURL as string;
 	const videoRef = useRef(null);
 	const navigation = useNavigation<any>();
-	const [hasError, setHasError] = useState(false);
 	const [isBuffering, setIsBuffering] = useState(false);
 	const [isPlaying, setIsPlaying] = useState(false);
 
 	const handleClose = () => {
 		navigation.goBack();
 	};
-	const handleRetry = () => {
-		setHasError(false);
-	};
 
 	const onError = () => {
-		setHasError(true);
 		Toast.show({ type: 'error', text1: 'Failed to load video.' });
 	};
 
 	const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
 		setIsBuffering(isBuffering);
-	};
-
-	const onLoad = () => {
-		setHasError(false);
 	};
 
 	if (!videoURL) return null;
@@ -52,7 +43,6 @@ export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 				muted={false}
 				onError={onError}
 				onBuffer={onBuffer}
-				onLoad={onLoad}
 				ignoreSilentSwitch="ignore"
 				mixWithOthers="mix"
 				onReadyForDisplay={() => setIsPlaying(true)}
@@ -80,15 +70,6 @@ export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 
 			{(isBuffering || !isPlaying) && (
 				<ActivityIndicator style={{ position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -15 }, { translateY: -15 }] }} />
-			)}
-
-			{hasError && (
-				<TouchableOpacity
-					onPress={handleRetry}
-					style={{ position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -40 }, { translateY: -10 }] }}
-				>
-					<Text style={{ color: 'white' }}>Retry</Text>
-				</TouchableOpacity>
 			)}
 		</View>
 	);

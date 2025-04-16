@@ -9,15 +9,17 @@ import {
 	mentionRegexSplit,
 	save
 } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import {
 	RootState,
+	appActions,
 	emojiSuggestionActions,
 	getStore,
 	referencesActions,
 	selectAllChannels,
 	selectAllHashtagDm,
-	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectCurrentDM,
 	threadsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -27,10 +29,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useMezon } from '@mezon/transport';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, Platform, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, TextInput, View } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
 import RNFS from 'react-native-fs';
-import { useSelector } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
@@ -38,7 +39,6 @@ import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
-import { style } from '../ChatBoxBottomBar/style';
 import { ChatBoxListener } from '../ChatBoxListener';
 import { ChatMessageInput } from '../ChatMessageInput';
 import { ChatMessageLeftArea } from '../ChatMessageLeftArea';
@@ -111,7 +111,6 @@ export const ChatBoxBottomBar = memo(
 		const [isShowAttachControl, setIsShowAttachControl] = useState<boolean>(false);
 		const [isFocus, setIsFocus] = useState<boolean>(false);
 		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<IModeKeyboardPicker>('text');
-		const currentChannel = useSelector(selectCurrentChannel);
 
 		const navigation = useNavigation<any>();
 		const inputRef = useRef<TextInput>();
@@ -245,10 +244,12 @@ export const ChatBoxBottomBar = memo(
 				if (convertRef.current) {
 					return;
 				}
+				dispatch(appActions.setLoadingMainMobile(true));
 				convertRef.current = true;
 				currentTextInput.current = '';
 				await onConvertToFiles(text);
-				setText('');
+				setText('converted');
+				dispatch(appActions.setLoadingMainMobile(false));
 				return;
 			}
 
@@ -379,14 +380,17 @@ export const ChatBoxBottomBar = memo(
 						const fileTxtSaved = await writeTextToFile(content);
 						const session = sessionRef.current;
 						const client = clientRef.current;
-
-						if (!client || !session || !currentChannel.channel_id) {
+						const store = getStore();
+						const currentDirect = selectCurrentDM(store.getState());
+						const directId = currentDirect?.id;
+						const channelId = directId ? directId : selectCurrentChannelId(store.getState() as any);
+						if (!client || !session || !channelId) {
 							return;
 						}
 
-						await dispatch(
+						dispatch(
 							referencesActions.setAtachmentAfterUpload({
-								channelId: currentChannel?.id,
+								channelId,
 								files: [
 									{
 										filename: fileTxtSaved.name,
@@ -404,33 +408,8 @@ export const ChatBoxBottomBar = memo(
 					convertRef.current = false;
 				}
 			},
-			[clientRef, currentChannel.channel_id, currentChannel?.id, dispatch, sessionRef]
+			[clientRef, dispatch, sessionRef]
 		);
-
-		// const handleFinishUpload = useCallback(
-		// 	(attachment: ApiMessageAttachment) => {
-		// 		console.log('finish attach');
-		// 		typeConverts.map((typeConvert) => {
-		// 			if (typeConvert.type === attachment.filetype) {
-		// 				return (attachment.filetype = typeConvert.typeConvert);
-		// 			}
-		// 		});
-		// 		dispatch(
-		// 			referencesActions.setAtachmentAfterUpload({
-		// 				channelId: currentChannel?.id,
-		// 				files: [
-		// 					{
-		// 						filename: attachment.filename,
-		// 						size: attachment.size,
-		// 						filetype: attachment.filetype,
-		// 						url: attachment.url
-		// 					}
-		// 				]
-		// 			})
-		// 		);
-		// 	},
-		// 	[channelId, dispatch]
-		// );
 
 		const writeTextToFile = useCallback(
 			async (text: string) => {
@@ -572,20 +551,3 @@ export const ChatBoxBottomBar = memo(
 		);
 	}
 );
-
-const TempInputComponent = memo(() => {
-	const { themeValue } = useTheme();
-	const styles = style(themeValue);
-
-	return (
-		<View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: size.s_6 }}>
-			<View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-				<TextInput
-					style={[styles.inputStyle, { height: Platform.OS === 'ios' ? 'auto' : size.s_40 }]}
-					placeholderTextColor={Colors.textGray}
-					multiline
-				/>
-			</View>
-		</View>
-	);
-});

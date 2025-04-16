@@ -88,7 +88,11 @@ export function ControlBar({
 	});
 
 	const microphoneOnChange = useCallback(
-		(enabled: boolean, isUserInitiated: boolean) => (isUserInitiated ? dispatch(voiceActions.setShowMicrophone(enabled)) : null),
+		(enabled: boolean, isUserInitiated: boolean) => {
+			if (isUserInitiated) {
+				dispatch(voiceActions.setShowMicrophone(enabled));
+			}
+		},
 		[dispatch]
 	);
 

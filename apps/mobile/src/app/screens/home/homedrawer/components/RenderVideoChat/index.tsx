@@ -2,6 +2,7 @@ import { Colors, Metrics, size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, NativeModules, Platform, TouchableOpacity, View } from 'react-native';
+import { createThumbnail } from 'react-native-create-thumbnail';
 import FastImage from 'react-native-fast-image';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
@@ -17,14 +18,23 @@ export const RenderVideoChat = React.memo(
 		};
 
 		useEffect(() => {
-			if (videoURL && !!NativeModules?.VideoThumbnail?.getThumbnail && Platform.OS === 'android') {
+			if (videoURL) {
 				setLoading(true);
-				NativeModules.VideoThumbnail.getThumbnail(videoURL)
-					.then((path) => {
-						setThumbPath(path);
-					})
-					.catch((err) => console.error(err))
-					.finally(() => setLoading(false));
+				if (Platform.OS === 'android') {
+					NativeModules.VideoThumbnail.getThumbnail(videoURL)
+						.then((path) => {
+							setThumbPath(path);
+						})
+						.catch((err) => console.error(err))
+						.finally(() => setLoading(false));
+				} else {
+					createThumbnail({ url: videoURL, timeStamp: 1000 })
+						.then((response) => setThumbPath(response.path))
+						.catch(() => {
+							setThumbPath(null);
+						})
+						.finally(() => setLoading(false));
+				}
 			}
 		}, [videoURL]);
 

@@ -45,6 +45,7 @@
 		"react-native-callkeep": "4.3.16",
 		"react-native-compressor": "1.10.3",
 		"react-native-controlled-mentions": "3.0.0-alpha.4",
+		"react-native-create-thumbnail": "^2.1.1",
 		"react-native-device-info": "11.1.0",
 		"react-native-document-picker": "9.3.1",
 		"react-native-dotenv": "3.4.11",
