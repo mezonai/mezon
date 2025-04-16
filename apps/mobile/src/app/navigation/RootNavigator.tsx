@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { MezonStoreProvider, initStore } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import React, { memo, useMemo } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContextProvider, EmojiSuggestionProvider } from '@mezon/core';
@@ -16,6 +16,7 @@ import { toastConfig } from '../configs/toastConfig';
 import { DeviceProvider } from '../contexts/device';
 import RootListener from './RootListener';
 import RootStack from './RootStack';
+import { APP_SCREEN } from './ScreenTypes';
 
 const NavigationMain = memo(
 	(props) => {
@@ -55,12 +56,31 @@ const NavigationMain = memo(
 			}
 		};
 
+		const linking: LinkingOptions<{ any }> = {
+			prefixes: ['https://mezon.ai', 'mezon.ai://'],
+			config: {
+				screens: {
+					[`${APP_SCREEN.HOME}`]: {
+						path: 'home'
+					},
+					[`${APP_SCREEN.CHANNEL_APP}`]: {
+						path: 'channel-app/:code',
+						parse: {
+							code: (code) => `${code}`
+						}
+					}
+				}
+			}
+		};
+
 		return (
 			<NavigationContainer
 				theme={theme}
+				independent
 				onReady={async () => {
 					await BootSplash.hide({ fade: true });
 				}}
+				linking={linking}
 			>
 				<NetInfoComp />
 				<RootListener />

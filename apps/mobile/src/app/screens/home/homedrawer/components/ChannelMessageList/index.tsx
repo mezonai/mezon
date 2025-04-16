@@ -90,10 +90,10 @@ const ChannelListMessage = React.memo(
 				ListFooterComponent={isLoadMoreTop && !isCannotLoadMore ? <ViewLoadMore /> : null}
 				onScrollToIndexFailed={(info) => {
 					const wait = new Promise((resolve) => setTimeout(resolve, 200));
-					if (info.highestMeasuredFrameIndex < info.index) {
+					if (info?.highestMeasuredFrameIndex < info?.index && info?.index <= messages?.length) {
 						flatListRef.current?.scrollToIndex({ index: info.highestMeasuredFrameIndex, animated: true });
 						wait.then(() => {
-							flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+							flatListRef.current?.scrollToIndex({ index: info?.index, animated: true });
 						});
 					}
 				}}

@@ -17,6 +17,7 @@ export const APP_SCREEN = {
 	HOME_DEFAULT: 'HOME_DEFAULT',
 	HOME: 'HOME',
 	VIDEO_DETAIL: 'VIDEO_DETAIL',
+	CHANNEL_APP: 'CHANNEL_APP',
 
 	SERVERS: {
 		STACK: 'ROUTES.SERVERS.STACK',
@@ -275,6 +276,13 @@ type SettingStackParamList = {
 	[APP_SCREEN.SETTINGS.HISTORY_TRANSACTION]: undefined;
 };
 
+type ChannelAppParamList = {
+	[APP_SCREEN.CHANNEL_APP]: {
+		channelId?: string;
+		clanId?: string;
+	};
+};
+
 export type AppStackParamList = {
 	[APP_SCREEN.UN_AUTHORIZE]: undefined;
 	[APP_SCREEN.LOGIN]: undefined;
@@ -293,6 +301,7 @@ export type AppStackParamList = {
 	[APP_SCREEN.MENU_CHANNEL.STACK]: NavigatorScreenParams<MenuChannelStackParamList>;
 	[APP_SCREEN.MENU_CLAN.STACK]: NavigatorScreenParams<MenuClanStackParamList>;
 	[APP_SCREEN.SETTINGS.STACK]: NavigatorScreenParams<SettingStackParamList>;
+	[APP_SCREEN.CHANNEL_APP]: NavigatorScreenParams<ChannelAppParamList>;
 };
 
 export type AppStackScreenProps<T extends keyof AppStackParamList = typeof APP_SCREEN.HOME> = StackScreenProps<AppStackParamList, T>;

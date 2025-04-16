@@ -21,7 +21,7 @@ const extractOriginalUrl = (url: string): string | null => {
 	return null;
 };
 
-const CachedImageWithRetryIOS = memo(({ source, urlOriginal, retryCount = 3, style, ...props }: ICachedImageWithRetryIOSProps) => {
+const CachedImageWithRetryIOS = memo(({ source, urlOriginal, retryCount = 2, style, ...props }: ICachedImageWithRetryIOSProps) => {
 	const [currentSource, setCurrentSource] = useState(source);
 	const [retriesLeft, setRetriesLeft] = useState(retryCount);
 	const [key, setKey] = useState(Date.now());
@@ -50,7 +50,7 @@ const CachedImageWithRetryIOS = memo(({ source, urlOriginal, retryCount = 3, sty
 		setTimeout(() => {
 			setRetriesLeft((prevRetries) => prevRetries - 1);
 			setKey(Date.now());
-		}, 1000);
+		}, 200);
 	};
 
 	const handleExhaustedRetries = () => {
@@ -60,6 +60,7 @@ const CachedImageWithRetryIOS = memo(({ source, urlOriginal, retryCount = 3, sty
 			const getOriginalUrl = urlOriginal ? urlOriginal : extractOriginalUrl(source?.uri);
 			if (getOriginalUrl) {
 				setLoading(true);
+				setKey(Date.now());
 				setFallbackUrl(getOriginalUrl);
 				setIsError(true);
 			}

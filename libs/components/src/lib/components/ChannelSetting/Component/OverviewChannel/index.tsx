@@ -270,6 +270,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 						<hr className="border-t border-solid dark:border-borderDivider my-10" />
 						<p className="text-xs font-bold dark:text-textSecondary text-textSecondary800 uppercase mb-2">App URL</p>
 						<InputField
+							disabled={true}
 							type="text"
 							placeholder={appUrl}
 							value={appUrl}

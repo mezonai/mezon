@@ -32,6 +32,7 @@ import { MessagesStacks } from './stacks/MessagesStacks';
 import { NotificationStacks } from './stacks/NotificationStacks';
 import { ServersStacks } from './stacks/ServersStacks';
 import { SettingStacks } from './stacks/SettingStacks';
+import ChannelAppScreen from "../../screens/home/homedrawer/ChannelApp";
 const RootStack = createStackNavigator();
 const { SharedPreferences } = NativeModules;
 
@@ -151,6 +152,7 @@ export const Authentication = memo(() => {
 							headerShadowVisible: false
 						}}
 					/>
+					<RootStack.Screen name={APP_SCREEN.CHANNEL_APP} component={ChannelAppScreen} />
 				</RootStack.Navigator>
 				<CallingModalWrapper />
 				<StreamingWrapper />

@@ -52,6 +52,7 @@ export const ClanIcon = memo(
 		);
 	},
 	(prevProps, nextProps) => {
-		return prevProps.data?.clan_id === nextProps.data?.clan_id;
+		return prevProps.data?.clan_id === nextProps.data?.clan_id && 
+			   prevProps.data?.logo === nextProps.data?.logo;
 	}
 );

@@ -115,10 +115,27 @@ export const QRScanner = () => {
 		}
 	};
 
+	const extractClanAndChannelIds = (url: string): { channel_id: string; clan_id: string } | null => {
+		const parts = url.split('/');
+		const index = parts.indexOf('channel-app');
+		if (index !== -1 && parts.length > index + 2) {
+			return { channel_id: parts[index + 1], clan_id: parts[index + 2] };
+		}
+		return null;
+	};
+
 	const onNavigationScanned = async (value: string) => {
 		const store = await getStoreAsync();
 		try {
 			store.dispatch(appActions.setLoadingMainMobile(false));
+			if (value?.includes('/channel-app')) {
+				const ids = extractClanAndChannelIds(value);
+				navigation.navigate(APP_SCREEN.CHANNEL_APP, {
+					channelId: ids?.channel_id,
+					clanId: ids?.clan_id
+				});
+				return;
+			}
 			const valueObj = safeJSONParse(value || '{}');
 			// case Transfer funds
 			if (valueObj?.receiver_id) {

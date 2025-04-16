@@ -1200,7 +1200,3 @@ input:-webkit-autofill:active {
 .bg-skeleton-dark {
 	background: oklab(0.9 0 0 / 0.12);
 }
-
-.lk-participant-media-video[data-lk-local-participant='false'] {
-	transform: rotateY(180deg) !important;
-}

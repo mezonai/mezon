@@ -18,47 +18,35 @@ export const style = (colors: Attributes) =>
 			width: '100%',
 			height: '100%'
 		},
-		topBar: {
-			paddingHorizontal: size.s_10,
-			paddingTop: size.s_2,
-			paddingBottom: size.s_10,
-			flexDirection: 'row',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-			position: 'absolute',
-			top: 0,
-			left: 0,
-			zIndex: 1000,
-			width: '100%',
-			backgroundColor: 'red'
-		},
 		row: {
 			flexDirection: 'row',
 			gap: size.s_10
 		},
 		backButton: {
-			height: size.s_30,
-			width: size.s_30,
 			borderRadius: size.s_30,
-			backgroundColor: colors.bgInputPrimary,
+			backgroundColor: 'rgba(0, 0, 0, 0.5)',
+			padding: size.s_6,
 			justifyContent: 'center',
 			alignItems: 'center',
 			position: 'absolute',
+			flexDirection: 'row',
+			gap: size.s_2,
 			top: size.s_6,
 			left: size.s_10,
 			zIndex: 1000
 		},
 		reloadButton: {
-			height: size.s_30,
-			width: size.s_30,
 			borderRadius: size.s_30,
-			backgroundColor: colors.bgInputPrimary,
-			justifyContent: 'center',
+			backgroundColor: 'rgba(0, 0, 0, 0.5)',
+			justifyContent: 'space-between',
+			padding: size.s_6,
 			alignItems: 'center',
 			position: 'absolute',
+			gap: size.s_6,
 			top: size.s_6,
 			right: size.s_10,
-			zIndex: 1000
+			zIndex: 1000,
+			flexDirection: 'row'
 		},
 		title: {
 			fontSize: size.s_20,
@@ -69,5 +57,28 @@ export const style = (colors: Attributes) =>
 			marginTop: size.s_6,
 			fontSize: size.s_14,
 			color: colors.text
+		},
+		buttonText: {
+			fontSize: size.s_12,
+			color: colors.white,
+			marginRight: size.s_2,
+			fontWeight: 'bold'
+		},
+		toolTip: {
+			minWidth: 220,
+			padding: 0,
+			borderRadius: size.s_10,
+			backgroundColor: colors.secondary,
+			top: size.s_20,
+			right: -size.s_10
+		},
+		toolTipContainer: {
+			position: 'absolute',
+			height: size.s_30,
+			width: size.s_30,
+			borderRadius: size.s_30,
+			top: 0,
+			right: 0,
+			zIndex: 1000
 		}
 	});

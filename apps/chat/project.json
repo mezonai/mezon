@@ -29,7 +29,7 @@
 					},
 					{
 						"glob": "**/*",
-						"input": "apps/chat/src/.well-known/",
+						"input": "apps/chat/src/assets/.well-known/",
 						"output": "./.well-known/"
 					},
 					{

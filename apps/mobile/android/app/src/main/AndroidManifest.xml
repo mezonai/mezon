@@ -125,7 +125,7 @@
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
         android:requestLegacyExternalStorage="true"
-        android:screenOrientation="unspecified"
+        android:screenOrientation="fullUser"
         android:showWhenLocked="false"
         android:turnScreenOn="true"
         android:theme="@style/AppTheme"
@@ -139,7 +139,8 @@
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
-              <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/mezon-mobile/home" />
+              <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/channel-app/" />
+              <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/home/" />
           </intent-filter>
           <!--TODO: Add this filter, if you want to support sharing text into your app-->
           <intent-filter>
