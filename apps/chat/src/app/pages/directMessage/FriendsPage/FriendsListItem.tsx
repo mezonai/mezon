@@ -100,8 +100,8 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		distanceToBottom: 0
 	});
 
-	const directMessageWithUser = async (userId: string) => {
-		const response = await createDirectMessageWithUser(userId);
+	const directMessageWithUser = async (userId: string, username?: string, avatar?: string) => {
+		const response = await createDirectMessageWithUser(userId, username, avatar);
 		if (response.channel_id) {
 			const directChat = toDmGroupPageFromFriendPage(response.channel_id, Number(response.type));
 			navigate(directChat);
@@ -157,7 +157,9 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		<div className="border-t-[1px] dark:border-[#3f4147] border-gray-300 group/list_friends">
 			<div
 				key={friend?.user?.id}
-				onClick={() => directMessageWithUser(friend?.user?.id ?? '')}
+				onClick={() =>
+					directMessageWithUser(friend?.user?.id ?? '', friend?.user?.display_name || friend.user?.username, friend.user?.avatar_url)
+				}
 				className="py-3 flex justify-between items-center px-[12px] cursor-pointer dark:hover:bg-[#393c41] hover:bg-[#eaebed] rounded-lg"
 			>
 				<div key={friend?.user?.id} className={'flex-1'}>

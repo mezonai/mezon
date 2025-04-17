@@ -158,7 +158,6 @@ import { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'm
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
-import { useDirect } from '../hooks/useDirect';
 
 type ChatContextProviderProps = {
 	children: React.ReactNode;
@@ -176,7 +175,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const { socketRef, reconnectWithTimeout } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
-	const { createDirectMessageWithUser } = useDirect();
 
 	const navigate = useCustomNavigate();
 	// update later
