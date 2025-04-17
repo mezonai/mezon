@@ -142,7 +142,9 @@ import {
 	VoiceEndedEvent,
 	VoiceJoinedEvent,
 	VoiceLeavedEvent,
-	WebrtcSignalingFwd
+	WebrtcSignalingFwd,
+	WebrtcSignalingType,
+	safeJSONParse
 } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
 import {
@@ -1671,29 +1673,41 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	);
 
 	const onwebrtcsignalingfwd = useCallback(async (event: WebrtcSignalingFwd) => {
-		// TODO: AND TYPE IN BE
-		// TYPE = 4: USER CANCEL CALL
-		// TYPE = 0: USER JOINED CALL
-		// TYPE = 5: OTHER CALL
 		const store = await getStoreAsync();
 		const userCallId = selectUserCallId(store.getState() as unknown as RootState);
 
 		if (userCallId && userCallId !== event?.caller_id) {
-			socketRef.current?.forwardWebrtcSignaling(event?.caller_id, 5, '', event?.channel_id, userId || '');
+			socketRef.current?.forwardWebrtcSignaling(
+				event?.caller_id,
+				WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
+				'',
+				event?.channel_id,
+				userId || ''
+			);
 			return;
 		}
-		if (event?.data_type === 4) {
+		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_QUIT) {
 			dispatch(DMCallActions.cancelCall({}));
 			dispatch(audioCallActions.startDmCall({}));
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));
 		}
-		if (event?.data_type === 0) {
+		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_INIT) {
 			dispatch(audioCallActions.setIsJoinedCall(true));
 		}
-		if (event?.data_type === 5) {
+		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL) {
 			dispatch(audioCallActions.setIsBusyTone(true));
+		}
+		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA) {
+			const dataJSON = safeJSONParse((event?.json_data as string) || '{}');
+			if (dataJSON?.micEnabled !== undefined) {
+				dispatch(audioCallActions.setIsRemoteAudio(dataJSON?.micEnabled));
+			}
+			if (dataJSON?.cameraEnabled !== undefined) {
+				dispatch(audioCallActions.setIsRemoteVideo(dataJSON?.cameraEnabled));
+			}
+			return;
 		}
 		dispatch(
 			DMCallActions.addOrUpdate({

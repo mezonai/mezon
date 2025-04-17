@@ -22,7 +22,7 @@ const initialState: DmCallState = {
 	isRingTone: false,
 	isEndTone: false,
 	isBusyTone: false,
-	isRemoteAudio: false,
+	isRemoteAudio: true,
 	isRemoteVideo: false,
 	isJoinedCall: false,
 	groupCallId: '',

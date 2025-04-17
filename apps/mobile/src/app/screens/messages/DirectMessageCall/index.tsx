@@ -12,6 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import { IMessageTypeCallLog } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
+import { WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useEffect, useState } from 'react';
 import { BackHandler, DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -73,7 +74,8 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 
 			if ([4, 5].includes(dataType)) {
 				if (!timeStartConnected?.current) {
-					const callLogType = dataType === 5 ? IMessageTypeCallLog.TIMEOUTCALL : IMessageTypeCallLog.REJECTCALL;
+					const callLogType =
+						dataType === WebrtcSignalingType.WEBRTC_SDP_TIMEOUT ? IMessageTypeCallLog.TIMEOUTCALL : IMessageTypeCallLog.REJECTCALL;
 					dispatch(
 						DMCallActions.updateCallLog({
 							channelId: directMessageId || '',
@@ -84,8 +86,8 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 						})
 					);
 				}
-				handleEndCall({ isCancelGoBack: dataType === 5 });
-				if (dataType === 5) {
+				handleEndCall({ isCancelGoBack: dataType === WebrtcSignalingType.WEBRTC_SDP_TIMEOUT });
+				if (dataType === WebrtcSignalingType.WEBRTC_SDP_TIMEOUT) {
 					Toast.show({
 						type: 'error',
 						text1: 'User is currently on another call',

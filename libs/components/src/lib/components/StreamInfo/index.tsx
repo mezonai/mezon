@@ -1,4 +1,4 @@
-import { useAppNavigation, useAuth, useMenu } from '@mezon/core';
+import { useAppNavigation, useAuth, useMenu, useWebRTCCall } from '@mezon/core';
 import {
 	DMCallActions,
 	audioCallActions,
@@ -38,9 +38,18 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const groupCallId = useSelector(selectGroupCallId);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(groupCallId ?? ''));
+	const dmUserId = currentDmGroup?.user_id?.[0] || '';
 	const direct = useAppSelector((state) => selectDirectById(state, groupCallId)) || {};
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const { disconnect } = useWebRTCStream();
+	const { handleEndCall } = useWebRTCCall({
+		dmUserId,
+		channelId: groupCallId as string,
+		userId: userProfile?.user?.id as string,
+		callerName: userProfile?.user?.username as string,
+		callerAvatar: userProfile?.user?.avatar_url as string,
+		isInChannelCalled: false
+	});
 
 	const redirectToCall = async () => {
 		await dispatch(
@@ -68,6 +77,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 
 	const leaveChannel = async () => {
 		if (type === ESummaryInfo.CALL) {
+			await handleEndCall();
 			dispatch(DMCallActions.setIsInCall(false));
 			dispatch(DMCallActions.removeAll());
 			muteSound();
