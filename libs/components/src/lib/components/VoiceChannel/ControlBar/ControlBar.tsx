@@ -135,16 +135,6 @@ export function ControlBar({
 					name: 'screen-share',
 					source: Track.Source.ScreenShare
 				});
-				// const audioStream = await getAudioScreenStream();
-				// if (audioStream !== null || audioStream !== undefined) {
-				// 	const audioTrack = audioStream?.getAudioTracks()[0];
-				// 	if (audioTrack) {
-				// 		audioScreenTrackRef.current = await localParticipant.localParticipant.publishTrack(audioTrack, {
-				// 			name: 'screen-share-audio',
-				// 			source: Track.Source.ScreenShareAudio
-				// 		});
-				// 	}
-				// }
 
 				screenTrackRef.current = trackPublication;
 			} catch (error) {
@@ -192,7 +182,10 @@ export function ControlBar({
 
 	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
 	let popoutWindow: Window | null = null;
-	const screenShareTracks = useTracks([{ source: Track.Source.ScreenShare, withPlaceholder: false }]);
+	const screenShareTracks = useTracks([
+		{ source: Track.Source.ScreenShare, withPlaceholder: false },
+		{ source: Track.Source.Camera, withPlaceholder: false }
+	]);
 	const togglePopout = useCallback(() => {
 		if (window.location.pathname === '/popout') {
 			dispatch(voiceActions.setOpenPopOut(false));
@@ -200,7 +193,7 @@ export function ControlBar({
 			return;
 		}
 		(window as any).sharedTracks = {
-			screenShare: screenShareTracks[0]
+			listTracks: screenShareTracks
 		};
 		popoutWindow = window.open('/popout', 'LiveKitPopout', 'width=800,height=600,left=100,top=100');
 

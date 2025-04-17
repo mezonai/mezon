@@ -1,7 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { DirectEntity } from '@mezon/store-mobile';
-import { UsersClanEntity } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, User } from 'mezon-js';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -10,11 +8,20 @@ import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { MezonButton } from '../../../componentUI/MezonButton';
 import { style } from './styles';
 
+export type Receiver = {
+	channel_id?: string;
+	channel_label?: string;
+	channel_avatar?: string[];
+	type?: ChannelType;
+	user?: User;
+	id?: string;
+};
+
 export interface IFriendListItemProps {
-	dmGroup?: DirectEntity;
-	user?: UsersClanEntity;
+	dmGroup?: Receiver;
+	user?: Receiver;
 	isSent?: boolean;
-	onPress: (directParamId?: string, type?: number, userId?: string, dmGroup?: DirectEntity) => void;
+	onPress: (directParamId?: string, type?: number, dmGroup?: Receiver) => void;
 }
 
 export interface IListMemberInviteProps {
@@ -48,7 +55,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 				<TouchableOpacity
 					disabled={isSent}
 					onPress={() => {
-						onPress(dmGroup.channel_id || '', dmGroup.type || 0, '', dmGroup);
+						onPress(dmGroup.channel_id || '', dmGroup.type || 0, dmGroup);
 					}}
 					style={[styles.friendItemWrapper, isSent && styles.friendItemWrapperInvited]}
 				>
@@ -67,7 +74,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 							viewContainerStyle={[styles.inviteButton]}
 							disabled={isSent}
 							onPress={() => {
-								onPress(dmGroup.channel_id || '', dmGroup.type || 0, '', dmGroup);
+								onPress(dmGroup.channel_id || '', dmGroup.type || 0, dmGroup);
 							}}
 						>
 							{isSent ? 'Sent' : 'Invite'}
@@ -78,7 +85,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 				<TouchableOpacity
 					disabled={isSent}
 					onPress={() => {
-						onPress('', 0, user?.id);
+						onPress('', 0, user);
 					}}
 					style={[styles.friendItemWrapper, isSent && styles.friendItemWrapperInvited]}
 				>
@@ -93,7 +100,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 							viewContainerStyle={[styles.inviteButton]}
 							disabled={isSent}
 							onPress={() => {
-								onPress('', 0, user?.id);
+								onPress('', 0, user);
 							}}
 						>
 							{isSent ? 'Sent' : 'Invite'}

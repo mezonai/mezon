@@ -27,7 +27,6 @@ import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import NotificationSetting from '../../../../../components/NotificationSetting';
-import InviteToChannel from '../InviteToChannel';
 import { style } from './styles';
 
 interface IChannelMenuProps {
@@ -88,17 +87,6 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	];
 
 	const inviteMenu: IMezonMenuItemProps[] = [
-		{
-			title: t('menu.inviteMenu.invite'),
-			onPress: () => {
-				const data = {
-					snapPoints: ['70%', '90%'],
-					children: <InviteToChannel isUnknownChannel={false} channelId={channel?.channel_id} />
-				};
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-			},
-			icon: <MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />
-		},
 		{
 			title: isFavorite ? t('menu.inviteMenu.unMarkFavorite') : t('menu.inviteMenu.markFavorite'),
 			onPress: () => {

@@ -235,6 +235,12 @@ export const ChatBoxBottomBar = memo(
 			const store = getStore();
 			setTextChange(text);
 			setText(text);
+			if (text) {
+				setMentionTextValue(text);
+			} else {
+				setMentionTextValue('');
+			}
+
 			if (messageAction !== EMessageActionType.CreateThread) {
 				saveMessageToCache(text);
 			}

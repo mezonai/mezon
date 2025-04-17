@@ -13,7 +13,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { ParticipantMeetState } from '@mezon/utils';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const VoicePopout: React.FC = () => {
@@ -68,17 +68,12 @@ const VoicePopout: React.FC = () => {
 			document.exitFullscreen().then(() => dispatch(voiceActions.setFullScreen(false)));
 		}
 	}, [dispatch]);
-	const track = (window.opener as any)?.sharedTracks?.screenShare;
+	const tracks = (window.opener as any)?.sharedTracks?.listTracks;
 
-	const [trackVideo, setTrackVideo] = useState<TrackReference | null>(null);
-	const renderVideo = () => {
-		if (track) {
-			setTrackVideo(track);
-		}
+	const [trackVideo, setTrackVideo] = useState<number>(0);
+	const handlePinScreen = (index: number) => {
+		setTrackVideo(index);
 	};
-	useEffect(() => {
-		renderVideo();
-	}, []);
 
 	return (
 		<div className="h-screen w-screen">
@@ -87,7 +82,7 @@ const VoicePopout: React.FC = () => {
 				ref={containerRef}
 				id="livekitRoom"
 				key={token}
-				className={`${isVoiceFullScreen ? '!fixed !inset-0 !z-50 !w-screen !h-screen' : ''}`}
+				className={`flex flex-col !w-screen !h-screen}`}
 				audio={showMicrophone}
 				video={showCamera}
 				token={token}
@@ -98,12 +93,17 @@ const VoicePopout: React.FC = () => {
 				}}
 				connect={false}
 			>
-				{/* <MyVideoConference
-					channelLabel={currentChannel?.channel_label as string}
-					onLeaveRoom={handleLeaveRoom}
-					onFullScreen={handleFullScreen}
-				/> */}
-				{trackVideo && <VideoTrack trackRef={trackVideo as TrackReference} />}
+				<div className="w-full h-[80vh] bg-red flex justify-center">
+					<VideoTrack trackRef={tracks[trackVideo] as TrackReference} className="!w-auto" />
+				</div>
+				<div className="h-[20vh] w-screen overflow-y-auto">
+					<div className="h-full flex flex-col flex-wrap items-center gap-4">
+						{tracks &&
+							tracks.map((trackVideo: any, index: number) => (
+								<VideoTrack trackRef={trackVideo as TrackReference} className="!w-auto" onClick={() => handlePinScreen(index)} />
+							))}
+					</div>
+				</div>
 			</LiveKitRoom>
 		</div>
 	);

@@ -2,7 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, appActions, getStoreAsync, referencesActions, selectChannelById, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { checkIsThread } from '@mezon/utils';
+import { MAX_FILE_SIZE, checkIsThread } from '@mezon/utils';
 import Geolocation from '@react-native-community/geolocation';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -50,6 +50,13 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 				type: [DocumentPicker.types.allFiles]
 			});
 			const file = res?.[0];
+			if (file?.size >= MAX_FILE_SIZE) {
+				Toast.show({
+					type: 'error',
+					text1: 'File size cannot exceed 50MB!'
+				});
+				return;
+			}
 
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({

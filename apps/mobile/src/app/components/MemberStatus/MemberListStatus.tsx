@@ -51,7 +51,7 @@ export const MemberListStatus = React.memo(() => {
 		if (action === EActionButton.InviteMembers) {
 			const data = {
 				snapPoints: ['70%', '90%'],
-				children: <InviteToChannel isUnknownChannel={false} isDMThread={isDMThread} channelId={currentChannel?.channel_id} />
+				children: <InviteToChannel isUnknownChannel={false} isDMThread={isDMThread} />
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		}

@@ -125,8 +125,9 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 	};
 
 	const handleMenuClick = (event: React.MouseEvent) => {
+		const widthMenu = 150;
 		event.stopPropagation();
-		const mouseX = event.clientX;
+		const mouseX = event.clientX - widthMenu;
 		const mouseY = event.clientY;
 		const windowHeight = window.innerHeight;
 		const distanceToBottom = windowHeight - event.clientY;

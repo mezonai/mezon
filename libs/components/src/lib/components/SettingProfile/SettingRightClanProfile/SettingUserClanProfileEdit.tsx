@@ -171,7 +171,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 	}, 300);
 
 	const handleDisplayName = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value.trim();
+		const value = e.target.value;
 		setDisplayName(value);
 		debouncedSetCategoryName(value);
 	};
@@ -196,7 +196,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 	};
 	const handleUpdateUser = async () => {
 		if (!checkValidate && (urlImage || displayName)) {
-			await updateUserClanProfile(userClansProfile?.clan_id ?? '', displayName || '', urlImage || '');
+			await updateUserClanProfile(userClansProfile?.clan_id ?? '', displayName.trim() || '', urlImage || '');
 		}
 	};
 	const saveProfile: ModalSettingSave = {

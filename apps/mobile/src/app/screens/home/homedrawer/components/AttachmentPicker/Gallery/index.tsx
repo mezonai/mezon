@@ -2,6 +2,7 @@ import { useReference } from '@mezon/core';
 import { ActionEmitEvent, CameraIcon, CheckIcon, PlayIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
+import { MAX_FILE_SIZE } from '@mezon/utils';
 import { CameraRoll, PhotoIdentifier, iosRefreshGallerySelection, iosRequestReadWriteGalleryPermission } from '@react-native-camera-roll/camera-roll';
 import { iosReadGalleryPermission } from '@react-native-camera-roll/camera-roll/src/CameraRollIOSPermission';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -21,9 +22,11 @@ import RNFS from 'react-native-fs';
 import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
+import Toast from 'react-native-toast-message';
 import { Camera } from 'react-native-vision-camera';
 import { IFile } from '../../../../../../componentUI/MezonImagePicker';
 import { style } from './styles';
+
 export const { height } = Dimensions.get('window');
 interface IProps {
 	onPickGallery: (files: IFile | any) => void;
@@ -255,6 +258,15 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			const type = file?.node?.type;
 			const name = file?.node?.image?.filename || file?.node?.image?.uri;
 			const size = file?.node?.image?.fileSize;
+
+			if (size && size >= MAX_FILE_SIZE) {
+				Toast.show({
+					type: 'error',
+					text1: 'File size cannot exceed 50MB!'
+				});
+				return;
+			}
+
 			let filePath = image?.uri;
 
 			if (Platform.OS === 'ios' && filePath.startsWith('ph://')) {

@@ -1,6 +1,16 @@
-import { useDMInvite, useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
+import { useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, fetchSystemMessageByClanId, selectClanSystemMessage, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
+import {
+	DirectEntity,
+	FriendsEntity,
+	fetchSystemMessageByClanId,
+	selectAllFriends,
+	selectAllUserClans,
+	selectClanSystemMessage,
+	selectCurrentClanId,
+	selectDirectsOpenlist,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -14,7 +24,7 @@ import MezonInput from '../../../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { normalizeString } from '../../../../../utils/helpers';
-import { FriendListItem } from '../../Reusables';
+import { FriendListItem, Receiver } from '../../Reusables';
 import { style } from './styles';
 
 interface IInviteToChannelProp {
@@ -40,20 +50,56 @@ export const FriendList = React.memo(
 		const currentClanId = useSelector(selectCurrentClanId);
 		const { createLinkInviteUser } = useInvite();
 		const { t } = useTranslation(['inviteToChannel']);
-		const { listDMInvite, listUserInvite } = useDMInvite(channelId ?? '');
 		const { createDirectMessageWithUser } = useDirect();
 		const { sendInviteMessage } = useSendInviteMessage();
 		const [sentIdList, setSentIdList] = useState<string[]>([]);
 		const welcomeChannel = useSelector(selectClanSystemMessage);
+		const dmGroupChatList = useSelector(selectDirectsOpenlist);
+		const friends = useSelector(selectAllFriends);
+		const usersClan = useSelector(selectAllUserClans);
 		const dispatch = useAppDispatch();
 		const currentInviteLinkRef = useRef('');
 
+		const friendList: FriendsEntity[] = useMemo(() => {
+			return friends?.filter((user) => user.state === 0) || [];
+		}, [friends]);
+
+		const userListInvite = useMemo(() => {
+			const userMap = new Map<string, Receiver>();
+			const userIdInClanArray = usersClan.map((user) => user.id);
+			friendList.forEach((itemFriend: FriendsEntity) => {
+				const userId = itemFriend?.user?.id ?? '';
+				if (userId && !userMap.has(userId) && !userIdInClanArray.includes(userId)) {
+					userMap.set(userId, {
+						id: userId,
+						user: itemFriend?.user,
+						channel_label: itemFriend?.user?.display_name || itemFriend?.user?.username
+					});
+				}
+			});
+
+			dmGroupChatList.forEach((itemDM: DirectEntity) => {
+				const userId = itemDM?.user_id?.[0] ?? '';
+				if (
+					(userId && !userIdInClanArray.includes(userId) && itemDM?.type === ChannelType.CHANNEL_TYPE_DM) ||
+					itemDM?.type === ChannelType.CHANNEL_TYPE_GROUP
+				) {
+					userMap.set(itemDM?.type === ChannelType.CHANNEL_TYPE_DM ? userId : itemDM?.channel_id, {
+						channel_id: itemDM?.channel_id,
+						channel_label: itemDM?.channel_label ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`,
+						channel_avatar: itemDM?.channel_avatar,
+						type: itemDM?.type,
+						id: itemDM?.channel_id
+					});
+				}
+			});
+
+			return [...(userMap?.values() ?? [])];
+		}, [dmGroupChatList, friendList, usersClan]);
+
 		const userInviteList = useMemo(() => {
-			if (listDMInvite?.length) {
-				return listDMInvite?.filter((dm) => normalizeString(dm?.channel_label).includes(normalizeString(searchUserText)));
-			}
-			return listUserInvite?.filter((UserInvite) => normalizeString(UserInvite?.user?.display_name).includes(normalizeString(searchUserText)));
-		}, [searchUserText, listDMInvite, listUserInvite]);
+			return userListInvite?.filter((dm) => normalizeString(dm?.channel_label).includes(normalizeString(searchUserText)));
+		}, [searchUserText, userListInvite]);
 
 		const addInviteLinkToClipboard = useCallback(() => {
 			Clipboard.setString(currentInviteLinkRef?.current);
@@ -66,8 +112,12 @@ export const FriendList = React.memo(
 			});
 		}, [currentInviteLinkRef?.current, t]);
 
-		const directMessageWithUser = async (userId: string) => {
-			const response = await createDirectMessageWithUser(userId);
+		const directMessageWithUser = async (user: Receiver) => {
+			const response = await createDirectMessageWithUser(
+				user?.user?.id,
+				user?.user?.display_name || user?.user?.username,
+				user?.user?.avatar_url
+			);
 			if (response?.channel_id) {
 				let channelMode = 0;
 				if (Number(response.type) === ChannelType.CHANNEL_TYPE_DM) {
@@ -80,10 +130,10 @@ export const FriendList = React.memo(
 			}
 		};
 
-		const handleSendInVite = async (directParamId?: string, type?: number, userId?: string, dmGroup?: DirectEntity) => {
-			if (userId) {
-				directMessageWithUser(userId);
-				setSentIdList([...sentIdList, userId]);
+		const handleSendInVite = async (directParamId?: string, type?: number, dmGroup?: Receiver) => {
+			if (dmGroup?.user) {
+				directMessageWithUser(dmGroup);
+				setSentIdList([...sentIdList, dmGroup?.user?.id]);
 				return;
 			}
 

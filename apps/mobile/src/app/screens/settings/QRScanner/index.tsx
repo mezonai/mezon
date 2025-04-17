@@ -3,6 +3,7 @@ import { baseColor, Colors, size, ThemeModeBase, useTheme } from '@mezon/mobile-
 import { appActions } from '@mezon/store';
 import { getStoreAsync } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
+import { Snowflake } from '@theinternetfolks/snowflake';
 import { safeJSONParse } from 'mezon-js';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,7 +148,14 @@ export const QRScanner = () => {
 				});
 				// 	case login
 			} else if (value) {
-				setValueCode(value);
+				try {
+					const decode = Snowflake.parse(value);
+					if (decode?.timestamp && Number.isInteger(Number(value))) {
+						setValueCode(value);
+					}
+				} catch {
+					//
+				}
 			} else {
 				// 	empty
 			}
