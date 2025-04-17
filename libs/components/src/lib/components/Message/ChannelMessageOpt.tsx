@@ -219,8 +219,8 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const sendNotificationMessage = useCallback(
-		async (userId: string) => {
-			const response = await createDirectMessageWithUser(userId);
+		async (userId: string, username?: string, avatar?: string) => {
+			const response = await createDirectMessageWithUser(userId, username, avatar);
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
@@ -260,7 +260,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 				message?.channel_id
 			);
 
-			await sendNotificationMessage(message.sender_id || '');
+			await sendNotificationMessage(message.sender_id || '', message.user?.name || message.user?.username, message.avatar);
 		} catch (error) {
 			console.error('Failed to give cofffee message', error);
 		}
