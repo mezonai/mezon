@@ -47,7 +47,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 
 	return (
 		<div>
-			<div className="w-full h-[calc(100vh-50px)] max-w-[100%] flex justify-center items-center">
+			<div className="w-full h-full max-w-[100%] flex justify-center items-center">
 				<div className="flex flex-col items-center">
 					<img src={'assets/images/warning.svg'} alt="warning" width={200} height={200} />
 

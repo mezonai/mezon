@@ -110,7 +110,7 @@ const useMiniAppEventListener = (
 				}
 				case MiniAppEventType.GET_CHANNEL: {
 					miniAppRef.current?.contentWindow?.postMessage(
-						JSON.stringify({ eventType: MiniAppEventType.CHANNELS_RESPONSE, eventData: appChannel }),
+						JSON.stringify({ eventType: MiniAppEventType.CHANNEL_RESPONSE, eventData: appChannel }),
 						appChannel.app_url
 					);
 					break;
@@ -120,7 +120,7 @@ const useMiniAppEventListener = (
 					const store = getStore();
 					const clan = selectCurrentClan(store.getState());
 					miniAppRef.current?.contentWindow?.postMessage(
-						JSON.stringify({ eventType: MiniAppEventType.CHANNELS_RESPONSE, eventData: clan }),
+						JSON.stringify({ eventType: MiniAppEventType.CLAN_RESPONSE, eventData: clan }),
 						appChannel.app_url
 					);
 					break;
