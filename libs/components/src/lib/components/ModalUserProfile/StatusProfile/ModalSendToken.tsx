@@ -13,7 +13,7 @@ type ModalSendTokenProps = {
 	token: number;
 	setToken: (token: number) => void;
 	setSelectedUserId: (id: string) => void;
-	handleSaveSendToken: (id: string) => void;
+	handleSaveSendToken: (id: string, username?: string, avatar?: string) => void;
 	setNote: (note: string) => void;
 	error: string | null;
 	userSearchError: string | null;
@@ -147,6 +147,11 @@ const ModalSendToken = ({
 		setNoteSendToken(note);
 	}, [token, selectedUserId, note]);
 
+	const handleSendToken = () => {
+		const userData = filteredUsers.find((user) => user.username === searchTerm) || '';
+		handleSaveSendToken(userData?.id, userData?.username, userData?.avatar_url);
+	};
+
 	return (
 		<Modal className="bg-bgModalDark" theme={{ content: { base: 'w-[440px]' } }} show={openModal} dismissible={true} onClose={onClose}>
 			<div className="dark:bg-bgPrimary bg-bgLightMode pt-4 rounded">
@@ -267,7 +272,7 @@ const ModalSendToken = ({
 						<Button
 							className="h-10 px-4 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover focus:!ring-transparent"
 							type="button"
-							onClick={() => handleSaveSendToken(filteredUsers.find((user) => user.username === searchTerm)?.id ?? '')}
+							onClick={handleSendToken}
 							disabled={isButtonDisabled}
 						>
 							Send

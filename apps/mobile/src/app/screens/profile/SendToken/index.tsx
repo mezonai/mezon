@@ -194,7 +194,12 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 						TypeMessage.SendToken
 					);
 				} else {
-					const response = await createDirectMessageWithUser(jsonObject?.receiver_id || selectedUser?.id);
+					const receiver = mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser;
+					const response = await createDirectMessageWithUser(
+						jsonObject?.receiver_id || selectedUser?.id,
+						receiver?.username?.[0],
+						receiver?.avatar_url
+					);
 					if (response?.channel_id) {
 						sendInviteMessage(
 							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,

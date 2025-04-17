@@ -624,6 +624,17 @@ input:-webkit-autofill:active {
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
+.mentions__suggestions__list::-webkit-scrollbar {
+	width: 4px;
+}
+.mentions__suggestions__list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.mentions__suggestions__list::-webkit-scrollbar-thumb {
+	background: #787881;
+	border-radius: 5px;
+}
 
 // editor-scroll
 

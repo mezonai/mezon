@@ -117,12 +117,32 @@ const UserProfile = React.memo(
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 					return;
 				}
-				const response = await createDirectMessageWithUser(userId);
+				const response = await createDirectMessageWithUser(
+					userId,
+					message?.display_name ||
+						message?.user?.username ||
+						user?.user?.username ||
+						userById?.user?.display_name ||
+						userById?.user?.username,
+					message?.avatar || user?.user?.avatar_url || userById?.user?.avatar_url
+				);
 				if (response?.channel_id) {
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 				}
 			},
-			[createDirectMessageWithUser, listDM, navigation]
+			[
+				createDirectMessageWithUser,
+				listDM,
+				message?.avatar,
+				message?.display_name,
+				message?.user?.username,
+				navigation,
+				user?.user?.avatar_url,
+				user?.user?.username,
+				userById?.user?.avatar_url,
+				userById?.user?.display_name,
+				userById?.user?.username
+			]
 		);
 
 		const navigateToMessageDetail = () => {

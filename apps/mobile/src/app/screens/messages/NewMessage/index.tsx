@@ -51,13 +51,17 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 	}, [friendList, searchText]);
 
 	const directMessageWithUser = useCallback(
-		async (userId: string) => {
-			const directMessage = listDM?.find?.((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === userId);
+		async (user: FriendsEntity) => {
+			const directMessage = listDM.find((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === user?.user?.id);
 			if (directMessage?.id) {
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 				return;
 			}
-			const response = await createDirectMessageWithUser(userId);
+			const response = await createDirectMessageWithUser(
+				user?.user?.id,
+				user?.user?.display_name || user?.user?.username,
+				user?.user?.avatar_url
+			);
 			if (response?.channel_id) {
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 			}
@@ -72,7 +76,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 					Toast.show({ type: 'info', text1: 'Updating...' });
 					break;
 				case EFriendItemAction.MessageDetail:
-					directMessageWithUser(friend?.user?.id);
+					directMessageWithUser(friend);
 					break;
 				case EFriendItemAction.ShowInformation:
 					setSelectedUser(friend?.user);

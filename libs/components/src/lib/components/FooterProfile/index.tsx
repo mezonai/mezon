@@ -135,8 +135,8 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	};
 
 	const sendNotificationMessage = useCallback(
-		async (userId: string, tokenValue: number, note: string) => {
-			const response = await createDirectMessageWithUser(userId);
+		async (userId: string, tokenValue: number, note: string, username?: string, avatar?: string) => {
+			const response = await createDirectMessageWithUser(userId, username, avatar);
 			if (response.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
@@ -150,7 +150,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		[createDirectMessageWithUser, sendInviteMessage]
 	);
 
-	const handleSaveSendToken = async (id: string) => {
+	const handleSaveSendToken = async (id: string, username?: string, avatar?: string) => {
 		const userId = selectedUserId !== '' ? selectedUserId : id;
 		if (userId === '') {
 			setUserSearchError('Please select a user');
@@ -178,7 +178,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		try {
 			await dispatch(giveCoffeeActions.sendToken(tokenEvent)).unwrap();
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_SUCCESS_STATUS }));
-			await sendNotificationMessage(userId, token, note ?? '');
+			await sendNotificationMessage(userId, token, note ?? '', username, avatar);
 		} catch (err) {
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_FAILED_STATUS }));
 		}

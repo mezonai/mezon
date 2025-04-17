@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { ActiveDm, BuzzArgs, IChannel, IUserItemActivity, LoadingStatus } from '@mezon/utils';
+import { ActiveDm, BuzzArgs, IChannel, IMessage, IUserItemActivity, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelMessage, ChannelType, ChannelUpdatedEvent, UserProfileRedis, safeJSONParse } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
@@ -344,13 +344,16 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 	};
 };
 
-export const addDirectByMessageWS = createAsyncThunk('direct/addDirectByMessageWS', async (message: ChannelMessage, thunkAPI) => {
+export const addDirectByMessageWS = createAsyncThunk('direct/addDirectByMessageWS', async (message: IMessage, thunkAPI) => {
 	try {
 		const state = thunkAPI.getState() as RootState;
 		const existingDirect = selectDirectById(state, message.channel_id);
 
 		const directEntity = mapMessageToConversation(message);
 		if (!existingDirect) {
+			if (message.isMe) {
+				return directEntity;
+			}
 			thunkAPI.dispatch(directActions.upsertOne(directEntity));
 			thunkAPI.dispatch(directMetaActions.upsertOne(directEntity as DMMetaEntity));
 			return directEntity;

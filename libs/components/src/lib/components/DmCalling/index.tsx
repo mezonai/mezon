@@ -63,9 +63,15 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const [activeVideo, setActiveVideo] = useState<'local' | 'remote' | null>(null);
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const otherCall = useSelector(selectOtherCall);
+	const isInChannelCalled = useMemo(() => {
+		const isSignalDataOffer = signalingData?.[0]?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER;
+		if (!isSignalDataOffer && !isInCall) {
+			return false;
+		}
+		return currentDmGroup?.user_id?.some((i) => i === signalingData?.[0]?.callerId);
+	}, [currentDmGroup?.user_id, isInCall, signalingData]);
 
 	const {
-		callState,
 		timeStartConnected,
 		startCall,
 		handleEndCall,
@@ -84,13 +90,14 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		currentOutputDevice,
 		audioInputDevicesList,
 		audioOutputDevicesList
-	} = useWebRTCCall(
+	} = useWebRTCCall({
 		dmUserId,
-		dmGroupId as string,
-		userId as string,
-		userProfile?.user?.username as string,
-		userProfile?.user?.avatar_url as string
-	);
+		channelId: dmGroupId as string,
+		userId: userId as string,
+		callerName: userProfile?.user?.username as string,
+		callerAvatar: userProfile?.user?.avatar_url as string,
+		isInChannelCalled: isInChannelCalled as boolean
+	});
 
 	useEffect(() => {
 		if (isJoinedCall && !isInCall) {
@@ -113,42 +120,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		}
 	}, [isPlayBusyTone]);
 
-	const isInChannelCalled = useMemo(() => {
-		const isSignalDataOffer = signalingData?.[0]?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER;
-		if (!isSignalDataOffer && !isInCall) {
-			return false;
-		}
-		return currentDmGroup?.user_id?.some((i) => i === signalingData?.[0]?.callerId);
-	}, [currentDmGroup?.user_id, isInCall, signalingData]);
-
 	useEffect(() => {
 		const lastSignalingData = signalingData?.[signalingData.length - 1]?.signalingData;
 
-		if (callState?.peerConnection && lastSignalingData) {
-			const dataType = lastSignalingData?.data_type;
-
-			if ([4, 5].includes(dataType)) {
-				if (!timeStartConnected?.current) {
-					const callLogType = dataType === 5 ? IMessageTypeCallLog.TIMEOUTCALL : IMessageTypeCallLog.REJECTCALL;
-
-					dispatch(
-						DMCallActions.updateCallLog({
-							channelId: dmGroupId || '',
-							content: {
-								t: '',
-								callLog: { isVideo: isShowMeetDM, callLogType }
-							}
-						})
-					);
-				}
-				handleEndCall();
-			}
-		}
-
-		if (lastSignalingData && isInCall && isInChannelCalled) {
+		if (lastSignalingData && (isInCall || lastSignalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_QUIT)) {
 			handleSignalingMessage(lastSignalingData);
 		}
-	}, [callState.peerConnection, isInCall, isInChannelCalled, signalingData, timeStartConnected.current]);
+	}, [isInCall, signalingData]);
 
 	useImperativeHandle(ref, () => ({
 		triggerCall
@@ -266,7 +244,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
 						}}
 					/>
-
 					<div
 						className={`flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${!isShowMeetDM ? 'w-full h-full bg-black rounded-lg' : ''} `}
 					>
@@ -309,7 +286,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
 							}}
 						/>
-
 						<div
 							className={`flex gap-6 items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${!isRemoteVideo ? 'w-full h-full bg-black rounded-lg' : ''} `}
 						>

@@ -11,10 +11,11 @@ import { useMezon } from '@mezon/transport';
 import { IMessageTypeCallLog, requestMediaPermission } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const STUN_SERVERS = [
+	{ urls: 'stun:stun.l.google.com:19302' },
 	{
 		urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
 		username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
@@ -32,7 +33,6 @@ interface CallState {
 	remoteStream: MediaStream | null;
 	localScreenStream: MediaStream | null;
 	remoteScreenStream: MediaStream | null;
-	peerConnection: RTCPeerConnection | null;
 	storedIceCandidates?: RTCIceCandidate[] | null;
 }
 
@@ -63,25 +63,31 @@ const decompress = async (compressedStr: string, encoding = 'gzip' as Compressio
 	const arrayBuffer = await new Response(cs.readable).arrayBuffer();
 	return new TextDecoder().decode(arrayBuffer);
 };
+interface IWebRTCCallParams {
+	dmUserId: string;
+	channelId: string;
+	userId: string;
+	callerName: string;
+	callerAvatar: string;
+	isInChannelCalled: boolean;
+}
 
-export function useWebRTCCall(dmUserId: string, channelId: string, userId: string, callerName: string, callerAvatar: string) {
-	const getScreen = useCallback(async () => {
+export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerAvatar, isInChannelCalled }: IWebRTCCallParams) {
+	const getScreen = async () => {
 		const screenSources = await window.electron.getScreenSources('screen');
 		return screenSources[0];
-	}, []);
-
+	};
 	const [callState, setCallState] = useState<CallState>({
 		localStream: null,
 		remoteStream: null,
 		localScreenStream: null,
 		remoteScreenStream: null,
-		peerConnection: null,
 		storedIceCandidates: null
 	});
-	const [isAnswerCall, setIsAnswerCall] = useState<boolean>(false);
+	const peerConnection = useRef<RTCPeerConnection | null>(null);
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isShowScreen = useSelector(selectIsShowShareScreen);
-
+	const [pendingCandidates, setPendingCandidates] = useState<(RTCIceCandidate | null)[]>([]);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
 	const mezon = useMezon();
 	const dispatch = useAppDispatch();
@@ -100,7 +106,6 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 	useEffect(() => {
 		return () => {
 			if (callState.localStream) {
-				setIsAnswerCall(false);
 				callState.localStream.getTracks().forEach((track) => track.stop());
 			}
 			timeStartConnected.current = null;
@@ -108,22 +113,12 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 	}, [callState.localStream]);
 
 	// Initialize peer connection with proper configuration
-	const initializePeerConnection = useCallback(() => {
+	const initializePeerConnection = () => {
 		const pc = new RTCPeerConnection(RTCConfig);
 
 		pc.onicecandidate = async (event) => {
-			if (event.candidate && pc?.signalingState !== 'have-local-offer') {
-				try {
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
-						dmUserId,
-						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-						JSON.stringify(event.candidate),
-						channelId,
-						userId
-					);
-				} catch (error) {
-					console.error('Error sending ICE candidate:', error);
-				}
+			if (event.candidate) {
+				setPendingCandidates((prev) => [...prev, event.candidate]);
 			}
 		};
 
@@ -147,8 +142,6 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 						}));
 					}
 				}
-			});
-			remoteStream.getVideoTracks().forEach((track) => {
 				track.onmute = () => {
 					dispatch(audioCallActions.setIsRemoteVideo(false));
 				};
@@ -159,6 +152,13 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			});
 
 			remoteStream.getAudioTracks().forEach((track) => {
+				if (remoteVideoRef.current) {
+					remoteVideoRef.current.srcObject = remoteStream;
+					setCallState((prev) => ({
+						...prev,
+						remoteStream: remoteStream
+					}));
+				}
 				track.onmute = () => {
 					dispatch(audioCallActions.setIsRemoteAudio(false));
 				};
@@ -174,12 +174,12 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 				dispatch(toastActions.addToast({ message: 'Connection connected', type: 'success', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(true));
 				dispatch(audioCallActions.setIsDialTone(false));
-				mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, 0, '', channelId, userId);
 				if (callTimeout.current) {
 					clearTimeout(callTimeout.current);
 					callTimeout.current = null;
 				}
 			}
+
 			if (pc.iceConnectionState === 'disconnected') {
 				dispatch(toastActions.addToast({ message: 'Connection disconnected', type: 'warning', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(false));
@@ -191,84 +191,65 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			}
 		};
 
-		// no need to handle negotiationneeded event
-		// pc.onnegotiationneeded = async () => {
-		// 	try {
-		// 		const offer = await pc.createOffer();
-		// 		await pc.setLocalDescription(offer);
-		//
-		// 		const compressedOffer = await compress(JSON.stringify(offer));
-		// 		await mezon.socketRef.current?.forwardWebrtcSignaling(
-		// 			dmUserId,
-		// 			WebrtcSignalingType.WEBRTC_SDP_OFFER,
-		// 			compressedOffer,
-		// 			channelId,
-		// 			userId
-		// 		);
-		// 	} catch (error) {
-		// 		console.error('Error during negotiation:', error);
-		// 	}
-		// };
-
 		return pc;
-	}, [mezon.socketRef, dmUserId, channelId, userId]);
+	};
 
 	const isScreenTrack = (track: MediaStreamTrack | null) => {
 		return track?.kind === 'video' && (track?.label.toLowerCase().includes('screen') || track?.label.toLowerCase().includes('window'));
 	};
-	const isCameraTrack = (track: MediaStreamTrack | null) => {
-		return track?.kind === 'video' && !isScreenTrack(track);
+
+	const getConstraintsLocal = async (isVideoCall = false) => {
+		let permissionCameraGranted = false;
+		let permissionMicroGranted = false;
+
+		const microphoneGranted = await requestMediaPermission('audio');
+		const cameraGranted = await requestMediaPermission('video');
+		if (cameraGranted === 'granted') {
+			permissionCameraGranted = true;
+		}
+		if (microphoneGranted !== 'granted') {
+			dispatch(
+				toastActions.addToast({
+					message: 'Microphone permission is required',
+					type: 'warning',
+					autoClose: 1000
+				})
+			);
+			handleEndCall();
+			return;
+		} else {
+			permissionMicroGranted = true;
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const outputDevices = devices.filter((device) => device.kind === 'audiooutput');
+			const inputDevices = devices.filter((device) => device.kind === 'audioinput');
+
+			setAudioInputDevicesList(inputDevices);
+			setAudioOutputDevicesList(outputDevices);
+			setCurrentInputDevice(inputDevices[0] || null);
+			setCurrentOutputDevice(outputDevices[0] || null);
+		}
+
+		return {
+			audio: permissionMicroGranted,
+			video: isVideoCall && permissionCameraGranted
+		};
 	};
-	// Start a call
+
 	const startCall = async (isVideoCall: boolean, isAnswer: boolean) => {
 		try {
-			setIsAnswerCall(isAnswer);
-			let permissionCameraGranted = false;
-			let permissionMicroGranted = false;
-
-			const microphoneGranted = await requestMediaPermission('audio');
-			if (microphoneGranted !== 'granted') {
-				dispatch(
-					toastActions.addToast({
-						message: 'Microphone permission is required',
-						type: 'warning',
-						autoClose: 1000
-					})
-				);
-			} else {
-				permissionMicroGranted = true;
-				const devices = await navigator.mediaDevices.enumerateDevices();
-				const outputDevices = devices.filter((device) => device.kind === 'audiooutput');
-				const inputDevices = devices.filter((device) => device.kind === 'audioinput');
-
-				setAudioInputDevicesList(inputDevices);
-				setAudioOutputDevicesList(outputDevices);
-				setCurrentInputDevice(inputDevices[0] || null);
-				setCurrentOutputDevice(outputDevices[0] || null);
-			}
-			if (isVideoCall) {
-				const cameraGranted = await requestMediaPermission('video');
-				if (cameraGranted !== 'granted') {
-					dispatch(toastActions.addToast({ message: 'Camera permission is required', type: 'warning', autoClose: 1000 }));
-				} else {
-					permissionCameraGranted = true;
-				}
-			}
-			dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
-			dispatch(DMCallActions.setIsMuteMicrophone(false));
-			const constraints = {
-				audio: permissionMicroGranted,
-				video: isVideoCall && permissionCameraGranted
-			};
-
-			const stream = await navigator.mediaDevices.getUserMedia(constraints);
-			const pc = initializePeerConnection();
-
-			// Add tracks to peer connection
-			stream.getTracks().forEach((track) => {
-				pc.addTrack(track, stream);
-			});
+			callTimeout?.current && clearTimeout(callTimeout.current);
 			if (!isAnswer) {
+				const constraints = await getConstraintsLocal(isVideoCall);
+				const stream = await navigator.mediaDevices.getUserMedia(constraints);
+				const pc = initializePeerConnection();
+
+				stream?.getVideoTracks()?.forEach?.((track) => {
+					track.enabled = isVideoCall;
+				});
+				// Add tracks to peer connection
+				stream.getTracks().forEach((track) => {
+					pc.addTrack(track, stream);
+				});
 				// Create and set local description
 				const offer = await pc.createOffer();
 				await pc.setLocalDescription(offer);
@@ -289,127 +270,186 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 					channelId
 				};
 				await mezon.socketRef.current?.makeCallPush(dmUserId, JSON.stringify(bodyFCMMobile), channelId, userId);
+				// Start a 30-second timeout to end the call if no answer
+				callTimeout.current = setTimeout(() => {
+					dispatch(
+						toastActions.addToast({
+							message: 'The recipient did not answer the call.',
+							type: 'warning',
+							autoClose: 3000
+						})
+					);
+					dispatch(
+						DMCallActions.updateCallLog({
+							channelId,
+							content: { t: '', callLog: { isVideo: isVideoCall, callLogType: IMessageTypeCallLog.TIMEOUTCALL } }
+						})
+					);
+					console.error('Error starting callTimeoutcallTimeoutcallTimeout');
+					handleEndCall();
+				}, 30000);
+				if (localVideoRef.current) {
+					localVideoRef.current.srcObject = stream;
+				}
+				// Update state
+				setCallState({
+					localStream: stream,
+					remoteStream: null,
+					localScreenStream: null,
+					remoteScreenStream: null
+				});
+				peerConnection.current = pc;
 			}
-			// Start a 30-second timeout to end the call if no answer
-			callTimeout.current = setTimeout(() => {
-				dispatch(
-					toastActions.addToast({
-						message: 'The recipient did not answer the call.',
-						type: 'warning',
-						autoClose: 3000
-					})
-				);
-				dispatch(
-					DMCallActions.updateCallLog({
-						channelId,
-						content: { t: '', callLog: { isVideo: isVideoCall, callLogType: IMessageTypeCallLog.TIMEOUTCALL } }
-					})
-				);
-				handleEndCall();
-			}, 30000);
-
-			if (localVideoRef.current) {
-				localVideoRef.current.srcObject = stream;
-			}
-			// Update state
-			setCallState({
-				localStream: stream,
-				remoteStream: null,
-				localScreenStream: null,
-				remoteScreenStream: null,
-				peerConnection: pc
-			});
 		} catch (error) {
 			console.error('Error starting call:', error);
 			handleEndCall();
 		}
 	};
 
-	// Handle incoming signaling messages
-	const handleSignalingMessage = async (signalingData: any) => {
-		if (!callState.peerConnection) return;
+	// Handle offer
+	const handleOffer = async (signalingData: any) => {
+		const constraints = await getConstraintsLocal(isShowMeetDM);
+		const stream = await navigator.mediaDevices.getUserMedia(constraints);
+		const pc = peerConnection?.current || initializePeerConnection();
 
+		stream.getTracks().forEach((track) => {
+			pc.addTrack(track, stream);
+		});
+
+		const offer = new RTCSessionDescription({
+			type: 'offer',
+			sdp: signalingData.sdp
+		});
+
+		await pc.setRemoteDescription(offer);
+
+		// Create and send answer
+		const answer = await pc.createAnswer();
+		await pc.setLocalDescription(answer);
+		const compressedAnswer = await compress(JSON.stringify(answer));
+		await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_ANSWER, compressedAnswer, channelId, userId);
+		if (localVideoRef.current) {
+			localVideoRef.current.srcObject = stream;
+		}
+
+		if (!peerConnection?.current) {
+			peerConnection.current = pc;
+		}
+		// Update state
+		setCallState({
+			localStream: stream,
+			remoteStream: null,
+			localScreenStream: null,
+			remoteScreenStream: null
+		});
+	};
+
+	const handleAnswer = async (signalingData: any) => {
+		if (!peerConnection?.current) return;
+
+		const answer = new RTCSessionDescription({
+			type: 'answer',
+			sdp: signalingData.sdp
+		});
+		await peerConnection?.current.setRemoteDescription(answer);
+		if (pendingCandidates) {
+			await mezon.socketRef.current?.forwardWebrtcSignaling(
+				dmUserId,
+				WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+				JSON.stringify(pendingCandidates?.[pendingCandidates?.length - 1]),
+				channelId,
+				userId
+			);
+		}
+
+		setPendingCandidates([]);
+	};
+
+	const handleICECandidate = async (data: any) => {
+		if (!peerConnection?.current) return;
 		try {
-			switch (signalingData.data_type) {
-				case WebrtcSignalingType.WEBRTC_SDP_OFFER: {
-					const decompressedData = await decompress(signalingData.json_data);
-					const offer = safeJSONParse(decompressedData || '{}');
+			if (data) {
+				const candidate = new RTCIceCandidate(data);
+				await peerConnection?.current?.addIceCandidate(candidate);
 
-					await callState.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-					const answer = await callState.peerConnection.createAnswer();
-					await callState.peerConnection.setLocalDescription(answer);
-
-					const compressedAnswer = await compress(JSON.stringify(answer));
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
-						dmUserId,
-						WebrtcSignalingType.WEBRTC_SDP_ANSWER,
-						compressedAnswer,
-						channelId,
-						userId
-					);
-					if (isAnswerCall) {
-						await updatePeerConnectionOffer();
+				if (pendingCandidates) {
+					for (const candidateItem of pendingCandidates) {
+						await mezon.socketRef.current?.forwardWebrtcSignaling(
+							dmUserId,
+							WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+							JSON.stringify(candidateItem),
+							channelId,
+							userId
+						);
 					}
-					// Add stored ICE candidates
-					if (callState.storedIceCandidates) {
-						for (const candidate of callState.storedIceCandidates) {
-							await callState.peerConnection.addIceCandidate(candidate);
-						}
-						callState.storedIceCandidates = [];
-					}
-					break;
 				}
-
-				case WebrtcSignalingType.WEBRTC_SDP_ANSWER: {
-					const decompressedData = await decompress(signalingData.json_data);
-					const answer = safeJSONParse(decompressedData || '{}');
-					if (callState.peerConnection.signalingState !== 'have-local-offer') {
-						console.warn('PeerConnection is not in the correct state to set remote answer');
-						return;
-					}
-					await callState.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-
-					if (callTimeout.current) {
-						clearTimeout(callTimeout.current);
-						callTimeout.current = null;
-					}
-
-					// Add stored ICE candidates
-					if (callState.storedIceCandidates) {
-						for (const candidate of callState.storedIceCandidates) {
-							await callState.peerConnection.addIceCandidate(candidate);
-						}
-						callState.storedIceCandidates = [];
-					}
-					break;
-				}
-
-				case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE: {
-					const candidate = safeJSONParse(signalingData?.json_data || '{}');
-					if (candidate) {
-						if (callState.peerConnection?.remoteDescription?.type) {
-							await callState.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-						} else {
-							console.warn('Remote description not set yet, storing candidate');
-							if (!callState.storedIceCandidates) {
-								callState.storedIceCandidates = [];
-							}
-							callState.storedIceCandidates.push(new RTCIceCandidate(candidate));
-						}
-					}
-					break;
-				}
-				/// case other call
-				case 5: {
-					if (callTimeout.current) {
-						clearTimeout(callTimeout.current);
-						callTimeout.current = null;
-					}
-					break;
-				}
+			} else {
+				console.error('Invalid ICE candidate data:', data);
 			}
 		} catch (error) {
-			console.error('Error handling signaling message:', error);
+			console.error('Error adding ICE candidate:', error);
+		}
+	};
+	// Handle incoming signaling messages
+	const handleSignalingMessage = async (signalingData: any) => {
+		const dataType = signalingData.data_type;
+		// 	WebrtcSignalingType.WEBRTC_SDP_TIMEOUT
+		if ([WebrtcSignalingType.WEBRTC_SDP_QUIT, 5].includes(dataType)) {
+			if (!timeStartConnected?.current) {
+				const callLogType = dataType === 5 ? IMessageTypeCallLog.TIMEOUTCALL : IMessageTypeCallLog.REJECTCALL;
+				dispatch(
+					DMCallActions.updateCallLog({
+						channelId: channelId || '',
+						content: {
+							t: '',
+							callLog: { isVideo: isShowMeetDM, callLogType }
+						}
+					})
+				);
+			}
+			handleEndCall(true);
+		}
+		if (isInChannelCalled) {
+			try {
+				switch (signalingData.data_type) {
+					case WebrtcSignalingType.WEBRTC_SDP_OFFER: {
+						const decompressedData = await decompress(signalingData.json_data);
+						const offer = safeJSONParse(decompressedData || '{}');
+						await handleOffer(offer);
+
+						break;
+					}
+
+					case WebrtcSignalingType.WEBRTC_SDP_ANSWER: {
+						const decompressedData = await decompress(signalingData.json_data);
+						const answer = safeJSONParse(decompressedData || '{}');
+						await handleAnswer(answer);
+						if (callTimeout.current) {
+							clearTimeout(callTimeout.current);
+							callTimeout.current = null;
+						}
+
+						break;
+					}
+
+					case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE: {
+						const candidate = safeJSONParse(signalingData?.json_data || '{}');
+						await handleICECandidate(candidate);
+						break;
+					}
+					/// case other call
+					// 	WebrtcSignalingType.WEBRTC_SDP_TIMEOUT
+					case 5: {
+						if (callTimeout.current) {
+							clearTimeout(callTimeout.current);
+							callTimeout.current = null;
+						}
+						break;
+					}
+				}
+			} catch (error) {
+				console.error('Error handling signaling message:', error);
+			}
 		}
 	};
 
@@ -417,20 +457,8 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		await mezon.socketRef.current?.forwardWebrtcSignaling(otherCallerId, 5, '', otherChannelId, userId);
 	};
 
-	const updatePeerConnectionOffer = async () => {
-		try {
-			const offer = await callState.peerConnection?.createOffer();
-			await callState.peerConnection?.setLocalDescription(offer);
-
-			const compressedOffer = await compress(JSON.stringify(offer));
-			await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_OFFER, compressedOffer, channelId, userId);
-		} catch (error) {
-			console.error('Error creating and forwarding offer:', error);
-		}
-	};
-
 	// End call and cleanup
-	const handleEndCall = async () => {
+	const handleEndCall = async (callerEndCall = false) => {
 		if (timeStartConnected?.current) {
 			let timeCall = '';
 			const startTime = new Date(timeStartConnected.current);
@@ -460,6 +488,9 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 		}
 
 		try {
+			if (!callerEndCall) {
+				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_QUIT, '', channelId, userId);
+			}
 			if (callTimeout.current) {
 				clearTimeout(callTimeout.current);
 				callTimeout.current = null;
@@ -471,8 +502,8 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			if (callState.localScreenStream) {
 				callState.localScreenStream.getTracks().forEach((track) => track.stop());
 			}
-			if (callState.peerConnection) {
-				callState.peerConnection.close();
+			if (peerConnection?.current) {
+				peerConnection?.current.close();
 			}
 
 			if (localVideoRef.current) {
@@ -489,7 +520,6 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 				remoteScreenVideoRef.current.srcObject = null;
 			}
 
-			await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, 4, '', channelId, userId);
 			dispatch(DMCallActions.setIsInCall(false));
 			if (!isPlayBusyTone) {
 				dispatch(audioCallActions.setIsEndTone(true));
@@ -505,10 +535,10 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			setCallState({
 				localStream: null,
 				remoteStream: null,
-				peerConnection: null,
 				localScreenStream: null,
 				remoteScreenStream: null
 			});
+			peerConnection.current = null;
 		} catch (error) {
 			console.error('Error ending call:', error);
 		}
@@ -516,67 +546,59 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 
 	// Toggle audio/video
 	const toggleAudio = async () => {
-		if (!callState.localStream || !callState.peerConnection) return;
-		const audioSender = callState.peerConnection.getSenders().find((sender) => sender.track?.kind === 'audio');
-
-		if (audioSender?.track) {
-			audioSender.track.enabled = !audioSender.track.enabled;
+		if (!callState.localStream) return;
+		const microphoneGranted = await requestMediaPermission('audio');
+		if (microphoneGranted !== 'granted') {
+			dispatch(
+				toastActions.addToast({
+					message: 'Microphone permission is required',
+					type: 'warning',
+					autoClose: 1000
+				})
+			);
+			return;
+		}
+		const audioTracks = callState.localStream.getAudioTracks();
+		try {
+			audioTracks.forEach((track) => {
+				track.enabled = !track.enabled;
+			});
+			if (localVideoRef.current) {
+				localVideoRef.current.srcObject = callState.localStream;
+			}
+		} catch (error) {
+			console.error('Error adding video track:', error);
 		}
 	};
 
 	const toggleVideo = async () => {
 		if (!callState.localStream) return;
-		let permissionCameraGranted = false;
 
+		const cameraGranted = await requestMediaPermission('video');
 		const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
-		if (cameraPermission.state === 'granted') {
-			permissionCameraGranted = true;
-		}
-
-		if (!isShowMeetDM && !permissionCameraGranted) {
-			dispatch(toastActions.addToast({ message: 'Camera is not available', type: 'warning', autoClose: 1000 }));
+		if (cameraGranted !== 'granted' || cameraPermission.state !== 'granted') {
+			dispatch(toastActions.addToast({ message: 'Camera permission is required', type: 'warning', autoClose: 1000 }));
 			return;
 		}
 
 		const videoTracks = callState.localStream.getVideoTracks();
-		if (videoTracks.length === 0) {
-			try {
-				const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-				const videoTrack = videoStream.getVideoTracks()[0];
-				callState.localStream.addTrack(videoTrack);
-				const senders = callState.peerConnection?.getSenders() || [];
-				const videoSender = senders.find((sender) => isCameraTrack(sender.track));
-
-				if (videoSender) {
-					await videoSender.replaceTrack(videoTrack);
-				} else {
-					callState.peerConnection?.addTrack(videoTrack, callState.localStream);
-				}
-
-				if (localVideoRef.current) {
-					localVideoRef.current.srcObject = callState.localStream;
-				}
-			} catch (error) {
-				console.error('Error adding video track:', error);
-			}
-		} else {
+		try {
 			videoTracks.forEach((track) => {
-				if (track.enabled) {
-					track.stop();
-					if (callState.localStream) {
-						callState.localStream.removeTrack(track);
-					}
-
-					const senders = callState.peerConnection?.getSenders() || [];
-					const videoSender = senders.find((sender) => isCameraTrack(sender.track));
-
-					if (videoSender) {
-						callState.peerConnection?.removeTrack(videoSender);
-					}
-				} else {
-					track.enabled = true;
-				}
+				track.enabled = !track.enabled;
 			});
+
+			// Replace the track in the peer connection if needed
+			const senders = peerConnection?.current?.getSenders() || [];
+			const videoSender = senders.find((sender) => sender.track?.kind === 'video');
+			if (videoSender) {
+				await videoSender.replaceTrack(videoTracks[0]);
+			}
+
+			if (localVideoRef.current) {
+				localVideoRef.current.srcObject = callState.localStream;
+			}
+		} catch (error) {
+			console.error('Error adding video track:', error);
 		}
 
 		dispatch(DMCallActions.setIsShowMeetDM(!isShowMeetDM));
@@ -604,14 +626,14 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			}
 			callState.localScreenStream = videoStream;
 			const videoTrack = videoStream?.getVideoTracks()[0];
-			const senders = callState.peerConnection?.getSenders() || [];
+			const senders = peerConnection?.current?.getSenders() || [];
 
 			const screenSender = senders.find((sender) => isScreenTrack(sender.track));
 
 			if (screenSender) {
 				await screenSender.replaceTrack(videoTrack);
 			} else {
-				callState.peerConnection?.addTrack(videoTrack, callState.localScreenStream);
+				peerConnection?.current?.addTrack(videoTrack, callState.localScreenStream);
 			}
 
 			if (localScreenVideoRef.current) {
@@ -643,14 +665,14 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 				const videoTrack = videoStream?.getVideoTracks()[0];
 
 				callState.localScreenStream.addTrack(videoTrack);
-				const senders = callState.peerConnection?.getSenders() || [];
+				const senders = peerConnection?.current?.getSenders() || [];
 
 				const screenSender = senders.find((sender) => isScreenTrack(sender.track));
 
 				if (screenSender) {
 					await screenSender.replaceTrack(videoTrack);
 				} else {
-					callState.peerConnection?.addTrack(videoTrack, callState.localScreenStream);
+					peerConnection?.current?.addTrack(videoTrack, callState.localScreenStream);
 				}
 
 				if (localScreenVideoRef.current) {
@@ -667,10 +689,10 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 						callState.localScreenStream.removeTrack(track);
 					}
 
-					const senders = callState.peerConnection?.getSenders() || [];
+					const senders = peerConnection?.current?.getSenders() || [];
 					const screenSender = senders.find((sender) => isScreenTrack(sender.track));
 					if (screenSender) {
-						callState.peerConnection?.removeTrack(screenSender);
+						peerConnection?.current?.removeTrack(screenSender);
 					}
 				} else {
 					track.enabled = true;
@@ -683,7 +705,7 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 
 	const changeAudioInputDevice = async (deviceId: string) => {
 		try {
-			if (!callState.peerConnection) return;
+			if (!peerConnection?.current) return;
 
 			const constraints: MediaStreamConstraints = {
 				audio: { deviceId: { exact: deviceId } },
@@ -703,7 +725,7 @@ export function useWebRTCCall(dmUserId: string, channelId: string, userId: strin
 			if (!selectedInputDevice) return;
 			setCurrentInputDevice(selectedInputDevice);
 
-			const senders = callState.peerConnection.getSenders();
+			const senders = peerConnection?.current.getSenders();
 
 			const audioSender = senders.find((sender) => sender.track?.kind === 'audio');
 

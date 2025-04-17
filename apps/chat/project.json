@@ -28,11 +28,6 @@
 						"output": "./assets/"
 					},
 					{
-						"glob": "**/*",
-						"input": "apps/chat/src/assets/.well-known/",
-						"output": "./.well-known/"
-					},
-					{
 						"glob": "apps/chat/src/assets/favicon.ico",
 						"input": "./",
 						"output": "./"
