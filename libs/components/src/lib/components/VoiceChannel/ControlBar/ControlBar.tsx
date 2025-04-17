@@ -96,10 +96,6 @@ export function ControlBar({
 	);
 
 	const cameraOnChange = useCallback((enabled: boolean, isUserInitiated: boolean) => {
-		console.log(enabled, 'enabled');
-
-		console.log(isUserInitiated, 'cameraOnChange');
-
 		return isUserInitiated ? dispatch(voiceActions.setShowCamera(enabled)) : null;
 	}, []);
 

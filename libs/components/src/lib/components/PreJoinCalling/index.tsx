@@ -12,12 +12,10 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { MyVideoConference } from '../VoiceChannel';
-import { ControlButton } from './ControlButton';
 import { JoinForm } from './JoinForm';
 import { VideoPreview } from './VideoPreview';
 
@@ -105,60 +103,60 @@ export default function PreJoinCalling() {
 	const getAvatar = account?.user?.avatar_url;
 
 	// Check permissions on component mount
-	useEffect(() => {
-		const checkPermissions = async () => {
-			try {
-				await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-				setPermissionsState({
-					camera: true,
-					microphone: true,
-					showPopup: false
-				});
-			} catch (err) {
-				if (err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
-					setPermissionsState({
-						camera: false,
-						microphone: false,
-						showPopup: true
-					});
-				} else {
-					try {
-						await navigator.mediaDevices.getUserMedia({ audio: true });
-						setPermissionsState((prev) => ({
-							...prev,
-							microphone: true
-						}));
-					} catch (audioErr) {
-						if (audioErr instanceof DOMException && (audioErr.name === 'NotAllowedError' || audioErr.name === 'PermissionDeniedError')) {
-							setPermissionsState((prev) => ({
-								...prev,
-								microphone: false,
-								showPopup: true
-							}));
-						}
-					}
+	// useEffect(() => {
+	// 	const checkPermissions = async () => {
+	// 		try {
+	// 			await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+	// 			setPermissionsState({
+	// 				camera: true,
+	// 				microphone: true,
+	// 				showPopup: false
+	// 			});
+	// 		} catch (err) {
+	// 			if (err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+	// 				setPermissionsState({
+	// 					camera: false,
+	// 					microphone: false,
+	// 					showPopup: true
+	// 				});
+	// 			} else {
+	// 				try {
+	// 					await navigator.mediaDevices.getUserMedia({ audio: true });
+	// 					setPermissionsState((prev) => ({
+	// 						...prev,
+	// 						microphone: true
+	// 					}));
+	// 				} catch (audioErr) {
+	// 					if (audioErr instanceof DOMException && (audioErr.name === 'NotAllowedError' || audioErr.name === 'PermissionDeniedError')) {
+	// 						setPermissionsState((prev) => ({
+	// 							...prev,
+	// 							microphone: false,
+	// 							showPopup: true
+	// 						}));
+	// 					}
+	// 				}
 
-					try {
-						await navigator.mediaDevices.getUserMedia({ video: true });
-						setPermissionsState((prev) => ({
-							...prev,
-							camera: true
-						}));
-					} catch (videoErr) {
-						if (videoErr instanceof DOMException && (videoErr.name === 'NotAllowedError' || videoErr.name === 'PermissionDeniedError')) {
-							setPermissionsState((prev) => ({
-								...prev,
-								camera: false,
-								showPopup: true
-							}));
-						}
-					}
-				}
-			}
-		};
+	// 				try {
+	// 					await navigator.mediaDevices.getUserMedia({ video: true });
+	// 					setPermissionsState((prev) => ({
+	// 						...prev,
+	// 						camera: true
+	// 					}));
+	// 				} catch (videoErr) {
+	// 					if (videoErr instanceof DOMException && (videoErr.name === 'NotAllowedError' || videoErr.name === 'PermissionDeniedError')) {
+	// 						setPermissionsState((prev) => ({
+	// 							...prev,
+	// 							camera: false,
+	// 							showPopup: true
+	// 						}));
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	};
 
-		checkPermissions();
-	}, []);
+	// 	checkPermissions();
+	// }, []);
 
 	const closePermissionsPopup = useCallback(() => {
 		setPermissionsState((prev) => ({
@@ -369,28 +367,6 @@ export default function PreJoinCalling() {
 								{error && (
 									<div className="w-full mb-4 p-2 bg-red-900/50 border border-red-800 rounded text-red-200 text-sm">{error}</div>
 								)}
-
-								{/* Controls */}
-								<div className="w-full flex items-center justify-center gap-8">
-									{permissionsState.camera && (
-										<ControlButton
-											onClick={toggleCamera}
-											isActive={cameraOn}
-											label={cameraOn ? 'Camera on' : 'Camera off'}
-											icon={cameraOn ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
-										/>
-									)}
-
-									{permissionsState.microphone && (
-										<ControlButton
-											onClick={toggleMic}
-											isActive={micOn}
-											label={micOn ? 'Mic on' : 'Mic off'}
-											audioLevel={micOn ? audioLevel : undefined}
-											icon={micOn ? <Icons.VoiceMicIcon scale={1.3} /> : <Icons.VoiceMicDisabledIcon scale={1.3} />}
-										/>
-									)}
-								</div>
 							</div>
 						</div>
 					</div>
