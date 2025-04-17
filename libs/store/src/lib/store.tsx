@@ -328,7 +328,7 @@ const reducer = {
 	allUsersByAddChannel: persisteduserChannelsReducer,
 	listchannelbyusers: persistedListchannelsByUserReducer,
 	listpermissionroleschannel: persistedPermissionRoleChannelReducer,
-	channelMembers: persistedChannelMembersReducer,
+	channelMembers: channelMembersReducer,
 	listusersbyuserid: persistedListUsersByUserReducer,
 	threads: persistedThreadReducer,
 	topicdiscussions: persistedTopicReducer,

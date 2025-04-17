@@ -17,7 +17,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { useMediaPermissions } from '@mezon/utils';
+import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
 
 import isElectron from 'is-electron';
 import { LocalTrackPublication, Track } from 'livekit-client';
@@ -53,6 +53,8 @@ export function ControlBar({
 	const isTooLittleSpace = useMediaQuery('max-width: 760px');
 	const audioScreenTrackRef = useRef<LocalTrackPublication | null>(null);
 
+	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
+
 	const screenTrackRef = useRef<LocalTrackPublication | null>(null);
 	const isDesktop = isElectron();
 	const defaultVariation = isTooLittleSpace ? 'minimal' : 'verbose';
@@ -86,18 +88,45 @@ export function ControlBar({
 		preventSave: !saveUserChoices
 	});
 
+	const handleRequestCameraPermission = useCallback(async () => {
+		const permissionStatus = await requestMediaPermission('video');
+		if (permissionStatus === 'granted') {
+			dispatch(voiceActions.setShowCamera(true));
+		}
+	}, []);
+
+	const handleRequestMicrophonePermission = useCallback(async () => {
+		const permissionStatus = await requestMediaPermission('audio');
+		if (permissionStatus === 'granted') {
+			dispatch(voiceActions.setShowMicrophone(true));
+		}
+	}, []);
+
 	const microphoneOnChange = useCallback(
 		(enabled: boolean, isUserInitiated: boolean) => {
 			if (isUserInitiated) {
-				dispatch(voiceActions.setShowMicrophone(enabled));
+				if (!hasMicrophoneAccess && enabled) {
+					handleRequestMicrophonePermission();
+				} else {
+					dispatch(voiceActions.setShowMicrophone(enabled));
+				}
 			}
 		},
-		[dispatch]
+		[hasMicrophoneAccess]
 	);
 
-	const cameraOnChange = useCallback((enabled: boolean, isUserInitiated: boolean) => {
-		return isUserInitiated ? dispatch(voiceActions.setShowCamera(enabled)) : null;
-	}, []);
+	const cameraOnChange = useCallback(
+		(enabled: boolean, isUserInitiated: boolean) => {
+			if (isUserInitiated) {
+				if (!hasCameraAccess && enabled) {
+					handleRequestCameraPermission();
+				} else {
+					dispatch(voiceActions.setShowCamera(enabled));
+				}
+			}
+		},
+		[hasCameraAccess]
+	);
 
 	useEffect(() => {
 		if (isShowSelectScreenModal) {
@@ -180,7 +209,6 @@ export function ControlBar({
 		[dispatch]
 	);
 
-	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
 	let popoutWindow: Window | null = null;
 	const screenShareTracks = useTracks([
 		{ source: Track.Source.ScreenShare, withPlaceholder: false },
@@ -232,7 +260,7 @@ export function ControlBar({
 				</span>
 			</div>
 			<div className="flex justify-center gap-3">
-				{visibleControls.microphone && hasMicrophoneAccess && (
+				{visibleControls.microphone && (
 					<div className="relative rounded-full">
 						<TrackToggle
 							key={+showMicrophone}
@@ -242,13 +270,15 @@ export function ControlBar({
 							onChange={microphoneOnChange}
 							onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Microphone, error })}
 						/>
-						<MediaDeviceMenu
-							kind="audioinput"
-							onActiveDeviceChange={(_kind, deviceId) => saveAudioInputDeviceId(deviceId ?? 'default')}
-						/>
+						{hasMicrophoneAccess && (
+							<MediaDeviceMenu
+								kind="audioinput"
+								onActiveDeviceChange={(_kind, deviceId) => saveAudioInputDeviceId(deviceId ?? 'default')}
+							/>
+						)}
 					</div>
 				)}
-				{visibleControls.camera && hasCameraAccess && (
+				{visibleControls.camera && (
 					<div className="relative rounded-full">
 						<TrackToggle
 							key={+showCamera}
@@ -258,12 +288,16 @@ export function ControlBar({
 							onChange={cameraOnChange}
 							onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Camera, error })}
 						/>
-						<MediaDeviceMenu
-							kind="videoinput"
-							onActiveDeviceChange={(_kind, deviceId) => saveVideoInputDeviceId(deviceId ?? 'default')}
-						/>
-						{showCamera && typeof window !== 'undefined' && 'MediaStreamTrackGenerator' in window && (
-							<BackgroundEffectsMenu participant={localParticipant.localParticipant} />
+						{hasCameraAccess && (
+							<>
+								<MediaDeviceMenu
+									kind="videoinput"
+									onActiveDeviceChange={(_kind, deviceId) => saveVideoInputDeviceId(deviceId ?? 'default')}
+								/>
+								{showCamera && typeof window !== 'undefined' && 'MediaStreamTrackGenerator' in window && (
+									<BackgroundEffectsMenu participant={localParticipant.localParticipant} />
+								)}
+							</>
 						)}
 					</div>
 				)}

@@ -206,7 +206,6 @@ type ChannelMainContentTextProps = {
 
 const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainContentTextProps) => {
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
-	const store = getStore();
 	const dispatch = useDispatch();
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const mode =
@@ -267,6 +266,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 	const handleLaunchApp = () => {
 		if (isAppChannel) {
+			const store = getStore();
 			const appChannel = selectAppChannelById(store.getState(), channelId);
 			dispatch(
 				channelsActions.setAppChannelsListShowOnPopUp({

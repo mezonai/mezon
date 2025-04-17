@@ -23,9 +23,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import { MiniAppEventType, ParticipantMeetState } from '@mezon/utils';
-import { ApiChannelAppResponse } from 'mezon-js/api.gen';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ApiChannelAppResponseExtend, MiniAppEventType, ParticipantMeetState } from '@mezon/utils';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useMiniAppEventListener from './useMiniAppEventListener';
 
@@ -67,7 +66,22 @@ export function VideoRoom({ token, serverUrl }: { token: string; serverUrl: stri
 	);
 }
 
-export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelAppResponse }) => {
+const buildAppUrl = (appChannel?: ApiChannelAppResponseExtend) => {
+	if (!appChannel?.app_url) return '';
+
+	const url = new URL(appChannel.app_url);
+
+	if (appChannel.subpath) {
+		url.pathname = `${url.pathname}${appChannel.subpath}`.replace(/\/\/+/g, '/');
+	}
+
+	if (appChannel.code) {
+		url.searchParams.set('code', appChannel.code);
+	}
+	return url.toString();
+};
+
+export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelAppResponseExtend }) => {
 	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
 	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -81,10 +95,6 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 
 	const isJoinVoice = useSelector(selectEnableCall);
 	const token = useSelector(selectLiveToken);
-
-	const miniAppDataHash = useMemo(() => {
-		return `userChannels=${JSON.stringify(userChannels)}`;
-	}, [userChannels]);
 
 	useEffect(() => {
 		const currentChannelAppClanId = selectChannelAppClanId(store.getState());
@@ -215,7 +225,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 					allow="clipboard-read; clipboard-write; camera"
 					ref={miniAppRef}
 					title={appChannel?.app_url}
-					src={`${appChannel?.app_url}#${miniAppDataHash}`}
+					src={buildAppUrl(appChannel)}
 					className="w-full h-full rounded-b-lg"
 				/>
 			</div>

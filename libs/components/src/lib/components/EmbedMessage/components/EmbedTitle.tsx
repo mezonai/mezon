@@ -1,9 +1,10 @@
 interface EmbedTitleProps {
 	title: string;
 	url?: string;
+	onClick?: () => void;
 }
 
-export function EmbedTitle({ title, url }: EmbedTitleProps) {
+export function EmbedTitle({ title, url, onClick }: EmbedTitleProps) {
 	return (
 		<div className="mt-2 h-fit">
 			{url ? (
@@ -12,6 +13,12 @@ export function EmbedTitle({ title, url }: EmbedTitleProps) {
 					className="font-semibold no-underline text-contentBrandLight hover:underline cursor-pointer"
 					target={'_blank'}
 					rel="noreferrer"
+					onClick={(e) => {
+						if (url?.startsWith('www.mezon.ai')) {
+							e.preventDefault();
+						}
+						onClick?.();
+					}}
 				>
 					{title}
 				</a>

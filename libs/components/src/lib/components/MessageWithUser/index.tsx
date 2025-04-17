@@ -20,7 +20,7 @@ import { ApiMessageMention } from 'mezon-js/api.gen';
 import React, { ReactNode, useCallback, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
-import EmbedMessage from '../EmbedMessage/EmbedMessage';
+import { EmbedMessageWrap } from '../EmbedMessage/EmbedMessageWrap';
 import { MessageActionsPanel } from '../MessageActionsPanel';
 import ModalUserProfile from '../ModalUserProfile';
 import TokenTransactionMessage from '../TokenTransactionMsg/TokenTransactionMsg';
@@ -287,11 +287,7 @@ function MessageWithUser({
 						)}
 
 						{Array.isArray(message?.content?.embed) && (
-							<div className="w-full">
-								{message?.content?.embed?.map((embed, index) => (
-									<EmbedMessage key={index} embed={embed} senderId={message?.sender_id} message_id={message?.id} />
-								))}
-							</div>
+							<EmbedMessageWrap embeds={message.content.embed} senderId={message?.sender_id} messageId={message?.id} />
 						)}
 						{!isTopic && message?.code === TypeMessage.Topic && <TopicViewButton message={message} />}
 

@@ -1,5 +1,6 @@
 import { useReference } from '@mezon/core';
 import {
+	channelMembersActions,
 	ChannelsEntity,
 	emojiSuggestionActions,
 	getStore,
@@ -26,50 +27,46 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import {
+	addMention,
+	adjustPos,
+	blankReferenceObj,
 	CHANNEL_INPUT_ID,
 	ChannelMembersEntity,
+	checkIsThread,
+	convertMentionOnfile,
 	EBacktickType,
 	ETypeMEntion,
+	filterEmptyArrays,
+	filterMentionsWithAtSign,
+	formatMentionsToString,
 	GENERAL_INPUT_ID,
+	getDisplayMention,
 	IEmojiOnMessage,
 	IHashtagOnMessage,
 	ILongPressType,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageWithUser,
-	MEZON_MENTIONS_COPY_KEY,
-	MIN_THRESHOLD_CHARS,
 	MentionDataProps,
 	MentionReactInputProps,
-	RequestInput,
-	TITLE_MENTION_HERE,
-	ThreadStatus,
-	addMention,
-	adjustPos,
-	blankReferenceObj,
-	checkIsThread,
-	convertMentionOnfile,
-	filterEmptyArrays,
-	filterMentionsWithAtSign,
-	formatMentionsToString,
-	getDisplayMention,
+	MEZON_MENTIONS_COPY_KEY,
+	MIN_THRESHOLD_CHARS,
 	parseHtmlAsFormattedText,
 	processMarkdownEntities,
+	RequestInput,
 	searchMentionsHashtag,
 	threadError,
+	ThreadStatus,
+	TITLE_MENTION_HERE,
 	updateMentionPositions
 } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import React, { ReactElement, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Mention as MentionComponent, MentionItem, MentionsInput as MentionsInputComponent } from 'react-mentions';
 import { useSelector } from 'react-redux';
-import CustomModalMentions from './CustomModalMentions';
-import lightMentionsInputStyle from './LightRmentionInputStyle';
-import darkMentionsInputStyle from './RmentionInputStyle';
-import mentionStyle from './RmentionStyle';
-import SuggestItem from './SuggestItem';
 import { ChatBoxToolbarWrapper } from './components';
+import CustomModalMentions from './CustomModalMentions';
 import {
 	useClickUpToEditMessage,
 	useEmojiPicker,
@@ -80,7 +77,11 @@ import {
 	usePasteMentions,
 	useUndoRedoHistory
 } from './hooks';
+import lightMentionsInputStyle from './LightRmentionInputStyle';
 import processMention from './processMention';
+import darkMentionsInputStyle from './RmentionInputStyle';
+import mentionStyle from './RmentionStyle';
+import SuggestItem from './SuggestItem';
 
 const MentionsInput = MentionsInputComponent as any;
 const Mention = MentionComponent as any;
@@ -553,6 +554,16 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const handleSearchUserMention = useCallback(
 		(search: string, callback: any) => {
+			if (!props.listMentions?.length && props.currentClanId && props.currentClanId !== '0') {
+				dispatch(
+					channelMembersActions.fetchChannelMembers({
+						clanId: props.currentClanId as string,
+						channelId: props.currentChannelId as string,
+						channelType: ChannelType.CHANNEL_TYPE_CHANNEL
+					})
+				);
+			}
+
 			setValueHightlight(search);
 			callback(searchMentionsHashtag(search, props.listMentions ?? []));
 		},
