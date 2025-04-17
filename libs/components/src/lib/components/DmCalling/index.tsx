@@ -116,7 +116,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	useEffect(() => {
 		if (isPlayBusyTone) {
 			dispatch(toastActions.addToast({ message: `${currentDmGroup.usernames} on another call`, type: 'warning', autoClose: 3000 }));
-			handleEndCall();
+			handleEndCall(true);
 		}
 	}, [isPlayBusyTone]);
 
