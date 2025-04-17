@@ -24,6 +24,7 @@ export const FOR_3_HOURS = 3 * 60 * 60 * 1000;
 export const FOR_8_HOURS = 8 * 60 * 60 * 1000;
 export const FOR_24_HOURS = 24 * 60 * 60 * 1000;
 export const MAX_LENGTH_MESSAGE_BUZZ = 160;
+export const ONE_MINUTE = 60000;
 
 export const MUTE = 0;
 export const ACTIVE = 1;

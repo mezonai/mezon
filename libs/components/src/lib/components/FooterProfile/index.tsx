@@ -22,7 +22,7 @@ import {
 	userClanProfileActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ESummaryInfo, EUserStatus, TypeMessage, createImgproxyUrl, formatMoney } from '@mezon/utils';
+import { ESummaryInfo, EUserStatus, ONE_MINUTE, TypeMessage, createImgproxyUrl, formatMoney } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -222,7 +222,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			});
 			const timer = setTimeout(() => {
 				handleClosePopup();
-			}, 10000);
+			}, ONE_MINUTE);
 
 			return () => clearTimeout(timer);
 		}
