@@ -90,13 +90,15 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 							handleOnClick={handleButtonClick}
 							selectedButton={selectedButton}
 						/>
-						{channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && canEditChannelPermissions && (
-							<ChannelSettingItemButton
-								tabName={EChannelSettingTab.PREMISSIONS}
-								handleOnClick={handleButtonClick}
-								selectedButton={selectedButton}
-							/>
-						)}
+						{channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
+							channel.type !== ChannelType.CHANNEL_TYPE_APP &&
+							canEditChannelPermissions && (
+								<ChannelSettingItemButton
+									tabName={EChannelSettingTab.PREMISSIONS}
+									handleOnClick={handleButtonClick}
+									selectedButton={selectedButton}
+								/>
+							)}
 						{/* <ChannelSettingItemButton
 							tabName={EChannelSettingTab.INVITES}
 							handleOnClick={handleButtonClick}

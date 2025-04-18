@@ -57,8 +57,8 @@ function PanelEventItem(props: PanelEventItemProps) {
 			className="fixed dark:bg-bgProfileBody bg-gray-100 rounded-sm shadow z-10 w-[200px] py-[10px] px-[10px]"
 			style={{
 				left: coords.mouseX + 10,
-				top: canModifyEvent ? (coords.distanceToBottom > 150 ? coords.mouseY : '') : coords.distanceToBottom > 60 ? coords.mouseY : '',
-				bottom: canModifyEvent ? (coords.distanceToBottom < 150 ? '20px' : '') : coords.distanceToBottom < 60 ? '20px' : ''
+				top: coords.distanceToBottom > 150 ? coords.mouseY : '',
+				bottom: coords.distanceToBottom > 150 ? '' : '20px'
 			}}
 			onClick={onHandle}
 		>

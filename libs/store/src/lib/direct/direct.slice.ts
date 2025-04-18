@@ -42,7 +42,7 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription) => {
 
 export const createNewDirectMessage = createAsyncThunk(
 	'direct/createNewDirectMessage',
-	async ({ body, username, avatar }: { body: ApiCreateChannelDescRequest; username?: string; avatar?: string }, thunkAPI) => {
+	async ({ body, username, avatar }: { body: ApiCreateChannelDescRequest; username?: string | string[]; avatar?: string | string[] }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
@@ -53,9 +53,9 @@ export const createNewDirectMessage = createAsyncThunk(
 					directActions.upsertOne({
 						id: response.channel_id || '',
 						...response,
-						usernames: username ? [username] : [],
-						channel_label: username,
-						channel_avatar: avatar ? [avatar] : ['']
+						usernames: Array.isArray(username) ? username : username ? [username] : [],
+						channel_label: Array.isArray(username) ? username.toString() : username,
+						channel_avatar: Array.isArray(avatar) ? avatar : avatar ? [avatar] : []
 					})
 				);
 				if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {

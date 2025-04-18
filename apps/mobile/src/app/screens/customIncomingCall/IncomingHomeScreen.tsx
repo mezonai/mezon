@@ -1,18 +1,19 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { DMCallActions, selectAllAccount, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { DMCallActions, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import LottieView from 'lottie-react-native';
-import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import * as React from 'react';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { BackHandler, Image, ImageBackground, NativeModules, Text, TouchableOpacity, View } from 'react-native';
 import { Bounce } from 'react-native-animated-spinkit';
-import { useSelector } from 'react-redux';
 import { DirectMessageCall } from '../messages/DirectMessageCall';
 
+import { load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import LOTTIE_PHONE_DECLINE from './phone-decline.json';
 import LOTTIE_PHONE_RING from './phone-ring.json';
 import { style } from './styles';
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import BG_CALLING from './bgCalling.png';
@@ -24,8 +25,10 @@ const IncomingHomeScreen = memo((props: any) => {
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const [isInCall, setIsInCall] = React.useState(false);
-	const userProfile = useSelector(selectAllAccount);
-	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
+	const userId = useMemo(() => {
+		return load(STORAGE_MY_USER_ID);
+	}, []);
+	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const mezon = useMezon();
 
 	const getDataCall = async () => {
@@ -38,11 +41,11 @@ const IncomingHomeScreen = memo((props: any) => {
 					json_data: payload?.offer,
 					data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,
 					caller_id: payload?.callerId,
-					receiver_id: userProfile?.user?.id
+					receiver_id: userId
 				};
 				dispatch(
 					DMCallActions.addOrUpdate({
-						calleeId: userProfile?.user?.id,
+						calleeId: userId,
 						signalingData: signalingData as WebrtcSignalingFwd,
 						id: payload?.callerId,
 						callerId: payload?.callerId
@@ -92,9 +95,9 @@ const IncomingHomeScreen = memo((props: any) => {
 		await mezon.socketRef.current?.forwardWebrtcSignaling(
 			latestSignalingEntry?.callerId,
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
-			'',
+			'{}',
 			latestSignalingEntry?.signalingData?.channel_id,
-			''
+			userId
 		);
 		dispatch(DMCallActions.removeAll());
 		BackHandler.exitApp();

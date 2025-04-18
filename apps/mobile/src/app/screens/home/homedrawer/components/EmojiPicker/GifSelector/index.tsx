@@ -52,7 +52,7 @@ export default function GifSelector({ onSelected, searchText, onScroll }: GifSel
 		<ScrollView
 			scrollEventThrottle={16}
 			onScroll={onScroll}
-			style={{ maxHeight: Metrics.screenHeight / 1.4 }}
+			style={{ maxHeight: Metrics.screenHeight / 1.07 }}
 			contentContainerStyle={{ paddingBottom: size.s_50 * 2 }}
 		>
 			{valueInputToCheckHandleSearch === '' ? (

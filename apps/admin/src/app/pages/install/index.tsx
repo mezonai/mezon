@@ -8,9 +8,17 @@ import { IAuthLoaderData } from '../../loader/authLoader';
 import ModalAddBot from './ModalAddBot';
 import ModalTry from './ModalTry';
 
+import ModalAddApp from './ModalAddApp';
+
 const Install: React.FC = () => {
 	const { isLogin, redirect } = useLoaderData() as IAuthLoaderData;
-	const { applicationId } = useParams();
+
+	const { applicationId, modalType } = useParams();
+	const MODAL_TYPE = {
+		BOT: 'bot',
+		APP: 'app'
+	} as const;
+
 	const appSelect = useSelector(selectAppById(applicationId || ''));
 
 	const [openModalAdd, setOpenModalAdd] = useState(false);
@@ -41,7 +49,17 @@ const Install: React.FC = () => {
 			) : (
 				<>
 					{openModalAdd && (
-						<ModalAddBot nameApp={appSelect?.appname} handleOpenModal={handleOpenModalAdd} applicationId={applicationId || ''} />
+						<>
+							{modalType === MODAL_TYPE.BOT && (
+								<ModalAddBot nameApp={appSelect?.appname} handleOpenModal={handleOpenModalAdd} applicationId={applicationId || ''} />
+							)}
+							{modalType === MODAL_TYPE.APP && (
+								<ModalAddApp nameApp={appSelect?.appname} handleOpenModal={handleOpenModalAdd} applicationId={applicationId || ''} />
+							)}
+							{modalType !== MODAL_TYPE.BOT && modalType !== MODAL_TYPE.APP && (
+								<div className="text-red-500 font-semibold text-lg">Invalid modal type: {modalType}</div>
+							)}
+						</>
 					)}
 					{openModalTry && <ModalTry nameApp={appSelect?.appname} handleOpenModal={handleOpenModalTry} />}
 				</>
@@ -51,7 +69,6 @@ const Install: React.FC = () => {
 };
 
 export default Install;
-
 const HeaderInstall = memo(() => {
 	const { isDarkMode } = useAppearance();
 
@@ -81,7 +98,7 @@ const ContentInstall = memo((props: ContentInstallProps) => {
 				<Icons.AddServe className="text-contentTertiary ml-4" />
 				<div className="flex justify-between items-center flex-1">
 					<div>
-						<h4 className="text-base font-medium">Add to clan</h4>
+						<h4 className="text-base font-medium ">Add to clan</h4>
 						<p className="dark:text-contentTertiary text-colorTextLightMode text-xs">Customise your clan by adding this app</p>
 					</div>
 					<Icons.ArrowRight defaultSize="size-6 mr-2 dark:text-contentTertiary text-contentTertiary" />

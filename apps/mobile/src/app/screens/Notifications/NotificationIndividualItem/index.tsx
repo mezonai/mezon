@@ -11,7 +11,7 @@ import { style } from './NotificationIndividualItem.styles';
 function NotificationIndividualItem({ notify, onLongPressNotify, onPressNotify }: NotifyProps) {
 	const user = useSelector((state) => selectMemberClanByUserId2(state, notify?.sender_id ?? ''));
 	const username = notify?.content?.username || user?.user?.display_name || user?.user?.username;
-	const unixTimestamp = Math.floor(new Date(notify?.content?.create_time).getTime() / 1000);
+	const unixTimestamp = Math.floor(new Date(notify?.create_time).getTime() / 1000);
 	const messageTimeDifference = convertTimestampToTimeAgo(unixTimestamp);
 	const colorsUsername = useColorsRoleById(notify?.sender_id)?.highestPermissionRoleColor;
 	const { themeValue } = useTheme();

@@ -1,12 +1,22 @@
 import copy from 'copy-to-clipboard';
-import { useParams } from 'react-router-dom';
+import { useMatches } from 'react-router-dom';
 
 const Installation = () => {
-	const { applicationId } = useParams();
-	const linkInstall = window.location.origin + '/developers/app/install/' + applicationId;
+	const matches = useMatches();
+	const appMatch = matches.find((match) => match.pathname.includes('/developers/applications/'));
+
+	const application = (appMatch?.data as any)?.application;
+
+	if (!application) {
+		return <div className="text-red-500">Application data not found</div>;
+	}
+
+	const linkInstall = window.location.origin + (application.app_url ? '/developers/app/install/' : '/developers/bot/install/') + application.id;
+
 	const handleCopyToClipboard = () => {
 		copy(linkInstall);
 	};
+
 	return (
 		<div className="text-xl">
 			<h3 className="text-2xl font-semibold mb-4">Installation</h3>

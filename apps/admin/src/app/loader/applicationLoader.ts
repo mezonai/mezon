@@ -11,6 +11,7 @@ import { CustomLoaderFunction } from './appLoader';
 
 interface IBotLoaderData {
 	applicationId: string;
+	application: any;
 }
 
 export const applicationLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
@@ -27,12 +28,17 @@ export const applicationLoader: CustomLoaderFunction = async ({ params, dispatch
 	}
 
 	const currentApp = selectApplicationById(store.getState(), applicationId);
+	if (!currentApp) {
+		throw new Error('Application not found');
+	}
+
 	dispatch(setCurrentAppId(applicationId));
 	await dispatch(getApplicationDetail({ appId: applicationId }));
 	await dispatch(fetchMezonOauthClient({ appId: applicationId, appName: currentApp.appname }));
 
 	return {
-		applicationId
+		applicationId,
+		application: currentApp
 	} as IBotLoaderData;
 };
 

@@ -50,7 +50,7 @@ export default function StickerSelector({ onSelected, onScroll }: StickerSelecto
 		<ScrollView
 			scrollEventThrottle={16}
 			onScroll={onScroll}
-			style={{ maxHeight: Metrics.screenHeight / 1.4 }}
+			style={{ maxHeight: Metrics.screenHeight / 1.07 }}
 			contentContainerStyle={{ paddingBottom: size.s_50 * 2 }}
 		>
 			<ScrollView horizontal contentContainerStyle={styles.btnWrap}>

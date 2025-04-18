@@ -1,6 +1,6 @@
 import { ActionEmitEvent, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
-import { DMCallActions, selectAllUserClans, selectIsInCall, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { DMCallActions, selectAllUserClans, selectIsInCall, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
@@ -66,13 +66,8 @@ const CallingModal = () => {
 
 	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
-		if (
-			signalingData &&
-			!!latestSignalingEntry &&
-			!isVisible &&
-			!isInCall &&
-			latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER
-		) {
+		const dataType = latestSignalingEntry?.signalingData?.data_type;
+		if (!isInCall && dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
 			setIsVisible(true);
 			Sound.setCategory('Playback');
 
@@ -91,15 +86,12 @@ const CallingModal = () => {
 				ringtoneRef.current = sound;
 				playVibration();
 			});
-		} else if ([0, 4, 5]?.includes?.(latestSignalingEntry?.signalingData?.data_type) || isInCall) {
+		} else {
 			setIsVisible(false);
 			stopAndReleaseSound();
 			Vibration.cancel();
-		} else {
-			stopAndReleaseSound();
-			Vibration.cancel();
 		}
-	}, [isInCall, isVisible, signalingData]);
+	}, [isInCall, signalingData]);
 
 	const playVibration = () => {
 		const pattern = Platform.select({
@@ -135,9 +127,9 @@ const CallingModal = () => {
 		await mezon.socketRef.current?.forwardWebrtcSignaling(
 			latestSignalingEntry?.callerId,
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
-			'',
+			'{}',
 			latestSignalingEntry?.signalingData?.channel_id,
-			''
+			userId
 		);
 	};
 

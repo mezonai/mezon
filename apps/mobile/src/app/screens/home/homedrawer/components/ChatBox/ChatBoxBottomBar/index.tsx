@@ -235,9 +235,7 @@ export const ChatBoxBottomBar = memo(
 			const store = getStore();
 			setTextChange(text);
 			setText(text);
-			if (text) {
-				setMentionTextValue(text);
-			} else {
+			if (!text || text === '') {
 				setMentionTextValue('');
 			}
 

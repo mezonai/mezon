@@ -53,7 +53,7 @@ function LeaveGroupModal({ groupWillBeLeave, onClose, navigateToFriends }: Leave
 					<div className="text-xl font-semibold break-words whitespace-normal overflow-wrap-break-word">
 						Leave '{groupWillBeLeave?.channel_label}'
 					</div>
-					<div className="text-lg ">
+					<div className="text-lg break-all">
 						Are you sure you want to leave <strong>{groupWillBeLeave?.channel_label}</strong>? You won't be able to rejoin this group
 						unless you are re-invited.
 					</div>

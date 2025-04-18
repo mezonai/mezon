@@ -14,6 +14,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl } from '@mezon/utils';
+import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import { ApiUserEventRequest } from 'mezon-js/api.gen';
 import Tooltip from 'rc-tooltip';
@@ -127,7 +128,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	const handleOpenPanel = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
-		const mouseY = event.clientY + window.screenY;
+		const mouseY = event.clientY + (isElectron() ? 0 : window.screenY);
 		const windowHeight = window.innerHeight;
 		const distanceToBottom = windowHeight - event.clientY;
 		setCoords({ mouseX, mouseY, distanceToBottom });

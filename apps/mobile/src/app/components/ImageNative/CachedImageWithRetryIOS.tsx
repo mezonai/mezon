@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react-native';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -21,76 +21,77 @@ const extractOriginalUrl = (url: string): string | null => {
 	return null;
 };
 
-const CachedImageWithRetryIOS = memo(({ source, urlOriginal, retryCount = 2, style, ...props }: ICachedImageWithRetryIOSProps) => {
-	const [currentSource, setCurrentSource] = useState(source);
-	const [retriesLeft, setRetriesLeft] = useState(retryCount);
-	const [key, setKey] = useState(Date.now());
-	const [loading, setLoading] = useState<boolean>(true);
-	const [isError, setIsError] = useState<boolean>(false);
-	const [fallbackUrl, setFallbackUrl] = useState<string>(urlOriginal);
+const CachedImageWithRetryIOS = memo(
+	({ source, urlOriginal, retryCount = 2, style, ...props }: ICachedImageWithRetryIOSProps) => {
+		const [retriesLeft, setRetriesLeft] = useState(retryCount);
+		const [key, setKey] = useState(Date.now());
+		const [loading, setLoading] = useState<boolean>(false);
+		const [isError, setIsError] = useState<boolean>(false);
+		const [fallbackUrl, setFallbackUrl] = useState<string>(urlOriginal);
+		const timeoutRef = useRef(null);
 
-	useEffect(() => {
-		setCurrentSource(source);
-		setRetriesLeft(retryCount);
-		setKey(Date.now());
-		setLoading(true);
-	}, [source]);
-
-	const handleError = (err) => {
-		if (retriesLeft > 0) {
-			retryLoadingImage();
-		} else {
-			handleExhaustedRetries();
-		}
-
-		Sentry.captureException(err);
-	};
-
-	const retryLoadingImage = () => {
-		setTimeout(() => {
-			setRetriesLeft((prevRetries) => prevRetries - 1);
-			setKey(Date.now());
-		}, 200);
-	};
-
-	const handleExhaustedRetries = () => {
-		if (urlOriginal) {
-			setIsError(true);
-		} else {
-			const getOriginalUrl = urlOriginal ? urlOriginal : extractOriginalUrl(source?.uri);
-			if (getOriginalUrl) {
-				setLoading(true);
-				setKey(Date.now());
-				setFallbackUrl(getOriginalUrl);
-				setIsError(true);
+		const handleError = (err) => {
+			if (retriesLeft > 0) {
+				retryLoadingImage();
+			} else {
+				handleExhaustedRetries();
 			}
-		}
-	};
+			Sentry.captureException(err);
+		};
 
-	const handleLoadEnd = () => {
-		setLoading(false);
-	};
+		const retryLoadingImage = () => {
+			timeoutRef.current = setTimeout(() => {
+				setRetriesLeft((prevRetries) => prevRetries - 1);
+				setKey(Date.now());
+			}, 2000);
+		};
 
-	return (
-		<View style={[styles.container, style]}>
-			{loading && <ActivityIndicator style={styles.loader} size="small" color="#333333" />}
-			<FastImage
-				key={`${key}_${retriesLeft}_${source?.uri}`}
-				source={{
-					uri: isError && fallbackUrl ? fallbackUrl : currentSource?.uri,
-					priority: FastImage.priority.high,
-					cache: FastImage.cacheControl.immutable
-				}}
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-expect-error
-				onError={handleError}
-				onLoadEnd={handleLoadEnd}
-				style={StyleSheet.absoluteFill}
-				{...props}
-			/>
-		</View>
-	);
-});
+		const handleExhaustedRetries = () => {
+			if (urlOriginal) {
+				setIsError(true);
+			} else {
+				const getOriginalUrl = urlOriginal ? urlOriginal : extractOriginalUrl(source?.uri);
+				if (getOriginalUrl) {
+					setKey(Date.now());
+					setFallbackUrl(getOriginalUrl);
+					setIsError(true);
+				}
+			}
+		};
+
+		const handleLoadStart = () => {
+			setLoading(true);
+		};
+
+		const handleLoadEnd = () => {
+			setLoading(false);
+		};
+
+		return (
+			<View style={[styles.container, style]}>
+				{loading && <ActivityIndicator style={styles.loader} size="small" color="#333333" />}
+				<FastImage
+					key={`${key}_${retriesLeft}_${source?.uri}`}
+					source={{
+						uri: isError && fallbackUrl ? fallbackUrl : source?.uri,
+						priority: FastImage.priority.high,
+						cache: FastImage.cacheControl.immutable
+					}}
+					onLoadStart={handleLoadStart}
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					onError={handleError}
+					onLoadEnd={handleLoadEnd}
+					style={StyleSheet.absoluteFill}
+					{...props}
+				/>
+			</View>
+		);
+	},
+	(prevProps, nextProps) => {
+		return prevProps.source?.uri === nextProps.source?.uri;
+	}
+);
 
 const styles = StyleSheet.create({
 	container: {

@@ -27,6 +27,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 	const [searchTerm, setSearchTerm] = useState<string>('');
 	const [idActive, setIdActive] = useState<string>('');
 	const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+	const dataSelectFriends = useRef<FriendsEntity[]>([]);
 	const boxRef = useRef<HTMLDivElement | null>(null);
 
 	const { filteredFriends, numberMemberInDmGroup } = useFriends();
@@ -39,6 +40,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 	const handleSelectFriends = (idFriend: string) => {
 		setSelectedFriends((prevSelectedFriends) => {
 			if (prevSelectedFriends.includes(idFriend)) {
+				dataSelectFriends.current = dataSelectFriends.current?.filter((friend) => friend.id !== idFriend);
 				return prevSelectedFriends.filter((friend) => friend !== idFriend);
 			}
 			if (
@@ -46,6 +48,10 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 				selectedFriends.length === GROUP_CHAT_MAXIMUM_MEMBERS - numberMemberInDmGroup
 			) {
 				return prevSelectedFriends;
+			}
+			const dataFriend = friends.find((friend) => friend.id === idFriend);
+			if (dataFriend) {
+				dataSelectFriends.current?.push(dataFriend);
 			}
 			return [...prevSelectedFriends, idFriend];
 		});
@@ -74,6 +80,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 
 	const handleCreateDM = async () => {
 		const listGroupDM = selectedFriends;
+
 		if (currentDM?.type === ChannelType.CHANNEL_TYPE_DM) {
 			listGroupDM.push(currentDM.user_id?.at(0) as string);
 		}
@@ -87,7 +94,18 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			handleAddMemberToGroupChat(bodyCreateDmGroup);
 			return;
 		}
-		const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDmGroup }));
+
+		const userNameGroup: string[] = [];
+		const avatarGroup: string[] = [];
+
+		dataSelectFriends.current?.map((friend) => {
+			userNameGroup.push(friend.user?.display_name || friend.user?.username || '');
+			avatarGroup.push(friend.user?.avatar_url || '');
+		});
+
+		const response = await dispatch(
+			directActions.createNewDirectMessage({ body: bodyCreateDmGroup, username: userNameGroup, avatar: avatarGroup })
+		);
 		const resPayload = response.payload as ApiCreateChannelDescRequest;
 		if (resPayload.channel_id) {
 			const directChat = toDmGroupPage(resPayload.channel_id, Number(resPayload.type));

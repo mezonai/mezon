@@ -1,14 +1,14 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
-import { EmojiDataOptionals, SenderInfoOptionals, TypeMessage, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
+import { EmojiDataOptionals, TypeMessage, calculateTotalCount } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useCallback } from 'react';
-import { DeviceEventEmitter, Keyboard, Pressable, Text, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { DeviceEventEmitter, Keyboard, Pressable, View } from 'react-native';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
-import ImageNative from '../../../../../components/ImageNative';
 import { IMessageReactionProps } from '../../types';
 import { MessageReactionContent } from './components/MessageReactionContent';
+import { ReactionItem } from './components/MessageReactionItem';
 import { style } from './styles';
 
 export type IReactionMessageProps = {
@@ -78,6 +78,26 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 		[message?.channel_id, message?.id, messageReactions, removeEmoji, userId]
 	);
 
+	const renderedReactions = useMemo(() => {
+		return messageReactions?.map((emojiItemData: EmojiDataOptionals) => {
+			if (calculateTotalCount(emojiItemData.senders) === 0 || !emojiItemData?.emojiId) {
+				return null;
+			}
+
+			return (
+				<ReactionItem
+					key={emojiItemData.emojiId}
+					emojiItemData={emojiItemData}
+					userId={userId}
+					preventAction={preventAction}
+					onReactItemLongPress={onReactItemLongPress}
+					message={message}
+					mode={mode}
+					styles={styles}
+				/>
+			);
+		});
+	}, [messageReactions, userId, preventAction, message, mode, styles, onReactItemLongPress]);
 	return (
 		<View style={[styles.reactionWrapper, styles.reactionSpace, isMessageSystem && { paddingTop: 0, marginLeft: size.s_40 }]}>
 			{!messageReactions?.length &&
@@ -85,42 +105,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 				message?.reactions?.map((i) => {
 					return <View style={[styles.imageReactionTemp]} />;
 				})}
-			{messageReactions?.map((emojiItemData: EmojiDataOptionals, index) => {
-				const isMyReaction = emojiItemData?.senders?.find?.((sender: SenderInfoOptionals) => sender.sender_id === userId);
-
-				if (calculateTotalCount(emojiItemData.senders) === 0) {
-					return null;
-				}
-				if (!emojiItemData?.emojiId) return null;
-				const countReacts = calculateTotalCount(emojiItemData.senders);
-
-				return (
-					<Pressable
-						delayLongPress={200}
-						onLongPress={() => !preventAction && onReactItemLongPress(emojiItemData.emojiId)}
-						onPress={() => {
-							if (preventAction) return;
-							DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
-								id: emojiItemData.id ?? '',
-								mode,
-								messageId: message?.id ?? '',
-								channelId: message?.channel_id ?? '',
-								emojiId: emojiItemData?.emojiId ?? '',
-								emoji: emojiItemData.emoji ?? '',
-								senderId: userId ?? '',
-								countToRemove: 1,
-								actionDelete: false,
-								topicId: message.topic_id || ''
-							} as IReactionMessageProps);
-						}}
-						key={index + emojiItemData.emojiId}
-						style={[styles.reactItem, isMyReaction ? styles.myReaction : styles.otherReaction]}
-					>
-						<ImageNative url={getSrcEmoji(emojiItemData.emojiId ?? '')} style={styles.iconEmojiReaction} resizeMode={'contain'} />
-						<Text style={styles.reactCount}>{countReacts}</Text>
-					</Pressable>
-				);
-			})}
+			{renderedReactions}
 
 			{messageReactions?.length ? (
 				<Pressable onPress={() => !preventAction && openEmojiPicker?.()} style={styles.addEmojiIcon}>

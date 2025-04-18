@@ -185,7 +185,7 @@ export default function EmojiSelectorContainer({
 			stickyHeaderIndices={[0]}
 			scrollEventThrottle={16}
 			onScroll={onScroll}
-			style={{ height: Metrics.screenHeight / (Platform.OS === 'ios' ? 1.4 : 1.3) }}
+			style={{ height: Metrics.screenHeight / (Platform.OS === 'ios' ? 1.4 : 1.03) }}
 			contentContainerStyle={{ paddingBottom: size.s_50 }}
 		>
 			<View style={{ backgroundColor: themeBasic === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>

@@ -1,4 +1,5 @@
-import { Icons } from "@mezon/ui"
+import { Icons } from '@mezon/ui';
+import { useCallback } from 'react';
 
 type ModalSaveChangesProps = {
 	onSave: () => void;
@@ -7,6 +8,10 @@ type ModalSaveChangesProps = {
 };
 
 const ModalSaveChanges = ({ onSave, onReset, isLoading }: ModalSaveChangesProps) => {
+	const handleSaveChanges = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.currentTarget.disabled = true;
+		onSave();
+	}, []);
 	return (
 		<div
 			className="w-fit min-w-[700px] max-md:min-w-[90%] fixed bottom-[20px] left-[50%] translate-x-[-50%] py-[10px] pl-4 pr-[10px] rounded-[5px] dark:bg-bgProfileBody bg-white dark:text-white text-colorTextLightMode border-0 text-sm font-medium z-50"
@@ -18,8 +23,8 @@ const ModalSaveChanges = ({ onSave, onReset, isLoading }: ModalSaveChangesProps)
 					<button onClick={onReset} className="rounded px-4 py-1.5 hover:underline">
 						Reset
 					</button>
-					<button onClick={onSave} className="ml-auto bg-blue-600 rounded-[4px] px-4 py-1.5 text-nowrap text-white w-28">
-						{isLoading ?  <Icons.IconLoadingTyping bgFill="mx-auto" iconFill={'fill-white'}/> : 'Save Changes'}
+					<button onClick={handleSaveChanges} className="ml-auto bg-blue-600 rounded-[4px] px-4 py-1.5 text-nowrap text-white w-28">
+						{isLoading ? <Icons.IconLoadingTyping bgFill="mx-auto" iconFill={'fill-white'} /> : 'Save Changes'}
 					</button>
 				</div>
 			</div>

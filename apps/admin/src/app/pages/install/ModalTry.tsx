@@ -1,8 +1,10 @@
 import { selectAllAccount } from '@mezon/store';
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FooterModal, HeaderModal, ModalAsk } from './ModalAddBot';
-import ModalSuccess from './ModalSuccess';
+import FooterModal from './components/FooterModal';
+import HeaderModal from './components/HeaderModal';
+import ModalAsk from './components/ModalAsk';
+import ModalSuccess from './components/ModalSuccess';
 
 type ModalTryProps = {
 	nameApp?: string;
@@ -22,7 +24,7 @@ const ModalTry = (props: ModalTryProps) => {
 		<div className="rounded bg-bgProfileBody max-w-[440px] w-full pt-4 flex flex-col text-center gap-y-2">
 			<HeaderModal name={nameApp} username={account?.user?.username} isModalTry />
 			<FooterModal name={nameApp} />
-			<ModalAsk handelBack={handleOpenModal} handleOpenModal={handleModalSuccess} />
+			<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleModalSuccess} />
 		</div>
 	) : (
 		<ModalSuccess name={nameApp} isModalTry />

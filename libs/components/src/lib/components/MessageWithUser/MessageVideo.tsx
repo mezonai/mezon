@@ -40,7 +40,7 @@ function MessageVideo({ attachmentData }: MessageImage) {
 				src={attachmentData.url}
 				controls={showControl}
 				autoPlay={false}
-				className={`object-contain`}
+				className={`object-cover max-h-32`}
 				style={{
 					width: height * ((attachmentData?.width || 1) / (attachmentData?.height || 1)),
 					height

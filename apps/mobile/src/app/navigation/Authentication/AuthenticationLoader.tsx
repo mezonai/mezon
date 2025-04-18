@@ -2,11 +2,13 @@ import { useAuth } from '@mezon/core';
 import {
 	ActionEmitEvent,
 	getAppInfo,
+	load,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	STORAGE_KEY_TEMPORARY_ATTACHMENT,
-	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
+	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES,
+	STORAGE_MY_USER_ID
 } from '@mezon/mobile-components';
 import {
 	appActions,
@@ -66,12 +68,13 @@ export const AuthenticationLoader = () => {
 		let timer;
 		const callListener = DeviceEventEmitter.addListener(ActionEmitEvent.GO_TO_CALL_SCREEN, async ({ payload, isDecline = false }) => {
 			if (isDecline) {
+				const myUserId = load(STORAGE_MY_USER_ID);
 				await mezon.socketRef.current?.forwardWebrtcSignaling(
 					payload?.callerId,
 					WebrtcSignalingType.WEBRTC_SDP_QUIT,
-					'',
+					'{}',
 					payload?.channelId,
-					''
+					myUserId
 				);
 				return;
 			}

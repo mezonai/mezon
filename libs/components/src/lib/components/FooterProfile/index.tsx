@@ -72,7 +72,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			});
 			return safeJSONParse(unescapedJSON || '{}')?.status;
 		}
-	}, [myProfile]);
+	}, [myProfile, myProfile.userProfile?.user?.metadata]);
 	const [customStatus, setCustomStatus] = useState<string>(userCustomStatus.status ?? '');
 	const [token, setToken] = useState<number>(0);
 	const [selectedUserId, setSelectedUserId] = useState<string>('');

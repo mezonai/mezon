@@ -408,18 +408,17 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 		<div className="w-auto pb-2 px-2">
 			<div className="grid grid-cols-2 gap-4">
 				{soundList.map((sound, index) => (
-					<div
-						key={sound.id}
-						className="relative flex flex-col justify-between items-start border border-gray-600 rounded-md w-full h-[7rem]"
-					>
+					<div key={sound.id} className="relative flex flex-col items-start rounded-md w-full">
 						<MessageAudio audioUrl={sound.url || ''} posInPopUp={true} />
-						<div className="flex justify-center w-full mt-1" onClick={() => onClickSendSound(sound)} title="Send the sound">
-							<Icons.SoundIcon className="w-10 h-10 text-[#2B2D31] dark:text-bgLightModeSecond dark:bg-bgLightModeSecond rounded-md" />
-						</div>
+						<div className="border border-gray-600 flex flex-col items-start w-48 rounded-b-md">
+							<div className="flex justify-center w-full mt-1" onClick={() => onClickSendSound(sound)} title="Send the sound">
+								<Icons.SoundIcon className="w-4 h-4 text-[#2B2D31] dark:text-bgLightModeSecond dark:bg-bgLightModeSecond rounded-md" />
+							</div>
 
-						<span title={sound.filename} className="text-xs mx-1 w-full truncate cursor-text">
-							{sound.filename}
-						</span>
+							<span title={sound.filename} className="text-xs mx-1 w-full truncate cursor-text dark:text-white">
+								{sound.filename}
+							</span>
+						</div>
 					</div>
 				))}
 			</div>

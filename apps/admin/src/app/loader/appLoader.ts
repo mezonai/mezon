@@ -1,4 +1,4 @@
-import { AppDispatch, appActions } from '@mezon/store';
+import { AppDispatch, appActions, clansActions } from '@mezon/store';
 import { LoaderFunctionArgs } from 'react-router-dom';
 
 export interface IAppLoaderData {
@@ -25,7 +25,7 @@ export const appLoader: CustomLoaderFunction = async ({ dispatch }) => {
 	const { pathname } = window.location;
 
 	dispatch(appActions.setInitialPath(pathname));
-
+	dispatch(clansActions.fetchClans());
 	return {
 		pathname
 	} as IAppLoaderData;

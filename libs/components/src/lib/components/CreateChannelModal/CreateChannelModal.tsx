@@ -20,12 +20,12 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ChannelLableModal } from './ChannelLabel';
 import { ChannelNameModalRef, ChannelNameTextField } from './ChannelNameTextField';
-import { ChannelStatusModal } from './ChannelStatus';
 import { ChannelTypeComponent } from './ChannelType';
 import { CreateChannelButton } from './CreateChannelButton';
 
 import { Dropdown } from 'flowbite-react';
 import React from 'react';
+import { ChannelStatusModal } from './ChannelStatus';
 
 export const CreateNewChannelModal = () => {
 	const dispatch = useAppDispatch();
@@ -284,9 +284,11 @@ export const CreateNewChannelModal = () => {
 									/>
 								</div>
 							)}
-							{channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
-								<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps="Is private channel?" />
-							)}
+							{channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
+								channelType !== ChannelType.CHANNEL_TYPE_STREAMING &&
+								channelType !== ChannelType.CHANNEL_TYPE_APP && (
+									<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps="Is private channel?" />
+								)}
 						</div>
 					</div>
 				</div>
