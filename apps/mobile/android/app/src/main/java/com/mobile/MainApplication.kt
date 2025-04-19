@@ -18,6 +18,7 @@ import com.mezon.mobile.FullScreenNotificationIncomingCallPackage
 import com.mezon.mobile.CustomImageViewPackage
 import com.mezon.mobile.PiPPackage
 import com.mezon.mobile.VideoThumbnailPackage;
+import com.mezon.mobile.CustomAudioPackage;
 
 class MainApplication : Application(), ReactApplication {
 
@@ -31,6 +32,7 @@ class MainApplication : Application(), ReactApplication {
               add(SharedPreferencesPackage())
               add(PiPPackage())
               add(VideoThumbnailPackage())
+              add(CustomAudioPackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"
