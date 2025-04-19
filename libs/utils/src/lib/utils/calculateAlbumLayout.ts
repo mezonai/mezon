@@ -163,7 +163,7 @@ function layoutWithComplexLayouter({
 	const pushAttempt = (lineCounts: number[]) => {
 		const heights: number[] = [];
 		let offset = 0;
-		lineCounts.forEach((currentCount) => {
+		lineCounts?.forEach((currentCount) => {
 			heights.push(multiHeight(offset, currentCount));
 			offset += currentCount;
 		});
@@ -205,7 +205,7 @@ function layoutWithComplexLayouter({
 	let optimalDiff = 0;
 	for (let i = 0; i < attempts.length; i++) {
 		const { heights, lineCounts } = attempts[i];
-		const lineCount = lineCounts.length;
+		const lineCount = lineCounts?.length;
 		const totalHeight = accumulate(heights, 0) + spacing * (lineCount - 1);
 		const minLineHeight = Math.min(...heights);
 		const bad1 = minLineHeight < minWidth ? 1.5 : 1;
