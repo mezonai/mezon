@@ -498,31 +498,6 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 	// End call and cleanup
 	const handleEndCall = async (callerEndCall = false) => {
-		if (timeStartConnected?.current) {
-			let timeCall = '';
-			const startTime = new Date(timeStartConnected.current);
-			const endTime = new Date();
-			const diffMs = endTime.getTime() - startTime.getTime();
-			const diffMins = Math.floor(diffMs / 60000);
-			const diffSecs = Math.floor((diffMs % 60000) / 1000);
-			timeCall = `${diffMins} mins ${diffSecs} secs`;
-
-			dispatch(
-				DMCallActions.updateCallLog({
-					channelId: channelId,
-					content: {
-						t: timeCall,
-						callLog: {
-							isVideo: isShowMeetDM,
-							callLogType: IMessageTypeCallLog.FINISHCALL
-						}
-					}
-				})
-			);
-		} else {
-			await cancelCallFCMMobile();
-		}
-
 		try {
 			if (!callerEndCall) {
 				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_QUIT, '', channelId, userId);
@@ -579,6 +554,31 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				micEnabled: true
 			});
 			peerConnection.current = null;
+
+			if (timeStartConnected?.current) {
+				let timeCall = '';
+				const startTime = new Date(timeStartConnected.current);
+				const endTime = new Date();
+				const diffMs = endTime.getTime() - startTime.getTime();
+				const diffMins = Math.floor(diffMs / 60000);
+				const diffSecs = Math.floor((diffMs % 60000) / 1000);
+				timeCall = `${diffMins} mins ${diffSecs} secs`;
+
+				dispatch(
+					DMCallActions.updateCallLog({
+						channelId: channelId,
+						content: {
+							t: timeCall,
+							callLog: {
+								isVideo: isShowMeetDM,
+								callLogType: IMessageTypeCallLog.FINISHCALL
+							}
+						}
+					})
+				);
+			} else {
+				await cancelCallFCMMobile();
+			}
 		} catch (error) {
 			console.error('Error ending call:', error);
 		}

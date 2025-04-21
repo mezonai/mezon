@@ -93,7 +93,8 @@ const ThreadBox = () => {
 
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
 		channelId: threadCurrentChannel?.id as string,
-		mode: ChannelStreamMode.STREAM_MODE_THREAD
+		mode: ChannelStreamMode.STREAM_MODE_THREAD,
+		username: sessionUser?.username
 	});
 
 	const mapToMemberIds = useMemo(() => {

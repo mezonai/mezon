@@ -280,6 +280,8 @@ type ChannelAppParamList = {
 	[APP_SCREEN.CHANNEL_APP]: {
 		channelId?: string;
 		clanId?: string;
+		code?: string;
+		subpath?: string;
 	};
 };
 

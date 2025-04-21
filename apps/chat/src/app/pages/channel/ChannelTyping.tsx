@@ -19,7 +19,7 @@ export function ChannelTyping({ channelId, mode, isPublic, isDM }: ChannelTyping
 						<Icons.IconLoadingTyping />
 					</span>
 					<span className="dark:text-textDarkTheme text-textPrimaryLight text-xs font-semibold mr-[2px] ">
-						{`${typingUsers[0].clan_nick || typingUsers[0].user?.display_name || typingUsers[0].user?.username}`}
+						{`${typingUsers[0].typingName}`}
 					</span>
 					is typing...
 				</>

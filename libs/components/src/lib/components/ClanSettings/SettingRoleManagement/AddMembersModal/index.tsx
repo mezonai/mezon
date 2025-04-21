@@ -124,7 +124,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 							/>
 						</div>
 						<p className="text-xs font-bold dark:text-textSecondary text-textSecondary800 uppercase mb-2 text-left">Members</p>
-						<div className="overflow-y-auto">
+						<div className="overflow-y-auto thread-scroll">
 							<ul className="flex flex-col gap-y-[5px] max-h-[200px] font-light text-sm ">
 								{displayUsers.map((user) => (
 									<ItemMemberModal

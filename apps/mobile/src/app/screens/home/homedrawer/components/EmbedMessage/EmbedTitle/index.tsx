@@ -1,6 +1,7 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { memo } from 'react';
-import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
 
 interface EmbedDescriptionProps {
@@ -14,6 +15,10 @@ export const EmbedTitle = memo(({ title, url }: EmbedDescriptionProps) => {
 
 	const handleOpenUrl = async () => {
 		try {
+			if (url?.includes('/channel-app')) {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_NAVIGATION_DEEPLINK, url);
+				return;
+			}
 			await Linking.openURL(url);
 		} catch (err) {
 			throw new Error(err);

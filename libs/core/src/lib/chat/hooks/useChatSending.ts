@@ -162,7 +162,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					clanId: getClanId || '',
 					channelId: channelIdOrDirectId ?? '',
 					mode,
-					isPublic: isPublic
+					isPublic: isPublic,
+					username: priorityNameToShow || ''
 				})
 			);
 		}

@@ -1,11 +1,4 @@
-import {
-	messagesActions,
-	selectChannelMemberByUserIds,
-	selectCurrentClanId,
-	selectTypingUserIdsByChannelId,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { messagesActions, selectCurrentClanId, selectTypingUsersById, useAppDispatch, useAppSelector } from '@mezon/store';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -18,22 +11,8 @@ interface UseChatTypingsOptions {
 }
 
 export function useChatTypings({ channelId, mode, isPublic, isDM }: UseChatTypingsOptions) {
-	const { userId } = useAuth();
-	const typingUsersIds = useAppSelector((state) => selectTypingUserIdsByChannelId(state, channelId));
-	const typingUsers = useAppSelector((state) =>
-		selectChannelMemberByUserIds(
-			state,
-			channelId,
-			typingUsersIds?.length
-				? typingUsersIds
-						?.filter((item) => item.id !== userId)
-						.map((item) => item.id)
-						.splice(0, 2) // only handle <= 2 items because business logic only show several user typing
-						.join('/')
-				: '',
-			isDM ? '1' : ''
-		)
-	);
+	const { userId, userProfile } = useAuth();
+	const typingUsers = useAppSelector((state) => selectTypingUsersById(state, { channelId, userId: userId as string }));
 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
@@ -44,7 +23,8 @@ export function useChatTypings({ channelId, mode, isPublic, isDM }: UseChatTypin
 				clanId: currentClanId || '',
 				channelId,
 				mode,
-				isPublic: isPublic
+				isPublic: isPublic,
+				username: userProfile?.user?.display_name || userProfile?.user?.username || ''
 			})
 		);
 	}, [channelId, currentClanId, dispatch, isPublic, mode]);

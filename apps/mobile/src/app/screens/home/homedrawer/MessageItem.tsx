@@ -310,12 +310,6 @@ const MessageItem = React.memo(
 									<View style={{ opacity: message.isError || message?.isErrorRetry ? 0.6 : 1 }}>
 										{isMessageSystem ? (
 											<MessageLineSystem message={message} />
-										) : isInviteLink || isGoogleMapsLink ? (
-											<RenderMessageBlock
-												isGoogleMapsLink={isGoogleMapsLink}
-												isInviteLink={isInviteLink}
-												contentMessage={contentMessage}
-											/>
 										) : isMessageCallLog ? (
 											<MessageCallLog
 												contentMsg={message?.content?.t}
@@ -360,6 +354,13 @@ const MessageItem = React.memo(
 												/>
 											))}
 									</View>
+									{(isInviteLink || isGoogleMapsLink) && (
+										<RenderMessageBlock
+											isGoogleMapsLink={isGoogleMapsLink}
+											isInviteLink={isInviteLink}
+											contentMessage={contentMessage}
+										/>
+									)}
 									{/* check  */}
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment

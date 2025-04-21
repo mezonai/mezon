@@ -73,7 +73,7 @@ const NavigationMain = memo(
 			},
 			// Add this debugging to see what's happening
 			getStateFromPath: (path, config) => {
-				if (path && Platform.OS === 'ios') {
+				if (path && Platform.OS === 'android') {
 					setTimeout(() => {
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_NAVIGATION_DEEPLINK, path);
 					}, 1000);

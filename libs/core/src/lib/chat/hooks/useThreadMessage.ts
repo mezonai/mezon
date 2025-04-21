@@ -20,9 +20,10 @@ import { useChannelMembers } from './useChannelMembers';
 export type UseThreadMessage = {
 	channelId: string;
 	mode: number;
+	username?: string;
 };
 
-export function useThreadMessage({ channelId, mode }: UseThreadMessage) {
+export function useThreadMessage({ channelId, mode, username }: UseThreadMessage) {
 	mode = ChannelStreamMode.STREAM_MODE_THREAD;
 
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -95,7 +96,8 @@ export function useThreadMessage({ channelId, mode }: UseThreadMessage) {
 					clanId: currentClanId || '',
 					channelId: channelId,
 					mode: ChannelStreamMode.STREAM_MODE_THREAD,
-					isPublic: false
+					isPublic: false,
+					username: username || ''
 				})
 			);
 		}

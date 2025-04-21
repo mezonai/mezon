@@ -78,15 +78,35 @@ export const Authentication = memo(() => {
 		}
 	};
 
+	const extractChannelParams = (url: string) => {
+		const pattern = /mezon\.ai\/channel-app\/([^/]+)\/([^/]+)\?([^#]+)/i;
+		const match = url.match(pattern);
+
+		if (match) {
+			const params = new URLSearchParams(match[3]);
+			return {
+				channelId: match[1],
+				clanId: match[2],
+				code: params.get('code'),
+				subpath: params.get('subpath')
+			};
+		}
+		return null;
+	};
+
 	const onNavigationDeeplink = async (path: string) => {
 		if (path?.includes?.('channel-app/')) {
-			const parts = path.split('/');
-			const channelId = parts[parts.length - 2];
-			const clanId = parts[parts.length - 1];
+			const parts = extractChannelParams(path);
+			const channelId = parts?.channelId;
+			const clanId = parts?.clanId;
+			const code = parts?.code;
+			const subpath = parts?.subpath;
 			if (clanId && channelId) {
 				navigation.navigate(APP_SCREEN.CHANNEL_APP, {
 					channelId: channelId,
-					clanId: clanId
+					clanId: clanId,
+					code: code,
+					subpath: subpath
 				});
 			}
 		}

@@ -16,11 +16,12 @@ export const style = (colors: Attributes) =>
 		offline: {
 			backgroundColor: baseColor.gray
 		},
-		textLink: { color: Colors.textLink, marginBottom: size.s_6 },
+		textLink: { color: Colors.textLink, marginBottom: size.s_6, fontSize: size.medium },
 		boxLink: {
 			backgroundColor: Colors?.bgCharcoal,
 			maxWidth: '100%',
 			alignSelf: 'flex-start',
+			marginTop: size.s_10,
 			padding: size.s_10,
 			paddingHorizontal: size.s_16,
 			borderRadius: size.s_10

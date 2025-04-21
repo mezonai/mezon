@@ -2,9 +2,10 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, selectCurrentChannelId, selectIsShowEmptyCategory, selectListChannelRenderByClanId, voiceActions } from '@mezon/store';
 import { selectCurrentClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
+import { useFocusEffect } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Platform, RefreshControl, View } from 'react-native';
+import { FlatList, InteractionManager, Platform, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import ChannelListBackground from '../components/ChannelList/ChannelListBackground';
@@ -33,6 +34,7 @@ const ChannelList = () => {
 	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClan?.clan_id));
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useAppDispatch();
+	const [headerVersion, setHeaderVersion] = useState(0);
 	const handleRefresh = async () => {
 		setRefreshing(true);
 
@@ -72,12 +74,21 @@ const ChannelList = () => {
 	const flashListRef = useRef(null);
 	const channelsPositionRef = useRef<ChannelsPositionRef>();
 
+	useFocusEffect(
+		useCallback(() => {
+			const task = InteractionManager.runAfterInteractions(() => {
+				setHeaderVersion((prev) => prev + 1);
+			});
+			return () => task.cancel();
+		}, [])
+	);
+
 	const renderItem = useCallback(
 		({ item, index }) => {
 			if (index === 0) {
 				return <ChannelListBackground />;
 			} else if (index === 1) {
-				return <ChannelListHeader />;
+				return <ChannelListHeader key={`header-${headerVersion}`} />;
 			} else if (item.channels) {
 				return <ChannelListSection channelsPositionRef={channelsPositionRef} data={item} />;
 			} else {
@@ -93,7 +104,7 @@ const ChannelList = () => {
 				);
 			}
 		},
-		[currentChannelId, themeValue.secondary]
+		[currentChannelId, headerVersion, themeValue.secondary]
 	);
 
 	const keyExtractor = useCallback((item, index) => item.id + item.isFavor?.toString() + index, []);

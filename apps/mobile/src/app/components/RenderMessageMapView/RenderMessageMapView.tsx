@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import React, { useMemo } from 'react';
-import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { style } from './styles';
 function RenderMessageMapView({ content }: { content: string }) {
@@ -26,10 +26,7 @@ function RenderMessageMapView({ content }: { content: string }) {
 	const coordinate = useMemo(() => extractCoordinates(content), [content]);
 
 	return (
-		<View>
-			<TouchableOpacity onPress={handlePress}>
-				<Text style={styles.textLink}>{content}</Text>
-			</TouchableOpacity>
+		<TouchableOpacity onPress={handlePress}>
 			<MapView
 				initialRegion={{
 					latitude: coordinate?.latitude,
@@ -45,7 +42,7 @@ function RenderMessageMapView({ content }: { content: string }) {
 					description={'Marker Description'}
 				/>
 			</MapView>
-		</View>
+		</TouchableOpacity>
 	);
 }
 export default React.memo(RenderMessageMapView);

@@ -22,7 +22,7 @@ export const extractInviteIdFromUrl = (url: string): string | null => {
 	return match ? match[1] : null;
 };
 
-function LinkInvite({ content, part }: { content: string; part: string }) {
+function LinkInvite({ content }: { content: string }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { inviteUser } = useInvite();
@@ -58,14 +58,11 @@ function LinkInvite({ content, part }: { content: string; part: string }) {
 	};
 
 	return (
-		<View>
-			<Text style={styles.textLink}>{part}</Text>
-			<View style={styles.boxLink}>
-				<Text style={styles.title}>{t('title')}</Text>
-				<TouchableOpacity style={styles.inviteClanBtn} onPress={handleJoinClanInvite}>
-					<Text style={styles.inviteClanBtnText}>{t('join')}</Text>
-				</TouchableOpacity>
-			</View>
+		<View style={styles.boxLink}>
+			<Text style={styles.title}>{t('title')}</Text>
+			<TouchableOpacity style={styles.inviteClanBtn} onPress={handleJoinClanInvite}>
+				<Text style={styles.inviteClanBtnText}>{t('join')}</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }

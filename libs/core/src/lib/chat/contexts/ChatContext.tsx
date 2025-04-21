@@ -65,6 +65,7 @@ import {
 	selectCurrentTopicId,
 	selectCurrentUserId,
 	selectDmGroupCurrentId,
+	selectIsInCall,
 	selectModeResponsive,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
@@ -1001,7 +1002,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				messagesActions.updateTypingUsers({
 					channelId: e.channel_id,
 					userId: e.sender_id,
-					isTyping: true
+					isTyping: true,
+					typingName: e.sender_display_name || e.sender_username
 				})
 			);
 		},
@@ -1641,7 +1643,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							dispatch(
 								policiesActions.updateOne({
 									id: role.id as string,
-									changes: { title: role.title }
+									changes: { title: role.title, id: role.id || '', max_level_permission: role.max_level_permission }
 								})
 							);
 						} else {
@@ -1675,6 +1677,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	const onwebrtcsignalingfwd = useCallback(async (event: WebrtcSignalingFwd) => {
 		const store = await getStoreAsync();
 		const userCallId = selectUserCallId(store.getState() as unknown as RootState);
+		const isInCall = selectIsInCall(store.getState() as unknown as RootState);
+		const signalingType = event?.data_type;
+		// Skip processing if not in a call and the signaling type is not relevant
+		if (!isInCall && [WebrtcSignalingType.WEBRTC_SDP_ANSWER, WebrtcSignalingType.WEBRTC_ICE_CANDIDATE].includes(signalingType)) {
+			return;
+		}
 
 		if (userCallId && userCallId !== event?.caller_id) {
 			socketRef.current?.forwardWebrtcSignaling(
@@ -1686,20 +1694,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			);
 			return;
 		}
-		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_QUIT) {
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT) {
 			dispatch(DMCallActions.cancelCall({}));
 			dispatch(audioCallActions.startDmCall({}));
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));
 		}
-		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_INIT) {
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_INIT) {
 			dispatch(audioCallActions.setIsJoinedCall(true));
 		}
-		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL) {
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL) {
 			dispatch(audioCallActions.setIsBusyTone(true));
 		}
-		if (event?.data_type === WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA) {
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA) {
 			const dataJSON = safeJSONParse((event?.json_data as string) || '{}');
 			if (dataJSON?.micEnabled !== undefined) {
 				dispatch(audioCallActions.setIsRemoteAudio(dataJSON?.micEnabled));

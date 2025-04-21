@@ -82,6 +82,13 @@ export const policiesSlice = createSlice({
 				} else {
 					policiesAdapter.updateOne(state, { id, changes });
 				}
+			} else {
+				policiesAdapter.addOne(state, {
+					id: id,
+					max_level_permission: changes.max_level_permission,
+					title: changes.title,
+					slug: changes.slug
+				});
 			}
 		}
 	},
