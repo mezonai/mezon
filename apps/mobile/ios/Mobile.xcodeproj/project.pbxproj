@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -124,7 +124,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		E94D0A4D2DA66F2700D84EF2 /* Exceptions for "ScreenBroadcast" folder in "ScreenBroadcast" target */ = {
+		E94D0A4D2DA66F2700D84EF2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -134,18 +134,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E94D0A442DA66F2700D84EF2 /* ScreenBroadcast */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				E94D0A4D2DA66F2700D84EF2 /* Exceptions for "ScreenBroadcast" folder in "ScreenBroadcast" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = ScreenBroadcast;
-			sourceTree = "<group>";
-		};
+		E94D0A442DA66F2700D84EF2 /* ScreenBroadcast */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E94D0A4D2DA66F2700D84EF2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ScreenBroadcast; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -951,7 +940,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.35;
+				MARKETING_VERSION = 1.2.36;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1131,7 +1120,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.35;
+				MARKETING_VERSION = 1.2.36;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

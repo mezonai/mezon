@@ -2,18 +2,20 @@ import React, { memo, useContext, useEffect } from 'react';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ChatContext } from '@mezon/core';
-import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT, remove } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT, remove } from '@mezon/mobile-components';
 import { ColorRoleProvider } from '@mezon/mobile-ui';
 import notifee from '@notifee/react-native';
+import { useNavigation } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { ChannelMessage, safeJSONParse } from 'mezon-js';
 import moment from 'moment';
-import { Dimensions, NativeModules, Platform } from 'react-native';
+import { DeviceEventEmitter, Dimensions, Linking, NativeModules, Platform } from 'react-native';
 import BottomSheetRootListener from '../../components/BottomSheetRootListener';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import ModalRootListener from '../../components/ModalRootListener';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
+import ChannelAppScreen from '../../screens/home/homedrawer/ChannelApp';
 import ChannelMessageListener from '../../screens/home/homedrawer/ChannelMessageListener';
 import ChannelMessageReactionListener from '../../screens/home/homedrawer/ChannelMessageReactionListener';
 import HomeDefaultWrapper from '../../screens/home/homedrawer/HomeDefaultWrapper';
@@ -32,13 +34,34 @@ import { MessagesStacks } from './stacks/MessagesStacks';
 import { NotificationStacks } from './stacks/NotificationStacks';
 import { ServersStacks } from './stacks/ServersStacks';
 import { SettingStacks } from './stacks/SettingStacks';
-import ChannelAppScreen from "../../screens/home/homedrawer/ChannelApp";
 const RootStack = createStackNavigator();
 const { SharedPreferences } = NativeModules;
 
 export const Authentication = memo(() => {
 	const isTabletLandscape = useTabletLandscape();
 	const { onchannelmessage } = useContext(ChatContext);
+	const navigation = useNavigation<any>();
+
+	useEffect(() => {
+		const getUrl = async () => {
+			try {
+				const url = await Linking.getInitialURL();
+				if (url) {
+					await onNavigationDeeplink(url);
+				}
+			} catch (error) {
+				console.error('Error getting initial URL:', error);
+			}
+		};
+		getUrl();
+	}, []);
+
+	useEffect(() => {
+		const eventDeelink = DeviceEventEmitter.addListener(ActionEmitEvent.ON_NAVIGATION_DEEPLINK, (path) => onNavigationDeeplink(path));
+		return () => {
+			eventDeelink.remove();
+		};
+	}, []);
 
 	useEffect(() => {
 		initLoader();
@@ -55,6 +78,19 @@ export const Authentication = memo(() => {
 		}
 	};
 
+	const onNavigationDeeplink = async (path: string) => {
+		if (path?.includes?.('channel-app/')) {
+			const parts = path.split('/');
+			const channelId = parts[parts.length - 2];
+			const clanId = parts[parts.length - 1];
+			if (clanId && channelId) {
+				navigation.navigate(APP_SCREEN.CHANNEL_APP, {
+					channelId: channelId,
+					clanId: clanId
+				});
+			}
+		}
+	};
 	const onNotificationOpenedApp = async () => {
 		if (Platform.OS === 'android') {
 			try {

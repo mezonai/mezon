@@ -83,13 +83,18 @@
   return rootView;
 }
 
- - (BOOL)application:(UIApplication *)application
- continueUserActivity:(NSUserActivity *)userActivity
-   restorationHandler:(void(^)(NSArray * __nullable restorableObjects))restorationHandler
+ - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity
+  restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
  {
-   return [RNCallKeep application:application
-            continueUserActivity:userActivity
-              restorationHandler:restorationHandler];
+   BOOL handledByCallKeep = [RNCallKeep application:application
+                             continueUserActivity:userActivity
+                               restorationHandler:restorationHandler];
+
+   BOOL handledByLinking = [RCTLinkingManager application:application
+                            continueUserActivity:userActivity
+                              restorationHandler:restorationHandler];
+
+   return handledByCallKeep || handledByLinking;
  }
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {

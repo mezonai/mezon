@@ -142,6 +142,18 @@
               <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/channel-app/" />
               <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/home/" />
           </intent-filter>
+          <intent-filter android:autoVerify="true">
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="https" android:host="mezon.ai" />
+          </intent-filter>
+          <intent-filter android:label="filter_react_native">
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="mezon.ai" />
+          </intent-filter>
           <!--TODO: Add this filter, if you want to support sharing text into your app-->
           <intent-filter>
               <action android:name="android.intent.action.SEND" />
