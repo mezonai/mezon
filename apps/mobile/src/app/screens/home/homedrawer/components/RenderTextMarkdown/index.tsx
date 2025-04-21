@@ -42,7 +42,8 @@ export const TYPE_MENTION = {
 	voiceChannel: '##voice',
 	userRoleMention: '@role',
 	thread: '#thread',
-	stream: '#stream'
+	stream: '#stream',
+	app: '#app'
 };
 /**
  * custom style for markdown
@@ -359,7 +360,7 @@ export const RenderTextMarkdownContent = ({
 
 					const { text, link } = parseMarkdownLink(mention);
 
-					const urlFormat = link.replace(/##voice|#thread|#stream|#%22|%22|"|#/g, '');
+					const urlFormat = link.replace(/##voice|#thread|#stream|#app|#%22|%22|"|#/g, '');
 					const dataChannel = urlFormat.split('_');
 					const payloadChannel = {
 						type: Number(dataChannel?.[0] || 1),
@@ -388,11 +389,13 @@ export const RenderTextMarkdownContent = ({
 						>
 							{payloadChannel?.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE ||
 							payloadChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
-								<CustomIcon name="volume-up" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
+								<CustomIcon name="voice" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
 							) : payloadChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-								<CustomIcon name="thread-icon" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
+								<CustomIcon name="thread" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
 							) : payloadChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
 								<CustomIcon name="stream" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
+							) : payloadChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
+								<CustomIcon name="app" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />
 							) : payloadChannel?.channel_id === 'undefined' ? (
 								<Feather name="lock" size={size.s_14} color={themeValue.text} style={{ marginTop: size.s_10 }} />
 							) : null}
