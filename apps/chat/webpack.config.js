@@ -1,6 +1,8 @@
+const path = require('path');
 const { composePlugins, withNx } = require('@nx/webpack');
 const { withReact } = require('@nx/react');
 const { merge } = require('webpack-merge');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
@@ -28,6 +30,34 @@ module.exports = composePlugins(
 
     config.resolve = config.resolve || {};
     config.resolve.fallback = { "fs": false };
+
+    config.plugins.push(
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, 'src/assets/.well-known'),
+            to: '.well-known',
+            noErrorOnMissing: true,
+          },
+        ],
+      })
+    );
+
+    config.devServer = config.devServer || {};
+
+    config.devServer.static = {
+      directory: path.join(__dirname, 'src/assets'),
+      publicPath: '/',
+    };
+
+    config.devServer.historyApiFallback = {
+      rewrites: [
+        {
+          from: /^\/\.well-known\/.*$/,
+          to: (context) => context.parsedUrl.pathname,
+        },
+      ],
+    };
 
     return merge(config, {
       ignoreWarnings: [/Failed to parse source map/]

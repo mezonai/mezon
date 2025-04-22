@@ -495,22 +495,6 @@ export const Routes = memo(() => {
 						]
 					},
 					{
-						path: '/.well-known/assetlinks.json',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<AssetLinkLayout />
-							</Suspense>
-						)
-					},
-					{
-						path: '/.well-known/apple-app-site-association',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<AppleAppSiteAssociationLayout />
-							</Suspense>
-						)
-					},
-					{
 						path: '*',
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
