@@ -1372,13 +1372,10 @@ export const selectTypingUsersById = createSelector(
 	}
 );
 
-export const selectTypingUserIdsByChannelId = createSelector([selectTypingUsersById], (typingUsers) => {
-	return typingUsers;
-});
-
 export const selectIsUserTypingInChannel = createSelector(
-	[selectTypingUserIdsByChannelId, (_, channelId) => channelId, (_, __, userId) => userId],
-	(typingUsers, channelId, userId) => {
+	[selectTypingUsers, (_, channelId) => channelId, (_, __, userId) => userId],
+	(listTyping, channelId, userId) => {
+		const typingUsers = listTyping?.[channelId]?.users;
 		if (!typingUsers || !channelId || !userId) return false;
 		if (Array.isArray(userId)) {
 			return typingUsers.some((user) => userId.includes(user.id));

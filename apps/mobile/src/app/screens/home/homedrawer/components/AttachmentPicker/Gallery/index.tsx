@@ -1,23 +1,12 @@
 import { useReference } from '@mezon/core';
-import { ActionEmitEvent, CameraIcon, CheckIcon, PlayIcon } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import { MAX_FILE_SIZE } from '@mezon/utils';
 import { CameraRoll, PhotoIdentifier, iosRefreshGallerySelection, iosRequestReadWriteGalleryPermission } from '@react-native-camera-roll/camera-roll';
 import { iosReadGalleryPermission } from '@react-native-camera-roll/camera-roll/src/CameraRollIOSPermission';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-	ActivityIndicator,
-	Alert,
-	DeviceEventEmitter,
-	Dimensions,
-	Image,
-	Linking,
-	PermissionsAndroid,
-	Platform,
-	TouchableOpacity,
-	View
-} from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, DeviceEventEmitter, Dimensions, Linking, PermissionsAndroid, Platform, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
@@ -25,7 +14,7 @@ import { CameraOptions } from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
 import { Camera } from 'react-native-vision-camera';
 import { IFile } from '../../../../../../componentUI/MezonImagePicker';
-import { style } from './styles';
+import GalleryItem from './components/GalleryItem';
 
 export const { height } = Dimensions.get('window');
 interface IProps {
@@ -35,11 +24,10 @@ interface IProps {
 
 const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
 	const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
 	const [currentAlbums, setCurrentAlbums] = useState<string>('All');
 	const [pageInfo, setPageInfo] = useState(null);
-	const [loading, setLoading] = useState(false);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const dispatch = useAppDispatch();
 	const timerRef = useRef<any>();
 	const { removeAttachmentByIndex, attachmentFilteredByChannelId } = useReference(currentChannelId);
@@ -181,24 +169,25 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	};
 
 	const loadPhotos = async (album, after = null) => {
-		if (loading) return;
+		if (isLoadingMore) return;
 
-		setLoading(true);
+		setIsLoadingMore(true);
 		try {
 			const res = await CameraRoll.getPhotos({
-				first: 30,
+				first: 32,
 				assetType: album === 'All Videos' ? 'Videos' : 'All',
 				...(!!pageInfo && !!after && { after: after }),
 				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
 				groupTypes: album === 'All' ? 'All' : 'Album',
 				groupName: album === 'All' || album === 'All Videos' ? null : album
 			});
+
 			setPhotos(after ? [...photos, ...res.edges] : res.edges);
 			setPageInfo(res.page_info);
 		} catch (error) {
 			console.error('Error loading photos', error);
 		} finally {
-			setLoading(false);
+			setIsLoadingMore(false);
 		}
 	};
 
@@ -213,89 +202,66 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	}, []);
 
 	const renderItem = ({ item }) => {
-		if (item?.isUseCamera) {
-			return (
-				<TouchableOpacity style={[styles.cameraPicker]} onPress={onOpenCamera}>
-					<CameraIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
-				</TouchableOpacity>
-			);
-		}
-		const fileName = item?.node?.image?.filename;
-		const isVideo = item?.node?.type?.startsWith?.('video');
-		const isSelected = attachmentFilteredByChannelId?.files.some((file) => file.filename === fileName);
-		const disabled = isDisableSelectAttachment && !isSelected;
 		return (
-			<TouchableOpacity
-				style={[styles.itemGallery, disabled && styles.disable]}
-				onPress={() => {
-					if (isSelected) {
-						handleRemove(fileName);
-					} else {
-						handleGalleryPress(item);
-					}
-				}}
-				disabled={disabled}
-			>
-				<Image source={{ uri: item.node.image.uri + '?thumbnail=true&quality=low' }} style={styles.imageGallery} />
-				{isVideo && (
-					<View style={styles.videoOverlay}>
-						<PlayIcon width={size.s_20} height={size.s_20} />
-					</View>
-				)}
-				{isSelected && (
-					<View style={styles.iconSelected}>
-						<CheckIcon color={Colors.bgViolet} />
-					</View>
-				)}
-				{isSelected && <View style={styles.selectedOverlay} />}
-			</TouchableOpacity>
+			<GalleryItem
+				item={item}
+				themeValue={themeValue}
+				isDisableSelectAttachment={isDisableSelectAttachment}
+				attachmentFilteredByChannelId={attachmentFilteredByChannelId}
+				onOpenCamera={onOpenCamera}
+				handleGalleryPress={handleGalleryPress}
+				handleRemove={handleRemove}
+			/>
 		);
 	};
 
-	const handleGalleryPress = async (file: PhotoIdentifier) => {
-		try {
-			const image = file?.node?.image;
-			const type = file?.node?.type;
-			const name = file?.node?.image?.filename || file?.node?.image?.uri;
-			const size = file?.node?.image?.fileSize;
+	const handleGalleryPress = useCallback(
+		async (file: PhotoIdentifier) => {
+			try {
+				const image = file?.node?.image;
+				const type = file?.node?.type;
+				const name = file?.node?.image?.filename || file?.node?.image?.uri;
+				const size = file?.node?.image?.fileSize;
 
-			if (size && size >= MAX_FILE_SIZE) {
-				Toast.show({
-					type: 'error',
-					text1: 'File size cannot exceed 50MB!'
-				});
-				return;
-			}
-
-			let filePath = image?.uri;
-
-			if (Platform.OS === 'ios' && filePath.startsWith('ph://')) {
-				const ms = new Date().getTime();
-				const ext = image.extension;
-				const destPath = `${RNFS.CachesDirectoryPath}/${ms}.${ext}`;
-
-				if (type && type.startsWith('video')) {
-					filePath = await RNFS.copyAssetsVideoIOS(filePath, destPath);
-				} else {
-					filePath = await RNFS.copyAssetsFileIOS(filePath, destPath, image.width, image.height);
+				if (size && size >= MAX_FILE_SIZE) {
+					Toast.show({
+						type: 'error',
+						text1: 'File size cannot exceed 50MB!'
+					});
+					return;
 				}
+
+				let filePath = image?.uri;
+
+				if (Platform.OS === 'ios' && filePath.startsWith('ph://')) {
+					const ms = new Date().getTime();
+					const ext = image.extension;
+					const destPath = `${RNFS.CachesDirectoryPath}/${ms}.${ext}`;
+
+					if (type && type.startsWith('video')) {
+						filePath = await RNFS.copyAssetsVideoIOS(filePath, destPath);
+					} else {
+						filePath = await RNFS.copyAssetsFileIOS(filePath, destPath, image.width, image.height);
+					}
+				}
+
+				const fileFormat: IFile = {
+					uri: filePath,
+					type: Platform.OS === 'ios' ? `${file?.node?.type}/${image?.extension}` : file?.node?.type,
+					size: size,
+					name,
+					fileData: filePath,
+					width: image?.width,
+					height: image?.height
+				};
+
+				onPickGallery(fileFormat);
+			} catch (err) {
+				console.error('Error: ', err);
 			}
-
-			const fileFormat: IFile = {
-				uri: filePath,
-				type: Platform.OS === 'ios' ? `${file?.node?.type}/${image?.extension}` : file?.node?.type,
-				size: size,
-				name,
-				fileData: filePath,
-				width: image?.width,
-				height: image?.height
-			};
-
-			onPickGallery(fileFormat);
-		} catch (err) {
-			console.error('Error: ', err);
-		}
-	};
+		},
+		[onPickGallery]
+	);
 
 	const checkPermissionCamera = async () => {
 		const permission = await Camera.requestCameraPermission();
@@ -305,7 +271,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		return permission === PermissionsAndroid.RESULTS.GRANTED;
 	};
 
-	const onOpenCamera = async () => {
+	const onOpenCamera = useCallback(async () => {
 		const isHavePermission = await checkPermissionCamera();
 
 		if (!isHavePermission) return;
@@ -336,7 +302,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				onPickGallery(fileFormat);
 			}
 		});
-	};
+	}, [checkPermissionCamera, onPickGallery]);
 
 	const handleLoadMore = async () => {
 		if (pageInfo?.has_next_page) {
@@ -344,10 +310,13 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		}
 	};
 
-	const handleRemove = (filename: string) => {
-		const index = attachmentFilteredByChannelId?.files?.findIndex((file) => file.filename === filename);
-		removeAttachmentByIndex(currentChannelId, index);
-	};
+	const handleRemove = useCallback(
+		(filename: string) => {
+			const index = attachmentFilteredByChannelId?.files?.findIndex((file) => file.filename === filename);
+			removeAttachmentByIndex(currentChannelId, index);
+		},
+		[attachmentFilteredByChannelId, currentChannelId, removeAttachmentByIndex]
+	);
 
 	return (
 		<View style={{ flex: 1 }}>
@@ -373,7 +342,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				}}
 				onEndReached={handleLoadMore}
 				onEndReachedThreshold={0.5}
-				ListFooterComponent={() => loading && <ActivityIndicator size="small" color={themeValue.text} />}
+				ListFooterComponent={() => isLoadingMore && <ActivityIndicator size="small" color={themeValue.text} />}
 			/>
 		</View>
 	);

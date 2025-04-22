@@ -17,6 +17,7 @@ import {
 	IEmoji,
 	MAX_LENGTH_MESSAGE_BUZZ,
 	ModeResponsive,
+	RECENT_EMOJI_CATEGORY,
 	RequestInput,
 	SubPanelName,
 	getSrcEmoji,
@@ -46,7 +47,7 @@ export type EmojiCustomPanelOptions = {
 
 const searchEmojis = (emojis: IEmoji[], searchTerm: string) => {
 	const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
-	return emojis.filter((emoji) => emoji?.shortname?.toLowerCase().includes(lowerCaseSearchTerm));
+	return emojis.filter((emoji) => emoji?.shortname?.toLowerCase().includes(lowerCaseSearchTerm) && emoji?.category !== RECENT_EMOJI_CATEGORY);
 };
 
 function EmojiCustomPanel(props: EmojiCustomPanelOptions) {

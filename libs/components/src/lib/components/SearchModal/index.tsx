@@ -5,6 +5,7 @@ import {
 	categoriesActions,
 	channelsActions,
 	directActions,
+	listChannelsByUserActions,
 	messagesActions,
 	selectAllChannelsByUser,
 	selectAllDirectMessages,
@@ -301,6 +302,11 @@ function SearchModal({ open, onClose }: SearchModalProps) {
 				dispatch(appActions.setIsShowCanvas(false));
 				const isChannel = item?.typeChat === TypeSearch.Channel_Type;
 				if (isChannel) {
+					listChannelsByUserActions.updateChannelBadgeCount({
+						channelId: item?.channelId as string,
+						count: (item?.count_messsage_unread || 0) * -1,
+						isReset: true
+					});
 					handleSelectChannel(item);
 					dispatch(messagesActions.setIsFocused(true));
 				} else {

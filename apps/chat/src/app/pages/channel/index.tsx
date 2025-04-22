@@ -186,7 +186,11 @@ const WindowFocus = () => {
 		);
 		dispatch(clansActions.updateClanBadgeCount({ clanId: currentChannel?.clan_id ?? '', count: numberNotification * -1 }));
 		dispatch(
-			listChannelsByUserActions.updateChannelBadgeCount({ channelId: currentChannel?.channel_id as string, count: numberNotification * -1 })
+			listChannelsByUserActions.updateChannelBadgeCount({
+				channelId: currentChannel?.channel_id as string,
+				count: numberNotification * -1,
+				isReset: true
+			})
 		);
 		handleReadMessage();
 	}, [numberNotification, lastMessage]);

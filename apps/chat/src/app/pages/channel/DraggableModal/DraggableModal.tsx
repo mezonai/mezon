@@ -358,6 +358,7 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
+			e.stopPropagation();
 			setResizeDirection(null);
 			if (e.target instanceof HTMLDivElement && e.target.dataset.resize) {
 				setResizeDirection(e.target.dataset.resize);
@@ -396,6 +397,7 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 
 	const handleMouseMove = useCallback(
 		(e: MouseEvent) => {
+			e.stopPropagation();
 			if (!dragging && !resizeDirection) return;
 
 			setOverlay(true);
@@ -468,11 +470,14 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 		};
 	}, [handleMouseMove, handleMouseUp]);
 	const modalStyle = inVisible ? { height: 0, visibility: 'hidden' as const } : {};
-
+	const handleStopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+	}, []);
 	return (
 		isShowModal && (
 			<div className="relative" style={modalStyle}>
 				<div
+					onClick={handleStopPropagation}
 					ref={modalElementRef}
 					className="absolute bg-[#212121] shadow-lg rounded-xl contain-strict z-50"
 					style={{

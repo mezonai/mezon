@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { IEmojiRecent } from '@mezon/utils';
+import { IEmojiRecent, RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiClanEmoji } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
@@ -136,7 +136,7 @@ export const selectAllEmojiRecent = createSelector([selectAllEmojiSuggestion, ge
 				id: emoji.id ?? '',
 				shortname: emoji.shortname ?? '',
 				src: emoji.src ?? '',
-				category: 'Recent',
+				category: RECENT_EMOJI_CATEGORY,
 				emoji_recents_id: recentEmoji?.emoji_recents_id ?? ''
 			} as ApiClanEmoji;
 		})
