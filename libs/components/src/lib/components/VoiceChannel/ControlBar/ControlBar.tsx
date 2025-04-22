@@ -151,11 +151,6 @@ export function ControlBar({
 				await localParticipant.localParticipant.unpublishTrack(screenTrackRef.current.track);
 				screenTrackRef.current = null;
 			}
-			if (audioScreenTrackRef.current?.track) {
-				audioScreenTrackRef.current.track.stop?.();
-				localParticipant.localParticipant.unpublishTrack(audioScreenTrackRef.current.track);
-				audioScreenTrackRef.current = null;
-			}
 			if (!stream) return;
 
 			const videoTrack = stream.getVideoTracks()[0];
@@ -170,7 +165,28 @@ export function ControlBar({
 				console.error('Error publishing screen track:', error);
 			}
 		};
+		const publishScreenAudioTrack = async () => {
+			if (audioScreenTrackRef.current?.track) {
+				audioScreenTrackRef.current.track.stop?.();
+				localParticipant.localParticipant.unpublishTrack(audioScreenTrackRef.current.track);
+				audioScreenTrackRef.current = null;
+			}
+			if (!stream) return;
 
+			const audioTrack = stream.getAudioTracks()[0];
+			try {
+				const audioPublication = await localParticipant.localParticipant.publishTrack(audioTrack, {
+					name: 'screen-share-audio',
+					source: Track.Source.ScreenShareAudio
+				});
+
+				audioScreenTrackRef.current = audioPublication;
+			} catch (error) {
+				console.error('Error publishing screen track:', error);
+			}
+		};
+
+		publishScreenAudioTrack();
 		publishScreenTrack();
 		return () => {
 			if (screenTrackRef.current?.track) {

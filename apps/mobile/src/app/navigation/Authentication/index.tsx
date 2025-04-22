@@ -79,19 +79,21 @@ export const Authentication = memo(() => {
 	};
 
 	const extractChannelParams = (url: string) => {
-		const pattern = /mezon\.ai\/channel-app\/([^/]+)\/([^/]+)\?([^#]+)/i;
-		const match = url.match(pattern);
+		const regex = /channel-app\/(\d+)\/(\d+)(?:\?[^#]*)?/;
+		const baseMatch = url.match(regex);
+		if (!baseMatch) return null;
 
-		if (match) {
-			const params = new URLSearchParams(match[3]);
-			return {
-				channelId: match[1],
-				clanId: match[2],
-				code: params.get('code'),
-				subpath: params.get('subpath')
-			};
-		}
-		return null;
+		const [, id1, id2] = baseMatch;
+
+		const codeMatch = url.match(/[?&]code=([^&]+)/);
+		const subpathMatch = url.match(/[?&]subpath=([^&]+)/);
+
+		return {
+			channelId: id1,
+			clanId: id2,
+			code: codeMatch ? codeMatch[1] : null,
+			subpath: subpathMatch ? subpathMatch[1] : null
+		};
 	};
 
 	const onNavigationDeeplink = async (path: string) => {

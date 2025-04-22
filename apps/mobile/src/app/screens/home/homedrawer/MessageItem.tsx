@@ -381,7 +381,7 @@ const MessageItem = React.memo(
 									preventAction={preventAction}
 									openEmojiPicker={() => {
 										const data = {
-											heightFitContent: true,
+											snapPoints: ['75%'],
 											children: (
 												<ContainerMessageActionModal
 													message={message}

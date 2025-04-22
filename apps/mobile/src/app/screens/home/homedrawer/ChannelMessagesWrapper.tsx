@@ -15,39 +15,6 @@ type ChannelMessagesProps = {
 };
 
 const ChannelMessagesWrapper = React.memo(({ channelId, topicId, clanId, mode, isPublic, isDM, topicChannelId }: ChannelMessagesProps) => {
-	// const [isReadyShowChannelMsg, setIsReadyShowChannelMsg] = React.useState<boolean>(false);
-	// const { themeValue } = useTheme();
-
-	// useFocusEffect(() => {
-	// 	if (!isReadyShowChannelMsg) {
-	// 		setTimeout(() => {
-	// 			setIsReadyShowChannelMsg(() => true);
-	// 		}, 50);
-	// 	}
-	// });
-
-	// useEffect(() => {
-	// 	const onSwitchChannel = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SWITCH_CHANEL, async (time: number) => {
-	// 		if (time) {
-	// 			setIsReadyShowChannelMsg(() => false);
-	// 			await sleep(time);
-	// 			setIsReadyShowChannelMsg(() => true);
-	// 		} else {
-	// 			setIsReadyShowChannelMsg(() => true);
-	// 		}
-	// 	});
-	// 	return () => {
-	// 		onSwitchChannel.remove();
-	// 	};
-	// }, []);
-
-	// if (!isReadyShowChannelMsg)
-	// 	return (
-	// 		<View style={{ flex: 1, backgroundColor: themeValue.primary }}>
-	// 			<MessageItemSkeleton skeletonNumber={8} />
-	// 		</View>
-	// 	);
-
 	return (
 		<View style={{ flex: 1 }}>
 			<ChannelMessages

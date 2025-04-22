@@ -117,7 +117,7 @@ function MezonPage() {
 								style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial' }}
 								className="tracking-[-.02em] text-center text-[60px] max-md:text-[36px] leading-[72px] max-md:leading-[48px] text-[#F4F7F9] max-md:text-textDarkTheme"
 							>
-								The Live, Work, and Play Platform – the best Discord alternative.
+								The Live, Work, and Play Platform – the best Mezon alternative.
 							</h1>
 							<div className="text-[20px] text-[#C2D5DF] text-center leading-[30px] hidden md:block">
 								<div>Mezon is great for playing games and chilling with friends, </div>

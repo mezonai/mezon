@@ -12,7 +12,7 @@ type MessageActionsPanelProps = {
 export const MessageActionsPanel: React.FC<MessageActionsPanelProps> = ({ actionRow, messageId, senderId }) => {
 	return (
 		<div className={'flex flex-row gap-2 py-2'}>
-			{actionRow.components.map((component) => (
+			{actionRow?.components?.map((component) => (
 				<Fragment key={component.id}>
 					{component.type === EMessageComponentType.BUTTON && (
 						<MessageButton button={component.component} messageId={messageId} senderId={senderId} buttonId={component.id} />

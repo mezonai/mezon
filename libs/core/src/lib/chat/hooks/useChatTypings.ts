@@ -12,8 +12,7 @@ interface UseChatTypingsOptions {
 
 export function useChatTypings({ channelId, mode, isPublic, isDM }: UseChatTypingsOptions) {
 	const { userId, userProfile } = useAuth();
-	const typingUsers = useAppSelector((state) => selectTypingUsersById(state, { channelId, userId: userId as string }));
-
+	const typingUsers = useAppSelector((state) => selectTypingUsersById(state, channelId, userId as string));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 

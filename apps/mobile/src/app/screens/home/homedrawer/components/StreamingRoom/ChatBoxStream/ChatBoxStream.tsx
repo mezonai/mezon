@@ -7,7 +7,7 @@ import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
-import ChannelMessagesWrapper from '../../../ChannelMessagesWrapper';
+import ChannelMessages from '../../../ChannelMessages';
 import { ChatBox } from '../../../ChatBox';
 import PanelKeyboard from '../../../PanelKeyboard';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
@@ -36,7 +36,7 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 		<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}>
 			<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 				<View style={{ flex: 1 }}>
-					<ChannelMessagesWrapper
+					<ChannelMessages
 						channelId={currentChannel?.channel_id}
 						clanId={currentChannel?.clan_id}
 						isPublic={isPublicChannel(currentChannel)}

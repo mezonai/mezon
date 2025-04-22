@@ -8,7 +8,7 @@ import { KeyboardAvoidingView, Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
-import ChannelMessagesWrapper from '../../ChannelMessagesWrapper';
+import ChannelMessages from '../../ChannelMessages';
 import { ChatBox } from '../../ChatBox';
 import PanelKeyboard from '../../PanelKeyboard';
 import { IModeKeyboardPicker } from '../BottomKeyboardPicker';
@@ -96,7 +96,7 @@ export default function TopicDiscussion() {
 			<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={0}>
 				<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 					<View style={{ flex: 1 }}>
-						<ChannelMessagesWrapper
+						<ChannelMessages
 							channelId={currentTopicId}
 							topicId={currentTopicId}
 							clanId={currentClanId}

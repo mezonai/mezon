@@ -20,7 +20,12 @@ const ScreenItems = memo(({ id, name, thumbnail, onClose }: ScreenItemsProps) =>
 					chromeMediaSourceId: id
 				}
 			},
-			audio: false
+			audio: {
+				mandatory: {
+					chromeMediaSource: 'desktop',
+					chromeMediaSourceId: id
+				}
+			}
 		} as MediaStreamConstraints);
 		dispatch(voiceActions.setShowSelectScreenModal(false));
 		dispatch(voiceActions.setStreamScreen(stream));

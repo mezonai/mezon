@@ -1,6 +1,7 @@
 const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const { join } = require('path');
 const Colors = require('../../libs/ui/src/lib/Variables/Colors');
+
 const topBarHeight = '60px';
 const chatBoxHeight = '52px';
 const chatBoxHeightThread = '60px';
@@ -24,7 +25,6 @@ module.exports = {
     ...createGlobPatternsForDependencies(__dirname),
   ],
   darkMode: 'class',
-
   theme: {
     extend: {
       flex: {
@@ -49,7 +49,6 @@ module.exports = {
         250: '250px',
       },
       width: {
-        // widthWithoutServerWidth: `calc(100vw - ${topBarHeight})`,
         widthMessageViewChat: `calc(100vw - ${clanWidth} - ${channelListWidth} - ${memberWidth})`,
         widthMessageViewChatThread: `calc(100vw - ${clanWidth} - ${channelListWidth} - ${memberWidthThread})`,
         widthMessageWithUser: `calc(100vw - ${clanWidth} - ${channelListWidth} - ${memberWidth} - ${avatarWidth})`,
@@ -69,7 +68,7 @@ module.exports = {
       },
       height: {
         heightMessageViewChat: `calc(100dvh - ${topBarHeight} - ${chatBoxHeight})`,
-        heightMessageViewChatMobile: `calc(100dvh  - ${chatBoxHeight})`,
+        heightMessageViewChatMobile: `calc(100dvh - ${chatBoxHeight})`,
         heightMessageViewChatDM: `calc(100dvh - ${topBarHeight})`,
         heightMessageViewChatThread: `calc(100dvh - ${topBarHeight} - ${chatBoxHeightThread})`,
         heightWithoutTopBar: `calc(100dvh - ${topBarHeight})`,
@@ -80,7 +79,6 @@ module.exports = {
         heightHeader: "60px",
         "9/10": "90%",
       },
-
       maxWidth: {
         '9/10': '90%',
         '2/5': "40%",
@@ -88,7 +86,6 @@ module.exports = {
         wrappBoxChatView: `calc(100vw - 377px)`,
         wrappBoxChatViewMobile: `calc(100vw)`,
       },
-
       maxHeight: {
         '4/5': '80%',
         '9/10': "90%",
@@ -96,16 +93,13 @@ module.exports = {
         messageViewChatDM: `calc(100dvh - 60px)`,
         listMemberRole: `calc(100dvh - 225px)`,
       },
-
       minHeight: {
         600: '600px',
         heightModalSearch: heightModalSearch,
       },
-
-      minWidth:{
+      minWidth: {
         widthMenuMobile: `calc(100vw - ${clanWidth})`,
       },
-
       fontFamily: {
         ggSans: ['gg sans', 'sans-serif'],
       },
@@ -125,31 +119,40 @@ module.exports = {
       },
       keyframes: {
         rotation: {
-          '0%': {
-            transform: 'rotate3d(0, 1, 0, 0deg)',
-          },
-          '50%': {
-            transform: 'rotate3d(0, 1, 0, 180deg)',
-          },
-          '100%': {
-            transform: 'rotate3d(0, 1, 0, 360deg)',
-          },
+          '0%': { transform: 'rotate3d(0, 1, 0, 0deg)' },
+          '50%': { transform: 'rotate3d(0, 1, 0, 180deg)' },
+          '100%': { transform: 'rotate3d(0, 1, 0, 360deg)' },
+        },
+        'bounce-slow': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'gradient-x': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         },
       },
+      animation: {
+        rotation: 'rotation 6s linear infinite',
+        spin: 'spin 1s linear infinite',
+        'bounce-slow': 'bounce-slow 2s infinite',
+        'gradient-x': 'gradient-x 3s ease infinite',
+        shimmer: 'shimmer 1.5s linear infinite',
+      },
     },
-    animation: {
-      rotation: 'rotation 6s linear infinite',
-      spin: 'spin 1s linear infinite',
-    },
-    screens: {
-      ssm: "430px",
-      sbm: "480px",
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
-      '2xl': '1536px',
-    },
+  },
+  screens: {
+    ssm: "430px",
+    sbm: "480px",
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+    '2xl': '1536px',
   },
   plugins: [
     plugin(function ({ addUtilities }) {
@@ -162,5 +165,4 @@ module.exports = {
     }),
     require('@tailwindcss/typography'),
   ],
-  //   plugins: [require('flowbite/plugin')],
 };

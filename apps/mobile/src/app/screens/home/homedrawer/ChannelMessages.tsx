@@ -34,7 +34,7 @@ import { style } from './styles';
 
 type ChannelMessagesProps = {
 	channelId: string;
-	topicId: string;
+	topicId?: string;
 	clanId: string;
 	mode: ChannelStreamMode;
 	isDM?: boolean;

@@ -13,12 +13,12 @@ enum RequestStatusSuccess {
 }
 
 type ModalAddBotProps = {
-	nameApp?: string;
+	nameBot?: string;
 	applicationId: string;
 	handleOpenModal: () => void;
 };
 
-const ModalAddBot = memo(({ nameApp = '', applicationId, handleOpenModal }: ModalAddBotProps) => {
+const ModalAddBot = memo(({ nameBot = '', applicationId, handleOpenModal }: ModalAddBotProps) => {
 	const clans = useSelector(selectAllClans);
 	const dispatch = useAppDispatch();
 	const account = useSelector(selectAllAccount);
@@ -28,7 +28,6 @@ const ModalAddBot = memo(({ nameApp = '', applicationId, handleOpenModal }: Moda
 
 	const [clanValue, setClanValue] = useState('');
 	const [clanError, setClanError] = useState<string>();
-
 	const clanConfig: SelectFieldConfig<any> = {
 		label: 'Add to clan',
 		value: clanValue,
@@ -51,21 +50,30 @@ const ModalAddBot = memo(({ nameApp = '', applicationId, handleOpenModal }: Moda
 		}
 		if (hasError) return;
 
-		const resp = await dispatch(addBotChat({ appId: applicationId, clanId: clanValue }));
+		const cleanAppId = applicationId.replace(/\s+/g, ' ').trim();
+		const cleanClanId = clanValue.replace(/\s+/g, ' ').trim();
+
+		const resp = await dispatch(
+			addBotChat({
+				appId: cleanAppId,
+				clanId: cleanClanId
+			})
+		);
+
 		if (resp.meta.requestStatus === RequestStatusSuccess.Fulfill) {
 			toggleSuccess();
 		}
 	}, [applicationId, clanValue, dispatch]);
 
 	if (openSuccess) {
-		return <ModalSuccess name={nameApp} clan={{ clanId: clanValue, clanName: '', isEmpty: false }} />;
+		return <ModalSuccess name={nameBot} clan={{ clanId: clanValue, clanName: '', isEmpty: false }} />;
 	}
 
 	return (
 		<div className="rounded overflow-hidden dark:bg-bgProfileBody bg-bgLightMode max-w-[440px] w-full flex flex-col text-center">
-			<HeaderModal name={nameApp} username={account?.user?.username} />
+			<HeaderModal name={nameBot} username={account?.user?.username} />
 			<SelectField {...clanConfig} />
-			<FooterModal name={nameApp} />
+			<FooterModal name={nameBot} />
 			<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleAdd} />
 		</div>
 	);

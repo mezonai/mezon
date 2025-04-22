@@ -1,4 +1,4 @@
-import { deleteApplication, useAppDispatch } from '@mezon/store';
+import { deleteApplication, fetchApplications, useAppDispatch } from '@mezon/store';
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,6 +19,7 @@ const DeleteAppPopup = ({ togglePopup, appName, appId }: IDeleteAppPopup) => {
 	const handleDeleteApp = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		await dispatch(deleteApplication({ appId: appId }));
+		await dispatch(fetchApplications({ noCache: true }));
 		togglePopup();
 		navigate('/');
 	};

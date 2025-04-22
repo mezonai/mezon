@@ -1,5 +1,5 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { messagesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
+import { messagesActions, selectAllAccount, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { IEmojiOnMessage, IHashtagOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { Dispatch, MutableRefObject, SetStateAction, forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -76,6 +76,7 @@ export const ChatMessageInput = memo(
 			const dispatch = useAppDispatch();
 			const styles = style(themeValue);
 			const currentClanId = useSelector(selectCurrentClanId);
+			const userProfile = useSelector(selectAllAccount);
 			const isAvailableSending = useMemo(() => {
 				return text?.length > 0 && text?.trim()?.length > 0;
 			}, [text]);
@@ -97,10 +98,11 @@ export const ChatMessageInput = memo(
 						clanId: currentClanId || '',
 						channelId,
 						mode,
-						isPublic
+						isPublic,
+						username: userProfile?.user?.display_name || userProfile?.user?.username
 					})
 				);
-			}, [channelId, currentClanId, dispatch, isPublic, mode]);
+			}, [channelId, currentClanId, dispatch, isPublic, mode, userProfile?.user?.display_name, userProfile?.user?.username]);
 
 			const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 
@@ -111,11 +113,12 @@ export const ChatMessageInput = memo(
 							clanId: '0',
 							channelId: channelId,
 							mode: mode,
-							isPublic: false
+							isPublic: false,
+							username: userProfile?.user?.display_name || userProfile?.user?.username
 						})
 					)
 				]);
-			}, [channelId, dispatch, mode]);
+			}, [channelId, dispatch, mode, userProfile?.user?.display_name, userProfile?.user?.username]);
 
 			const handleDirectMessageTypingDebounced = useThrottledCallback(handleDirectMessageTyping, 1000);
 			//end: DM stuff

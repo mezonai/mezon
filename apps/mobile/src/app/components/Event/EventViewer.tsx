@@ -1,7 +1,14 @@
 import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
-import { EventManagementEntity, selectAllTextChannel, selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store-mobile';
+import {
+	EventManagementEntity,
+	selectAllAccount,
+	selectAllTextChannel,
+	selectCurrentClanId,
+	selectEventsByClanId,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -25,14 +32,15 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 	const allEventManagement = useAppSelector((state) => selectEventsByClanId(state, currentClanId as string));
 	const allThreadChannelPrivate = useSelector(selectAllTextChannel);
 	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
+	const userId = useSelector(selectAllAccount)?.user?.id;
 
 	const listEventToShow = useMemo(() => {
-		return (
-			allEventManagement?.filter(
-				(event) => !event?.channel_id || event?.channel_id === '0' || allThreadChannelPrivateIds?.includes(event?.channel_id)
-			) || []
+		return allEventManagement?.filter(
+			(event) =>
+				(!event?.is_private || event.creator_id === userId) &&
+				(!event.channel_id || event.channel_id === '0' || allThreadChannelPrivateIds.includes(event.channel_id))
 		);
-	}, [allEventManagement, allThreadChannelPrivateIds]);
+	}, [allEventManagement, allThreadChannelPrivateIds, userId]);
 
 	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
 		EPermission.administrator,

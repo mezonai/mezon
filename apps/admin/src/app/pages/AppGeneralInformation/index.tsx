@@ -1,5 +1,5 @@
 import { ModalSaveChanges } from '@mezon/components';
-import { editApplication, selectAppDetail, useAppDispatch } from '@mezon/store';
+import { editApplication, fetchApplications, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.gen';
@@ -52,6 +52,7 @@ const GeneralInformation = () => {
 			applogo: appLogoUrl
 		};
 		await dispatch(editApplication({ request: updateRequest, appId: appId }));
+		await dispatch(fetchApplications({ noCache: true }));
 		setHasChanges(false);
 	};
 

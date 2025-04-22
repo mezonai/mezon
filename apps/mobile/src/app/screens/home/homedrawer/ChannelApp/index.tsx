@@ -21,16 +21,19 @@ const ChannelAppScreen = ({ navigation, route }) => {
 	const webviewRef = useRef<WebView>(null);
 
 	const uri = useMemo(() => {
-		const params = new URLSearchParams();
-
-		if (paramsRoute?.code) params.set('code', paramsRoute?.code);
-		if (paramsRoute?.subpath) params.set('subpath', paramsRoute?.subpath);
-
-		const queryString = params.toString();
+		let queryString: string;
+		if (paramsRoute?.code && paramsRoute?.subpath) {
+			queryString = `?code=${paramsRoute?.code}&subpath=${paramsRoute?.subpath}`;
+		} else if (paramsRoute?.code) {
+			queryString = `?code=${paramsRoute?.code}`;
+		} else if (paramsRoute?.subpath) {
+			queryString = `?subpath=${paramsRoute?.subpath}`;
+		} else {
+		}
 
 		const baseUrl = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/apps-mobile/${paramsRoute?.clanId}/${paramsRoute?.channelId}`;
 
-		return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+		return queryString ? `${baseUrl}${queryString}` : baseUrl;
 	}, [paramsRoute?.channelId, paramsRoute?.clanId, paramsRoute?.code, paramsRoute?.subpath]);
 
 	const injectedJS = `

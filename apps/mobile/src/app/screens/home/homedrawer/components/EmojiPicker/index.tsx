@@ -155,15 +155,15 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		[]
 	);
 
-	const handleBottomSheetExpand = () => {
+	const handleBottomSheetExpand = useCallback(() => {
 		bottomSheetRef && bottomSheetRef?.current && bottomSheetRef.current.expand();
-	};
+	}, [bottomSheetRef]);
 
-	const handleBottomSheetCollapse = () => {
+	const handleBottomSheetCollapse = useCallback(() => {
 		bottomSheetRef && bottomSheetRef?.current && bottomSheetRef.current.collapse();
-	};
+	}, [bottomSheetRef]);
 
-	const onScroll = (e: { nativeEvent: { contentOffset: { y: number } } }) => {
+	const onScroll = useCallback((e: { nativeEvent: { contentOffset: { y: number } } }) => {
 		if (e.nativeEvent.contentOffset.y < -100 || (e.nativeEvent.contentOffset.y <= -5 && Platform.OS === 'android')) {
 			handleBottomSheetCollapse();
 		}
@@ -171,7 +171,11 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		if (e.nativeEvent.contentOffset.y > 200) {
 			handleBottomSheetExpand();
 		}
-	};
+	}, []);
+
+	const onSelectEmoji = useCallback((url) => {
+		handleSelected('emoji', url);
+	}, []);
 
 	return (
 		<TouchableWithoutFeedback onPressIn={handleInputSearchBlur}>
@@ -214,7 +218,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 						onScroll={onScroll}
 						handleBottomSheetExpand={handleBottomSheetExpand}
 						handleBottomSheetCollapse={handleBottomSheetCollapse}
-						onSelected={(url) => handleSelected('emoji', url)}
+						onSelected={onSelectEmoji}
 						searchText={searchText}
 					/>
 				) : mode === 'gif' ? (

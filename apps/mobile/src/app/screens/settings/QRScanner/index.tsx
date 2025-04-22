@@ -117,20 +117,11 @@ export const QRScanner = () => {
 		}
 	};
 
-	const extractClanAndChannelIds = (url: string): { channel_id: string; clan_id: string } | null => {
-		const parts = url.split('/');
-		const index = parts.indexOf('channel-app');
-		if (index !== -1 && parts.length > index + 2) {
-			return { channel_id: parts[index + 1], clan_id: parts[index + 2] };
-		}
-		return null;
-	};
-
 	const onNavigationScanned = async (value: string) => {
 		const store = await getStoreAsync();
 		try {
 			store.dispatch(appActions.setLoadingMainMobile(false));
-			if (value?.includes('/channel-app')) {
+			if (value?.includes('channel-app')) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_NAVIGATION_DEEPLINK, value);
 				return;
 			}

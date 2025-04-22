@@ -1364,15 +1364,11 @@ export const selectUnreadMessageIdByChannelId = createSelector(
 export const selectTypingUsers = createSelector(getMessagesState, (state) => state.typingUsers);
 
 export const selectTypingUsersById = createSelector(
-	[
-		getMessagesState,
-		(_state, { channelId, userId }: { channelId: string; userId: string }) => {
-			return { channelId, userId };
-		}
-	],
-	(state, props) => {
-		const { channelId, userId } = props;
-		return state?.typingUsers?.[channelId]?.users.filter((user) => user.id !== userId) || [];
+	[selectTypingUsers, (_, channelId: string) => channelId, (_, __, userId: string) => userId],
+	(typingUsers, channelId, userId) => {
+		const channelTypingUsers = typingUsers?.[channelId]?.users || [];
+
+		return channelTypingUsers.filter((user) => user.id !== userId);
 	}
 );
 

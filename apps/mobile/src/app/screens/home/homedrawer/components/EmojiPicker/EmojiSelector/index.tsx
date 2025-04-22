@@ -1,6 +1,6 @@
-import {Colors, Metrics, size, useAnimatedState} from '@mezon/mobile-ui';
+import { Colors, Metrics, size, useAnimatedState } from '@mezon/mobile-ui';
 import React, { useEffect } from 'react';
-import {Platform, View} from 'react-native';
+import { Platform, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import EmojiSelectorContainer from '../EmojiSelectorContainer';
 
@@ -20,15 +20,13 @@ export default function EmojiSelector({
 	handleBottomSheetExpand,
 	handleBottomSheetCollapse
 }: EmojiSelectorProps) {
-	const [isReadyForUse, setIsReadyForUse] = useAnimatedState<boolean>(isReactMessage);
+	const [isReadyForUse, setIsReadyForUse] = useAnimatedState<boolean>(false);
 	useEffect(() => {
-		const timer = isReactMessage
-			? null
-			: setTimeout(() => {
-					setIsReadyForUse(true);
-				}, 200);
+		const timer = setTimeout(() => {
+			setIsReadyForUse(true);
+		}, 200);
 		return () => timer && clearTimeout(timer);
-	}, [isReactMessage]);
+	}, []);
 
 	return (
 		<View>

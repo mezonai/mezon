@@ -4,7 +4,8 @@ import { getStoreAsync, selectCurrentChannel, selectCurrentClan, selectMembersCl
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import { EventViewer } from '../../../../../../components/Event';
@@ -75,7 +76,7 @@ const ChannelListHeader = () => {
 
 	return (
 		<View style={[styles.container]}>
-			<TouchableOpacity activeOpacity={0.8} onPress={handlePress} style={styles.listHeader}>
+			<Pressable onPress={handlePress} style={styles.listHeader}>
 				<View style={styles.titleNameWrapper}>
 					<Text numberOfLines={1} style={styles.titleServer}>
 						{clanName}
@@ -99,18 +100,18 @@ const ChannelListHeader = () => {
 						Community
 					</Text>
 				</View>
-			</TouchableOpacity>
+			</Pressable>
 			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
-				<TouchableOpacity activeOpacity={0.8} onPress={navigateToSearchPage} style={styles.wrapperSearch}>
+				<Pressable onPress={navigateToSearchPage} style={styles.wrapperSearch}>
 					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					<Text style={styles.placeholderSearchBox}>{t('search')}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity activeOpacity={0.8} onPress={onOpenScanQR} style={styles.iconWrapper}>
+				</Pressable>
+				<Pressable onPress={onOpenScanQR} style={styles.iconWrapper}>
 					<MezonIconCDN icon={IconCDN.scanQR} height={size.s_18} width={size.s_18} color={themeValue.text} />
-				</TouchableOpacity>
-				<TouchableOpacity activeOpacity={0.8} onPress={onOpenEvent} style={styles.iconWrapper}>
+				</Pressable>
+				<Pressable onPress={onOpenEvent} style={styles.iconWrapper}>
 					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
-				</TouchableOpacity>
+				</Pressable>
 			</View>
 		</View>
 	);
