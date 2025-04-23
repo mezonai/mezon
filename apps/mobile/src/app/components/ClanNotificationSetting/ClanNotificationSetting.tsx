@@ -9,7 +9,6 @@ import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from 
 import MezonOption from '../../componentUI/MezonOption';
 import MezonSwitch from '../../componentUI/MezonSwitch';
 import { IconCDN } from '../../constants/icon_cdn';
-import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { CategoryChannel } from './CategoryChannel';
 import { style } from './ClanNotificationSetting.styles';
@@ -22,7 +21,6 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { t } = useTranslation(['clanNotificationsSetting']);
-	useBackHardWare();
 	navigation.setOptions({
 		headerLeft: () => (
 			<Pressable style={{ padding: 20 }} onPress={handleClose}>

@@ -2,6 +2,12 @@ import { Colors, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+	wrapper: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.5)'
+	},
 	sheetContainer: {
 		overflow: 'hidden',
 		backgroundColor: Colors.white,
@@ -9,7 +15,7 @@ export const styles = StyleSheet.create({
 		borderRadius: size.s_10,
 		paddingVertical: size.s_10,
 		maxHeight: '70%',
-		maxWidth: '95%',
+		maxWidth: '85%',
 		display: 'flex',
 		flexDirection: 'column',
 		justifyContent: 'space-between'

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
-import { CheckIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -19,8 +19,7 @@ import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -41,13 +40,11 @@ export interface IForwardIObject {
 }
 
 interface ForwardMessageModalProps {
-	show?: boolean;
-	onClose: () => void;
 	message: IMessageWithUser;
 	isPublic?: boolean;
 }
 
-const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessageModalProps) => {
+const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) => {
 	const [searchText, setSearchText] = useState('');
 
 	const dmGroupChatList = useSelector(selectDirectsOpenlist);
@@ -127,8 +124,13 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 		return existingIndex !== -1;
 	};
 
+	const onClose = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+	};
+
 	const handleForward = () => {
 		return isForwardAll ? handleForwardAllMessage() : sentToMessage();
+		onClose();
 	};
 
 	const handleForwardAllMessage = async () => {
@@ -229,7 +231,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 	};
 
 	return (
-		<Modal isVisible={show} hasBackdrop={false} style={{ margin: 0, backgroundColor: themeValue.secondary, paddingHorizontal: size.s_16 }}>
+		<View style={{ flex: 1, margin: 0, backgroundColor: themeValue.primary, paddingHorizontal: size.s_16 }}>
 			<StatusBarHeight />
 			<View style={{ flex: 1, marginTop: size.s_34 }}>
 				<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
@@ -274,7 +276,7 @@ const ForwardMessageModal = ({ show, message, onClose, isPublic }: ForwardMessag
 					</TouchableOpacity>
 				</View>
 			</View>
-		</Modal>
+		</View>
 	);
 };
 

@@ -20,8 +20,7 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Dimensions, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { Alert, Modal, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import ViewShot from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
@@ -405,16 +404,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 			<Pressable style={styles.button} onPress={sendToken} disabled={disableButton}>
 				<Text style={styles.buttonTitle}>{t('sendToken')}</Text>
 			</Pressable>
-			<Modal
-				isVisible={showConfirmModal}
-				animationIn="fadeIn"
-				animationOut="fadeOut"
-				hasBackdrop={true}
-				coverScreen={true}
-				backdropColor="rgba(0,0,0, 0.9)"
-				deviceHeight={Dimensions.get('screen').height}
-				style={{ margin: 0, justifyContent: 'center', alignItems: 'center' }}
-			>
+			<Modal visible={showConfirmModal}>
 				{fileShared && isShowModalShare ? (
 					<Sharing data={fileShared} onClose={onCloseFileShare} />
 				) : (

@@ -1,9 +1,8 @@
 import { Colors, size } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BackHandler, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Modal from 'react-native-modal';
 
 const UpdateGateScreen = ({ route }) => {
 	const storeUrl = route?.params?.storeUrl;
@@ -18,7 +17,7 @@ const UpdateGateScreen = ({ route }) => {
 	const onPress = () => Linking.openURL(storeUrl);
 
 	return (
-		<Modal isVisible={true} animationIn={'fadeIn'} coverScreen={true} backdropColor={Colors.secondary} backdropOpacity={1}>
+		<Modal visible={true}>
 			<View style={styles.container}>
 				<View />
 				<View

@@ -167,7 +167,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				})
 			);
 		}
-	}, [channelIdOrDirectId, getClanId, dispatch, isPublic, mode, anonymousMode]);
+	}, [priorityNameToShow, channelIdOrDirectId, getClanId, dispatch, isPublic, mode, anonymousMode]);
 
 	// Move this function to to a new action of messages slice
 	const editSendMessage = React.useCallback(

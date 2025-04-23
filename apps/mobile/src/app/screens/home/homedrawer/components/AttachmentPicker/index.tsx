@@ -4,11 +4,11 @@ import { ChannelsEntity, appActions, getStoreAsync, referencesActions, selectCha
 import { useMezon } from '@mezon/transport';
 import { MAX_FILE_SIZE, checkIsThread } from '@mezon/utils';
 import Geolocation from '@react-native-community/geolocation';
+import { pick, types } from '@react-native-documents/picker';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
-import DocumentPicker from '@react-native-documents/picker';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -30,7 +30,7 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 	const styles = style(themeValue);
 	const { t } = useTranslation(['message']);
 	const { sessionRef } = useMezon();
-	const timeRef = useRef<any>();
+	const timeRef = useRef<any>(null);
 	const dispatch = useDispatch();
 	const [isShowAlbum, setIsShowAlbum] = useState<boolean>(false);
 	const [currentAlbum, setCurrentAlbum] = useState<string>('All');
@@ -46,8 +46,8 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 			timeRef.current = setTimeout(() => {
 				dispatch(appActions.setIsFromFCMMobile(true));
 			}, 500);
-			const res = await DocumentPicker.pick({
-				type: [DocumentPicker.types.allFiles]
+			const res = await pick({
+				type: [types.allFiles]
 			});
 			const file = res?.[0];
 			if (file?.size >= MAX_FILE_SIZE) {

@@ -3,8 +3,7 @@ import { STORAGE_AGE_RESTRICTED_CHANNEL_IDS, load } from '@mezon/mobile-componen
 import { useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectCurrentChannel } from '@mezon/store-mobile';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { Modal, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import AgeRestricted from './AgeRestricted';
 import AgeRestrictedForm from './AgeRestrictedForm';
@@ -29,22 +28,14 @@ const AgeRestrictedModal = () => {
 	if (!isShowAgeRestricted) return <View></View>;
 
 	return (
-		<Modal
-			isVisible={isShowAgeRestricted}
-			animationIn={'bounceIn'}
-			animationOut={'bounceOut'}
-			hasBackdrop={true}
-			avoidKeyboard={false}
-			backdropOpacity={1}
-			backdropColor={themeValue.secondary}
-			coverScreen={false}
-			deviceHeight={Dimensions.get('screen').height}
-		>
-			{userProfile?.user?.dob === '0001-01-01T00:00:00Z' ? (
-				<AgeRestrictedForm onClose={closeBackdrop} />
-			) : (
-				<AgeRestricted onClose={closeBackdrop} />
-			)}
+		<Modal visible={isShowAgeRestricted}>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: themeValue.secondary }}>
+				{userProfile?.user?.dob === '0001-01-01T00:00:00Z' ? (
+					<AgeRestrictedForm onClose={closeBackdrop} />
+				) : (
+					<AgeRestricted onClose={closeBackdrop} />
+				)}
+			</View>
 		</Modal>
 	);
 };

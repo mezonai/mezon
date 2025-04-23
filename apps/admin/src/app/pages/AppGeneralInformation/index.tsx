@@ -121,21 +121,77 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	const handleCopyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
 	};
+	const [changeName, setChangeName] = useState(appDetail.appname);
+	const [changeUrl, setChangeUrl] = useState(appDetail.app_url);
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState(false);
+	const [openSaveChange, setOpenSaveChange] = useState(false);
+	const [isUrlValid, setIsUrlValid] = useState(true);
+	const dispatch = useAppDispatch();
 	const toggleDeletePopup = () => {
 		setIsShowDeletePopup(!isShowDeletePopup);
+	};
+	const handleOpenSaveChangeForName = (e: ChangeEvent<HTMLInputElement>) => {
+		setChangeName(e.target.value);
+		if (e.target.value !== appDetail.appname) {
+			setChangeName(e.target.value);
+			setOpenSaveChange(true);
+		}
+	};
+	const handleOpenSaveChangeForUrl = (e: ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setChangeUrl(value);
+
+		try {
+			new URL(value);
+			setIsUrlValid(true);
+		} catch {
+			setIsUrlValid(false);
+		}
+
+		if (value !== appDetail.app_url) {
+			setOpenSaveChange(true);
+		}
+	};
+
+	const handleResetChange = () => {
+		setChangeName(appDetail.appname);
+		setOpenSaveChange(false);
+	};
+	const handleEditAppOrBot = async () => {
+		const updateRequest: MezonUpdateAppBody = {
+			appname: changeName,
+			app_url: changeUrl,
+			token: 'reset'
+		};
+		const response = await dispatch(editApplication({ request: updateRequest, appId: appId }));
+		await dispatch(fetchApplications({ noCache: true }));
+		setOpenSaveChange(false);
 	};
 	return (
 		<div className="flex-1 flex flex-col gap-7">
 			<div className="w-full flex flex-col gap-2">
 				<div className="text-[12px] uppercase font-semibold">Name</div>
 				<input
-					value={appDetail.appname}
-					className="cursor-not-allowed w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
+					value={changeName}
+					className=" w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
 					type="text"
-					readOnly={true}
+					onChange={handleOpenSaveChangeForName}
 				/>
 			</div>
+			{appDetail.app_url && (
+				<div className="w-full flex flex-col gap-2">
+					<div className="text-[12px] uppercase font-semibold">URL</div>
+					<input
+						value={changeUrl}
+						className=" w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
+						type="text"
+						onChange={handleOpenSaveChangeForUrl}
+					/>
+					{!isUrlValid && <div className="text-red-500 text-sm">Please enter a valid URL (e.g., https://example.com).</div>}
+				</div>
+			)}
+			{openSaveChange && isUrlValid && <ModalSaveChanges onReset={handleResetChange} onSave={handleEditAppOrBot} />}
+
 			<div className="flex flex-col gap-2">
 				<div className="text-[12px] uppercase font-semibold">Description (maximum 400 characters)</div>
 				<div className="text-[14px]">Your description will appear in the About Me section of your bot's profile.</div>

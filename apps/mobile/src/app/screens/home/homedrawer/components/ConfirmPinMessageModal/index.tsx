@@ -1,12 +1,11 @@
-import { CheckIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Colors } from '@mezon/mobile-ui';
 import { AppDispatch, pinMessageActions } from '@mezon/store-mobile';
 import { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { SeparatorWithLine } from '../../../../../components/Common';
@@ -61,31 +60,27 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			}
 		});
 		onClose();
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 	return (
-		<Modal
-			isVisible={isVisible}
-			animationIn={'fadeIn'}
-			hasBackdrop={true}
-			coverScreen={true}
-			avoidKeyboard={false}
-			backdropColor={'rgba(0,0,0, 0.7)'}
-		>
-			<View style={[styles.container, isTabletLandscape && { maxWidth: '40%' }]}>
-				<View>
-					<Text style={styles.title}>{EMessageActionType.PinMessage === type ? t('pinMessage') : t('unpinMessage')}</Text>
-					<SeparatorWithLine />
-				</View>
-				<Text style={styles.descriptionText}>
-					{EMessageActionType.PinMessage === type ? t('confirmPinMessage') : t('confirmUnPinMessage')}
-				</Text>
-				<View style={styles.buttonsWrapper}>
-					<TouchableOpacity onPress={() => onConfirm()} style={styles.yesButton}>
-						<Text style={styles.buttonText}>{t('Yes')}</Text>
-					</TouchableOpacity>
-					<TouchableOpacity onPress={() => onClose()} style={styles.noButton}>
-						<Text style={styles.buttonText}>{t('No')}</Text>
-					</TouchableOpacity>
+		<Modal visible={isVisible} animationType={'fade'} transparent={true} onRequestClose={onClose}>
+			<View style={styles.wrapper}>
+				<View style={[styles.container, isTabletLandscape && { maxWidth: '40%' }]}>
+					<View>
+						<Text style={styles.title}>{EMessageActionType.PinMessage === type ? t('pinMessage') : t('unpinMessage')}</Text>
+						<SeparatorWithLine />
+					</View>
+					<Text style={styles.descriptionText}>
+						{EMessageActionType.PinMessage === type ? t('confirmPinMessage') : t('confirmUnPinMessage')}
+					</Text>
+					<View style={styles.buttonsWrapper}>
+						<TouchableOpacity onPress={() => onConfirm()} style={styles.yesButton}>
+							<Text style={styles.buttonText}>{t('Yes')}</Text>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={() => onClose()} style={styles.noButton}>
+							<Text style={styles.buttonText}>{t('No')}</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</View>
 		</Modal>

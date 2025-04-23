@@ -483,23 +483,22 @@ const SidebarMenu = memo(
 );
 
 const ClansList = memo(() => {
-	const dispatch = useDispatch();
 	const clans = useSelector(selectOrderedClans);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
 
 	const [items, setItems] = useState<string[]>([]);
-
 	const { draggingState, handleMouseDown, handleMouseEnter } = useClanDragAndDrop(items, setItems);
+
 	useEffect(() => {
 		setItems(clans.map((c) => c.id));
 	}, [clans]);
 
 	const { isDragging, draggedItem, dragPosition, dragOffset } = draggingState;
-	const isActive = isClanView && currentClanId === clans.find((c) => c.id === draggedItem)?.clan_id;
+	const isActive = (clanId: string) => isClanView && currentClanId === clans.find((c) => c.id === clanId)?.clan_id;
 
 	return (
-		<div className="flex flex-col gap-2 relative">
+		<div className="flex flex-col gap-3 relative">
 			{items.map((id) => {
 				const clan = clans.find((c) => c.id === id)!;
 				const draggingThis = isDragging && draggedItem === clan.id;
@@ -507,17 +506,20 @@ const ClansList = memo(() => {
 				return (
 					<div
 						key={clan.id}
-						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'}`}
+						className={`relative transition-all duration-200 ${
+							draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'
+						}`}
 						onMouseEnter={() => handleMouseEnter(clan.id)}
 						onMouseDown={(e) => handleMouseDown(e, clan.id)}
 					>
-						<SidebarClanItem option={clan} active={isActive} className={draggingThis ? 'opacity-0' : ''} />
+						<SidebarClanItem option={clan} active={isActive(clan.id)} className={`${draggingThis ? 'opacity-0' : ''}`} />
 					</div>
 				);
 			})}
+
 			{isDragging && draggedItem && dragPosition && (
 				<div
-					className="fixed pointer-events-none z-50 w-[48px] h-[48px]"
+					className="fixed pointer-events-none z-50 w-[40px] h-[40px]"
 					style={{
 						left: `${dragPosition.x - dragOffset.x}px`,
 						top: `${dragPosition.y - dragOffset.y}px`

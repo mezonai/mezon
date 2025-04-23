@@ -87,6 +87,10 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
+	const onCloseModalConfirm = useCallback(() => {
+		setCurrentMessageActionType(null);
+	}, []);
+
 	const onDeleteMessage = useCallback(
 		async (messageId: string) => {
 			const socket = socketRef.current;
@@ -335,9 +339,14 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		setCurrentMessageActionType(EMessageActionType.Report);
 	};
 
-	const handleForwardMessage = () => {
+	const handleForwardMessage = async () => {
 		dispatch(setIsForwardAll(false));
-		setCurrentMessageActionType(EMessageActionType.ForwardMessage);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		await sleep(500);
+		const data = {
+			children: <ForwardMessageModal message={message} isPublic={isPublicChannel(currentChannel)} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	};
 
 	const handleForwardAllMessages = () => {
@@ -645,21 +654,13 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			) : (
 				renderMessageItemActions()
 			)}
-			{currentMessageActionType === EMessageActionType.ForwardMessage && (
-				<ForwardMessageModal
-					show={currentMessageActionType === EMessageActionType.ForwardMessage}
-					onClose={onClose}
-					message={message}
-					isPublic={isPublicChannel(currentChannel)}
-				/>
-			)}
 			{currentMessageActionType === EMessageActionType.Report && (
 				<ReportMessageModal isVisible={currentMessageActionType === EMessageActionType.Report} onClose={onClose} message={message} />
 			)}
 			{[EMessageActionType.PinMessage, EMessageActionType.UnPinMessage].includes(currentMessageActionType) && (
 				<ConfirmPinMessageModal
 					isVisible={[EMessageActionType.PinMessage, EMessageActionType.UnPinMessage].includes(currentMessageActionType)}
-					onClose={onClose}
+					onClose={onCloseModalConfirm}
 					message={message}
 					type={currentMessageActionType}
 				/>

@@ -2,6 +2,14 @@ import { Colors, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+	wrapper: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		width: '100%',
+		height: '100%',
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
 	container: {
 		overflow: 'hidden',
 		backgroundColor: Colors.bgDarkCharcoal,

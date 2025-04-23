@@ -79,9 +79,9 @@ const RootListener = () => {
 
 	const startupRunning = async (navigation: any) => {
 		await setupNotificationListeners(navigation);
-		if (Platform.OS === 'ios') {
-			await setupCallKeep();
-		}
+		// if (Platform.OS === 'ios') {
+		// 	await setupCallKeep();
+		// }
 	};
 
 	const initAppLoading = async () => {

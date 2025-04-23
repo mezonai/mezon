@@ -6,7 +6,6 @@ import { RouteProp } from '@react-navigation/native';
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
-import useBackHardWare from '../../../hooks/useBackHardWare';
 import StatusBarHeight from '../../StatusBarHeight/StatusBarHeight';
 import InputSearchMessageChannel from './InputSearchMessageChannel';
 import SearchMessagePage from './SearchMessagePage';
@@ -38,7 +37,6 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 	const [filtersSearch, setFiltersSearch] = useState<SearchFilter[]>();
 	const dispatch = useAppDispatch();
 	const [optionFilter, setOptionFilter] = useState<IOption>();
-	useBackHardWare();
 
 	const [searchText, setSearchText] = useState<string>('');
 	const handleSearchText = useCallback((text) => {

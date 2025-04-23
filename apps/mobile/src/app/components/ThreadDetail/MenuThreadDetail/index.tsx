@@ -6,7 +6,6 @@ import { style } from './style';
 
 import { useTheme } from '@mezon/mobile-ui';
 import { IChannel } from '@mezon/utils';
-import useBackHardWare from '../../../hooks/useBackHardWare';
 import StatusBarHeight from '../../StatusBarHeight/StatusBarHeight';
 import { ActionRow } from '../ActionRow';
 import { AssetsViewer } from '../AssetViewer';
@@ -26,7 +25,6 @@ export default function MenuThreadDetail(props: { route: any }) {
 		}
 		return currentChannel;
 	}, [directMessage, currentChannel]);
-	useBackHardWare();
 
 	return (
 		<threadDetailContext.Provider value={channel}>

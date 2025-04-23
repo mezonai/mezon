@@ -8,7 +8,6 @@ import { DeviceEventEmitter, Pressable, ScrollView, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
-import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
 import { LogoClanSelector } from './LogoClanSelector';
@@ -25,7 +24,6 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 		EPermission.manageClan,
 		EPermission.clanOwner
 	]);
-	useBackHardWare();
 
 	const isCanEditRole = useMemo(() => {
 		return hasAdminPermission || isClanOwner || hasManageClanPermission;

@@ -24,7 +24,6 @@ import MezonInput from '../../componentUI/MezonInput';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonOption from '../../componentUI/MezonOption';
 import { IconCDN } from '../../constants/icon_cdn';
-import useBackHardWare from '../../hooks/useBackHardWare';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 import { AddMemberOrRoleBS } from '../../screens/channelPermissionSetting/components/AddMemberOrRoleBS';
 import { validInput } from '../../utils/validate';
@@ -65,7 +64,6 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	const currentCategoryName = useMemo(() => {
 		return channel?.category_name;
 	}, [channel?.category_name]);
-	useBackHardWare();
 	const currentUserId = useSelector(selectCurrentUserId);
 
 	navigation.setOptions({

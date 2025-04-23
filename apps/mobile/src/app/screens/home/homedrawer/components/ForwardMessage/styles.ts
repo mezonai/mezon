@@ -7,13 +7,14 @@ export const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: Colors.bgViolet,
-		paddingVertical: 10,
+		paddingVertical: size.s_16,
 		borderRadius: 50,
 		marginHorizontal: size.s_10,
-		marginBottom: size.s_18
+		marginBottom: size.s_24
 	},
 	btnText: {
-		color: Colors.white
+		color: Colors.white,
+		fontSize: size.medium
 	},
 	memberAvatar: {
 		height: size.s_34,
