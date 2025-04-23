@@ -1,20 +1,20 @@
 import {
-	ControlBarControls,
-	useLocalParticipant,
-	useLocalParticipantPermissions,
-	usePersistentUserChoices,
-	useTracks
+  ControlBarControls,
+  useLocalParticipant,
+  useLocalParticipantPermissions,
+  usePersistentUserChoices,
+  useTracks
 } from '@livekit/components-react';
 import {
-	selectShowCamera,
-	selectShowMicrophone,
-	selectShowScreen,
-	selectShowSelectScreenModal,
-	selectStreamScreen,
-	selectVoiceFullScreen,
-	selectVoiceOpenPopOut,
-	useAppDispatch,
-	voiceActions
+  selectShowCamera,
+  selectShowMicrophone,
+  selectShowScreen,
+  selectShowSelectScreenModal,
+  selectStreamScreen,
+  selectVoiceFullScreen,
+  selectVoiceOpenPopOut,
+  useAppDispatch,
+  voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
@@ -267,8 +267,8 @@ export function ControlBar({
 	}, [dispatch, isOpenPopOut, openVoicePopup, closeVoicePopup]);
 
 	return (
-		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent">
-			<div className="flex justify-start gap-4">
+		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-sbm:!hidden max-md:flex-col">
+			<div className="flex justify-start gap-4 max-md:hidden">
 				<span>
 					<Icons.VoiceSoundControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
 				</span>
@@ -276,13 +276,13 @@ export function ControlBar({
 					<Icons.VoiceEmojiControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
 				</span>
 			</div>
-			<div className="flex justify-center gap-3">
+			<div className="flex justify-center gap-3 flex-1">
 				{visibleControls.microphone && (
 					<div className="relative rounded-full">
 						<TrackToggle
 							key={+showMicrophone}
 							initialState={showMicrophone}
-							className="w-14 h-14 !rounded-full flex justify-center items-center"
+							className="w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center"
 							source={Track.Source.Microphone}
 							onChange={microphoneOnChange}
 							onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Microphone, error })}
@@ -300,7 +300,7 @@ export function ControlBar({
 						<TrackToggle
 							key={+showCamera}
 							initialState={showCamera}
-							className="w-14 h-14 !rounded-full flex justify-center items-center"
+							className="w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center"
 							source={Track.Source.Camera}
 							onChange={cameraOnChange}
 							onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Camera, error })}
@@ -324,7 +324,7 @@ export function ControlBar({
 						<TrackToggle
 							key={+showScreen}
 							initialState={showScreen}
-							className="w-14 h-14 !rounded-full flex justify-center items-center"
+							className="w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center"
 							source={Track.Source.ScreenShare}
 							captureOptions={{ audio: true, selfBrowserSurface: 'include' }}
 							onChange={onScreenShare}
@@ -333,19 +333,19 @@ export function ControlBar({
 					) : (
 						<ScreenShareToggleButton
 							onClick={handleOpenScreenSelection}
-							className="w-14 h-14 !rounded-full flex justify-center items-center"
+							className="w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center"
 						/>
 					))}
 				{visibleControls.leave && (
 					<div
 						onClick={onLeaveRoom}
-						className="w-14 h-14 bg-[#da373c] hover:bg-[#a12829] cursor-pointer rounded-full flex justify-center items-center"
+						className="w-14 aspect-square max-md:w-10 bg-[#da373c] hover:bg-[#a12829] cursor-pointer rounded-full flex justify-center items-center"
 					>
-						<Icons.EndCall className="w-6 h-6" />
+						<Icons.EndCall className="w-6 aspect-square max-md:w-4" />
 					</div>
 				)}
 			</div>
-			<div className="flex justify-end gap-4">
+			<div className="flex justify-end gap-4 max-md:hidden">
 				{!isExternalCalling && (
 					<div onClick={togglePopout}>
 						{isOpenPopOut ? (

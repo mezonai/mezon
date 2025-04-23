@@ -13,6 +13,7 @@ import {
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowModelEvent,
+	selectStatusMenu,
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
 	selectVoiceInfo,
@@ -135,9 +136,10 @@ const ChannelVoice = memo(
 		const showModalEvent = useSelector(selectShowModelEvent);
 		const { channelId } = useAppParams();
 		const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
+		const isOnMenu = useSelector(selectStatusMenu);
 		return (
 			<div
-				className={`${!isChannelMezonVoice || showModalEvent || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0  z-30`}
+				className={`${!isChannelMezonVoice || showModalEvent || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'}  right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-30`}
 				style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
 			>
 				{token === '' || !serverUrl ? (

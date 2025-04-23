@@ -28,7 +28,7 @@ export const style = (colors: Attributes) =>
 			borderColor: colors.border,
 			borderRadius: size.s_20,
 			padding: size.s_2,
-			zIndex: size.s_2
+			zIndex: 2
 		},
 		videoOverlay: {
 			position: 'absolute',

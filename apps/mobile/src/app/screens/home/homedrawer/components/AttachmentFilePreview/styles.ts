@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 		borderColor: Colors.secondary,
 		borderRadius: size.s_20,
 		padding: size.s_2,
-		zIndex: size.s_2
+		zIndex: 2
 	},
 	videoOverlay: {
 		position: 'absolute',

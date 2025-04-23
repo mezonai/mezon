@@ -8,11 +8,6 @@ import CustomIncomingCall from './src/app/screens/customIncomingCall';
 import { setupIncomingCall } from './src/app/utils/pushNotificationHelpers';
 notifee.onBackgroundEvent(async () => {});
 
-// eslint-disable-next-line no-undef
-if (__DEV__) {
-	require('./reactotronConfig');
-}
-
 registerGlobals();
 enableFreeze(Platform.OS === 'android');
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {

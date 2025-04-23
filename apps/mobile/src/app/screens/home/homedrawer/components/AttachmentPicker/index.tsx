@@ -8,7 +8,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
+import DocumentPicker from '@react-native-documents/picker';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';

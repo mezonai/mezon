@@ -34,6 +34,7 @@ export * from './lib/chat/hooks/useUserById';
 
 export * from './lib/app/navigation/navigation';
 export * from './lib/chat/hooks/useActivities';
+export * from './lib/chat/hooks/useClanDragAndDrop';
 export * from './lib/chat/hooks/useCurrentChat';
 export * from './lib/chat/hooks/useDeleteMessage';
 export * from './lib/chat/hooks/useDirect';

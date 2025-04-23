@@ -15,7 +15,7 @@ import {
 	SidebarLogoItem,
 	Topbar
 } from '@mezon/components';
-import { useAppParams, useAuth, useMenu, useReference } from '@mezon/core';
+import { useAppParams, useAuth, useClanDragAndDrop, useMenu, useReference } from '@mezon/core';
 import {
 	DMCallActions,
 	accountActions,
@@ -27,7 +27,6 @@ import {
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
 	selectAllChannelMemberIds,
-	selectAllClans,
 	selectAllRoleIds,
 	selectAudioBusyTone,
 	selectAudioDialTone,
@@ -52,6 +51,7 @@ import {
 	selectOnboardingMode,
 	selectOpenModalAttachment,
 	selectOpenModalE2ee,
+	selectOrderedClans,
 	selectSignalingDataByUserId,
 	selectStatusMenu,
 	selectTheme,
@@ -62,7 +62,7 @@ import {
 
 import { useWebRTCStream } from '@mezon/components';
 import { Icons } from '@mezon/ui';
-import { IClan, PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
+import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
 import { ChannelType, WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -483,30 +483,49 @@ const SidebarMenu = memo(
 );
 
 const ClansList = memo(() => {
-	const clans = useSelector(selectAllClans);
-	const isClanView = useSelector(selectClanView);
+	const dispatch = useDispatch();
+	const clans = useSelector(selectOrderedClans);
 	const currentClanId = useSelector(selectCurrentClanId);
+	const isClanView = useSelector(selectClanView);
 
-	const sortedClans = useMemo(() => {
-		return [...clans].sort((a, b) => {
-			const nameA = a.clan_name ?? '';
-			const nameB = b.clan_name ?? '';
+	const [items, setItems] = useState<string[]>([]);
 
-			if (nameA < nameB) {
-				return -1;
-			}
-			if (nameA > nameB) {
-				return 1;
-			}
-			return 0;
-		});
+	const { draggingState, handleMouseDown, handleMouseEnter } = useClanDragAndDrop(items, setItems);
+	useEffect(() => {
+		setItems(clans.map((c) => c.id));
 	}, [clans]);
 
+	const { isDragging, draggedItem, dragPosition, dragOffset } = draggingState;
+	const isActive = isClanView && currentClanId === clans.find((c) => c.id === draggedItem)?.clan_id;
+
 	return (
-		<div className="flex flex-col gap-3">
-			{sortedClans.map((clan: IClan) => (
-				<SidebarClanItem key={clan.id} option={clan} active={isClanView && currentClanId === clan.clan_id} />
-			))}
+		<div className="flex flex-col gap-2 relative">
+			{items.map((id) => {
+				const clan = clans.find((c) => c.id === id)!;
+				const draggingThis = isDragging && draggedItem === clan.id;
+
+				return (
+					<div
+						key={clan.id}
+						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'}`}
+						onMouseEnter={() => handleMouseEnter(clan.id)}
+						onMouseDown={(e) => handleMouseDown(e, clan.id)}
+					>
+						<SidebarClanItem option={clan} active={isActive} className={draggingThis ? 'opacity-0' : ''} />
+					</div>
+				);
+			})}
+			{isDragging && draggedItem && dragPosition && (
+				<div
+					className="fixed pointer-events-none z-50 w-[48px] h-[48px]"
+					style={{
+						left: `${dragPosition.x - dragOffset.x}px`,
+						top: `${dragPosition.y - dragOffset.y}px`
+					}}
+				>
+					<SidebarClanItem option={clans.find((c) => c.id === draggedItem)!} active={false} />
+				</div>
+			)}
 		</div>
 	);
 });

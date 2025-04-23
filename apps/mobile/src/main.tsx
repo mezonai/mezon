@@ -7,9 +7,6 @@ import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
 import { setupIncomingCall } from './app/utils/pushNotificationHelpers';
 notifee.onBackgroundEvent(async () => {});
-if (__DEV__) {
-	require('../reactotronConfig');
-}
 
 registerGlobals();
 enableFreeze(Platform.OS === 'android');

@@ -13,9 +13,11 @@ import PanelClan from '../PanelClan';
 export type SidebarClanItemProps = {
 	option: IClan;
 	active?: boolean;
+	onMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void;
+	className?: string;
 };
 
-const SidebarClanItem = ({ option, active }: SidebarClanItemProps) => {
+const SidebarClanItem = ({ option, active, onMouseDown, className = '' }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
 	const badgeCountClan = useSelector(selectBadgeCountByClanId(option.clan_id ?? '')) || 0;
 	const navigate = useCustomNavigate();
@@ -36,6 +38,7 @@ const SidebarClanItem = ({ option, active }: SidebarClanItemProps) => {
 			}
 		});
 	};
+
 	const [coords, setCoords] = useState<Coords>({
 		mouseX: 0,
 		mouseY: 0,
@@ -55,7 +58,12 @@ const SidebarClanItem = ({ option, active }: SidebarClanItemProps) => {
 	};
 
 	return (
-		<div onContextMenu={handleMouseClick} className="relative h-[40px]">
+		<div
+			onMouseDown={onMouseDown}
+			onContextMenu={handleMouseClick}
+			data-id={option.id}
+			className={`relative h-[48px] w-[48px] overflow-hidden cursor-move rounded-lg bg-gray-800 flex items-center justify-center transition-all duration-200 hover:bg-gray-700 ${className}`}
+		>
 			<button onClick={handleClick} draggable="false">
 				<NavLinkComponent active={active}>
 					{option.logo ? (
