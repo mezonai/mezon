@@ -36,8 +36,14 @@ module.exports = composePlugins(
         patterns: [
           {
             from: path.resolve(__dirname, 'src/assets/.well-known'),
-            to: '.well-known',
             noErrorOnMissing: true,
+            to({ context, absoluteFilename }) {
+              const filename = path.basename(absoluteFilename);
+              if (filename === 'apple-app-site-association.json') {
+                return path.posix.join('.well-known', 'apple-app-site-association');
+              }
+              return path.posix.join('.well-known', filename);
+            },
           },
         ],
       })
@@ -53,8 +59,8 @@ module.exports = composePlugins(
     config.devServer.historyApiFallback = {
       rewrites: [
         {
-          from: /^\/\.well-known\/.*$/,
-          to: (context) => context.parsedUrl.pathname,
+          from: /^\/\.well-known\/apple-app-site-association$/,
+          to: '/.well-known/apple-app-site-association.json',
         },
       ],
     };
