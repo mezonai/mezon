@@ -1,6 +1,9 @@
 import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { useChannelRedirect } from '../../hooks/useChannelRedirect';
 
 export default function ChannelIndex() {
+	useChannelRedirect();
+
 	return (
 		<div className="flex flex-col flex-1 shrink min-w-0 dark:bg-bgPrimary bg-bgLightModeSecond h-[100%] overflow-hidden">
 			<div className={`flex ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'} flex-row `}>

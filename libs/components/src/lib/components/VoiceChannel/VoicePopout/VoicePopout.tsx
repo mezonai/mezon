@@ -1,10 +1,10 @@
-/* eslint-disable no-console */
-import { TrackReferenceOrPlaceholder, VideoTrack } from '@livekit/components-react';
+import { LiveKitRoom, TrackReferenceOrPlaceholder } from '@livekit/components-react';
 import { useAuth } from '@mezon/core';
 import { handleParticipantVoiceState, selectVoiceInfo, useAppDispatch, voiceActions } from '@mezon/store';
 import { ParticipantMeetState } from '@mezon/utils';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { MyVideoConference } from '../MyVideoConference/MyVideoConference';
 
 const VoicePopout: React.FC<{
 	tracks?: TrackReferenceOrPlaceholder[];
@@ -55,30 +55,27 @@ const VoicePopout: React.FC<{
 		}
 	}, [dispatch]);
 
-	const [trackVideo, setTrackVideo] = useState<number>(0);
-	const handlePinScreen = (index: number) => {
-		setTrackVideo(index);
-	};
-
 	return (
 		<div className="h-full w-full">
-			<div className="w-full h-[80%] bg-[#2f3136] flex justify-center">
-				{tracks && tracks.length > 0 && <VideoTrack trackRef={tracks[trackVideo] as any} className="!w-auto" />}
-			</div>
-			<div className="h-[20%] w-full overflow-y-auto">
-				<div className="h-full flex flex-col flex-wrap items-center gap-4">
-					{tracks &&
-						tracks.map((trackRef, index) => (
-							<div
-								key={index}
-								className={`cursor-pointer h-20 ${trackVideo === index ? 'border-2 border-blue-500' : ''}`}
-								onClick={() => handlePinScreen(index)}
-							>
-								<VideoTrack trackRef={trackRef as any} className="!w-auto h-full" />
-							</div>
-						))}
-				</div>
-			</div>
+			<LiveKitRoom
+				ref={containerRef}
+				id="livekitRoom"
+				className="flex flex-col !w-full !h-full"
+				token={''}
+				serverUrl={''}
+				data-lk-theme="default"
+				connectOptions={{
+					autoSubscribe: false
+				}}
+				connect={false}
+			>
+				<MyVideoConference
+					channelLabel={voiceInfo?.channelLabel || 'Voice Channel'}
+					onLeaveRoom={handleLeaveRoom}
+					onFullScreen={handleFullScreen}
+					tracks={tracks}
+				/>
+			</LiveKitRoom>
 		</div>
 	);
 };

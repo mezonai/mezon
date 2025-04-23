@@ -201,8 +201,23 @@ function layoutWithComplexLayouter({
 		}
 	}
 
+	if (attempts.length === 0) {
+		const rowCount = Math.ceil(count / 3);
+		const lineCounts: number[] = [];
+
+		let remainingItems = count;
+		for (let i = 0; i < rowCount - 1; i++) {
+			lineCounts.push(3);
+			remainingItems -= 3;
+		}
+		lineCounts.push(remainingItems);
+
+		pushAttempt(lineCounts);
+	}
+
 	let optimalAttempt: IAttempt | undefined;
 	let optimalDiff = 0;
+
 	for (let i = 0; i < attempts.length; i++) {
 		const { heights, lineCounts } = attempts[i];
 		const lineCount = lineCounts?.length;

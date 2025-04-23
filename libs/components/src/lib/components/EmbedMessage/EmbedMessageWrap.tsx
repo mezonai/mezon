@@ -15,7 +15,7 @@ export function EmbedMessageWrap({ embeds, senderId, messageId }: EmbedMessageWr
 	const dispatch = useDispatch();
 
 	const extractChannelParams = (url: string) => {
-		const pattern = /www\.mezon\.ai\/channel-app\/([^/]+)\/([^/]+)\?([^#]+)/i;
+		const pattern = /mezon\.ai\/channel-app\/([^/]+)\/([^/]+)\?([^#]+)/i;
 		const match = url.match(pattern);
 
 		if (match) {

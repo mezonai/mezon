@@ -1,4 +1,4 @@
-import { inviteActions, selectTheme, useAppDispatch } from '@mezon/store';
+import { channelsActions, getStore, inviteActions, selectAppChannelById, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EBacktickType, getYouTubeEmbedSize, getYouTubeEmbedUrl, isYouTubeLink } from '@mezon/utils';
 import { useCallback, useEffect, useState } from 'react';
@@ -16,6 +16,23 @@ type MarkdownContentOpt = {
 	typeOfBacktick?: EBacktickType;
 	isReply?: boolean;
 	isSearchMessage?: boolean;
+};
+
+const extractChannelParams = (url: string) => {
+	const pattern = /mezon\.ai\/chat\/clans\/([^/]+)\/channels\/([^/]+)\?([^#]+)/i;
+	const match = url.match(pattern);
+
+	if (match) {
+		const params = new URLSearchParams(match[3]);
+		return {
+			channelId: match[2],
+			clanId: match[1],
+			code: params.get('code'),
+			subpath: params.get('subpath')
+		};
+	}
+
+	return null;
 };
 
 export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
@@ -41,7 +58,29 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				if (url.startsWith(origin) || url.startsWith(originClan) || url.startsWith(originDirect)) {
 					const urlInvite = new URL(url);
 					dispatch(inviteActions.setIsClickInvite(true));
+
 					navigate(urlInvite.pathname);
+
+					const params = extractChannelParams(url);
+
+					if (!params?.channelId || !params?.clanId || !params?.code) return;
+
+					const store = getStore();
+					const appChannel = selectAppChannelById(store.getState(), params.channelId);
+
+					if (appChannel) {
+						dispatch(
+							channelsActions.setAppChannelsListShowOnPopUp({
+								clanId: params.clanId,
+								channelId: params.channelId,
+								appChannel: {
+									...appChannel,
+									code: params.code as string,
+									subpath: params.subpath as string
+								}
+							})
+						);
+					}
 				} else {
 					window.open(url, '_blank');
 				}

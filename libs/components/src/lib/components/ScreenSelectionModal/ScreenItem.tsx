@@ -6,10 +6,11 @@ type ScreenItemsProps = {
 	id: string;
 	name: string;
 	thumbnail: string;
+	audio: boolean;
 	onClose?: () => void;
 };
 
-const ScreenItems = memo(({ id, name, thumbnail, onClose }: ScreenItemsProps) => {
+const ScreenItems = memo(({ id, name, thumbnail, onClose, audio }: ScreenItemsProps) => {
 	const dispatch = useDispatch();
 
 	const selectStreamScreen = useCallback(async () => {
@@ -20,12 +21,14 @@ const ScreenItems = memo(({ id, name, thumbnail, onClose }: ScreenItemsProps) =>
 					chromeMediaSourceId: id
 				}
 			},
-			audio: {
-				mandatory: {
-					chromeMediaSource: 'desktop',
-					chromeMediaSourceId: id
-				}
-			}
+			audio: audio
+				? {
+						mandatory: {
+							chromeMediaSource: 'desktop',
+							chromeMediaSourceId: id
+						}
+					}
+				: false
 		} as MediaStreamConstraints);
 		dispatch(voiceActions.setShowSelectScreenModal(false));
 		dispatch(voiceActions.setStreamScreen(stream));

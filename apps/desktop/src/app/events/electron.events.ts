@@ -39,11 +39,6 @@ export default class ElectronEvents {
 							App.mainWindow.restore();
 						}
 						App.mainWindow.focus();
-
-						if (process.platform === 'win32' || process.platform === 'linux') {
-							App.mainWindow.flashFrame(true);
-						}
-
 						if (options.data?.link) {
 							App.mainWindow.webContents.send(NOTIFICATION_CLICKED, {
 								link: options.data.link,

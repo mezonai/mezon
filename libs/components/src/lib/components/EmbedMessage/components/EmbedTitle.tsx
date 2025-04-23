@@ -14,7 +14,7 @@ export function EmbedTitle({ title, url, onClick }: EmbedTitleProps) {
 					target={'_blank'}
 					rel="noreferrer"
 					onClick={(e) => {
-						if (url?.startsWith('www.mezon.ai')) {
+						if (url?.startsWith('mezon.ai')) {
 							e.preventDefault();
 						}
 						onClick?.();

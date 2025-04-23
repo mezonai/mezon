@@ -20,11 +20,13 @@ import { Icons } from '@mezon/ui';
 import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
 
 import isElectron from 'is-electron';
-import { LocalTrackPublication, Track } from 'livekit-client';
+import { LocalTrackPublication, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { usePopup } from '../../DraggablePopup/usePopup';
 import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
+import VoicePopout from '../VoicePopout/VoicePopout';
 import { BackgroundEffectsMenu } from './BackgroundEffectsMenu';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
 import { ScreenShareToggleButton } from './TrackToggle/ScreenShareToggleButton';
@@ -88,19 +90,25 @@ export function ControlBar({
 		preventSave: !saveUserChoices
 	});
 
+	useEffect(() => {
+		if (!isOpenPopOut) {
+			closeVoicePopup();
+		}
+	}, [isOpenPopOut]);
+
 	const handleRequestCameraPermission = useCallback(async () => {
 		const permissionStatus = await requestMediaPermission('video');
 		if (permissionStatus === 'granted') {
 			dispatch(voiceActions.setShowCamera(true));
 		}
-	}, []);
+	}, [dispatch]);
 
 	const handleRequestMicrophonePermission = useCallback(async () => {
 		const permissionStatus = await requestMediaPermission('audio');
 		if (permissionStatus === 'granted') {
 			dispatch(voiceActions.setShowMicrophone(true));
 		}
-	}, []);
+	}, [dispatch]);
 
 	const microphoneOnChange = useCallback(
 		(enabled: boolean, isUserInitiated: boolean) => {
@@ -112,7 +120,7 @@ export function ControlBar({
 				}
 			}
 		},
-		[hasMicrophoneAccess]
+		[hasMicrophoneAccess, dispatch, handleRequestMicrophonePermission]
 	);
 
 	const cameraOnChange = useCallback(
@@ -125,7 +133,7 @@ export function ControlBar({
 				}
 			}
 		},
-		[hasCameraAccess]
+		[hasCameraAccess, dispatch, handleRequestCameraPermission]
 	);
 
 	useEffect(() => {
@@ -225,46 +233,39 @@ export function ControlBar({
 		[dispatch]
 	);
 
-	let popoutWindow: Window | null = null;
-	const screenShareTracks = useTracks([
-		{ source: Track.Source.ScreenShare, withPlaceholder: false },
-		{ source: Track.Source.Camera, withPlaceholder: false }
-	]);
+	const screenShareTracks = useTracks(
+		[
+			{ source: Track.Source.Camera, withPlaceholder: true },
+			{ source: Track.Source.ScreenShare, withPlaceholder: false }
+		],
+		{ updateOnlyOn: [RoomEvent.ActiveSpeakersChanged], onlySubscribed: false }
+	);
+
+	const [openVoicePopup, closeVoicePopup] = usePopup(
+		({ closePopup }) => (
+			<VoicePopout
+				tracks={screenShareTracks}
+				onClose={() => {
+					closePopup();
+				}}
+			/>
+		),
+		{
+			title: 'Voice Channel',
+			handleClose: () => dispatch(voiceActions.setOpenPopOut(false))
+		}
+	);
+
 	const togglePopout = useCallback(() => {
-		if (window.location.pathname === '/popout') {
+		if (isOpenPopOut) {
+			closeVoicePopup();
 			dispatch(voiceActions.setOpenPopOut(false));
-			window.close();
-			return;
+		} else {
+			openVoicePopup();
+			dispatch(voiceActions.setOpenPopOut(true));
 		}
-		(window as any).sharedTracks = {
-			listTracks: screenShareTracks
-		};
-		popoutWindow = window.open('/popout', 'LiveKitPopout', 'width=800,height=600,left=100,top=100');
+	}, [dispatch, isOpenPopOut, openVoicePopup, closeVoicePopup]);
 
-		if (popoutWindow) {
-			popoutWindow.onload = () => {
-				const trackRef = screenShareTracks.find((ref) => ref.publication?.videoTrack);
-				if (!trackRef) return;
-			};
-		}
-
-		if (!popoutWindow) {
-			console.error('Pop-up window blocked!');
-			return;
-		}
-
-		dispatch(voiceActions.setOpenPopOut(true));
-
-		const checkIfClosed = setInterval(() => {
-			if (popoutWindow?.closed) {
-				clearInterval(checkIfClosed);
-				popoutWindow = null;
-				dispatch(voiceActions.setOpenPopOut(false));
-			}
-		}, 500);
-	}, [screenShareTracks, screenShareTracks.length]);
-
-	const livekitRoomId = isOpenPopOut ? 'livekitRoomPopOut' : 'livekitRoom';
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent">
 			<div className="flex justify-start gap-4">
