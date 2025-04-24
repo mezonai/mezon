@@ -9,6 +9,7 @@ import {
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	selectCurrentClanId,
+	selectSession,
 	selectVoiceOpenPopOut,
 	usersClanActions
 } from '@mezon/store';
@@ -39,6 +40,14 @@ function getRedirectTo(initialPath?: string): string {
 const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch; initialPath: string }) => {
 	let retries = 3;
 	let isRedirectLogin = false;
+	const store = getStore();
+	const sessionUser = selectSession(store?.getState());
+
+	// Does not have token in session, cannot call refreshSession
+	if (!sessionUser?.token) {
+		return { isLogin: !isRedirectLogin } as IAuthLoaderData;
+	}
+
 	while (retries > 0) {
 		try {
 			const response = await dispatch(authActions.refreshSession());

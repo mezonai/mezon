@@ -19,13 +19,16 @@
 		E908EBB72D76A98C00571976 /* CustomImageViewIOSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908EBB62D76A98C00571976 /* CustomImageViewIOSManager.swift */; };
 		E91B62B12CEF3E2F0042CB57 /* dialtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E91B62B02CEF3E2F0042CB57 /* dialtone.mp3 */; };
 		E925D79F2DB8D6A700C10D69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E925D79E2DB8D69E00C10D69 /* AppDelegate.swift */; };
+		E943F9ED2DB9D70200B81261 /* DeviceUtilsIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E943F9EC2DB9D70000B81261 /* DeviceUtilsIOS.swift */; };
+		E943F9F12DBA144700B81261 /* DeviceUtilsIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = E943F9F02DBA144700B81261 /* DeviceUtilsIOS.m */; };
 		E94D0A432DA66F2700D84EF2 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E94CBA5D2DA65548005C0A98 /* ReplayKit.framework */; };
-		E94D0A4A2DA66F2700D84EF2 /* ScreenBroadcast.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E94D0A422DA66F2700D84EF2 /* ScreenBroadcast.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E967E05F2C6B20060050124F /* MezonSharing in Resources */ = {isa = PBXBuildFile; fileRef = E967E05E2C6B20060050124F /* MezonSharing */; };
 		E967E0672C6B20290050124F /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E967E0662C6B20290050124F /* ShareViewController.swift */; };
 		E967E06A2C6B20290050124F /* Base in Resources */ = {isa = PBXBuildFile; fileRef = E967E0692C6B20290050124F /* Base */; };
 		E967E06E2C6B20290050124F /* MezonSharing.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E967E0642C6B20290050124F /* MezonSharing.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E99B89652D0ECA2100D60E91 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E99B89642D0ECA2100D60E91 /* GoogleService-Info.plist */; };
+		E9A25DD52DBA416B0056281D /* KeepAwakeIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */; };
+		E9A25DD72DBA41D00056281D /* KeepAwakeIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */; };
 		E9ABAB192CF42C7F003537E1 /* default.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E9ABAB182CF42C7F003537E1 /* default.mp3 */; };
 		E9ABAB1B2CF42CDA003537E1 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9ABAB1A2CF42CDA003537E1 /* CallKit.framework */; };
 		E9ABAB1D2CF42CE3003537E1 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9ABAB1C2CF42CE3003537E1 /* Intents.framework */; };
@@ -66,7 +69,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				E94D0A4A2DA66F2700D84EF2 /* ScreenBroadcast.appex in Embed Foundation Extensions */,
 				E967E06E2C6B20290050124F /* MezonSharing.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -96,6 +98,8 @@
 		E91B62B02CEF3E2F0042CB57 /* dialtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dialtone.mp3; sourceTree = "<group>"; };
 		E925D79E2DB8D69E00C10D69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E94005A02C17F0A300D5CF58 /* Mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Mobile.entitlements; path = Mobile/Mobile.entitlements; sourceTree = "<group>"; };
+		E943F9EC2DB9D70000B81261 /* DeviceUtilsIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilsIOS.swift; sourceTree = "<group>"; };
+		E943F9F02DBA144700B81261 /* DeviceUtilsIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceUtilsIOS.m; sourceTree = "<group>"; };
 		E94CBA5D2DA65548005C0A98 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		E94D0A422DA66F2700D84EF2 /* ScreenBroadcast.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ScreenBroadcast.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E967E05E2C6B20060050124F /* MezonSharing */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MezonSharing; sourceTree = "<group>"; };
@@ -105,6 +109,8 @@
 		E967E06B2C6B20290050124F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E967E0722C6B203C0050124F /* MezonSharing.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MezonSharing.entitlements; sourceTree = "<group>"; };
 		E99B89642D0ECA2100D60E91 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../NCC/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAwakeIOS.swift; sourceTree = "<group>"; };
+		E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeepAwakeIOS.m; sourceTree = "<group>"; };
 		E9ABAB182CF42C7F003537E1 /* default.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = default.mp3; sourceTree = "<group>"; };
 		E9ABAB1A2CF42CDA003537E1 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		E9ABAB1C2CF42CE3003537E1 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
@@ -172,6 +178,7 @@
 		13B07FAE1A68108700A75B9A /* Mobile */ = {
 			isa = PBXGroup;
 			children = (
+				E943F9EC2DB9D70000B81261 /* DeviceUtilsIOS.swift */,
 				E925D79E2DB8D69E00C10D69 /* AppDelegate.swift */,
 				E99B89642D0ECA2100D60E91 /* GoogleService-Info.plist */,
 				E9CB94B52CFE07C800F484EA /* buzz.mp3 */,
@@ -190,6 +197,9 @@
 				E908EBB12D76A95200571976 /* Mobile-Bridging-Header.h */,
 				E908EBB42D76A97400571976 /* CustomImageViewIOS.m */,
 				E908EBB62D76A98C00571976 /* CustomImageViewIOSManager.swift */,
+				E943F9F02DBA144700B81261 /* DeviceUtilsIOS.m */,
+				E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */,
+				E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */,
 			);
 			name = Mobile;
 			sourceTree = "<group>";
@@ -591,6 +601,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E925D79F2DB8D6A700C10D69 /* AppDelegate.swift in Sources */,
+				E943F9F12DBA144700B81261 /* DeviceUtilsIOS.m in Sources */,
+				E9A25DD72DBA41D00056281D /* KeepAwakeIOS.m in Sources */,
+				E943F9ED2DB9D70200B81261 /* DeviceUtilsIOS.swift in Sources */,
+				E9A25DD52DBA416B0056281D /* KeepAwakeIOS.swift in Sources */,
 				E908EBB32D76A95200571976 /* CustomImageViewIOS.swift in Sources */,
 				E908EBB72D76A98C00571976 /* CustomImageViewIOSManager.swift in Sources */,
 				E908EBB52D76A97400571976 /* CustomImageViewIOS.m in Sources */,
@@ -855,7 +869,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.37;
+				MARKETING_VERSION = 1.2.38;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1035,7 +1049,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.37;
+				MARKETING_VERSION = 1.2.38;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

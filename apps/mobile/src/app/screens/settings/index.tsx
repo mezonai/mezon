@@ -1,7 +1,6 @@
 import { useAuth } from '@mezon/core';
 import {
 	debounce,
-	getAppInfo,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
@@ -13,7 +12,7 @@ import { appActions, authActions, channelsActions, clansActions, getAuthState, g
 import { sleep } from '@mezon/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, Platform, ScrollView, View } from 'react-native';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -47,9 +46,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		const [appInfo] = await Promise.all([getAppInfo()]);
-		const { app_platform: platform } = appInfo;
-		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: platform }));
+		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
 		store.dispatch(appActions.setLoadingMainMobile(false));
 		setLinkRedirectLogout('');
 	};

@@ -3,7 +3,6 @@ import { appActions, selectHasInternetMobile } from '@mezon/store-mobile';
 import NetInfo from '@react-native-community/netinfo';
 import React, { useEffect } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { hasNotch } from 'react-native-device-info';
 import Animated from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -36,7 +35,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 15,
 		position: 'absolute',
 		zIndex: 999999999999,
-		top: hasNotch() ? 60 : 20,
+		top: 60,
 		marginHorizontal: 10,
 		alignSelf: 'center',
 		backgroundColor: 'white',

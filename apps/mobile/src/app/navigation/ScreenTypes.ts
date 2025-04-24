@@ -254,8 +254,8 @@ type MenuClanStackParamList = {
 	[APP_SCREEN.MENU_CLAN.CATEGORY_SETTING]: {
 		categoryId: string;
 	};
-	[APP_SCREEN.MENU_CLAN.INTEGRATIONS]: undefined;
-	[APP_SCREEN.MENU_CLAN.WEBHOOKS]: undefined;
+	[APP_SCREEN.MENU_CLAN.INTEGRATIONS]: { channelId?: string };
+	[APP_SCREEN.MENU_CLAN.WEBHOOKS]: { channelId?: string };
 	[APP_SCREEN.MENU_CLAN.WEBHOOKS_EDIT]: {
 		webhook: ApiWebhook;
 	};

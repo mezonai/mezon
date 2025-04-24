@@ -216,10 +216,9 @@ const RootListener = () => {
 			if (!username) {
 				return;
 			}
-			const [fcmtoken, appInfo] = await Promise.all([handleFCMToken(), getAppInfo()]);
+			const fcmtoken = await handleFCMToken();
 			if (fcmtoken) {
-				const { app_platform: platform } = appInfo;
-				dispatch(fcmActions.registFcmDeviceToken({ tokenId: fcmtoken, deviceId: username, platform }));
+				dispatch(fcmActions.registFcmDeviceToken({ tokenId: fcmtoken, deviceId: username, platform: Platform.OS }));
 			}
 		} catch (error) {
 			console.error('Error loading FCM config:', error);

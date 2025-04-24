@@ -2,12 +2,13 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { getAuthState } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
-import { useMemo, useRef, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, Modal, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Wave } from 'react-native-animated-spinkit';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import StatusBarHeight from '../../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './styles';
 
@@ -19,6 +20,23 @@ const ChannelAppScreen = ({ navigation, route }) => {
 	const session = JSON.stringify(authState.session);
 	const [loading, setLoading] = useState(true);
 	const webviewRef = useRef<WebView>(null);
+	const [orientation, setOrientation] = useState<'Portrait' | 'Landscape'>('Portrait');
+
+	useEffect(() => {
+		const handleOrientationChange = () => {
+			const { width, height } = Dimensions.get('window');
+			setOrientation(width > height ? 'Landscape' : 'Portrait');
+		};
+		const subscription = Platform.OS === 'ios' ? Dimensions.addEventListener('change', handleOrientationChange) : null;
+
+		if (Platform.OS === 'ios') {
+			handleOrientationChange();
+		}
+
+		return () => {
+			subscription?.remove();
+		};
+	}, []);
 
 	const uri = useMemo(() => {
 		let queryString: string;
@@ -111,6 +129,7 @@ const ChannelAppScreen = ({ navigation, route }) => {
 
 	return (
 		<Modal style={styles.container} visible={true} supportedOrientations={['portrait', 'landscape']}>
+			{orientation === 'Portrait' && Platform.OS === 'ios' && <StatusBarHeight />}
 			{loading && (
 				<View
 					style={{

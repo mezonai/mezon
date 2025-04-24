@@ -1,7 +1,6 @@
 import { useAuth } from '@mezon/core';
 import {
 	ChevronIcon,
-	getAppInfo,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
@@ -12,7 +11,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import { authActions, channelsActions, clansActions, getStoreAsync, messagesActions } from '@mezon/store-mobile';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Platform, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { SeparatorWithLine } from '../../../components/Common';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
@@ -49,9 +48,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		const [appInfo] = await Promise.all([getAppInfo()]);
-		const { app_platform: platform } = appInfo;
-		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: platform }));
+		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
 	};
 
 	//TODO: delete

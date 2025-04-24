@@ -46,7 +46,6 @@
 		"react-native-compressor": "1.11.0",
 		"react-native-controlled-mentions": "3.0.0-alpha.4",
 		"react-native-create-thumbnail": "^2.1.1",
-		"react-native-device-info": "11.1.0",
 		"react-native-dotenv": "3.4.11",
 		"react-native-fast-image": "8.6.3",
 		"react-native-fs": "2.20.0",

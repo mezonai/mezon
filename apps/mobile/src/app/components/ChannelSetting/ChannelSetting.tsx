@@ -153,10 +153,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: t('fields.channelWebhooks.webhook'),
 					expandable: true,
 					icon: <MezonIconCDN icon={IconCDN.webhookIcon} color={themeValue.text} />,
-					isShow: isChannel && channel?.type !== ChannelType.CHANNEL_TYPE_APP,
+					isShow: channel?.type !== ChannelType.CHANNEL_TYPE_APP,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
-							screen: APP_SCREEN.MENU_CLAN.INTEGRATIONS
+							screen: APP_SCREEN.MENU_CLAN.INTEGRATIONS,
+							params: {
+								channelId: channel?.channel_id
+							}
 						});
 					}
 				}

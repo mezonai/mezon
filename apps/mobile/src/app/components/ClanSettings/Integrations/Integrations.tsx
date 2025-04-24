@@ -13,26 +13,31 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from '../styles';
 
-export function Integrations() {
+export function Integrations({ route }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const { t } = useTranslation(['clanIntegrationsSetting']);
-
+	const { channelId } = route?.params || {};
 	const currentClanId = useSelector(selectCurrentClanId) as string;
 	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		if (canManageClan) {
-			dispatch(fetchWebhooks({ channelId: '0', clanId: currentClanId }));
+			dispatch(fetchWebhooks({ channelId: channelId || '0', clanId: currentClanId }));
 		}
-	}, [canManageClan, currentClanId, dispatch]);
+	}, [canManageClan, channelId, currentClanId, dispatch]);
 	const integrationsMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('integration.title'),
 			onPress: () => {
-				navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS);
+				navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
+					screen: APP_SCREEN.MENU_CLAN.WEBHOOKS,
+					params: {
+						channelId: channelId
+					}
+				});
 			},
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.webhookIcon} color={themeValue.text} />,

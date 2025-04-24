@@ -12,9 +12,10 @@ interface RenderMessageItemRefProps {
 	message: MessagesEntity;
 	preventAction: boolean;
 	isSearchTab?: boolean;
+	onLongPress?: () => void;
 }
 
-export const RenderMessageItemRef = ({ message, preventAction, isSearchTab }: RenderMessageItemRefProps) => {
+export const RenderMessageItemRef = ({ message, preventAction, isSearchTab, onLongPress }: RenderMessageItemRefProps) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation('message');
 
@@ -33,6 +34,7 @@ export const RenderMessageItemRef = ({ message, preventAction, isSearchTab }: Re
 					isMessageReply={true}
 					channelId={message.channel_id}
 					clanId={message.clan_id}
+					onLongPress={onLongPress}
 				/>
 			)}
 			{isMessageReplyDeleted && !isSearchTab ? (

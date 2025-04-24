@@ -19,9 +19,10 @@ interface IProps {
 	isMessageReply?: boolean;
 	channelId?: string;
 	clanId?: string;
+	onLongPress?: () => void;
 }
 
-export const MessageReferences = ({ messageReferences, preventAction, channelId, clanId }: IProps) => {
+export const MessageReferences = ({ messageReferences, preventAction, channelId, clanId, onLongPress }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
@@ -46,7 +47,7 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 	};
 
 	return (
-		<Pressable onPress={onPressAvatar} style={styles.aboveMessage}>
+		<Pressable onLongPress={preventAction ? undefined : onLongPress} onPress={onPressAvatar} style={styles.aboveMessage}>
 			<View style={styles.iconReply}>
 				<ReplyIcon width={size.s_34} height={size.s_30} />
 			</View>

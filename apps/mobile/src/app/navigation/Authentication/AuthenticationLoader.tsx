@@ -1,7 +1,6 @@
 import { useAuth } from '@mezon/core';
 import {
 	ActionEmitEvent,
-	getAppInfo,
 	load,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
@@ -254,9 +253,7 @@ export const AuthenticationLoader = () => {
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		const [appInfo] = await Promise.all([getAppInfo()]);
-		const { app_platform: platform } = appInfo;
-		store.dispatch(authActions.logOut({ device_id: userProfile?.user?.username, platform: platform }));
+		store.dispatch(authActions.logOut({ device_id: userProfile?.user?.username, platform: Platform.OS }));
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	}, []);
 
