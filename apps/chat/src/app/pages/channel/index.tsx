@@ -38,6 +38,7 @@ import {
 	selectProcessingByClan,
 	selectStatusMenu,
 	selectTheme,
+	selectToCheckAppIsOpening,
 	selectTopicByChannelId,
 	threadsActions,
 	topicsActions,
@@ -226,6 +227,9 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const missionDone = useSelector(selectMissionDone);
 	const missionSum = useSelector(selectMissionSum);
 	const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel.clan_id as string));
+	const appIsOpen = useAppSelector((state) => selectToCheckAppIsOpening(state, channelId));
+	const appButtonLabel = appIsOpen ? 'Reset App' : 'Launch App';
+
 	const currentMission = useMemo(() => {
 		return onboardingClan.mission[missionDone];
 	}, [missionDone, channelId]);
@@ -272,6 +276,14 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		if (isAppChannel) {
 			const store = getStore();
 			const appChannel = selectAppChannelById(store.getState(), channelId);
+			if (appIsOpen) {
+				const appSize = store.getState().channelApp.size;
+				const windowWidth = window.innerWidth;
+				const windowHeight = window.innerHeight;
+				const centerX = Math.max(0, (windowWidth - appSize.width) / 2);
+				const centerY = Math.max(0, (windowHeight - appSize.height) / 2);
+				dispatch(channelAppActions.setPosition({ x: centerX, y: centerY }));
+			}
 			dispatch(
 				channelsActions.setAppChannelsListShowOnPopUp({
 					clanId: appChannel?.clan_id as string,
@@ -293,7 +305,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 						className="w-[calc(50%_-_4px)] flex gap-1 items-center justify-center dark:bg-bgSecondary bg-bgLightSecondary dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton py-2 px-2 rounded-md cursor-pointer font-medium dark:hover:text-white hover:text-black"
 					>
 						<Icons.Joystick className="w-6" />
-						<div>Launch App</div>
+						<div>{appButtonLabel}</div>
 					</div>
 					<div className="w-[calc(50%_-_4px)] flex gap-1 items-center justify-center dark:bg-bgSecondary bg-bgLightSecondary dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton py-2 px-2 rounded-md cursor-pointer font-medium dark:hover:text-white hover:text-black">
 						<Icons.AppHelpIcon className="w-6" />

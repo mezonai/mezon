@@ -94,8 +94,6 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
 
-	const isMe = userId === myProfile?.userId;
-
 	const tokenInWallet = useMemo(() => {
 		return myProfile?.userProfile?.wallet ? safeJSONParse(myProfile?.userProfile?.wallet)?.value : 0;
 	}, [myProfile?.userProfile?.wallet]);

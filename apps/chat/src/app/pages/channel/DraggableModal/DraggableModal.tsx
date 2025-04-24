@@ -19,8 +19,9 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ASPECT_RATIO, ApiChannelAppResponseExtend, COLLAPSED_SIZE, DEFAULT_POSITION, INIT_SIZE, MIN_POSITION, useWindowSize } from '@mezon/utils';
+import { ApiChannelAppResponseExtend, COLLAPSED_SIZE, DEFAULT_POSITION, INIT_SIZE, MIN_POSITION, useWindowSize } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 
 import React from 'react';
@@ -30,7 +31,7 @@ type DraggableModalTabsProps = {
 	appChannelList: ApiChannelAppResponseExtend[];
 	onCollapseToggle?: (() => void | undefined) | undefined;
 	isCollapsed?: boolean;
-	handleMouseDown: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	handleMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
 	onFullSizeToggle?: () => void;
 	isFullSize?: boolean;
 };
@@ -315,19 +316,22 @@ const BlankChannelComponent: React.FC = () => {
 };
 
 type ResizeHandlesProps = {
-	handleResizeMouseDown: (dir: string) => (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	handleResizeMouseDown: (direction: string) => (event: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 const ResizeHandles: React.FC<ResizeHandlesProps> = memo(({ handleResizeMouseDown }) => (
 	<>
-		<div className="absolute top-0 left-1 w-[calc(100%-8px)] h-1 cursor-n-resize z-50 " onMouseDown={handleResizeMouseDown('top')} />
-		<div className="absolute bottom-0 left-1 w-[calc(100%-8px)] h-1 cursor-s-resize z-50 " onMouseDown={handleResizeMouseDown('bottom')} />
-		<div className="absolute left-0 top-1 h-[calc(100%-8px)] w-1 cursor-w-resize z-50 " onMouseDown={handleResizeMouseDown('left')} />
-		<div className="absolute right-0 top-1 h-[calc(100%-8px)] w-1 cursor-e-resize z-50 " onMouseDown={handleResizeMouseDown('right')} />
-		<div className="absolute bottom-0 right-0 w-3 h-3 cursor-se-resize z-50 " onMouseDown={handleResizeMouseDown('bottom-right')} />
-		<div className="absolute bottom-0 left-0 w-3 h-3 cursor-sw-resize z-50 " onMouseDown={handleResizeMouseDown('bottom-left')} />
-		<div className="absolute top-0 right-0 w-3 h-3 cursor-ne-resize z-50 " onMouseDown={handleResizeMouseDown('top-right')} />
-		<div className="absolute top-0 left-0 w-3 h-3 cursor-nw-resize z-50 " onMouseDown={handleResizeMouseDown('top-left')} />
+		<div className="absolute top-0 left-1 w-[calc(100%-8px)] h-1 cursor-n-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('n')} />
+		<div
+			className="absolute bottom-0 left-1 w-[calc(100%-8px)] h-1 cursor-s-resize z-50 resize-handle"
+			onMouseDown={handleResizeMouseDown('s')}
+		/>
+		<div className="absolute left-0 top-1 h-[calc(100%-8px)] w-1 cursor-w-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('w')} />
+		<div className="absolute right-0 top-1 h-[calc(100%-8px)] w-1 cursor-e-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('e')} />
+		<div className="absolute bottom-0 right-0 w-3 h-3 cursor-se-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('se')} />
+		<div className="absolute bottom-0 left-0 w-3 h-3 cursor-sw-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('sw')} />
+		<div className="absolute top-0 right-0 w-3 h-3 cursor-ne-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('ne')} />
+		<div className="absolute top-0 left-0 w-3 h-3 cursor-nw-resize z-50 resize-handle" onMouseDown={handleResizeMouseDown('nw')} />
 	</>
 ));
 
@@ -358,11 +362,8 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
-			e.stopPropagation();
 			setResizeDirection(null);
-			if (e.target instanceof HTMLDivElement && e.target.dataset.resize) {
-				setResizeDirection(e.target.dataset.resize);
-			} else {
+			if (!e.target || !(e.target as HTMLElement).classList.contains('resize-handle')) {
 				setDragging(true);
 			}
 		},
@@ -397,62 +398,59 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 
 	const handleMouseMove = useCallback(
 		(e: MouseEvent) => {
-			e.stopPropagation();
 			if (!dragging && !resizeDirection) return;
 
 			setOverlay(true);
 			if (dragging) {
-				setModalPosition((prev) => ({
-					x: Math.max(0, Math.min(prev.x + e.movementX, window.innerWidth - modalSize.width)),
-					y: Math.max(0, Math.min(prev.y + e.movementY, window.innerHeight - modalSize.height))
-				}));
+				const newPosition = {
+					x: modalPosition.x + e.movementX,
+					y: modalPosition.y + e.movementY
+				};
+
+				setModalPosition(newPosition);
+				dispatch(channelAppActions.setPosition(newPosition));
 			} else if (resizeDirection) {
 				let newWidth = modalSize.width;
 				let newHeight = modalSize.height;
 				let newX = modalPosition.x;
 				let newY = modalPosition.y;
-				const isCorner = resizeDirection.includes('-');
-				const shouldMaintainAspect = ASPECT_RATIO && isCorner;
 
-				if (resizeDirection.includes('right')) {
-					newWidth = Math.min(modalSize.width + e.movementX, window.innerWidth - modalPosition.x);
+				if (resizeDirection.includes('e')) {
+					newWidth = Math.max(200, modalSize.width + e.movementX);
 				}
-				if (resizeDirection.includes('left')) {
-					newWidth = Math.min(modalSize.width - e.movementX, window.innerWidth - newX);
-					newX = Math.max(0, newX + e.movementX);
+				if (resizeDirection.includes('w')) {
+					const deltaWidth = e.movementX;
+					newWidth = Math.max(200, modalSize.width - deltaWidth);
+					if (newWidth !== modalSize.width) {
+						newX = modalPosition.x + (modalSize.width - newWidth);
+					}
 				}
-				if (resizeDirection.includes('bottom')) {
-					newHeight = Math.min(modalSize.height + e.movementY, window.innerHeight - modalPosition.y);
+				if (resizeDirection.includes('s')) {
+					newHeight = Math.max(200, modalSize.height + e.movementY);
 				}
-				if (resizeDirection.includes('top')) {
-					newHeight = Math.min(modalSize.height - e.movementY, window.innerHeight - newY);
-					newY = Math.max(0, newY + e.movementY);
-				}
-
-				if (shouldMaintainAspect) {
-					newHeight = newWidth / ASPECT_RATIO;
+				if (resizeDirection.includes('n')) {
+					const deltaHeight = e.movementY;
+					newHeight = Math.max(200, modalSize.height - deltaHeight);
+					if (newHeight !== modalSize.height) {
+						newY = modalPosition.y + (modalSize.height - newHeight);
+					}
 				}
 
 				setModalSize({ width: newWidth, height: newHeight });
 				setModalPosition({ x: newX, y: newY });
+
+				dispatch(channelAppActions.setSize({ width: newWidth, height: newHeight }));
+				dispatch(channelAppActions.setPosition({ x: newX, y: newY }));
 			}
 		},
-		[dragging, resizeDirection, modalSize, modalPosition, ASPECT_RATIO, overlay]
+		[dragging, resizeDirection, modalSize, modalPosition, dispatch]
 	);
 
 	const handleMouseUp = useCallback(() => {
-		if (modalElementRef.current) {
-			const isSameAsWindowSize = modalSize.width === width && modalSize.height === height;
-			const isSameAsCollapsedSize = modalSize.width === COLLAPSED_SIZE.width && modalSize.height === COLLAPSED_SIZE.height;
-			if (!isSameAsCollapsedSize && !isSameAsWindowSize) {
-				dispatch(channelAppActions.setPosition({ x: modalPosition.x, y: modalPosition.y }));
-				dispatch(channelAppActions.setSize({ width: modalSize.width, height: modalSize.height }));
-			}
-		}
 		setDragging(false);
 		setResizeDirection(null);
 		setOverlay(false);
-	}, [dispatch, modalPosition, modalSize, width, height]);
+	}, []);
 
 	const handleResizeMouseDown = useCallback((dir: string) => {
 		return (e: React.MouseEvent<HTMLDivElement>) => {
@@ -469,25 +467,24 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 			window.removeEventListener('mouseup', handleMouseUp);
 		};
 	}, [handleMouseMove, handleMouseUp]);
+
 	const modalStyle = inVisible ? { height: 0, visibility: 'hidden' as const } : {};
-	const handleStopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-		e.stopPropagation();
-	}, []);
-	return (
-		isShowModal && (
-			<div className="relative" style={modalStyle}>
+
+	const [showModal, hideModal] = useModal(() => {
+		return (
+			isShowModal && (
 				<div
-					onClick={handleStopPropagation}
 					ref={modalElementRef}
-					className="absolute bg-[#212121] shadow-lg rounded-xl contain-strict z-50"
+					className="none-draggable-area fixed bg-[#212121] shadow-lg rounded-xl contain-strict z-50"
 					style={{
-						left: `${modalPosition.x}px`,
-						top: `${modalPosition.y}px`,
+						left: `${(dragging ? modalPosition : storedPosition || DEFAULT_POSITION).x}px`,
+						top: `${(dragging ? modalPosition : storedPosition || DEFAULT_POSITION).y}px`,
 						width: `${modalSize.width}px`,
 						height: `${modalSize.height}px`,
 						display: 'flex',
 						flexDirection: 'column',
-						minHeight: `${COLLAPSED_SIZE.height}px`
+						minHeight: `${COLLAPSED_SIZE.height}px`,
+						...modalStyle
 					}}
 					onMouseDown={handleMouseDown}
 				>
@@ -503,9 +500,43 @@ const DraggableModal: React.FC<DraggableModalProps> = memo(({ appChannelList, in
 					<ModalContent isCollapsed={isCollapsed} appChannelList={appChannelList} />
 					{!isCollapsed && <ResizeHandles handleResizeMouseDown={handleResizeMouseDown} />}
 				</div>
-			</div>
-		)
-	);
+			)
+		);
+	}, [
+		isShowModal,
+		modalStyle,
+		dragging,
+		modalPosition,
+		storedPosition,
+		modalSize,
+		overlay,
+		isCollapsed,
+		isFullSize,
+		handleMouseDown,
+		onCollapseToggle,
+		onFullSizeToggle,
+		handleResizeMouseDown,
+		appChannelList
+	]);
+
+	useEffect(() => {
+		if (isShowModal) {
+			if (!storedPosition || (storedPosition.x === DEFAULT_POSITION.x && storedPosition.y === DEFAULT_POSITION.y)) {
+				const windowWidth = window.innerWidth;
+				const windowHeight = window.innerHeight;
+				const centerX = Math.max(0, (windowWidth - modalSize.width) / 2);
+				const centerY = Math.max(0, (windowHeight - modalSize.height) / 2);
+				dispatch(channelAppActions.setPosition({ x: centerX, y: centerY }));
+			} else {
+				setModalPosition(storedPosition);
+			}
+			showModal();
+		} else {
+			hideModal();
+		}
+	}, [isShowModal, showModal, hideModal, storedPosition, modalSize, dispatch]);
+
+	return null;
 });
 
 export default DraggableModal;

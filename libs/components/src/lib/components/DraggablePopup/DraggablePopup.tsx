@@ -174,7 +174,7 @@ const DraggablePopup: React.FC<DraggablePopupProps> = ({
 	return (
 		<div
 			ref={popupRef}
-			className="fixed z-50 bg-[#36393f] rounded-md shadow-lg overflow-hidden"
+			className="contain-strict none-draggable-area fixed z-50 bg-[#36393f] rounded-md shadow-lg overflow-hidden"
 			style={{
 				width: `${dimensions.width}px`,
 				height: `${dimensions.height}px`,

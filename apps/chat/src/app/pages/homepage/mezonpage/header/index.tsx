@@ -75,7 +75,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							>
 								Developers
 							</a>
-              <a
+							<a
 								href={'https://top.mezon.ai'}
 								target="_blank"
 								rel="noopener noreferrer"
@@ -83,13 +83,13 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							>
 								Bots/Apps
 							</a>
-              <a
-								href={'documents/'}
+							<a
+								href={'docs/'}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="border-b-2 border-transparent shadow-none text-[16px] leading-[24px] text-[#7C92AF] font-semibold flex flex-row items-center px-[2px] hover:border-[#8FA7BF] hover:text-[#8FA7BF] focus:border-transparent focus:rounded-lg focus:shadow-[0px_0px_0px_4px_#678FFF]"
 							>
-								Documents 
+								Documents
 							</a>
 						</div>
 					</div>

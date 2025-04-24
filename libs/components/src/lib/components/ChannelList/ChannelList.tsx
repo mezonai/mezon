@@ -123,7 +123,8 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 		const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
 		return window.innerHeight - outsideHeight - titleBarHeight;
 	}, []);
-	const [height, setHeight] = useState(calculateHeight());
+
+	const [height, setHeight] = useState(0);
 
 	useWindowSize(() => {
 		setHeight(calculateHeight());
