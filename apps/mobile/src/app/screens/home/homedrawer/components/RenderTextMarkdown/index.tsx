@@ -122,7 +122,8 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 		},
 		editedText: {
 			fontSize: size.small,
-			color: colors.textDisabled
+			color: colors.textDisabled,
+			marginLeft: size.s_6
 		},
 		mention: {
 			fontSize: size.medium,
@@ -535,14 +536,6 @@ export const RenderTextMarkdownContent = ({
 		);
 	}
 
-	if (isEdited) {
-		textParts.push(
-			<Text key="edited" style={themeValue ? markdownStyles(themeValue).editedText : {}}>
-				{` ${translate('edited')}`}
-			</Text>
-		);
-	}
-
 	return (
 		<View
 			style={{
@@ -570,6 +563,7 @@ export const RenderTextMarkdownContent = ({
 			)}
 			<Text>{textParts}</Text>
 			{markdownBlackParts && markdownBlackParts?.length > 0 && markdownBlackParts.map((item) => item)}
+			{isEdited && <Text style={themeValue ? markdownStyles(themeValue).editedText : {}}>{translate('edited')}</Text>}
 		</View>
 	);
 };

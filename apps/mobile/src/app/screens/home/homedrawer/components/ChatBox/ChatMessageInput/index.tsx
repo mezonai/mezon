@@ -1,5 +1,12 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { messagesActions, selectAllAccount, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
+import {
+	messagesActions,
+	selectAllAccount,
+	selectCurrentClanId,
+	selectMemberClanByUserId2,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { IEmojiOnMessage, IHashtagOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { Dispatch, MutableRefObject, SetStateAction, forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -77,6 +84,7 @@ export const ChatMessageInput = memo(
 			const styles = style(themeValue);
 			const currentClanId = useSelector(selectCurrentClanId);
 			const userProfile = useSelector(selectAllAccount);
+			const userClanProfile = useAppSelector((state) => selectMemberClanByUserId2(state, userProfile?.user?.id));
 			const isAvailableSending = useMemo(() => {
 				return text?.length > 0 && text?.trim()?.length > 0;
 			}, [text]);
@@ -99,10 +107,19 @@ export const ChatMessageInput = memo(
 						channelId,
 						mode,
 						isPublic,
-						username: userProfile?.user?.display_name || userProfile?.user?.username
+						username: userClanProfile?.clan_nick || userProfile?.user?.display_name || userProfile?.user?.username
 					})
 				);
-			}, [channelId, currentClanId, dispatch, isPublic, mode, userProfile?.user?.display_name, userProfile?.user?.username]);
+			}, [
+				channelId,
+				currentClanId,
+				dispatch,
+				isPublic,
+				mode,
+				userClanProfile?.clan_nick,
+				userProfile?.user?.display_name,
+				userProfile?.user?.username
+			]);
 
 			const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 

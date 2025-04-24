@@ -24,7 +24,7 @@ const ScreenItems = memo(({ id, name, thumbnail, onClose, audio }: ScreenItemsPr
 			audio: audio
 				? {
 						mandatory: {
-							chromeMediaSource: 'desktop',
+							chromeMediaSource: 'screen',
 							chromeMediaSourceId: id
 						}
 					}
@@ -34,7 +34,7 @@ const ScreenItems = memo(({ id, name, thumbnail, onClose, audio }: ScreenItemsPr
 		dispatch(voiceActions.setStreamScreen(stream));
 		dispatch(voiceActions.setShowScreen(true));
 		onClose?.();
-	}, [id, dispatch, onClose]);
+	}, [id, dispatch, onClose, audio]);
 
 	return (
 		<div onClick={() => selectStreamScreen()} className="h-40 overflow-hidden flex flex-col gap-2">
