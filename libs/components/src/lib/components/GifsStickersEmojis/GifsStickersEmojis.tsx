@@ -42,6 +42,12 @@ export const GifStickerEmojiPopup = ({
 	const currentChannel = useSelector(selectCurrentChannel);
 	const emojiRefParentDiv = useRef<HTMLDivElement>(null);
 
+	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+
+	const fromTopic = isTopic || isFocusTopicBox;
+
+	// fix mode
+
 	const channelMode = useMemo(() => {
 		if (!channelOrDirect?.type) return null;
 
@@ -125,7 +131,7 @@ export const GifStickerEmojiPopup = ({
 					buzzInputRequest={buzzInputRequest}
 					setBuzzInputRequest={setBuzzInputRequest}
 					toggleEmojiPanel={toggleEmojiPanel}
-					isTopic={isTopic}
+					isTopic={fromTopic}
 				/>
 			</div>
 		</div>
@@ -192,6 +198,8 @@ const ContentPanel = React.memo(
 		const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 		const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
 
+		console.log(channelMode, 'channelMode');
+
 		const currenTopicId = useSelector(selectCurrentTopicId);
 		const { directId } = useAppParams();
 		const isClanView = useSelector(selectClanView);
@@ -225,7 +233,7 @@ const ContentPanel = React.memo(
 						currenTopicId={currenTopicId ?? ''}
 						directId={directId}
 						isClanView={isClanView}
-						mode={mode}
+						mode={channelMode || mode}
 						messageEmojiId={idMessageRefReaction}
 						onClose={onClose}
 						isFocusThreadBox={isFocusThreadBox}

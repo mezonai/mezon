@@ -127,7 +127,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 					<div className="p-4 max-w-[720px] max-h-[50vh] overflow-y-auto hide-scrollbar truncate">
 						<ColorRoleProvider>
 							{isMessageSystem ? (
-								<MessageWithSystem message={mess as IMessageWithUser} mode={mode} />
+								<MessageWithSystem message={mess as IMessageWithUser} mode={mode} isTopic={!!isTopic} />
 							) : (
 								<MessageWithUser
 									allowDisplayShortProfile={false}

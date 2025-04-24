@@ -29,7 +29,6 @@ const GifStickerEmojiButtons = memo(
 				setClickedTrendingGif(false);
 				setButtonArrowBack(false);
 				dispatch(reactionActions.setReactionRightState(false));
-				dispatch(reactionActions.setReactionBottomState(false));
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
 				const newState = subPanelActive === SubPanelName.GIFS ? SubPanelName.NONE : SubPanelName.GIFS;
 				setSubPanelActive(newState);
@@ -48,7 +47,6 @@ const GifStickerEmojiButtons = memo(
 				setClickedTrendingGif(false);
 				setButtonArrowBack(false);
 				dispatch(reactionActions.setReactionRightState(false));
-				dispatch(reactionActions.setReactionBottomState(false));
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
 
 				const newState = subPanelActive === SubPanelName.STICKERS ? SubPanelName.NONE : SubPanelName.STICKERS;
@@ -69,7 +67,6 @@ const GifStickerEmojiButtons = memo(
 				setClickedTrendingGif(false);
 				setButtonArrowBack(false);
 				dispatch(reactionActions.setReactionRightState(false));
-				dispatch(reactionActions.setReactionBottomState(false));
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
 
 				const newState = subPanelActive === SubPanelName.EMOJI ? SubPanelName.NONE : SubPanelName.EMOJI;

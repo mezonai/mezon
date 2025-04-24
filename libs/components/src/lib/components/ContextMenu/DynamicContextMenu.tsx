@@ -8,7 +8,7 @@ import {
 	selectTheme,
 	useAppSelector
 } from '@mezon/store';
-import { ContextMenuItem, IEmoji, SHOW_POSITION, isPublicChannel } from '@mezon/utils';
+import { ContextMenuItem, IEmoji, IMessageWithUser, SHOW_POSITION, isPublicChannel } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
 import { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { Item, Menu, Separator, Submenu } from 'react-contexify';
@@ -22,9 +22,11 @@ type Props = {
 	items: ContextMenuItem[];
 	mode: number | undefined;
 	messageId: string;
+	message: IMessageWithUser;
+	isTopic: boolean;
 };
 
-export default function DynamicContextMenu({ menuId, items, mode, messageId }: Props) {
+export default function DynamicContextMenu({ menuId, items, mode, messageId, message, isTopic }: Props) {
 	const appearanceTheme = useSelector(selectTheme);
 	const emojiConverted = useEmojiConverted();
 
@@ -42,20 +44,25 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 	);
 	const handleClickEmoji = useCallback(
 		async (emojiId: string, emojiShortCode: string) => {
-			await reactionMessageDispatch(
-				'',
+			console.log('handleClickEmoji');
+
+			await reactionMessageDispatch({
+				id: emojiId,
 				messageId,
-				emojiId,
-				emojiShortCode,
-				1,
-				userId.userId ?? '',
-				false,
-				isPublicChannel(currentChannel),
+				emoji_id: emojiId,
+				emoji: emojiShortCode,
+				count: 1,
+				message_sender_id: userId.userId ?? '',
+				action_delete: false,
+				is_public: isPublicChannel(currentChannel),
+				clanId: currentChannel?.clan_id ?? '',
+				mode: mode ?? 0,
+				channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 				isFocusTopicBox,
-				currentMessage?.channel_id
-			);
+				channelIdOnMessage: currentMessage?.channel_id
+			});
 		},
-		[messageId, currentChannel, directId, isClanView, reactionMessageDispatch, userId]
+		[messageId, currentChannel, directId, isClanView, reactionMessageDispatch, userId, isFocusTopicBox, currentMessage?.channel_id, mode]
 	);
 
 	const firstFourElements = useMemo(() => {
@@ -153,6 +160,8 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 											messageId={messageId}
 											isOption={false}
 											isAddReactionPanel
+											message={message}
+											isTopic={isTopic}
 										/>
 									</div>
 								</Item>
@@ -220,7 +229,16 @@ export default function DynamicContextMenu({ menuId, items, mode, messageId }: P
 
 	return (
 		<Menu onVisibilityChange={onVisibilityChange} id={menuId} style={className} className="z-50">
-			{checkPos && <ReactionPart emojiList={firstFourElements} activeMode={mode} messageId={messageId} isOption={false} />}
+			{checkPos && (
+				<ReactionPart
+					emojiList={firstFourElements}
+					activeMode={mode}
+					messageId={messageId}
+					isOption={false}
+					message={message}
+					isTopic={isTopic}
+				/>
+			)}
 			{children}
 		</Menu>
 	);

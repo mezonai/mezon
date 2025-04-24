@@ -19,7 +19,6 @@ import {
 	selectDefaultCanvasByChannelId,
 	selectDmGroupCurrent,
 	selectDmGroupCurrentId,
-	selectIsMessageHasReaction,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
@@ -103,6 +102,8 @@ function MessageContextMenu({
 	openPinMessageModal,
 	openDeleteMessageModal
 }: MessageContextMenuProps) {
+	console.log('MessageContextMenu');
+
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
@@ -403,7 +404,7 @@ function MessageContextMenu({
 		return posShowMenu === SHOW_POSITION.IN_EMOJI;
 	}, [posShowMenu]);
 
-	const reactionStatus = useSelector(selectIsMessageHasReaction(currentChannel?.id as string, messageId));
+	const reactionStatus = true;
 	const enableViewReactionItem = useMemo(() => {
 		if (!checkPos) return false;
 		return reactionStatus;
@@ -545,18 +546,21 @@ function MessageContextMenu({
 										token_count: AMOUNT_TOKEN.TEN_TOKENS
 									})
 								).unwrap();
-								await reactionMessageDispatch(
-									'',
-									message.id ?? '',
-									EMOJI_GIVE_COFFEE.emoji_id,
-									EMOJI_GIVE_COFFEE.emoji,
-									1,
-									message?.sender_id ?? '',
-									false,
-									isPublicChannel(currentChannel),
+								await reactionMessageDispatch({
+									id: EMOJI_GIVE_COFFEE.emoji_id,
+									messageId: message.id ?? '',
+									emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
+									emoji: EMOJI_GIVE_COFFEE.emoji,
+									count: 1,
+									message_sender_id: message?.sender_id ?? '',
+									action_delete: false,
+									is_public: isPublicChannel(currentChannel),
+									clanId: message.clan_id ?? '',
+									mode: message.mode ?? 0,
+									channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 									isFocusTopicBox,
-									message?.channel_id
-								);
+									channelIdOnMessage: message?.channel_id
+								});
 
 								await sendTransactionMessage(message.sender_id || '', message.user?.name || message.user?.username, message.avatar);
 							}
@@ -779,7 +783,9 @@ function MessageContextMenu({
 	]);
 	/* eslint-disable no-console */
 
-	return <DynamicContextMenu key={messageId} menuId={id} items={items} messageId={messageId} mode={activeMode} />;
+	return (
+		<DynamicContextMenu key={messageId} menuId={id} items={items} messageId={messageId} mode={activeMode} message={message} isTopic={isTopic} />
+	);
 }
 
 export default MessageContextMenu;

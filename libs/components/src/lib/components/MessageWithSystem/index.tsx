@@ -19,9 +19,10 @@ export type MessageWithSystemProps = {
 	popup?: () => ReactNode;
 	isSearchMessage?: boolean;
 	showDivider?: boolean;
+	isTopic: boolean;
 };
 
-function MessageWithSystem({ message, mode, onContextMenu, popup, isSearchMessage, showDivider }: Readonly<MessageWithSystemProps>) {
+function MessageWithSystem({ message, mode, onContextMenu, popup, isSearchMessage, showDivider, isTopic }: Readonly<MessageWithSystemProps>) {
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
 
@@ -50,7 +51,7 @@ function MessageWithSystem({ message, mode, onContextMenu, popup, isSearchMessag
 							mode={mode}
 						/>
 					</div>
-					<MessageReaction message={message} mode={mode} />
+					<MessageReaction message={message} mode={mode} isTopic={isTopic} />
 				</HoverStateWrapper>
 			)}
 		</>

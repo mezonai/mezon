@@ -1,5 +1,5 @@
 import { useChatReaction } from '@mezon/core';
-import { selectAllAccount, selectClickedOnTopicStatus, selectCurrentChannel } from '@mezon/store';
+import { selectAllAccount, selectCurrentChannel } from '@mezon/store';
 import { EmojiDataOptionals, IMessageWithUser, SenderInfoOptionals, calculateTotalCount, getSrcEmoji, isPublicChannel } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import { memo } from 'react';
@@ -10,16 +10,17 @@ type EmojiItemProps = {
 	emoji: EmojiDataOptionals;
 	mode: number;
 	message: IMessageWithUser;
+	isTopic: boolean;
 };
 
-function ItemEmoji({ emoji, mode, message }: EmojiItemProps) {
+function ItemEmoji({ emoji, mode, message, isTopic }: EmojiItemProps) {
 	const userId = useSelector(selectAllAccount)?.user?.id as string;
+
 	const { reactionMessageDispatch } = useChatReaction();
 	const getUrlItem = getSrcEmoji(emoji.emojiId || '');
 	const count = calculateTotalCount(emoji.senders);
-	const userSenderCount = emoji.senders.find((sender: SenderInfoOptionals) => sender.sender_id === userId)?.count;
+	const userSenderCount = emoji.senders?.find((sender: SenderInfoOptionals) => sender.sender_id === userId)?.count;
 	const currentChannel = useSelector(selectCurrentChannel);
-	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 
 	async function reactOnExistEmoji(
 		id: string,
@@ -31,23 +32,27 @@ function ItemEmoji({ emoji, mode, message }: EmojiItemProps) {
 		message_sender_id: string,
 		action_delete: boolean
 	) {
-		await reactionMessageDispatch(
-			id,
+		console.log('reactionMessageDispatch');
 
-			messageId ?? '',
-			emojiId ?? '',
-			emoji ?? '',
-			1,
-			message_sender_id ?? '',
-			false,
-			isPublicChannel(currentChannel),
-			isFocusTopicBox,
-			message?.channel_id
-		);
+		await reactionMessageDispatch({
+			id,
+			messageId: messageId ?? '',
+			emoji_id: emojiId ?? '',
+			emoji: emoji ?? '',
+			count: 1,
+			message_sender_id: message_sender_id ?? '',
+			action_delete: false,
+			is_public: isPublicChannel(currentChannel),
+			clanId: message?.clan_id ?? '',
+			mode,
+			channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+			isFocusTopicBox: isTopic,
+			channelIdOnMessage: message?.channel_id
+		});
 	}
 
 	return (
-		<Tooltip overlay={<UserReactionPanel message={message} emojiShowPanel={emoji} mode={mode} />} placement="top">
+		<Tooltip overlay={<UserReactionPanel message={message} emojiShowPanel={emoji} mode={mode} isTopic={isTopic} />} placement="top">
 			<div
 				style={{ height: 24 }}
 				className={`rounded-md w-fit min-w-12 gap-3 h-6 flex flex-row noselect

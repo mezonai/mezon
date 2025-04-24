@@ -3,6 +3,7 @@ import {
 	CanvasAPIEntity,
 	ChannelsEntity,
 	createEditCanvas,
+	getStore,
 	gifsStickerEmojiActions,
 	giveCoffeeActions,
 	messagesActions,
@@ -94,7 +95,7 @@ const ChannelMessageOpt = ({
 	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const addToNote = useAddToNoteBuilder(message, defaultCanvas, currentChannel, mode);
-	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message);
+	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message, isTopic);
 	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channel_id ?? ''));
 	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topic_id ?? ''));
 	const doNotAllowCreateTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic) || !hasPermission || !canSendMessage;
@@ -106,7 +107,7 @@ const ChannelMessageOpt = ({
 		>
 			<div className="flex justify-between dark:bg-bgDarkPopover bg-bgLightMode border border-bgSecondary rounded">
 				<div className="w-fit h-full flex items-center justify-between" ref={refOpt}>
-					<RecentEmoji message={message} />
+					<RecentEmoji message={message} isTopic={isTopic} mode={mode} />
 					{items
 						.filter((item) => {
 							return currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || item.id !== EMessageOpt.THREAD;
@@ -189,9 +190,11 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 
 interface RecentEmojiProps {
 	message: IMessageWithUser;
+	isTopic: boolean;
+	mode: number;
 }
 
-const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
+const RecentEmoji: React.FC<RecentEmojiProps> = ({ message, isTopic, mode }) => {
 	const emojiConverted = useEmojiConverted();
 
 	const firstThreeElements = useMemo(() => {
@@ -200,7 +203,14 @@ const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
 
 	return (
 		<div className="flex items-center">
-			<ReactionPart emojiList={firstThreeElements} activeMode={undefined} messageId={message.id} isOption={true} />
+			<ReactionPart
+				emojiList={firstThreeElements}
+				activeMode={mode}
+				messageId={message.id}
+				isOption={true}
+				message={message}
+				isTopic={isTopic}
+			/>
 			{firstThreeElements.length > 0 && (
 				<span className="opacity-50 px-1 ml-2 border-l dark:border-borderDividerLight border-borderDivider h-6 inline-flex "></span>
 			)}
@@ -208,7 +218,7 @@ const RecentEmoji: React.FC<RecentEmojiProps> = ({ message }) => {
 	);
 };
 
-function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
+function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) {
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
@@ -235,30 +245,35 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser) {
 	);
 
 	const handleItemClick = useCallback(async () => {
+		const store = getStore();
+		const currentChannel = selectCurrentChannel(store.getState());
 		try {
 			await dispatch(
 				giveCoffeeActions.updateGiveCoffee({
 					channel_id: message.channel_id,
-					clan_id: message.clan_id,
+					clan_id: message.clan_id ?? '',
 					message_ref_id: message.id,
 					receiver_id: message.sender_id,
 					sender_id: userId,
 					token_count: AMOUNT_TOKEN.TEN_TOKENS
 				})
 			).unwrap();
-
-			await reactionMessageDispatch(
-				'',
-				message.id ?? '',
-				EMOJI_GIVE_COFFEE.emoji_id,
-				EMOJI_GIVE_COFFEE.emoji,
-				1,
-				message?.sender_id ?? '',
-				false,
-				isPublicChannel(channel),
+			// fix
+			await reactionMessageDispatch({
+				id: EMOJI_GIVE_COFFEE.emoji_id,
+				messageId: message.id ?? '',
+				emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
+				emoji: EMOJI_GIVE_COFFEE.emoji,
+				count: 1,
+				message_sender_id: message?.sender_id ?? '',
+				action_delete: false,
+				is_public: isPublicChannel(channel),
+				clanId: message.clan_id ?? '',
+				mode: message.mode ?? 0,
+				channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 				isFocusTopicBox,
-				message?.channel_id
-			);
+				channelIdOnMessage: message?.channel_id
+			});
 
 			await sendNotificationMessage(message.sender_id || '', message.user?.name || message.user?.username, message.avatar);
 		} catch (error) {

@@ -114,18 +114,26 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const handleEmojiSelect = useCallback(
 		async (emojiId: string, emojiPicked: string) => {
 			if (subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT || subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM) {
-				await reactionMessageDispatch(
-					'',
-					props.messageEmojiId ?? '',
-					emojiId.trim(),
-					emojiPicked.trim(),
-					1,
-					messageEmoji?.sender_id ?? '',
-					false,
-					isPublicChannel(currentChannel),
-					props.isFocusTopicBox,
-					messageEmoji?.channel_id
-				);
+				console.log('RUNNN');
+				console.log(props.isFromTopicView, 'props.isFromTopicView');
+
+				console.log(props.mode, 'props.mode');
+
+				await reactionMessageDispatch({
+					id: emojiId,
+					messageId: props.messageEmojiId ?? '',
+					emoji_id: emojiId.trim(),
+					emoji: emojiPicked.trim(),
+					count: 1,
+					message_sender_id: messageEmoji?.sender_id ?? '',
+					action_delete: false,
+					is_public: isPublicChannel(currentChannel),
+					clanId: currentChannel?.clan_id ?? '',
+					mode: props.mode ?? 0,
+					channelId: props.isFromTopicView ? currentChannel?.id || '' : (messageEmoji?.channel_id ?? ''),
+					isFocusTopicBox: props.isFocusTopicBox,
+					channelIdOnMessage: messageEmoji?.channel_id
+				});
 				setSubPanelActive(SubPanelName.NONE);
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
 			} else if (subPanelActive === SubPanelName.EMOJI) {

@@ -1,5 +1,5 @@
 import { useAuth, useChatReaction, useUserById } from '@mezon/core';
-import { selectClickedOnTopicStatus, selectCurrentChannel, selectReactionsByEmojiIdFromMessage, useAppSelector } from '@mezon/store';
+import { getStore, selectClickedOnTopicStatus, selectCurrentChannel } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
 import {
 	EmojiDataOptionals,
@@ -18,17 +18,16 @@ type UserReactionPanelProps = {
 	emojiShowPanel: EmojiDataOptionals;
 	mode: number;
 	message: IMessageWithUser;
+	isTopic: boolean;
 };
 
-const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message }: UserReactionPanelProps, ref: ForwardedRef<HTMLDivElement>) => {
+const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message, isTopic }: UserReactionPanelProps, ref: ForwardedRef<HTMLDivElement>) => {
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	console.log('reactionMessageDispatch');
 
 	const { reactionMessageDispatch } = useChatReaction();
 	const userId = useAuth();
-	const currentChannel = useSelector(selectCurrentChannel);
-	const getEmojiById = useAppSelector((state) =>
-		selectReactionsByEmojiIdFromMessage(state, message.channel_id, message.id, emojiShowPanel.emojiId ?? '')
-	);
+	const getEmojiById = {} as any;
 
 	const removeEmojiSender = async (
 		id: string,
@@ -38,19 +37,24 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message }: UserRea
 		message_sender_id: string,
 		countRemoved: number
 	) => {
-		await reactionMessageDispatch(
-			id,
+		const store = getStore();
+		const currentChannel = selectCurrentChannel(store.getState());
 
+		await reactionMessageDispatch({
+			id,
 			messageId,
-			getEmojiById?.emojiId ?? '',
-			getEmojiById?.emoji ?? '',
-			countRemoved,
+			emoji_id: getEmojiById?.emojiId ?? '',
+			emoji: getEmojiById?.emoji ?? '',
+			count: countRemoved,
 			message_sender_id,
-			true,
-			isPublicChannel(currentChannel),
+			action_delete: true,
+			is_public: isPublicChannel(currentChannel),
+			clanId: currentChannel?.clan_id ?? '',
+			mode: mode,
+			channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 			isFocusTopicBox,
-			message?.channel_id
-		);
+			channelIdOnMessage: message?.channel_id
+		});
 	};
 
 	const hideSenderOnPanel = useCallback((emojiData: EmojiDataOptionals, senderId: string) => {

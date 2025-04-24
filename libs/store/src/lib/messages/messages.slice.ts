@@ -38,7 +38,7 @@ import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
-import { ReactionEntity, reactionActions } from '../reactionMessage/reactionMessage.slice';
+import { ReactionEntity, UpdateReactionMessageArgs, mapReactionToEntity } from '../reactionMessage/reactionMessage.slice';
 import { RootState } from '../store';
 
 const FETCH_MESSAGES_CACHED_TIME = 1000 * 60 * 60;
@@ -353,7 +353,7 @@ export const fetchMessages = createAsyncThunk(
 			thunkAPI.dispatch(messagesActions.setMessageParams({ channelId: chlId, param: { lastLoadMessageId: lastLoadMessage?.id, hasMore } }));
 
 			if (shouldReturnCachedMessages(isFetchingLatestMessages, oldMessages, lastSentMessage, !!fromCache)) {
-				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
+				// thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
 				return {
 					messages: [],
 					isClearMessage,
@@ -370,7 +370,7 @@ export const fetchMessages = createAsyncThunk(
 			}
 
 			if (messages.length > 0) {
-				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages }));
+				// thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages }));
 			}
 
 			if (response.last_seen_message?.id) {
@@ -1196,6 +1196,38 @@ export const messagesSlice = createSlice({
 		},
 		setLoadingJumpMessage: (state, action) => {
 			state.isLoadingJumpMessage = action.payload;
+		},
+		setReactionDataSocket: (state, action: PayloadAction<UpdateReactionMessageArgs>) => {
+			const reactionDataSocket = {
+				...action.payload,
+				count: action.payload.count || 1
+			};
+
+			if (!reactionDataSocket.channel_id || !reactionDataSocket.message_id) return;
+
+			const messages = state.channelMessages[reactionDataSocket.channel_id];
+			const isAdd = !action.payload.action;
+			const message = messages.entities[reactionDataSocket.message_id];
+			if (!Array.isArray(message?.reactions)) {
+				message.reactions = [];
+			}
+			const found = message.reactions?.find((item) => item.id === reactionDataSocket.id);
+
+			if (isAdd && !found) {
+				message.reactions = [...message.reactions, mapReactionToEntity(reactionDataSocket)];
+			} else if (isAdd && found) {
+				found.count = found.count + reactionDataSocket.count;
+			} else if (!isAdd && found) {
+				message.reactions = message.reactions.filter((item) => item.id === reactionDataSocket.id);
+			}
+
+			console.log(JSON.stringify(message), 'found');
+
+			state.channelMessages[reactionDataSocket.channel_id].entities[reactionDataSocket.message_id] = message;
+
+			console.log(state.channelMessages, 'state.channelMessages');
+
+			// Server not send id
 		}
 	},
 	extraReducers: (builder) => {
@@ -1226,14 +1258,17 @@ export const messagesSlice = createSlice({
 					// const reversedMessages = action.payload.messages.reverse();
 
 					// remove all messages if clear message is true
-					if (isClearMessage) {
-						handleRemoveManyMessages(state, channelId);
-					}
+
+					console.log(isClearMessage, 'isClearMessage');
+
+					// if (isClearMessage) {
+					// 	handleRemoveManyMessages(state, channelId);
+					// }
 
 					// remove all messages if ís fetching latest messages and is viewing older messages
-					if (isFetchingLatestMessages && isViewingOlderMessages) {
-						handleRemoveManyMessages(state, channelId);
-					}
+					// if (isFetchingLatestMessages && isViewingOlderMessages) {
+					// 	handleRemoveManyMessages(state, channelId);
+					// }
 
 					handleSetManyMessages({
 						state,
@@ -1560,7 +1595,7 @@ const handleSetManyMessages = ({
 			id: channelId
 		});
 	if (isClearMessage) {
-		state.channelMessages[channelId] = channelMessagesAdapter.setAll(state.channelMessages[channelId], adapterPayload);
+		state.channelMessages[channelId] = channelMessagesAdapter.setMany(state.channelMessages[channelId], adapterPayload);
 	} else {
 		if (!adapterPayload.length) return;
 		state.channelMessages[channelId] = channelMessagesAdapter.setMany(state.channelMessages[channelId], adapterPayload);

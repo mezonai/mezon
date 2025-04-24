@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { EmojiDataOptionals, EmojiStorage, IReaction } from '@mezon/utils';
+import { EmojiStorage, IReaction } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
 import { ApiMessageReaction } from 'mezon-js/api.gen';
@@ -40,9 +40,7 @@ export interface ReactionState extends EntityState<ReactionEntity, string> {
 	loadingStatus: 'not loaded' | 'loading' | 'loaded' | 'error';
 	error?: string | null;
 	reactionTopState: boolean;
-	reactionBottomState: boolean;
 	reactionRightState: boolean;
-	reactionBottomStateResponsive: boolean;
 	messageMatchWithRef: boolean;
 	positionOfSmileButton: {
 		top: number;
@@ -50,8 +48,6 @@ export interface ReactionState extends EntityState<ReactionEntity, string> {
 		left: number;
 		bottom: number;
 	};
-	emojiHover: EmojiDataOptionals | null;
-	computedMessageReactions: Record<string, EmojiDataOptionals[]>;
 }
 
 export const reactionAdapter = createEntityAdapter({
@@ -188,9 +184,7 @@ export const initialReactionState: ReactionState = reactionAdapter.getInitialSta
 		right: 0,
 		left: 0,
 		bottom: 0
-	},
-	emojiHover: null,
-	computedMessageReactions: {}
+	}
 });
 
 export const reactionSlice = createSlice({
@@ -200,12 +194,6 @@ export const reactionSlice = createSlice({
 		removeAll: reactionAdapter.removeAll,
 		setReactionTopState(state, action) {
 			state.reactionTopState = action.payload;
-		},
-		setReactionBottomState(state, action) {
-			state.reactionBottomState = action.payload;
-		},
-		setReactionBottomStateResponsive(state, action) {
-			state.reactionBottomStateResponsive = action.payload;
 		},
 
 		setReactionRightState(state, action) {
@@ -236,6 +224,8 @@ export const reactionSlice = createSlice({
 				}
 			}
 
+			console.log(reactionDataSocket, 'reactionDataSocke');
+
 			const existing = reactionAdapter.getSelectors().selectById(state, reactionDataSocket.id || '');
 			if (isAdd && !existing) {
 				reactionAdapter.addOne(state, mapReactionToEntity(reactionDataSocket));
@@ -251,30 +241,9 @@ export const reactionSlice = createSlice({
 			} else {
 				// Do nothing when remove reaction and not found
 			}
-
-			if (action.payload.message_id && action.payload.channel_id) {
-				const combinedId = `${action.payload.channel_id}_${action.payload.message_id}`;
-				state.computedMessageReactions[combinedId] = combineMessageReactions(state, combinedId);
-			}
 		},
 		setPositionOfSmileButton(state, action) {
 			state.positionOfSmileButton = action.payload;
-		},
-		updateBulkMessageReactions: (state, action: PayloadAction<UpdateBulkMessageReactionsArgs>) => {
-			const { messages } = action.payload;
-			for (const message of messages) {
-				const reactionsRaw = message.reactions;
-				if (!reactionsRaw?.length) continue;
-				const reactions = (reactionsRaw || []).map((reaction) => {
-					const id = reaction.id || '';
-					const message_id = message.id;
-					return mapReactionToEntity({ ...reaction, id, message_id, channel_id: message.channel_id });
-				});
-				reactionAdapter.upsertMany(state, reactions);
-
-				const combinedId = `${message.channel_id}_${message.id}`;
-				state.computedMessageReactions[combinedId] = combineMessageReactions(state, combinedId);
-			}
 		}
 	}
 });
@@ -308,124 +277,18 @@ function saveRecentEmoji(emojiLastest: EmojiStorage) {
 
 	localStorage.setItem('recentEmojis', JSON.stringify(emojisRecentParse));
 }
-function combineMessageReactions(state: ReactionState, combinedId: string): EmojiDataOptionals[] {
-	const reactionEntities = reactionAdapter.getSelectors().selectAll(state);
-	const [channel_id, message_id] = combinedId.split('_');
-	const reactions = reactionEntities.filter((reaction) => reaction.message_id === message_id && reaction.channel_id === channel_id);
-
-	const dataCombined: Record<string, EmojiDataOptionals> = {};
-
-	for (const reaction of reactions) {
-		const emojiId = reaction.emoji_id || ('' as string);
-		const emoji = reaction.emoji || ('' as string);
-
-		if (reaction.count < 1) {
-			continue;
-		}
-
-		if (!dataCombined[emojiId]) {
-			dataCombined[emojiId] = {
-				emojiId,
-				emoji,
-				senders: [],
-				action: false,
-				message_id: message_id,
-				// TODO: TBD
-				id: '',
-				channel_id: ''
-			};
-		}
-		if (!reaction.sender_name) continue;
-		const newSender = {
-			sender_id: reaction.sender_id,
-			count: reaction.count
-		};
-
-		const reactionData = dataCombined[emojiId];
-		const senderIndex = reactionData.senders.findIndex((sender) => sender.sender_id === newSender.sender_id);
-
-		if (senderIndex === -1) {
-			reactionData.senders.push(newSender);
-		} else if (reactionData?.senders[senderIndex]) {
-			reactionData.senders[senderIndex].count = newSender.count;
-		}
-	}
-
-	const dataCombinedArray = Object.values(dataCombined);
-
-	return dataCombinedArray;
-}
 
 export const reactionReducer = reactionSlice.reducer;
 
 export const reactionActions = {
 	...reactionSlice.actions,
-	updateReactionMessage,
 	writeMessageReaction
 };
 
-const { selectAll, selectEntities } = reactionAdapter.getSelectors();
-
 export const getReactionState = (rootState: { [REACTION_FEATURE_KEY]: ReactionState }): ReactionState => rootState[REACTION_FEATURE_KEY];
 
-export const selectAllEmojiReaction = createSelector(getReactionState, selectAll);
-
-export const selectEmojiReactionEntities = createSelector(getReactionState, selectEntities);
-
 export const selectReactionTopState = createSelector(getReactionState, (state: ReactionState) => state.reactionTopState);
-
-export const selectReactionBottomState = createSelector(getReactionState, (state: ReactionState) => state.reactionBottomState);
-
-export const selectReactionBottomStateResponsive = createSelector(getReactionState, (state: ReactionState) => state.reactionBottomStateResponsive);
 
 export const selectReactionRightState = createSelector(getReactionState, (state: ReactionState) => state.reactionRightState);
 
 export const selectPositionEmojiButtonSmile = createSelector(getReactionState, (state: ReactionState) => state.positionOfSmileButton);
-
-export const selectComputedMessageReactions = createSelector(getReactionState, (state: ReactionState) => state.computedMessageReactions);
-
-export const selectIsMessageHasReaction = (channelId: string, messageId: string) =>
-	createSelector(selectComputedMessageReactions, (computedMessageReactions) => {
-		const combinedId = `${channelId}_${messageId}`;
-		return computedMessageReactions[combinedId] && computedMessageReactions[combinedId].length > 0;
-	});
-
-export const selectComputedReactionsByMessageId = (channelId: string, messageId: string) =>
-	createSelector(selectComputedMessageReactions, (computedMessageReactions) => {
-		const combinedId = `${channelId}_${messageId}`;
-		return computedMessageReactions[combinedId] || [];
-	});
-
-export const selectReactionsByEmojiIdFromMessage = createSelector(
-	[selectComputedMessageReactions, (_, channelId: string, messageId: string, emojiId: string) => `${channelId},${messageId},${emojiId}`],
-	(computedMessageReactions, payload) => {
-		const [channelId, messageId, emojiId] = payload.split(',');
-
-		if (channelId && messageId && emojiId) {
-			const combinedId = `${channelId}_${messageId}`;
-			const reactionsForMessage = computedMessageReactions[combinedId] || [];
-			const filteredReactions = reactionsForMessage.filter((reaction) => reaction.emojiId === emojiId);
-
-			if (filteredReactions.length > 0) {
-				const reaction = filteredReactions[0];
-
-				const senders =
-					reaction.senders?.map((sender) => ({
-						sender_id: sender.sender_id,
-						count: sender.count
-					})) || [];
-
-				return {
-					emojiId: reaction.emojiId,
-					emoji: reaction.emoji,
-					senders,
-					action: reaction.action ?? false,
-					messageId: reaction.message_id,
-					id: reaction.id || '',
-					channelId: reaction.channel_id || ''
-				};
-			}
-		}
-		return null;
-	}
-);

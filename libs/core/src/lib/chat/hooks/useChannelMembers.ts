@@ -1,13 +1,13 @@
 import {
-    channelMembersActions,
-    channelMetaActions,
-    ChannelsEntity,
-    channelUsersActions,
-    selectAllChannelMembers,
-    selectChannelById,
-    ThreadsEntity,
-    useAppDispatch,
-    useAppSelector
+	channelMembersActions,
+	channelMetaActions,
+	ChannelsEntity,
+	channelUsersActions,
+	selectAllChannelMembers,
+	selectChannelById,
+	ThreadsEntity,
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useMemo } from 'react';

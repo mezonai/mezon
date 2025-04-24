@@ -1,13 +1,6 @@
-import { useAppParams, useAuth, useChatReaction } from '@mezon/core';
-import {
-	selectClanView,
-	selectClickedOnTopicStatus,
-	selectCurrentChannel,
-	selectCurrentTopicId,
-	selectMessageByMessageId,
-	useAppSelector
-} from '@mezon/store';
-import { getSrcEmoji, isPublicChannel } from '@mezon/utils';
+import { useAuth, useChatReaction } from '@mezon/core';
+import { selectCurrentChannel } from '@mezon/store';
+import { IMessageWithUser, getSrcEmoji, isPublicChannel } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -18,38 +11,45 @@ interface IReactionItem {
 	messageId: string;
 	isOption: boolean;
 	isAddReactionPanel?: boolean;
+	message: IMessageWithUser;
+	isTopic: boolean;
 }
 
-const ReactionItem: React.FC<IReactionItem> = ({ emojiShortCode, emojiId, activeMode, messageId, isOption, isAddReactionPanel }) => {
-	const { directId } = useAppParams();
-
+const ReactionItem: React.FC<IReactionItem> = ({
+	emojiShortCode,
+	emojiId,
+	activeMode,
+	messageId,
+	isOption,
+	isAddReactionPanel,
+	message,
+	isTopic
+}) => {
 	const { reactionMessageDispatch } = useChatReaction();
 	const getUrl = getSrcEmoji(emojiId);
 	const userId = useAuth();
-	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
-	const currenTopicId = useSelector(selectCurrentTopicId);
 
-	const isClanView = useSelector(selectClanView);
 	const currentChannel = useSelector(selectCurrentChannel);
 
-	const currentMessage = useAppSelector((state) =>
-		selectMessageByMessageId(state, isFocusTopicBox ? currenTopicId : currentChannel?.channel_id, messageId || '')
-	);
-
 	const handleClickEmoji = useCallback(async () => {
-		await reactionMessageDispatch(
-			'',
+		console.log('reactionMessageDispatch');
+
+		await reactionMessageDispatch({
+			id: emojiId,
 			messageId,
-			emojiId,
-			emojiShortCode,
-			1,
-			userId.userId ?? '',
-			false,
-			isPublicChannel(currentChannel),
-			isFocusTopicBox,
-			currentMessage?.channel_id
-		);
-	}, [reactionMessageDispatch, messageId, emojiId, emojiShortCode, userId.userId, currentChannel, isFocusTopicBox, currentMessage?.channel_id]);
+			emoji_id: emojiId,
+			emoji: emojiShortCode,
+			count: 1,
+			message_sender_id: userId.userId ?? '',
+			action_delete: false,
+			is_public: isPublicChannel(currentChannel),
+			clanId: message?.clan_id ?? '',
+			mode: activeMode ?? 0,
+			channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+			isFocusTopicBox: isTopic,
+			channelIdOnMessage: message?.channel_id
+		});
+	}, [reactionMessageDispatch, message, emojiId, emojiShortCode, userId.userId, currentChannel, activeMode, isTopic]);
 
 	return (
 		<div

@@ -4,6 +4,7 @@ import {
 	ChannelsEntity,
 	clansActions,
 	EMarkAsReadType,
+	getStore,
 	listChannelRenderAction,
 	listChannelsByUserActions,
 	markAsReadProcessing,
@@ -17,10 +18,8 @@ import {
 import { ChannelThreads, ICategoryChannel } from '@mezon/utils';
 import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useState } from 'react';
-import { useStore } from 'react-redux';
 
 export function useMarkAsRead() {
-	const store = useStore();
 	const dispatch = useAppDispatch();
 	const [statusMarkAsReadChannel, setStatusMarkAsReadChannel] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const [statusMarkAsReadCategory, setStatusMarkAsReadCategory] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
@@ -117,6 +116,8 @@ export function useMarkAsRead() {
 				clan_id: category.clan_id,
 				category_id: category.category_id
 			};
+
+			const store = getStore();
 
 			const channelsInCategory = selectChannelThreads(store.getState() as RootState)?.filter(
 				(channel) => channel.category_id === category.category_id
