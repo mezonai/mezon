@@ -55,7 +55,8 @@ export const createNewDirectMessage = createAsyncThunk(
 						...response,
 						usernames: Array.isArray(username) ? username : username ? [username] : [],
 						channel_label: Array.isArray(username) ? username.toString() : username,
-						channel_avatar: Array.isArray(avatar) ? avatar : avatar ? [avatar] : []
+						channel_avatar: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
+						user_id: body.user_ids
 					})
 				);
 				if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
