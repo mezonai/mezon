@@ -7,6 +7,7 @@ import {
 	MessagesEntity,
 	getIsFowardAll,
 	getSelectedMessage,
+	getStore,
 	selectAllChannelsByUser,
 	selectCurrentChannelId,
 	selectDirectsOpenlist,
@@ -47,13 +48,10 @@ interface ForwardMessageModalProps {
 const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) => {
 	const [searchText, setSearchText] = useState('');
 
-	const dmGroupChatList = useSelector(selectDirectsOpenlist);
-	const listChannels = useSelector(selectAllChannelsByUser);
-
 	const { sendForwardMessage } = useSendForwardMessage();
 	const { t } = useTranslation('message');
 	const { themeValue } = useTheme();
-
+	const store = getStore();
 	const isForwardAll = useSelector(getIsFowardAll);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -96,6 +94,8 @@ const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) =>
 	};
 
 	const allForwardObject = useMemo(() => {
+		const listChannels = selectAllChannelsByUser(store.getState() as any);
+		const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
 		const listDMForward = dmGroupChatList
 			?.filter((dm) => dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channel_label)
 			.map(mapDirectMessageToForwardObject);
@@ -109,7 +109,7 @@ const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) =>
 			.map(mapChannelToForwardObject);
 
 		return [...listTextChannel, ...listGroupForward, ...listDMForward];
-	}, [dmGroupChatList, listChannels]);
+	}, [store]);
 
 	const filteredForwardObjects = useMemo(() => {
 		if (searchText?.trim()?.charAt(0) === '#') {

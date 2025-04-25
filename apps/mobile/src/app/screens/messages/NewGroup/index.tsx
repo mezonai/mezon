@@ -92,7 +92,20 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 			return;
 		}
 
-		const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDmGroup }));
+		const userNameGroup: string[] = [];
+		const avatarGroup: string[] = [];
+
+		const setFriend = new Set(friendIdSelectedList);
+		const listFriendToAdd = friendList?.filter((item) => setFriend.has(item?.id));
+
+		listFriendToAdd?.forEach((friend) => {
+			userNameGroup.push(friend.user?.display_name || friend.user?.username || '');
+			avatarGroup.push(friend.user?.avatar_url || '');
+		});
+
+		const response = await dispatch(
+			directActions.createNewDirectMessage({ body: bodyCreateDmGroup, username: userNameGroup, avatar: avatarGroup })
+		);
 		const resPayload = response.payload as ApiCreateChannelDescRequest;
 		if (resPayload.channel_id) {
 			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: resPayload.channel_id, from: APP_SCREEN.MESSAGES.NEW_GROUP });

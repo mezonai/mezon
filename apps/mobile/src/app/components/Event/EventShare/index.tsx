@@ -4,6 +4,7 @@ import {
 	DirectEntity,
 	EventManagementEntity,
 	appActions,
+	getStore,
 	selectAllChannelsByUser,
 	selectChannelById,
 	selectDirectsOpenlist,
@@ -32,9 +33,8 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, isTabletLandscape);
+	const store = getStore();
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id || ''));
-	const dmGroupChatList = useAppSelector(selectDirectsOpenlist);
-	const listChannels = useAppSelector(selectAllChannelsByUser);
 	const [searchText, setSearchText] = useState('');
 	const selectedShareObjectsRef = useRef<IForwardIObject[]>([]);
 	const [memberCount, setMemberCount] = useState('');
@@ -64,6 +64,8 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 	};
 
 	const allForwardObject = useMemo(() => {
+		const listChannels = selectAllChannelsByUser(store.getState());
+		const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
 		const listDMForward = dmGroupChatList
 			?.filter((dm) => dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channel_label)
 			.map(mapDirectMessageToForwardObject);
@@ -77,7 +79,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 			.map(mapChannelToForwardObject);
 
 		return [...listTextChannel, ...listGroupForward, ...listDMForward];
-	}, [dmGroupChatList, listChannels]);
+	}, [store]);
 
 	const filteredForwardObjects = useMemo(() => {
 		if (searchText?.trim()?.charAt(0) === '#') {

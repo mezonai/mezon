@@ -24,7 +24,7 @@ const ScreenItems = memo(({ id, name, thumbnail, onClose, audio }: ScreenItemsPr
 			audio: audio
 				? {
 						mandatory: {
-							chromeMediaSource: 'screen',
+							chromeMediaSource: 'desktop',
 							chromeMediaSourceId: id
 						}
 					}

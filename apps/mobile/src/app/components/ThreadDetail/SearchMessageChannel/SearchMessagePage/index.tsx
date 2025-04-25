@@ -1,6 +1,7 @@
 import { ACTIVE_TAB, ETypeSearch, IUerMention } from '@mezon/mobile-components';
 import {
 	DirectEntity,
+	getStore,
 	listChannelsByUserActions,
 	selectAllChannelsByUser,
 	selectAllUsersByUser,
@@ -29,9 +30,8 @@ interface ISearchMessagePageProps {
 function SearchMessagePage({ searchText, currentChannel, userMention, isSearchMessagePage, typeSearch }: ISearchMessagePageProps) {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const [activeTab, setActiveTab] = useState<number>(ACTIVE_TAB.MEMBER);
-	const listChannels = useSelector(selectAllChannelsByUser);
+	const store = getStore();
 	const totalResult = useSelector(selectTotalResultSearchMessage);
-	const allUsesInAllClans = useSelector(selectAllUsersByUser);
 	const dispatch = useAppDispatch();
 	const [isContentReady, setIsContentReady] = useState(false);
 
@@ -48,22 +48,24 @@ function SearchMessagePage({ searchText, currentChannel, userMention, isSearchMe
 	}, [dispatch]);
 
 	const channelsSearch = useMemo(() => {
+		const listChannels = selectAllChannelsByUser(store.getState());
 		if (!searchText) return listChannels;
 		return (
 			listChannels?.filter((channel) => {
 				return normalizeString(channel?.channel_label)?.toLowerCase().includes(normalizeString(searchText)?.toLowerCase());
 			}) || []
 		).sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channel_label'));
-	}, [listChannels, searchText]);
+	}, [searchText, store]);
 
 	const membersSearch = useMemo(() => {
+		const allUsesInAllClans = selectAllUsersByUser(store.getState());
 		if (!searchText) return allUsesInAllClans;
 		return allUsesInAllClans
 			?.filter((member) => {
 				return member?.username?.toLowerCase()?.includes(searchText?.toLowerCase());
 			})
 			.sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'display_name'));
-	}, [allUsesInAllClans, searchText]);
+	}, [searchText]);
 
 	const TabList = useMemo(() => {
 		return [

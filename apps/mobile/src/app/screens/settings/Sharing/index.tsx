@@ -16,13 +16,13 @@ import {
 	channelsActions,
 	clansActions,
 	directActions,
+	getStore,
 	getStoreAsync,
 	selectAllChannelsByUser,
 	selectClansEntities,
 	selectCurrentChannelId,
-	selectCurrentClan,
-	selectDirectsOpenlist,
-	useAppSelector
+	selectCurrentClanId,
+	selectDirectsOpenlist
 } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { checkIsThread, createImgproxyUrl, EBacktickType, ILinkOnMessage, isPublicChannel, isYouTubeLink } from '@mezon/utils';
@@ -35,7 +35,7 @@ import { Flow } from 'react-native-animated-spinkit';
 import { Image, Video } from 'react-native-compressor';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -51,22 +51,24 @@ interface ISharing {
 }
 
 export const Sharing = ({ data, onClose }: ISharing) => {
-	const listDM = useSelector(selectDirectsOpenlist);
-	const listChannels = useSelector(selectAllChannelsByUser);
-	const clans = useAppSelector((state) => selectClansEntities(state));
+	const store = getStore();
+
+	const clans = useMemo(() => {
+		return selectClansEntities(store.getState() as any);
+	}, [store]);
 
 	const listChannelsText = useMemo(() => {
+		const listChannels = selectAllChannelsByUser(store.getState() as any);
 		return listChannels.filter(
 			(channel) => channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE
 		);
-	}, [listChannels]);
+	}, [store]);
+	const listDM = selectDirectsOpenlist(store.getState() as any);
 
 	const listDMText = useMemo(() => {
 		return listDM.filter((channel) => !!channel.channel_label);
 	}, [listDM]);
 
-	const currentClan = useSelector(selectCurrentClan);
-	const currentChannelId = useSelector(selectCurrentChannelId) || '';
 	const mezon = useMezon();
 	const dispatch = useDispatch();
 	const [dataText, setDataText] = useState<string>('');
@@ -74,8 +76,7 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [searchText, setSearchText] = useState<string>('');
 	const [channelSelected, setChannelSelected] = useState<any>();
-	const inputSearchRef = useRef<any>();
-	const session = mezon.sessionRef.current;
+	const inputSearchRef = useRef<any>(null);
 	const [attachmentUpload, setAttachmentUpload] = useState<any>([]);
 	const { handleReconnect } = useContext(ChatContext);
 	const dataMedia = useMemo(() => {
@@ -101,7 +102,7 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 		} else {
 			setDataShareTo([...listChannelsText, ...listDMText]);
 		}
-	}, [searchText]);
+	}, [listChannelsText, listDMText, searchText]);
 
 	useEffect(() => {
 		if (dataMedia?.length) {
@@ -183,25 +184,22 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 	}, []);
 
 	const sendToGroup = async (dataSend: { text: any; links: any[] }) => {
-		const store = await getStoreAsync();
+		const clanIdStore = selectCurrentClanId(store.getState());
 		const isPublic = channelSelected ? isPublicChannel(channelSelected) : false;
-		const isDiffClan = currentClan?.id !== channelSelected?.clan_id;
-		const isDiffChannel = currentChannelId !== channelSelected?.channel_id;
+		const isDiffClan = clanIdStore !== channelSelected?.clan_id;
 		requestAnimationFrame(async () => {
 			if (isDiffClan) {
 				await store.dispatch(clansActions.joinClan({ clanId: channelSelected.clan_id }));
 				await store.dispatch(clansActions.changeCurrentClan({ clanId: channelSelected.clan_id }));
 			}
-			if (isDiffChannel) {
-				await store.dispatch(
-					channelsActions.joinChannel({
-						clanId: channelSelected.clan_id ?? '',
-						channelId: channelSelected.channel_id,
-						noFetchMembers: false,
-						noCache: true
-					})
-				);
-			}
+			await store.dispatch(
+				channelsActions.joinChannel({
+					clanId: channelSelected.clan_id ?? '',
+					channelId: channelSelected.channel_id,
+					noFetchMembers: false,
+					noCache: true
+				})
+			);
 		});
 		const dataSave = getUpdateOrAddClanChannelCache(channelSelected.clan_id, channelSelected.channel_id);
 		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
@@ -374,6 +372,8 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 	const handleFiles = async (files: any) => {
 		const maxRetries = 5;
 		const retryDelay = 4000; // 4 seconds
+		const clanIdStore = selectCurrentClanId(store.getState());
+		const currentChannelId = selectCurrentChannelId(store.getState() as any);
 
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
@@ -384,7 +384,7 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 				}
 
 				const promises = Array.from(files).map((file: any) => {
-					return handleUploadFileMobile(client, session, currentClan?.id, currentChannelId, file.name, file);
+					return handleUploadFileMobile(client, session, clanIdStore, currentChannelId, file.name, file);
 				});
 
 				const response = await Promise.all(promises);

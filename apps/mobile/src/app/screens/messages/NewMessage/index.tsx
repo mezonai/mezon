@@ -1,13 +1,12 @@
 import { useDirect, useFriends } from '@mezon/core';
 import { ChevronIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { FriendsEntity, selectDirectsOpenlist } from '@mezon/store-mobile';
+import { FriendsEntity, getStore, selectDirectsOpenlist } from '@mezon/store-mobile';
 import { User } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../../components/Common';
@@ -27,7 +26,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 	const { t } = useTranslation(['']);
 	const { friends: allUser } = useFriends();
 	const { createDirectMessageWithUser } = useDirect();
-	const listDM = useSelector(selectDirectsOpenlist);
+	const store = getStore();
 	const friendList: FriendsEntity[] = useMemo(() => {
 		return allUser.filter((user) => user.state === 0);
 	}, [allUser]);
@@ -52,6 +51,8 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 
 	const directMessageWithUser = useCallback(
 		async (user: FriendsEntity) => {
+			const listDM = selectDirectsOpenlist(store.getState() as any);
+
 			const directMessage = listDM.find((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === user?.user?.id);
 			if (directMessage?.id) {
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
@@ -66,7 +67,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 			}
 		},
-		[createDirectMessageWithUser, listDM, navigation]
+		[createDirectMessageWithUser, navigation, store]
 	);
 
 	const handleFriendAction = useCallback(

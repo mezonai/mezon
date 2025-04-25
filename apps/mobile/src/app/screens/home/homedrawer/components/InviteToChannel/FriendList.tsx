@@ -4,6 +4,7 @@ import {
 	DirectEntity,
 	FriendsEntity,
 	fetchSystemMessageByClanId,
+	getStore,
 	selectAllFriends,
 	selectAllUserClans,
 	selectClanSystemMessage,
@@ -54,17 +55,18 @@ export const FriendList = React.memo(
 		const { sendInviteMessage } = useSendInviteMessage();
 		const [sentIdList, setSentIdList] = useState<string[]>([]);
 		const welcomeChannel = useSelector(selectClanSystemMessage);
-		const dmGroupChatList = useSelector(selectDirectsOpenlist);
-		const friends = useSelector(selectAllFriends);
-		const usersClan = useSelector(selectAllUserClans);
 		const dispatch = useAppDispatch();
 		const currentInviteLinkRef = useRef('');
+		const store = getStore();
 
 		const friendList: FriendsEntity[] = useMemo(() => {
+			const friends = selectAllFriends(store.getState() as any);
 			return friends?.filter((user) => user.state === 0) || [];
-		}, [friends]);
+		}, [store]);
 
 		const userListInvite = useMemo(() => {
+			const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
+			const usersClan = selectAllUserClans(store.getState() as any);
 			const userMap = new Map<string, Receiver>();
 			const userIdInClanArray = usersClan.map((user) => user.id);
 			friendList.forEach((itemFriend: FriendsEntity) => {
@@ -95,7 +97,7 @@ export const FriendList = React.memo(
 			});
 
 			return [...(userMap?.values() ?? [])];
-		}, [dmGroupChatList, friendList, usersClan]);
+		}, [friendList, store]);
 
 		const userInviteList = useMemo(() => {
 			return userListInvite?.filter((dm) => normalizeString(dm?.channel_label).includes(normalizeString(searchUserText)));

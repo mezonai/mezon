@@ -6,6 +6,7 @@ import {
 	DirectEntity,
 	FriendsEntity,
 	appActions,
+	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
 	selectAllAccount,
@@ -51,6 +52,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const { t } = useTranslation(['token']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const store = getStore();
 	const formValue = route?.params?.formValue;
 	const jsonObject: ApiTokenSentEvent = safeJSONParse(formValue || '{}');
 	const formattedAmount = formatTokenAmount(jsonObject?.amount || '0');
@@ -59,11 +61,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const [note, setNote] = useState(jsonObject?.note || t('sendToken'));
 	const [plainTokenCount, setPlainTokenCount] = useState(jsonObject?.amount || 0);
 	const userProfile = useSelector(selectAllAccount);
-	const usersClan = useSelector(selectAllUserClans);
-	const dmGroupChatList = useSelector(selectAllDirectMessages);
-	const friends = useSelector(selectAllFriends);
 	const BottomSheetRef = useRef<BottomSheetModal>(null);
-	const listDM = dmGroupChatList.filter((groupChat) => groupChat.type === ChannelType.CHANNEL_TYPE_DM);
 	const [selectedUser, setSelectedUser] = useState<Receiver>(null);
 	const [searchText, setSearchText] = useState<string>('');
 	const { createDirectMessageWithUser } = useDirect();
@@ -73,12 +71,17 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	const [isShowModalShare, setIsShowModalShare] = useState<boolean>(false);
 	const { saveImageToCameraRoll } = useImage();
 	const dispatch = useAppDispatch();
+	const listDM = useMemo(() => {
+		const dmGroupChatList = selectAllDirectMessages(store.getState());
+		return dmGroupChatList.filter((groupChat) => groupChat.type === ChannelType.CHANNEL_TYPE_DM);
+	}, []);
 
 	const viewToSnapshotRef = useRef<ViewShot>(null);
 	const [disableButton, setDisableButton] = useState<boolean>(false);
 	const friendList: FriendsEntity[] = useMemo(() => {
+		const friends = selectAllFriends(store.getState());
 		return friends?.filter((user) => user.state === 0) || [];
-	}, [friends]);
+	}, []);
 	const canEdit = jsonObject?.canEdit;
 
 	const tokenInWallet = useMemo(() => {
@@ -87,6 +90,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 
 	const mergeUser = useMemo(() => {
 		const userMap = new Map<string, Receiver>();
+		const usersClan = selectAllUserClans(store.getState());
 
 		usersClan
 			?.filter((item) => item?.user?.id !== userProfile?.user?.id)
@@ -132,7 +136,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 		});
 
 		return Array.from(userMap.values());
-	}, [friendList, listDM, userProfile?.user?.id, usersClan]);
+	}, [friendList, listDM, userProfile?.user?.id]);
 
 	const directMessageId = useMemo(() => {
 		const directMessage = listDM?.find?.((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === (jsonObject?.receiver_id || selectedUser?.id));
