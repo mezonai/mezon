@@ -1,5 +1,5 @@
 import { useAuth, useChatReaction, useUserById } from '@mezon/core';
-import { selectClickedOnTopicStatus, selectCurrentChannel, selectReactionsByEmojiIdFromMessage, useAppSelector } from '@mezon/store';
+import { getStore, selectClickedOnTopicStatus, selectCurrentChannel } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
 import {
 	EmojiDataOptionals,
@@ -16,41 +16,34 @@ import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
 type UserReactionPanelProps = {
 	emojiShowPanel: EmojiDataOptionals;
-	mode: number;
 	message: IMessageWithUser;
+	isTopic: boolean;
 };
 
-const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message }: UserReactionPanelProps, ref: ForwardedRef<HTMLDivElement>) => {
+const UserReactionPanel = forwardRef(({ emojiShowPanel, message, isTopic }: UserReactionPanelProps, ref: ForwardedRef<HTMLDivElement>) => {
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 
 	const { reactionMessageDispatch } = useChatReaction();
 	const userId = useAuth();
-	const currentChannel = useSelector(selectCurrentChannel);
-	const getEmojiById = useAppSelector((state) =>
-		selectReactionsByEmojiIdFromMessage(state, message.channel_id, message.id, emojiShowPanel.emojiId ?? '')
-	);
 
-	const removeEmojiSender = async (
-		id: string,
-		messageId: string,
-		emoji_id: string,
-		emoji: string,
-		message_sender_id: string,
-		countRemoved: number
-	) => {
-		await reactionMessageDispatch(
+	const removeEmojiSender = async (id: string, emoji_id: string, emoji: string, message_sender_id: string, countRemoved: number) => {
+		const store = getStore();
+		const currentChannel = selectCurrentChannel(store.getState());
+
+		await reactionMessageDispatch({
 			id,
-
-			messageId,
-			getEmojiById?.emojiId ?? '',
-			getEmojiById?.emoji ?? '',
-			countRemoved,
+			messageId: message?.id,
+			emoji_id: emojiShowPanel?.emojiId ?? '',
+			emoji: emojiShowPanel?.emoji ?? '',
+			count: countRemoved,
 			message_sender_id,
-			true,
-			isPublicChannel(currentChannel),
+			action_delete: true,
+			is_public: isPublicChannel(currentChannel),
+			clanId: currentChannel?.clan_id ?? '',
+			channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 			isFocusTopicBox,
-			message?.channel_id
-		);
+			channelIdOnMessage: message?.channel_id
+		});
 	};
 
 	const hideSenderOnPanel = useCallback((emojiData: EmojiDataOptionals, senderId: string) => {
@@ -61,7 +54,7 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message }: UserRea
 		return newEmojiData;
 	}, []);
 
-	const count = calculateTotalCount(getEmojiById?.senders ?? []);
+	const count = calculateTotalCount(emojiShowPanel?.senders ?? []);
 
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
@@ -72,15 +65,15 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, mode, message }: UserRea
 						onClick={(e) => e.stopPropagation()}
 						className={`z-50 w-[18rem] dark:bg-bgSecondary600 bg-white border-[#28272b] rounded-sm min-h-5 max-h-[25rem] ${window.innerWidth < 640 ? 'flex flex-col justify-center' : 'p-1 bottom-0'}`}
 					>
-						<PanelHeader emojiId={getEmojiById?.emojiId} emojiName={getEmojiById?.emoji ?? ''} count={count} />
+						<PanelHeader emojiId={emojiShowPanel?.emojiId} emojiName={emojiShowPanel?.emoji ?? ''} count={count} />
 						<div ref={ref} tabIndex={-1} className="max-h-40 overflow-y-auto hide-scrollbar focus-visible:outline-none">
-							{getEmojiById?.senders.map((sender: SenderInfoOptionals, index: number) => {
+							{emojiShowPanel?.senders.map((sender: SenderInfoOptionals, index: number) => {
 								if (sender.count && sender.count > 0) {
 									return (
 										<Fragment key={`${index}_${sender.sender_id}`}>
 											<SenderItem
 												sender={sender}
-												emojiShowPanel={getEmojiById}
+												emojiShowPanel={emojiShowPanel}
 												userId={userId}
 												removeEmojiSender={removeEmojiSender}
 												hideSenderOnPanel={hideSenderOnPanel}
@@ -125,14 +118,7 @@ type SenderItemProps = {
 	sender: any;
 	emojiShowPanel: any;
 	userId: any;
-	removeEmojiSender: (
-		id: string,
-		messageId: string,
-		emoji_id: string,
-		emoji: string,
-		message_sender_id: string,
-		countRemoved: number
-	) => Promise<void>;
+	removeEmojiSender: (id: string, emoji_id: string, emoji: string, message_sender_id: string, countRemoved: number) => Promise<void>;
 	hideSenderOnPanel: (emojiData: any, senderId: string) => void;
 };
 
@@ -141,7 +127,6 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 		e.stopPropagation();
 		await removeEmojiSender(
 			emojiShowPanel?.id ?? '',
-			emojiShowPanel?.messageId ?? '',
 			emojiShowPanel?.emojiId ?? '',
 			emojiShowPanel?.emoji ?? '',
 			sender?.sender_id ?? '',

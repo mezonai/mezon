@@ -1,22 +1,22 @@
 import { useIdleRender } from '@mezon/core';
 import {
+	getActiveMode,
+	getCurrentChannelAndDm,
+	getStore,
 	pinMessageActions,
 	RootState,
 	selectClanView,
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectCurrentTopicId,
-	selectDmGroupCurrent,
-	selectDmGroupCurrentId,
 	selectMessageByMessageId,
 	useAppDispatch
 } from '@mezon/store';
 import { ChannelMembersEntity, SHOW_POSITION } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode } from 'mezon-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ShowContextMenuParams, useContextMenu } from 'react-contexify';
 import { useModal } from 'react-modal-hook';
-import { useStore } from 'react-redux';
 import ModalDeleteMess from '../DeleteMessageModal/ModalDeleteMess';
 import { ModalAddPinMess } from '../PinMessModal';
 import MessageContextMenu from './MessageContextMenu';
@@ -85,14 +85,6 @@ export const MessageContextMenuContext = createContext<MessageContextMenuContext
 	}
 });
 
-const getCurrentChannelAndDm = (appState: RootState) => {
-	const currentChannel = selectCurrentChannel(appState);
-	const currentDmId = selectDmGroupCurrentId(appState);
-	const currentDm = selectDmGroupCurrent(currentDmId || '')(appState);
-
-	return { currentChannel, currentDm };
-};
-
 const getMessage = (appState: RootState, isTopic: boolean, messageId: string) => {
 	const isClanView = selectClanView(appState);
 	const { currentChannel, currentDm } = getCurrentChannelAndDm(appState);
@@ -100,26 +92,6 @@ const getMessage = (appState: RootState, isTopic: boolean, messageId: string) =>
 	const message = selectMessageByMessageId(appState, isTopic ? currentTopicId : isClanView ? currentChannel?.id : currentDm?.id, messageId);
 
 	return message;
-};
-
-const getActiveMode = (appState: RootState) => {
-	const isClanView = selectClanView(appState);
-	const { currentChannel, currentDm } = getCurrentChannelAndDm(appState);
-
-	if (isClanView) {
-		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
-			return ChannelStreamMode.STREAM_MODE_CHANNEL;
-		}
-		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
-			return ChannelStreamMode.STREAM_MODE_THREAD;
-		}
-	}
-
-	if (currentDm?.type === ChannelType.CHANNEL_TYPE_DM) {
-		return ChannelStreamMode.STREAM_MODE_DM;
-	}
-
-	return ChannelStreamMode.STREAM_MODE_GROUP;
 };
 
 export const MessageContextMenuProvider = ({
@@ -141,19 +113,19 @@ export const MessageContextMenuProvider = ({
 	const [posShortProfile, setPosShortProfile] = useState<posShortProfileOpt>({});
 	const [isTopic, setIsTopic] = useState<boolean>(false);
 
-	const appStore = useStore();
-
 	const [openDeleteMessageModal, closeDeleteMessageModal] = useModal(() => {
-		const appState = appStore.getState() as RootState;
-		const mode = getActiveMode(appState);
+		const store = getStore();
+		const appState = store.getState() as RootState;
+		const mode = getActiveMode();
 		const message = getMessage(appState, isTopic, messageIdRef.current);
 		return <ModalDeleteMess mess={message} closeModal={closeDeleteMessageModal} mode={mode} isTopic={isTopic} />;
 	}, [messageIdRef.current]);
 
 	const [openPinMessageModal, closePinMessageModal] = useModal(() => {
-		const appState = appStore.getState() as RootState;
+		const store = getStore();
+		const appState = store.getState() as RootState;
 		const message = getMessage(appState, isTopic, messageIdRef.current);
-		const mode = getActiveMode(appState);
+		const mode = getActiveMode();
 		const currentChannel = selectCurrentChannel(appState);
 
 		return (
@@ -168,11 +140,12 @@ export const MessageContextMenuProvider = ({
 	}, [messageIdRef.current]);
 
 	const handlePinMessage = useCallback(async () => {
-		const appState = appStore.getState() as RootState;
+		const store = getStore();
+		const appState = store.getState() as RootState;
 		const currentClanId = selectCurrentClanId(appState);
 		const message = getMessage(appState, isTopic, messageIdRef.current);
 		const { currentChannel, currentDm } = getCurrentChannelAndDm(appState);
-		const mode = getActiveMode(appState);
+		const mode = getActiveMode();
 
 		dispatch(
 			pinMessageActions.setChannelPinMessage({
@@ -209,9 +182,7 @@ export const MessageContextMenuProvider = ({
 
 	const menu = useMemo(() => {
 		if (!isMenuVisible) return null;
-
-		const appState = appStore.getState() as RootState;
-		const mode = getActiveMode(appState);
+		const mode = getActiveMode();
 		return (
 			<MessageContextMenu
 				id={MESSAGE_CONTEXT_MENU_ID}

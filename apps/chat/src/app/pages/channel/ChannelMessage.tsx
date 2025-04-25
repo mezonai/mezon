@@ -135,7 +135,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	) : isMessageIndicator ? (
 		<ChatWelcome isPrivate={isPrivate} key={messageId} name={channelLabel} avatarDM={avatarDM} username={username} mode={mode} />
 	) : isMessageSystem ? (
-		<MessageWithSystem message={mess} mode={mode} popup={popup} onContextMenu={handleContextMenu} showDivider={isDifferentDay} />
+		<MessageWithSystem message={mess} popup={popup} onContextMenu={handleContextMenu} showDivider={isDifferentDay} isTopic={isTopic} />
 	) : (
 		<MessageWithUser
 			allowDisplayShortProfile={true}

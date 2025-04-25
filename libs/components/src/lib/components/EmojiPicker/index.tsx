@@ -7,6 +7,7 @@ import {
 	selectMessageByMessageId,
 	selectModeResponsive,
 	selectTheme,
+	selectThreadCurrentChannel,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -29,7 +30,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export type EmojiCustomPanelOptions = {
 	messageEmojiId?: string | undefined;
-	mode?: number;
 	isReaction?: boolean;
 	onClickAddButton?: () => void;
 	onClose: () => void;
@@ -51,7 +51,7 @@ const searchEmojis = (emojis: IEmoji[], searchTerm: string) => {
 };
 
 function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
-	const { buzzInputRequest, setBuzzInputRequest, toggleEmojiPanel } = props;
+	const { buzzInputRequest, setBuzzInputRequest, toggleEmojiPanel, isFocusThreadBox, isFocusTopicBox, messageEmojiId, currenTopicId } = props;
 	const dispatch = useDispatch();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const addEmojiState = useSelector(selectAddEmojiState);
@@ -102,9 +102,14 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	}, [categoriesEmoji, categoryIcons]);
 
 	const channelID = props.isClanView ? currentChannel?.id : props.directId;
+	const currentThread = useAppSelector(selectThreadCurrentChannel);
 
 	const messageEmoji = useAppSelector((state) =>
-		selectMessageByMessageId(state, props.isFocusTopicBox ? props.currenTopicId : channelID, props.messageEmojiId || '')
+		selectMessageByMessageId(
+			state,
+			isFocusTopicBox ? currenTopicId : isFocusThreadBox ? currentThread?.channel_id : channelID,
+			messageEmojiId || ''
+		)
 	);
 	const { reactionMessageDispatch } = useChatReaction();
 	const { setSubPanelActive, setPlaceHolderInput } = useGifsStickersEmoji();
@@ -114,18 +119,20 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const handleEmojiSelect = useCallback(
 		async (emojiId: string, emojiPicked: string) => {
 			if (subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT || subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM) {
-				await reactionMessageDispatch(
-					'',
-					props.messageEmojiId ?? '',
-					emojiId.trim(),
-					emojiPicked.trim(),
-					1,
-					messageEmoji?.sender_id ?? '',
-					false,
-					isPublicChannel(currentChannel),
-					props.isFocusTopicBox,
-					messageEmoji?.channel_id
-				);
+				await reactionMessageDispatch({
+					id: emojiId,
+					messageId: props.messageEmojiId ?? '',
+					emoji_id: emojiId.trim(),
+					emoji: emojiPicked.trim(),
+					count: 1,
+					message_sender_id: messageEmoji?.sender_id ?? '',
+					action_delete: false,
+					is_public: isPublicChannel(currentChannel),
+					clanId: currentChannel?.clan_id ?? '',
+					channelId: props.isFromTopicView ? currentChannel?.id || '' : (messageEmoji?.channel_id ?? ''),
+					isFocusTopicBox: props.isFocusTopicBox,
+					channelIdOnMessage: messageEmoji?.channel_id
+				});
 				setSubPanelActive(SubPanelName.NONE);
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
 			} else if (subPanelActive === SubPanelName.EMOJI) {

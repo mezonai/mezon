@@ -12,6 +12,7 @@ import {
 	referencesActions,
 	selectAllDirectMessages,
 	selectClanView,
+	selectClickedOnThreadBoxStatus,
 	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectCurrentClanId,
@@ -19,13 +20,13 @@ import {
 	selectDefaultCanvasByChannelId,
 	selectDmGroupCurrent,
 	selectDmGroupCurrentId,
-	selectIsMessageHasReaction,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
 	selectModeResponsive,
 	selectPinMessageByChannelId,
 	selectTheme,
+	selectThreadCurrentChannel,
 	setIsForwardAll,
 	setSelectedMessage,
 	threadsActions,
@@ -112,13 +113,20 @@ function MessageContextMenu({
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const isClanView = useSelector(selectClanView);
 	const currentTopicId = useSelector(selectCurrentTopicId);
+	const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
+	const currentThread = useAppSelector(selectThreadCurrentChannel);
 
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const message = useAppSelector((state) =>
-		selectMessageByMessageId(state, isTopic ? currentTopicId : isClanView ? currentChannel?.id : currentDmId, messageId)
+		selectMessageByMessageId(
+			state,
+			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channel_id : isClanView ? currentChannel?.id : currentDmId,
+			messageId
+		)
 	);
+
 	const currentDm = useSelector(selectDmGroupCurrent(currentDmId || ''));
 	const modeResponsive = useSelector(selectModeResponsive);
 	const allMessagesEntities = useAppSelector((state) =>
@@ -403,12 +411,6 @@ function MessageContextMenu({
 		return posShowMenu === SHOW_POSITION.IN_EMOJI;
 	}, [posShowMenu]);
 
-	const reactionStatus = useSelector(selectIsMessageHasReaction(currentChannel?.id as string, messageId));
-	const enableViewReactionItem = useMemo(() => {
-		if (!checkPos) return false;
-		return reactionStatus;
-	}, [reactionStatus, checkPos]);
-
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
 		const enableEdit = isMyMessage;
@@ -426,13 +428,6 @@ function MessageContextMenu({
 		if (!checkPos) return false;
 		return checkMessageHasText;
 	}, [checkMessageHasText, checkPos]);
-
-	const [enableRemoveOneReactionItem, enableRemoveAllReactionsItem] = useMemo(() => {
-		if (!checkPos) return [false, false];
-		const enableOne = removeReaction && enableViewReactionItem;
-		const enableAll = removeReaction && enableViewReactionItem;
-		return [enableOne, enableAll];
-	}, [checkPos, enableViewReactionItem, removeReaction]);
 
 	const enableCreateThreadItem = useMemo(() => {
 		if (!checkPos) return false;
@@ -545,18 +540,20 @@ function MessageContextMenu({
 										token_count: AMOUNT_TOKEN.TEN_TOKENS
 									})
 								).unwrap();
-								await reactionMessageDispatch(
-									'',
-									message.id ?? '',
-									EMOJI_GIVE_COFFEE.emoji_id,
-									EMOJI_GIVE_COFFEE.emoji,
-									1,
-									message?.sender_id ?? '',
-									false,
-									isPublicChannel(currentChannel),
+								await reactionMessageDispatch({
+									id: EMOJI_GIVE_COFFEE.emoji_id,
+									messageId: message.id ?? '',
+									emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
+									emoji: EMOJI_GIVE_COFFEE.emoji,
+									count: 1,
+									message_sender_id: message?.sender_id ?? '',
+									action_delete: false,
+									is_public: isPublicChannel(currentChannel),
+									clanId: message.clan_id ?? '',
+									channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 									isFocusTopicBox,
-									message?.channel_id
-								);
+									channelIdOnMessage: message?.channel_id
+								});
 
 								await sendTransactionMessage(message.sender_id || '', message.user?.name || message.user?.username, message.avatar);
 							}
@@ -672,22 +669,6 @@ function MessageContextMenu({
 				);
 			});
 
-		// builder.when(enableRemoveOneReactionItem, (builder) => {
-		// 	builder.addMenuItem(
-		// 		'removeReactions',
-		// 		'Remove Reactions',
-		// 		() => {
-		// 			console.log('remove reaction');
-		// 		},
-		// 		<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
-		// 	);
-		// });
-		// builder.when(enableRemoveAllReactionsItem, (builder) => {
-		// 	builder.addMenuItem('removeAllReactions', 'Remove All Reactions', () => {
-		// 		console.log('remove all reaction');
-		// 	});
-		// });
-
 		builder.when(enableDelMessageItem, (builder) => {
 			builder.addMenuItem('deleteMessage', 'Delete Message', openDeleteMessageModal, <Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />);
 		});
@@ -747,15 +728,12 @@ function MessageContextMenu({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		checkPos,
-		enableViewReactionItem,
 		enableEditMessageItem,
 		pinMessageStatus,
 		canSendMessage,
 		enableCreateThreadItem,
 		isShowForwardAll,
 		enableSpeakMessageItem,
-		enableRemoveOneReactionItem,
-		enableRemoveAllReactionsItem,
 		enableDelMessageItem,
 		enableReportMessageItem,
 		enableCopyLinkItem,
@@ -779,7 +757,7 @@ function MessageContextMenu({
 	]);
 	/* eslint-disable no-console */
 
-	return <DynamicContextMenu key={messageId} menuId={id} items={items} messageId={messageId} mode={activeMode} />;
+	return <DynamicContextMenu key={messageId} menuId={id} items={items} messageId={messageId} message={message} isTopic={isTopic} />;
 }
 
 export default MessageContextMenu;

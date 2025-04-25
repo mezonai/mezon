@@ -312,7 +312,7 @@ function MessageWithUser({
 								</div>
 							))}
 					</div>
-					<MessageReaction message={message} mode={mode} />
+					<MessageReaction message={message} isTopic={!!isTopic} />
 				</HoverStateWrapper>
 			)}
 		</>

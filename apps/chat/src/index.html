@@ -102,12 +102,15 @@
     window?.electron?.on('reload-app', () => {
       const authData = localStorage.getItem('persist:auth');
       const appData = localStorage.getItem('persist:apps');
+      const clanData = localStorage.getItem('persist:clans');
       const categoriesData = localStorage.getItem('persist:categories');
       const rememberChannelData = localStorage.getItem('remember_channel');
       localStorage.clear();
 
       authData && localStorage.setItem('persist:auth', authData);
       appData && localStorage.setItem('persist:apps', appData);
+      clanData && localStorage.setItem('persist:clans', clanData);
+
       categoriesData && localStorage.setItem('persist:categories', categoriesData);
       rememberChannelData && localStorage.setItem('remember_channel', rememberChannelData)
 

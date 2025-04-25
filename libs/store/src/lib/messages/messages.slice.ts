@@ -38,7 +38,7 @@ import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
-import { ReactionEntity, reactionActions } from '../reactionMessage/reactionMessage.slice';
+import { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import { RootState } from '../store';
 
 const FETCH_MESSAGES_CACHED_TIME = 1000 * 60 * 60;
@@ -353,7 +353,6 @@ export const fetchMessages = createAsyncThunk(
 			thunkAPI.dispatch(messagesActions.setMessageParams({ channelId: chlId, param: { lastLoadMessageId: lastLoadMessage?.id, hasMore } }));
 
 			if (shouldReturnCachedMessages(isFetchingLatestMessages, oldMessages, lastSentMessage, !!fromCache)) {
-				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages: oldMessages }));
 				return {
 					messages: [],
 					isClearMessage,
@@ -367,10 +366,6 @@ export const fetchMessages = createAsyncThunk(
 
 			if (clanId === '0' || !clanId) {
 				messages = await MessageCrypt.decryptMessages(messages, currentUser?.user?.id as string);
-			}
-
-			if (messages.length > 0) {
-				thunkAPI.dispatch(reactionActions.updateBulkMessageReactions({ messages }));
 			}
 
 			if (response.last_seen_message?.id) {
@@ -1225,6 +1220,8 @@ export const messagesSlice = createSlice({
 
 					// const reversedMessages = action.payload.messages.reverse();
 
+					// fix later
+
 					// remove all messages if clear message is true
 					if (isClearMessage) {
 						handleRemoveManyMessages(state, channelId);
@@ -1560,6 +1557,7 @@ const handleSetManyMessages = ({
 			id: channelId
 		});
 	if (isClearMessage) {
+		// fix later
 		state.channelMessages[channelId] = channelMessagesAdapter.setAll(state.channelMessages[channelId], adapterPayload);
 	} else {
 		if (!adapterPayload.length) return;

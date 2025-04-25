@@ -19,7 +19,7 @@ const ChannelMessageThread = (props: ChannelMessageThreadProps) => {
 	return (
 		<div className="mb-3">
 			{isMessageSystem ? (
-				<MessageWithSystem message={message} mode={ChannelStreamMode.STREAM_MODE_THREAD} />
+				<MessageWithSystem message={message} isTopic={false} />
 			) : (
 				<MessageWithUser
 					allowDisplayShortProfile={true}

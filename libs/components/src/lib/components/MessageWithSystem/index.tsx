@@ -14,14 +14,14 @@ export type ReactedOutsideOptional = {
 
 export type MessageWithSystemProps = {
 	message: MessagesEntity;
-	mode: number;
 	onContextMenu?: (event: React.MouseEvent<HTMLParagraphElement>) => void;
 	popup?: () => ReactNode;
 	isSearchMessage?: boolean;
 	showDivider?: boolean;
+	isTopic: boolean;
 };
 
-function MessageWithSystem({ message, mode, onContextMenu, popup, isSearchMessage, showDivider }: Readonly<MessageWithSystemProps>) {
+function MessageWithSystem({ message, onContextMenu, popup, isSearchMessage, showDivider, isTopic }: Readonly<MessageWithSystemProps>) {
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
 
@@ -47,10 +47,9 @@ function MessageWithSystem({ message, mode, onContextMenu, popup, isSearchMessag
 							isSearchMessage={isSearchMessage}
 							isJumMessageEnabled={false}
 							content={contentUpdatedMention}
-							mode={mode}
 						/>
 					</div>
-					<MessageReaction message={message} mode={mode} />
+					<MessageReaction message={message} isTopic={isTopic} />
 				</HoverStateWrapper>
 			)}
 		</>
