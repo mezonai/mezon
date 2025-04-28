@@ -53,6 +53,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		if (!clientRef.current) {
 			throw new Error('Mezon client not initialized');
 		}
+
+		if (socketRef.current && socketRef.current.isOpen()) {
+			await socketRef.current.disconnect(false);
+		}
+
 		const socket = clientRef.current.createSocket(clientRef.current.useSSL, false, new WebSocketAdapterPb());
 		socketRef.current = socket;
 		return socket;
@@ -267,20 +272,26 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					}
 
 					try {
+						if (socketRef.current && socketRef.current.isOpen()) {
+							return resolve(socketRef.current);
+						}
+
 						const socket = await createSocket();
 						const newSession = await clientRef?.current?.sessionRefresh(
 							new Session(session.token, session.refresh_token, session.created, session.is_remember ?? false)
 						);
-						const recsession = await socket.connect(
+
+						const connectedSession = await socket.connect(
 							newSession || session,
 							true,
 							isFromMobile ? '1' : '0',
 							DefaultSocket.DefaultConnectTimeoutMs,
 							signal
 						);
+
 						await socket.joinClanChat(clanId);
 						socketRef.current = socket;
-						sessionRef.current = recsession;
+						sessionRef.current = connectedSession;
 						return resolve(socket);
 					} catch (error) {
 						failCount++;
@@ -291,11 +302,17 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 							timeoutIdRef.current = setTimeout(res, retryTime);
 						});
 
-						!socketRef.current?.isOpen() && (await retry());
+						if (socketRef.current && socketRef.current.isOpen()) {
+							return resolve(socketRef.current);
+						}
+						await retry();
 					}
 				};
 
-				!socketRef.current?.isOpen() && (await retry());
+				if (socketRef.current && socketRef.current.isOpen()) {
+					return resolve(socketRef.current);
+				}
+				await retry();
 			});
 		},
 		[createSocket, isFromMobile]
@@ -308,13 +325,18 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
 			}
+
+			if (socketRef.current && socketRef.current.isOpen()) {
+				return Promise.resolve(socketRef.current);
+			}
+
 			return new Promise((resolve, reject) => {
 				timeoutRef.current = setTimeout(() => {
 					reconnect(clanId).then(resolve).catch(reject);
 				}, 500);
 			});
 		},
-		[reconnect]
+		[reconnect, socketRef]
 	);
 
 	const value = React.useMemo<MezonContextValue>(

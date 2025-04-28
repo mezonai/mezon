@@ -101,13 +101,14 @@ const Attachments: React.FC<{
 	defaultMaxWidth?: number;
 }> = ({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 	const { videos, images, documents, audio } = classifyAttachments(attachments, message);
+	const { isMobile } = useAppLayout();
 	return (
 		<>
 			{videos.length > 0 && (
 				<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
 					{videos.map((video, index) => (
 						<div key={index} className="w-fit max-h-[350px] gap-y-2">
-							<MessageVideo attachmentData={video} />
+							<MessageVideo attachmentData={video} isMobile={isMobile} />
 						</div>
 					))}
 				</div>
@@ -122,6 +123,7 @@ const Attachments: React.FC<{
 					onContextMenu={onContextMenu}
 					isInSearchMessage={isInSearchMessage}
 					defaultMaxWidth={defaultMaxWidth}
+					isMobile={isMobile}
 				/>
 			)}
 
@@ -166,7 +168,8 @@ const ImageAlbum = ({
 	onContextMenu,
 	observeIntersectionForLoading,
 	isInSearchMessage,
-	defaultMaxWidth
+	defaultMaxWidth,
+	isMobile
 }: {
 	images: (ApiMessageAttachment & { create_time?: string })[];
 	message: IMessageWithUser;
@@ -175,10 +178,9 @@ const ImageAlbum = ({
 	observeIntersectionForLoading?: ObserveFn;
 	isInSearchMessage?: boolean;
 	defaultMaxWidth?: number;
+	isMobile?: boolean;
 }) => {
 	const dispatch = useAppDispatch();
-
-	const { isMobile } = useAppLayout();
 
 	const handleClick = useCallback((url?: string) => {
 		// move code from old image view component

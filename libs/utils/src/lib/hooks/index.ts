@@ -14,6 +14,7 @@ export * from './useLayoutEffectWithPrevDeps';
 export { default as useMediaTransition } from './useMediaTransition';
 export { default as useMediaWithLoadProgress } from './useMediaWithLoadProgress';
 export { default as usePreviousDeprecated } from './usePreviousDeprecated';
+export { default as useResizeObserver } from './useResizeObserver';
 export * from './useScrollHooks';
 export * from './useShowTransition';
 export { default as useShowTransition } from './useShowTransition';
