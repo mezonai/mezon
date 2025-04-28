@@ -8,9 +8,10 @@ interface EmbedMessageWrapProps {
 	embeds: IEmbedProps[];
 	senderId?: string;
 	messageId?: string;
+	channelId: string;
 }
 
-export function EmbedMessageWrap({ embeds, senderId, messageId }: EmbedMessageWrapProps) {
+export function EmbedMessageWrap({ embeds, senderId, messageId, channelId }: EmbedMessageWrapProps) {
 	const navigate = useCustomNavigate();
 	const dispatch = useDispatch();
 
@@ -57,7 +58,14 @@ export function EmbedMessageWrap({ embeds, senderId, messageId }: EmbedMessageWr
 	return (
 		<div className="w-full">
 			{embeds.map((embed, index) => (
-				<EmbedMessage key={index} embed={embed} senderId={senderId} message_id={messageId} onClick={() => onEmbedClick(embed)} />
+				<EmbedMessage
+					key={index}
+					embed={embed}
+					senderId={senderId}
+					message_id={messageId}
+					onClick={() => onEmbedClick(embed)}
+					channelId={channelId}
+				/>
 			))}
 		</div>
 	);

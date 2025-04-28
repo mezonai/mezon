@@ -287,7 +287,12 @@ function MessageWithUser({
 						)}
 
 						{Array.isArray(message?.content?.embed) && (
-							<EmbedMessageWrap embeds={message.content.embed} senderId={message?.sender_id} messageId={message?.id} />
+							<EmbedMessageWrap
+								embeds={message.content.embed}
+								senderId={message?.sender_id}
+								messageId={message?.id}
+								channelId={message.channel_id}
+							/>
 						)}
 						{!isTopic && message?.code === TypeMessage.Topic && <TopicViewButton message={message} />}
 
@@ -308,7 +313,12 @@ function MessageWithUser({
 						{message?.content?.components &&
 							message?.content.components.map((actionRow, index) => (
 								<div className={'flex flex-col w-full'} key={index}>
-									<MessageActionsPanel actionRow={actionRow} messageId={message?.id} senderId={message?.sender_id} />
+									<MessageActionsPanel
+										actionRow={actionRow}
+										messageId={message?.id}
+										senderId={message?.sender_id}
+										channelId={message.channel_id}
+									/>
 								</div>
 							))}
 					</div>

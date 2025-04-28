@@ -1,14 +1,6 @@
-import {
-	messagesActions,
-	selectCurrentChannelId,
-	selectCurrentUserId,
-	selectDataFormEmbedByMessageId,
-	selectDmGroupCurrentId,
-	selectModeResponsive,
-	useAppDispatch
-} from '@mezon/store';
+import { messagesActions, selectCurrentUserId, selectDataFormEmbedByMessageId, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EButtonMessageStyle, EIconEmbedButtonMessage, IButtonMessage, ModeResponsive } from '@mezon/utils';
+import { EButtonMessageStyle, EIconEmbedButtonMessage, IButtonMessage } from '@mezon/utils';
 import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -18,12 +10,10 @@ type MessageButtonProps = {
 	senderId: string;
 	buttonId: string;
 	inside?: boolean;
+	channelId: string;
 };
 
-export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button, senderId, buttonId, inside }) => {
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentDmId = useSelector(selectDmGroupCurrentId);
-	const modeResponsive = useSelector(selectModeResponsive);
+export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button, senderId, buttonId, inside, channelId }) => {
 	const currentUserId = useSelector(selectCurrentUserId);
 	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, messageId));
 	const dispatch = useAppDispatch();
@@ -51,7 +41,7 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 			dispatch(
 				messagesActions.clickButtonMessage({
 					message_id: messageId,
-					channel_id: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
+					channel_id: channelId,
 					button_id: buttonId,
 					sender_id: senderId,
 					user_id: currentUserId,

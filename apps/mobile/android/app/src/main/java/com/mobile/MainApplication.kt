@@ -21,6 +21,7 @@ import com.mezon.mobile.VideoThumbnailPackage;
 import com.mezon.mobile.CustomAudioPackage;
 import com.mezon.mobile.KeepAwakePackage;
 import com.mezon.mobile.DeviceUtilsPackage;
+import com.mezon.mobile.BluetoothPackage;
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 
 class MainApplication : Application(), ReactApplication {
@@ -38,6 +39,7 @@ class MainApplication : Application(), ReactApplication {
               add(CustomAudioPackage())
               add(KeepAwakePackage())
               add(DeviceUtilsPackage())
+              add(BluetoothPackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"

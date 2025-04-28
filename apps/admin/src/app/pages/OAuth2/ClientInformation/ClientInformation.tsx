@@ -1,6 +1,6 @@
-import { editMezonOauthClient, IApplicationEntity, useAppDispatch } from '@mezon/store';
+import { IApplicationEntity, editMezonOauthClient, fetchMezonOauthClient, useAppDispatch } from '@mezon/store';
 import { ApiMezonOauthClient } from 'mezon-js/api.gen';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface IClientInformationProps {
 	currentApp: IApplicationEntity;
@@ -8,6 +8,13 @@ interface IClientInformationProps {
 
 const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 	const [isShowResetSecretPO, setIsShowSecretPO] = useState(false);
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		if (currentApp?.id) {
+			dispatch(fetchMezonOauthClient({ appId: currentApp.id, appName: currentApp.appname }));
+		}
+	}, [currentApp?.id, dispatch]);
 
 	const toggleResetSecretePopup = () => {
 		setIsShowSecretPO(!isShowResetSecretPO);
@@ -84,8 +91,8 @@ const generateRandomPassword = () => {
 	const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 	const allChars = symbols + numbers + lowercase + uppercase;
-
 	let password = '';
+
 	for (let i = 0; i < PASSWORD_LENGTH.THIRTY_TWO_CHARS; i++) {
 		const randomIndex = Math.floor(Math.random() * allChars.length);
 		password += allChars[randomIndex];

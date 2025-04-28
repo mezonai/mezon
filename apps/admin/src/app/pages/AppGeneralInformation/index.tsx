@@ -19,11 +19,13 @@ const GeneralInformation = () => {
 	const [hasChanges, setHasChanges] = useState(false);
 
 	useEffect(() => {
-		const computeHasChanges = appLogoUrl !== appDetail.applogo;
-		if (computeHasChanges) {
-			setHasChanges(true);
-		}
-	}, [appDetail.applogo, appLogoUrl]);
+		setAppLogoUrl(appDetail.applogo);
+		setHasChanges(false);
+	}, [appId, appDetail.applogo]);
+
+	useEffect(() => {
+		setHasChanges(appLogoUrl !== appDetail.applogo);
+	}, [appLogoUrl, appDetail.applogo]);
 
 	const handleResetChange = () => {
 		setAppLogoUrl(appDetail.applogo);
@@ -48,10 +50,15 @@ const GeneralInformation = () => {
 	};
 
 	const handleEditApp = async () => {
-		const updateRequest: MezonUpdateAppBody = {
-			applogo: appLogoUrl
-		};
-		await dispatch(editApplication({ request: updateRequest, appId: appId }));
+		const updateRequest: MezonUpdateAppBody = {};
+
+		if (appLogoUrl !== appDetail.applogo) {
+			updateRequest.applogo = appLogoUrl;
+		}
+
+		if (Object.keys(updateRequest).length === 0) return;
+
+		await dispatch(editApplication({ request: updateRequest, appId }));
 		await dispatch(fetchApplications({ noCache: true }));
 		setHasChanges(false);
 	};
@@ -118,25 +125,38 @@ interface IAppDetailRightProps {
 }
 
 const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
-	const handleCopyUrl = (url: string) => {
-		navigator.clipboard.writeText(url);
-	};
 	const [changeName, setChangeName] = useState(appDetail.appname);
 	const [changeUrl, setChangeUrl] = useState(appDetail.app_url);
+	const [changeAboutApp, setChangeAboutApp] = useState(appDetail.about);
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState(false);
 	const [openSaveChange, setOpenSaveChange] = useState(false);
 	const [isUrlValid, setIsUrlValid] = useState(true);
+	const [visibleToken, setVisibleToken] = useState<string | null>(null);
 	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		const savedToken = localStorage.getItem(`app_token_${appId}`);
+		if (savedToken) {
+			setVisibleToken(savedToken);
+			const timer = setTimeout(() => {
+				setVisibleToken(null);
+				localStorage.removeItem(`app_token_${appId}`);
+			}, 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [appId]);
+
 	const toggleDeletePopup = () => {
 		setIsShowDeletePopup(!isShowDeletePopup);
 	};
+
 	const handleOpenSaveChangeForName = (e: ChangeEvent<HTMLInputElement>) => {
 		setChangeName(e.target.value);
 		if (e.target.value !== appDetail.appname) {
-			setChangeName(e.target.value);
 			setOpenSaveChange(true);
 		}
 	};
+
 	const handleOpenSaveChangeForUrl = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setChangeUrl(value);
@@ -153,64 +173,122 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		}
 	};
 
+	const handleOpenSaveChangeAboutApp = (e: ChangeEvent<HTMLTextAreaElement>) => {
+		const newAbout = e.target.value;
+		if (newAbout !== appDetail.about) {
+			setChangeAboutApp(newAbout);
+			setOpenSaveChange(true);
+		}
+	};
 	const handleResetChange = () => {
 		setChangeName(appDetail.appname);
+		setChangeUrl(appDetail.app_url);
+		setChangeAboutApp(appDetail.about);
 		setOpenSaveChange(false);
 	};
+
 	const handleEditAppOrBot = async () => {
-		const updateRequest: MezonUpdateAppBody = {
-			appname: changeName,
-			app_url: changeUrl,
-			token: 'reset'
-		};
-		const response = await dispatch(editApplication({ request: updateRequest, appId: appId }));
+		const updateRequest: MezonUpdateAppBody = {};
+
+		if (changeName !== appDetail.appname) {
+			updateRequest.appname = changeName;
+		}
+
+		if (changeUrl !== appDetail.app_url) {
+			updateRequest.app_url = changeUrl;
+		}
+
+		if (changeAboutApp !== appDetail.about) {
+			updateRequest.about = changeAboutApp;
+		}
+
+		if (Object.keys(updateRequest).length === 0) return;
+
+		const response = await dispatch(editApplication({ request: updateRequest, appId })).unwrap();
+
+		if (response?.token) {
+			setVisibleToken(response.token);
+			const timer = setTimeout(() => {
+				setVisibleToken(null);
+			}, 5000);
+			return () => clearTimeout(timer);
+		}
+
 		await dispatch(fetchApplications({ noCache: true }));
 		setOpenSaveChange(false);
 	};
+
+	const handleCopyUrl = (url: string) => {
+		navigator.clipboard.writeText(url);
+	};
+
+	const handleResetToken = async () => {
+		try {
+			const updateRequest: MezonUpdateAppBody = { token: 'reset' };
+			const response = await dispatch(editApplication({ request: updateRequest, appId })).unwrap();
+
+			if (response?.token) {
+				setVisibleToken(response.token);
+				const timer = setTimeout(() => {
+					setVisibleToken(null);
+				}, 5000);
+				return () => clearTimeout(timer);
+			}
+
+			await dispatch(fetchApplications({ noCache: true }));
+		} catch (error) {
+			console.error('Failed to reset token:', error);
+		}
+	};
+
+	useEffect(() => {
+		setChangeName(appDetail.appname);
+		setChangeUrl(appDetail.app_url);
+		setChangeAboutApp(appDetail.about);
+	}, [appDetail]);
+
 	return (
 		<div className="flex-1 flex flex-col gap-7">
 			<div className="w-full flex flex-col gap-2">
 				<div className="text-[12px] uppercase font-semibold">Name</div>
 				<input
 					value={changeName}
-					className=" w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
+					className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
 					type="text"
 					onChange={handleOpenSaveChangeForName}
 				/>
 			</div>
+
 			{appDetail.app_url && (
 				<div className="w-full flex flex-col gap-2">
 					<div className="text-[12px] uppercase font-semibold">URL</div>
 					<input
 						value={changeUrl}
-						className=" w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
+						className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
 						type="text"
 						onChange={handleOpenSaveChangeForUrl}
 					/>
 					{!isUrlValid && <div className="text-red-500 text-sm">Please enter a valid URL (e.g., https://example.com).</div>}
 				</div>
 			)}
+
 			{openSaveChange && isUrlValid && <ModalSaveChanges onReset={handleResetChange} onSave={handleEditAppOrBot} />}
 
 			<div className="flex flex-col gap-2">
 				<div className="text-[12px] uppercase font-semibold">Description (maximum 400 characters)</div>
-				<div className="text-[14px]">Your description will appear in the About Me section of your bot's profile.</div>
+				<div className="text-[14px]">
+					Your description will appear in the About Me section of your {appDetail.app_url ? 'application' : 'bot'}
+				</div>
 				<textarea
 					className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] min-h-[120px] max-h-[120px] p-[10px] outline-primary dark:bg-[#1e1f22]"
-					name=""
-					id=""
+					placeholder={`Write a short description of your ${appDetail.app_url ? 'app' : 'bot'} `}
+					onChange={handleOpenSaveChangeAboutApp}
+					value={changeAboutApp}
 				></textarea>
 			</div>
-			<div className="flex flex-col gap-2">
-				<div className="text-[12px] uppercase font-semibold">Tags (maximum 5)</div>
-				<div className="text-[14px]">Add up to 5 tags to describe the content and functionality of your application.</div>
-				<input
-					className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
-					type="text"
-				/>
-			</div>
+
 			<div className="text-[12px] font-semibold flex flex-col gap-2">
-				<div className="uppercase">Application ID</div>
+				<div className="uppercase">{appDetail.app_url ? 'Application' : 'Bot'} ID</div>
 				<div>{appId}</div>
 				<div
 					onClick={() => handleCopyUrl(appId)}
@@ -219,24 +297,50 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 					Copy
 				</div>
 			</div>
+
 			<div className="text-[12px] font-semibold flex flex-col gap-2">
-				<div className="uppercase">Application Token</div>
-				<div>{appDetail.token}</div>
+				<div className="uppercase">{appDetail.app_url ? 'Application' : 'Bot'} Token</div>
+
+				{visibleToken ? (
+					<div className="text-blue-600  rounded-sm mt-1">
+						<span className="text-sm text-red-500">
+							This is your new token. Copy and store it safely, you won't be able to see it again.
+						</span>
+						<div className="mt-2 font-mono break-all">{visibleToken}</div>
+					</div>
+				) : (
+					<div className=" mt-1">
+						<span className="text-sm text-gray-500 text-sm">
+							For security purposes, tokens can only be viewed once, when created. If you forgot or lost access to your token, please
+							regenerate a new one.
+						</span>
+					</div>
+				)}
+				{visibleToken && (
+					<div
+						onClick={() => handleCopyUrl(visibleToken)}
+						className="mt-2 py-[7px] px-[16px] bg-blue-600 hover:bg-blue-800 cursor-pointer w-fit text-[15px] text-white rounded-sm"
+					>
+						Copy Token
+					</div>
+				)}
 				<div
-					onClick={() => handleCopyUrl(appDetail.token as string)}
+					onClick={handleResetToken}
 					className="py-[7px] px-[16px] bg-blue-600 hover:bg-blue-800 cursor-pointer w-fit text-[15px] text-white rounded-sm"
 				>
-					Copy
+					Reset Token
 				</div>
 			</div>
+
 			<div className="flex justify-end">
 				<div
 					onClick={toggleDeletePopup}
 					className="text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-sm w-fit"
 				>
-					Delete App
+					Delete {appDetail.app_url ? 'Application' : 'Bot'}
 				</div>
 			</div>
+
 			{isShowDeletePopup && <DeleteAppPopup appId={appId} appName={appDetail.appname as string} togglePopup={toggleDeletePopup} />}
 		</div>
 	);

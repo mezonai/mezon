@@ -1,17 +1,41 @@
+import { getApplicationDetail, selectAppDetail, useAppDispatch } from '@mezon/store';
 import copy from 'copy-to-clipboard';
-import { useMatches } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const Installation = () => {
-	const matches = useMatches();
-	const appMatch = matches.find((match) => match.pathname.includes('/developers/applications/'));
+	const dispatch = useAppDispatch();
+	const { applicationId } = useParams();
+	const application = useSelector(selectAppDetail);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const application = (appMatch?.data as any)?.application;
+	useEffect(() => {
+		const fetchData = async () => {
+			if (applicationId) {
+				setIsLoading(true);
+				try {
+					await dispatch(getApplicationDetail({ appId: applicationId })).unwrap();
+				} catch (error) {
+					console.error('Failed to fetch application details:', error);
+				} finally {
+					setIsLoading(false);
+				}
+			}
+		};
 
-	if (!application) {
+		fetchData();
+	}, [applicationId, dispatch]);
+
+	if (isLoading) {
+		return <div className="text-red-500">Loading application data...</div>;
+	}
+
+	if (!application || !applicationId) {
 		return <div className="text-red-500">Application data not found</div>;
 	}
 
-	const linkInstall = window.location.origin + (application.app_url ? '/developers/app/install/' : '/developers/bot/install/') + application.id;
+	const linkInstall = window.location.origin + (application.app_url ? '/developers/app/install/' : '/developers/bot/install/') + applicationId;
 
 	const handleCopyToClipboard = () => {
 		copy(linkInstall);

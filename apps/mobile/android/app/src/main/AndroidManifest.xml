@@ -41,8 +41,12 @@
     <uses-permission android:name="android.permission.CALL_PHONE" android:required="false" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:required="false" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" android:required="false" />
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" android:required="false" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+                     android:usesPermissionFlags="neverForLocation"
+                     android:required="false" />
 
     <application
       android:name=".MainApplication"
@@ -207,6 +211,10 @@
         android:name="com.google.firebase.messaging.default_notification_color"
         android:resource="@color/black"
       />
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_channel_id"
+        android:value="@string/default_notification_channel_id"
+        tools:replace="android:value" />
       <meta-data
       android:name="com.google.android.geo.API_KEY"
       android:value=""/>

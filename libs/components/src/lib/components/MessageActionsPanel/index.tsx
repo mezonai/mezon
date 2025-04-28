@@ -7,15 +7,22 @@ type MessageActionsPanelProps = {
 	actionRow: IMessageActionRow;
 	messageId: string;
 	senderId: string;
+	channelId: string;
 };
 
-export const MessageActionsPanel: React.FC<MessageActionsPanelProps> = ({ actionRow, messageId, senderId }) => {
+export const MessageActionsPanel: React.FC<MessageActionsPanelProps> = ({ actionRow, messageId, senderId, channelId }) => {
 	return (
 		<div className={'flex flex-row gap-2 py-2'}>
 			{actionRow?.components?.map((component) => (
 				<Fragment key={component.id}>
 					{component.type === EMessageComponentType.BUTTON && (
-						<MessageButton button={component.component} messageId={messageId} senderId={senderId} buttonId={component.id} />
+						<MessageButton
+							button={component.component}
+							messageId={messageId}
+							senderId={senderId}
+							buttonId={component.id}
+							channelId={channelId}
+						/>
 					)}
 					{component.type === EMessageComponentType.SELECT && (
 						<MessageSelect select={component.component} messageId={messageId} senderId={senderId} buttonId={component.id} />

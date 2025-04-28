@@ -9,9 +9,10 @@ interface EmbedFieldsProps {
 	fields: IFieldEmbed[];
 	message_id: string;
 	senderId: string;
+	channelId: string;
 }
 
-export function EmbedFields({ fields, message_id, senderId }: EmbedFieldsProps) {
+export function EmbedFields({ fields, message_id, senderId, channelId }: EmbedFieldsProps) {
 	const groupedFields = useMemo(() => {
 		return fields.reduce<IFieldEmbed[][]>((acc, field) => {
 			if (!field.inline) {
@@ -56,6 +57,7 @@ export function EmbedFields({ fields, message_id, senderId }: EmbedFieldsProps) 
 											buttonId={button.id}
 											senderId={senderId}
 											messageId={message_id}
+											channelId={channelId}
 										/>
 									))}
 							</div>

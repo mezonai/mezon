@@ -7,6 +7,7 @@ import InCallManager from 'react-native-incall-manager';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import BluetoothManager from './BluetoothManager';
 import RoomView from './RoomView';
 import { style } from './styles';
 const { CustomAudioModule, KeepAwake, KeepAwakeIOS } = NativeModules;
@@ -30,7 +31,7 @@ const ConnectionMonitor = () => {
 
 	const startAudioCall = async () => {
 		if (Platform.OS === 'android') {
-			CustomAudioModule.setSpeaker(true, null);
+			CustomAudioModule.setSpeaker(false, null);
 		} else {
 			await AudioSession.startAudioSession();
 			InCallManager.start({ media: 'audio' });
@@ -39,8 +40,8 @@ const ConnectionMonitor = () => {
 					defaultOutput: 'speaker'
 				}
 			});
-			InCallManager.setSpeakerphoneOn(true);
-			InCallManager.setForceSpeakerphoneOn(true);
+			InCallManager.setSpeakerphoneOn(false);
+			InCallManager.setForceSpeakerphoneOn(false);
 		}
 	};
 
@@ -84,7 +85,7 @@ function ChannelVoice({
 	const styles = style(themeValue);
 	const channel = useAppSelector((state) => selectChannelById2(state, channelId));
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
-	const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(true);
+	const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(false);
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const dispatch = useAppDispatch();
 
@@ -120,9 +121,9 @@ function ChannelVoice({
 		};
 	}, []);
 
-	const onToggleSpeaker = async () => {
+	const onToggleSpeaker = async (status = undefined) => {
 		try {
-			const newSpeakerState = !isSpeakerOn;
+			const newSpeakerState = status !== undefined ? status : !isSpeakerOn;
 			if (Platform.OS === 'ios') {
 				await AudioSession.configureAudio({
 					ios: {
@@ -161,6 +162,52 @@ function ChannelVoice({
 			subscription.remove();
 		};
 	}, [dispatch]);
+
+	useEffect(() => {
+		checkPermissions();
+		// Check initial state
+		BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
+			if (connected) toggleSpeakerByStatusBluetooth(connected);
+		});
+
+		// Listen for changes
+		BluetoothManager.startListeningForConnectionChanges((connected) => {
+			if (connected) toggleSpeakerByStatusBluetooth(connected);
+		});
+
+		// Cleanup
+		return () => {
+			BluetoothManager.stopListeningForConnectionChanges();
+		};
+	}, []);
+
+	const checkPermissions = async () => {
+		try {
+			const hasPermissions = await BluetoothManager.requestPermissions();
+			if (hasPermissions) {
+				await checkHeadsetStatus();
+			}
+		} catch (error) {
+			console.error('Error checking permissions:', error);
+		}
+	};
+
+	const checkHeadsetStatus = async () => {
+		try {
+			const connected = await BluetoothManager.isBluetoothHeadsetConnected();
+			if (connected) toggleSpeakerByStatusBluetooth(connected);
+		} catch (error) {
+			console.error('Error checking headset status:', error);
+		}
+	};
+
+	const toggleSpeakerByStatusBluetooth = async (connected: boolean) => {
+		if (connected) {
+			await onToggleSpeaker(false);
+		} else {
+			await onToggleSpeaker(true);
+		}
+	};
 
 	return (
 		<View>

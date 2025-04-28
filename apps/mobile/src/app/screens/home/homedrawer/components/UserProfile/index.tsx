@@ -121,10 +121,13 @@ const UserProfile = React.memo(
 					userId,
 					message?.display_name ||
 						message?.user?.username ||
+						user?.user?.display_name ||
 						user?.user?.username ||
+						user?.display_name ||
+						user?.username ||
 						userById?.user?.display_name ||
 						userById?.user?.username,
-					message?.avatar || user?.user?.avatar_url || userById?.user?.avatar_url
+					message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
 				);
 				if (response?.channel_id) {
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
@@ -137,8 +140,12 @@ const UserProfile = React.memo(
 				message?.display_name,
 				message?.user?.username,
 				navigation,
+				user?.avatar_url,
+				user?.display_name,
 				user?.user?.avatar_url,
+				user?.user?.display_name,
 				user?.user?.username,
+				user?.username,
 				userById?.user?.avatar_url,
 				userById?.user?.display_name,
 				userById?.user?.username

@@ -2399,6 +2399,13 @@
   resolved "https://registry.yarnpkg.com/@livekit/react-core/-/react-core-1.1.0.tgz#f6c842b05331e78d125f04c17821aa2656c5d131"
   integrity sha512-0VkEFlqGgL3m4244CZoYa3Vkmiq7xFYNfc5xEA62y5lOHzeNT1FQbOyPrYc4puFWOjWKlzfG+iDmu7h0aAZQPQ==
 
+"@livekit/track-processors@^0.4.0":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@livekit/track-processors/-/track-processors-0.4.1.tgz#ca92c67cd03c4cf7737e8e6374cc65ef2c63e039"
+  integrity sha512-3mXKJPJn0u6bnY2/5w02RLeXIFTUFIKjDi2wfMeLcRb6B/BXEGPigKEkaovEfOyt6txiD2jeiQfxlP5lG2rlQg==
+  dependencies:
+    "@mediapipe/tasks-vision" "0.10.21"
+
 "@loadable/component@^5.16.3":
   version "5.16.4"
   resolved "https://registry.yarnpkg.com/@loadable/component/-/component-5.16.4.tgz#583cb65945a5061ca3c6b90eb34835c154283ff4"
@@ -2424,6 +2431,11 @@
     fs-extra "^9.0.0"
     lodash "^4.17.15"
     tmp-promise "^3.0.2"
+
+"@mediapipe/tasks-vision@0.10.21":
+  version "0.10.21"
+  resolved "https://registry.yarnpkg.com/@mediapipe/tasks-vision/-/tasks-vision-0.10.21.tgz#b78df074763e0c7fdf8606c60121d65c9199bbf6"
+  integrity sha512-TuhKH+credq4zLksGbYrnvJ1aLIWMc5r0UHwzxzql4BHECJwIAoBR61ZrqwGOW6ZmSBIzU1t4VtKj8hbxFaKeA==
 
 "@metamask/json-rpc-engine@^8.0.1", "@metamask/json-rpc-engine@^8.0.2":
   version "8.0.2"
@@ -3661,13 +3673,6 @@
     rc-motion "^2.0.0"
     rc-resize-observer "^1.3.1"
     rc-util "^5.44.0"
-
-"@react-native-async-storage/async-storage@^1.23.1":
-  version "1.24.0"
-  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.24.0.tgz#888efbc62a26f7d9464b32f4d3027b7f2771999b"
-  integrity sha512-W4/vbwUOYOjco0x3toB8QCr7EjIP6nE9G7o8PMguvvjYT5Awg09lyV4enACRx4s++PPulBiBSjL0KTFx2u0Z/g==
-  dependencies:
-    merge-options "^3.0.4"
 
 "@react-native-community/cli-platform-android@12.3.0":
   version "12.3.0"
@@ -10517,11 +10522,6 @@ is-plain-obj@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-1.1.0.tgz#71a50c8429dfca773c92a390a4a03b39fcd51d3e"
   integrity sha512-yvkRyxmFKEOQ4pNXCmJG5AEQNlXJS5LaONXo5/cLdTZdWvsZ1ioJEonLGAosKlMWE8lwUy/bJzMjcw8az73+Fg==
 
-is-plain-obj@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
-  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
-
 is-plain-obj@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-3.0.0.tgz#af6f2ea14ac5a646183a5bbdb5baabbc156ad9d7"
@@ -12059,13 +12059,6 @@ merge-descriptors@1.0.3:
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.3.tgz#d80319a65f3c7935351e5cfdac8f9318504dbed5"
   integrity sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==
 
-merge-options@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/merge-options/-/merge-options-3.0.4.tgz#84709c2aa2a4b24c1981f66c179fe5565cc6dbb7"
-  integrity sha512-2Sug1+knBjkaMsMgf1ctR1Ujx+Ayku4EdJN4Z+C2+JzoeF7A3OZ9KM2GY0CpQS51NR61LTurMJrRKPhSs3ZRTQ==
-  dependencies:
-    is-plain-obj "^2.1.0"
-
 merge-stream@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
@@ -12286,17 +12279,17 @@ mezon-active-windows@0.1.38:
   dependencies:
     node-addon-api "^1.7.2"
 
-mezon-js-protobuf@1.7.38:
-  version "1.7.38"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.7.38.tgz#c2601665f56b31ec60e9cef212740ff42b929140"
-  integrity sha512-Gs14dm5Ga68AXtT/Txsq2jztk7e2ZOM9qyRoCN4ye09besRUokZXXJg4XcWSvYJkUA9++KMNOZQxU7ttg48q7A==
+mezon-js-protobuf@1.7.46:
+  version "1.7.46"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.7.46.tgz#472e0ee0732fa669ea086b3cce4c4cc21a545fd2"
+  integrity sha512-FUxRhNZY+299HpnTnIbv3OJB2YRqxklZerEOlB/2Zp9jRDk7VRWParVpi4Ll5hatlsyBgKbd4LqnhuYKZ43URw==
   dependencies:
     "@scarf/scarf" "^1.1.1"
 
-mezon-js@2.11.29:
-  version "2.11.29"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.11.29.tgz#8be588a968086541a725ce98a7b221a11ac754d3"
-  integrity sha512-a+QA4s1Zh7jXFKkH/q/dJrSuDNKJTUMiXMRMpV9N8Ir4IoBQQXoPBVaQLBXUJ0r7VV3jD7M7iN4h1M8kq3179Q==
+mezon-js@2.11.41:
+  version "2.11.41"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.11.41.tgz#c5c3542b2f086b47e8305e412bac6e6da717984c"
+  integrity sha512-xiqGZ5SgjRzQzg+YwwPHjnpVoS4ne+AupPUjIGgZ4RWsl6xvL4LJczdS1wbq8ly7Uem5ayDfhf+m4AUQ6Fn08g==
   dependencies:
     "@scarf/scarf" "^1.1.1"
     base64-arraybuffer "^1.0.2"
@@ -14175,7 +14168,7 @@ pretty-format@^29.0.0, pretty-format@^29.0.3, pretty-format@^29.7.0:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
-prismjs@^1.27.0, prismjs@^1.29.0:
+prismjs@^1.27.0:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.29.0.tgz#f113555a8fa9b57c35e637bba27509dcf802dd12"
   integrity sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==
@@ -14660,17 +14653,17 @@ react-responsive@^9.0.2:
     prop-types "^15.6.1"
     shallow-equal "^1.2.1"
 
-react-router-dom@^7.0.2:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-7.1.1.tgz#9e76fb63a762ba5da13032f5fd9e4a24946396b6"
-  integrity sha512-vSrQHWlJ5DCfyrhgo0k6zViOe9ToK8uT5XGSmnuC2R3/g261IdIMpZVqfjD6vWSXdnf5Czs4VA/V60oVR6/jnA==
+react-router-dom@7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-7.4.1.tgz#fd913abb488364859c343881ecb7b7bc84b902f2"
+  integrity sha512-L3/4tig0Lvs6m6THK0HRV4eHUdpx0dlJasgCxXKnavwhh4tKYgpuZk75HRYNoRKDyDWi9QgzGXsQ1oQSBlWpAA==
   dependencies:
-    react-router "7.1.1"
+    react-router "7.4.1"
 
-react-router@7.1.1:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-7.1.1.tgz#88f5657fa5b8f0b918c7222ec710de0274d00b2e"
-  integrity sha512-39sXJkftkKWRZ2oJtHhCxmoCrBCULr/HAH4IT5DHlgu/Q0FCPV0S4Lx+abjDTx/74xoZzNYDYbOZWlJjruyuDQ==
+react-router@7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-7.4.1.tgz#0e6af1eefb8370d2cd79c961b87708afdb50fe64"
+  integrity sha512-Vmizn9ZNzxfh3cumddqv3kLOKvc7AskUT0dC1prTabhiEi0U4A33LmkDOJ79tXaeSqCqMBXBU/ySX88W85+EUg==
   dependencies:
     "@types/cookie" "^0.6.0"
     cookie "^1.0.1"
@@ -17245,11 +17238,6 @@ webextension-polyfill@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.10.0.tgz#ccb28101c910ba8cf955f7e6a263e662d744dbb8"
   integrity sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==
-
-webfontloader@^1.6.28:
-  version "1.6.28"
-  resolved "https://registry.yarnpkg.com/webfontloader/-/webfontloader-1.6.28.tgz#db786129253cb6e8eae54c2fb05f870af6675bae"
-  integrity sha512-Egb0oFEga6f+nSgasH3E0M405Pzn6y3/9tOVanv/DLfa1YBIgcv90L18YyWnvXkRbIM17v5Kv6IT2N6g1x5tvQ==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

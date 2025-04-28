@@ -75,9 +75,9 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>We need access to Apple Music to play your selected songs</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Need Bluetooth access for voip call</string>
+	<string>We need needs to use Bluetooth to detect connected headsets for mezon meeting</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Need Bluetooth access for voip call</string>
+	<string>We need needs to use Bluetooth to detect connected headsets for mezon meeting</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Mezon app needs access to the camera to call video or take add pricture send to chat</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

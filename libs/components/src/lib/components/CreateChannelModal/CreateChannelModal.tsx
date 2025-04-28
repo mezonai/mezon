@@ -275,7 +275,7 @@ export const CreateNewChannelModal = () => {
 									</div>
 								</div>
 							)}
-							{channelType === channelTypeVoice && (
+							{/* {channelType === channelTypeVoice && (
 								<div className={'mt-2 w-full'}>
 									<ChannelVoicePlatformField
 										onChange={onChangeChannelTypeVoice}
@@ -283,7 +283,7 @@ export const CreateNewChannelModal = () => {
 										channelTypeVoiceProp={channelTypeVoice}
 									/>
 								</div>
-							)}
+							)} */}
 							{channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
 								channelType !== ChannelType.CHANNEL_TYPE_STREAMING &&
 								channelType !== ChannelType.CHANNEL_TYPE_APP && (

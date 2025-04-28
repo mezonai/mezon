@@ -3,6 +3,8 @@ import { createApplication, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ApiAddAppRequest } from 'mezon-js/api.gen';
 import { FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface ICreateAppPopup {
 	togglePopup: () => void;
@@ -25,9 +27,13 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const typeApplication = creationType === 'application';
 	const typeBot = creationType === 'bot';
 	const isFormValid = !!formValues.name && (creationType === 'bot' || (formValues.url !== '' && isUrlValid)) && isCheckedForPolicy;
+	const navigate = useNavigate();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (isLoading) return;
+
 		if (!formValues.name) {
 			setNotification(
 				<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">
@@ -66,8 +72,25 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 			is_shadow: isShadowBot,
 			app_url: typeApplication ? cleanedUrl : ''
 		};
-		await dispatch(createApplication({ request: createRequest }));
-		togglePopup();
+
+		try {
+			setIsLoading(true);
+			const response = (await dispatch(createApplication({ request: createRequest }))) as { payload?: { id?: string; token?: string } };
+
+			if (response?.payload?.id) {
+				if (response?.payload?.token) {
+					localStorage.setItem(`app_token_${response.payload.id}`, response.payload.token);
+				}
+				navigate(`/developers/applications/${response?.payload?.id}/information`);
+				togglePopup();
+			} else {
+				toast.error(`Failed to create application or missing ID in response`);
+			}
+		} catch (error: any) {
+			toast.error(`An unexpected error occurred.${error.message}`);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleTogglePolicyCheckBox = () => {
@@ -94,6 +117,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 			}
 		}
 	};
+
 	const handleCreationTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedType = e.target.value as CreationType;
 		setCreationType(selectedType);
@@ -176,10 +200,10 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 					</div>
 					<button
 						type="submit"
-						disabled={!isFormValid}
-						className={`rounded px-[20px] py-[9px] cursor-pointer text-white ${isFormValid ? 'bg-blue-600 hover:bg-blue-800' : 'bg-gray-400 cursor-not-allowed'}`}
+						disabled={!isFormValid || isLoading}
+						className={`rounded px-[20px] py-[9px] cursor-pointer text-white ${isFormValid && !isLoading ? 'bg-blue-600 hover:bg-blue-800' : 'bg-gray-400 cursor-not-allowed'}`}
 					>
-						Create
+						{isLoading ? 'Creating...' : 'Create'}
 					</button>
 				</div>
 			</form>
