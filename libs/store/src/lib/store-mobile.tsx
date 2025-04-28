@@ -32,7 +32,7 @@ import { canvasReducer } from './canvas/canvas.slice';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
-import { channelAppReducer } from './channels/channelapp.slice';
+import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
 import { hashtagDmReducer } from './channels/hashtagDm.slice';
 import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
@@ -40,6 +40,7 @@ import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { clanMembersMetaReducer } from './clanMembers/clan.members.meta';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
+import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
 import { directMembersMetaReducer } from './direct/direct.members.meta';
 import { directMetaReducer } from './direct/directmeta.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
@@ -372,6 +373,13 @@ const persistedEmojiRecentReducer = persistReducer(
 	},
 	emojiRecentReducer
 );
+const persistedOverriddenPoliciesReducer = persistReducer(
+	{
+		key: 'overriddenPolicies',
+		storage
+	},
+	overriddenPoliciesReducer
+);
 
 const persistedOnboardingReducer = persistReducer(
 	{
@@ -380,6 +388,23 @@ const persistedOnboardingReducer = persistReducer(
 		whitelist: ['keepAnswers', 'answerByClanId']
 	},
 	onboardingReducer
+);
+
+const persistedChannelAppReducer = persistReducer(
+	{
+		key: CHANNEL_APP,
+		storage,
+		whitelist: ['position', 'size', 'prePosition', 'preSize']
+	},
+	channelAppReducer
+);
+
+const persistedCompose = persistReducer(
+	{
+		key: COMPOSE_FEATURE_KEY,
+		storage
+	},
+	composeReducer
 );
 
 const reducer = {
@@ -411,7 +436,7 @@ const reducer = {
 	directmeta: directMetaReducer,
 	roleId: roleIdReducer,
 	policiesDefaultSlice: policiesDefaultReducer,
-	[OVERRIDDEN_POLICIES_FEATURE_KEY]: overriddenPoliciesReducer,
+	[OVERRIDDEN_POLICIES_FEATURE_KEY]: persistedOverriddenPoliciesReducer,
 	notificationsetting: notificationSettingReducer,
 	pinmessages: persistedPinMsgReducer,
 	defaultnotificationclan: persistedDefaultNotiClanReducer,
@@ -423,10 +448,10 @@ const reducer = {
 	isshow: IsShowReducer,
 	forwardmessage: popupForwardReducer,
 	notification: notificationReducer,
-	voice: persistedVoiceReducer,
+	voice: voiceReducer,
 	usersstream: usersStreamReducer,
 	videostream: videoStreamReducer,
-	channelApp: channelAppReducer,
+	channelApp: persistedChannelAppReducer,
 	canvas: canvasReducer,
 	canvasapi: canvasAPIReducer,
 	activitiesapi: activitiesAPIReducer,
@@ -457,7 +482,8 @@ const reducer = {
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
 	walletLedger: walletLedgerReducer,
-	[CHANNEL_LIST_RENDER]: persistListChannelRenderReducer
+	[CHANNEL_LIST_RENDER]: persistListChannelRenderReducer,
+	[COMPOSE_FEATURE_KEY]: persistedCompose
 };
 
 let storeInstance = configureStore({

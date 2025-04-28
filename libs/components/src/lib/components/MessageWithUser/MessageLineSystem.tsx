@@ -8,12 +8,14 @@ import {
 	convertTimeString,
 	parseThreadInfo
 } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MentionUser, PlainText, useMessageContextMenu } from '../../components';
 
 type MessageLineSystemProps = {
 	message: IMessageWithUser;
+	mode?: number;
 	content?: IExtendedMessage;
 	isSearchMessage?: boolean;
 	isHideLinkOneImage?: boolean;
@@ -21,13 +23,14 @@ type MessageLineSystemProps = {
 	isTokenClickAble: boolean;
 };
 
-const MessageLineSystemComponent = ({ message, content, isJumMessageEnabled, isSearchMessage, isTokenClickAble }: MessageLineSystemProps) => {
+const MessageLineSystemComponent = ({ message, mode, content, isJumMessageEnabled, isSearchMessage, isTokenClickAble }: MessageLineSystemProps) => {
 	return (
 		<RenderContentSystem
 			message={message}
 			isTokenClickAble={isTokenClickAble}
 			isJumMessageEnabled={isJumMessageEnabled}
 			data={content as IExtendedMessage}
+			mode={mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL}
 			isSearchMessage={isSearchMessage}
 		/>
 	);
@@ -38,12 +41,13 @@ export const MessageLineSystem = MessageLineSystemComponent;
 interface RenderContentProps {
 	message: IMessageWithUser;
 	data: IExtendedMessage;
+	mode: number;
 	isSearchMessage?: boolean;
 	isTokenClickAble: boolean;
 	isJumMessageEnabled: boolean;
 }
 
-const RenderContentSystem = ({ message, data, isSearchMessage, isJumMessageEnabled, isTokenClickAble }: RenderContentProps) => {
+const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessageEnabled, isTokenClickAble }: RenderContentProps) => {
 	const { t, mentions = [] } = data;
 	const elements = [...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS }))].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 	const { allUserIdsInChannel } = useMessageContextMenu();
@@ -100,6 +104,7 @@ const RenderContentSystem = ({ message, data, isSearchMessage, isJumMessageEnabl
 							key={`mentionUser-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
 							tagUserName={contentInElement ?? ''}
 							tagUserId={element.user_id}
+							mode={mode}
 						/>
 					);
 				} else {

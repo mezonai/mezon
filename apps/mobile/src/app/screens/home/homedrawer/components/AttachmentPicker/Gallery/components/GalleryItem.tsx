@@ -2,8 +2,8 @@ import { CameraIcon, CheckIcon, PlayIcon } from '@mezon/mobile-components';
 import { Colors, size } from '@mezon/mobile-ui';
 import { PreSendAttachment } from '@mezon/utils';
 import { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
-import React, { memo, useState } from 'react';
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import React, { memo, useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Platform, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { style } from './styles';
 
@@ -33,6 +33,12 @@ const GalleryItem = ({
 	const disabled = isDisableSelectAttachment && !isSelected;
 	const [isLoadingImage, setIsLoadingImage] = useState(true);
 
+	useEffect(() => {
+		if (item?.node?.image?.uri && Platform.OS === 'ios') {
+			Image.prefetch(item?.node?.image?.uri).catch((error) => console.error('Image prefetch failed:', error));
+		}
+	}, [item?.node?.image?.uri]);
+
 	if (item?.isUseCamera) {
 		return (
 			<TouchableOpacity style={[styles.cameraPicker]} onPress={onOpenCamera}>
@@ -53,11 +59,19 @@ const GalleryItem = ({
 			}}
 			disabled={disabled}
 		>
-			<FastImage
-				source={{ uri: item.node.image.uri + '?thumbnail=true&quality=low', cache: FastImage.cacheControl.immutable }}
-				style={styles.imageGallery}
-				onLoadEnd={() => setIsLoadingImage(false)}
-			/>
+			{Platform.OS === 'android' ? (
+				<FastImage
+					source={{ uri: item?.node?.image?.uri + '?thumbnail=true&quality=low', cache: FastImage.cacheControl.immutable }}
+					style={styles.imageGallery}
+					onLoadEnd={() => setIsLoadingImage(false)}
+				/>
+			) : (
+				<Image
+					source={{ uri: item?.node?.image?.uri + '?thumbnail=true&quality=low' }}
+					style={styles.imageGallery}
+					onLoadEnd={() => setIsLoadingImage(false)}
+				/>
+			)}
 			{isLoadingImage && (
 				<View style={styles.loadingContainer}>
 					<ActivityIndicator size="small" color={themeValue.text} />

@@ -13,12 +13,10 @@ export const getActiveMode = (channelId?: string): ChannelStreamMode => {
 	const channel = channelId ? selectChannelById2(appState, channelId) : currentChannel;
 
 	if (isClanView && channel) {
-		if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
-			return ChannelStreamMode.STREAM_MODE_CHANNEL;
-		}
 		if (channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 			return ChannelStreamMode.STREAM_MODE_THREAD;
 		}
+		return ChannelStreamMode.STREAM_MODE_CHANNEL;
 	}
 
 	if (currentDm?.type === ChannelType.CHANNEL_TYPE_DM) {

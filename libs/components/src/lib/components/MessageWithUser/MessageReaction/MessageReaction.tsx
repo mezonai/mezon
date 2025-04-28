@@ -1,7 +1,9 @@
+import { useIdleRender } from '@mezon/core';
 import { selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { EmojiDataOptionals, IMessageWithUser } from '@mezon/utils';
 import React, { useRef, useState } from 'react';
 import ItemEmoji from './ItemEmoji';
+import ItemEmojiSkeleton from './ItemEmojiSkeleton';
 import ReactionBottom from './ReactionBottom';
 
 type MessageReactionProps = {
@@ -12,6 +14,7 @@ type MessageReactionProps = {
 const ReactionContent: React.FC<MessageReactionProps> = ({ message, isTopic }) => {
 	const smileButtonRef = useRef<HTMLDivElement | null>(null);
 	const [showIconSmile, setShowIconSmile] = useState<boolean>(false);
+	const shouldRender = useIdleRender();
 
 	return (
 		<div
@@ -19,9 +22,11 @@ const ReactionContent: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 			onMouseEnter={() => setShowIconSmile(true)}
 			onMouseLeave={() => setShowIconSmile(false)}
 		>
-			{message?.reactions?.map((emoji, index) => (
-				<ItemEmoji key={`${index}-${message.id}`} message={message} emoji={emoji as any} isTopic={isTopic} />
-			))}
+			{!shouldRender && message?.reactions?.map((emoji, index) => <ItemEmojiSkeleton key={`${index}-${message.id}`} />)}
+			{shouldRender &&
+				message?.reactions?.map((emoji, index) => (
+					<ItemEmoji key={`${index}-${message.id}`} message={message} emoji={emoji as any} isTopic={isTopic} />
+				))}
 			{showIconSmile && (
 				<div className="w-6 h-6 flex justify-center items-center cursor-pointer relative">
 					<ReactionBottom messageIdRefReaction={message.id} smileButtonRef={smileButtonRef} />
