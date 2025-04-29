@@ -1,23 +1,24 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-'use client';
-
 import { LiveKitRoom } from '@livekit/components-react';
+import { JoinForm, MyVideoConference, VideoPreview } from '@mezon/components';
 import {
+	authActions,
 	generateMeetTokenExternal,
 	selectAllAccount,
 	selectExternalToken,
+	selectGuestAccessToken,
+	selectGuestUserId,
 	selectJoinCallExtStatus,
 	selectShowCamera,
 	selectShowMicrophone,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
+import { GUEST_NAME } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { MyVideoConference } from '../VoiceChannel';
-import { JoinForm } from './JoinForm';
-import { VideoPreview } from './VideoPreview';
+import { toast } from 'react-toastify';
+import ChatStream from '../chatStream';
 
 // Permissions popup component
 const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
@@ -63,11 +64,8 @@ const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
 
 export default function PreJoinCalling() {
 	const [cameraOn, setCameraOn] = useState(false);
-	const [micOn, setMicOn] = useState(false);
 	const [username, setUsername] = useState('');
 	const [avatar, setAvatar] = useState('');
-
-	const [audioLevel, setAudioLevel] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	// State for permissions
 	const [permissionsState, setPermissionsState] = useState({
@@ -75,11 +73,8 @@ export default function PreJoinCalling() {
 		microphone: false,
 		showPopup: false
 	});
-
-	const videoRef = useRef<HTMLVideoElement | null>(null);
 	const streamRef = useRef<MediaStream | null>(null);
 	const micStreamRef = useRef<MediaStream | null>(null);
-	const analyserRef = useRef<AnalyserNode | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const animationFrameRef = useRef<number | null>(null);
 	const dispatch = useAppDispatch();
@@ -87,6 +82,44 @@ export default function PreJoinCalling() {
 
 	const getExternalToken = useSelector(selectExternalToken);
 	const getJoinCallExtStatus = useSelector(selectJoinCallExtStatus);
+	const getGuestUserId = useSelector(selectGuestUserId);
+	const getGuestAccessToken = useSelector(selectGuestAccessToken);
+
+	function decodeJWT(token: string) {
+		try {
+			const parts = token.split('.');
+			if (parts.length !== 3) throw new Error('JWT must have 3 parts');
+			const payload = parts[1];
+			const decoded = atob(payload);
+			return JSON.parse(decoded);
+		} catch (error) {
+			toast.error('Invalid JWT');
+			return {};
+		}
+	}
+	function createGuestSessionData(token: string) {
+		const payload = decodeJWT(token);
+		const now = Math.floor(Date.now() / 1000);
+		return {
+			created: false,
+			token,
+			created_at: now,
+			expires_at: payload.exp,
+			refresh_expires_at: undefined,
+			username: payload.usn || payload.usr || payload.sub || GUEST_NAME,
+			user_id: payload.uid?.toString(),
+			vars: payload.vrs || {},
+			is_remember: false
+		};
+	}
+
+	useEffect(() => {
+		if (getGuestAccessToken && getGuestAccessToken !== '0') {
+			const session = createGuestSessionData(getGuestAccessToken as string);
+			dispatch(authActions.setSession(session));
+			dispatch(authActions.checkSessionWithToken());
+		}
+	}, [getGuestAccessToken, dispatch]);
 
 	useEffect(() => {
 		if (getJoinCallExtStatus === 'error') {
@@ -101,62 +134,6 @@ export default function PreJoinCalling() {
 	const account = useSelector(selectAllAccount);
 	const getDisplayName = account?.user?.display_name;
 	const getAvatar = account?.user?.avatar_url;
-
-	// Check permissions on component mount
-	// useEffect(() => {
-	// 	const checkPermissions = async () => {
-	// 		try {
-	// 			await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-	// 			setPermissionsState({
-	// 				camera: true,
-	// 				microphone: true,
-	// 				showPopup: false
-	// 			});
-	// 		} catch (err) {
-	// 			if (err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
-	// 				setPermissionsState({
-	// 					camera: false,
-	// 					microphone: false,
-	// 					showPopup: true
-	// 				});
-	// 			} else {
-	// 				try {
-	// 					await navigator.mediaDevices.getUserMedia({ audio: true });
-	// 					setPermissionsState((prev) => ({
-	// 						...prev,
-	// 						microphone: true
-	// 					}));
-	// 				} catch (audioErr) {
-	// 					if (audioErr instanceof DOMException && (audioErr.name === 'NotAllowedError' || audioErr.name === 'PermissionDeniedError')) {
-	// 						setPermissionsState((prev) => ({
-	// 							...prev,
-	// 							microphone: false,
-	// 							showPopup: true
-	// 						}));
-	// 					}
-	// 				}
-
-	// 				try {
-	// 					await navigator.mediaDevices.getUserMedia({ video: true });
-	// 					setPermissionsState((prev) => ({
-	// 						...prev,
-	// 						camera: true
-	// 					}));
-	// 				} catch (videoErr) {
-	// 					if (videoErr instanceof DOMException && (videoErr.name === 'NotAllowedError' || videoErr.name === 'PermissionDeniedError')) {
-	// 						setPermissionsState((prev) => ({
-	// 							...prev,
-	// 							camera: false,
-	// 							showPopup: true
-	// 						}));
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	};
-
-	// 	checkPermissions();
-	// }, []);
 
 	const closePermissionsPopup = useCallback(() => {
 		setPermissionsState((prev) => ({
@@ -190,99 +167,8 @@ export default function PreJoinCalling() {
 		};
 	}, []);
 
-	// Toggle Camera
-	const toggleCamera = useCallback(async () => {
-		if (cameraOn) {
-			if (streamRef.current) {
-				streamRef.current.getTracks().forEach((track) => track.stop());
-				streamRef.current = null;
-			}
-			if (videoRef.current) {
-				videoRef.current.srcObject = null;
-			}
-
-			setCameraOn(false);
-			dispatch(voiceActions.setShowCamera(false));
-		} else {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-				streamRef.current = stream;
-				if (videoRef.current) {
-					videoRef.current.srcObject = stream;
-				}
-				setCameraOn(true);
-				dispatch(voiceActions.setShowCamera(true));
-				setError(null);
-				// Update permissions state
-				setPermissionsState((prev) => ({
-					...prev,
-					camera: true
-				}));
-			} catch (err) {
-				console.error('Error accessing camera:', err);
-				setError('Failed to access camera. Please check your permissions and try again.');
-			}
-		}
-	}, [cameraOn, dispatch]);
-
-	// Toggle Microphone
-	const toggleMic = useCallback(async () => {
-		if (micOn) {
-			setMicOn(false);
-			dispatch(voiceActions.setShowMicrophone(false));
-			if (animationFrameRef.current) {
-				cancelAnimationFrame(animationFrameRef.current);
-				animationFrameRef.current = null;
-			}
-			if (micStreamRef.current) {
-				micStreamRef.current.getTracks().forEach((track) => track.stop());
-				micStreamRef.current = null;
-			}
-			if (audioContextRef.current) {
-				audioContextRef.current.close();
-				audioContextRef.current = null;
-				analyserRef.current = null;
-			}
-			setAudioLevel(0);
-		} else {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-				micStreamRef.current = stream;
-				const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-				audioContextRef.current = audioContext;
-				const analyser = audioContext.createAnalyser();
-				analyserRef.current = analyser;
-				const source = audioContext.createMediaStreamSource(stream);
-				source.connect(analyser);
-				analyser.fftSize = 32;
-				const bufferLength = analyser.frequencyBinCount;
-				const dataArray = new Uint8Array(bufferLength);
-				const updateAudioLevel = () => {
-					if (!analyserRef.current) return;
-					analyserRef.current.getByteFrequencyData(dataArray);
-					const sum = dataArray.reduce((acc, val) => acc + val, 0);
-					const avg = sum / bufferLength;
-					const normalizedLevel = Math.min(avg / 128, 1);
-					setAudioLevel(normalizedLevel);
-					if (micStreamRef.current && micStreamRef.current.active) {
-						animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
-					}
-				};
-				updateAudioLevel();
-				setMicOn(true);
-				dispatch(voiceActions.setShowMicrophone(true));
-				setError(null);
-				// Update permissions state
-				setPermissionsState((prev) => ({
-					...prev,
-					microphone: true
-				}));
-			} catch (err) {
-				console.error('Error accessing microphone:', err);
-				setError('Failed to access microphone. Please check your permissions and try again.');
-			}
-		}
-	}, [micOn, dispatch]);
+	const isUser = getDisplayName && getAvatar;
+	const isGuest = getGuestAccessToken && getGuestUserId && getGuestUserId !== '0';
 
 	// Handle Join Meeting
 	const joinMeeting = useCallback(async () => {
@@ -293,10 +179,11 @@ export default function PreJoinCalling() {
 
 		setError(null);
 		setAvatar(avatar as string);
-		const fullStringNameAndAvatar =
-			getDisplayName && getAvatar ? JSON.stringify({ extName: getDisplayName, extAvatar: getAvatar }) : JSON.stringify({ extName: username });
+		const fullStringNameAndAvatar = isUser
+			? JSON.stringify({ extName: getDisplayName, extAvatar: getAvatar })
+			: JSON.stringify({ extName: username });
 
-		await dispatch(generateMeetTokenExternal({ token: code as string, displayName: fullStringNameAndAvatar }));
+		await dispatch(generateMeetTokenExternal({ token: code as string, displayName: fullStringNameAndAvatar, isGuest: !isUser as boolean }));
 	}, [dispatch, username, getDisplayName, code]);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -322,7 +209,7 @@ export default function PreJoinCalling() {
 
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
-		<div className="h-screen w-screen">
+		<div className="h-screen w-screen flex">
 			{getExternalToken ? (
 				<LiveKitRoom
 					ref={containerRef}
@@ -333,7 +220,7 @@ export default function PreJoinCalling() {
 					token={getExternalToken}
 					serverUrl={serverUrl}
 					data-lk-theme="default"
-					className="h-full"
+					className="h-full flex-1 flex"
 				>
 					<MyVideoConference
 						isExternalCalling={true}
@@ -341,9 +228,10 @@ export default function PreJoinCalling() {
 						onLeaveRoom={handleLeaveRoom}
 						onFullScreen={handleFullScreen}
 					/>
+					<ChatStream />
 				</LiveKitRoom>
 			) : (
-				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
+				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white flex-1">
 					<div className="w-full max-w-3xl px-4 py-8 flex flex-col items-center">
 						{/* Header */}
 						<div className="text-center mb-4">

@@ -37,9 +37,7 @@ const ChannelIndex = lazy(() => import(/* webpackChunkName: "channel-index" */ '
 const DirectMessageIndex = lazy(() => import(/* webpackChunkName: "dm-index" */ '../pages/directMessage/DirectMessageIndex'));
 const ChannelAppLayoutMobile = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/ChannelAppLayoutMobile'));
 const Canvas = lazy(() => import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.default.Canvas })));
-const PreJoinCalling = lazy(() =>
-	import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.default.PreJoinCalling }))
-);
+const PreJoinCalling = lazy(() => import(/* webpackChunkName: "ui-components" */ '../pages/meeting'));
 
 const AppDirectory = lazy(() => import(/* webpackChunkName: "app-pages" */ '../pages/AppDirectory'));
 const ChannelMain = lazy(() => import(/* webpackChunkName: "channel-pages" */ '../pages/channel'));

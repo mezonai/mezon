@@ -15,6 +15,7 @@ import {
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
+	SET_RATIO_WINDOW,
 	TITLE_BAR_ACTION,
 	UNMAXIMIZE_WINDOW
 } from './app/events/constants';
@@ -221,6 +222,14 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 			win.webContents.downloadURL(cleanedWebpOnUrl);
 			break;
 		}
+	}
+});
+
+ipcMain.handle(SET_RATIO_WINDOW, (event, ratio) => {
+	const currentZoom = App.mainWindow.webContents.getZoomFactor();
+	const zoomChange = ratio ? 0.25 : -0.25;
+	if ((ratio && currentZoom < 2) || (!ratio && currentZoom > 0.5)) {
+		App.mainWindow.webContents.setZoomFactor(currentZoom + zoomChange);
 	}
 });
 

@@ -244,7 +244,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 	};
 
 	const snapPoints = useMemo(() => {
-		return ['50%', '90%'];
+		return ['70%', '90%'];
 	}, []);
 
 	const handleSelectUser = (item: Receiver) => {

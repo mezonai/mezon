@@ -144,7 +144,7 @@ export function MyVideoConference({
 
 	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
 	return (
-		<div className="lk-video-conference">
+		<div className="lk-video-conference flex-1">
 			<LayoutContextProvider value={layoutContext}>
 				<div className="lk-video-conference-inner relative " onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
 					{!focusTrack ? (

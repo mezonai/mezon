@@ -1,8 +1,9 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { selectComputedReactionsByMessageId } from '@mezon/store-mobile';
+import { useAppSelector } from '@mezon/store';
+import { selectMessageByMessageId } from '@mezon/store-mobile';
 import React from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { combineMessageReactions } from '../../../../../utils/helpers';
 import { IMessageReactionProps } from '../../types';
 import { MessageReactionWrapper } from './MessageReactionWrapper';
 import { style } from './styles';
@@ -24,9 +25,10 @@ export type IReactionMessageProps = {
 
 export const MessageAction = React.memo((props: IMessageReactionProps) => {
 	const { message } = props || {};
-	const messageReactions = useSelector(selectComputedReactionsByMessageId(message.channel_id, message.id));
+	const messageReactions = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const combineReactions = combineMessageReactions(messageReactions?.reactions, message?.id);
 	if (!!message?.reactions?.length && !messageReactions)
 		return (
 			<View style={[styles.reactionWrapper, styles.reactionSpace]}>
@@ -37,5 +39,5 @@ export const MessageAction = React.memo((props: IMessageReactionProps) => {
 			</View>
 		);
 
-	return <MessageReactionWrapper {...props} messageReactions={messageReactions} />;
+	return <MessageReactionWrapper {...props} messageReactions={combineReactions} />;
 });

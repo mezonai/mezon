@@ -201,11 +201,11 @@ const OnboardingGetStart = ({ link, clanId }: { link: string; clanId: string }) 
 	return (
 		<div className="w-full h-12 flex flex-col gap-2 relative px-2" onClick={handleNavigate}>
 			<div className="flex justify-between">
-				<p className="text-sm font-bold text-white">Get Started</p>
-				<div className="flex gap-[1px] items-center">
-					<p className="text-xs font-bold text-white">{missionDone}</p>
+				<p className="text-sm font-bold dark:text-white text-colorTextLightMode">Get Started</p>
+				<div className="flex gap-[1px] items-center dark:text-white text-colorTextLightMode">
+					<p className="text-xs font-bold ">{missionDone}</p>
 					<p className="text-xs">of</p>
-					<p className="text-xs font-bold text-white">{missionSum}</p>
+					<p className="text-xs font-bold">{missionSum}</p>
 					<Icons.ArrowRight defaultSize="w-3 h-3" />
 				</div>
 			</div>

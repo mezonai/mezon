@@ -6,18 +6,19 @@ import { style } from './styles';
 
 interface IProps {
 	onPress: () => void;
+	onLongPress: () => void;
 	id: string;
 	avatar: string;
 	username: string;
 	isShow: boolean;
 }
-export const AvatarMessage = React.memo(({ isShow, onPress, id, username, avatar }: IProps) => {
+export const AvatarMessage = React.memo(({ isShow, onPress, onLongPress, id, username, avatar }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 
 	if (isShow) {
 		return (
-			<Pressable onPress={onPress} style={styles.wrapperAvatar}>
+			<Pressable onPress={onPress} onLongPress={onLongPress} style={styles.wrapperAvatar}>
 				<MezonAvatar avatarUrl={avatar} username={username} />
 			</Pressable>
 		);

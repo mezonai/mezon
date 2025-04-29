@@ -1,7 +1,7 @@
 import { ChatContext, useChatReaction } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { mapReactionToEntity, reactionActions, selectDmGroupCurrentId, useAppDispatch } from '@mezon/store';
-import { getStore, messagesActions, selectCurrentChannel } from '@mezon/store-mobile';
+import { selectDmGroupCurrentId, useAppDispatch } from '@mezon/store';
+import { getStore, selectCurrentChannel } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { isPublicChannel } from '@mezon/utils';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
@@ -22,27 +22,7 @@ const ChannelMessageReactionListener = React.memo(() => {
 
 	const onReactionMessage = useCallback(
 		async (data: IReactionMessageProps) => {
-			const currentChannel = selectCurrentChannel(store.getState() as any);
-			const fakeDataToRetry = {
-				action: false,
-				channel_id: data.channelId,
-				clan_id: '',
-				count: 1,
-				emoji: data.emoji,
-				emoji_id: data.emojiId,
-				isSending: true,
-				id: new Date().getTime().toString(),
-				is_public: currentDirectId ? false : isPublicChannel(currentChannel),
-				message_id: data.messageId,
-				message_sender_id: '',
-				mode: data.mode,
-				sender_avatar: '',
-				sender_id: data.senderId,
-				sender_name: '',
-				topic_id: data?.topicId || ''
-			};
-			dispatch(reactionActions.setReactionDataSocket(mapReactionToEntity(fakeDataToRetry)));
-			dispatch(messagesActions.updateMessageReactions(mapReactionToEntity(fakeDataToRetry)));
+			const currentChannel = await selectCurrentChannel(store.getState() as any);
 			if (!socketRef?.current?.isOpen()) {
 				handleReconnect('');
 				intervalRef.current = setInterval(() => {
@@ -55,21 +35,23 @@ const ChannelMessageReactionListener = React.memo(() => {
 				}, 700); // Check and retry every 700ms
 			} else {
 				intervalRef.current && clearInterval(intervalRef.current);
-				await reactionMessageDispatch(
-					data?.id ?? '',
-					data?.messageId ?? '',
-					data?.emojiId ?? '',
-					data?.emoji?.trim() ?? '',
-					data?.countToRemove ?? 0,
-					data?.senderId ?? '',
-					data?.actionDelete ?? false,
-					currentDirectId ? false : isPublicChannel(currentChannel),
-					!!data?.topicId,
-					data?.topicId ?? ''
-				);
+				await reactionMessageDispatch({
+					id: data?.id ?? '',
+					messageId: data?.messageId ?? '',
+					emoji_id: data?.emojiId ?? '',
+					emoji: data?.emoji?.trim() ?? '',
+					count: data?.countToRemove ?? 0,
+					message_sender_id: data?.senderId ?? '',
+					action_delete: data?.actionDelete ?? false,
+					is_public: currentDirectId ? false : isPublicChannel(currentChannel),
+					clanId: currentDirectId ? '0' : currentChannel?.clan_id,
+					channelId: currentDirectId || currentChannel?.channel_id,
+					isFocusTopicBox: !!data?.topicId,
+					channelIdOnMessage: data?.channelId ?? ''
+				});
 			}
 		},
-		[store, currentDirectId, dispatch, socketRef, handleReconnect, reactionMessageDispatch]
+		[store, currentDirectId, socketRef, handleReconnect, reactionMessageDispatch]
 	);
 
 	const onReactionMessageRetry = useCallback(
@@ -78,18 +60,20 @@ const ChannelMessageReactionListener = React.memo(() => {
 				const currentChannel = selectCurrentChannel(store.getState() as any);
 				counterRef.current = 0;
 				intervalRef?.current && clearInterval(intervalRef.current);
-				await reactionMessageDispatch(
-					data?.id ?? '',
-					data?.messageId ?? '',
-					data?.emojiId ?? '',
-					data?.emoji?.trim() ?? '',
-					data?.countToRemove ?? 0,
-					data?.senderId ?? '',
-					data?.actionDelete ?? false,
-					currentDirectId ? false : isPublicChannel(currentChannel),
-					!!data?.topicId,
-					data?.topicId ?? ''
-				);
+				await reactionMessageDispatch({
+					id: data?.id ?? '',
+					messageId: data?.messageId ?? '',
+					emoji_id: data?.emojiId ?? '',
+					emoji: data?.emoji?.trim() ?? '',
+					count: data?.countToRemove ?? 0,
+					message_sender_id: data?.senderId ?? '',
+					action_delete: data?.actionDelete ?? false,
+					is_public: currentDirectId ? false : isPublicChannel(currentChannel),
+					clanId: currentDirectId ? '0' : currentChannel?.clan_id,
+					channelId: currentDirectId || currentChannel?.channel_id,
+					isFocusTopicBox: !!data?.topicId,
+					channelIdOnMessage: data?.channelId ?? ''
+				});
 			}
 		},
 		[socketRef, store, reactionMessageDispatch, currentDirectId]

@@ -182,6 +182,7 @@ export const ChatMessageInput = memo(
 							multiline={true}
 							spellCheck={false}
 							numberOfLines={4}
+							textBreakStrategy="simple"
 							onChange={() => handleTypingMessage()}
 							{...textInputProps}
 							style={[styles.inputStyle, { height: Platform.OS === 'ios' ? 'auto' : Math.max(size.s_40, heightInput) }]}

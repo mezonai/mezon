@@ -7,7 +7,8 @@ import {
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
-	SET_BADGE_COUNT
+	SET_BADGE_COUNT,
+	SET_RATIO_WINDOW
 } from '../events/constants';
 
 contextBridge.exposeInMainWorld('electron', {
@@ -45,5 +46,6 @@ contextBridge.exposeInMainWorld('electron', {
 	handleActionShowImage: (action: string, url: any) => {
 		return ipcRenderer.invoke(ACTION_SHOW_IMAGE, { payload: { action, fileURL: url } });
 	},
-	getScreenSources: (source: string) => ipcRenderer.invoke(REQUEST_PERMISSION_SCREEN, source)
+	getScreenSources: (source: string) => ipcRenderer.invoke(REQUEST_PERMISSION_SCREEN, source),
+	setRatioWindow: (ratio: boolean) => ipcRenderer.invoke(SET_RATIO_WINDOW, ratio)
 });

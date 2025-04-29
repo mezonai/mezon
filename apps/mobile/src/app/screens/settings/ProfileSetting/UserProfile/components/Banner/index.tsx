@@ -75,6 +75,7 @@ export default function BannerAvatar({ avatar, onLoad, alt, defaultAvatar }: IBa
 					noDefaultText
 					style={{ borderWidth: 0, borderRadius: 0 }}
 					penPosition={{ right: 10, top: 10 }}
+					disabled={true}
 				/>
 			</View>
 

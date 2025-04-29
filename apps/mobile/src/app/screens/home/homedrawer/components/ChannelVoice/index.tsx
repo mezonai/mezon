@@ -21,23 +21,33 @@ const ConnectionMonitor = () => {
 		if (connectionState === 'connected') {
 			startAudioCall();
 		}
-
-		return () => {
-			if (connectionState === 'connected') {
-				stopAudioCall();
-			}
-		};
 	}, [connectionState]);
+
+	useEffect(() => {
+		return () => {
+			stopAudioCall();
+		};
+	}, []);
 
 	const startAudioCall = async () => {
 		if (Platform.OS === 'android') {
+			await AudioSession.configureAudio({
+				android: {
+					audioTypeOptions: {
+						forceHandleAudioRouting: true
+					}
+				}
+			});
 			CustomAudioModule.setSpeaker(false, null);
 		} else {
 			await AudioSession.startAudioSession();
+			await AudioSession.setAppleAudioConfiguration({
+				audioCategoryOptions: ['allowBluetooth', 'allowBluetoothA2DP']
+			});
 			InCallManager.start({ media: 'audio' });
 			await AudioSession.configureAudio({
 				ios: {
-					defaultOutput: 'speaker'
+					defaultOutput: 'earpiece'
 				}
 			});
 			InCallManager.setSpeakerphoneOn(false);
@@ -46,21 +56,8 @@ const ConnectionMonitor = () => {
 	};
 
 	const stopAudioCall = async () => {
-		if (Platform.OS === 'android') {
-			CustomAudioModule.setSpeaker(true, null);
-		} else {
-			await AudioSession.startAudioSession();
-			InCallManager.start({ media: 'audio' });
-			await AudioSession.configureAudio({
-				ios: {
-					defaultOutput: 'speaker'
-				}
-			});
-			InCallManager.setSpeakerphoneOn(true);
-			InCallManager.setForceSpeakerphoneOn(true);
-			InCallManager.stop();
-			await AudioSession.stopAudioSession();
-		}
+		InCallManager.stop();
+		await AudioSession.stopAudioSession();
 	};
 
 	return <View />;

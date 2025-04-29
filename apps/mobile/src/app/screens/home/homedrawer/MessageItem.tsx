@@ -288,6 +288,7 @@ const MessageItem = React.memo(
 						{!isMessageSystem && (
 							<AvatarMessage
 								onPress={onPressInfoUser}
+								onLongPress={handleLongPressMessage}
 								id={message?.user?.id}
 								avatar={messageAvatar}
 								username={usernameMessage}
@@ -299,6 +300,7 @@ const MessageItem = React.memo(
 							{!isMessageSystem && (
 								<InfoUserMessage
 									onPress={onPressInfoUser}
+									onLongPress={handleLongPressMessage}
 									senderDisplayName={senderDisplayName}
 									isShow={!isCombine || !!message?.references?.length || showUserInformation}
 									createTime={message?.create_time}

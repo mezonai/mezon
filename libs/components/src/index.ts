@@ -1,10 +1,9 @@
-import { Canvas, PreJoinCalling } from './lib/components';
+import { Canvas } from './lib/components';
 
 export * from './lib/components';
 
 const ComponentsModule = {
-	Canvas,
-	PreJoinCalling
+	Canvas
 };
 
 export default ComponentsModule;

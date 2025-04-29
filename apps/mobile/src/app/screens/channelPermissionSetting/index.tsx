@@ -16,7 +16,7 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const { themeValue } = useTheme();
 	const { t } = useTranslation('channelSetting');
-	const [currentTab, setCurrentTab] = useState<EPermissionSetting>(EPermissionSetting.AdvancedView);
+	const [currentTab, setCurrentTab] = useState<EPermissionSetting>(EPermissionSetting.BasicView);
 	const [isAdvancedEditMode, setIsAdvancedEditMode] = useState(false);
 
 	const onTabChange = (tab: EPermissionSetting) => {

@@ -63,6 +63,7 @@ import {
 import { useWebRTCStream } from '@mezon/components';
 import { Icons } from '@mezon/ui';
 import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
+import isElectron from 'is-electron';
 import { ChannelType, WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -238,6 +239,14 @@ function MyApp() {
 			}
 			if (event[prefixKey] && event.shiftKey && event.key === 'Enter' && !directId) {
 				dispatch(accountActions.setAnonymousMode());
+			}
+			if (event[prefixKey] && event.key === '-' && isElectron()) {
+				event.preventDefault();
+				window.electron.setRatioWindow(false);
+			}
+			if (event[prefixKey] && event.shiftKey && event.key === '+' && isElectron()) {
+				event.preventDefault();
+				window.electron.setRatioWindow(true);
 			}
 		},
 		[openSearchModal, currentURL]

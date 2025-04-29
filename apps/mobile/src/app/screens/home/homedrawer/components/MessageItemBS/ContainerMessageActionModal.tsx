@@ -546,7 +546,9 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		userId,
 		message?.user?.id,
 		message?.isError,
+		message?.topic_id,
 		message?.code,
+		message?.channel_id,
 		message?.attachments,
 		message?.id,
 		listPinMessages,
@@ -556,32 +558,39 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		currentChannel?.parent_id,
 		isAllowDelMessage,
 		canSendMessage,
+		currentChannelId,
+		isMessageSystem,
 		isShowForwardAll,
 		t
 	]);
 
-	const handleReact = async (mode, messageId, emoji_id: string, emoji: string, senderId) => {
-		if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
-			await dispatch(threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channel_id ?? '', activeCode: ThreadStatus.joined }));
-			joinningToThread(currentChannel, [userId ?? '']);
-		}
+	const handleReact = useCallback(
+		async (mode, messageId, emoji_id: string, emoji: string, senderId) => {
+			if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
+				await dispatch(
+					threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channel_id ?? '', activeCode: ThreadStatus.joined })
+				);
+				joinningToThread(currentChannel, [userId ?? '']);
+			}
 
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
-			id: '',
-			mode: mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
-			messageId: messageId ?? '',
-			clanId: mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM ? '' : message?.clan_id,
-			channelId: message?.channel_id ?? '',
-			emojiId: emoji_id ?? '',
-			emoji: emoji?.trim() ?? '',
-			senderId: senderId ?? '',
-			countToRemove: 1,
-			actionDelete: false,
-			topicId: message.topic_id || ''
-		} as IReactionMessageProps);
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
+				id: emoji_id,
+				mode: mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
+				messageId: messageId ?? '',
+				clanId: mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM ? '' : message?.clan_id,
+				channelId: message?.channel_id ?? '',
+				emojiId: emoji_id ?? '',
+				emoji: emoji?.trim() ?? '',
+				senderId: senderId ?? '',
+				countToRemove: 1,
+				actionDelete: false,
+				topicId: message.topic_id || ''
+			} as IReactionMessageProps);
 
-		onClose();
-	};
+			onClose();
+		},
+		[currentChannel, dispatch, joinningToThread, message?.channel_id, message?.clan_id, message?.topic_id, onClose, userId]
+	);
 
 	const renderMessageItemActions = () => {
 		return (

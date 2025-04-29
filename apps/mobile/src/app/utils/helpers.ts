@@ -1,4 +1,5 @@
 import { load, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
+import { EmojiDataOptionals } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { Platform } from 'react-native';
 
@@ -71,3 +72,46 @@ export const resetCachedMessageActionNeedToResolve = (channelId: string) => {
 export const getUserStatusByMetadata = (metadata: string | { status: string; user_status: string }) => {
 	return typeof metadata === 'string' ? safeJSONParse(metadata)?.user_status : metadata?.user_status;
 };
+
+export function combineMessageReactions(reactions: any[], message_id: string): any[] {
+	const dataCombined: Record<string, EmojiDataOptionals> = {};
+
+	for (const reaction of reactions) {
+		const emojiId = reaction?.emoji_id || ('' as string);
+		const emoji = reaction?.emoji || ('' as string);
+
+		if (reaction?.count < 1) {
+			continue;
+		}
+
+		if (!dataCombined?.[emojiId]) {
+			dataCombined[emojiId] = {
+				emojiId,
+				emoji,
+				senders: [],
+				action: false,
+				message_id: message_id,
+				id: '',
+				channel_id: ''
+			};
+		}
+		if (!reaction?.sender_name) continue;
+		const newSender = {
+			sender_id: reaction?.sender_id,
+			count: reaction?.count
+		};
+
+		const reactionData = dataCombined?.[emojiId];
+		const senderIndex = reactionData?.senders?.findIndex((sender) => sender?.sender_id === newSender?.sender_id);
+
+		if (senderIndex === -1) {
+			reactionData?.senders?.push(newSender);
+		} else if (reactionData?.senders?.[senderIndex]) {
+			reactionData.senders[senderIndex].count = newSender?.count;
+		}
+	}
+
+	const dataCombinedArray = Object.values(dataCombined);
+
+	return dataCombinedArray;
+}

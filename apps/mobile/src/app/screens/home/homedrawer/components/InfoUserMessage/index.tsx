@@ -8,13 +8,14 @@ import { styles } from './styles';
 
 interface IProps {
 	onPress: () => void;
+	onLongPress: () => void;
 	senderDisplayName: string;
 	createTime: string;
 	isShow: boolean;
 	messageSenderId: string;
 	mode: number;
 }
-export const InfoUserMessage = ({ createTime, isShow, onPress, senderDisplayName, messageSenderId, mode }: IProps) => {
+export const InfoUserMessage = ({ createTime, isShow, onPress, onLongPress, senderDisplayName, messageSenderId, mode }: IProps) => {
 	const userRolesClan = useColorsRoleById(messageSenderId);
 	const colorSenderName = useMemo(() => {
 		return mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
@@ -30,7 +31,7 @@ export const InfoUserMessage = ({ createTime, isShow, onPress, senderDisplayName
 
 	if (isShow) {
 		return (
-			<TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.messageBoxTop}>
+			<TouchableOpacity activeOpacity={0.8} onPress={onPress} onLongPress={onLongPress} style={styles.messageBoxTop}>
 				<Text style={{ ...styles.usernameMessageBox, color: colorSenderName }} numberOfLines={1} ellipsizeMode="tail">
 					{senderDisplayName}
 				</Text>

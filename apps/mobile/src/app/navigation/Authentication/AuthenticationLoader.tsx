@@ -159,6 +159,8 @@ export const AuthenticationLoader = () => {
 						store.dispatch(directActions.setDmGroupCurrentId(''));
 						store.dispatch(appActions.setLoadingMainMobile(true));
 						store.dispatch(appActions.setIsFromFCMMobile(true));
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 						requestAnimationFrame(async () => {
 							await navigateToNotification(store, remoteMessage, navigation);
 						});

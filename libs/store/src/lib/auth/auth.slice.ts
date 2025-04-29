@@ -104,6 +104,34 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 	return normalizeSession(session);
 });
 
+export const checkSessionWithToken = createAsyncThunk('auth/checkSessionWithToken', async (_, thunkAPI) => {
+	const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+	const sessionState = selectSession(thunkAPI.getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
+
+	if (!sessionState) {
+		return thunkAPI.rejectWithValue('Invalid session');
+	}
+
+	if (mezon.sessionRef.current?.token === sessionState?.token) {
+		return sessionState;
+	}
+	let session;
+	try {
+		session = await mezon?.connectWithSession({
+			...sessionState,
+			is_remember: sessionState.is_remember ?? false
+		});
+	} catch (error: any) {
+		return thunkAPI.rejectWithValue(error?.status === 401 ? 'Redirect Login' : 'Invalid session');
+	}
+
+	if (!session) {
+		return thunkAPI.rejectWithValue('Invalid session');
+	}
+
+	return normalizeSession(session);
+});
+
 export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platform }: { device_id?: string; platform?: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	await mezon?.logOutMezon(device_id, platform);
@@ -213,7 +241,19 @@ export const authSlice = createSlice({
 				state.loadingStatus = 'not loaded';
 				state.error = action.error.message;
 			});
-
+		builder
+			.addCase(checkSessionWithToken.pending, (state: AuthState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(checkSessionWithToken.fulfilled, (state: AuthState, action) => {
+				state.loadingStatus = 'loaded';
+				state.session = action.payload;
+				state.isLogin = true;
+			})
+			.addCase(checkSessionWithToken.rejected, (state: AuthState, action) => {
+				state.loadingStatus = 'not loaded';
+				state.error = action.error.message;
+			});
 		builder
 			.addCase(checkLoginRequest.fulfilled, (state: AuthState, action) => {
 				if (action.payload !== null) {
@@ -291,7 +331,8 @@ export const authActions = {
 	confirmLoginRequest,
 	logOut,
 	registrationPassword,
-	authenticateEmail
+	authenticateEmail,
+	checkSessionWithToken
 };
 
 export const getAuthState = (rootState: { [AUTH_FEATURE_KEY]: AuthState }): AuthState => rootState[AUTH_FEATURE_KEY];

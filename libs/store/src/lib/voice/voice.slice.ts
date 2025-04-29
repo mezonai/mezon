@@ -31,9 +31,13 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	stream: MediaStream | null | undefined;
 	showSelectScreenModal: boolean;
 	externalToken: string | undefined;
+	guestUserId: string | undefined;
+	guestAccessToken: string | undefined;
 	joinCallExtStatus: LoadingStatus;
 	isPiPMode?: boolean;
 	openPopOut?: boolean;
+	openChatBox?: boolean;
+	externalGroup?: boolean;
 }
 
 export const voiceAdapter = createEntityAdapter<VoiceEntity>();
@@ -44,6 +48,10 @@ type fetchVoiceChannelMembersPayload = {
 	channelType: ChannelType;
 };
 
+export interface ApiGenerateMeetTokenResponseExtend extends ApiGenerateMeetTokenResponse {
+	guest_user_id?: string;
+	guest_access_token?: string;
+}
 export const fetchVoiceChannelMembers = createAsyncThunk(
 	'voice/fetchVoiceChannelMembers',
 	async ({ clanId, channelId, channelType }: fetchVoiceChannelMembersPayload, thunkAPI) => {
@@ -80,10 +88,10 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 
 export const generateMeetTokenExternal = createAsyncThunk(
 	'meet/generateMeetTokenExternal',
-	async ({ token, displayName }: { token: string; displayName?: string }, thunkAPI) => {
+	async ({ token, displayName, isGuest }: { token: string; displayName?: string; isGuest?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const response = await mezon.client.generateMeetTokenExternal(token, displayName);
+			const response = await mezon.client.generateMeetTokenExternal(token, displayName, isGuest);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'meet/generateMeetTokenExternal');
@@ -108,8 +116,12 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	stream: null,
 	showSelectScreenModal: false,
 	externalToken: undefined,
+	guestUserId: undefined,
+	guestAccessToken: undefined,
 	joinCallExtStatus: 'not loaded',
-	openPopOut: false
+	openPopOut: false,
+	openChatBox: false,
+	externalGroup: false
 });
 
 export const voiceSlice = createSlice({
@@ -189,6 +201,12 @@ export const voiceSlice = createSlice({
 		},
 		setOpenPopOut: (state, action: PayloadAction<boolean>) => {
 			state.openPopOut = action.payload;
+		},
+		setToggleChatBox: (state) => {
+			state.openChatBox = !state.openChatBox;
+		},
+		setExternalGroup: (state) => {
+			state.externalGroup = true;
 		}
 		// ...
 	},
@@ -209,8 +227,10 @@ export const voiceSlice = createSlice({
 			.addCase(generateMeetTokenExternal.pending, (state: VoiceState) => {
 				state.joinCallExtStatus = 'loading';
 			})
-			.addCase(generateMeetTokenExternal.fulfilled, (state: VoiceState, action: PayloadAction<ApiGenerateMeetTokenResponse>) => {
+			.addCase(generateMeetTokenExternal.fulfilled, (state: VoiceState, action: PayloadAction<ApiGenerateMeetTokenResponseExtend>) => {
 				state.externalToken = action.payload.token;
+				state.guestAccessToken = action.payload.guest_access_token || undefined;
+				state.guestUserId = action.payload.guest_user_id;
 				state.joinCallExtStatus = 'loaded';
 			})
 			.addCase(generateMeetTokenExternal.rejected, (state: VoiceState, action) => {
@@ -302,3 +322,6 @@ export const selectJoinCallExtStatus = createSelector(getVoiceState, (state) => 
 export const selectExternalToken = createSelector(getVoiceState, (state) => state.externalToken);
 export const selectIsPiPMode = createSelector(getVoiceState, (state) => state.isPiPMode);
 export const selectVoiceOpenPopOut = createSelector(getVoiceState, (state) => state.openPopOut);
+export const selectGuestAccessToken = createSelector(getVoiceState, (state) => state.guestAccessToken);
+export const selectGuestUserId = createSelector(getVoiceState, (state) => state.guestUserId);
+export const selectOpenExternalChatBox = createSelector(getVoiceState, (state) => state.openChatBox);

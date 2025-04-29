@@ -144,7 +144,7 @@ const TopBarChannelText = memo(() => {
 							avatar={currentDmGroup?.channel_avatar?.[0]}
 							avatarName={currentDmGroup?.channel_label?.at(0)}
 						/>
-						<p className="font-medium truncate one-line">{channelDmGroupLabel}</p>
+						<p className="font-medium truncate one-line text-colorTextLightMode dark:text-contentPrimary">{channelDmGroupLabel}</p>
 					</div>
 				)}
 			</div>

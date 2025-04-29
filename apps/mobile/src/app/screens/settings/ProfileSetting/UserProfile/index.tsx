@@ -21,8 +21,10 @@ export default function UserProfile({ userProfileValue, setCurrentUserProfileVal
 	const styles = style(themeValue);
 	const auth = useAuth();
 	const handleAvatarChange = async (imgUrl: string) => {
-		const { username, displayName, aboutMe } = userProfileValue;
-		setCurrentUserProfileValue((prevValue) => ({ ...prevValue, imgUrl: imgUrl, username, aboutMe, displayName }));
+		setCurrentUserProfileValue((prevValue) => ({
+			...prevValue,
+			imgUrl
+		}));
 	};
 
 	const handleDetailChange = (newValue: Partial<IUserProfileValue>) => {

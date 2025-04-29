@@ -26,6 +26,8 @@
 		E967E0672C6B20290050124F /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E967E0662C6B20290050124F /* ShareViewController.swift */; };
 		E967E06A2C6B20290050124F /* Base in Resources */ = {isa = PBXBuildFile; fileRef = E967E0692C6B20290050124F /* Base */; };
 		E967E06E2C6B20290050124F /* MezonSharing.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E967E0642C6B20290050124F /* MezonSharing.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E98DC52D2DBF8B2D00A76EC5 /* BluetoothModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E98DC52C2DBF8B2D00A76EC5 /* BluetoothModule.swift */; };
+		E98DC52F2DBF8B5C00A76EC5 /* BluetoothModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E98DC52E2DBF8B5C00A76EC5 /* BluetoothModule.m */; };
 		E99B89652D0ECA2100D60E91 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E99B89642D0ECA2100D60E91 /* GoogleService-Info.plist */; };
 		E9A25DD52DBA416B0056281D /* KeepAwakeIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */; };
 		E9A25DD72DBA41D00056281D /* KeepAwakeIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */; };
@@ -108,6 +110,8 @@
 		E967E0692C6B20290050124F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		E967E06B2C6B20290050124F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E967E0722C6B203C0050124F /* MezonSharing.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MezonSharing.entitlements; sourceTree = "<group>"; };
+		E98DC52C2DBF8B2D00A76EC5 /* BluetoothModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothModule.swift; sourceTree = "<group>"; };
+		E98DC52E2DBF8B5C00A76EC5 /* BluetoothModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BluetoothModule.m; sourceTree = "<group>"; };
 		E99B89642D0ECA2100D60E91 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../NCC/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepAwakeIOS.swift; sourceTree = "<group>"; };
 		E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeepAwakeIOS.m; sourceTree = "<group>"; };
@@ -200,6 +204,8 @@
 				E943F9F02DBA144700B81261 /* DeviceUtilsIOS.m */,
 				E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */,
 				E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */,
+				E98DC52C2DBF8B2D00A76EC5 /* BluetoothModule.swift */,
+				E98DC52E2DBF8B5C00A76EC5 /* BluetoothModule.m */,
 			);
 			name = Mobile;
 			sourceTree = "<group>";
@@ -607,6 +613,8 @@
 				E9A25DD52DBA416B0056281D /* KeepAwakeIOS.swift in Sources */,
 				E908EBB32D76A95200571976 /* CustomImageViewIOS.swift in Sources */,
 				E908EBB72D76A98C00571976 /* CustomImageViewIOSManager.swift in Sources */,
+				E98DC52D2DBF8B2D00A76EC5 /* BluetoothModule.swift in Sources */,
+				E98DC52F2DBF8B5C00A76EC5 /* BluetoothModule.m in Sources */,
 				E908EBB52D76A97400571976 /* CustomImageViewIOS.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1059,7 +1067,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = mezon.mobile;
 				PRODUCT_NAME = Mobile;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mezon mobile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "mezon mobile";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

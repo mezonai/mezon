@@ -1,20 +1,20 @@
 import {
-  ControlBarControls,
-  useLocalParticipant,
-  useLocalParticipantPermissions,
-  usePersistentUserChoices,
-  useTracks
+	ControlBarControls,
+	useLocalParticipant,
+	useLocalParticipantPermissions,
+	usePersistentUserChoices,
+	useTracks
 } from '@livekit/components-react';
 import {
-  selectShowCamera,
-  selectShowMicrophone,
-  selectShowScreen,
-  selectShowSelectScreenModal,
-  selectStreamScreen,
-  selectVoiceFullScreen,
-  selectVoiceOpenPopOut,
-  useAppDispatch,
-  voiceActions
+	selectShowCamera,
+	selectShowMicrophone,
+	selectShowScreen,
+	selectShowSelectScreenModal,
+	selectStreamScreen,
+	selectVoiceFullScreen,
+	selectVoiceOpenPopOut,
+	useAppDispatch,
+	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
@@ -266,6 +266,10 @@ export function ControlBar({
 		}
 	}, [dispatch, isOpenPopOut, openVoicePopup, closeVoicePopup]);
 
+	const toggleChatBox = useCallback(() => {
+		dispatch(voiceActions.setToggleChatBox());
+	}, []);
+
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-sbm:!hidden max-md:flex-col">
 			<div className="flex justify-start gap-4 max-md:hidden">
@@ -360,6 +364,11 @@ export function ControlBar({
 					</div>
 				)}
 
+				{isExternalCalling && (
+					<div onClick={toggleChatBox}>
+						<Icons.BoxChatIcon defaultSize="cursor-pointer w-6 h-6" />
+					</div>
+				)}
 				<div onClick={onFullScreen}>
 					{isFullScreen ? (
 						<span>
