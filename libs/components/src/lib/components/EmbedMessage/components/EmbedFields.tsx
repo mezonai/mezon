@@ -1,9 +1,18 @@
-import { DatePickerComponent, EMessageComponentType, IFieldEmbed, InputComponent, RadioComponent, SelectComponent } from '@mezon/utils';
+import {
+	AnimationComponent,
+	DatePickerComponent,
+	EMessageComponentType,
+	IFieldEmbed,
+	InputComponent,
+	RadioComponent,
+	SelectComponent
+} from '@mezon/utils';
 import { useMemo } from 'react';
 import { MessageButton } from '../../MessageActionsPanel/components/MessageButton';
 import { MessageDatePicker } from '../../MessageActionsPanel/components/MessageDatePicker';
 import { MessageInput } from '../../MessageActionsPanel/components/MessageInput';
 import { MessageSelect } from '../../MessageActionsPanel/components/MessageSelect';
+import { EmbedAnimation } from './EmbedAnimation';
 import { EmbedOptionRatio } from './EmbedOptionRatio';
 interface EmbedFieldsProps {
 	fields: IFieldEmbed[];
@@ -72,7 +81,7 @@ export function EmbedFields({ fields, message_id, senderId, channelId }: EmbedFi
 type InputEmbedByType = {
 	messageId: string;
 	senderId: string;
-	component: SelectComponent | InputComponent | DatePickerComponent | RadioComponent;
+	component: SelectComponent | InputComponent | DatePickerComponent | RadioComponent | AnimationComponent;
 };
 
 const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) => {
@@ -85,6 +94,8 @@ const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) 
 			return <MessageDatePicker buttonId={component.id} messageId={messageId} senderId={senderId} datepicker={component.component} />;
 		case EMessageComponentType.RADIO:
 			return <EmbedOptionRatio key={component.id} idRadio={component.id} options={component.component} message_id={messageId} />;
+		case EMessageComponentType.ANIMATION:
+			return <EmbedAnimation url_image={component.component.url_image} url_position={component.component.url_position} />;
 		default:
 			return;
 	}

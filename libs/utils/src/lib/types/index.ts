@@ -270,7 +270,7 @@ export interface IFieldEmbed {
 	name: string;
 	value: string;
 	inline?: boolean;
-	inputs?: SelectComponent | InputComponent | DatePickerComponent | RadioComponent;
+	inputs?: SelectComponent | InputComponent | DatePickerComponent | RadioComponent | AnimationComponent;
 	button?: ButtonComponent[];
 }
 
@@ -287,7 +287,8 @@ export enum EMessageComponentType {
 	SELECT = 2,
 	INPUT = 3,
 	DATEPICKER = 4,
-	RADIO = 5
+	RADIO = 5,
+	ANIMATION = 6
 }
 
 export enum EIconEmbedButtonMessage {
@@ -336,6 +337,17 @@ export enum IMessageTypeCallLog {
 	REJECTCALL = 4,
 	CANCELCALL = 5
 }
+export interface IMessageAnimation {
+	url_image?: string;
+	url_position?: string;
+	pool?: IPoolAnimation[];
+	duration?: number;
+	repeat?: number;
+}
+
+export interface IPoolAnimation {
+	images?: string[];
+}
 
 export interface IMessageCallLog {
 	isVideo: boolean;
@@ -374,6 +386,7 @@ export type SelectComponent = IMessageComponent<IMessageSelect> & { type: EMessa
 export type InputComponent = IMessageComponent<IMessageInput> & { type: EMessageComponentType.INPUT };
 export type DatePickerComponent = IMessageComponent<IMessageDatePicker> & { type: EMessageComponentType.DATEPICKER };
 export type RadioComponent = IMessageComponent<IMessageRatioOption[]> & { type: EMessageComponentType.RADIO };
+export type AnimationComponent = IMessageComponent<IMessageAnimation> & { type: EMessageComponentType.ANIMATION };
 
 export interface IMessageActionRow {
 	components: Array<ButtonComponent | SelectComponent | InputComponent>;
