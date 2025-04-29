@@ -7,8 +7,9 @@ import {
 	jumpToChannel,
 	save
 } from '@mezon/mobile-components';
+
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentClanId } from '@mezon/store-mobile';
+import { selectCurrentChannel, selectCurrentClanId } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -21,19 +22,23 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinChannelVoiceBS.styles';
+
 function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { dismiss } = useBottomSheetModal();
 	const { t } = useTranslation(['channelVoice']);
 	const currentClanId = useSelector(selectCurrentClanId);
+	const currentChannel = useSelector(selectCurrentChannel);
 	const handleJoinVoice = async () => {
-		if (!channel.meeting_code) return;
+		if (!currentChannel?.meeting_code) return;
+
 		const data = {
-			channelId: channel?.channel_id || '',
-			roomName: channel?.meeting_code,
-			clanId: currentClanId
+			channelId: channel?.channel_id,
+			roomName: currentChannel.meeting_code,
+			clanId: channel?.clan_id
 		};
+
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 		dismiss();
 	};
