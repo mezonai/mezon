@@ -12,8 +12,7 @@ import {
 	debounce
 } from '@mezon/mobile-components';
 import { Colors, Metrics, baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { useAppSelector } from '@mezon/store';
-import { emojiSuggestionActions, selectCurrentClan } from '@mezon/store-mobile';
+import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectCurrentClan, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import { IEmoji, getSrcEmoji } from '@mezon/utils';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -80,7 +79,7 @@ export default function EmojiSelectorContainer({
 	handleBottomSheetExpand,
 	handleBottomSheetCollapse
 }: EmojiSelectorContainerProps) {
-	const currentClan = useAppSelector(selectCurrentClan);
+	const store = getStore();
 	const { categoryEmoji, categoriesEmoji, emojis } = useEmojiSuggestionContext();
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
@@ -90,6 +89,12 @@ export default function EmojiSelectorContainer({
 	const refScrollView = useRef<ScrollView>(null);
 	const { t } = useTranslation('message');
 	const dispatch = useDispatch();
+	const channelId = useMemo(() => {
+		const currentDirectId = selectDmGroupCurrentId(store.getState());
+		const currentChannelId = selectCurrentChannelId(store.getState() as any);
+
+		return currentDirectId ? currentDirectId : currentChannelId;
+	}, [store]);
 
 	const cateIcon = useMemo(() => {
 		const clanEmojis = categoryEmoji?.length
@@ -117,24 +122,23 @@ export default function EmojiSelectorContainer({
 		];
 	}, [themeValue]);
 
-	const categoriesWithIcons = useMemo(
-		() =>
-			categoriesEmoji.map((category, index) => ({
-				displayName: category === 'Custom' && currentClan?.clan_name ? currentClan?.clan_name : category,
-				name: category,
-				icon: cateIcon[index],
-				emojis: emojis?.reduce((acc, emoji) => {
-					if (emoji?.category?.includes?.(category)) {
-						acc.push({
-							...emoji,
-							category: category
-						});
-					}
-					return acc;
-				}, [])
-			})),
-		[categoriesEmoji, emojis, currentClan]
-	);
+	const categoriesWithIcons = useMemo(() => {
+		const currentClan = selectCurrentClan(store.getState());
+		return categoriesEmoji.map((category, index) => ({
+			displayName: category === 'Custom' && currentClan?.clan_name ? currentClan?.clan_name : category,
+			name: category,
+			icon: cateIcon[index],
+			emojis: emojis?.reduce((acc, emoji) => {
+				if (emoji?.category?.includes?.(category)) {
+					acc.push({
+						...emoji,
+						category: category
+					});
+				}
+				return acc;
+			}, [])
+		}));
+	}, [categoriesEmoji, emojis, store]);
 
 	const categoryRefs = useRef(
 		categoriesEmoji.reduce((refs, item) => {
@@ -150,7 +154,7 @@ export default function EmojiSelectorContainer({
 			handleBottomSheetCollapse?.();
 			if (!isReactMessage) {
 				const emojiItemName = `:${emoji.shortname?.split(':').join('')}:`;
-				DeviceEventEmitter.emit(ActionEmitEvent.ADD_EMOJI_PICKED, { shortName: emojiItemName });
+				DeviceEventEmitter.emit(ActionEmitEvent.ADD_EMOJI_PICKED, { shortName: emojiItemName, channelId });
 				dispatch(emojiSuggestionActions.setSuggestionEmojiPicked(emojiItemName));
 				dispatch(
 					emojiSuggestionActions.setSuggestionEmojiObjPicked({
@@ -160,7 +164,7 @@ export default function EmojiSelectorContainer({
 				);
 			}
 		},
-		[dispatch, handleBottomSheetCollapse, isReactMessage, onSelected]
+		[dispatch, handleBottomSheetCollapse, isReactMessage, onSelected, channelId]
 	);
 
 	const searchEmojis = (emojis: any[], searchTerm: string) => {

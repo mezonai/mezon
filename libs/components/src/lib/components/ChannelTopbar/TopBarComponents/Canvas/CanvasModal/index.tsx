@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import EmptyCanvas from './EmptyCanvas';
 import GroupCanvas from './GroupCanvas';
 import SearchCanvas from './SearchCanvas';
+import { CANVAS_TYPES } from './constants';
 
 type CanvasProps = {
 	onClose: () => void;
@@ -39,11 +40,38 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	}, [canvases, keywordSearch]);
 
 	const handleCreateCanvas = () => {
+		const isThread = Boolean(currentChannel?.parent_id && currentChannel?.parent_id !== '0');
+		const id = isThread ? currentChannel?.channel_id : currentChannel?.channel_id;
+
+		if (!id) {
+			console.error('Error: ID is undefined. Check currentChannel data:', currentChannel);
+			return;
+		}
+		const type = isThread ? CANVAS_TYPES.THREAD : CANVAS_TYPES.CHANNEL;
+		dispatch(canvasActions.setParentId(isThread ? currentChannel?.parent_id || null : id));
+		dispatch(canvasActions.setType(type));
 		dispatch(appActions.setIsShowCanvas(true));
 		dispatch(canvasActions.setTitle(''));
 		dispatch(canvasActions.setContent(''));
 		dispatch(canvasActions.setIdCanvas(null));
 		onClose();
+	};
+
+	const handleEditCanvas = (canvasId: string) => {
+		const isThread = Boolean(
+			currentChannel?.parent_id && currentChannel?.parent_id !== '0' && currentChannel?.parent_id !== currentChannel?.channel_id
+		);
+		const id = isThread ? currentChannel?.parent_id : currentChannel?.channel_id;
+
+		if (!id) {
+			console.error('Error: ID is undefined. Check currentChannel data:', currentChannel);
+			return;
+		}
+		const type = isThread ? CANVAS_TYPES.THREAD : CANVAS_TYPES.CHANNEL;
+		dispatch(canvasActions.setParentId(id || null));
+		dispatch(canvasActions.setType(type));
+		dispatch(canvasActions.setIdCanvas(canvasId));
+		dispatch(appActions.setIsShowCanvas(true));
 	};
 
 	const modalRef = useRef<HTMLDivElement>(null);

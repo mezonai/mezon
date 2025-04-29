@@ -264,7 +264,6 @@ const ChannelTopbarTools = memo(
 							{!isApp && <ThreadButton isLightMode={appearanceTheme === 'light'} />}
 							<CanvasButton isLightMode={appearanceTheme === 'light'} />
 						</div>
-
 						<div className="sbm:hidden mr-5">
 							<ChannelListButton />
 						</div>

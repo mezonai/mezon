@@ -6,7 +6,7 @@ import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
-import Gallery, { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
+import GalleryAwesome, { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import LoadingModal from '../LoadingModal/LoadingModal';
@@ -175,7 +175,7 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 			{visibleToolbarConfig.showHeader && (
 				<RenderHeaderModal onClose={onClose} imageSelected={currentImage} onImageSaved={onImageSaved} onLoading={onLoading} />
 			)}
-			<Gallery
+			<GalleryAwesome
 				ref={ref}
 				initialIndex={initialIndex === -1 ? 0 : initialIndex}
 				data={formattedImageList}

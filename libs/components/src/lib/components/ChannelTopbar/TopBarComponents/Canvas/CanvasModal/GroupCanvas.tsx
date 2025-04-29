@@ -47,7 +47,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 				channel_id: channelId,
 				clan_id: clanId
 			};
-			const results = await dispatch(canvasAPIActions.deleteCanvas(body));
+			await dispatch(canvasAPIActions.deleteCanvas(body));
 			dispatch(canvasAPIActions.removeOneCanvas({ channelId, canvasId }));
 			if (currentIdCanvas === canvasId) {
 				dispatch(appActions.setIsShowCanvas(false));
@@ -55,22 +55,24 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 		}
 	};
 
+	const link =
+		canvas.parent_id && canvas.parent_id !== '0'
+			? `/chat/clans/${clanId}/threads/${channelId}/canvas/${canvasId}`
+			: `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
+
 	return (
 		<div className="w-full flex gap-2 relative">
 			<div
 				className="w-full py-2 pl-4 pr-4 cursor-pointer rounded-lg dark:bg-bgPrimary bg-bgLightPrimary border border-transparent dark:hover:border-bgModifierHover hover:border-bgModifierHover hover:bg-bgLightModeButton"
 				role="button"
 			>
-				<Link to={`/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`} onClick={handleOpenCanvas}>
+				<Link to={link} onClick={handleOpenCanvas}>
 					<div className="h-6 text-xs one-line font-semibold leading-6 dark:text-bgLightPrimary text-bgPrimary">
 						{canvas.title ? canvas.title : 'Untitled'}
 					</div>
 				</Link>
 			</div>
-			<CopyToClipboard
-				text={process.env.NX_CHAT_APP_REDIRECT_URI + `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`}
-				onCopy={() => setIsCopied(true)}
-			>
+			<CopyToClipboard text={process.env.NX_CHAT_APP_REDIRECT_URI + link} onCopy={() => setIsCopied(true)}>
 				<button
 					style={{ top: '9px' }}
 					className={`absolute top-0 dark:border-black dark:shadow-[#000000] bg-white dark:bg-transparent shadow-emoji_item-delete font-bold w-6 h-6 flex items-center justify-center rounded-full ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}`}

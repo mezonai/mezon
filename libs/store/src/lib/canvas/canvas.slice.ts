@@ -6,12 +6,16 @@ export interface CanvasState {
 	title: string;
 	content: string;
 	idCanvas: string | null;
+	parentId: string | null;
+	type: 'channel' | 'thread' | null;
 }
 
 const initialState: CanvasState = {
 	title: '',
 	content: '',
-	idCanvas: null
+	idCanvas: null,
+	parentId: null,
+	type: null
 };
 
 const canvasSlice = createSlice({
@@ -26,6 +30,12 @@ const canvasSlice = createSlice({
 		},
 		setIdCanvas: (state, action: PayloadAction<string | null>) => {
 			state.idCanvas = action.payload;
+		},
+		setParentId: (state, action: PayloadAction<string | null>) => {
+			state.parentId = action.payload;
+		},
+		setType: (state, action: PayloadAction<'channel' | 'thread' | null>) => {
+			state.type = action.payload;
 		}
 	}
 });

@@ -28,6 +28,7 @@ export { default as UpdateButton } from './components/UpdateButton/UpdateButton'
 export { default as PreClass } from './components/MarkdownFormatText/PreClass';
 
 export { default as TooManyUpload } from './components/DragAndDrop/TooManyUpload';
+export { default as CanvasHashtag } from './components/MarkdownFormatText/CanvasHashtag';
 export { default as ChannelHashtag } from './components/MarkdownFormatText/HashTag';
 export { default as MentionUser } from './components/MarkdownFormatText/MentionUser';
 export { default as MemberList } from './components/MemberList';

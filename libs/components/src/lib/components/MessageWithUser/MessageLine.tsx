@@ -1,10 +1,10 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { getTagByIdOnStored } from '@mezon/core';
-import { ChannelsEntity, getStore, selectGmeetVoice } from '@mezon/store';
+import { ChannelsEntity, getStore, selectCanvasIdsByChannelId, selectGmeetVoice } from '@mezon/store';
 import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useRef } from 'react';
-import { ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
+import { CanvasHashtag, ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
 
 interface RenderContentProps {
 	content: IExtendedMessage;
@@ -35,6 +35,15 @@ export interface ElementToken {
 	emojiid?: string;
 	type?: EBacktickType;
 	username?: string;
+}
+
+export function extractIdsFromUrl(url: string) {
+	const regex = /\/chat\/clans\/([^/]+)\/channels\/([^/]+)\/canvas\/([^/]+)/;
+	const match = url?.match(regex);
+	if (!match) return null;
+
+	const [, clanId, channelId, canvasId] = match;
+	return { clanId, channelId, canvasId };
 }
 
 // Utility functions for text selection
@@ -191,37 +200,62 @@ export const MessageLine = ({
 					const basePath = '/chat/clans/';
 					const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
 
-					let componentToRender;
-					if (contentHasChannelLink) {
-						const pathSegments = contentInElement?.split('/') as string[];
-						const channelIdOnLink = pathSegments?.[pathSegments?.indexOf('channels') + 1];
-						const channelFound = getTagByIdOnStored(channelIdOnLink);
-						if (channelIdOnLink && channelFound?.id) {
-							componentToRender = (
-								<ChannelHashtag
-									channelOnLinkFound={channelFound}
-									key={`linkChannel${s}-${messageId}`}
+					const ids = extractIdsFromUrl(contentInElement as string);
+
+					if (ids) {
+						const { clanId, channelId, canvasId } = ids;
+
+						let componentToRender: React.ReactNode = null;
+
+						const isCanvas = contentHasChannelLink && contentInElement?.includes('canvas');
+
+						if (isCanvas && channelId) {
+							const state = getStore().getState();
+							const canvases = selectCanvasIdsByChannelId(state, channelId);
+							const foundCanvas = canvases.find((item) => item.id === canvasId);
+
+							if (foundCanvas) {
+								componentToRender = (
+									<CanvasHashtag
+										key={`canvas-${s}-${messageId}`}
+										clanId={clanId}
+										channelId={channelId}
+										canvasId={canvasId}
+										title={foundCanvas.title}
+										isTokenClickAble={isTokenClickAble}
+										isJumMessageEnabled={isJumMessageEnabled}
+									/>
+								);
+							}
+						} else if (!isCanvas && contentHasChannelLink) {
+							const channelFound = getTagByIdOnStored(channelId);
+							if (channelId && channelFound?.id) {
+								componentToRender = (
+									<ChannelHashtag
+										channelOnLinkFound={channelFound}
+										key={`linkChannel${s}-${messageId}`}
+										isTokenClickAble={isTokenClickAble}
+										isJumMessageEnabled={isJumMessageEnabled}
+										channelHastagId={`<#${channelId}>`}
+									/>
+								);
+							}
+						}
+
+						formattedContent.push(
+							componentToRender ?? (
+								<MarkdownContent
+									key={`link${s}-${messageId}`}
+									isLink={true}
 									isTokenClickAble={isTokenClickAble}
 									isJumMessageEnabled={isJumMessageEnabled}
-									channelHastagId={`<#${channelIdOnLink}>`}
+									content={contentInElement}
+									isReply={isReply}
+									isSearchMessage={isSearchMessage}
 								/>
-							);
-						}
+							)
+						);
 					}
-
-					formattedContent.push(
-						componentToRender ?? (
-							<MarkdownContent
-								key={`link${s}-${messageId}`}
-								isLink={true}
-								isTokenClickAble={isTokenClickAble}
-								isJumMessageEnabled={isJumMessageEnabled}
-								content={contentInElement}
-								isReply={isReply}
-								isSearchMessage={isSearchMessage}
-							/>
-						)
-					);
 				} else if (element.type === EBacktickType.BOLD) {
 					formattedContent.push(<b key={`markdown-${s}-${messageId}`}> {contentInElement} </b>);
 				} else if (element.type === EBacktickType.VOICE_LINK) {
@@ -324,7 +358,7 @@ export const MessageLine = ({
 							minHeight: 30
 						}
 			}
-			className={`w-full ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:dark:text-[#E6F3F5] text-[#4E5057] dark:text-[#B4BAC0] cursor-pointer' : 'text-[#4E5057] dark:text-[#E6E6E6]'}`}
+			className={`w-full ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 hover:text-[#060607] hover:!text-white cursor-pointer' : 'text-[#4E5057] dark:text-[#E6E6E6]'}`}
 		>
 			{code === TypeMessage.MessageBuzz ? <span className="text-red-500">{content2}</span> : content2}
 		</div>

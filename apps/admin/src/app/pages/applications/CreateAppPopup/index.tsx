@@ -5,13 +5,13 @@ import { ApiAddAppRequest } from 'mezon-js/api.gen';
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { APP_TYPES, AppType } from '../../../constants/constants';
 
 interface ICreateAppPopup {
 	togglePopup: () => void;
 }
 
-type CreationType = 'application' | 'bot';
-
+type CreationType = AppType;
 const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const [formValues, setFormValues] = useState({
 		name: '',
@@ -21,11 +21,12 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const [isCheckedForPolicy, setIsChecked] = useState(false);
 	const [isShadowBot, setIsShadowBot] = useState(false);
 	const [notification, setNotification] = useState<React.JSX.Element | null>(null);
-	const [creationType, setCreationType] = useState<CreationType>('application');
+	const [creationType, setCreationType] = useState<CreationType>(APP_TYPES.APPLICATION);
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
-	const typeApplication = creationType === 'application';
-	const typeBot = creationType === 'bot';
+	const typeApplication = creationType === APP_TYPES.APPLICATION;
+	const typeBot = creationType === APP_TYPES.BOT;
+
 	const isFormValid = !!formValues.name && (creationType === 'bot' || (formValues.url !== '' && isUrlValid)) && isCheckedForPolicy;
 	const navigate = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
@@ -121,7 +122,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const handleCreationTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedType = e.target.value as CreationType;
 		setCreationType(selectedType);
-		if (selectedType === 'bot') {
+		if (selectedType === APP_TYPES.BOT) {
 			setFormValues((prev) => ({ ...prev, url: '' }));
 			setIsUrlValid(true);
 		}
@@ -144,8 +145,8 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 							onChange={handleCreationTypeChange}
 							className="bg-bgLightModeThird dark:bg-[#1e1f22] outline-primary p-[10px] rounded-sm"
 						>
-							<option value="application">Create an application</option>
-							<option value="bot">Create a Bot</option>
+							<option value={APP_TYPES.APPLICATION}>Create an application</option>
+							<option value={APP_TYPES.BOT}>Create a bot</option>
 						</select>
 					</div>
 

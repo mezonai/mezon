@@ -107,7 +107,7 @@ const Attachments: React.FC<{
 			{videos.length > 0 && (
 				<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
 					{videos.map((video, index) => (
-						<div key={index} className="w-fit max-h-[350px] gap-y-2">
+						<div key={index} className="gap-y-2">
 							<MessageVideo attachmentData={video} isMobile={isMobile} />
 						</div>
 					))}

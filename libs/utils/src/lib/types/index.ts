@@ -1082,6 +1082,7 @@ export type ICanvas = {
 	content?: string;
 	is_default?: boolean;
 	creator_id?: string;
+	parent_id?: string;
 };
 
 export type CanvasUpdate = {

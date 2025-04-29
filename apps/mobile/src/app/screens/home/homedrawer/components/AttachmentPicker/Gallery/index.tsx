@@ -29,7 +29,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	const [pageInfo, setPageInfo] = useState(null);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const dispatch = useAppDispatch();
-	const timerRef = useRef<any>();
+	const timerRef = useRef<any>(null);
 	const { removeAttachmentByIndex, attachmentFilteredByChannelId } = useReference(currentChannelId);
 
 	const isDisableSelectAttachment = useMemo(() => {

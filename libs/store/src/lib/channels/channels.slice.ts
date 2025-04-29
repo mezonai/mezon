@@ -567,7 +567,7 @@ export const addThreadToChannels = createAsyncThunk(
 
 export const addThreadSocket = createAsyncThunk(
 	'channels/addThreadSocket',
-	async ({ clanId, channelId, channel }: { clanId: string; channelId: string; channel: any }, thunkAPI) => {
+	async ({ clanId, channelId, channel }: { clanId: string; channelId: string; channel: Record<string, unknown> }, thunkAPI) => {
 		const channelData = selectChannelById2(getChannelsRootState(thunkAPI), channelId);
 		if (channelId && !channelData) {
 			if (channel) {

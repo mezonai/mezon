@@ -113,7 +113,7 @@ export const ChatBoxBottomBar = memo(
 		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<IModeKeyboardPicker>('text');
 
 		const navigation = useNavigation<any>();
-		const inputRef = useRef<TextInput>();
+		const inputRef = useRef<TextInput>(null);
 		const cursorPositionRef = useRef(0);
 		const currentTextInput = useRef('');
 		const convertRef = useRef(false);
@@ -479,7 +479,9 @@ export const ChatBoxBottomBar = memo(
 				setText('');
 			});
 			const addEmojiPickedListener = DeviceEventEmitter.addListener(ActionEmitEvent.ADD_EMOJI_PICKED, (emoji) => {
-				handleEventAfterEmojiPicked(emoji.shortName);
+				if (emoji?.channelId === channelId) {
+					handleEventAfterEmojiPicked(emoji.shortName);
+				}
 			});
 			return () => {
 				clearTextInputListener.remove();

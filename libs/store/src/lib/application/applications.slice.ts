@@ -122,7 +122,7 @@ export const editApplication = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.updateApp(mezon.session, data.appId, data.request);
 			if (response) {
-				return data.request;
+				return response;
 			}
 		} catch (error) {
 			captureSentryError(error, 'adminApplication/editApplication');
