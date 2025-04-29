@@ -27,7 +27,6 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 	const [isChannelPrivate, setChannelPrivate] = useState<boolean>(false);
 	const [channelName, setChannelName] = useState<string>('');
 	const [channelType, setChannelType] = useState<ChannelType>(ChannelType.CHANNEL_TYPE_CHANNEL);
-	const [channelTypeVoice, setChannelTypeVoice] = useState<number>(ChannelType.CHANNEL_TYPE_MEZON_VOICE);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { categoryId } = route.params;
 
@@ -138,7 +137,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 		{
 			title: t('fields.channelType.voice.title'),
 			description: t('fields.channelType.voice.description'),
-			value: channelTypeVoice,
+			value: ChannelType.CHANNEL_TYPE_MEZON_VOICE,
 			icon: <MezonIconCDN icon={IconCDN.channelVoice} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 		},
 		{
@@ -149,23 +148,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 		}
 	];
 
-	const channelVoiceTypeList = [
-		{
-			title: t('fields.channelVoiceType.mezon'),
-			value: ChannelType.CHANNEL_TYPE_MEZON_VOICE
-		},
-		{
-			title: t('fields.channelVoiceType.gMeet'),
-			value: ChannelType.CHANNEL_TYPE_GMEET_VOICE
-		}
-	];
-
 	function handleChannelTypeChange(value: number) {
-		setChannelType(value);
-	}
-
-	function handleChannelTypeVoiceChange(value: number) {
-		setChannelTypeVoice(value);
 		setChannelType(value);
 	}
 
@@ -182,15 +165,6 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 				/>
 
 				<MezonOption title={t('fields.channelType.title')} data={channelTypeList} onChange={handleChannelTypeChange} value={channelType} />
-
-				{channelType === channelTypeVoice && (
-					<MezonOption
-						title={t('fields.channelVoiceType.title')}
-						data={channelVoiceTypeList}
-						onChange={handleChannelTypeVoiceChange}
-						value={channelTypeVoice}
-					/>
-				)}
 
 				{channelType === ChannelType.CHANNEL_TYPE_CHANNEL && <MezonMenu menu={menuPrivate} />}
 			</ScrollView>

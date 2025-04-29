@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import ChatStream from '../chatStream';
+import ChatStreamExternal from './ChatMeeting';
 
 // Permissions popup component
 const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
@@ -228,7 +228,7 @@ export default function PreJoinCalling() {
 						onLeaveRoom={handleLeaveRoom}
 						onFullScreen={handleFullScreen}
 					/>
-					<ChatStream />
+					<ChatStreamExternal />
 				</LiveKitRoom>
 			) : (
 				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white flex-1">

@@ -4,7 +4,7 @@ import { safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-const ChatStream = () => {
+const ChatStreamExternal = () => {
 	const chatOptions: ChatProps = React.useMemo(() => {
 		return { messageDecoder: undefined, messageEncoder: undefined, channelTopic: undefined };
 	}, []);
@@ -61,3 +61,5 @@ const MessageItem = ({ message }: { message: ReceivedChatMessage }) => {
 		</div>
 	);
 };
+
+export default ChatStreamExternal;
