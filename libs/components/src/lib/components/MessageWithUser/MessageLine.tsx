@@ -38,7 +38,7 @@ export interface ElementToken {
 }
 
 export function extractIdsFromUrl(url: string) {
-	const regex = /\/chat\/clans\/([^/]+)\/channels\/([^/]+)\/canvas\/([^/]+)/;
+	const regex = /\/chat\/clans\/([^/]+)\/channels\/([^/]+)(?:\/canvas\/([^/]+))?/;
 	const match = url?.match(regex);
 	if (!match) return null;
 
@@ -199,13 +199,12 @@ export const MessageLine = ({
 				if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
 					const basePath = '/chat/clans/';
 					const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
+					let componentToRender: React.ReactNode = null;
 
 					const ids = extractIdsFromUrl(contentInElement as string);
 
 					if (ids) {
 						const { clanId, channelId, canvasId } = ids;
-
-						let componentToRender: React.ReactNode = null;
 
 						const isCanvas = contentHasChannelLink && contentInElement?.includes('canvas');
 
@@ -213,7 +212,6 @@ export const MessageLine = ({
 							const state = getStore().getState();
 							const canvases = selectCanvasIdsByChannelId(state, channelId);
 							const foundCanvas = canvases.find((item) => item.id === canvasId);
-
 							if (foundCanvas) {
 								componentToRender = (
 									<CanvasHashtag
@@ -241,7 +239,20 @@ export const MessageLine = ({
 								);
 							}
 						}
-
+						formattedContent.push(
+							componentToRender ?? (
+								<MarkdownContent
+									key={`link${s}-${messageId}`}
+									isLink={true}
+									isTokenClickAble={isTokenClickAble}
+									isJumMessageEnabled={isJumMessageEnabled}
+									content={contentInElement}
+									isReply={isReply}
+									isSearchMessage={isSearchMessage}
+								/>
+							)
+						);
+					} else {
 						formattedContent.push(
 							componentToRender ?? (
 								<MarkdownContent
