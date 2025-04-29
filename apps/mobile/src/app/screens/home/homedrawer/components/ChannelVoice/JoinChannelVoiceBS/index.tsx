@@ -34,7 +34,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 		if (!currentChannel?.meeting_code) return;
 
 		const data = {
-			channelId: channel?.channel_id,
+			channelId: channel?.channel_id || '',
 			roomName: currentChannel.meeting_code,
 			clanId: channel?.clan_id
 		};
