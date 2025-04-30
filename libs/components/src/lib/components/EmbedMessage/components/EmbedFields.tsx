@@ -101,6 +101,8 @@ const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) 
 					url_position={component.component.url_position}
 					pool={component.component.pool}
 					messageId={messageId}
+					duration={component.component.duration}
+					repeat={component.component.repeat}
 				/>
 			);
 		default:

@@ -5,9 +5,11 @@ type EmbedAnimationProps = {
 	url_position?: string;
 	pool?: Array<string[]>;
 	messageId: string;
+	repeat?: number;
+	duration?: number;
 };
 
-export const EmbedAnimation = ({ url_image, url_position, pool, messageId }: EmbedAnimationProps) => {
+export const EmbedAnimation = ({ url_image, url_position, pool, messageId, repeat, duration = 2 }: EmbedAnimationProps) => {
 	useEffect(() => {
 		const fetchAnimationData = async () => {
 			if (!url_position) {
@@ -20,12 +22,14 @@ export const EmbedAnimation = ({ url_image, url_position, pool, messageId }: Emb
 				const innerAnimation = makeAnimation(jsonPosition, poolItem).animate;
 				style.innerHTML = `
 
-        .box_animation {
+        .box_animation_${index} {
           background-image: url(${url_image});
-          animation: animation_embed 2s steps(1) forwards;
+          animation: animation_embed_${index} ${duration}s steps(1) forwards;
+          animation-iteration-count: ${repeat ? repeat : 'infinite'};
+          background-repeat : no-repeat;
           }
 
-          @keyframes animation_embed {
+          @keyframes animation_embed_${index} {
             ${innerAnimation}
             }
 
@@ -40,7 +44,9 @@ export const EmbedAnimation = ({ url_image, url_position, pool, messageId }: Emb
 
 	return (
 		<div className="rounded-md bg-white">
-			{pool?.map((poolItem, index) => <div id={`${messageId}_animation_${index}`} className="w-[230px] h-[160px] box_animation"></div>)}
+			{pool?.map((poolItem, index) => (
+				<div id={`${messageId}_animation_${index}`} className={`w-[230px] h-[160px] box_animation_${index}`}></div>
+			))}
 		</div>
 	);
 };
@@ -56,17 +62,15 @@ const makeAnimation = (data: TDataAnimation, poolImages: string[]) => {
 				animate +
 				`
       ${index * (100 / imageNumber)}%{
-        background-position : ${frame.x}px ${frame.y}px;
+        background-position : -${frame.x}px -${frame.y}px;
         }
-        100%{
-        background-position : ${frame.x}px ${frame.y}px;
-        }
+
         `;
 		} else {
 			animate =
 				animate +
-				`${index * (100 / imageNumber)}%{
-        background-position : ${frame.x}px ${frame.y}px;
+				`${100 - (imageNumber - 1 - index) * (100 / imageNumber)}%{
+        background-position : -${frame.x}px -${frame.y}px;
     }
         `;
 		}
