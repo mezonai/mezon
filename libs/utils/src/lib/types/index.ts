@@ -340,13 +340,9 @@ export enum IMessageTypeCallLog {
 export interface IMessageAnimation {
 	url_image?: string;
 	url_position?: string;
-	pool?: IPoolAnimation[];
+	pool?: Array<string[]>;
 	duration?: number;
 	repeat?: number;
-}
-
-export interface IPoolAnimation {
-	images?: string[];
 }
 
 export interface IMessageCallLog {

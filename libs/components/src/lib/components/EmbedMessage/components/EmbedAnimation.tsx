@@ -3,50 +3,54 @@ import { useEffect } from 'react';
 type EmbedAnimationProps = {
 	url_image?: string;
 	url_position?: string;
+	pool?: Array<string[]>;
+	messageId: string;
 };
 
-export const EmbedAnimation = ({ url_image, url_position }: EmbedAnimationProps) => {
+export const EmbedAnimation = ({ url_image, url_position, pool, messageId }: EmbedAnimationProps) => {
 	useEffect(() => {
 		const fetchAnimationData = async () => {
 			if (!url_position) {
 				return;
 			}
 			const jsonPosition = await (await fetch(url_position)).json();
-			const style = document.createElement('style');
-			const innerAnimation = makeAnimation(jsonPosition).animate;
-			style.innerHTML = `
 
-      .box_animation {
-        background-image: url(${url_image});
-        animation: slot_machine 2s steps(1) fowards;
-        }
+			pool?.map((poolItem, index) => {
+				const style = document.createElement('style');
+				const innerAnimation = makeAnimation(jsonPosition, poolItem).animate;
+				style.innerHTML = `
 
-        @keyframes slot_machine {
-          ${innerAnimation}
+        .box_animation {
+          background-image: url(${url_image});
+          animation: animation_embed 2s steps(1) forwards;
           }
 
+          @keyframes animation_embed {
+            ${innerAnimation}
+            }
 
-          `;
 
-			const div = document.getElementById('box_animation');
-			div?.appendChild(style);
+            `;
+				const div = document.getElementById(`${messageId}_animation_${index}`);
+				div?.appendChild(style);
+			});
 		};
 		fetchAnimationData();
 	}, []);
 
 	return (
 		<div className="rounded-md bg-white">
-			<div id="box_animation" className="w-32 h-32 box_animation"></div>
+			{pool?.map((poolItem, index) => <div id={`${messageId}_animation_${index}`} className="w-[230px] h-[160px] box_animation"></div>)}
 		</div>
 	);
 };
 export default EmbedAnimation;
 
-const makeAnimation = (data: TDataAnimation) => {
-	const imageNumber = Object.keys(data.frames).length;
+const makeAnimation = (data: TDataAnimation, poolImages: string[]) => {
+	const imageNumber = poolImages.length;
 	let animate = '';
-	Object.keys(data.frames).map((value, index) => {
-		const frame = data.frames[value].frame;
+	poolImages.map((key, index) => {
+		const frame = data.frames[key].frame;
 		if (!index) {
 			animate =
 				animate +
