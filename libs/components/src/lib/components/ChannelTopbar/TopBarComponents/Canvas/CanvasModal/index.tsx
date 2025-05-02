@@ -57,23 +57,6 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 		onClose();
 	};
 
-	const handleEditCanvas = (canvasId: string) => {
-		const isThread = Boolean(
-			currentChannel?.parent_id && currentChannel?.parent_id !== '0' && currentChannel?.parent_id !== currentChannel?.channel_id
-		);
-		const id = isThread ? currentChannel?.parent_id : currentChannel?.channel_id;
-
-		if (!id) {
-			console.error('Error: ID is undefined. Check currentChannel data:', currentChannel);
-			return;
-		}
-		const type = isThread ? CANVAS_TYPES.THREAD : CANVAS_TYPES.CHANNEL;
-		dispatch(canvasActions.setParentId(id || null));
-		dispatch(canvasActions.setType(type));
-		dispatch(canvasActions.setIdCanvas(canvasId));
-		dispatch(appActions.setIsShowCanvas(true));
-	};
-
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	useOnClickOutside(modalRef, onClose, rootRef);

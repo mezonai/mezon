@@ -1,7 +1,16 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
 import { Text, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, getStoreAsync, MessagesEntity, selectCurrentChannel, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import {
+	ChannelsEntity,
+	getStore,
+	getStoreAsync,
+	MessagesEntity,
+	selectCurrentChannel,
+	selectDmGroupCurrent,
+	selectMemberClanByUserId2,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import React, { useCallback } from 'react';
 import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, View } from 'react-native';
 import { EMessageActionType, EMessageBSToShow } from './enums';
@@ -9,8 +18,9 @@ import { style } from './styles';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { setSelectedMessage } from '@mezon/store-mobile';
-import { ETypeLinkMedia, isValidEmojiData, TypeMessage } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import { ApiMessageMention } from 'mezon-js/api.gen';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -93,11 +103,26 @@ const MessageItem = React.memo(
 		}, [message]);
 		//check
 
-		const hasIncludeMention = userId
-			? message?.content?.t?.includes('@here') ||
-				message?.mentions?.some?.((mention) => mention?.user_id === userId) ||
-				message?.references?.[0]?.message_sender_id === userId
-			: false;
+		const hasIncludeMention = (() => {
+			const store = getStore();
+			const currentClanUser = selectMemberClanByUserId2(store.getState(), userId as string);
+
+			if (!userId) return false;
+			if (typeof message?.content?.t == 'string') {
+				if (message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
+			}
+			if (typeof message?.mentions === 'string') {
+				const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;
+				const userIdMention = userId;
+				const includesUser = parsedMentions?.some((mention) => mention?.user_id === userIdMention);
+				const includesRole = parsedMentions?.some((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
+				return includesUser || includesRole;
+			}
+			const userIdMention = userId;
+			const includesUser = message?.mentions?.some((mention) => mention?.user_id === userIdMention);
+			const includesRole = message?.mentions?.some((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
+			return includesUser || includesRole;
+		})();
 
 		const isSameUser = message?.user?.id === previousMessage?.user?.id;
 

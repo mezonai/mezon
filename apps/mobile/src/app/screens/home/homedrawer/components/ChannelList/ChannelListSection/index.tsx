@@ -1,22 +1,19 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { categoriesActions, selectCategoryExpandStateByCategoryId, useAppDispatch } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
 import React, { memo, useCallback } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
-import { ChannelsPositionRef } from '../../../ChannelList';
 import CategoryMenu from '../../CategoryMenu';
-import { IThreadActiveType } from '../ChannelListItem';
 import ChannelListSectionHeader from '../ChannelListSectionHeader';
 import { style } from './styles';
 
 interface IChannelListSectionProps {
 	data: ICategoryChannel;
-	channelsPositionRef: ChannelsPositionRef;
 }
 
-const ChannelListSection = memo(({ data, channelsPositionRef }: IChannelListSectionProps) => {
+const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 	const styles = style(useTheme().themeValue);
 	const dispatch = useAppDispatch();
 	const categoryExpandState = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, data?.category_id));
@@ -44,33 +41,6 @@ const ChannelListSection = memo(({ data, channelsPositionRef }: IChannelListSect
 	if (!data?.category_name?.trim()) {
 		return;
 	}
-
-	const handlePositionChannel = (item, event) => {
-		const { y } = event.nativeEvent.layout;
-		let threadY = 0;
-		const heightChannel = y;
-		if (item?.threads?.length) {
-			const threadActives = item?.threads.filter((thread: { active: IThreadActiveType }) => thread?.active === IThreadActiveType.Active);
-			threadActives?.forEach((thread) => {
-				const threadHeight = size.s_36;
-				threadY += threadHeight;
-				channelsPositionRef.current = {
-					...channelsPositionRef.current,
-					[`${thread.id}`]: {
-						cateId: item?.category_id,
-						height: y + threadY
-					}
-				};
-			});
-		}
-		channelsPositionRef.current = {
-			...channelsPositionRef.current,
-			[`${item.id}`]: {
-				height: heightChannel,
-				cateId: item?.category_id
-			}
-		};
-	};
 
 	return (
 		<View style={styles.channelListSection}>

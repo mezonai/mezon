@@ -37,7 +37,7 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 						)}
 						{numUnread > 0 && (
 							<View style={styles.badge}>
-								<Text style={styles.badgeText}>{numUnread || ''}</Text>
+								<Text style={styles.badgeText}>{numUnread > 99 ? '99+' : numUnread || ''}</Text>
 							</View>
 						)}
 					</View>

@@ -10,6 +10,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
 import { DeviceEventEmitter, Platform, StatusBar } from 'react-native';
 import BootSplash from 'react-native-bootsplash';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import NetInfoComp from '../components/NetworkInfo';
 import { WebRTCStreamProvider } from '../components/StreamContext/StreamContext';
@@ -92,7 +93,11 @@ const NavigationMain = memo(
 			>
 				<NetInfoComp />
 				<RootListener />
-				<RootStack {...props} />
+				<SafeAreaProvider>
+					<SafeAreaView edges={Platform.OS === 'android' ? ['top', 'bottom'] : []} style={{ flex: 1, backgroundColor: themeValue.primary }}>
+						<RootStack {...props} />
+					</SafeAreaView>
+				</SafeAreaProvider>
 			</NavigationContainer>
 		);
 	},

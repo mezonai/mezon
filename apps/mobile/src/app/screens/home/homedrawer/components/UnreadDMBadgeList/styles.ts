@@ -30,6 +30,8 @@ export const style = (colors: Attributes) =>
 			borderWidth: size.s_2,
 			borderColor: Colors.secondary,
 			minWidth: size.s_20,
+			paddingHorizontal: size.s_2,
+			paddingVertical: size.s_2,
 			height: size.s_20,
 			alignItems: 'center',
 			justifyContent: 'center',

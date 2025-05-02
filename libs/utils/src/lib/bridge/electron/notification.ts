@@ -150,9 +150,12 @@ export class MezonNotificationService {
 	}
 
 	public pushNotification(title: string, message: string, image: string, link: string | undefined, msg?: NotificationData) {
+		const hideContent = localStorage.getItem('hideNotificationContent') === 'true';
+		const notificationBody = hideContent ? '' : message;
+
 		if (isElectron()) {
 			const options: MezonNotificationOptions = {
-				body: message,
+				body: notificationBody,
 				icon: image ?? '',
 				data: {
 					link: link ?? '',
@@ -178,7 +181,7 @@ export class MezonNotificationService {
 		}
 
 		const notification = new Notification(title, {
-			body: message,
+			body: notificationBody,
 			icon: image ?? '',
 			data: {
 				link: link ?? ''
@@ -195,6 +198,7 @@ export class MezonNotificationService {
 			if (!link) {
 				return;
 			}
+
 			const existingWindow = window.open('', '_self');
 
 			if (existingWindow) {

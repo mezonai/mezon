@@ -72,7 +72,6 @@ const ChannelList = () => {
 	const styles = style(themeValue, isTabletLandscape);
 
 	const flashListRef = useRef(null);
-	const channelsPositionRef = useRef<ChannelsPositionRef>();
 
 	useFocusEffect(
 		useCallback(() => {
@@ -90,7 +89,7 @@ const ChannelList = () => {
 			} else if (index === 1) {
 				return <ChannelListHeader key={`header-${headerVersion}`} />;
 			} else if (item.channels) {
-				return <ChannelListSection channelsPositionRef={channelsPositionRef} data={item} />;
+				return <ChannelListSection data={item} />;
 			} else {
 				const isActive = item?.id === currentChannelId;
 				const isHaveParentActive = item?.threadIds?.includes(currentChannelId);

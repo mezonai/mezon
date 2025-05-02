@@ -357,7 +357,7 @@ export const style = (colors: Attributes) =>
 			backgroundColor: Colors.bgMessageHighlight,
 			borderLeftColor: Colors.borderMessageHighlight,
 			borderLeftWidth: 2,
-			paddingTop: size.s_2
+			paddingVertical: size.s_2
 		},
 		repliedTextAvatar: {
 			fontSize: size.s_12,

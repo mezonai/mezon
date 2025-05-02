@@ -73,6 +73,7 @@ export { ReplyMessageBox } from './components/ReplyMessageBox';
 export { default as SearchMessageChannelRender } from './components/SearchMessageChannel/SearchMessageChannelRender';
 export { default as SettingAccount } from './components/SettingAccount';
 export { default as SettingAppearance } from './components/SettingAppearance';
+export { default as SettingNotifications } from './components/SettingNotifications';
 export * from './components/SettingProfile';
 export { getColorAverageFromURL } from './components/SettingProfile/AverageColor';
 export { default as ShortUserProfile } from './components/ShortUserProfile/ShortUserProfile';

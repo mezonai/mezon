@@ -1,11 +1,10 @@
-import { ExitSetting, SettingAccount, SettingAppearance, SettingItem, SettingRightProfile } from '@mezon/components';
+import { ExitSetting, SettingAccount, SettingAppearance, SettingItem, SettingNotifications, SettingRightProfile } from '@mezon/components';
 import { useEscapeKeyClose, useSettingFooter } from '@mezon/core';
 import { selectIsShowSettingFooter, showSettingFooterProps } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EUserSettings } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-// ... existing code ...
 
 interface settingProps {
 	isDM: boolean;
@@ -43,6 +42,7 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 				{currentSetting === EUserSettings.ACCOUNT && <SettingAccount menuIsOpen={menuIsOpen} onSettingProfile={handleSettingItemClick} />}
 				{currentSetting === EUserSettings.PROFILES && <SettingRightProfile menuIsOpen={menuIsOpen} isDM={isDM} />}
 				{currentSetting === EUserSettings.APPEARANCE && <SettingAppearance menuIsOpen={menuIsOpen} />}
+				{currentSetting === EUserSettings.NOTIFICATIONS && <SettingNotifications menuIsOpen={menuIsOpen} />}
 				<ExitSetting onClose={closeSetting} />
 
 				{menuIsOpen ? (
