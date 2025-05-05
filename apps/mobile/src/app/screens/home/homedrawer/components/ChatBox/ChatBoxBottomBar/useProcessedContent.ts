@@ -45,17 +45,25 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 
 	let i = 0;
 	while (i < inputString.length) {
-		if (inputString[i] === ':') {
+		if (
+			inputString[i] === ':' &&
+			i + 1 < inputString.length &&
+			inputString.indexOf(':', i + 1) !== -1 &&
+			!inputString.startsWith('http://', i + 1) &&
+			!inputString.startsWith('https://', i + 1)
+		) {
 			// Emoji processing
 			const startindex = i;
-			i++;
 			let shortname = '';
-			while (i < inputString.length && inputString[i] !== colon) {
-				shortname += inputString[i];
-				i++;
+			let j = i + 1;
+
+			while (j < inputString.length && inputString[j] !== colon) {
+				shortname += inputString[j];
+				j++;
 			}
-			if (i < inputString.length && inputString[i] === ':') {
-				const endindex = i + 1;
+
+			if (j < inputString.length && inputString[j] === ':' && shortname.length > 0) {
+				const endindex = j + 1;
 				const preCharFour = inputString.substring(startindex - 4, startindex);
 				const preCharFive = inputString.substring(startindex - 5, startindex);
 				const emojiId = emojiObjPicked?.[`:${shortname}:`];
@@ -65,8 +73,11 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 						s: startindex,
 						e: endindex
 					});
+					i = endindex;
+					continue;
 				}
 			}
+			i++;
 		} else if (inputString.startsWith('http://', i) || inputString.startsWith('https://', i)) {
 			// Link processing
 			const startindex = i;

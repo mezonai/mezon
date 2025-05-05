@@ -1,3 +1,4 @@
+import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	PinMessageEntity,
@@ -9,7 +10,7 @@ import {
 } from '@mezon/store-mobile';
 import { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, safeJSONParse } from 'mezon-js';
 import { memo, useContext, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -31,6 +32,7 @@ interface IPinMessageItemProps {
 const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessage }: IPinMessageItemProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessageItem.sender_id || '');
 	const message =
 		useAppSelector((state) => selectMessageByMessageId(state, pinMessageItem?.channel_id, pinMessageItem?.message_id)) ||
 		({} as IMessageWithUser);
@@ -59,14 +61,22 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 		}
 	};
 
+	const pinMessageAttachments = useMemo(() => {
+		try {
+			return safeJSONParse(pinMessageItem?.attachment || '[]') || [];
+		} catch (e) {
+			console.error({ e });
+		}
+	}, [pinMessageItem?.attachment]);
+
 	return (
 		<TouchableOpacity onPress={handleJumpMess} style={styles.pinMessageItemWrapper}>
-			<MezonAvatar avatarUrl={pinMessageItem?.avatar} username={pinMessageItem?.username}></MezonAvatar>
+			<MezonAvatar avatarUrl={priorityAvatar} username={namePriority}></MezonAvatar>
 			<View style={styles.pinMessageItemBox}>
-				<Text style={styles.pinMessageItemName}>{pinMessageItem?.username}</Text>
+				<Text style={styles.pinMessageItemName}>{namePriority}</Text>
 				<RenderTextMarkdownContent content={contentMessage} isEdited={false} />
-				{message?.attachments?.length > 0 && (
-					<MessageAttachment attachments={message?.attachments || []} clanId={message?.clan_id} channelId={message?.channel_id} />
+				{pinMessageAttachments?.length > 0 && (
+					<MessageAttachment attachments={pinMessageAttachments} clanId={message?.clan_id} channelId={message?.channel_id} />
 				)}
 			</View>
 			<View>

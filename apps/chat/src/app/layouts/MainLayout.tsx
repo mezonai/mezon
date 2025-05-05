@@ -1,8 +1,10 @@
 import { ChatContext, ChatContextProvider, ColorRoleProvider, useCustomNavigate, useDragAndDrop, useFriends, useIdleRender } from '@mezon/core';
 import {
+	authActions,
 	e2eeActions,
 	gifsStickerEmojiActions,
 	selectAllAccount,
+	selectAllAuth,
 	selectAnyUnreadChannel,
 	selectBadgeCountAllClan,
 	useAppDispatch
@@ -34,8 +36,14 @@ const GlobalEventListener = () => {
 	const { quantityPendingRequest } = useFriends();
 
 	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
-
+	const { redirectUrl } = useSelector(selectAllAuth);
 	useEffect(() => {
+		if (redirectUrl) {
+			const targetUrl = redirectUrl;
+			dispatch(authActions.setRedirectUrl(''));
+			navigate(targetUrl);
+		}
+
 		const reconnectSocket = debounce(() => {
 			if (document.visibilityState === 'visible') {
 				handleReconnect('Socket disconnected event, attempting to reconnect...');
