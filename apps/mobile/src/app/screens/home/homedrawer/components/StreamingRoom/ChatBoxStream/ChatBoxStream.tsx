@@ -3,8 +3,9 @@ import { selectCurrentChannel } from '@mezon/store-mobile';
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/ScreenTypes';
 import ChannelMessages from '../../../ChannelMessages';
@@ -33,7 +34,11 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 	}, []);
 
 	return (
-		<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}>
+		<KeyboardAvoidingView
+			style={styles.channelView}
+			behavior={'padding'}
+			keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : StatusBar.currentHeight + 40}
+		>
 			<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 				<View style={{ flex: 1 }}>
 					<ChannelMessages

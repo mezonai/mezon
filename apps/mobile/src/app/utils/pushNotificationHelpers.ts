@@ -81,12 +81,12 @@ const getConfigDisplayNotificationAndroid = async (data: { [key: string]: string
 		}
 	};
 
-	if (!data?.channelId) {
+	if (!data?.channel) {
 		return defaultConfig;
 	}
 
-	const channelGroup = await getOrCreateChannelGroup(data.channelId as string);
-	const channelId = await createNotificationChannel(data.channelId as string, channelGroup?.groupId);
+	const channelGroup = await getOrCreateChannelGroup(data.channel as string);
+	const channelId = await createNotificationChannel(data.channel as string, channelGroup?.groupId);
 
 	return {
 		...defaultConfig,
@@ -104,7 +104,7 @@ const getOrCreateChannelGroup = async (channelId: string): Promise<any> => {
 	}
 	groupId = await notifee.createChannelGroup({
 		id: channelId,
-		name: `${channelId} group`
+		name: channelId
 	});
 
 	return {
@@ -116,7 +116,7 @@ const getOrCreateChannelGroup = async (channelId: string): Promise<any> => {
 const createNotificationChannel = async (channelId: string, groupId: string): Promise<string> => {
 	return await notifee.createChannel({
 		id: channelId,
-		name: `${channelId} channel`,
+		name: channelId,
 		groupId,
 		importance: AndroidImportance.HIGH,
 		sound: 'default',
@@ -139,7 +139,7 @@ const getConfigDisplayNotificationIOS = async (data: { [key: string]: string | o
 
 	return {
 		...defaultConfig,
-		threadId: (data?.channelId as string) || undefined
+		threadId: (data?.channel as string) || undefined
 	};
 };
 
@@ -148,7 +148,6 @@ export const createLocalNotification = async (title: string, body: string, data:
 		const configDisplayNotificationAndroid = Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
 		console.log('log  => configDisplayNotificationAndroid', configDisplayNotificationAndroid);
 		const configDisplayNotificationIOS = Platform.OS === 'ios' ? await getConfigDisplayNotificationIOS(data) : {};
-
 		await notifee.displayNotification({
 			title: title || '',
 			body: body,
@@ -187,13 +186,13 @@ export const handleFCMToken = async () => {
 };
 
 export const isShowNotification = (currentChannelId, currentDmId, remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-	if (!remoteMessage?.notification?.title) {
+	if (!remoteMessage?.data) {
 		return false;
 	}
 
 	const link = remoteMessage?.data?.link as string;
-	const directMessageId = link.match(clanDirectMessageLinkRegex)?.[1] || '';
-	const channelMessageId = link.match(clanAndChannelIdLinkRegex)?.[2] || '';
+	const directMessageId = link?.match?.(clanDirectMessageLinkRegex)?.[1] || '';
+	const channelMessageId = link?.match?.(clanAndChannelIdLinkRegex)?.[2] || '';
 
 	const areOnChannel = currentChannelId === channelMessageId;
 	const areOnDirectMessage = currentDmId === directMessageId;
@@ -211,7 +210,7 @@ export const isShowNotification = (currentChannelId, currentDmId, remoteMessage:
 
 export const navigateToNotification = async (store: any, notification: any, navigation: any, time?: number) => {
 	const link = notification?.data?.link;
-	const topicId = notification?.data?.topicId;
+	const topicId = notification?.data?.topic;
 	if (link) {
 		const linkMatch = link.match(clanAndChannelIdLinkRegex);
 
@@ -317,17 +316,28 @@ const processNotification = async ({ notification, navigation, time = 0 }) => {
 };
 
 export const setupNotificationListeners = async (navigation) => {
-	// await notifee.createChannel({
-	// 	id: 'default',
-	// 	name: 'mezon',
-	// 	importance: AndroidImportance.HIGH,
-	// 	vibration: true,
-	// 	vibrationPattern: [300, 500]
-	// });
-
 	messaging()
 		.getInitialNotification()
 		.then(async (remoteMessage) => {
+			notifee
+				.getInitialNotification()
+				.then(async (resp) => {
+					if (resp) {
+						const store = await getStoreAsync();
+						save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
+						store.dispatch(appActions.setIsFromFCMMobile(true));
+						if (resp) {
+							processNotification({
+								notification: { ...resp?.notification, data: resp?.notification?.data },
+								navigation,
+								time: 1
+							});
+						}
+					}
+				})
+				.catch((err) => {
+					console.error('*** err getInitialNotification', err);
+				});
 			if (remoteMessage) {
 				const store = await getStoreAsync();
 				save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
@@ -350,7 +360,16 @@ export const setupNotificationListeners = async (navigation) => {
 		});
 	});
 
-	// messaging().setBackgroundMessageHandler(async (remoteMessage) => {});
+	notifee.onBackgroundEvent(async ({ type, detail }) => {
+		// const { notification, pressAction, input } = detail;
+		if (type === EventType.PRESS && detail) {
+			processNotification({
+				notification: detail.notification,
+				navigation,
+				time: 1
+			});
+		}
+	});
 
 	return notifee.onForegroundEvent(({ type, detail }) => {
 		switch (type) {

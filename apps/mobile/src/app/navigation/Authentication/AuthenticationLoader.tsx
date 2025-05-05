@@ -139,8 +139,8 @@ export const AuthenticationLoader = () => {
 		const unsubscribe = messaging().onMessage((remoteMessage) => {
 			if (isShowNotification(currentChannelRef.current?.id, currentDmGroupIdRef.current, remoteMessage)) {
 				// Case: FCM start call
-				const title = remoteMessage?.notification?.title;
-				const body = remoteMessage?.notification?.body;
+				const title = remoteMessage?.notification?.title || remoteMessage?.data?.title;
+				const body = remoteMessage?.notification?.body || remoteMessage?.data?.body;
 				if (
 					title === 'Incoming call' ||
 					(body && ['started a video call', 'started a audio call', 'Untitled message'].some((text) => body?.includes?.(text)))
@@ -150,7 +150,10 @@ export const AuthenticationLoader = () => {
 				Toast.show({
 					type: 'notification',
 					topOffset: Platform.OS === 'ios' ? undefined : 10,
-					props: remoteMessage.notification,
+					props: {
+						title,
+						body
+					},
 					swipeable: true,
 					visibilityTime: 5000,
 					onPress: async () => {

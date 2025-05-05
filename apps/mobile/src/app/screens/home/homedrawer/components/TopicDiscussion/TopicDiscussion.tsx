@@ -4,8 +4,9 @@ import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import ChannelMessages from '../../ChannelMessages';
@@ -93,7 +94,11 @@ export default function TopicDiscussion() {
 				mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 				handleBack={onGoBack}
 			/>
-			<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={0}>
+			<KeyboardAvoidingView
+				style={styles.channelView}
+				behavior={'padding'}
+				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
+			>
 				<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 					<View style={{ flex: 1 }}>
 						<ChannelMessages

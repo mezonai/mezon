@@ -68,9 +68,23 @@ export const Authentication = memo(() => {
 		onNotificationOpenedApp();
 	}, []);
 
+	const deleteAllChannelGroupsNotifee = async () => {
+		try {
+			const channelGroups = await notifee.getChannelGroups(); // Fetch all channel groups
+			for (const group of channelGroups) {
+				await notifee.deleteChannelGroup(group.id); // Delete each channel group by its ID
+			}
+		} catch (error) {
+			console.error('Error deleting channel groups:', error);
+		}
+	};
+
 	const initLoader = async () => {
 		try {
 			await notifee.cancelAllNotifications();
+			if (Platform.OS === 'android') {
+				await deleteAllChannelGroupsNotifee();
+			}
 			await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 			await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
 		} catch (error) {

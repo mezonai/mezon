@@ -18,7 +18,13 @@ const ProtectedRoutes = () => {
 
 	if (!isLogin) {
 		dispatch(authActions.setRedirectUrl(location.pathname));
-		return <Navigate to={redirectUrl || redirect || '/login'} replace />;
+		return <Navigate to={redirect || '/desktop/login'} replace />;
+	}
+
+	if (redirectUrl) {
+		const targetUrl = redirectUrl;
+		dispatch(authActions.setRedirectUrl(''));
+		return <Navigate to={targetUrl} replace />;
 	}
 
 	return <Outlet />;

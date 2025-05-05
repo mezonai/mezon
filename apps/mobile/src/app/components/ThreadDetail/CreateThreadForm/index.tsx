@@ -21,7 +21,8 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiChannelDescription, ApiCreateChannelDescRequest, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import { Alert, DeviceEventEmitter, Platform, Text, View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
@@ -173,7 +174,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	}, []);
 
 	return (
-		<KeyboardAvoidingView style={styles.createChannelContent} behavior={'padding'} keyboardVerticalOffset={0}>
+		<KeyboardAvoidingView style={styles.createChannelContent} behavior={'padding'} keyboardVerticalOffset={50}>
 			<Formik innerRef={formikRef} initialValues={{ nameValueThread: null, isPrivate: false }}>
 				{({ setFieldValue, handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
 					<View style={styles.createChannelContent}>

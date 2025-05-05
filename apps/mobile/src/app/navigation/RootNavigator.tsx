@@ -2,14 +2,15 @@
 import { MezonStoreProvider, initStore } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { LinkingOptions, NavigationContainer, getStateFromPath } from '@react-navigation/native';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContextProvider, EmojiSuggestionProvider } from '@mezon/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
-import { DeviceEventEmitter, Platform, StatusBar } from 'react-native';
+import { DeviceEventEmitter, NativeModules, Platform, StatusBar } from 'react-native';
 import BootSplash from 'react-native-bootsplash';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import NetInfoComp from '../components/NetworkInfo';
@@ -19,11 +20,29 @@ import { DeviceProvider } from '../contexts/device';
 import RootListener from './RootListener';
 import RootStack from './RootStack';
 import { APP_SCREEN } from './ScreenTypes';
+const { NavigationBarModule } = NativeModules;
 
 const NavigationMain = memo(
 	(props) => {
-		// const [isShowUpdateModal, setIsShowUpdateModal] = React.useState<boolean>(false);
 		const { themeValue, themeBasic } = useTheme();
+		const [isThreeButtonNav, setIsThreeButtonNav] = useState<boolean>(false);
+
+		useEffect(() => {
+			const getNavigationInfo = async () => {
+				if (Platform.OS === 'android') {
+					try {
+						const hasThreeButtons = await NavigationBarModule.getNavigationBarStyle();
+						setIsThreeButtonNav(hasThreeButtons);
+					} catch (error) {
+						console.error('Error getting navigation bar info:', error);
+					}
+				} else {
+					// iOS doesn't have the same navigation bar concept
+				}
+			};
+
+			getNavigationInfo();
+		}, []);
 
 		// comment logic check new version on code-push
 		// useEffect(() => {
@@ -91,10 +110,19 @@ const NavigationMain = memo(
 				}}
 				linking={linking}
 			>
+				<StatusBar
+					animated
+					translucent
+					backgroundColor={themeValue.primary}
+					barStyle={themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content'}
+				/>
 				<NetInfoComp />
 				<RootListener />
 				<SafeAreaProvider>
-					<SafeAreaView edges={Platform.OS === 'android' ? ['top'] : []} style={{ flex: 1, backgroundColor: themeValue.primary }}>
+					<SafeAreaView
+						edges={Platform.OS === 'android' ? (isThreeButtonNav ? ['top', 'bottom'] : ['top']) : []}
+						style={{ flex: 1, backgroundColor: themeValue.primary }}
+					>
 						<RootStack {...props} />
 					</SafeAreaView>
 				</SafeAreaProvider>
@@ -129,7 +157,9 @@ const RootNavigation = (props) => {
 					<WebRTCStreamProvider>
 						<DeviceProvider>
 							<EmojiSuggestionProvider isMobile={true}>
-								<NavigationMain {...props} />
+								<KeyboardProvider statusBarTranslucent>
+									<NavigationMain {...props} />
+								</KeyboardProvider>
 							</EmojiSuggestionProvider>
 						</DeviceProvider>
 					</WebRTCStreamProvider>

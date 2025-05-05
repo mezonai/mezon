@@ -4,7 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { setTimeout } from '@testing-library/react-native/build/helpers/timers';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { DeviceEventEmitter, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Platform, StatusBar } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import AgeRestrictedModal from '../../../components/AgeRestricted/AgeRestrictedModal';
 import NotificationSetting from '../../../components/NotificationSetting';
 import ChannelAppHotbar from './ChannelAppHotbar';
@@ -68,7 +69,11 @@ const HomeDefault = React.memo(
 		}, []);
 
 		return (
-			<KeyboardAvoidingView style={styles.channelView} behavior={'padding'} keyboardVerticalOffset={0}>
+			<KeyboardAvoidingView
+				style={styles.channelView}
+				behavior={'padding'}
+				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
+			>
 				{Platform.OS === 'ios' && <LicenseAgreement />}
 				<DrawerListener />
 				<HomeDefaultHeader openBottomSheet={openBottomSheet} navigation={props.navigation} onOpenDrawer={onOpenDrawer} />
