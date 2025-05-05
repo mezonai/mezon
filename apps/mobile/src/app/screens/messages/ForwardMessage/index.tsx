@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
+import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -16,19 +16,19 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { ChannelThreads, IMessageWithUser, normalizeString } from '@mezon/utils';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
-import MezonInput from '../../../../../componentUI/MezonInput';
-import { SeparatorWithLine } from '../../../../../components/Common';
-import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
-import { IconCDN } from '../../../../../constants/icon_cdn';
-import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../componentUI/MezonInput';
+import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../constants/icon_cdn';
+import ForwardMessageItem from '../../home/homedrawer/components/ForwardMessage/ForwardMessageItem/ForwardMessageItem';
 import { styles } from './styles';
 
 export interface IForwardIObject {
@@ -40,13 +40,12 @@ export interface IForwardIObject {
 	clanName?: string;
 }
 
-interface ForwardMessageModalProps {
-	message: IMessageWithUser;
-	isPublic?: boolean;
-}
-
-const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) => {
+const ForwardMessageScreen = () => {
 	const [searchText, setSearchText] = useState('');
+	const navigation = useNavigation();
+	const route = useRoute();
+	const params = route.params as { message: IMessageWithUser; isPublic?: boolean };
+	const { message, isPublic } = params;
 
 	const { sendForwardMessage } = useSendForwardMessage();
 	const { t } = useTranslation('message');
@@ -125,12 +124,11 @@ const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) =>
 	};
 
 	const onClose = () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		navigation.goBack();
 	};
 
 	const handleForward = () => {
 		return isForwardAll ? handleForwardAllMessage() : sentToMessage();
-		onClose();
 	};
 
 	const handleForwardAllMessage = async () => {
@@ -181,7 +179,7 @@ const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) =>
 		} catch (error) {
 			console.error('Forward all messages log => error', error);
 		}
-		onClose && onClose();
+		onClose();
 	};
 
 	const sentToMessage = async () => {
@@ -213,7 +211,7 @@ const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) =>
 		} catch (error) {
 			console.error('error', error);
 		}
-		onClose && onClose();
+		onClose();
 	};
 
 	const onSelectChange = useCallback((value: boolean, item: IForwardIObject) => {
@@ -227,57 +225,54 @@ const ForwardMessageModal = ({ message, isPublic }: ForwardMessageModalProps) =>
 	}, []);
 
 	const renderForwardObject = ({ item }: { item: IForwardIObject }) => {
-		return <ForwardMessageItem isItemChecked={isChecked(item)} onSelectChange={onSelectChange} item={item} />;
+		return (
+			<ForwardMessageItem key={`item_forward_${item?.channelId}`} isItemChecked={isChecked(item)} onSelectChange={onSelectChange} item={item} />
+		);
 	};
 
 	return (
-		<View style={{ flex: 1, margin: 0, backgroundColor: themeValue.primary, paddingHorizontal: size.s_16 }}>
+		<View style={{ flex: 1, backgroundColor: themeValue.primary, paddingHorizontal: size.s_16, paddingTop: size.s_16 }}>
 			<StatusBarHeight />
-			<View style={{ flex: 1, marginTop: size.s_34 }}>
-				<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
-					<View style={{ position: 'absolute', left: 0 }}>
-						<TouchableOpacity onPress={() => onClose()}>
-							<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
-						</TouchableOpacity>
-					</View>
-					<Text h3 color={themeValue.white}>
-						{t('forwardTo')}
-					</Text>
-				</View>
-
-				<MezonInput
-					placeHolder={t('search')}
-					onTextChange={setSearchText}
-					value={searchText}
-					prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
-					inputWrapperStyle={{ backgroundColor: themeValue.primary, paddingHorizontal: size.s_6 }}
-				/>
-
+			<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
 				<View style={{ flex: 1 }}>
-					<FlashList
-						keyboardShouldPersistTaps="handled"
-						data={filteredForwardObjects}
-						ItemSeparatorComponent={() => <SeparatorWithLine style={{ backgroundColor: themeValue.border }} />}
-						keyExtractor={(item) => item?.channelId?.toString()}
-						renderItem={renderForwardObject}
-						estimatedItemSize={size.s_60}
-					/>
-				</View>
-
-				<View style={{ paddingTop: size.s_10 }}>
-					<TouchableOpacity
-						style={[styles.btn, !selectedForwardObjectsRef.current?.length && { backgroundColor: themeValue.charcoal }]}
-						onPress={handleForward}
-					>
-						<Text style={styles.btnText}>
-							{'Send'}
-							{count}
-						</Text>
+					<TouchableOpacity onPress={onClose}>
+						<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				</View>
+				<Text h3 color={themeValue.white}>
+					{t('forwardTo')}
+				</Text>
+				<View style={{ flex: 1 }} />
 			</View>
+
+			<MezonInput
+				placeHolder={t('search')}
+				onTextChange={setSearchText}
+				value={searchText}
+				prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
+				inputWrapperStyle={{ backgroundColor: themeValue.primary, paddingHorizontal: size.s_6 }}
+			/>
+
+			<View style={{ marginTop: size.s_24, flex: 1 }}>
+				<FlashList
+					keyExtractor={(item) => `${item.channelId}_${item.type}`}
+					estimatedItemSize={70}
+					data={filteredForwardObjects}
+					renderItem={renderForwardObject}
+				/>
+			</View>
+
+			<TouchableOpacity
+				style={[styles.btn, !selectedForwardObjectsRef.current?.length && { backgroundColor: themeValue.charcoal }]}
+				onPress={handleForward}
+			>
+				<Text style={styles.btnText}>
+					{'Send'}
+					{count}
+				</Text>
+			</TouchableOpacity>
 		</View>
 	);
 };
 
-export default ForwardMessageModal;
+export default ForwardMessageScreen;

@@ -10,16 +10,13 @@ const ProtectedRoutes = () => {
 	const isLogin = isLoginLoader && isLoginStore;
 	const location = useLocation();
 	const dispatch = useAppDispatch();
-
 	useEffect(() => {
 		dispatch(stickerSettingActions.fetchStickerByUserId({}));
 	}, [dispatch]);
-
 	if (!isLogin) {
 		dispatch(authActions.setRedirectUrl(location.pathname));
 		return <Navigate to={redirect || '/desktop/login'} replace />;
 	}
-
 	return <Outlet />;
 };
 

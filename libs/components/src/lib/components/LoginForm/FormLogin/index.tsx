@@ -1,10 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { RootState, authActions, selectAllAuth, selectTheme } from '@mezon/store';
+import { RootState, authActions, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons, Loading } from '@mezon/ui';
 import { BaseSyntheticEvent, useCallback, useState } from 'react';
 import { Resolver, useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
@@ -27,9 +26,7 @@ export const validationSchema = Yup.object().shape({
 
 function LoginForm(props: LoginFormProps) {
 	const isLoading = useSelector((state: RootState) => state.auth.loadingStatus);
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
-	const { redirectUrl } = useSelector(selectAllAuth);
+	const dispatch = useAppDispatch();
 
 	const { onSubmit } = props;
 	const {
@@ -51,13 +48,9 @@ function LoginForm(props: LoginFormProps) {
 			if (typeof onSubmit === 'function') {
 				onSubmit(data);
 			}
-			if (redirectUrl) {
-				navigate(redirectUrl);
-				dispatch(authActions.clearRedirectUrl());
-			}
 			return false;
 		},
-		[onSubmit, redirectUrl, navigate, dispatch]
+		[onSubmit]
 	);
 
 	const handleFormSubmit = useCallback(

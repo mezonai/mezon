@@ -1,6 +1,6 @@
 import { ETypeSearch, ICategoryChannelOption } from '@mezon/mobile-components';
 import { ChannelsEntity, DirectEntity, NotiChannelCategorySettingEntity } from '@mezon/store-mobile';
-import { ChannelThreads, ICategoryChannel, IChannel, OptionEvent } from '@mezon/utils';
+import { ChannelThreads, ICategoryChannel, IChannel, IMessageWithUser, OptionEvent } from '@mezon/utils';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -39,7 +39,8 @@ export const APP_SCREEN = {
 		NEW_GROUP: 'ROUTES.MESSAGES.NEW_GROUP',
 		CHAT_STREAMING: 'ROUTES.MESSAGES.CHAT_STREAMING',
 		TOPIC_DISCUSSION: 'ROUTES.MESSAGES.TOPIC_DISCUSSION',
-		CHANNEL_APP: 'ROUTES.MESSAGES.CHANNEL_APP'
+		CHANNEL_APP: 'ROUTES.MESSAGES.CHANNEL_APP',
+		FORWARD_MESSAGE: 'ROUTES.MESSAGES.FORWARD_MESSAGE'
 	},
 
 	FRIENDS: {
@@ -139,6 +140,10 @@ type MessagesStackParamList = {
 	[APP_SCREEN.MESSAGES.NEW_GROUP]: undefined;
 	[APP_SCREEN.MESSAGES.CHAT_STREAMING]: undefined;
 	[APP_SCREEN.MESSAGES.TOPIC_DISCUSSION]: undefined;
+	[APP_SCREEN.MESSAGES.FORWARD_MESSAGE]: {
+		message: IMessageWithUser;
+		isPublic?: boolean;
+	};
 };
 
 type FriendsStackParamList = {

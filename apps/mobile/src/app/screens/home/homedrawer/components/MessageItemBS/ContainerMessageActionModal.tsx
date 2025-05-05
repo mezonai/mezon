@@ -53,7 +53,6 @@ import { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IRe
 import { ConfirmBuzzMessageModal } from '../ConfirmBuzzMessage';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
-import ForwardMessageModal from '../ForwardMessage';
 import { IReactionMessageProps } from '../MessageReaction';
 import { ReportMessageModal } from '../ReportMessageModal';
 import { RecentEmojiMessageAction } from './RecentEmojiMessageAction';
@@ -343,10 +342,13 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		dispatch(setIsForwardAll(false));
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		await sleep(500);
-		const data = {
-			children: <ForwardMessageModal message={message} isPublic={isPublicChannel(currentChannel)} />
-		};
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
+			screen: APP_SCREEN.MESSAGES.FORWARD_MESSAGE,
+			params: {
+				message: message,
+				isPublic: isPublicChannel(currentChannel)
+			}
+		});
 	};
 
 	const handleForwardAllMessages = () => {

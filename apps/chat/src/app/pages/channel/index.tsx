@@ -60,6 +60,7 @@ import {
 	titleMission,
 	useBackgroundMode
 } from '@mezon/utils';
+import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiOnboardingItem } from 'mezon-js/api.gen';
 import { DragEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -445,7 +446,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
 						<div
-							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
+							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big ${isElectron() ? 'h-[calc(100%_-_23px)]' : ''} ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
 						>
 							<Canvas />
 						</div>

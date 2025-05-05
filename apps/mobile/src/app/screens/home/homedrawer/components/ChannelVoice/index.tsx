@@ -1,7 +1,7 @@
-import { AudioSession, LiveKitRoom, TrackReference, useConnectionState } from '@livekit/react-native';
+import { AudioSession, LiveKitRoom, TrackReference, useConnectionState, useLocalParticipant } from '@livekit/react-native';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectChannelById2, selectIsPiPMode, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
-import React, { useEffect, useState } from 'react';
+import { ChannelsEntity, selectChannelById2, selectIsPiPMode, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
+import React, { memo, useEffect, useState } from 'react';
 import { AppState, Dimensions, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -62,6 +62,60 @@ const ConnectionMonitor = () => {
 
 	return <View />;
 };
+
+type headerProps = {
+	channel: ChannelsEntity;
+	onPressMinimizeRoom: () => void;
+	onToggleSpeaker: () => void;
+	isSpeakerOn: boolean;
+};
+
+const HeaderRoomView = memo(({ channel, onPressMinimizeRoom, onToggleSpeaker, isSpeakerOn }: headerProps) => {
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
+	const { cameraTrack, isCameraEnabled } = useLocalParticipant();
+
+	const handleSwitchCamera = () => {
+		if (cameraTrack && cameraTrack.track) {
+			if (typeof cameraTrack?.track?.mediaStreamTrack?._switchCamera === 'function') {
+				try {
+					cameraTrack?.track?.mediaStreamTrack?._switchCamera();
+				} catch (error) {
+					console.error(error);
+				}
+			}
+		}
+	};
+
+	return (
+		<View style={[styles.menuHeader]}>
+			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20, flexGrow: 1, flexShrink: 1 }}>
+				<TouchableOpacity onPress={onPressMinimizeRoom} style={styles.buttonCircle}>
+					<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
+				</TouchableOpacity>
+				<Text numberOfLines={1} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
+					{channel?.channel_label}
+				</Text>
+			</View>
+
+			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+				{isCameraEnabled && (
+					<TouchableOpacity onPress={() => handleSwitchCamera()} style={[styles.buttonCircle]}>
+						<MezonIconCDN icon={IconCDN.cameraFront} height={size.s_17} width={size.s_20} color={themeValue.white} />
+					</TouchableOpacity>
+				)}
+				<TouchableOpacity onPress={() => onToggleSpeaker()} style={[styles.buttonCircle, isSpeakerOn && styles.buttonCircleActive]}>
+					<MezonIconCDN
+						icon={isSpeakerOn ? IconCDN.channelVoice : IconCDN.voiceLowIcon}
+						height={size.s_17}
+						width={isSpeakerOn ? size.s_17 : size.s_20}
+						color={isSpeakerOn ? themeValue.border : themeValue.white}
+					/>
+				</TouchableOpacity>
+			</View>
+		</View>
+	);
+});
 
 function ChannelVoice({
 	channelId,
@@ -216,32 +270,15 @@ function ChannelVoice({
 					backgroundColor: themeValue?.primary
 				}}
 			>
-				{isAnimationComplete && !focusedScreenShare && !isPiPMode && (
-					<View style={[styles.menuHeader]}>
-						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20, flexGrow: 1, flexShrink: 1 }}>
-							<TouchableOpacity onPress={onPressMinimizeRoom} style={styles.buttonCircle}>
-								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
-							</TouchableOpacity>
-							<Text numberOfLines={1} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
-								{channel?.channel_label}
-							</Text>
-						</View>
-						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20, flexGrow: 1, flexShrink: 1 }}>
-							<TouchableOpacity
-								onPress={() => onToggleSpeaker()}
-								style={[styles.buttonCircle, isSpeakerOn && styles.buttonCircleActive]}
-							>
-								<MezonIconCDN
-									icon={isSpeakerOn ? IconCDN.channelVoice : IconCDN.voiceLowIcon}
-									height={size.s_17}
-									width={isSpeakerOn ? size.s_17 : size.s_20}
-									color={isSpeakerOn ? themeValue.border : themeValue.white}
-								/>
-							</TouchableOpacity>
-						</View>
-					</View>
-				)}
 				<LiveKitRoom serverUrl={serverUrl} token={token} connect={true}>
+					{isAnimationComplete && !focusedScreenShare && !isPiPMode && (
+						<HeaderRoomView
+							channel={channel}
+							isSpeakerOn={isSpeakerOn}
+							onPressMinimizeRoom={onPressMinimizeRoom}
+							onToggleSpeaker={onToggleSpeaker}
+						/>
+					)}
 					<ConnectionMonitor />
 					<RoomView
 						channelId={channelId}
