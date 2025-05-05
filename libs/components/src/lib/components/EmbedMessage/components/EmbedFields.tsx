@@ -103,6 +103,7 @@ const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) 
 					messageId={messageId}
 					duration={component.component.duration}
 					repeat={component.component.repeat}
+					isResult={component.component.isResult}
 				/>
 			);
 		default:

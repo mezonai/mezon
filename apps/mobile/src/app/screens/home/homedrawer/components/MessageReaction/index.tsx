@@ -29,6 +29,11 @@ export const MessageAction = React.memo((props: IMessageReactionProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const combineReactions = combineMessageReactions(messageReactions?.reactions, message?.id);
+
+	if (combineReactions?.length === 0) {
+		return null;
+	}
+
 	if (!!message?.reactions?.length && !messageReactions)
 		return (
 			<View style={[styles.reactionWrapper, styles.reactionSpace]}>

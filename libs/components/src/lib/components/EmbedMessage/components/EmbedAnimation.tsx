@@ -7,34 +7,60 @@ type EmbedAnimationProps = {
 	messageId: string;
 	repeat?: number;
 	duration?: number;
+	vertical?: boolean;
+	isResult?: number;
 };
 
-export const EmbedAnimation = ({ url_image, url_position, pool, messageId, repeat, duration = 2 }: EmbedAnimationProps) => {
+export const EmbedAnimation = ({
+	url_image,
+	url_position,
+	pool,
+	messageId,
+	repeat,
+	duration = 2,
+	vertical = false,
+	isResult
+}: EmbedAnimationProps) => {
 	useEffect(() => {
 		const fetchAnimationData = async () => {
 			if (!url_position) {
 				return;
 			}
-			const jsonPosition = await (await fetch(url_position)).json();
+			const jsonPosition = (await (await fetch(url_position)).json()) as TDataAnimation;
 
 			pool?.map((poolItem, index) => {
 				const style = document.createElement('style');
-				const innerAnimation = makeAnimation(jsonPosition, poolItem).animate;
-				style.innerHTML = `
+				if (!isResult) {
+					const innerAnimation = makeAnimation(jsonPosition, poolItem).animate;
+					style.innerHTML = `
 
-        .box_animation_${index} {
-          background-image: url(${url_image});
-          animation: animation_embed_${index} ${duration}s steps(1) forwards;
-          animation-iteration-count: ${repeat ? repeat : 'infinite'};
-          background-repeat : no-repeat;
-          }
-
-          @keyframes animation_embed_${index} {
-            ${innerAnimation}
+          .box_animation_${index}_${messageId} {
+            background-image: url(${url_image});
+            animation: animation_embed_${index}_${messageId} ${duration}s steps(1) forwards;
+            animation-iteration-count: ${repeat ? repeat : 'infinite'};
+            background-repeat : no-repeat;
+            width : ${jsonPosition.frames[poolItem[index]].frame.w}px;
+            height : ${jsonPosition.frames[poolItem[index]].frame.h}px;
             }
 
+            @keyframes animation_embed_${index}_${messageId} {
+              ${innerAnimation}
+              }
 
-            `;
+
+              `;
+				} else {
+					style.innerHTML = `
+
+          .box_animation_${index}_${messageId} {
+            background-image: url(${url_image});
+            background-repeat : no-repeat;
+            background-position: -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.x}px -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.y}px;
+            width : ${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.w}px;
+            height : ${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.h}px;
+            }
+              `;
+				}
 				const div = document.getElementById(`${messageId}_animation_${index}`);
 				div?.appendChild(style);
 			});
@@ -43,10 +69,8 @@ export const EmbedAnimation = ({ url_image, url_position, pool, messageId, repea
 	}, []);
 
 	return (
-		<div className="rounded-md bg-white">
-			{pool?.map((poolItem, index) => (
-				<div id={`${messageId}_animation_${index}`} className={`w-[230px] h-[160px] box_animation_${index}`}></div>
-			))}
+		<div className={`rounded-md flex gap-2 ${vertical ? 'flex-col' : ''}`}>
+			{pool?.map((poolItem, index) => <div id={`${messageId}_animation_${index}`} className={`box_animation_${index}_${messageId}`}></div>)}
 		</div>
 	);
 };
