@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { ChatBoxStreamComponent } from '../../../screens/home/homedrawer/components/StreamingRoom/ChatBoxStream';
 import TopicDiscussion from '../../../screens/home/homedrawer/components/TopicDiscussion/TopicDiscussion';
-import ForwardMessageScreen from '../../../screens/messages/ForwardMessage';
+import ForwardMessageScreen from '../../../screens/home/homedrawer/components/ForwardMessage';
 import { NewGroupScreen } from '../../../screens/messages/NewGroup';
 import { NewMessageScreen } from '../../../screens/messages/NewMessage';
 import { APP_SCREEN } from '../../ScreenTypes';

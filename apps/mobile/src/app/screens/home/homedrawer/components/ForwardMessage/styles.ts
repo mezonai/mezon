@@ -23,5 +23,19 @@ export const styles = StyleSheet.create({
 	btnText: {
 		color: Colors.white,
 		fontSize: size.medium
+	},
+	memberAvatar: {
+		height: size.s_34,
+		width: size.s_34,
+		borderRadius: 50,
+		backgroundColor: Colors.bgGrayDark
+	},
+	groupAvatar: {
+		backgroundColor: Colors.orange,
+		width: size.s_34,
+		height: size.s_34,
+		borderRadius: 50,
+		justifyContent: 'center',
+		alignItems: 'center'
 	}
 });
