@@ -2,7 +2,9 @@ import { useClans, usePermissionChecker } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import { style } from './style';
 
@@ -10,6 +12,7 @@ const LogoClanSelector = () => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { currentClan, updateClan } = useClans();
+	const { t } = useTranslation(['clanSetting']);
 	const [hasAdminPermission, hasManageClanPermission, clanOwnerPermission] = usePermissionChecker([
 		EPermission.administrator,
 		EPermission.manageClan,
@@ -21,6 +24,13 @@ const LogoClanSelector = () => {
 
 	const handleLoad = useCallback(
 		async (url?: string) => {
+			if (!hasAdminPermission && !clanOwnerPermission) {
+				Toast.show({
+					type: 'error',
+					text1: t('menu.settings.permissionDenied')
+				});
+				return;
+			}
 			if (url) {
 				await updateClan({
 					clan_id: currentClan?.clan_id ?? '',

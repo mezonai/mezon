@@ -5,7 +5,7 @@ import { selectAllPermissionsDefault, selectAllRolesClan, selectEveryoneRole, se
 import { EPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { FlatList, Keyboard, Platform, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -110,6 +110,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 	};
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: !isEditRoleMode
 			? t('setupPermission.title')
 			: () => {

@@ -1,7 +1,7 @@
 import { MezonStoreProvider, initStore, selectIsLogin, setIsElectronDownloading, setIsElectronUpdateAvailable } from '@mezon/store';
 import { CreateMezonClientOptions, MezonContextProvider, useMezon } from '@mezon/transport';
 
-import { useActivities, useSettingFooter } from '@mezon/core';
+import { PermissionProvider, useActivities, useSettingFooter } from '@mezon/core';
 import { captureSentryError } from '@mezon/logger';
 import { ACTIVE_WINDOW, DOWNLOAD_PROGRESS, TRIGGER_SHORTCUT, UPDATE_AVAILABLE, UPDATE_ERROR, electronBridge } from '@mezon/utils';
 import isElectron from 'is-electron';
@@ -137,8 +137,10 @@ export function App() {
 		>
 			{showLoading && <LoadingFallbackWrapper />}
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
-				<AppInitializer />
-				<Routes />
+				<PermissionProvider>
+					<AppInitializer />
+					<Routes />
+				</PermissionProvider>
 			</MezonStoreProvider>
 		</LoadingContext.Provider>
 	);

@@ -13,7 +13,7 @@ import {
 import { LIMIT, checkIsThread } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN, MenuThreadScreenProps } from '../../navigation/ScreenTypes';
@@ -38,6 +38,10 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 		headerShown: true,
 		headerTitle: t('threads'),
 		headerTitleAlign: 'center',
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
+		headerStyle: {
+			backgroundColor: themeValue.primary
+		},
 		headerRight: () => <ThreadAddButton onPress={handleNavigateCreateForm} />
 	});
 	const [searchText, setSearchText] = useState('');

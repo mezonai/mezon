@@ -27,17 +27,16 @@ import {
 	isLinuxDesktop,
 	isWindowsDesktop,
 	toggleDisableHover,
-	useSyncEffect,
-	useWindowSize
+	useSyncEffect
 } from '@mezon/utils';
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { CreateNewChannelModal } from '../CreateChannelModal';
 import { MentionFloatButton } from '../MentionFloatButton';
 import { ThreadLinkWrapper } from '../ThreadListChannel';
 import { useVirtualizer } from '../virtual-core/useVirtualizer';
-import CategorizedItem from './CategorizedChannels';
+import CategorizedItem, { IChannelLinkPermission } from './CategorizedChannels';
 import { Events } from './ChannelListComponents';
 import ChannelListItem from './ChannelListItem';
 export type ChannelListProps = { className?: string };
@@ -48,6 +47,24 @@ function ChannelList() {
 	const appearanceTheme = useSelector(selectTheme);
 	const isOpenModal = useAppSelector((state) => selectIsOpenCreateNewChannel(state));
 	const [openCreateChannel, closeCreateChannel] = useModal(() => <CreateNewChannelModal />, []);
+	const currentClan = useSelector(selectCurrentClan);
+
+	const userId = useSelector(selectCurrentUserId);
+	const [hasAdminPermission, hasClanPermission, hasChannelManagePermission] = usePermissionChecker([
+		EPermission.administrator,
+		EPermission.manageClan,
+		EPermission.manageChannel
+	]);
+	const isClanOwner = currentClan?.creator_id === userId;
+	const permissions = useMemo(
+		() => ({
+			hasAdminPermission,
+			hasClanPermission,
+			hasChannelManagePermission,
+			isClanOwner
+		}),
+		[hasAdminPermission, hasClanPermission, hasChannelManagePermission, isClanOwner]
+	);
 
 	useEffect(() => {
 		if (isOpenModal) {
@@ -61,7 +78,7 @@ function ChannelList() {
 		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="contain-strict h-full">
 			<hr className="h-[0.08px] w-full dark:border-borderDivider border-white mx-2" />
 			<div className={`flex-1 space-y-[21px] text-gray-300`}>
-				<RowVirtualizerDynamic appearanceTheme={appearanceTheme} />
+				<RowVirtualizerDynamic permissions={permissions} />
 			</div>
 		</div>
 	);
@@ -86,7 +103,7 @@ const ChannelBannerAndEvents = memo(({ currentClan }: { currentClan: ClansEntity
 	);
 });
 
-const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: string }) => {
+const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLinkPermission }) => {
 	const currentClan = useSelector(selectCurrentClan);
 	const [showFullList, setShowFullList] = useState(false);
 	const prevClanIdRef = useRef<string | null>(null);
@@ -115,20 +132,7 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 		return listChannelRender?.find((item) => (item as IChannel)?.count_mess_unread && ((item as IChannel)?.count_mess_unread || 0) > 0) || null;
 	}, [listChannelRender]);
 
-	const calculateHeight = useCallback(() => {
-		//TODO: check get height after join clan
-		const clanFooterEle = document.getElementById('clan-footer');
-		const totalHeight = clanTopbarEle + (clanFooterEle?.clientHeight || 0) + 2;
-		const outsideHeight = totalHeight;
-		const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
-		return window.innerHeight - outsideHeight - titleBarHeight;
-	}, []);
-
 	const [height, setHeight] = useState(0);
-
-	useWindowSize(() => {
-		setHeight(calculateHeight());
-	});
 
 	const data = useMemo(() => {
 		const filteredChannels = listChannelRender
@@ -149,7 +153,16 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 	}, [listChannelRender, isShowEmptyCategory, showFullList]) as ICategoryChannel[];
 
 	useEffect(() => {
-		setHeight(calculateHeight());
+		const calculateHeight = () => {
+			const clanFooterEle = document.getElementById('clan-footer');
+			const totalHeight = clanTopbarEle + (clanFooterEle?.clientHeight || 0) + 2;
+			const outsideHeight = totalHeight;
+			const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
+			setHeight(window.innerHeight - outsideHeight - titleBarHeight);
+		};
+		calculateHeight();
+		window.addEventListener('resize', calculateHeight);
+		return () => window.removeEventListener('resize', calculateHeight);
 	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
 
 	useEffect(() => {
@@ -207,22 +220,6 @@ const RowVirtualizerDynamic = memo(({ appearanceTheme }: { appearanceTheme: stri
 	});
 
 	const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
-	const userId = useSelector(selectCurrentUserId);
-	const [hasAdminPermission, hasClanPermission, hasChannelManagePermission] = usePermissionChecker([
-		EPermission.administrator,
-		EPermission.manageClan,
-		EPermission.manageChannel
-	]);
-	const isClanOwner = currentClan?.creator_id === userId;
-	const permissions = useMemo(
-		() => ({
-			hasAdminPermission,
-			hasClanPermission,
-			hasChannelManagePermission,
-			isClanOwner
-		}),
-		[hasAdminPermission, hasClanPermission, hasChannelManagePermission, isClanOwner]
-	);
 
 	const handleScrollChannelIntoView = () => {
 		const { index, currentScrollIndex, currentScrollPosition, targetScrollPosition } = findScrollIndex();

@@ -50,8 +50,9 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				gestureDirection: 'horizontal',
 				headerTitleAlign: 'center',
 				headerStyle: {
-					backgroundColor: themeValue.secondary
+					backgroundColor: themeValue.primary
 				},
+				headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 				headerTitleStyle: {
 					color: themeValue.textStrong
 				},

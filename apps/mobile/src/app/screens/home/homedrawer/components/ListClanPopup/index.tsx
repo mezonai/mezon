@@ -2,17 +2,19 @@ import { PlusAltIcon, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	clansActions,
+	ClansEntity,
 	directActions,
 	getStoreAsync,
 	RootState,
-	selectAllClans,
 	selectCurrentStreamInfo,
+	selectOrderedClans,
 	useAppDispatch,
 	videoStreamActions
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { NestableDraggableFlatList, RenderItemParams } from 'react-native-draggable-flatlist';
 import { useSelector, useStore } from 'react-redux';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
@@ -31,21 +33,7 @@ export const ListClanPopup = React.memo(() => {
 	const dispatch = useAppDispatch();
 	const store = useStore();
 	const { disconnect } = useWebRTCStream();
-	const clanData = useSelector(selectAllClans);
-	const clans = useMemo(() => {
-		return [...clanData].sort((a, b) => {
-			const nameA = a.clan_name ?? '';
-			const nameB = b.clan_name ?? '';
-
-			if (nameA < nameB) {
-				return -1;
-			}
-			if (nameA > nameB) {
-				return 1;
-			}
-			return 0;
-		});
-	}, [clanData]);
+	const clans = useSelector(selectOrderedClans);
 	useEffect(() => {
 		return () => {
 			timerRef?.current && clearTimeout(timerRef.current);
@@ -65,6 +53,14 @@ export const ListClanPopup = React.memo(() => {
 			// dispatch(usersStreamActions.remove(idStreamByMe));
 		}
 	}, [disconnect, dispatch, store]);
+
+	const handleDragEnd = useCallback(
+		({ data }) => {
+			const newListOrder = data?.map((c) => c?.clan_id);
+			dispatch(clansActions.updateClansOrder(newListOrder));
+		},
+		[dispatch]
+	);
 
 	const handleChangeClan = useCallback(
 		async (clanId: string) => {
@@ -87,24 +83,30 @@ export const ListClanPopup = React.memo(() => {
 		[isTabletLandscape, navigation]
 	);
 
+	const renderItem = ({ item, drag, isActive }: RenderItemParams<ClansEntity>) => {
+		return <ClanIcon data={item} onPress={handleChangeClan} drag={drag} isActive={isActive} />;
+	};
+
 	return (
 		<View style={styles.clansBox}>
-			<FlatList
+			<NestableDraggableFlatList
 				scrollEnabled={false}
 				// estimatedItemSize={size.s_48}
 				data={clans}
-				keyExtractor={(clan) => `${clan?.id}_clan_item`}
-				renderItem={({ item }) => <ClanIcon data={item} onPress={handleChangeClan} />}
+				keyExtractor={(clan, index) => `${clan?.clan_id}_${index}_clan_item`}
+				onDragEnd={handleDragEnd}
+				renderItem={renderItem}
 				ListEmptyComponent={<View />}
 				ListFooterComponent={() => {
 					return (
-						<Pressable style={styles.createClan} onPress={() => visibleCreateClanModal(!isVisibleCreateClanModal)}>
+						<TouchableOpacity style={styles.createClan} onPress={() => visibleCreateClanModal(!isVisibleCreateClanModal)}>
 							<View style={styles.wrapperPlusClan}>
 								<PlusAltIcon width={size.s_14} height={size.s_14} />
 							</View>
-						</Pressable>
+						</TouchableOpacity>
 					);
 				}}
+				activationDistance={15}
 			/>
 			<CreateClanModal visible={isVisibleCreateClanModal} setVisible={visibleCreateClanModal} />
 		</View>

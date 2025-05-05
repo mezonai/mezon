@@ -202,7 +202,7 @@ const persistedEventMngtReducer = persistReducer(
 	{
 		key: 'eventmanagement',
 		storage,
-		blacklist: ['ongoingEvent']
+		blacklist: ['ongoingEvent', 'showModalEvent', 'showModalDetailEvent']
 	},
 	eventManagementReducer
 );
@@ -427,6 +427,7 @@ const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
 export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRootState) => {
 	const store = configureStore({
 		reducer,
+		devTools: process.env.NODE_ENV !== 'production',
 		preloadedState,
 		middleware: (getDefaultMiddleware) =>
 			getDefaultMiddleware({

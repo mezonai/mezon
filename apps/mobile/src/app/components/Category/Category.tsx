@@ -3,7 +3,7 @@ import { categoriesActions, selectCurrentClanId, useAppDispatch } from '@mezon/s
 import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonInput from '../../componentUI/MezonInput2';
@@ -25,6 +25,7 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 	const { t } = useTranslation(['categoryCreator']);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerRight: () => (
 			<Pressable onPress={handleCreateCategory}>
 				<Text

@@ -6,7 +6,7 @@ import { selectAllRolesClan, selectAllUserClans, selectRoleByRoleId } from '@mez
 import { EPermission, UsersClanEntity } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, Platform, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -54,6 +54,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: !isEditRoleMode
 			? t('setupMember.title')
 			: () => {

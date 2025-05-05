@@ -5,7 +5,7 @@ import { rolesClanActions, selectRoleByRoleId, selectUserMaxPermissionLevel, use
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, FlatList, Keyboard, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, DeviceEventEmitter, FlatList, Keyboard, Platform, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
@@ -63,6 +63,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	}, [isNotChange, navigation]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: () => (
 			<View>
 				<Text center bold h3 color={themeValue?.white}>

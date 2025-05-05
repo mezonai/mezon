@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import Images from '../../../../../assets/Images';
 import CreateClanModal from '../components/CreateClanModal';
 import JoinClanModal from '../components/JoinClanModal';
-import { styles } from './UserEmptyClan.styles';
+import { styles } from './styles';
 
 const UserEmptyClan = () => {
 	const clans = useSelector(selectAllClans);

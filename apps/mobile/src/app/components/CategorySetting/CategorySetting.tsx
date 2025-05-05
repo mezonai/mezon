@@ -15,7 +15,7 @@ import { ICategoryChannel, IChannel } from '@mezon/utils';
 import { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, ScrollView, Text } from 'react-native';
+import { DeviceEventEmitter, Platform, Pressable, ScrollView, Text } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
@@ -44,6 +44,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 	}, [categorySettingValue, currentSettingValue]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerRight: () => (
 			<Pressable onPress={() => handleSaveCategorySetting()}>
 				<Text style={[styles.saveChangeButton, !isNotChanged ? styles.changed : styles.notChange]}>{t('confirm.save')}</Text>

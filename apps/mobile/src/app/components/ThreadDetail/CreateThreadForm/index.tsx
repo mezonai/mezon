@@ -60,6 +60,10 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	const bottomPickerRef = useRef<BottomSheet>(null);
 	navigation.setOptions({
 		headerShown: true,
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
+		headerStyle: {
+			backgroundColor: themeValue.primary
+		},
 		headerTitle: () => <Text></Text>,
 		headerLeft: () => <HeaderLeftThreadForm currentChannel={channelThreads || currentChannel} />,
 		headerTintColor: themeValue.white
@@ -169,14 +173,10 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	}, []);
 
 	return (
-		<View style={{ flex: 1 }}>
+		<KeyboardAvoidingView style={styles.createChannelContent} behavior={'padding'} keyboardVerticalOffset={0}>
 			<Formik innerRef={formikRef} initialValues={{ nameValueThread: null, isPrivate: false }}>
 				{({ setFieldValue, handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
-					<KeyboardAvoidingView
-						style={styles.createChannelContent}
-						behavior={'padding'}
-						keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
-					>
+					<View style={styles.createChannelContent}>
 						<View style={{ margin: size.s_20, flex: 1 }}>
 							<View style={styles.iconContainer}>
 								<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
@@ -234,9 +234,9 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 						/>
 						<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 						<View style={{ height: Platform.OS === 'ios' ? size.s_40 : 0 }} />
-					</KeyboardAvoidingView>
+					</View>
 				)}
 			</Formik>
-		</View>
+		</KeyboardAvoidingView>
 	);
 }

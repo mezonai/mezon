@@ -4,6 +4,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, Ent
 import { ApiPermission } from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx, MezonValueContext } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
+import { RootState } from '../store';
 export const OVERRIDDEN_POLICIES_FEATURE_KEY = 'overriddenPolicies';
 export interface ChannelPermission {
 	channelId: string;
@@ -137,8 +138,9 @@ const maxChannelPermissionsAdapters = overriddenPermissionAdapter.getSelectors()
 export const selectAllChannelsWithMaxPermissionEntities = createSelector(selectOverriddenPoliciesState, (state) =>
 	maxChannelPermissionsAdapters.selectEntities(state?.channelPermissions)
 );
-export const selectMaxPermissionForChannel = (channelId: string) =>
-	createSelector(selectAllChannelsWithMaxPermissionEntities, (permissionEntities) => {
+export const selectMaxPermissionForChannel = createSelector(
+	[selectAllChannelsWithMaxPermissionEntities, (_: RootState, channelId: string) => channelId],
+	(permissionEntities, channelId) => {
 		const channelPermissions = permissionEntities[channelId]?.maxPermissions;
 		const permissionsMap = {} as Record<EOverriddenPermission, boolean>;
 		for (const permission in channelPermissions) {
@@ -146,4 +148,5 @@ export const selectMaxPermissionForChannel = (channelId: string) =>
 			permissionsMap[permission as EOverriddenPermission] = isActive;
 		}
 		return permissionsMap;
-	});
+	}
+);

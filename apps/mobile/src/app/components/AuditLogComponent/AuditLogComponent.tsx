@@ -8,7 +8,7 @@ import { FlashList } from '@shopify/flash-list';
 import { MezonapiListAuditLog } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonDateTimePicker from '../../componentUI/MezonDateTimePicker';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -55,6 +55,7 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 
 	useEffect(() => {
 		navigation.setOptions({
+			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: t('auditLogComponent.title'),
 			headerLeft: () => (
 				<TouchableOpacity style={styles.headerLeftBtn} onPress={() => navigation.goBack()}>

@@ -26,8 +26,6 @@ import {
 	listChannelsByUserActions,
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
-	selectAllChannelMemberIds,
-	selectAllRoleIds,
 	selectAudioBusyTone,
 	selectAudioDialTone,
 	selectAudioEndTone,
@@ -37,7 +35,6 @@ import {
 	selectClanView,
 	selectCloseMenu,
 	selectCurrentChannel,
-	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectCurrentStartDmCall,
 	selectCurrentStreamInfo,
@@ -560,12 +557,8 @@ const PreviewOnboardingMode = () => {
 };
 
 const MessageModalImageWrapper = () => {
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const allUserIdsInChannel = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannelId));
-	const allRolesInClan = useSelector(selectAllRoleIds);
-
 	return (
-		<MessageContextMenuProvider allRolesInClan={allRolesInClan} allUserIdsInChannel={allUserIdsInChannel}>
+		<MessageContextMenuProvider>
 			<MessageModalImage />
 		</MessageContextMenuProvider>
 	);

@@ -1,17 +1,9 @@
 import { channelsActions, messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
-import {
-	ChannelMembersEntity,
-	ETokenMessage,
-	IExtendedMessage,
-	IMessageWithUser,
-	TypeMessage,
-	convertTimeString,
-	parseThreadInfo
-} from '@mezon/utils';
+import { ETokenMessage, IExtendedMessage, IMessageWithUser, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MentionUser, PlainText, useMessageContextMenu } from '../../components';
+import { MentionUser, PlainText } from '../../components';
 
 type MessageLineSystemProps = {
 	message: IMessageWithUser;
@@ -50,7 +42,6 @@ interface RenderContentProps {
 const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessageEnabled, isTokenClickAble }: RenderContentProps) => {
 	const { t, mentions = [] } = data;
 	const elements = [...mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS }))].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
-	const { allUserIdsInChannel } = useMessageContextMenu();
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
@@ -87,35 +78,16 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 			}
 
 			if (element.kindOf === ETokenMessage.MENTIONS && element.user_id) {
-				let isValidMention = false;
-				if (typeof allUserIdsInChannel?.[0] === 'string') {
-					isValidMention = (allUserIdsInChannel as string[])?.includes(element.user_id) || contentInElement === '@here';
-				} else {
-					isValidMention =
-						(allUserIdsInChannel as ChannelMembersEntity[])?.some((member) => member.id === element.user_id) ||
-						contentInElement === '@here';
-				}
-
-				if (isValidMention) {
-					formattedContent.push(
-						<MentionUser
-							isTokenClickAble={isTokenClickAble}
-							isJumMessageEnabled={isJumMessageEnabled}
-							key={`mentionUser-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
-							tagUserName={contentInElement ?? ''}
-							tagUserId={element.user_id}
-							mode={mode}
-						/>
-					);
-				} else {
-					formattedContent.push(
-						<PlainText
-							isSearchMessage={false}
-							key={`userDeleted-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
-							text={contentInElement ?? ''}
-						/>
-					);
-				}
+				formattedContent.push(
+					<MentionUser
+						isTokenClickAble={isTokenClickAble}
+						isJumMessageEnabled={isJumMessageEnabled}
+						key={`mentionUser-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
+						tagUserName={contentInElement ?? ''}
+						tagUserId={element.user_id}
+						mode={mode}
+					/>
+				);
 			}
 
 			lastindex = e;

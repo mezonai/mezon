@@ -41,6 +41,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 
 	useEffect(() => {
 		navigation.setOptions({
+			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerBackTitleVisible: false
 		});
 	}, [navigation]);

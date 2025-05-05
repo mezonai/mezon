@@ -7,7 +7,7 @@ import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -34,6 +34,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const [searchText, setSearchText] = useState<string>('');
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: t('screens.eventType.headerTitle'),
 		headerTitleStyle: {
 			fontSize: Fonts.size.h7,

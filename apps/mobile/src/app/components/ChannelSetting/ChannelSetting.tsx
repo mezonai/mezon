@@ -15,7 +15,7 @@ import { checkIsThread } from '@mezon/utils';
 import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, ScrollView, Text, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
@@ -67,6 +67,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	const currentUserId = useSelector(selectCurrentUserId);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: isChannel ? t1('menuChannelStack.channelSetting') : t1('menuChannelStack.threadSetting'),
 		headerRight: () => (
 			<Pressable onPress={() => handleSaveChannelSetting()}>

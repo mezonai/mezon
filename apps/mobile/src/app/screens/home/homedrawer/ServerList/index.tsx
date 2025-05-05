@@ -3,6 +3,7 @@ import { selectLogoCustom } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { NestableScrollContainer } from 'react-native-draggable-flatlist';
 import { useSelector } from 'react-redux';
 import LogoMezonDark from '../../../../../assets/svg/logoMezonDark.svg';
 import LogoMezonLight from '../../../../../assets/svg/logoMezonLight.svg';
@@ -37,10 +38,12 @@ const ServerList = React.memo(() => {
 				<BadgeFriendRequest />
 			</TouchableOpacity>
 			<SeparatorWithLine style={styles.separatorLine} />
-			<ScrollView contentContainerStyle={styles.contentScroll} showsVerticalScrollIndicator={false}>
-				<UnreadDMBadgeList />
-				<ListClanPopup />
-			</ScrollView>
+			<NestableScrollContainer>
+				<ScrollView contentContainerStyle={styles.contentScroll} showsVerticalScrollIndicator={false}>
+					<UnreadDMBadgeList />
+					<ListClanPopup />
+				</ScrollView>
+			</NestableScrollContainer>
 		</View>
 	);
 });

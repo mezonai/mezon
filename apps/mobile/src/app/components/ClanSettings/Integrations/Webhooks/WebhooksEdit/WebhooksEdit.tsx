@@ -16,7 +16,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Image, Keyboard, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, Keyboard, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import * as ImagePicker from 'react-native-image-picker';
 import { CameraOptions } from 'react-native-image-picker';
@@ -107,6 +107,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 
 	useEffect(() => {
 		navigation.setOptions({
+			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerRight: () =>
 				hasChange ? (
 					<Pressable onPress={handleEditWebhook} style={{ padding: 20 }}>

@@ -7,7 +7,7 @@ import { ChannelType } from 'mezon-js';
 import { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -34,6 +34,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 	const dispatch = useAppDispatch();
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerRight: () => (
 			<Pressable onPress={handleCreateChannel}>
 				<Text

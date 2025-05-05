@@ -4,8 +4,6 @@ import {
 	SearchMessageEntity,
 	searchMessagesActions,
 	selectAllAccount,
-	selectAllChannelMemberIds,
-	selectAllRoleIds,
 	selectChannelById,
 	selectMemberClanByUserId2,
 	selectTheme,
@@ -39,8 +37,6 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 	const dispatch = useAppDispatch();
 	const userId = useSelector(selectAllAccount)?.user?.id;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId2(state, userId as string));
-	const allRolesInClan = useSelector(selectAllRoleIds);
-	const memberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, isDm));
 	const messageContainerRef = useRef<HTMLDivElement>(null);
 	const onPageChange = (page: number) => {
 		dispatch(searchMessagesActions.setCurrentPage(page));
@@ -82,7 +78,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 				<div className="flex flex-row justify-between items-center h-14 p-4 text-textLightTheme dark:text-textPrimary bg-bgLightTertiary dark:bg-bgTertiary">
 					<h3 className="select-none">{`${totalResult < 1 ? 'No Results' : `${totalResult} Results`}`}</h3>
 				</div>
-				<MessageContextMenuProvider channelId={channelId} allRolesInClan={allRolesInClan} allUserIdsInChannel={memberIds}>
+				<MessageContextMenuProvider channelId={channelId}>
 					{groupedMessages.length > 0 ? (
 						<div
 							ref={messageContainerRef}

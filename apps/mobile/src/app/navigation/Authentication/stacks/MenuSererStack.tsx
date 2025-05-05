@@ -46,8 +46,9 @@ export const MenuClanStacks = ({}: any) => {
 				headerTitleAlign: 'center',
 				headerTintColor: themeValue.white,
 				headerStyle: {
-					backgroundColor: themeValue.secondary
+					backgroundColor: themeValue.primary
 				},
+				headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 				headerTitleStyle: {
 					fontSize: Fonts.size.label,
 					fontWeight: 'bold',

@@ -26,8 +26,9 @@ export const MessagesStacks = ({}: any) => {
 				headerTitleAlign: 'center',
 				headerTintColor: themeValue.text,
 				headerStyle: {
-					backgroundColor: themeValue.secondary
+					backgroundColor: themeValue.primary
 				},
+				headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 				headerLeftContainerStyle: Platform.select({
 					ios: {
 						left: size.s_6

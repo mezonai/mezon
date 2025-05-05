@@ -2,7 +2,7 @@ import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
@@ -40,6 +40,7 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 	}, [t]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: () => (
 			<View>
 				<Text bold h3 color={themeValue?.white}>
@@ -97,7 +98,7 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 			<View
 				style={{
 					backgroundColor: themeValue.tertiary,
-					marginBottom: size.s_10,
+					marginVertical: size.s_10,
 					flexDirection: 'row',
 					borderRadius: size.s_16,
 					gap: size.s_6

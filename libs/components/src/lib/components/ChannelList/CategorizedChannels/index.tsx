@@ -5,7 +5,6 @@ import {
 	defaultNotificationCategoryActions,
 	FAVORITE_CATEGORY_ID,
 	selectCategoryExpandStateByCategoryId,
-	selectCategoryIdSortChannel,
 	selectCurrentChannel,
 	selectCurrentClan,
 	useAppDispatch,
@@ -89,7 +88,6 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	});
 
 	const [isShowCategorySetting, setIsShowCategorySetting] = useState<boolean>(false);
-	const categoryIdSortChannel = useSelector(selectCategoryIdSortChannel);
 
 	const dispatch = useAppDispatch();
 	const isShowCreateChannel = isClanOwner || hasAdminPermission || hasChannelManagePermission || hasClanPermission;

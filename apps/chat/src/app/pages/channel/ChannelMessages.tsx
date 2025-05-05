@@ -8,8 +8,6 @@ import {
 	getStore,
 	messagesActions,
 	selectAllAccount,
-	selectAllChannelMemberIds,
-	selectAllRoleIds,
 	selectCurrentChannelId,
 	selectDataReferences,
 	selectFirstMessageOfCurrentTopic,
@@ -89,13 +87,7 @@ const SCROLL_DEBOUNCE = 200;
 const runDebouncedForScroll = debounce((cb) => cb(), SCROLL_DEBOUNCE, false);
 
 const DMMessageWrapper = ({ channelId, children }: { channelId: string; children: React.ReactNode }) => {
-	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, true));
-	const defaultRoles = useMemo(() => [], []);
-	return (
-		<MessageContextMenuProvider channelId={channelId} allRolesInClan={defaultRoles} allUserIdsInChannel={getMemberIds}>
-			{children}
-		</MessageContextMenuProvider>
-	);
+	return <MessageContextMenuProvider channelId={channelId}>{children}</MessageContextMenuProvider>;
 };
 
 const ClanMessageWrapper = ({
@@ -113,54 +105,7 @@ const ClanMessageWrapper = ({
 	userIdsFromTopicBox?: string[] | ChannelMembersEntity[];
 	children: React.ReactNode;
 }) => {
-	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, channelId, false));
-	const allUserIdsInChannel = isThreadBox ? userIdsFromThreadBox : isTopicBox ? userIdsFromTopicBox : getMemberIds;
-
-	const prevUsersRef = useRef<string[] | ChannelMembersEntity[] | undefined>(undefined);
-
-	const users = useMemo(() => {
-		if (!allUserIdsInChannel) return allUserIdsInChannel;
-		if (prevUsersRef.current && prevUsersRef.current.length === allUserIdsInChannel.length) {
-			const currentIds = Array.isArray(allUserIdsInChannel)
-				? allUserIdsInChannel.map((item) => (typeof item === 'string' ? item : item.id))
-				: [];
-
-			const prevIds = Array.isArray(prevUsersRef.current)
-				? prevUsersRef.current.map((item) => (typeof item === 'string' ? item : item.id))
-				: [];
-
-			const currentSet = new Set(currentIds);
-			const prevSet = new Set(prevIds);
-			if (currentSet.size === prevSet.size && Array.from(currentSet).every((id) => prevSet.has(id))) {
-				return prevUsersRef.current;
-			}
-		}
-		prevUsersRef.current = allUserIdsInChannel;
-		return allUserIdsInChannel;
-	}, [allUserIdsInChannel]);
-
-	const rolesData = useSelector(selectAllRoleIds);
-	const prevRolesRef = useRef<string[] | undefined>(undefined);
-
-	const allRolesInClan = useMemo(() => {
-		if (!rolesData) return rolesData;
-		if (prevRolesRef.current && prevRolesRef.current.length === rolesData.length) {
-			const currentSet = new Set(rolesData);
-			const prevSet = new Set(prevRolesRef.current);
-
-			if (currentSet.size === prevSet.size && Array.from(currentSet).every((id) => prevSet.has(id))) {
-				return prevRolesRef.current;
-			}
-		}
-		prevRolesRef.current = rolesData;
-		return rolesData;
-	}, [rolesData]);
-
-	return (
-		<MessageContextMenuProvider channelId={channelId} allRolesInClan={allRolesInClan} allUserIdsInChannel={users}>
-			{children}
-		</MessageContextMenuProvider>
-	);
+	return <MessageContextMenuProvider channelId={channelId}>{children}</MessageContextMenuProvider>;
 };
 
 function ChannelMessages({
@@ -196,12 +141,14 @@ function ChannelMessages({
 	const anchorTopRef = useRef<number | null>(null);
 	const setAnchor = useRef<number | null>(null);
 	const previousChannelId = useRef<string | null>(null);
+	const preventScrollbottom = useRef<boolean>(false);
 
 	useSyncEffect(() => {
 		userActiveScroll.current = false;
 		skipCalculateScroll.current = false;
 		anchorIdRef.current = null;
 		anchorTopRef.current = null;
+		preventScrollbottom.current = false;
 		requestIdleCallback &&
 			requestIdleCallback(() => {
 				previousChannelId.current && dispatch(messagesActions.updateLastFiftyMessagesAction(previousChannelId.current));
@@ -228,7 +175,7 @@ function ChannelMessages({
 
 			if (direction === ELoadMoreDirection.bottom) {
 				const hasMoreBottom = selectHasMoreBottomByChannelId2(store.getState() as RootState, channelId);
-				if (!hasMoreBottom) {
+				if (!hasMoreBottom || preventScrollbottom.current) {
 					dispatch(messagesActions.setViewingOlder({ channelId, status: false }));
 					return;
 				}
@@ -258,10 +205,20 @@ function ChannelMessages({
 					);
 					return true;
 				}
-				await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.AFTER_TIMESTAMP }));
+
+				const res = await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.AFTER_TIMESTAMP }));
+				const messages = (res?.payload as any)?.payload?.messages || [];
+				if (lastMessageId === messages[0]?.id) {
+					preventScrollbottom.current = true;
+				} else {
+					preventScrollbottom.current = false;
+				}
+
 				// dispatch(messagesActions.setViewingOlder({ channelId, status: true }));
 				return true;
 			}
+
+			preventScrollbottom.current = false;
 
 			//load more in topic
 			if (isTopicBox) {
@@ -658,6 +615,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			(event: { direction: LoadMoreDirection }) => {
 				if (event.direction === LoadMoreDirection.Forwards) {
 					setLoadingDirection(ELoadMoreDirection.bottom);
+				} else if (event.direction === LoadMoreDirection.Backwards) {
+					setLoadingDirection(ELoadMoreDirection.top);
 				}
 				onChange(event.direction);
 			}
@@ -681,6 +640,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		// useSyncEffect(() => {
 		// 	memoFocusingIdRef.current = focusingId;
 		// }, [focusingId]);
+
 		const handleScroll = useLastCallback(() => {
 			if (isScrollTopJustUpdatedRef.current) {
 				isScrollTopJustUpdatedRef.current = false;

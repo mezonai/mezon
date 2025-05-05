@@ -2,7 +2,7 @@ import { useAuth, useClans, useEventManagement } from '@mezon/core';
 import { Fonts, useTheme } from '@mezon/mobile-ui';
 import { OptionEvent } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -22,6 +22,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, isPrivate, onGoBack } = route.params || {};
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: t('screens.eventPreview.headerTitle'),
 		headerTitleStyle: {
 			fontSize: Fonts.size.h7,

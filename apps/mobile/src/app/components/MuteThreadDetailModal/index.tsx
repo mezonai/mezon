@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -95,6 +95,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	}, [currentChannel]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerShown: true,
 		headerTitle: () => (
 			<View>

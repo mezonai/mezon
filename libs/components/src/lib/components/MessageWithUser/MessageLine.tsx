@@ -1,10 +1,10 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { getTagByIdOnStored } from '@mezon/core';
 import { ChannelsEntity, getStore, selectCanvasIdsByChannelId, selectGmeetVoice } from '@mezon/store';
-import { ChannelMembersEntity, EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useRef } from 'react';
-import { CanvasHashtag, ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText, useMessageContextMenu } from '../../components';
+import { CanvasHashtag, ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText } from '../../components';
 
 interface RenderContentProps {
 	content: IExtendedMessage;
@@ -427,32 +427,16 @@ export const MentionContent = ({
 	index,
 	s
 }: MentionContentProps) => {
-	const { allUserIdsInChannel } = useMessageContextMenu();
-	let isValidMention = false;
-
-	if (allUserIdsInChannel && allUserIdsInChannel?.length > 0) {
-		if (typeof allUserIdsInChannel?.[0] === 'string') {
-			isValidMention = (allUserIdsInChannel as string[])?.includes(element.user_id ?? '') || contentInElement === '@here';
-		} else {
-			isValidMention =
-				(allUserIdsInChannel as ChannelMembersEntity[])?.some((member) => member.id === element.user_id) || contentInElement === '@here';
-		}
-	}
-
-	if (isValidMention || mention) {
-		return (
-			<MentionUser
-				isTokenClickAble={isTokenClickAble}
-				isJumMessageEnabled={isJumMessageEnabled}
-				tagUserName={contentInElement ?? ''}
-				tagUserId={element.user_id}
-				mode={mode}
-				mention={mention}
-			/>
-		);
-	}
-
-	return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
+	return (
+		<MentionUser
+			isTokenClickAble={isTokenClickAble}
+			isJumMessageEnabled={isJumMessageEnabled}
+			tagUserName={contentInElement ?? ''}
+			tagUserId={element.user_id}
+			mode={mode}
+			mention={mention}
+		/>
+	);
 };
 
 interface RoleMentionContentProps {
@@ -466,21 +450,13 @@ interface RoleMentionContentProps {
 }
 
 export const RoleMentionContent = ({ element, contentInElement, isTokenClickAble, isJumMessageEnabled, mode, index, s }: RoleMentionContentProps) => {
-	const { allRolesInClan } = useMessageContextMenu();
-
-	const isValidRole = allRolesInClan.indexOf(element.role_id ?? '') !== -1;
-
-	if (isValidRole) {
-		return (
-			<MentionUser
-				isTokenClickAble={isTokenClickAble}
-				isJumMessageEnabled={isJumMessageEnabled}
-				tagRoleName={contentInElement ?? ''}
-				tagRoleId={element.role_id}
-				mode={mode}
-			/>
-		);
-	}
-
-	return <PlainText isSearchMessage={false} text={contentInElement ?? ''} />;
+	return (
+		<MentionUser
+			isTokenClickAble={isTokenClickAble}
+			isJumMessageEnabled={isJumMessageEnabled}
+			tagRoleName={contentInElement ?? ''}
+			tagRoleId={element.role_id}
+			mode={mode}
+		/>
+	);
 };

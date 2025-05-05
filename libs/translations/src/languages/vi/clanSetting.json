@@ -10,7 +10,8 @@
             "emoji": "Emoji",
             "sticker": "Sticker",
             "webhooks": "Webhooks",
-            "security": "Bảo mật"
+            "security": "Bảo mật",
+            "permissionDenied": "Bạn không có quyền để chỉnh sửa"
         },
         "community": {
             "title": "Cộng đồng",

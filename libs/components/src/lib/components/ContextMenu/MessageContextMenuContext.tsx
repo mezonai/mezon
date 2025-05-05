@@ -12,7 +12,7 @@ import {
 	selectMessageByMessageId,
 	useAppDispatch
 } from '@mezon/store';
-import { ChannelMembersEntity, SHOW_POSITION } from '@mezon/utils';
+import { SHOW_POSITION } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ShowContextMenuParams, useContextMenu } from 'react-contexify';
@@ -42,8 +42,6 @@ type MessageContextMenuContextValue = {
 	posShowMenu: string;
 	setImageURL: (url: string) => void;
 	imageSrc: string;
-	allUserIdsInChannel?: string[] | ChannelMembersEntity[];
-	allRolesInClan: string[];
 	posShortProfile: posShortProfileOpt;
 	setPosShortProfile: (pos: posShortProfileOpt) => void;
 	onVisibilityChange: (status: boolean) => void;
@@ -72,7 +70,6 @@ export const MessageContextMenuContext = createContext<MessageContextMenuContext
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 	},
 	imageSrc: '',
-	allRolesInClan: [],
 	posShortProfile: {},
 	setPosShortProfile: () => {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -94,17 +91,7 @@ const getMessage = (appState: RootState, isTopic: boolean, messageId: string) =>
 	return message;
 };
 
-export const MessageContextMenuProvider = ({
-	children,
-	allUserIdsInChannel,
-	allRolesInClan,
-	channelId
-}: {
-	children: React.ReactNode;
-	allUserIdsInChannel?: string[] | ChannelMembersEntity[];
-	allRolesInClan: string[];
-	channelId?: string;
-}) => {
+export const MessageContextMenuProvider = ({ children, channelId }: { children: React.ReactNode; channelId?: string }) => {
 	const dispatch = useAppDispatch();
 	const messageIdRef = useRef<string>('');
 	const [elementTarget, setElementTarget] = useState<HTMLElement | null>(null);
@@ -255,8 +242,6 @@ export const MessageContextMenuProvider = ({
 			posShowMenu,
 			setImageURL,
 			imageSrc,
-			allUserIdsInChannel,
-			allRolesInClan,
 			posShortProfile,
 			setPosShortProfile,
 			onVisibilityChange,
@@ -269,8 +254,6 @@ export const MessageContextMenuProvider = ({
 			posShowMenu,
 			setImageURL,
 			imageSrc,
-			allUserIdsInChannel,
-			allRolesInClan,
 			posShortProfile,
 			setPosShortProfile,
 			onVisibilityChange,

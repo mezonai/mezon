@@ -10,7 +10,8 @@
             "emoji": "Emoji",
             "sticker": "Sticker",
             "webhooks": "Webhooks",
-            "security": "Security"
+            "security": "Security",
+            "permissionDenied": "You do not have permission to edit"
         },
         "community": {
             "title": "Community",

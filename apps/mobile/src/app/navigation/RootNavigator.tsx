@@ -94,7 +94,7 @@ const NavigationMain = memo(
 				<NetInfoComp />
 				<RootListener />
 				<SafeAreaProvider>
-					<SafeAreaView edges={Platform.OS === 'android' ? ['top', 'bottom'] : []} style={{ flex: 1, backgroundColor: themeValue.primary }}>
+					<SafeAreaView edges={Platform.OS === 'android' ? ['top'] : []} style={{ flex: 1, backgroundColor: themeValue.primary }}>
 						<RootStack {...props} />
 					</SafeAreaView>
 				</SafeAreaProvider>

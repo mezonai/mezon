@@ -17,18 +17,18 @@ export const styles = StyleSheet.create({
 		fontWeight: '600'
 	},
 	imageBg: {
-		width: '100%',
-		height: '40%',
+		width: '90%',
+		height: '35%',
 		marginVertical: size.s_30
 	},
 	title: {
-		fontSize: size.h6,
+		fontSize: size.label,
 		color: Colors.white,
 		fontWeight: '700',
 		textAlign: 'center'
 	},
 	description: {
-		fontSize: size.label,
+		fontSize: size.s_15,
 		color: Colors.textGray,
 		fontWeight: '500',
 		textAlign: 'center'
@@ -49,13 +49,13 @@ export const styles = StyleSheet.create({
 		borderRadius: size.s_50
 	},
 	textCreateClan: {
-		fontSize: size.label,
+		fontSize: size.s_15,
 		color: Colors.textGray,
 		fontWeight: '600',
 		textAlign: 'center'
 	},
 	textJoinClan: {
-		fontSize: size.label,
+		fontSize: size.s_15,
 		color: Colors.white,
 		fontWeight: '600',
 		textAlign: 'center'

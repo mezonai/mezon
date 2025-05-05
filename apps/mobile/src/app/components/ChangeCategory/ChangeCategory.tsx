@@ -3,7 +3,7 @@ import { CategoriesEntity, channelsActions, selectAllCategories, useAppDispatch 
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
@@ -59,6 +59,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 	];
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: () => (
 			<View>
 				<Text bold h3 color={themeValue?.white}>

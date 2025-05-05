@@ -21,7 +21,7 @@ import {
 	WIDTH_PANEL_PROFILE,
 	createImgproxyUrl
 } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -140,7 +140,6 @@ export const BaseMemberProfile = ({
 	const activityStatus = customStatus || activityNames[activityByUserId?.activity_type as number];
 	const activityTitle = activityByUserId?.activity_description;
 	const activityName = activityByUserId?.activity_name;
-	const isFooter = positionType === MemberProfileType.FOOTER_PROFILE;
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		// stop open popup default of web
@@ -158,7 +157,7 @@ export const BaseMemberProfile = ({
 
 		if (event.button === MouseButton.LEFT) {
 			// handle show profile item
-			const hasActivityPanel = !isFooter && status?.status && activityByUserId;
+			const hasActivityPanel = status?.status && activityByUserId;
 			const heightPanel = isDM ? HEIGHT_PANEL_PROFILE_DM : HEIGHT_PANEL_PROFILE;
 
 			if (window.innerHeight - event.clientY > heightPanel) {
@@ -175,7 +174,7 @@ export const BaseMemberProfile = ({
 			openProfileItem();
 		}
 
-		if (event.button === MouseButton.RIGHT && !isFooter) {
+		if (event.button === MouseButton.RIGHT) {
 			const distanceToBottom = windowHeight - mouseY;
 			setCoords({ mouseX: adjustedMouseX, mouseY, distanceToBottom });
 			if (modalState.current.pannelMember) {
@@ -210,9 +209,9 @@ export const BaseMemberProfile = ({
 
 	const isListDm = positionType === MemberProfileType.DM_LIST;
 
-	const isAnonymous = (isFooter ? userProfile?.user?.id : user?.user?.id) === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const isAnonymous = user?.user?.id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
-	const username = isFooter ? userProfile?.user?.username || '' : name || '';
+	const username = name || '';
 
 	const subNameRef = useRef<HTMLInputElement>(null);
 	const minWidthNameMain = subNameRef.current?.offsetWidth;
@@ -313,10 +312,6 @@ export const BaseMemberProfile = ({
 	};
 
 	const userStatus: EUserStatus = useMemo(() => {
-		if (isFooter && userProfile?.user?.metadata) {
-			const metadata = safeJSONParse(userProfile?.user?.metadata) as any;
-			return metadata?.user_status;
-		}
 		if (metaDataDM) {
 			return metaDataDM?.user_status;
 		}
@@ -326,13 +321,13 @@ export const BaseMemberProfile = ({
 		if (user?.user?.metadata) {
 			return user?.user?.metadata;
 		}
-	}, [isFooter, userProfile?.user?.metadata, metaDataDM, statusOnline, user?.user?.metadata]);
+	}, [userProfile?.user?.metadata, metaDataDM, statusOnline, user?.user?.metadata]);
 	return (
 		<div className="relative group">
 			<div
 				ref={panelRef}
 				onMouseDown={handleMouseClick}
-				className={`relative gap-[9px] flex items-center cursor-pointer rounded ${isFooter ? 'h-10 max-w-[142px]' : ''} ${classParent} ${isOffline ? 'opacity-60' : ''} ${listProfile ? '' : 'overflow-hidden'}`}
+				className={`relative gap-[9px] flex items-center cursor-pointer rounded ${classParent} ${isOffline ? 'opacity-60' : ''} ${listProfile ? '' : 'overflow-hidden'}`}
 			>
 				<div className="relative inline-flex items-center justify-start w-8 h-8 text-lg text-white rounded-full">
 					<AvatarImage
@@ -344,14 +339,8 @@ export const BaseMemberProfile = ({
 						src={avatar}
 						isAnonymous={isAnonymous}
 					/>
-					{isFooter && (
-						<span
-							className={`absolute bottom-[0px] inline-flex items-center justify-center gap-1 p-[3px] text-sm text-white dark:bg-bgSecondary bg-bgLightMode rounded-full right-[-4px]`}
-						>
-							<UserStatusIcon status={userStatus} />
-						</span>
-					)}
-					{!isFooter && !isHideIconStatus && (
+
+					{!isHideIconStatus && (
 						<StatusUser
 							isListDm={isListDm}
 							isDM={isDM}
@@ -368,18 +357,14 @@ export const BaseMemberProfile = ({
 					{!isHideStatus && (
 						<div
 							ref={subNameRef}
-							className={`absolute top-[22px] mr-5 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col items-start justify-start ${isFooter ? 'ml-[2px]' : ''} ${isHideAnimation ? '' : 'group-hover:-translate-y-4'}`}
+							className={`absolute top-[22px] mr-5 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col items-start justify-start  ${isHideAnimation ? '' : 'group-hover:-translate-y-4'}`}
 						>
-							{customStatus && (isFooter || isListFriend) ? (
-								<span
-									className={`text-[11px] text-left dark:text-contentSecondary text-colorTextLightMode line-clamp-1 ${isFooter ? 'leading-[14px]' : ''}`}
-								>
+							{customStatus && isListFriend ? (
+								<span className={`text-[11px] text-left dark:text-contentSecondary text-colorTextLightMode line-clamp-1 `}>
 									{customStatus}
 								</span>
 							) : (
-								<span
-									className={`text-[11px] dark:text-contentSecondary text-colorTextLightMode ${isFooter ? 'leading-[18px]' : ''}`}
-								>
+								<span className={`text-[11px] dark:text-contentSecondary text-colorTextLightMode `}>
 									{typeof userStatus === 'string' && userStatus ? userStatus : !status?.status ? 'Offline' : 'Online'}
 								</span>
 							)}
@@ -400,7 +385,6 @@ export const BaseMemberProfile = ({
 									${positionType === MemberProfileType.DM_LIST ? `${isOwnerClanOrGroup ? 'max-w-[150px]' : 'max-w-[176px]'} whitespace-nowrap overflow-x-hidden text-ellipsis group-hover/itemListDm:text-black dark:group-hover/itemListDm:text-white` : ''}
 									${classParent === '' ? 'bg-transparent' : 'relative dark:bg-transparent bg-channelTextareaLight'}
 									${isUnReadDirect && !isMute ? 'dark:text-white text-black dark:font-medium font-semibold' : 'font-medium dark:text-channelTextLabel text-colorTextLightMode'}
-									${isFooter ? 'top-0 leading-[18px] max-w-[102px] overflow-x-hidden text-ellipsis text-sm font-semibold text-black dark:text-white' : ''}
 									`}
 									title={name}
 								>
@@ -410,7 +394,6 @@ export const BaseMemberProfile = ({
 										hideLongName={hideLongName}
 										isOwnerClanOrGroup={!!isOwnerClanOrGroup}
 										isListFriend={isListFriend}
-										isFooter={isFooter}
 										isDM={isDM}
 										userId={user?.user?.id}
 									/>
@@ -515,13 +498,12 @@ interface UserNameProps {
 	hideLongName?: boolean;
 	isOwnerClanOrGroup?: boolean;
 	isListFriend?: boolean;
-	isFooter?: boolean;
 	isDM?: boolean;
 	userId?: string;
 }
 const UserName = memo(
-	({ name, isHiddenAvatarPanel, hideLongName, isOwnerClanOrGroup, isListFriend, isFooter, isDM, userId }: UserNameProps) => {
-		if (isFooter || isDM) {
+	({ name, isHiddenAvatarPanel, hideLongName, isOwnerClanOrGroup, isListFriend, isDM, userId }: UserNameProps) => {
+		if (isDM) {
 			return (
 				<DMUserName
 					name={name}
@@ -551,7 +533,6 @@ const UserName = memo(
 			prevProps.hideLongName === nextProps.hideLongName &&
 			prevProps.isOwnerClanOrGroup === nextProps.isOwnerClanOrGroup &&
 			prevProps.isListFriend === nextProps.isListFriend &&
-			prevProps.isFooter === nextProps.isFooter &&
 			prevProps.isDM === nextProps.isDM &&
 			prevProps.userId === nextProps.userId
 		);

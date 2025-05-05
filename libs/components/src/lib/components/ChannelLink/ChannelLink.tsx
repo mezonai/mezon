@@ -101,11 +101,6 @@ const ChannelLinkComponent = ({
 	const channelPath = `/chat/clans/${clanId}/channels/${channel.id}`;
 	const state = isActive ? 'active' : channel?.unread ? 'inactiveUnread' : 'inactiveRead';
 
-	const handleCreateLinkInvite = () => {
-		createInviteLink(clanId ?? '', channel.channel_id ?? '');
-		closeProfileItem();
-	};
-
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
 		const mouseY = event.clientY;

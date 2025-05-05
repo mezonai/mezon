@@ -26,6 +26,10 @@ export const NotificationStacks = ({}: any) => {
 						left: size.s_6
 					}
 				}),
+				headerStyle: {
+					backgroundColor: themeValue.primary
+				},
+				headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 				cardStyle: { backgroundColor: themeValue.secondary },
 				cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 				animationEnabled: Platform.OS === 'ios'

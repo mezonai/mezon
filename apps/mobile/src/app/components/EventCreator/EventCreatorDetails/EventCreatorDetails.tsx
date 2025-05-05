@@ -3,7 +3,7 @@ import { Fonts, useTheme } from '@mezon/mobile-ui';
 import { ERepeatType, OptionEvent } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
 import MezonDateTimePicker from '../../../componentUI/MezonDateTimePicker';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -25,6 +25,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	const today = new Date();
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: t('screens.eventDetails.headerTitle'),
 		headerTitleStyle: {
 			fontSize: Fonts.size.h7,

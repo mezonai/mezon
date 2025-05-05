@@ -4,7 +4,7 @@ import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
 import { permissionRoleChannelActions, selectAllPermissionRoleChannel, selectPermissionChannel, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, ScrollView, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
@@ -94,6 +94,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 	}, [navigation, isSettingNotChange]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerTitle: () => (
 			<View>
 				<Text bold h3 color={themeValue?.white}>

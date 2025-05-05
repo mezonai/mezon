@@ -6,7 +6,7 @@ import { RouteProp, useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import CategoryNotificationSetting from '../CategoryNotificationSetting';
@@ -80,6 +80,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const { currentCategory } = route?.params || {};
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerShown: true,
 		headerTitle: () => (
 			<View>

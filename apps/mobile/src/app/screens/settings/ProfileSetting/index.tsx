@@ -15,7 +15,7 @@ import { RouteProp } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -204,6 +204,7 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 	};
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerRight: () => (
 			<Pressable onPress={() => saveCurrentTab()}>
 				<Text

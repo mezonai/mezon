@@ -29,8 +29,9 @@ export function MenuChannelStacks({}: any) {
 				headerTitleAlign: 'center',
 				headerTintColor: themeValue.text,
 				headerStyle: {
-					backgroundColor: themeValue.secondary
+					backgroundColor: themeValue.primary
 				},
+				headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 				headerTitleStyle: {
 					fontSize: Fonts.size.h6,
 					fontWeight: 'bold'
@@ -52,7 +53,7 @@ export function MenuChannelStacks({}: any) {
 				options={{
 					headerTitle: t('menuChannelStack.channelSetting'),
 					headerStyle: {
-						backgroundColor: themeValue.secondary
+						backgroundColor: themeValue.primary
 					},
 					headerTitleStyle: {
 						color: themeValue.textStrong

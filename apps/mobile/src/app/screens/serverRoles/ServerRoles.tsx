@@ -4,7 +4,7 @@ import { RolesClanEntity, selectAllRolesClan, selectEveryoneRole } from '@mezon/
 import { EPermission } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../components/Common';
@@ -30,6 +30,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	}, [rolesClan, hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerRight: () => (
 			<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.CREATE_NEW_ROLE)}>
 				<MezonIconCDN icon={IconCDN.plusLargeIcon} height={20} width={20} color={themeValue.textStrong} />

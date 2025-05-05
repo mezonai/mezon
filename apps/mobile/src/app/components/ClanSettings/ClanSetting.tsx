@@ -4,7 +4,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, ScrollView, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Pressable, ScrollView, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -30,6 +30,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
 	navigation.setOptions({
+		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 		headerLeft: () => (
 			<Pressable style={{ padding: 20 }} onPress={handleClose}>
 				<MezonIconCDN icon={IconCDN.closeSmallBold} color={themeValue.textStrong} />
