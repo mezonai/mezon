@@ -168,6 +168,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const [displayMarkup, setDisplayMarkup] = useState<string>('');
 	const [mentionUpdated, setMentionUpdated] = useState<IMentionOnMessage[]>([]);
 	const [isPasteMulti, setIsPasteMulti] = useState<boolean>(false);
+	const [isFocused, setIsFocused] = useState(false);
 
 	const { addToUndoHistory, handleUndoRedoShortcut } = useUndoRedoHistory({
 		updateDraft,
@@ -623,151 +624,180 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		// This function is just checking if E2EE key exists, no return needed
 	}, []);
 
+	const handleFocus = () => setIsFocused(true);
+	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+		if (!event.target.value) {
+			setIsFocused(false);
+		}
+	};
+
 	return (
 		<div className="contain-layout relative" ref={containerRef}>
-			<MentionsInput
-				onPaste={(event: any) => {
-					const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
-					if (pastedData) {
-						onPasteMentions(event);
-						event.preventDefault();
-					} else {
-						event.preventDefault();
-						const pastedText = event.clipboardData.getData('text');
-						setPastedContent(pastedText);
-					}
-				}}
-				onPasteCapture={async (event: any) => {
-					if (event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY)) {
-						event.preventDefault();
-					} else {
-						if (props.handlePaste) {
-							await props.handlePaste(event);
+			<div className="relative">
+				<span
+					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none z-10 truncate transition-opacity duration-300 ${
+						draftRequest?.valueTextInput ? 'hidden' : 'opacity-100'
+					} sm:opacity-100 max-sm:opacity-100`}
+					style={{
+						whiteSpace: 'nowrap',
+						overflow: 'hidden',
+						textOverflow: 'ellipsis',
+						maxWidth: 'calc(100% - 120px)',
+						paddingRight: '8px'
+					}}
+				>
+					Write your thoughts here...
+				</span>
+				<MentionsInput
+					onPaste={(event: any) => {
+						const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
+						if (pastedData) {
+							onPasteMentions(event);
+							event.preventDefault();
+						} else {
+							event.preventDefault();
+							const pastedText = event.clipboardData.getData('text');
+							setPastedContent(pastedText);
 						}
-					}
-				}}
-				id={inputElementId}
-				inputRef={editorRef}
-				placeholder="Write your thoughts here..."
-				value={draftRequest?.valueTextInput ?? ''}
-				onChange={onChangeMentionInput}
-				style={{
-					...(appearanceTheme === 'light' ? lightMentionsInputStyle : darkMentionsInputStyle),
-					suggestions: {
-						...(appearanceTheme === 'light' ? lightMentionsInputStyle.suggestions : darkMentionsInputStyle.suggestions),
-						width: `${!closeMenu ? props.mentionWidth : '90vw'}`,
-						left: `${!closeMenu ? '-40px' : '-30px'}`
-					},
-
-					'&multiLine': {
-						highlighter: {
-							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
-							border: 'none',
-							maxHeight: '350px',
-							overflow: 'auto',
-							scrollbarWidth: 'none'
+					}}
+					onPasteCapture={async (event: any) => {
+						if (event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY)) {
+							event.preventDefault();
+						} else {
+							if (props.handlePaste) {
+								await props.handlePaste(event);
+							}
+						}
+					}}
+					id={inputElementId}
+					inputRef={editorRef}
+					value={draftRequest?.valueTextInput ?? ''}
+					onChange={onChangeMentionInput}
+					onFocus={handleFocus}
+					onBlur={handleBlur}
+					autoFocus={false}
+					style={{
+						...(appearanceTheme === 'light' ? lightMentionsInputStyle : darkMentionsInputStyle),
+						suggestions: {
+							...(appearanceTheme === 'light' ? lightMentionsInputStyle.suggestions : darkMentionsInputStyle.suggestions),
+							width: `${!closeMenu ? props.mentionWidth : '90vw'}`,
+							left: `${!closeMenu ? '-40px' : '-30px'}`
 						},
-						input: {
-							padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
-							border: 'none',
-							outline: 'none',
-							maxHeight: '350px',
-							overflow: 'auto'
+
+						'&multiLine': {
+							highlighter: {
+								padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
+								border: 'none',
+								maxHeight: '350px',
+								overflow: 'auto',
+								scrollbarWidth: 'none'
+							},
+							input: {
+								padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
+								border: 'none',
+								outline: 'none',
+								maxHeight: '350px',
+								overflow: 'auto'
+							}
 						}
-					}
-				}}
-				className={`mentions min-h-11 dark:bg-channelTextarea  bg-channelTextareaLight dark:text-white text-colorTextLightMode rounded-lg ${appearanceTheme === 'light' ? 'lightMode lightModeScrollBarMention' : 'darkMode'} cursor-not-allowed`}
-				allowSpaceInQuery={true}
-				onKeyDown={onKeyDown}
-				forceSuggestionsAboveCursor={true}
-				customSuggestionsContainer={(children: React.ReactNode) => {
-					return (
-						<CustomModalMentions
-							isThreadBoxOrTopicBox={props.isThread || props.isTopic}
-							children={children}
-							titleModalMention={titleModalMention}
-						/>
-					);
-				}}
-				onClick={handleShowModalE2ee}
-			>
-				<Mention
-					appendSpaceOnAdd={true}
-					data={handleSearchUserMention}
-					trigger="@"
-					displayTransform={(id: any, display: any) => {
-						return display === '@here' ? `${display}` : `@${display}`;
 					}}
-					renderSuggestion={(suggestion: MentionDataProps) => {
+					className={`mentions min-h-11 dark:bg-channelTextarea  bg-channelTextareaLight dark:text-white text-colorTextLightMode rounded-lg ${appearanceTheme === 'light' ? 'lightMode lightModeScrollBarMention' : 'darkMode'} cursor-not-allowed`}
+					allowSpaceInQuery={true}
+					onKeyDown={onKeyDown}
+					forceSuggestionsAboveCursor={true}
+					customSuggestionsContainer={(children: React.ReactNode) => {
 						return (
-							<SuggestItem
-								valueHightLight={valueHighlight}
-								avatarUrl={suggestion.avatarUrl}
-								subText={
-									suggestion.display === '@here'
-										? 'Notify everyone who has permission to see this channel'
-										: (suggestion.username ?? '')
-								}
-								subTextStyle={(suggestion.display === '@here' ? 'normal-case' : 'lowercase') + ' text-xs'}
-								showAvatar={suggestion.display !== '@here'}
-								display={suggestion.display}
-								emojiId=""
-								color={suggestion.color}
+							<CustomModalMentions
+								isThreadBoxOrTopicBox={props.isThread || props.isTopic}
+								children={children}
+								titleModalMention={titleModalMention}
 							/>
 						);
 					}}
-					style={mentionStyle}
-					className="dark:bg-[#3B416B] bg-bgLightModeButton"
-				/>
-				<Mention
-					markup="#[__display__](__id__)"
-					appendSpaceOnAdd={true}
-					data={handleSearchHashtag}
-					trigger="#"
-					displayTransform={(id: any, display: any) => {
-						return `#${display}`;
-					}}
-					style={mentionStyle}
-					renderSuggestion={(suggestion: any) =>
-						suggestion?.id && suggestion?.display ? (
-							<SuggestItem
-								valueHightLight={valueHighlight}
-								display={suggestion.display}
-								symbol="#"
-								subText={(suggestion as ChannelsMentionProps).subText}
-								channelId={suggestion.id}
-								emojiId=""
-							/>
-						) : null
-					}
-					className="dark:bg-[#3B416B] bg-bgLightModeButton"
-				/>
-				<Mention
-					trigger=":"
-					markup="::[__display__](__id__)"
-					data={queryEmojis}
-					displayTransform={(id: any, display: any) => {
-						return `${display}`;
-					}}
-					renderSuggestion={(suggestion: any) => {
-						return (
-							<SuggestItem display={suggestion.display ?? ''} symbol={(suggestion as any).emoji} emojiId={suggestion.id as string} />
-						);
-					}}
-					className="dark:bg-[#3B416B] bg-bgLightModeButton"
-					appendSpaceOnAdd={true}
-				/>
-				<Mention
-					trigger="**"
-					markup="**__display__**"
-					data={[]}
-					displayTransform={(id: any, display: any) => {
-						return `${display}`;
-					}}
-					className="dark:!text-white !text-black"
-					style={{ WebkitTextStroke: 1, WebkitTextStrokeColor: appearanceTheme === 'dark' ? 'white' : 'black' }}
-				/>
-			</MentionsInput>
+					onClick={handleShowModalE2ee}
+				>
+					<Mention
+						appendSpaceOnAdd={true}
+						data={handleSearchUserMention}
+						trigger="@"
+						displayTransform={(id: any, display: any) => {
+							return display === '@here' ? `${display}` : `@${display}`;
+						}}
+						renderSuggestion={(suggestion: MentionDataProps) => {
+							return (
+								<SuggestItem
+									valueHightLight={valueHighlight}
+									avatarUrl={suggestion.avatarUrl}
+									subText={
+										suggestion.display === '@here'
+											? 'Notify everyone who has permission to see this channel'
+											: (suggestion.username ?? '')
+									}
+									subTextStyle={(suggestion.display === '@here' ? 'normal-case' : 'lowercase') + ' text-xs'}
+									showAvatar={suggestion.display !== '@here'}
+									display={suggestion.display}
+									emojiId=""
+									color={suggestion.color}
+								/>
+							);
+						}}
+						style={mentionStyle}
+						className="dark:bg-[#3B416B] bg-bgLightModeButton"
+					/>
+					<Mention
+						markup="#[__display__](__id__)"
+						appendSpaceOnAdd={true}
+						data={handleSearchHashtag}
+						trigger="#"
+						displayTransform={(id: any, display: any) => {
+							return `#${display}`;
+						}}
+						style={mentionStyle}
+						renderSuggestion={(suggestion: any) =>
+							suggestion?.id && suggestion?.display ? (
+								<SuggestItem
+									valueHightLight={valueHighlight}
+									display={suggestion.display}
+									symbol="#"
+									subText={(suggestion as ChannelsMentionProps).subText}
+									channelId={suggestion.id}
+									emojiId=""
+								/>
+							) : null
+						}
+						className="dark:bg-[#3B416B] bg-bgLightModeButton"
+					/>
+					<Mention
+						trigger=":"
+						markup="::[__display__](__id__)"
+						data={queryEmojis}
+						displayTransform={(id: any, display: any) => {
+							return `${display}`;
+						}}
+						renderSuggestion={(suggestion: any) => {
+							return (
+								<SuggestItem
+									display={suggestion.display ?? ''}
+									symbol={(suggestion as any).emoji}
+									emojiId={suggestion.id as string}
+								/>
+							);
+						}}
+						className="dark:bg-[#3B416B] bg-bgLightModeButton"
+						appendSpaceOnAdd={true}
+					/>
+					<Mention
+						trigger="**"
+						markup="**__display__**"
+						data={[]}
+						displayTransform={(id: any, display: any) => {
+							return `${display}`;
+						}}
+						className="dark:!text-white !text-black"
+						style={{ WebkitTextStroke: 1, WebkitTextStrokeColor: appearanceTheme === 'dark' ? 'white' : 'black' }}
+					/>
+				</MentionsInput>
+			</div>
 			<ChatBoxToolbarWrapper
 				isShowEmojiPicker={isShowEmojiPicker}
 				hasPermissionEdit={props.hasPermissionEdit || true}

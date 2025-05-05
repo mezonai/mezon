@@ -82,7 +82,7 @@ const GifStickerEmojiButtons = memo(
 		const cursorPointer = isTopic || hasPermissionEdit;
 
 		return (
-			<div className="flex flex-row absolute h-11 items-center gap-1 mr-3 top-0 right-0">
+			<div className="flex flex-row absolute h-11 items-center gap-1 mr-3 top-0 right-0 z-20">
 				{!isTopic && (
 					<div {...voiceLongPress} className={`w-6 h-6 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
 						<Icons.MicEnable

@@ -139,11 +139,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		const savedToken = localStorage.getItem(`app_token_${appId}`);
 		if (savedToken) {
 			setVisibleToken(savedToken);
-			const timer = setTimeout(() => {
-				setVisibleToken(null);
-				localStorage.removeItem(`app_token_${appId}`);
-			}, 9000);
-			return () => clearTimeout(timer);
+			localStorage.removeItem(`app_token_${appId}`);
 		}
 	}, [appId]);
 
@@ -209,10 +205,6 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 		if (response?.token) {
 			setVisibleToken(response.token);
-			const timer = setTimeout(() => {
-				setVisibleToken(null);
-			}, 5000);
-			return () => clearTimeout(timer);
 		}
 
 		await dispatch(fetchApplications({ noCache: true }));
@@ -230,10 +222,6 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 			if (response?.token) {
 				setVisibleToken(response.token);
-				const timer = setTimeout(() => {
-					setVisibleToken(null);
-				}, 9000);
-				return () => clearTimeout(timer);
 			}
 
 			await dispatch(fetchApplications({ noCache: true }));

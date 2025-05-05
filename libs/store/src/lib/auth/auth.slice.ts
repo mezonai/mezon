@@ -13,6 +13,7 @@ export interface AuthState {
 	isLogin?: boolean;
 	isRegistering?: LoadingStatus;
 	loadingStatusEmail?: LoadingStatus;
+	redirectUrl?: string | null;
 }
 
 export interface ISession {
@@ -33,7 +34,8 @@ export const initialAuthState: AuthState = {
 	session: null,
 	isLogin: false,
 	isRegistering: 'not loaded',
-	loadingStatusEmail: 'not loaded'
+	loadingStatusEmail: 'not loaded',
+	redirectUrl: null
 };
 
 function normalizeSession(session: Session): ISession {
@@ -199,9 +201,16 @@ export const authSlice = createSlice({
 	name: AUTH_FEATURE_KEY,
 	initialState: initialAuthState,
 	reducers: {
+		setRedirectUrl(state, action) {
+			state.redirectUrl = action.payload;
+		},
+		clearRedirectUrl(state) {
+			state.redirectUrl = null;
+		},
 		setSession(state, action) {
 			state.session = action.payload;
 			state.isLogin = true;
+			state.redirectUrl = null;
 		},
 		setLogout(state) {
 			state.session = null;
@@ -284,6 +293,7 @@ export const authSlice = createSlice({
 				state.loadingStatus = 'loaded';
 				state.session = action.payload;
 				state.isLogin = true;
+				state.redirectUrl = null;
 			})
 			.addCase(authenticateMezon.rejected, (state: AuthState, action) => {
 				state.loadingStatus = 'error';
@@ -297,6 +307,7 @@ export const authSlice = createSlice({
 				state.loadingStatusEmail = 'loaded';
 				state.session = action.payload;
 				state.isLogin = true;
+				state.redirectUrl = null;
 			})
 			.addCase(authenticateEmail.rejected, (state: AuthState, action) => {
 				state.loadingStatusEmail = 'error';
