@@ -38,7 +38,7 @@ const ServerList = React.memo(() => {
 				<BadgeFriendRequest />
 			</TouchableOpacity>
 			<SeparatorWithLine style={styles.separatorLine} />
-			<NestableScrollContainer contentContainerStyle={styles.contentScroll} showsHorizontalScrollIndicator={false}>
+			<NestableScrollContainer contentContainerStyle={styles.contentScroll} showsVerticalScrollIndicator={false}>
 				<UnreadDMBadgeList />
 				<ListClanPopup />
 			</NestableScrollContainer>

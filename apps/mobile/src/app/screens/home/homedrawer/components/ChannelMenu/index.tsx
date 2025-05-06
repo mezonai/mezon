@@ -52,6 +52,9 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const getNotificationChannelSelected = useSelector(selectNotifiSettingsEntitiesById(channel?.channel_id));
 	const currentUserId = useSelector(selectCurrentUserId);
 
+	const isStreamingOrVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING || 
+                                channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+
 	const isChannelUnmute = useMemo(() => {
 		return (
 			getNotificationChannelSelected?.active === ENotificationActive.ON || getNotificationChannelSelected?.id === ENotificationChannelId.Default
@@ -82,7 +85,8 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		{
 			title: t('menu.watchMenu.markAsRead'),
 			onPress: () => handleMarkAsRead(),
-			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
+			isShow: !isStreamingOrVoiceChannel
 		}
 	];
 
@@ -154,7 +158,8 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 			) : (
 				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
-			)
+			),
+			isShow: !isStreamingOrVoiceChannel
 		},
 		{
 			title: t('menu.notification.notification'),
@@ -165,7 +170,8 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />,
+			isShow: !isStreamingOrVoiceChannel
 		}
 	];
 
@@ -180,7 +186,8 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					params: { channelThreads: channel }
 				});
 			},
-			icon: <MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.textStrong} />,
+			isShow: !isStreamingOrVoiceChannel
 		}
 	];
 
@@ -278,7 +285,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					}
 				});
 			},
-			isShow: isCanManageThread
+			isShow: channel?.creator_id === currentUserId 
 		},
 		{
 			title: t('menu.manageThreadMenu.deleteThread'),
@@ -301,7 +308,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			textStyle: {
 				color: Colors.textRed
 			},
-			isShow: isCanManageThread
+			isShow: channel?.creator_id === currentUserId
 		}
 		// {
 		// 	title: t('menu.manageThreadMenu.copyLink'),

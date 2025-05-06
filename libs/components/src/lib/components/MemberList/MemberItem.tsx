@@ -1,5 +1,5 @@
-import { useAuth, useMemberCustomStatus, useUserMetaById } from '@mezon/core';
-import { ChannelMembersEntity, selectAccountCustomStatus } from '@mezon/store';
+import { useUserMetaById } from '@mezon/core';
+import { ChannelMembersEntity, selectAccountCustomStatus, selectAllAccount, selectMemberCustomStatusById, useAppSelector } from '@mezon/store';
 import { MemberProfileType } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
@@ -19,11 +19,12 @@ export type MemberItemProps = {
 };
 
 function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCreate, directMessageId, name, isDM, isMobile }: MemberItemProps) {
-	const userCustomStatus = useMemberCustomStatus(user.user?.id || '', isDM);
-	const { userProfile } = useAuth();
+	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusById(state, user.user?.id || '', isDM));
+	const userProfile = useSelector(selectAllAccount);
 	const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 	const displayCustomStatus = user.user?.id === userProfile?.user?.id ? currentUserCustomStatus : userCustomStatus;
 	const userMetaById = useUserMetaById(user.user?.id);
+
 	const statusOnline = useMemo(() => {
 		if (userProfile?.user?.metadata && user.user?.id === userProfile.user.id) {
 			const metadata = safeJSONParse(userProfile?.user?.metadata);
@@ -33,9 +34,8 @@ function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCrea
 			return userMetaById as any;
 		}
 	}, [user.user?.id, userMetaById, userProfile?.user?.id, userProfile?.user?.metadata]);
-	const isMe = useMemo(() => {
-		return user?.user?.id === userProfile?.user?.id;
-	}, [user?.user?.id, userProfile?.user?.id]);
+
+	const isMe = user?.user?.id === userProfile?.user?.id;
 
 	return (
 		<MemberProfile

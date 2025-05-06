@@ -1,4 +1,4 @@
-import { accountActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
+import { accountActions, authActions, selectAllAccount, selectSession, useAppDispatch } from '@mezon/store';
 import { Session } from 'mezon-js';
 import { ApiLoginIDResponse } from 'mezon-js/dist/api.gen';
 import React, { useCallback, useMemo } from 'react';
@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 export function useAuth() {
 	const userProfile = useSelector(selectAllAccount);
-
+	const session = useSelector(selectSession);
 	const dispatch = useAppDispatch();
 
 	const userId = useMemo(() => userProfile?.user?.id, [userProfile]);
@@ -74,7 +74,8 @@ export function useAuth() {
 			checkLoginRequest,
 			loginByApple,
 			fetchUserProfile,
-			confirmLoginRequest
+			confirmLoginRequest,
+			session
 		}),
 		[userProfile, userId, qRCode, loginByApple, fetchUserProfile, loginByEmail]
 	);

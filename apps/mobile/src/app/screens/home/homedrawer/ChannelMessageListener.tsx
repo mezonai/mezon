@@ -12,6 +12,7 @@ import {
 	selectCurrentStreamInfo,
 	selectDmGroupCurrentId,
 	selectGrouplMembers,
+	selectSession,
 	selectStatusStream,
 	useAppDispatch,
 	videoStreamActions
@@ -20,6 +21,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect } from 'react';
 import { DeviceEventEmitter, Linking, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { useWebRTCStream } from '../../../components/StreamContext/StreamContext';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../utils/helpers';
@@ -31,6 +33,7 @@ const ChannelMessageListener = React.memo(() => {
 	const dispatch = useAppDispatch();
 	const { handleChannelClick, disconnect } = useWebRTCStream();
 	const { userProfile } = useAuth();
+	const sessionUser = useSelector(selectSession);
 
 	const onMention = useCallback(
 		async (mentionedUser: string) => {
@@ -96,7 +99,8 @@ const ChannelMessageListener = React.memo(() => {
 								channel?.channel_id as string,
 								userProfile?.user?.id as string,
 								channel?.channel_id as string,
-								userProfile?.user?.username as string
+								userProfile?.user?.username as string,
+								sessionUser?.token
 							);
 							dispatch(
 								videoStreamActions.startStream({

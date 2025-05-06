@@ -31,6 +31,13 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 	const { handleReconnect } = useContext(ChatContext);
 	const appStateRef = useRef(AppState.currentState);
 
+	useEffect(() => {
+		// When the screen is focused, socket disconnect or some case, we want to fetch the DM group if it is not already available
+		if (!currentDmGroup) {
+			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		}
+	}, [currentDmGroup, dispatch]);
+
 	const dmType = useMemo(() => {
 		return currentDmGroup?.type;
 	}, [currentDmGroup?.type]);

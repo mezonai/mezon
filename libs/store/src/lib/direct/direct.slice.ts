@@ -326,7 +326,7 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 			sender_id: message.sender_id,
 			content: JSON.stringify(message.content),
 			attachment: '[]',
-			referece: '[]',
+			reference: '[]',
 			mention: '[]',
 			reaction: '[]'
 		},

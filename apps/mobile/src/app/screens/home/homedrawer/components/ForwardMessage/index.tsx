@@ -24,11 +24,11 @@ import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import MezonInput from '../../../componentUI/MezonInput';
-import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
-import { IconCDN } from '../../../constants/icon_cdn';
-import ForwardMessageItem from '../../home/homedrawer/components/ForwardMessage/ForwardMessageItem/ForwardMessageItem';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import MezonInput from '../../../../../componentUI/MezonInput';
+import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
+import { IconCDN } from '../../../../../constants/icon_cdn';
+import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';
 import { styles } from './styles';
 
 export interface IForwardIObject {

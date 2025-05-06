@@ -28,7 +28,7 @@ import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
 import { WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { DeviceEventEmitter, Platform } from 'react-native';
+import { DeviceEventEmitter, Platform, StatusBar } from 'react-native';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 import Sound from 'react-native-sound';
 import Toast from 'react-native-toast-message';
@@ -149,7 +149,7 @@ export const AuthenticationLoader = () => {
 				}
 				Toast.show({
 					type: 'notification',
-					topOffset: Platform.OS === 'ios' ? undefined : 10,
+					topOffset: Platform.OS === 'ios' ? undefined : StatusBar.currentHeight + 10,
 					props: {
 						title,
 						body

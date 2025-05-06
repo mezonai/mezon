@@ -1,4 +1,12 @@
-import { appActions, selectAllAccount, selectCurrentChannel, selectCurrentClan, useAppDispatch, videoStreamActions } from '@mezon/store-mobile';
+import {
+	appActions,
+	selectAllAccount,
+	selectCurrentChannel,
+	selectCurrentClan,
+	selectSession,
+	useAppDispatch,
+	videoStreamActions
+} from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, PanResponder } from 'react-native';
@@ -15,6 +23,7 @@ const StreamingPopup = () => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const { handleChannelClick, disconnect } = useWebRTCStream();
 	const userProfile = useSelector(selectAllAccount);
+	const sessionUser = useSelector(selectSession);
 	const dispatch = useAppDispatch();
 
 	const panResponder = useRef(
@@ -57,10 +66,10 @@ const StreamingPopup = () => {
 	).current;
 
 	useEffect(() => {
-		handleJoinStreamingRoom();
-	}, []);
+		if (sessionUser?.token) handleJoinStreamingRoom();
+	}, [sessionUser?.token]);
 
-	const handleJoinStreamingRoom = useCallback(async () => {
+	const handleJoinStreamingRoom = async () => {
 		if (currentClan && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 			disconnect();
 			handleChannelClick(
@@ -68,7 +77,8 @@ const StreamingPopup = () => {
 				currentChannel?.channel_id as string,
 				userProfile?.user?.id as string,
 				currentChannel.channel_id as string,
-				userProfile?.user?.username as string
+				userProfile?.user?.username as string,
+				sessionUser?.token as string
 			);
 			dispatch(
 				videoStreamActions.startStream({
@@ -81,7 +91,7 @@ const StreamingPopup = () => {
 			);
 			dispatch(appActions.setIsShowChatStream(false));
 		}
-	}, []);
+	};
 
 	const handleResizeStreamRoom = () => {
 		if (isFullScreen.current) {

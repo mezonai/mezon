@@ -146,7 +146,6 @@ const getConfigDisplayNotificationIOS = async (data: { [key: string]: string | o
 export const createLocalNotification = async (title: string, body: string, data: { [key: string]: string | object }) => {
 	try {
 		const configDisplayNotificationAndroid = Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
-		console.log('log  => configDisplayNotificationAndroid', configDisplayNotificationAndroid);
 		const configDisplayNotificationIOS = Platform.OS === 'ios' ? await getConfigDisplayNotificationIOS(data) : {};
 		await notifee.displayNotification({
 			title: title || '',

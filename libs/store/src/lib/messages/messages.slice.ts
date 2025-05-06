@@ -143,6 +143,7 @@ type FetchMessagesPayloadAction = {
 	viewingOlder?: boolean;
 	foundE2ee?: boolean;
 	fromCache?: boolean;
+	toPresent?: boolean;
 };
 
 export interface MessagesRootState {
@@ -213,6 +214,7 @@ type fetchMessageChannelPayload = {
 	isClearMessage?: boolean;
 	directTimeStamp?: DirectTimeStampArg;
 	viewingOlder?: boolean;
+	toPresent?: boolean;
 	topicId?: string;
 	foundE2ee?: boolean;
 };
@@ -286,7 +288,8 @@ export const fetchMessages = createAsyncThunk(
 			directTimeStamp,
 			viewingOlder,
 			topicId,
-			foundE2ee
+			foundE2ee,
+			toPresent
 		}: fetchMessageChannelPayload,
 		thunkAPI
 	) => {
@@ -382,7 +385,8 @@ export const fetchMessages = createAsyncThunk(
 				isFetchingLatestMessages,
 				isClearMessage,
 				viewingOlder,
-				foundE2ee
+				foundE2ee,
+				toPresent
 			};
 		} catch (error) {
 			captureSentryError(error, 'messages/fetchMessages');
@@ -1191,6 +1195,13 @@ export const messagesSlice = createSlice({
 		},
 		setLoadingJumpMessage: (state, action) => {
 			state.isLoadingJumpMessage = action.payload;
+		},
+		jumToPresent: (state, action) => {
+			const { channelId } = action.payload;
+			const messageIds = state.channelMessages[channelId]?.ids as string[];
+			if (messageIds?.length) {
+				state.channelViewPortMessageIds[channelId] = messageIds.slice(-50);
+			}
 		}
 	},
 	extraReducers: (builder) => {
@@ -1204,6 +1215,7 @@ export const messagesSlice = createSlice({
 					const channelId = action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
 					const isFetchingLatestMessages = action.payload.isFetchingLatestMessages || false;
 					const isClearMessage = action.payload.isClearMessage || false;
+					const toPresent = action.payload.toPresent || false;
 					const fromCache = action.payload.fromCache || false;
 					const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId || ''];
 					const foundE2ee = action.payload.foundE2ee || false;
@@ -1220,15 +1232,8 @@ export const messagesSlice = createSlice({
 
 					// const reversedMessages = action.payload.messages.reverse();
 
-					// fix later
-
-					// remove all messages if clear message is true
-					if (isClearMessage) {
-						handleRemoveManyMessages(state, channelId);
-					}
-
 					// remove all messages if ís fetching latest messages and is viewing older messages
-					if (isFetchingLatestMessages && isViewingOlderMessages) {
+					if (toPresent) {
 						handleRemoveManyMessages(state, channelId);
 					}
 
@@ -1241,14 +1246,32 @@ export const messagesSlice = createSlice({
 					});
 
 					const messageIds = state.channelMessages[channelId]?.ids as string[];
+
 					if (messageIds?.length <= 50) {
 						state.channelViewPortMessageIds[channelId] = messageIds;
 						const showFab = !!lastSentMessageId && !messageIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 						return;
 					} else {
+						const oldViewport = state.channelViewPortMessageIds[channelId];
 						const offsetId = action.meta.arg.messageId;
-						const { newViewportIds } = getViewportSlice(messageIds, offsetId, direction);
+
+						let newViewportIds: string[] = [];
+
+						if (!offsetId) {
+							const index = messageIds.findIndex((item) => item === oldViewport.at(-1));
+							if (state.isViewingOlderMessagesByChannelId[channelId] && oldViewport.length) {
+								return;
+							} else if (oldViewport.length) {
+								newViewportIds = [...oldViewport, ...messageIds.slice(index)];
+							} else {
+								newViewportIds = messageIds;
+							}
+						} else {
+							const viewport = getViewportSlice(messageIds, offsetId, direction);
+							newViewportIds = viewport.newViewportIds;
+						}
+
 						state.channelViewPortMessageIds[channelId] = newViewportIds;
 						const showFab = !!lastSentMessageId && !newViewportIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
@@ -1558,7 +1581,7 @@ const handleSetManyMessages = ({
 		});
 	if (isClearMessage) {
 		// fix later
-		state.channelMessages[channelId] = channelMessagesAdapter.setAll(state.channelMessages[channelId], adapterPayload);
+		state.channelMessages[channelId] = channelMessagesAdapter.setMany(state.channelMessages[channelId], adapterPayload);
 	} else {
 		if (!adapterPayload.length) return;
 		state.channelMessages[channelId] = channelMessagesAdapter.setMany(state.channelMessages[channelId], adapterPayload);

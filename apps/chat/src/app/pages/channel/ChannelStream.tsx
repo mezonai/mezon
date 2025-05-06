@@ -4,7 +4,6 @@ import {
 	appActions,
 	ChannelsEntity,
 	selectCurrentClan,
-	selectGotifyToken,
 	selectIsJoin,
 	selectIsShowChatStream,
 	selectMemberClanByGoogleId,
@@ -267,7 +266,7 @@ function UserItem({ user }: { user: IChannelMember }) {
 type ChannelStreamProps = {
 	currentStreamInfo: IStreamInfo | null;
 	currentChannel: ChannelsEntity | null;
-	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, gotifyToken: string) => void;
+	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => void;
 	streamVideoRef: RefObject<HTMLVideoElement>;
 	disconnect: () => void;
 	isStream: boolean;
@@ -287,17 +286,16 @@ export default function ChannelStream({
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
 	const appearanceTheme = useSelector(selectTheme);
-	const { userProfile } = useAuth();
+	const { userProfile, session } = useAuth();
+	const accessToken = session?.token;
 	const dispatch = useAppDispatch();
 	const [showMembers, setShowMembers] = useState(true);
 	const [showEndCallButton, setShowEndCallButton] = useState(true);
 	const [showMembersButton, setShowMembersButton] = useState(true);
 	const hideButtonsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
-	const gotifyToken = useSelector(selectGotifyToken);
 
 	const currentClan = useSelector(selectCurrentClan);
-
 	useEffect(() => {
 		if (!currentChannel || !currentClan || !currentStreamInfo) return;
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
@@ -338,7 +336,7 @@ export default function ChannelStream({
 			userProfile?.user?.id as string,
 			currentChannel?.channel_id as string,
 			userProfile?.user?.username as string,
-			gotifyToken as string
+			accessToken as string
 		);
 	};
 

@@ -143,6 +143,12 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		}
 	}, [appId]);
 
+	useEffect(() => {
+		setChangeName(appDetail.appname);
+		setChangeUrl(appDetail.app_url);
+		setChangeAboutApp(appDetail.about);
+	}, [appDetail]);
+
 	const toggleDeletePopup = () => {
 		setIsShowDeletePopup(!isShowDeletePopup);
 	};
@@ -230,11 +236,6 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		}
 	};
 
-	useEffect(() => {
-		setChangeName(appDetail.appname);
-		setChangeUrl(appDetail.app_url);
-		setChangeAboutApp(appDetail.about);
-	}, [appDetail]);
 	const setAppOrBot = appDetail.app_url ? APP_TYPES.APPLICATION : APP_TYPES.BOT;
 	return (
 		<div className="flex-1 flex flex-col gap-7">
@@ -289,7 +290,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				<div className="uppercase">{setAppOrBot} Token</div>
 
 				{visibleToken ? (
-					<div className="text-blue-600  rounded-sm mt-1">
+					<div className="text-gray-500  rounded-sm mt-1">
 						<span className="text-sm text-red-500">
 							This is your new token. Copy and store it safely, you won't be able to see it again.
 						</span>
@@ -306,14 +307,18 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				{visibleToken && (
 					<div
 						onClick={() => handleCopyUrl(visibleToken)}
-						className="mt-2 py-[7px] px-[16px] bg-green-600 hover:bg-green-800 cursor-pointer w-fit text-[15px] text-white rounded-sm"
+						className={`mt-2 py-[7px] px-[16px] bg-green-600 hover:bg-green-800 flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-sm ${
+							openSaveChange ? 'pointer-events-none opacity-50' : ''
+						}`}
 					>
 						Copy Token
 					</div>
 				)}
 				<div
 					onClick={handleResetToken}
-					className="py-[7px] px-[16px] bg-blue-600 hover:bg-blue-800 cursor-pointer w-fit text-[15px] text-white rounded-sm"
+					className={`py-[7px] px-[16px] bg-blue-600 flex items-center justify-center hover:bg-blue-800 cursor-pointer w-[130px] text-[15px] text-white rounded-sm ${
+						openSaveChange ? 'pointer-events-none opacity-50' : ''
+					}`}
 				>
 					Reset Token
 				</div>
@@ -322,15 +327,15 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			<div className="flex justify-end">
 				<div
 					onClick={toggleDeletePopup}
-					className="text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-sm w-fit"
+					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-sm w-fit ${
+						openSaveChange ? 'pointer-events-none opacity-50' : ''
+					}`}
 				>
 					Delete {setAppOrBot}
 				</div>
 			</div>
-
 			{isShowDeletePopup && <DeleteAppPopup appId={appId} appName={appDetail.appname as string} togglePopup={toggleDeletePopup} />}
 		</div>
 	);
 };
-
 export default GeneralInformation;
