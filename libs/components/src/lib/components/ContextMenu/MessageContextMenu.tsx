@@ -644,8 +644,8 @@ function MessageContextMenu({
 
 		builder.when(checkPos, (builder) => {
 			builder.addMenuItem(
-				'markMessage',
-				'Mark Message',
+				'addToInbox',
+				'Add To Inbox',
 				handleMarkMessageNoti,
 				<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path

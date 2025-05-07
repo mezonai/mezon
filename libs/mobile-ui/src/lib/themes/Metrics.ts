@@ -7,9 +7,9 @@ const guidelineBaseWidth = 375;
 const guidelineBaseHeight = 812;
 const CONTAINER_FLUID_SPACING = 16;
 const CONTAINER_SPACING = 24;
-
-const widthConvert = width;
-const heightConvert = height;
+const aspectRatio = height / width;
+const widthConvert = !(Math.min(width, height) >= 600 && aspectRatio <= 1.6) ? (width < height ? height : width) : width;
+const heightConvert = !(Math.min(width, height) >= 600 && aspectRatio <= 1.6) ? (height < width ? width : height) : height;
 const horizontalScale = (size: number) => (widthConvert / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (heightConvert / guidelineBaseHeight) * size;
 const moderateScale = (size: number, factor = 0.5) => size + (horizontalScale(size) - size) * factor;

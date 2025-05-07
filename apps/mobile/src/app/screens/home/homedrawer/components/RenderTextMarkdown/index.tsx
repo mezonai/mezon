@@ -463,7 +463,8 @@ export const RenderTextMarkdownContent = ({
 						const { clanId, channelId, canvasId } = extractIds(contentInElement);
 
 						const basePath = '/chat/clans/';
-						const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
+						const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/') && !contentInElement?.includes('/canvas/');
+						const contentHasCanvasLink = contentInElement.includes('canvas') && canvasId && clanId && channelId
 
 						if (contentHasChannelLink) {
 							const pathSegments = contentInElement?.split('/') as string[];
@@ -519,7 +520,7 @@ export const RenderTextMarkdownContent = ({
 							}
 						}
 
-						if (contentInElement.includes('canvas') && canvasId && clanId && channelId) {
+						if (contentHasCanvasLink) {
 							textParts.push(<RenderCanvasItem key={`canvas-${index}`} clanId={clanId} channelId={channelId} canvasId={canvasId} />);
 						} else if (contentInElement.includes('unknown')) {
 							textParts.push(

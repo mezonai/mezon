@@ -3,6 +3,7 @@ import { embedActions, useAppDispatch } from '@mezon/store-mobile';
 import { EMessageComponentType, IFieldEmbed, IMessageRatioOption } from '@mezon/utils';
 import { memo, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
+import { EmbedAnimation } from './EmbedAnimation';
 import { EmbedDatePicker } from './EmbedDatePicker';
 import { EmbedInput } from './EmbedInput';
 import { EmbedRadioButton } from './EmbedRadioItem';
@@ -115,6 +116,9 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 														onCheck={() => handleCheckRadioButton(optionItem, fieldItem?.inputs?.id)}
 													/>
 												))}
+											{fieldItem?.inputs?.type === EMessageComponentType.ANIMATION && fieldItem?.inputs?.component && (
+												<EmbedAnimation animationOptions={fieldItem?.inputs?.component} />
+											)}
 										</View>
 									)}
 								</View>

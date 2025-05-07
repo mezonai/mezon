@@ -9,7 +9,11 @@ import {
 } from '@mezon/mobile-components';
 import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
-import { AndroidImportance, AndroidVisibility } from '@notifee/react-native/src/types/NotificationAndroid';
+import {
+	AndroidCategory,
+	AndroidImportance,
+	AndroidVisibility
+} from '@notifee/react-native/src/types/NotificationAndroid';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform } from 'react-native';
@@ -91,6 +95,9 @@ const getConfigDisplayNotificationAndroid = async (data: { [key: string]: string
 	return {
 		...defaultConfig,
 		channelId,
+		tag: channelId,
+		sortKey: channelId,
+		category: AndroidCategory.MESSAGE,
 		groupId: channelGroup?.groupId,
 		groupSummary: channelGroup?.isGroupSummary
 	};
@@ -146,6 +153,7 @@ const getConfigDisplayNotificationIOS = async (data: { [key: string]: string | o
 export const createLocalNotification = async (title: string, body: string, data: { [key: string]: string | object }) => {
 	try {
 		const configDisplayNotificationAndroid = Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
+		console.log('log  => configDisplayNotificationAndroid', configDisplayNotificationAndroid);
 		const configDisplayNotificationIOS = Platform.OS === 'ios' ? await getConfigDisplayNotificationIOS(data) : {};
 		await notifee.displayNotification({
 			title: title || '',

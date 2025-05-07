@@ -198,11 +198,11 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					sender_id: userId,
 					token_count: AMOUNT_TOKEN.TEN_TOKENS
 				};
-				dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
+				await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
 				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji, userId);
 				const response = await createDirectMessageWithUser(
-					message?.user?.id,
-					message?.display_name || message?.user?.username,
+					message?.sender_id,
+					message?.user?.name || message?.user?.username,
 					message?.avatar
 				);
 				if (response?.channel_id) {

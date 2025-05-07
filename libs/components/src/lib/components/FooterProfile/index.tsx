@@ -249,7 +249,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 				/>
 			</div>
 		);
-	}, [userStatusProfile, rootRef.current]);
+	}, [userStatusProfile, rootRef.current, avatar, name]);
 
 	return (
 		<div
