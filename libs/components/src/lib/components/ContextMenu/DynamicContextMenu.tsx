@@ -67,9 +67,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 
 	const [warningStatus, setWarningStatus] = useState<string>('');
 
-	const isLightMode = useMemo(() => {
-		return appearanceTheme === 'light';
-	}, [appearanceTheme]);
+	const isLightMode = appearanceTheme === 'light';
 
 	const className: CSSProperties = {
 		'--contexify-menu-bgColor': isLightMode ? '#FFFFFF' : '#111214',
