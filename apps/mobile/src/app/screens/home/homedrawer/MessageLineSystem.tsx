@@ -1,11 +1,14 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { Text, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { ETokenMessage, TypeMessage, convertTimeString } from '@mezon/utils';
+import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
+import { useNavigation } from '@react-navigation/native';
+import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
 export const MessageLineSystem = memo(({ message }: { message: MessagesEntity }) => {
@@ -13,25 +16,28 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	const styles = style(themeValue);
 	const { mentions = [] } = message;
 	const { t } = message?.content ?? {};
+	const navigation = useNavigation<any>();
 
 	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, message?.channel_id as string));
 
 	const messageTime = convertTimeString(message?.create_time as string);
 	const findThreadInText = (text: string) => {
-		const threadStart = 'started a thread: ';
-		const startIdx = text?.indexOf(threadStart);
+		let threadContent: { threadLabel?: string; threadId?: string; threadContent?: string } = {};
+		if (message?.code === TypeMessage.CreateThread && text) {
+			threadContent = parseThreadInfo(message?.content?.t);
+		}
 
-		if (startIdx !== -1) {
-			const threadContentStart = startIdx + threadStart?.length;
-			const threadContentEnd = text.indexOf('.', threadContentStart);
-			const threadContent =
-				threadContentEnd !== -1 ? text?.substring(threadContentStart, threadContentEnd) : text?.substring(threadContentStart);
+		if (threadContent) {
+			const threadStart = threadContent?.threadLabel;
+			const startIdx = text?.indexOf(threadStart);
 
-			return {
-				s: threadContentStart,
-				e: threadContentStart + threadContent?.length,
-				kindOf: ETokenMessage.HASHTAGS
-			};
+			if (startIdx !== -1) {
+				return {
+					s: startIdx - 1,
+					e: text?.length,
+					kindOf: ETokenMessage.HASHTAGS
+				};
+			}
 		}
 		return null;
 	};
@@ -86,6 +92,23 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 		},
 		[dispatch, message?.channel_id, message?.clan_id, message?.references]
 	);
+
+	const handleJumpToThread = async (threadInfo) => {
+		if (threadInfo) {
+			const payloadThread = {
+				type: ChannelType.CHANNEL_TYPE_THREAD,
+				id: threadInfo?.threadId,
+				channel_id: threadInfo?.threadId,
+				clan_id: message?.clan_id
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, payloadThread);
+		}
+	};
+
+	const navigateAllThread = () => {
+		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD });
+	};
+
 	const content = useMemo(() => {
 		const formattedContent = [];
 		let lastIndex = 0;
@@ -96,8 +119,10 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 					if (element?.user_id) {
 						formattedContent.push(
 							allUserIdsInChannel?.includes(element?.user_id) || contentInElement === '@here' ? (
-								<Text style={styles.textMention} key={`mention-${index}`} onPress={() => onMention(`@${element?.username}`)}>
-									{contentInElement}
+								<Text>
+									<Text style={styles.textMention} key={`mention-${index}`} onPress={() => onMention(`@${element?.username}`)}>
+										{contentInElement?.trim()}
+									</Text>{' '}
 								</Text>
 							) : (
 								<Text key={`plain-${index}`}>{contentInElement}</Text>
@@ -106,13 +131,22 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 					}
 					break;
 
-				case ETokenMessage.HASHTAGS:
+				case ETokenMessage.HASHTAGS: {
+					const hashtag = parseThreadInfo(contentInElement);
 					formattedContent.push(
-						<Text style={styles.textMention} key={`hashtag-${index}`}>
-							{contentInElement}
+						<Text key={`hashtag-${index}_${hashtag?.threadId}`}>
+							{'started a thread: '}
+							<Text style={styles.textMention} onPress={() => handleJumpToThread(hashtag)}>
+								{hashtag?.threadLabel}
+							</Text>
+							{`${hashtag?.threadContent || ''}. see `}
+							<Text style={styles.textMention} key={`hashtag-${index}`} onPress={navigateAllThread}>
+								{'all threads'}
+							</Text>
 						</Text>
 					);
 					break;
+				}
 
 				case ETokenMessage.LINKS:
 					formattedContent.push(

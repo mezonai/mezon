@@ -6,10 +6,10 @@
     "mute": "Tắt thông báo",
     "labelOptions": {
       "reactionMessage": "Phản ứng tin nhắn",
-      "categoryDefault": "Sử dụng mặc định danh mục",
+      "categoryDefault": "Sử dụng danh mục mặc định",
       "allMessage": "Tất cả",
       "notThingMessage": "Không có gì",
-      "mentionMessage": "Chỉ @đề cập"
+      "mentionMessage": "Chỉ @mention"
     },
     "muteCategoryUntil": "Bạn đã tắt thông báo cho danh mục này cho đến khi"
   },

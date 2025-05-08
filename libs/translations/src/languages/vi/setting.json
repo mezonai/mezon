@@ -11,7 +11,7 @@
         "clip": "Clip",
         "friendRequests": "Yêu cầu kết bạn",
         "QRScan": "Quét mã QR",
-        "MyQRCode": "My QR của tôi"
+        "MyQRCode": "Mã QR của tôi"
     },
     "paymentSettings": {
         "title": "Cài đặt thanh toán",
@@ -41,6 +41,6 @@
         "title": "Có gì mới",
         "whatsNew": "Có gì mới"
     },
-    "logOut": "Đăng Xuất",
-    "removeAccount": "Xóa Tài Khoản"
+    "logOut": "Đăng xuất",
+    "removeAccount": "Xóa tài khoản"
 }

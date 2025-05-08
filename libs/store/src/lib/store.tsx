@@ -100,7 +100,15 @@ const persistedAppReducer = persistReducer(
 	{
 		key: 'apps',
 		storage,
-		blacklist: ['loadingMainMobile', 'isFromFcmMobile', 'hasInternetMobile', 'isShowChatStream', 'chatStreamWidth', 'isShowCanvas']
+		blacklist: [
+			'loadingMainMobile',
+			'isFromFcmMobile',
+			'hasInternetMobile',
+			'isShowChatStream',
+			'chatStreamWidth',
+			'isShowCanvas',
+			'isShowSettingFooter'
+		]
 	},
 	appReducer
 );

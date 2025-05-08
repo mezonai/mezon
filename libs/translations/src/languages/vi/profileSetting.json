@@ -12,7 +12,7 @@
             "placeholder": ""
         },
         "clanName": {
-            "label": "Tên Clan",
+            "label": "Tên clan",
             "placeholder": ""
         },
         "pronouns": {
@@ -30,8 +30,8 @@
         "discard": "Bỏ",
         "keepEditing": "Tiếp tục chỉnh sửa"
     },
-    "selectAClan": "Chọn Một Máy Chủ",
-    "searchClanPlaceholder": "Tìm kiếm Máy Chủ",
+    "selectAClan": "Chọn một máy chủ",
+    "searchClanPlaceholder": "Tìm kiếm máy chủ",
     "updateProfileSuccess": "Cập nhật hồ sơ thành công",
     "updateClanProfileSuccess": "Cập nhật hồ sơ máy chủ thành công"
 }

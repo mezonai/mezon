@@ -70,7 +70,7 @@ export const EmbedAnimation = ({ animationOptions, isVeltical }: EmbedAnimationP
 		if (isVeltical) return 1;
 		if (animationOptions?.pool?.length) {
 			if (animationOptions?.pool?.length * frameWidth >= screenWith - size.s_100) {
-				return (screenWith - size.s_100) / screenWith;
+				return (screenWith - size.s_100 * 1.3) / screenWith;
 			}
 		}
 		return 1;

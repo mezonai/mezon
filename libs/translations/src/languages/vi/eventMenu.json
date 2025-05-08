@@ -1,8 +1,8 @@
 {
     "menu": {
       "startEvent": "Bắt đầu sự kiện",
-      "markAsNotInterested": "Đánh dấu Không quan tâm",
-      "markAsInterested": "Đánh dấu Quan tâm",
+      "markAsNotInterested": "Đánh dấu không quan tâm",
+      "markAsInterested": "Đánh dấu quan tâm",
       "editEvent": "Chỉnh sửa sự kiện",
       "cancelEvent": "Hủy sự kiện",
       "reportEvent": "Báo cáo sự kiện",

@@ -26,7 +26,7 @@ export function EmbedDescription({ description }: EmbedDescriptionProps) {
 
 			if (lastindex < s) {
 				formattedContent.push(
-					<p key={`plain-${lastindex}`} className="whitespace-pre-line">
+					<p key={`plain-${lastindex}`} className="whitespace-pre-line " style={{ wordBreak: 'break-word' }}>
 						{text?.slice(lastindex, s) ?? ''}
 					</p>
 				);
@@ -53,7 +53,7 @@ export function EmbedDescription({ description }: EmbedDescriptionProps) {
 
 		if (text && lastindex < text?.length) {
 			formattedContent.push(
-				<p key={`plain-${lastindex}-end`} className="whitespace-pre-line">
+				<p key={`plain-${lastindex}-end`} className="whitespace-pre-line" style={{ wordBreak: 'break-word' }}>
 					{text.slice(lastindex)}
 				</p>
 			);
@@ -62,5 +62,5 @@ export function EmbedDescription({ description }: EmbedDescriptionProps) {
 		return formattedContent;
 	}, [elements]);
 
-	return <div className="mt-2 text-sm text-textSecondary800 dark:text-textSecondary">{content}</div>;
+	return <div className="mt-2 text-sm text-textSecondary800 dark:text-textSecondary break-words">{content}</div>;
 }

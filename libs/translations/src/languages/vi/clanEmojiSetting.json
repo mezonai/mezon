@@ -1,10 +1,10 @@
 {
     "header": {
-        "save": "Save"
+        "save": "Lưu"
     },
     "toast": {
-        "saveSuccess": "Save Successfully",
-        "reject": "Reject"
+        "saveSuccess": "Lưu thành công",
+        "reject": "Từ chối"
     },
     "button": {
         "upload": "Tải lên Emoji"

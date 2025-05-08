@@ -1,4 +1,4 @@
-import { PlusAltIcon, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
+import { ActionEmitEvent, PlusAltIcon, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	clansActions,
@@ -12,8 +12,8 @@ import {
 	videoStreamActions
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import { NestableDraggableFlatList, RenderItemParams } from 'react-native-draggable-flatlist';
 import { useSelector, useStore } from 'react-redux';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
@@ -26,7 +26,6 @@ import { style } from './styles';
 export const ListClanPopup = React.memo(() => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [isVisibleCreateClanModal, setIsVisibleCreateClanModal] = useState<boolean>(false);
 	const timerRef = useRef(null);
 	const navigation = useNavigation();
 	const isTabletLandscape = useTabletLandscape();
@@ -40,8 +39,11 @@ export const ListClanPopup = React.memo(() => {
 		};
 	}, []);
 
-	const visibleCreateClanModal = useCallback((value: boolean) => {
-		setIsVisibleCreateClanModal(value);
+	const onCreateClanModal = useCallback(() => {
+		const data = {
+			children: <CreateClanModal />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, []);
 
 	const handleLeaveChannel = useCallback(async () => {
@@ -98,7 +100,7 @@ export const ListClanPopup = React.memo(() => {
 				ListEmptyComponent={<View />}
 				ListFooterComponent={() => {
 					return (
-						<TouchableOpacity style={styles.createClan} onPress={() => visibleCreateClanModal(!isVisibleCreateClanModal)}>
+						<TouchableOpacity style={styles.createClan} onPress={onCreateClanModal}>
 							<View style={styles.wrapperPlusClan}>
 								<PlusAltIcon width={size.s_14} height={size.s_14} />
 							</View>
@@ -107,7 +109,6 @@ export const ListClanPopup = React.memo(() => {
 				}}
 				activationDistance={15}
 			/>
-			<CreateClanModal visible={isVisibleCreateClanModal} setVisible={visibleCreateClanModal} />
 		</View>
 	);
 });

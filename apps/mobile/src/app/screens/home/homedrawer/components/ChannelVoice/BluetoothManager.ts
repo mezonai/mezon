@@ -1,7 +1,7 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
-const { BluetoothModule } = NativeModules;
-const bluetoothEventEmitter = new NativeEventEmitter(BluetoothModule);
+const BluetoothModule = NativeModules?.BluetoothManager;
+const bluetoothEventEmitter = Platform.OS === 'android' ? new NativeEventEmitter(BluetoothModule) : undefined;
 
 type BluetoothConnectionChangeEvent = {
 	connected: boolean;

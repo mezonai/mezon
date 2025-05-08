@@ -214,6 +214,7 @@ function ChannelMessages({
 					preventScrollbottom.current = false;
 				}
 
+				dispatch(messagesActions.resetLoading());
 				// dispatch(messagesActions.setViewingOlder({ channelId, status: true }));
 				return true;
 			}
@@ -234,6 +235,8 @@ function ChannelMessages({
 			}
 
 			await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.BEFORE_TIMESTAMP }));
+
+			dispatch(messagesActions.resetLoading());
 
 			return true;
 		},

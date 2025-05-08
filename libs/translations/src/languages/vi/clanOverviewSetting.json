@@ -8,37 +8,37 @@
 },
   "menu": {
     "serverName": {
-      "title": "Tên Clan",
+      "title": "Tên clan",
       "errorMessage": "Vui lòng nhập tên ban hội hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
-      "duplicateNameMessage" : "Tên Clan đã tồn tại. Vui lòng chọn tên khác.",
-      "permissionDenied": "Bạn không có quyền để chỉnh sửa hình nền Clan"
+      "duplicateNameMessage" : "Tên clan đã tồn tại. Vui lòng chọn tên khác.",
+      "permissionDenied": "Bạn không có quyền để chỉnh sửa hình nền clan"
     },
     "inactive": {
-      "title": "Cài Đặt Không Hoạt Động",
+      "title": "Cài đặt không hoạt động",
       "description": "Tự động di chuyển thành viên đến kênh này và tắt tiếng họ khi họ không hoạt động trong thời gian dài hơn thời gian chờ không hoạt động. Tính năng này không ảnh hưởng đến trình duyệt.",
-      "inactiveChannel": "Channel Không Hoạt Động",
-      "inactiveTimeout": "Thời Gian Chờ Không Hoạt Động"
+      "inactiveChannel": "Kênh không hoạt động",
+      "inactiveTimeout": "Thời gian chờ không hoạt động"
     },
     "systemMessage": {
-      "title": "Cài Đặt Thông Báo Hệ Thống",
+      "title": "Cài đặt thông báo hệ thống",
       "description": "Đây là kênh chúng tôi gửi thông báo sự kiện hệ thống. Bạn có thể tắt chúng bất cứ lúc nào.",
-      "channel": "Channel",
+      "channel": "Kênh",
       "sendRandomWelcome": "Gửi tin nhắn chào mừng ngẫu nhiên khi ai đó tham gia máy chủ này.",
       "promptMembersReply": "Yêu cầu thành viên trả lời tin nhắn chào mừng bằng nhãn dán.",
       "sendMessageBoost": "Gửi tin nhắn khi ai đó tăng cấp máy chủ này",
       "sendHelpfulTips": "Gửi các mẹo hữu ích để thiết lập máy chủ"
     },
     "deleteServer": {
-      "title": "Xóa Máy Chủ",
-      "delete": "Xóa Máy Chủ"
+      "title": "Xóa máy chủ",
+      "delete": "Xóa máy chủ"
     }
   },
   "fields": {
     "defaultNotification": {
       "title": "Cài đặt thông báo mặc định",
-      "description": "Thiết lập này sẽ xác định liệu các thành viên chưa thiết lập rõ ràng cài đặt thông báo của họ có nhận thông báo cho mọi tin nhắn được gửi trong máy chủ này hay không. Chúng tôi強烈建議 (cuong liệt khuyen nghị - strongly recommend) cho các cộng đồng clan chỉ nên đặt thông báo cho @mentions.",
+      "description": "Thiết lập này sẽ xác định liệu các thành viên chưa thiết lập rõ ràng cài đặt thông báo của họ có nhận thông báo cho mọi tin nhắn được gửi trong máy chủ này hay không. Chúng tôi khuyến nghị cho các cộng đồng clan chỉ nên đặt thông báo cho @mention.",
       "allMessages": "Tất cả tin nhắn",
-      "onlyMentions": "Chỉ @mentions"
+      "onlyMentions": "Chỉ @mention"
     }
   }
 }

@@ -348,7 +348,7 @@ export const fetchMessages = createAsyncThunk(
 
 			const oldMessages = channelMessagesAdapter.getSelectors().selectAll(state.messages.channelMessages[chlId] || { ids: [], entities: {} });
 
-			const lastLoadMessage = !fromCache ? response.messages.at(-1) : oldMessages[0];
+			const lastLoadMessage = !fromCache ? response.messages?.at(-1) : oldMessages[0];
 			const hasMore = lastLoadMessage?.code !== EMessageCode.FIRST_MESSAGE;
 
 			thunkAPI.dispatch(messagesActions.setFirstMessageId({ channelId: chlId, firstMessageId: !hasMore ? lastLoadMessage?.id : null }));
@@ -972,9 +972,6 @@ export const messagesSlice = createSlice({
 
 						state.lastMessageByChannel[channelId] = lastMessage;
 
-						// update is viewing older messages
-						// state.isViewingOlderMessagesByChannelId[channelId] = computeIsViewingOlderMessagesByChannelId(state, channelId);
-
 						// remove sending message when receive new message by the same user
 						// potential bug: if the user send the same message multiple times
 						// or the sending message is the same as the received message from the server
@@ -1042,22 +1039,11 @@ export const messagesSlice = createSlice({
 		},
 		setManyLastMessages: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel[]>) => {
 			action.payload.forEach((message) => {
-				// update last message
 				state.lastMessageByChannel[message.channel_id] = message;
-
-				// update is viewing older messages
-				// state.isViewingOlderMessagesByChannelId[message.channel_id] = computeIsViewingOlderMessagesByChannelId(state, message.channel_id);
 			});
 		},
 		setLastMessage: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel>) => {
-			// update last message
 			state.lastMessageByChannel[action.payload.channel_id] = action.payload;
-
-			// update is viewing older messages
-			// state.isViewingOlderMessagesByChannelId[action.payload.channel_id] = computeIsViewingOlderMessagesByChannelId(
-			// 	state,
-			// 	action.payload.channel_id
-			// );
 		},
 		setViewingOlder: (state, action: PayloadAction<{ channelId: string; status: boolean }>) => {
 			const { channelId, status } = action.payload;
@@ -1110,7 +1096,7 @@ export const messagesSlice = createSlice({
 			};
 		},
 		UpdateChannelLastMessage: (state, action: PayloadAction<{ channelId: string }>) => {
-			const lastMess = state.channelMessages[action.payload.channelId]?.ids.at(-1);
+			const lastMess = state.channelMessages[action.payload.channelId]?.ids?.at(-1);
 			state.unreadMessagesEntries = {
 				...state.unreadMessagesEntries,
 				[action.payload.channelId]: lastMess || ''
@@ -1202,6 +1188,9 @@ export const messagesSlice = createSlice({
 			if (messageIds?.length) {
 				state.channelViewPortMessageIds[channelId] = messageIds.slice(-50);
 			}
+		},
+		resetLoading: (state) => {
+			state.loadingStatus = 'loaded';
 		}
 	},
 	extraReducers: (builder) => {
@@ -1213,11 +1202,9 @@ export const messagesSlice = createSlice({
 				fetchMessages.fulfilled,
 				(state: MessagesState, action: PayloadAction<FetchMessagesPayloadAction, string, FetchMessagesMeta>) => {
 					const channelId = action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
-					const isFetchingLatestMessages = action.payload.isFetchingLatestMessages || false;
 					const isClearMessage = action.payload.isClearMessage || false;
 					const toPresent = action.payload.toPresent || false;
 					const fromCache = action.payload.fromCache || false;
-					const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId || ''];
 					const foundE2ee = action.payload.foundE2ee || false;
 					const lastSentMessageId = state.lastMessageByChannel[channelId]?.id;
 					state.loadingStatus = 'loaded';
@@ -1253,13 +1240,14 @@ export const messagesSlice = createSlice({
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 						return;
 					} else {
-						const oldViewport = state.channelViewPortMessageIds[channelId];
+						const oldViewport = state.channelViewPortMessageIds[channelId] || [];
 						const offsetId = action.meta.arg.messageId;
 
 						let newViewportIds: string[] = [];
 
 						if (!offsetId) {
-							const index = messageIds.findIndex((item) => item === oldViewport.at(-1));
+							const messageId = oldViewport?.at(-1);
+							const index = messageIds.findIndex((item) => item === messageId);
 							if (state.isViewingOlderMessagesByChannelId[channelId] && oldViewport.length) {
 								return;
 							} else if (oldViewport.length) {
@@ -1529,7 +1517,7 @@ export const selectLatestMessageId = createCachedSelector([getMessagesState, get
 });
 
 export const selectLastMessageIdByChannelId = createSelector(selectMessageIdsByChannelId, (ids) => {
-	return ids.at(-1);
+	return ids?.at(-1);
 });
 
 export const selectMessageIsLoading = createSelector(getMessagesState, (state) => state.loadingStatus === 'loading');
