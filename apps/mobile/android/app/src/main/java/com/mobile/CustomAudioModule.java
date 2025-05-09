@@ -28,21 +28,26 @@ public class CustomAudioModule extends ReactContextBaseJavaModule {
     public void setSpeaker(boolean isOn, @Nullable Callback callback) {
         try {
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-            if (isOn) {
-                audioManager.setSpeakerphoneOn(true);
-            } else {
-                audioManager.setSpeakerphoneOn(false);
+            boolean currentSpeakerState = audioManager.isSpeakerphoneOn();
+            if (currentSpeakerState != isOn) {
+                audioManager.setSpeakerphoneOn(isOn);
 
                 // Check for connected Bluetooth devices and route audio
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     AudioDeviceInfo[] devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+                    boolean hasBluetooth = false;
                     for (AudioDeviceInfo device : devices) {
-                        if (device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-                            device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
-                            audioManager.startBluetoothSco();
-                            audioManager.setBluetoothScoOn(true);
+                        int type = device.getType();
+                        if (type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                            type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+                            hasBluetooth = true;
                             break;
                         }
+                    }
+                    if (hasBluetooth) {
+                        Log.d("CustomAudioModule", "Bluetooth Device");
+                        audioManager.startBluetoothSco();
+                        audioManager.setBluetoothScoOn(true);
                     }
                 }
             }

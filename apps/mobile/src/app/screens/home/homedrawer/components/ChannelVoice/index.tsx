@@ -240,19 +240,28 @@ function ChannelVoice({
 		if (Platform.OS === 'android') {
 			checkPermissions();
 			// Check initial state
-			BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
-				if (connected) toggleSpeakerByStatusBluetooth(connected);
-			});
+			try {
+				BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
+					if (connected) toggleSpeakerByStatusBluetooth(connected);
+				});
 
-			// Listen for changes
-			BluetoothManager.startListeningForConnectionChanges((connected) => {
-				if (connected) toggleSpeakerByStatusBluetooth(connected);
-			});
+				// Listen for changes
+				BluetoothManager.startListeningForConnectionChanges((connected) => {
+					if (connected) toggleSpeakerByStatusBluetooth(connected);
+				});
+			} catch (err) {
+				console.error(`error BluetoothManager: ${err}`);
+			}
+			// Check initial state
 		}
 		// Cleanup
 		return () => {
 			if (Platform.OS === 'android') {
-				BluetoothManager.stopListeningForConnectionChanges();
+				try {
+					BluetoothManager.stopListeningForConnectionChanges();
+				} catch (err) {
+					console.error(`error turn off BluetoothManager: ${err}`);
+				}
 			}
 		};
 	}, []);
