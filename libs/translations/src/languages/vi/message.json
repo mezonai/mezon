@@ -20,7 +20,8 @@
       "giveACoffee": "Mời một ly cà phê",
       "topicDiscussion": "Thảo luận chủ đề",
       "resend": "Gửi lại",
-      "buzz": "Buzz!!"
+      "buzz": "Buzz!!",
+      "markMessage": "Đánh dấu tin nhắn"
   },
   "chatBox": {
       "replyingTo": "Đang trả lời",
@@ -29,7 +30,8 @@
   "toast": {
       "copyText": "Đã sao chép văn bản tin nhắn",
       "attachmentIsLoading": "Tệp đính kèm đang tải, vui lòng đợi một chút",
-      "pinMessage": "Tin nhắn đã được ghim"
+      "pinMessage": "Tin nhắn đã được ghim",
+      "markMessage": "Đã đánh dấu tin nhắn"
   },
   "directMessage": {
       "you": "Bạn"

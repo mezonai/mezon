@@ -2,7 +2,7 @@ import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { channelsActions, inviteActions, selectInviteById, selectIsClickInvite, useAppDispatch } from '@mezon/store';
-import { Button, Modal } from 'flowbite-react';
+import { Modal } from 'flowbite-react';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -83,12 +83,12 @@ export default function InvitePage() {
 			</Modal.Body>
 			{/* <Modal.Footer> */}
 			<div className="flex justify-center flex-row items-center gap-4 pb-8 bg-bgDisable rounded-bl-[5px] rounded-br-[5px]">
-				<Button color="gray" className="outline-none font-semibold rounded" onClick={handleCancelJoin}>
+				<button color="gray" className="px-3 py-2 flex items-center outline-none font-semibold rounded" onClick={handleCancelJoin}>
 					No, Thanks
-				</Button>
-				<Button color="blue" onClick={handleJoinChannel} className="font-semibold rounded">
+				</button>
+				<button color="blue" onClick={handleJoinChannel} className="px-3 py-2 flex items-center font-semibold rounded">
 					Join Mezon
-				</Button>
+				</button>
 			</div>
 			{/* </Modal.Footer> */}
 		</Modal>

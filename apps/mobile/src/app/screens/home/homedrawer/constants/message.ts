@@ -83,6 +83,11 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			id: 14,
 			title: t('message:actions.saveImage'),
 			type: EMessageActionType.SaveImage
-		}
+		},
+		{
+			id: 15,
+			title: t('message:actions.markMessage'),
+			type: EMessageActionType.MarkMessage
+		},
 	];
 };

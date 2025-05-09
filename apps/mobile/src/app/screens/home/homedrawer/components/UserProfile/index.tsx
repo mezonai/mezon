@@ -252,12 +252,13 @@ const UserProfile = React.memo(
 
 		const handleTransferFunds = () => {
 			const payload = JSON.stringify({
-				receiver_id: userId,
+				receiver_id: userId ? userId : user?.id,
 				receiver_name: user?.user?.username || userById?.user?.username || user?.username,
 				amount: 10000,
 				note: t('userAction.transferFunds'),
 				canEdit: true
 			});
+
 			navigation.push(APP_SCREEN.SETTINGS.STACK, {
 				screen: APP_SCREEN.SETTINGS.SEND_TOKEN,
 				params: {

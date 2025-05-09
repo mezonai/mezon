@@ -2,7 +2,6 @@ import { selectCurrentChannelId, selectCurrentClan, selectCurrentClanId } from '
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { fileTypeImage } from '@mezon/utils';
-import { Button } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ModalValidateFile from '../../../ModalValidateFile';
@@ -91,12 +90,12 @@ const ClanBannerBackground = ({ hasChanges, onUpload, onHasChanges }: ClanBanner
 				<p className="text-sm font-normal dark:text-textSecondary text-textSecondary800">
 					The recommended minimum size is 960x540 and recommended aspect ratio is 16:9.
 				</p>
-				<Button
+				<button
 					className="h-10 w-fit px-4 mt-4 rounded bg-bgLightModeThird text-textLightTheme dark:text-textDarkTheme border dark:border-buttonProfile hover:!bg-[#9e9e9e] dark:bg-transparent dark:hover:!bg-buttonProfile focus:!ring-transparent"
 					onClick={handleOpenFile}
 				>
 					Upload Background
-				</Button>
+				</button>
 			</div>
 			<div className="flex flex-1 sbm:mb-0 mb-5">
 				<div className="relative max-w-[320px] w-full h-[180px]">

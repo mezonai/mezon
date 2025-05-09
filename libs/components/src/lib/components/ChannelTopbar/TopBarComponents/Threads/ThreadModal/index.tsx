@@ -13,7 +13,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EOverriddenPermission, LIMIT, checkIsThread } from '@mezon/utils';
-import { Button } from 'flowbite-react';
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -133,13 +132,12 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 					<SearchThread channelId={currentChannelId} />
 					{canManageThread && (
 						<div className="flex flex-row items-center gap-4">
-							<Button
+							<button
 								onClick={handleCreateThread}
-								size="sm"
-								className="h-6 rounded focus:ring-transparent bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover items-center"
+								className=" px-3 text-center text-sm font-medium h-6 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover"
 							>
 								Create
-							</Button>
+							</button>
 							<button onClick={onClose}>
 								<Icons.Close defaultSize="w-4 h-4 dark:text-[#CBD5E0] text-colorTextLightMode" />
 							</button>

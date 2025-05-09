@@ -166,7 +166,7 @@ const MessageItem = React.memo(
 			if (preventAction) return;
 			dispatch(setSelectedMessage(message));
 			const data = {
-				heightFitContent: true,
+				snapPoints: ['60%', '85%'],
 				children: (
 					<ContainerMessageActionModal
 						message={message}
@@ -222,7 +222,7 @@ const MessageItem = React.memo(
 			if (preventAction) return;
 			dispatch(setSelectedMessage(message));
 			const data = {
-				heightFitContent: true,
+				snapPoints: ['60%', '85%'],
 				children: (
 					<ContainerMessageActionModal
 						message={message}

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
@@ -8,6 +8,7 @@ import {
 	getStore,
 	giveCoffeeActions,
 	messagesActions,
+	notificationActions,
 	selectAllAccount,
 	selectCurrentChannel,
 	selectCurrentChannelId,
@@ -381,6 +382,22 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	};
 
+	const handleActionMarkMessage = async () => {
+		try {
+			await dispatch(notificationActions.markMessageNotify(message));
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('toast.markMessage'),
+					leadingIcon: <CheckIcon color={Colors.green} />
+				}
+			});
+			onClose();
+		} catch (error) {
+			console.error('Error marking message:', error);
+		}
+	};
+
 	const implementAction = (type: EMessageActionType) => {
 		switch (type) {
 			case EMessageActionType.GiveACoffee:
@@ -397,6 +414,9 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				break;
 			case EMessageActionType.CopyText:
 				handleActionCopyText();
+				break;
+			case EMessageActionType.MarkMessage:
+				handleActionMarkMessage();
 				break;
 			case EMessageActionType.DeleteMessage:
 				handleActionDeleteMessage();
@@ -442,7 +462,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const getActionMessageIcon = (type: EMessageActionType) => {
 		switch (type) {
 			case EMessageActionType.EditMessage:
-				return <MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+				return <MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_20} height={size.s_18} color={themeValue.text} />;
 			case EMessageActionType.Reply:
 				return <MezonIconCDN icon={IconCDN.arrowAngleLeftUpIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case EMessageActionType.ForwardMessage:
@@ -477,6 +497,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				return <MezonIconCDN icon={IconCDN.discussionIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case EMessageActionType.Buzz:
 				return <MezonIconCDN icon={IconCDN.buzz} width={size.s_18} height={size.s_18} color={baseColor.red} />;
+			case EMessageActionType.MarkMessage:
+				return <MezonIconCDN icon={IconCDN.starIcon} width={size.s_20} height={size.s_18} color={themeValue.text} />;
 			default:
 				return <View />;
 		}

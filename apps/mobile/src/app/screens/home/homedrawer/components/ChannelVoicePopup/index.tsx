@@ -13,7 +13,7 @@ import {
 } from '@mezon/store-mobile';
 import { ParticipantMeetState } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, DeviceEventEmitter, PanResponder } from 'react-native';
+import { Animated, DeviceEventEmitter, Keyboard, PanResponder } from 'react-native';
 import { useSelector } from 'react-redux';
 import ChannelVoice from '../ChannelVoice';
 
@@ -166,6 +166,12 @@ const ChannelVoicePopup = () => {
 			});
 		}
 	};
+
+	useEffect(() => {
+		if (isAnimationComplete || voicePlay) {
+			Keyboard.dismiss();
+		}
+	}, [isAnimationComplete, voicePlay]);
 
 	const handlePressMinimizeRoom = useCallback(() => {
 		isFullScreen.current = false;
