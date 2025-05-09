@@ -169,6 +169,9 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 			fontWeight: 'bold',
 			lineHeight: size.s_20,
 			color: colors.text
+		},
+		blockSpacing: {
+			paddingVertical: size.s_4
 		}
 	});
 };
@@ -424,9 +427,11 @@ export const RenderTextMarkdownContent = ({
 					case EBacktickType.PRE:
 						textParts.push(
 							<Text>
-								{'\n'}
-								<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
-									<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>{contentInElement}</Text>
+								{s !== 0 && '\n'}
+								<View style={themeValue ? markdownStyles(themeValue).blockSpacing : {}}>
+									<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
+										<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>{contentInElement}</Text>
+									</View>
 								</View>
 							</Text>
 						);
@@ -435,14 +440,16 @@ export const RenderTextMarkdownContent = ({
 					case EBacktickType.TRIPLE:
 						textParts.push(
 							<Text>
-								{'\n'}
-								<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
-									<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>
-										{(contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
-											? contentInElement?.slice(3, -3)
-											: contentInElement
-										)?.replace(/^\n+|\n+$/g, '')}
-									</Text>
+								{s !== 0 && '\n'}
+								<View style={themeValue ? markdownStyles(themeValue).blockSpacing : {}}>
+									<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
+										<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>
+											{(contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
+												? contentInElement?.slice(3, -3)
+												: contentInElement
+											)?.replace(/^\n+|\n+$/g, '')}
+										</Text>
+									</View>
 								</View>
 							</Text>
 						);

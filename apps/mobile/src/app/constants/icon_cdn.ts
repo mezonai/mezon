@@ -132,5 +132,6 @@ export enum IconCDN {
 	reloadIcon = require('./iconPNG/reloadIcon.png'),
 	transactionIcon = require('./iconPNG/transactionIcon.png'),
 	cameraFront = require('./iconPNG/cameraSwitchFront.png'),
+	anonymous = require('./iconPNG/anonymous.png'),
 	starIcon = require('./iconPNG/starIcon.png')
 }

@@ -92,7 +92,7 @@ export const ListClanPopup = React.memo(() => {
 	return (
 		<View style={styles.clansBox}>
 			<NestableDraggableFlatList
-				scrollEnabled={false}
+				scrollEnabled={true}
 				data={clans?.map?.((clan) => ({ ...clan, key: clan?.id })) || []}
 				keyExtractor={(clan, index) => `${clan?.clan_id}_${index}_clan_item`}
 				onDragEnd={handleDragEnd}
@@ -107,7 +107,7 @@ export const ListClanPopup = React.memo(() => {
 						</TouchableOpacity>
 					);
 				}}
-				activationDistance={15}
+				activationDistance={40}
 			/>
 		</View>
 	);

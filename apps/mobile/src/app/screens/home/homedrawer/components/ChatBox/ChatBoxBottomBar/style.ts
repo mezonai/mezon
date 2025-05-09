@@ -40,5 +40,11 @@ export const style = (colors: Attributes) =>
 		},
 		iconVoice: {
 			marginLeft: size.s_6
+		},
+		iconAnonymous: {
+			position: 'absolute',
+			top: -size.s_10,
+			right: -size.s_10,
+			transform: [{ rotate: '45deg' }]
 		}
 	});

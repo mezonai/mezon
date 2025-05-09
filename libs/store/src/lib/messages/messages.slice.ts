@@ -34,13 +34,13 @@ import { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMe
 import { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
+import { selectScrollOffsetByChannelId, selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 import { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import { RootState } from '../store';
-
 const FETCH_MESSAGES_CACHED_TIME = 1000 * 60 * 60;
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -348,7 +348,7 @@ export const fetchMessages = createAsyncThunk(
 
 			const oldMessages = channelMessagesAdapter.getSelectors().selectAll(state.messages.channelMessages[chlId] || { ids: [], entities: {} });
 
-			const lastLoadMessage = !fromCache ? response.messages?.at(-1) : oldMessages[0];
+			const lastLoadMessage = !fromCache ? response.messages?.at(-1) || oldMessages[0] : oldMessages[0];
 			const hasMore = lastLoadMessage?.code !== EMessageCode.FIRST_MESSAGE;
 
 			thunkAPI.dispatch(messagesActions.setFirstMessageId({ channelId: chlId, firstMessageId: !hasMore ? lastLoadMessage?.id : null }));
@@ -746,16 +746,35 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	}
 });
 
+const SCROLL_OFFSET_THRESHOLD = 3000;
+
 export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (message: MessagesEntity, thunkAPI) => {
-	// ignore the message if in view older messages mode
-	const state = getMessagesState(getMessagesRootState(thunkAPI));
-	const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[message.channel_id];
+	if (!message?.channel_id) return;
+
+	const state = thunkAPI.getState() as RootState;
+	const channelId = message.channel_id;
+	const isViewingOlderMessages = getMessagesState(getMessagesRootState(thunkAPI))?.isViewingOlderMessagesByChannelId?.[channelId];
+	const isBottom = !selectShowScrollDownButton(state, channelId);
+	const scrollOffset = selectScrollOffsetByChannelId(state, channelId);
+
+	if (!message.isMe && scrollOffset > SCROLL_OFFSET_THRESHOLD) {
+		return;
+	}
 
 	if (isViewingOlderMessages) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));
 		return;
 	}
+
 	thunkAPI.dispatch(messagesActions.newMessage(message));
+
+	thunkAPI.dispatch(
+		messagesActions.addMessageToViewport({
+			channelId,
+			messageId: message.id,
+			keep50items: isBottom
+		})
+	);
 });
 
 type UpdateTypingArgs = {
@@ -1181,6 +1200,29 @@ export const messagesSlice = createSlice({
 		},
 		setLoadingJumpMessage: (state, action) => {
 			state.isLoadingJumpMessage = action.payload;
+		},
+		addMessageToViewport: (
+			state,
+			{
+				payload
+			}: PayloadAction<{
+				channelId: string;
+				messageId: string;
+				keep50items: boolean;
+			}>
+		) => {
+			const { channelId, messageId, keep50items } = payload;
+			const currentViewport = state.channelViewPortMessageIds[channelId] || [];
+
+			const updatedViewport =
+				currentViewport.length >= 50 ? [...currentViewport.slice(keep50items ? -49 : 1), messageId] : [...currentViewport, messageId];
+
+			state.channelViewPortMessageIds[channelId] = updatedViewport;
+
+			const firstId = state.firstMessageId[channelId];
+			if (firstId && !updatedViewport.includes(firstId)) {
+				state.firstMessageId[channelId] = null;
+			}
 		},
 		jumToPresent: (state, action) => {
 			const { channelId } = action.payload;
@@ -1640,11 +1682,8 @@ const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: M
 };
 
 const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: MessagesState; channelId: string; adapterPayload: MessagesEntity }) => {
-	if (state.channelMessages[channelId]) {
+	if (state.channelMessages[channelId]?.ids?.length) {
 		state.channelMessages[channelId] = channelMessagesAdapter.addOne(state.channelMessages[channelId], adapterPayload);
-		if (Array.isArray(state.channelViewPortMessageIds[channelId])) {
-			state.channelViewPortMessageIds[channelId] = [...state.channelViewPortMessageIds[channelId], adapterPayload.id];
-		}
 	}
 };
 

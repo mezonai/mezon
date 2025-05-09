@@ -1,6 +1,5 @@
 import { selectSearchedThreadLoadingStatus, selectThreadInputSearchByChannelId, threadsActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { Spinner } from 'flowbite-react';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -44,7 +43,7 @@ const SearchThread = ({ channelId }: SearchThreadProps) => {
 				/>
 			</div>
 			<div className="w-5 h-6 flex flex-row items-center pl-1 absolute right-1 bg-transparent top-1/2 transform -translate-y-1/2">
-				{isLoading ? <Spinner className="w-4 h-4 mb-1" /> : <Icons.Search />}
+				{isLoading ? <Icons.LoadingSpinner /> : <Icons.Search />}
 			</div>
 		</div>
 	);

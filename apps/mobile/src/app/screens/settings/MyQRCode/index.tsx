@@ -1,5 +1,5 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectAllAccount, selectUpdateToken } from '@mezon/store-mobile';
+import { selectAllAccount } from '@mezon/store-mobile';
 import { createImgproxyUrl, formatMoney } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -22,7 +22,6 @@ export const MyQRCode = () => {
 	const tokenInWallet = useMemo(() => {
 		return userProfile?.wallet ? safeJSONParse(userProfile?.wallet || '{}')?.value : 0;
 	}, [userProfile?.wallet]);
-	const getTokenSocket = useSelector(selectUpdateToken(userProfile?.user?.id ?? ''));
 
 	const genQRCode = useCallback(async () => {
 		const data = {
@@ -63,7 +62,7 @@ export const MyQRCode = () => {
 				/>
 				<View>
 					<Text style={styles.nameProfile}>{userProfile?.user?.display_name || userProfile?.user?.username}</Text>
-					<Text style={styles.tokenProfile}>Balance: {formatMoney(Number(tokenInWallet || 0) + Number(getTokenSocket || 0))}₫</Text>
+					<Text style={styles.tokenProfile}>Balance: {formatMoney(Number(tokenInWallet || 0))}₫</Text>
 				</View>
 			</View>
 			{urlQRCode ? (

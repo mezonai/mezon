@@ -16,7 +16,7 @@ import {
 	useReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Popover, Spinner } from 'flowbite-react';
+import { Popover } from 'flowbite-react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -416,7 +416,7 @@ const Flow = () => {
 			</Popover>
 			{flowState.isLoading && (
 				<div className="fixed top-0 left-0 pt-2 right-0 bottom-0 bg-[#83818169] z-[999] text-center">
-					<Spinner size="xl" color="success" aria-label="Success spinner example" />
+					<Icons.LoadingSpinner />
 				</div>
 			)}
 			<SaveFlowModal

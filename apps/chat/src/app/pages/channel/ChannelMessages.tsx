@@ -571,8 +571,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const [getContainerHeight, prevContainerHeightRef] = useContainerHeight(chatRef, true);
 
-		const isLoading = useAppSelector(selectMessageIsLoading);
-		const [loadingDirection, setLoadingDirection] = useState<ELoadMoreDirection | null>(null);
+		// const isLoading = useAppSelector(selectMessageIsLoading);
+		// const [loadingDirection, setLoadingDirection] = useState<ELoadMoreDirection | null>(null);
 
 		const isScrollTopJustUpdatedRef = useRef(false);
 		const isViewportNewest = true;
@@ -619,11 +619,11 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			onNotchToggle,
 			isReady.current,
 			(event: { direction: LoadMoreDirection }) => {
-				if (event.direction === LoadMoreDirection.Forwards) {
-					setLoadingDirection(ELoadMoreDirection.bottom);
-				} else if (event.direction === LoadMoreDirection.Backwards) {
-					setLoadingDirection(ELoadMoreDirection.top);
-				}
+				// if (event.direction === LoadMoreDirection.Forwards) {
+				// 	setLoadingDirection(ELoadMoreDirection.bottom);
+				// } else if (event.direction === LoadMoreDirection.Backwards) {
+				// 	setLoadingDirection(ELoadMoreDirection.top);
+				// }
 				onChange(event.direction);
 			}
 		);
@@ -1010,12 +1010,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						)}
 						{renderedMessages}
 						{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
-
-						{userActiveScroll.current && loadingDirection === ELoadMoreDirection.bottom && isLoading && (
-							<div className="py-2">
-								<MessageSkeleton imageFrequency={0.5} randomKey={`top-${messageIds[0] || ''}`} />
-							</div>
-						)}
 
 						<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger"></div>
 						<div className="h-[20px] w-[1px] pointer-events-none"></div>

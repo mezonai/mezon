@@ -62,6 +62,7 @@ interface IChatMessageSendingProps {
 	boldsOnMessage?: MutableRefObject<ILinkOnMessage[]>;
 	markdownsOnMessage?: MutableRefObject<IMarkdownOnMessage[]>;
 	voiceLinkRoomOnMessage?: MutableRefObject<ILinkVoiceRoomOnMessage[]>;
+	anonymousMode?: boolean;
 }
 
 export const ChatMessageSending = memo(
@@ -79,7 +80,8 @@ export const ChatMessageSending = memo(
 		linksOnMessage,
 		boldsOnMessage,
 		markdownsOnMessage,
-		voiceLinkRoomOnMessage
+		voiceLinkRoomOnMessage,
+		anonymousMode = false
 	}: IChatMessageSendingProps) => {
 		const { themeValue } = useTheme();
 		const dispatch = useAppDispatch();
@@ -251,7 +253,7 @@ export const ChatMessageSending = memo(
 								simplifiedMentionList || [],
 								attachmentDataRef || [],
 								reference,
-								false,
+								anonymousMode && !currentDmGroup,
 								isMentionEveryOne,
 								true
 							);

@@ -22,7 +22,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ApiChannelAppResponseExtend, ChannelStatusEnum, ChannelThreads, IChannel, openVoiceChannel } from '@mezon/utils';
-import { Spinner } from 'flowbite-react';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -258,7 +257,7 @@ const ChannelLinkComponent = ({
 							? `${channel?.channel_label.substring(0, 20)}...`
 							: channel?.channel_label}
 					</p>
-					{channel.status === StatusVoiceChannel.No_Active && <Spinner aria-label="Loading spinner" />}
+					{channel.status === StatusVoiceChannel.No_Active && <Icons.LoadingSpinner />}
 				</span>
 			) : (
 				<Link to={channelPath} onClick={handleClick} className="channel-link" draggable="false">
