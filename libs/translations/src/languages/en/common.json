@@ -1,4 +1,12 @@
 {
     "searchPlaceHolder": "Search",
-    "savedSuccessfully": "Saved Successfully"
+    "savedSuccessfully": "Saved Successfully",
+    "settings": "Setting",
+    "search": "Search",
+    "muteNotification": "Mute",
+    "thread": "Threads",
+    "members": "Members",
+    "media": "Media",
+    "files": "Files",
+    "pins": "Pins"
 }

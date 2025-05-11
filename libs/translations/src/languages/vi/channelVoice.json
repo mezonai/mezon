@@ -13,7 +13,7 @@
     "channelVoiceRoom": {
         "channelVoice": "kênh thoại",
         "addPeople": "Thêm người vào cuộc trò chuyện thoại",
-        "leftTheGroup": "Đã rời nhóm, bạn đã được biết là đang ở đây!"
+        "leftTheGroup": "Đã rời nhóm. Những người khác đã được thông báo về sự hiện diện của bạn!"
     },
     "noChannelVoice": "Không có kênh thoại",
     "chat": "Trò chuyện",

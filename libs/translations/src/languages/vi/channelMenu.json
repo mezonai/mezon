@@ -2,7 +2,7 @@
   "menu": {
       "watchMenu": {
           "title": "",
-          "markAsRead": "Đánh dấu đã đọc"
+          "markAsRead": "Đánh dấu là đã đọc"
       },
       "inviteMenu": {
           "title": "",
@@ -23,7 +23,7 @@
         "title": "",
         "threads": "Chủ đề",
         "searchThreads": "Tìm kiếm chủ đề",
-        "searchFiles": "Tìm kiếm files",
+        "searchFiles": "Tìm kiếm tệp",
         "searchCanvas": "Tìm kiếm tên canvas"
 
       },

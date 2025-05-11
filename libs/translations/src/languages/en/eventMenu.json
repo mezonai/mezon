@@ -12,5 +12,24 @@
     "confirm": {
         "title": "Cancel Event",
         "content": "Are you sure you want to cancel this event?"
+    },
+    "dashboard": {
+        "title": "Events",
+        "noEvent": "There are no upcoming events.",
+        "noEventDescription": "Schedule an event for any planned activity in your clan. You can give other people permission to create event in Clan Settings > Roles.",
+        "createButton": "Create"
+    },
+    "item": {
+        "interested": "Interested",
+        "uninterested": "Uninterested"
+    },
+    "detail": {
+        "eventInfo": "Event Info",
+        "interested": "Interested"
+    },
+    "share": {
+        "title": "Share Event to friends",
+        "search": "Search",
+        "share": "Share"
     }
 }

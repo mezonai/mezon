@@ -16,5 +16,10 @@
     },
     "headerRight": {
         "addFriends": "Thêm bạn bè"
+    },
+    "navigationTabs": {
+        "messages": "Tin nhắn",
+        "notifications": "Thông báo",
+        "profile": "Hồ sơ"
     }
 }

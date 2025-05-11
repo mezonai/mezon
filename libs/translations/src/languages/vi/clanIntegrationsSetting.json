@@ -4,7 +4,7 @@
     "automatedMessage": "Tin nhắn và cập nhật tự động"
   },
   "webhooks": {
-    "description": "Webhook là một cách dễ dàng để nhận tin nhắn tự động và cập nhật dữ liệu được gửi đến kênh văn bản trong máy chủ bằng phép thuật Internet.",
+       "description": "Webhook là công cụ giúp bạn nhận tin nhắn tự động và cập nhật dữ liệu gửi đến kênh văn bản trong clan của bạn thông qua các kết nối Internet.",
     "learnMore": "Tìm hiểu thêm."
   },
   "webhooksEdit": {
@@ -12,7 +12,7 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "channel": "Kênh",
-    "recommendImage": "Chúng tôi khuyên bạn nên sử dụng hình ảnh có kích thước tối thiểu 128x128 px",
+    "recommendImage": "Khuyến nghị sử dụng hình ảnh có kích thước tối thiểu 128x128 px",
     "webhookURL": "URL Webhook",
     "copy": "Sao chép",
     "copied": "Đã sao chép",
@@ -24,7 +24,7 @@
   },
   "webhooksEmpty": {
     "noWebhooks": "KHÔNG CÓ WEBHOOK",
-    "webhooksEmptyDes": "Hiện tại, webhook chỉ có thể được tạo trên web hoặc desktop."
+    "webhooksEmptyDes": "Hiện tại, bạn chỉ có thể tạo webhook trên phiên bản web hoặc máy tính để bàn."
   },
   "webhooksItem": {
     "createdBy": "Được tạo vào {{webhookCreateTime}} bởi {{webhookUserOwnerName}}"

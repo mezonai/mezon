@@ -9,12 +9,15 @@
     },
     "copyLink": "Link Copied!",
     "unknownChannel": "UNKNOWN CHANNEL",
-    "yourLinkInvite":"Your invite link expires in ",
-    "editInviteLink": "Edit invite link.",
+    "yourLinkInvite":"Your invite link expires in",
+    "inviteFriendToChannel": "Invite friend to channel",
+    "editInviteLink": "Edit invite link",
     "inviteChannel": "INVITE CHANNEL",
     "advancedSettings":"ADVANCED SETTINGS",
     "expireAfter":"EXPIRE AFTER",
     "maxUsers":"MAX USERS",
     "temporaryMembership":"Temporary Membership",
-    "memberAutoKick":"Members are automatically kicked when they disconnect unless a role is assigned."
+    "memberAutoKick":"Members are automatically kicked when they disconnect unless a role is assigned.",
+    "btnInvite": "Invite",
+    "btnSent": "Sent"
 }

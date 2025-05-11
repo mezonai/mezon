@@ -1,6 +1,6 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
-const BluetoothModule = NativeModules?.BluetoothManager;
+const BluetoothModule = NativeModules?.BluetoothModule;
 const bluetoothEventEmitter = Platform.OS === 'android' ? new NativeEventEmitter(BluetoothModule) : undefined;
 
 type BluetoothConnectionChangeEvent = {
@@ -18,7 +18,7 @@ class BluetoothManager {
 		if (Platform.OS === 'android' && Platform.Version >= 31) {
 			try {
 				// For Android 12+ use the native module method
-				return await BluetoothModule.requestPermissions();
+				return await BluetoothModule?.requestPermissions();
 			} catch (err) {
 				console.error('Failed to request Bluetooth permissions:', err);
 				return false;
@@ -55,7 +55,7 @@ class BluetoothManager {
 		}
 
 		// Start the native listener
-		BluetoothModule.startBluetoothListener();
+		BluetoothModule?.startBluetoothListener();
 
 		// Register for events
 		const listener = bluetoothEventEmitter.addListener('bluetoothHeadsetConnectionChanged', (event: BluetoothConnectionChangeEvent) => {
@@ -71,7 +71,7 @@ class BluetoothManager {
 		this.listeners = [];
 
 		// Stop the native listener
-		BluetoothModule.stopBluetoothListener();
+		BluetoothModule?.stopBluetoothListener();
 	}
 }
 

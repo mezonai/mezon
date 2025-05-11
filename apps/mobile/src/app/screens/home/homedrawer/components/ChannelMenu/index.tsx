@@ -52,8 +52,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const getNotificationChannelSelected = useSelector(selectNotifiSettingsEntitiesById(channel?.channel_id));
 	const currentUserId = useSelector(selectCurrentUserId);
 
-	const isStreamingOrVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING || 
-                                channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+	const isStreamingOrVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
 	const isChannelUnmute = useMemo(() => {
 		return (
@@ -285,7 +284,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					}
 				});
 			},
-			isShow: channel?.creator_id === currentUserId 
+			isShow: channel?.creator_id === currentUserId
 		},
 		{
 			title: t('menu.manageThreadMenu.deleteThread'),

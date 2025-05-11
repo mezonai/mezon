@@ -2,6 +2,7 @@ import { HomeTab, MessageTab, NotiTab, ProfileTab } from '@mezon/mobile-componen
 import { size, useTheme } from '@mezon/mobile-ui';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Notifications from '../../screens/Notifications';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -15,6 +16,7 @@ const TabStack = createBottomTabNavigator();
 const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm: boolean }) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
+	const { t } = useTranslation(['screen']);
 
 	return (
 		<TabStack.Navigator
@@ -51,7 +53,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				component={isTabletLandscape ? MessagesScreenTablet : MessagesScreen}
 				options={{
 					headerShown: false,
-					title: 'Messages',
+					title: t('navigationTabs.messages'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
 					tabBarIcon: ({ color }) => <MessageTab color={color} width={size.s_22} height={size.s_22} />
 				}}
@@ -61,7 +63,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				component={Notifications}
 				options={{
 					headerShown: false,
-					title: 'Notifications',
+					title: t('navigationTabs.notifications'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
 					tabBarIcon: ({ color }) => <NotiTab color={color} width={size.s_22} height={size.s_22} />
 				}}
@@ -71,7 +73,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				component={ProfileScreen}
 				options={{
 					headerShown: false,
-					title: 'Profile',
+					title: t('navigationTabs.profile'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
 					tabBarIcon: ({ color }) => <ProfileTab color={color} width={size.s_22} height={size.s_22} />
 				}}

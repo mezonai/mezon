@@ -7,5 +7,17 @@
     "disableAccount": "Disable Account",
     "deleteAccount": "Delete Account",
     "accountInformation": "Account Information",
-    "doNotHaveBlockedUser": "You don't have any blocked users"
+    "doNotHaveBlockedUser": "You don't have any blocked users",
+    "disableAccountAlert": {
+        "title": "Disable account",
+        "description": "Are you sure you want to disable your account?",
+        "noConfirm": "No",
+        "yesConfirm": "Yes"
+    },
+    "deleteAccountAlert": {
+        "title": "Delete account",
+        "description": "Are you sure you want to delete your account?",
+        "noConfirm": "No",
+        "yesConfirm": "Yes"
+    },
 }

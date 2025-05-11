@@ -2,7 +2,7 @@
     "menu": {
         "watchMenu": {
             "title": "",
-            "markAsRead": "Đánh dấu đã đọc",
+            "markAsRead": "Đánh dấu là đã đọc",
             "browseChannels": "Tìm kênh"
         },
         "organizationMenu": {
@@ -43,5 +43,9 @@
     "info": {
         "online": "Trực tuyến",
         "members": "Thành viên"
+    },
+    "common": {
+        "search": "Tìm kiếm",
+        "community": "Cộng đồng"
     }
 }

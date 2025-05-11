@@ -24,7 +24,7 @@
   },
   "webhooksEmpty": {
     "noWebhooks":"NO WEBHOOKS",
-    "webhooksEmptyDes": "For now, webhooks can only be created on web or desktop"
+    "webhooksEmptyDes": "For now, webhook can only be created on web or desktop"
   },
   "webhooksItem": {
     "createdBy": "Created on {{webhookCreateTime}} by {{webhookUserOwnerName}}"

@@ -16,7 +16,7 @@
         "enableE2EE": "Enable E2EE"
     },
     "confirm": {
-        "title": "Leave '{{groupName}}'",
+        "title": "Leave {{groupName}}",
         "content": "Are you sure you want to leave {{groupName}}? You won't be able to rejoin this group unless you are re-invited.",
         "confirmText": "Yes"
     }

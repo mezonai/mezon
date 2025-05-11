@@ -97,14 +97,14 @@ const ChannelListHeader = () => {
 						}}
 					/>
 					<Text numberOfLines={1} style={styles.subTitle}>
-						Community
+						{t('common.community')}
 					</Text>
 				</View>
 			</Pressable>
 			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
 				<Pressable onPress={navigateToSearchPage} style={styles.wrapperSearch}>
 					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
-					<Text style={styles.placeholderSearchBox}>{t('search')}</Text>
+					<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
 				</Pressable>
 				<Pressable onPress={onOpenScanQR} style={styles.iconWrapper}>
 					<MezonIconCDN icon={IconCDN.scanQR} height={size.s_18} width={size.s_18} color={themeValue.text} />

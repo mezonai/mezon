@@ -25,7 +25,7 @@
         },
         "modalConfirm": {
             "title": "Xóa danh mục",
-            "content": "Bạn có chắc muốn xóa danh mục? Thay đổi này không thể hoàn tác",
+            "content": "Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể khôi phục.",
             "confirmText": "Xóa"
         }
     },

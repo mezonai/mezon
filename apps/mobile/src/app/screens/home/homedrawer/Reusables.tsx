@@ -1,6 +1,7 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { ChannelType, User } from 'mezon-js';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Images from '../../../../assets/Images';
@@ -47,6 +48,7 @@ export const FastImageRes = React.memo(({ uri, isCirle = false }: { uri: string;
 export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 	const { dmGroup, user, isSent, onPress } = props;
 	const { themeValue } = useTheme();
+	const { t } = useTranslation();
 	const styles = style(themeValue);
 
 	return (
@@ -77,7 +79,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 								onPress(dmGroup.channel_id || '', dmGroup.type || 0, dmGroup);
 							}}
 						>
-							{isSent ? 'Sent' : 'Invite'}
+							{isSent ? t('btnSent') : t('btnInvite')}
 						</MezonButton>
 					</View>
 				</TouchableOpacity>
@@ -103,7 +105,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 								onPress('', 0, user);
 							}}
 						>
-							{isSent ? 'Sent' : 'Invite'}
+							{isSent ? t('btnSent') : t('btnInvite')}
 						</MezonButton>
 					</View>
 				</TouchableOpacity>

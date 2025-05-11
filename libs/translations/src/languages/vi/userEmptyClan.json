@@ -14,10 +14,10 @@
     "createClan":"Tạo clan của bạn",
     "joinClan":"Tham gia một clan",
     "joinChannel":"Tham gia một kênh",
-    "findChannel":"Bạn thấy mình đang ở một nơi xa lạ. Bạn không có quyền truy cập vào bất kỳ kênh văn bản nào\n"
+   "findChannel":"Bạn thấy mình đang ở một nơi xa lạ. Bạn không có quyền truy cập vào bất kỳ kênh văn bản nào."
   },
   "emptyMessage": {
-    "dMsWith":"Tin nhắn trực tiếp với sức mạnh siêu phàm",
+   "dMsWith":"Tin nhắn trực tiếp với nhiều tính năng hữu ích",
     "inviteYourFriends":"Mời bạn bè của bạn chơi game, nghe nhạc cùng nhau và nhiều hơn nữa.",
     "addFriend":"Thêm bạn bè"
   }

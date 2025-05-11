@@ -41,6 +41,11 @@
         "title": "Có gì mới",
         "whatsNew": "Có gì mới"
     },
+    "updateGate": {
+    "outOfDateVersion": "Phiên bản đã lỗi thời",
+    "updateExperience": "Hãy cập nhật để có trải nghiệm tốt nhất!",
+    "updateNow": "Cập nhật ngay"
+  },
     "logOut": "Đăng xuất",
     "removeAccount": "Xóa tài khoản"
 }

@@ -41,6 +41,11 @@
         "title": "What's new",
         "whatsNew": "What's new"
     },
+    "updateGate": {
+    "outOfDateVersion": "Out of Date Version",
+    "updateExperience": "Let's update to have the best experience!",
+    "updateNow": "Update Now"
+  },
     "logOut": "Logout",
     "removeAccount": "Remove Account"
 }

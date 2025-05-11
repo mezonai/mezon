@@ -1,5 +1,5 @@
 {
-  "muteClan": "Tắt tiếng máy chủ sẽ ngăn chỉ báo chưa đọc và thông báo xuất hiện trừ khi bạn được đề cập",
+     "muteClan": "Tắt thông báo của clan sẽ ẩn các chỉ báo tin nhắn chưa đọc và không hiển thị thông báo, trừ khi bạn được nhắc đến",
   "notifySettingOption": {
       "title": "Cài đặt thông báo clan",
       "allMessage": "Tất cả tin nhắn",
@@ -21,7 +21,7 @@
       "addChannelsAllCategory": "Thêm tất cả kênh vào danh mục"
   },
   "clanNotificationSettingDetail": {
-      "muteChannelSubText": "Bạn sẽ không nhận được thông báo từ các kênh đã tắt tiếng, và chúng sẽ xuất hiện trong danh sách kênh của bạn. Cài đặt này áp dụng trên tất cả các thiết bị của bạn.",
+      "muteChannelSubText": "Bạn sẽ không nhận được thông báo từ các kênh đã tắt tiếng. Cài đặt này áp dụng trên tất cả các thiết bị của bạn.",
       "youHaveMuted": "Bạn đã tắt tiếng kênh này đến"
   },
   "clanNotificationBS": {

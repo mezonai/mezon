@@ -238,16 +238,20 @@ function ChannelVoice({
 
 	useEffect(() => {
 		if (Platform.OS === 'android') {
-			checkPermissions();
-			// Check initial state
-			BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
-				if (connected) toggleSpeakerByStatusBluetooth(connected);
-			});
+			try {
+				checkPermissions();
+				// Check initial state
+				BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
+					if (connected) toggleSpeakerByStatusBluetooth(connected);
+				});
 
-			// Listen for changes
-			BluetoothManager.startListeningForConnectionChanges((connected) => {
-				if (connected) toggleSpeakerByStatusBluetooth(connected);
-			});
+				// Listen for changes
+				BluetoothManager.startListeningForConnectionChanges((connected) => {
+					if (connected) toggleSpeakerByStatusBluetooth(connected);
+				});
+			} catch (error) {
+				console.error('Error setting up Bluetooth:', error);
+			}
 		}
 		// Cleanup
 		return () => {

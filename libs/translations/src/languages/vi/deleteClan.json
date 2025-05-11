@@ -1,10 +1,10 @@
 {
   "deleteClanModal": {
-    "title": "Xóa máy chủ",
+    "title": "Xóa clan",
     "description": "Bạn có chắc chắn muốn xóa {{currentClan}} không? Hành động này không thể hoàn tác.",
     "confirm": "Có",
     "cancel": "Không",
      "titleLeaveClan": "Rời clan",
-    "descriptionLeaveClan": "Bạn có chắc chắn muốn rời khỏi {{currentClan}} không? Bạn sẽ không thể tham gia lại máy chủ này trừ khi bạn được mời lại."
+    "descriptionLeaveClan": "Bạn có chắc chắn muốn rời khỏi {{currentClan}} không? Bạn sẽ không thể tham gia lại clan này trừ khi bạn được mời lại."
   }
 }

@@ -26,13 +26,13 @@
     "acceptFriend": "Chấp nhận kết bạn",
     "cancelFriendRequest": "Hủy yêu cầu kết bạn",
     "copyUsername": "Sao chép tên người dùng",
-    "copiedUserName": "Đã sao chép '{{username}}'"
+    "copiedUserName": "Đã sao chép {{username}}"
   },
   "userInfoDM": {
     "menu": {
       "removeFromGroup": "Xóa khỏi nhóm",
       "removeSuccess": "Đã xóa thành viên khỏi nhóm",
-      "removeFailed": "Xóa thanh viên khỏi nhóm không thành công"
+      "removeFailed": "Xóa thành viên khỏi nhóm không thành công"
     },
     "mezonMemberSince": "THÀNH VIÊN MEZON TỪ"
   },

@@ -169,6 +169,8 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 							value={eventTitle}
 							onTextChange={handleEventTitle}
 							placeHolder={t('fields.eventName.placeholder')}
+							isValid={isValidEventTitle}
+							errorMessage={t('fields.eventName.errorMessage')}
 						/>
 
 						<View style={styles.inlineSec}>
@@ -236,9 +238,6 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			</View>
 
 			<View style={styles.btnWrapper}>
-				{isValidEventTitle ? null : (
-					<ErrorInput isShowIcon={false} textErrorStyle={{ fontStyle: 'normal' }} errorMessage={'An event topic is required'} />
-				)}
 				<MezonButton
 					title={t('actions.next')}
 					titleStyle={styles.titleMezonBtn}

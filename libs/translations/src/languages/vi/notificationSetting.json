@@ -5,8 +5,8 @@
     "unMute": "Bật thông báo",
     "mute": "Tắt thông báo",
     "labelOptions": {
-      "reactionMessage": "Phản ứng tin nhắn",
-      "categoryDefault": "Sử dụng danh mục mặc định",
+      "reactionMessage": "Biểu cảm tin nhắn",
+      "categoryDefault": "Sử dụng cài đặt mặc định",
       "allMessage": "Tất cả",
       "notThingMessage": "Không có gì",
       "mentionMessage": "Chỉ @mention"
@@ -25,6 +25,6 @@
       "forTwentyFourHours": "Trong 24 giờ",
       "untilTurnItBackOn": "Cho đến khi bật lại"
     },
-    "description": "Bạn đang nhận thông báo từ tất cả tin nhắn trong clan này, nhưng bạn có thể thay đổi cài đặt tại đây"
+    "description": "Bạn đang nhận được thông báo từ tất cả tin nhắn trong clan này, nhưng bạn có thể thay đổi cài đặt tại đây"
   }
 }

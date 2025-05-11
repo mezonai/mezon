@@ -16,7 +16,7 @@
     },
     "confirm": {
         "delete": {
-            "content": "Bạn có chắc muốn xóa kênh {{categoryName}}?. Hành động này không thể khôi phục lại",
+            "content": "Bạn có chắc chắn muốn xóa kênh {{categoryName}} không? Hành động này không thể khôi phục.",
             "confirmText": "Xóa",
             "title": "Xóa danh mục"
         },
