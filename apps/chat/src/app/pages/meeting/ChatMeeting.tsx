@@ -52,7 +52,7 @@ const MessageItem = ({ message }: { message: ReceivedChatMessage }) => {
 		return `${hours}:${minutes}`;
 	}, []);
 	return (
-		<div className={`flex flex-col p-2 ${message.from?.isLocal ? 'text-right' : ''}`}>
+		<div className={`flex flex-col p-2`}>
 			<p className="text-base font-semibold leading-4">
 				{nameSender}
 				<span className="font-normal text-xs leading-4 ml-4">{time}</span>

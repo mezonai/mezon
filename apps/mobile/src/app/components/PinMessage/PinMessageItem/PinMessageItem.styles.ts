@@ -14,7 +14,8 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_10
 		},
 		pinMessageItemBox: {
-			flex: 1
+			flex: 1,
+			overflow: 'hidden'
 		},
 		pinMessageItemName: {
 			fontSize: size.label,

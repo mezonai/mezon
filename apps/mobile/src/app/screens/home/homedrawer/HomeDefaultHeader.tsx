@@ -1,16 +1,20 @@
-import { ENotificationActive, ETypeSearch } from '@mezon/mobile-components';
+import { useChatSending } from '@mezon/core';
+import { ActionEmitEvent, ENotificationActive, ETypeSearch, IOption } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectCurrentChannel, useAppSelector } from '@mezon/store-mobile';
-import { ChannelStatusEnum } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
+import { accountActions, selectAnonymousMode, selectChannelById, selectCurrentChannel, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { ChannelStatusEnum, TypeMessage, sleep } from '@mezon/utils';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import useStatusMuteChannel from '../../../hooks/useStatusMuteChannel';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import { ConfirmBuzzMessageModal } from './components/ConfirmBuzzMessage';
+import { OptionChannelHeader } from './components/HeaderOptions';
+import HeaderTooltip from './components/HeaderTooltip';
 import { style } from './styles';
 
 const HomeDefaultHeader = React.memo(
@@ -19,6 +23,51 @@ const HomeDefaultHeader = React.memo(
 		const styles = style(themeValue);
 		const currentChannel = useSelector(selectCurrentChannel);
 		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parent_id || ''));
+		const anonymousMode = useSelector(selectAnonymousMode);
+		const dispatch = useAppDispatch();
+		const mode =
+			currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
+		const { sendMessage } = useChatSending({ mode, channelOrDirect: currentChannel });
+
+		const headerOptions: IOption[] = [
+			{
+				title: 'anonymous',
+				content: anonymousMode ? 'Turn off Anonymous' : 'Turn on Anonymous',
+				value: OptionChannelHeader.Anonymous,
+				icon: <MezonIconCDN icon={IconCDN.anonymous} color={Colors.textGray} height={size.s_18} width={size.s_18} />
+			},
+			{
+				title: 'buzz',
+				content: 'Buzz',
+				value: OptionChannelHeader.Buzz,
+				icon: <MezonIconCDN icon={IconCDN.buzz} color={Colors.textGray} height={size.s_18} width={size.s_18} />
+			}
+		];
+
+		const onPressOption = (option: IOption) => {
+			if (option?.value === OptionChannelHeader.Anonymous) {
+				handleToggleAnnonymous();
+			} else if (option?.value === OptionChannelHeader.Buzz) {
+				handleActionBuzzMessage();
+			}
+		};
+
+		const handleActionBuzzMessage = async () => {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			await sleep(500);
+			const data = {
+				children: <ConfirmBuzzMessageModal onSubmit={handleBuzzMessage} />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+		};
+
+		const handleBuzzMessage = (text: string) => {
+			sendMessage({ t: text || 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+		};
+
+		const handleToggleAnnonymous = () => {
+			dispatch(accountActions.setAnonymousMode());
+		};
 
 		const parentChannelLabel = parent?.channel_label || '';
 		const navigateMenuThreadDetail = () => {
@@ -125,6 +174,7 @@ const HomeDefaultHeader = React.memo(
 				) : (
 					<View />
 				)}
+				<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
 			</View>
 		);
 	}

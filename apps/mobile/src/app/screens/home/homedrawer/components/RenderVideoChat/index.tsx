@@ -3,9 +3,10 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, NativeModules, Platform, TouchableOpacity, View } from 'react-native';
 import { createThumbnail } from 'react-native-create-thumbnail';
-import FastImage from 'react-native-fast-image';
 import Entypo from 'react-native-vector-icons/Entypo';
+import ImageNative from '../../../../../components/ImageNative';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
+
 const widthMedia = Metrics.screenWidth - 150;
 export const RenderVideoChat = React.memo(
 	({ videoURL, onLongPress }: { videoURL: string; onLongPress: () => void }) => {
@@ -14,7 +15,7 @@ export const RenderVideoChat = React.memo(
 		const [thumbPath, setThumbPath] = useState('');
 
 		const handlePlayVideo = () => {
-			navigation.navigate(APP_SCREEN.VIDEO_DETAIL, { videoURL });
+			navigation.push(APP_SCREEN.VIDEO_DETAIL, { videoURL });
 		};
 
 		useEffect(() => {
@@ -61,8 +62,8 @@ export const RenderVideoChat = React.memo(
 						onLongPress={onLongPress}
 						style={{ alignItems: 'center', justifyContent: 'center', width: '80%', overflow: 'hidden', borderRadius: size.s_4 }}
 					>
-						<FastImage
-							source={{ uri: thumbPath || '' }}
+						<ImageNative
+							url={thumbPath || ''}
 							style={{
 								width: '100%',
 								height: Math.max(160, size.s_100 * 2.5),

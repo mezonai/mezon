@@ -7,10 +7,10 @@
         "cateName": {
             "title": "Danh mục mới",
             "placeholder": "Tên danh mục",
-            "errorMessage": "Vui lòng nhập tên kênh hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -)."
+            "errorMessage": "Vui lòng nhập tên danh mục hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -)."
         },
         "catePrivate": {
-            "title": "Danh mục riêng",
+            "title": "Danh mục riêng tư",
             "description": "Nếu danh mục đặt ở chế độ riêng tư, chỉ các thành viên và vai trò được chọn mới có thể xem danh mục này. Các kênh đã đồng bộ trong danh mục này cũng sẽ tự động được chuyển thành riêng tư."
         }
     }

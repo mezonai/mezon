@@ -26,7 +26,7 @@
     "acceptFriend": "Accept Friend",
     "cancelFriendRequest": "Cancel Friend Request",
     "copyUsername": "Copy Username",
-    "copiedUserName": "Copied '{{username}}'"
+    "copiedUserName": "Copied {{username}}"
   },
   "userInfoDM": {
     "menu": {

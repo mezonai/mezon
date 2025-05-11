@@ -36,9 +36,9 @@
     "fields": {
         "defaultNotification": {
             "title": "Default Notification Settings",
-            "description": "This will determine whether members who have not explicitly set their notification settings receive notification for every messages sent in this server or not. We highly recommend setting this to only @mentions for community clan",
+            "description": "This will determine whether members who have not explicitly set their notification settings receive notification for every messages sent in this server or not. We highly recommend setting this to only @mention for community clan",
             "allMessages": "All Messages",
-            "onlyMentions": "Only @mentions"
+            "onlyMentions": "Only @mention"
         }
     }
 }

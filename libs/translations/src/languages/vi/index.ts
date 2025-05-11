@@ -7,7 +7,8 @@ import auditLog from './auditLog.json';
 import categoryCreator from './categoryCreator.json';
 import categoryMenu from './categoryMenu.json';
 import categorySetting from './categorySetting.json';
-import { default as channelCreator, default as channelMenu } from './channelCreator.json';
+import channelCreator from './channelCreator.json';
+import channelMenu from './channelMenu.json';
 import channelSetting from './channelSetting.json';
 import channelVoice from './channelVoice.json';
 import clan from './clan.json';
@@ -18,7 +19,7 @@ import clanNotificationsSetting from './clanNotificationsSetting.json';
 import clanOverviewSetting from './clanOverviewSetting.json';
 import clanRoles from './clanRoles.json';
 import clanSetting from './clanSetting.json';
-import clanStickerSettings from './clanStickerSetting.json';
+import clanStickerSetting from './clanStickerSetting.json';
 import common from './common.json';
 import createThread from './createThread.json';
 import customUserStatus from './customUserStatus.json';
@@ -87,7 +88,7 @@ export default {
 	customUserStatus,
 	searchMessageChannel,
 	clanNotificationsSetting,
-	clanStickerSettings,
+	clanStickerSetting,
 	menuCustomDM,
 	linkMessageInvite,
 	streamingRoom,

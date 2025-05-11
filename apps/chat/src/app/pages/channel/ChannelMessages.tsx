@@ -214,6 +214,7 @@ function ChannelMessages({
 					preventScrollbottom.current = false;
 				}
 
+				dispatch(messagesActions.resetLoading());
 				// dispatch(messagesActions.setViewingOlder({ channelId, status: true }));
 				return true;
 			}
@@ -234,6 +235,8 @@ function ChannelMessages({
 			}
 
 			await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.BEFORE_TIMESTAMP }));
+
+			dispatch(messagesActions.resetLoading());
 
 			return true;
 		},
@@ -297,13 +300,6 @@ function ChannelMessages({
 			scrollToLastMessage();
 		}
 	}, [dataReferences, lastMessage, scrollToLastMessage, getChatScrollBottomOffset]);
-
-	// Jump to present when user is jumping to present
-	// useEffect(() => {
-	// 	if (isJumpingToPresent) {
-	// 		setAnchor.current = new Date().getTime();
-	// 	}
-	// }, [dispatch, isJumpingToPresent, channelId, scrollToLastMessage]);
 
 	const handleScrollDownVisibilityChange = useCallback(
 		(isVisible: boolean) => {
@@ -417,7 +413,8 @@ const ScrollDownButton = memo(
 					channelId,
 					isFetchingLatestMessages: true,
 					noCache: true,
-					isClearMessage: true
+					isClearMessage: true,
+					toPresent: true
 				})
 			);
 			dispatch(messagesActions.setIsJumpingToPresent({ channelId, status: true }));
@@ -431,6 +428,13 @@ const ScrollDownButton = memo(
 			const lastSentMessageId = selectLatestMessageId(state, channelId);
 			const jumpPresent = !!lastSentMessageId && !messageIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
 
+			dispatch(
+				channelsActions.setScrollOffset({
+					channelId: channelId,
+					offset: 0
+				})
+			);
+
 			if (jumpPresent) {
 				handleJumpToPresent();
 				return;
@@ -441,6 +445,8 @@ const ScrollDownButton = memo(
 			if (!lastMessageElement) {
 				return;
 			}
+
+			dispatch(messagesActions.jumToPresent({ channelId }));
 
 			animateScroll({
 				container: messagesContainer,
@@ -565,8 +571,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const [getContainerHeight, prevContainerHeightRef] = useContainerHeight(chatRef, true);
 
-		const isLoading = useAppSelector(selectMessageIsLoading);
-		const [loadingDirection, setLoadingDirection] = useState<ELoadMoreDirection | null>(null);
+		// const isLoading = useAppSelector(selectMessageIsLoading);
+		// const [loadingDirection, setLoadingDirection] = useState<ELoadMoreDirection | null>(null);
 
 		const isScrollTopJustUpdatedRef = useRef(false);
 		const isViewportNewest = true;
@@ -613,11 +619,11 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			onNotchToggle,
 			isReady.current,
 			(event: { direction: LoadMoreDirection }) => {
-				if (event.direction === LoadMoreDirection.Forwards) {
-					setLoadingDirection(ELoadMoreDirection.bottom);
-				} else if (event.direction === LoadMoreDirection.Backwards) {
-					setLoadingDirection(ELoadMoreDirection.top);
-				}
+				// if (event.direction === LoadMoreDirection.Forwards) {
+				// 	setLoadingDirection(ELoadMoreDirection.bottom);
+				// } else if (event.direction === LoadMoreDirection.Backwards) {
+				// 	setLoadingDirection(ELoadMoreDirection.top);
+				// }
 				onChange(event.direction);
 			}
 		);
@@ -1004,12 +1010,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						)}
 						{renderedMessages}
 						{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
-
-						{userActiveScroll.current && loadingDirection === ELoadMoreDirection.bottom && isLoading && (
-							<div className="py-2">
-								<MessageSkeleton imageFrequency={0.5} randomKey={`top-${messageIds[0] || ''}`} />
-							</div>
-						)}
 
 						<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger"></div>
 						<div className="h-[20px] w-[1px] pointer-events-none"></div>

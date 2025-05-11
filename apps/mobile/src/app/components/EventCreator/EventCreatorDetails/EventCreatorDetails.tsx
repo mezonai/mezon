@@ -11,7 +11,6 @@ import MezonInput from '../../../componentUI/MezonInput';
 import MezonSelect from '../../../componentUI/MezonSelect';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
-import { ErrorInput } from '../../ErrorInput';
 import { style } from './styles';
 
 type CreateEventScreenDetails = typeof APP_SCREEN.MENU_CLAN.CREATE_EVENT_DETAILS;
@@ -169,6 +168,8 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 							value={eventTitle}
 							onTextChange={handleEventTitle}
 							placeHolder={t('fields.eventName.placeholder')}
+							isValid={isValidEventTitle}
+							errorMessage={t('fields.eventName.errorMessage')}
 						/>
 
 						<View style={styles.inlineSec}>
@@ -236,9 +237,6 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			</View>
 
 			<View style={styles.btnWrapper}>
-				{isValidEventTitle ? null : (
-					<ErrorInput isShowIcon={false} textErrorStyle={{ fontStyle: 'normal' }} errorMessage={'An event topic is required'} />
-				)}
 				<MezonButton
 					title={t('actions.next')}
 					titleStyle={styles.titleMezonBtn}

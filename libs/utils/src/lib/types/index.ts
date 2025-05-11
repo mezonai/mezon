@@ -991,7 +991,8 @@ export type SearchFilter = {
 
 export enum ETypeLinkMedia {
 	IMAGE_PREFIX = 'image',
-	VIDEO_PREFIX = 'video'
+	VIDEO_PREFIX = 'video',
+	VIDEO_TS_FILE = 'vnd.dlna.mpeg-tts'
 }
 
 export type RequestInput = {

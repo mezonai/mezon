@@ -6,6 +6,7 @@ import { FlashList } from '@shopify/flash-list';
 import { ApiWalletLedger } from 'mezon-js/api.gen';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SeparatorWithLine } from '../../../components/Common';
@@ -17,6 +18,7 @@ const limitWallet = 8;
 type ScreenHistoryTransaction = typeof APP_SCREEN.SETTINGS.HISTORY_TRANSACTION;
 export const HistoryTransactionScreen = ({ navigation }: SettingScreenProps<ScreenHistoryTransaction>) => {
 	const { themeValue } = useTheme();
+	const { t } = useTranslation(['token']);
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const walletLedger = useAppSelector((state) => selectWalletLedger(state));
@@ -61,7 +63,7 @@ export const HistoryTransactionScreen = ({ navigation }: SettingScreenProps<Scre
 			<Pressable key={`token_receiver_${item.id}`} style={styles.userItem} onPress={() => toggleDetails(item.transaction_id, item?.value < 0)}>
 				<View>
 					<Text style={styles.title}>{moment(item?.create_time).format('DD/MM/YYYY')}</Text>
-					<Text style={styles.code}>Transaction code: {item?.transaction_id}</Text>
+					<Text style={styles.code}>{t('historyTransaction.transactionCode', { code: item?.transaction_id })}</Text>
 				</View>
 				<Text style={[styles.title, { color: item?.value > 0 ? baseColor.bgSuccess : baseColor.buzzRed }]}>{valueText(item.value)}</Text>
 			</Pressable>
@@ -83,7 +85,7 @@ export const HistoryTransactionScreen = ({ navigation }: SettingScreenProps<Scre
 					disabled={!isPrevPage}
 					onPress={handlePrevPage}
 				>
-					<Text style={styles.title}>Previous page</Text>
+					<Text style={styles.title}>{t('historyTransaction.previousPage')}</Text>
 				</TouchableOpacity>
 				<View style={styles.page}>
 					<Text style={styles.title}>{page}</Text>
@@ -93,7 +95,7 @@ export const HistoryTransactionScreen = ({ navigation }: SettingScreenProps<Scre
 					disabled={!isNextPage}
 					onPress={handleNextPage}
 				>
-					<Text style={styles.title}>Next page</Text>
+					<Text style={styles.title}>{t('historyTransaction.nextPage')}</Text>
 				</TouchableOpacity>
 			</View>
 		</View>

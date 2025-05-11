@@ -1,4 +1,3 @@
-import { Select } from 'flowbite-react';
 import { connectField, HTMLFieldProps } from 'uniforms';
 
 type CustomFormFieldProps = HTMLFieldProps<string, HTMLDivElement> & {
@@ -19,23 +18,22 @@ function CustomSelectField({
 	return (
 		<div className="ImageField mt-2">
 			{label && <label className="block text-sm">{label}</label>}
-			<Select
+			<select
 				onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
 					onChange(event.target.value);
 				}}
 				value={value || ''}
 				disabled={props.disabled}
 				name={props.name}
-				ref={undefined}
 				required
-				style={{ backgroundColor: 'transparent', border: '1px solid #e5e7eb', borderRadius: '0.375rem' }}
+				className="bg-transparent border rounded-sm px-2 py-2 outline-none"
 			>
 				{options.map((option, index) => (
 					<option className="bg-white text-gray-800 dark:bg-gray-700 dark:text-white" key={index} value={option.value}>
 						{option.label}
 					</option>
 				))}
-			</Select>
+			</select>
 		</div>
 	);
 }

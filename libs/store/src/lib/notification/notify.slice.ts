@@ -2,8 +2,10 @@ import { captureSentryError } from '@mezon/logger';
 import { Direction_Mode, INotification, LoadingStatus, NotificationCategory, NotificationEntity } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import memoizee from 'memoizee';
-import { ApiNotification } from 'mezon-js/api.gen';
+import { safeJSONParse } from 'mezon-js';
+import { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
+import { MessagesEntity } from '../messages/messages.slice';
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIST_NOTIFICATION_CACHED_TIME = 1000 * 60 * 60;
 const LIMIT_NOTIFICATION = 50;
@@ -109,6 +111,33 @@ export const deleteNotify = createAsyncThunk(
 	}
 );
 
+export const markMessageNotify = createAsyncThunk('notification/markMessageNotify', async (message: MessagesEntity, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.createMessage2Inbox(mezon.session, {
+			message_id: message.id,
+			content: JSON.stringify(message.content),
+			avatar: message.avatar,
+			clan_id: message.clan_id,
+			channel_id: message.channel_id,
+			attachments: JSON.stringify(message.attachments),
+			mentions: JSON.stringify(message.mentions),
+			reactions: JSON.stringify(message.reactions),
+			references: JSON.stringify(message.references)
+		});
+		if (!response) {
+			return thunkAPI.rejectWithValue([]);
+		}
+		return {
+			noti: response,
+			message: message
+		};
+	} catch (error) {
+		captureSentryError(error, 'notification/markMessageNotify');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const initialNotificationState: NotificationState = notificationAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	notificationMentions: [],
@@ -197,7 +226,27 @@ export const notificationSlice = createSlice({
 				if (state.notifications[category]) {
 					state.notifications[category].data = state.notifications[category].data.filter((item) => !ids.includes(item.id));
 				}
-			});
+			})
+			.addCase(
+				markMessageNotify.fulfilled,
+				(state: NotificationState, action: PayloadAction<{ noti: ApiChannelMessageHeader; message: MessagesEntity }>) => {
+					if (state.notifications[NotificationCategory.MESSAGES].data.length) {
+						const { noti, message } = action.payload;
+						const notiMark: INotification = {
+							...message,
+							id: noti.id || '',
+							...noti,
+							create_time: safeJSONParse(noti.content || '').create_time,
+							content: safeJSONParse(noti.content || ''),
+							category: NotificationCategory.MESSAGES
+						};
+						state.notifications[NotificationCategory.MESSAGES].data = [
+							...state.notifications[NotificationCategory.MESSAGES].data,
+							notiMark
+						];
+					}
+				}
+			);
 	}
 });
 
@@ -206,6 +255,7 @@ export const notificationReducer = notificationSlice.reducer;
 export const notificationActions = {
 	...notificationSlice.actions,
 	fetchListNotification,
+	markMessageNotify,
 	deleteNotify
 };
 

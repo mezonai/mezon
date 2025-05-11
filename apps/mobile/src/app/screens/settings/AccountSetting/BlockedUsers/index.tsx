@@ -12,7 +12,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 	return (
 		<View style={styles.container}>
 			{/* TODO: update later */}
-			<Text style={{ textAlign: 'center' }}>{t('doNotHaveBlockedUser')}</Text>
+			<Text style={{ color: themeValue.text, textAlign: 'center' }}>{t('doNotHaveBlockedUser')}</Text>
 		</View>
 	);
 };

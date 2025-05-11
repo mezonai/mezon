@@ -11,6 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -27,6 +28,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { t } = useTranslation(['eventMenu']);
 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allEventManagement = useAppSelector((state) => selectEventsByClanId(state, currentClanId as string));
@@ -58,7 +60,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 			children: (
 				<MezonTab
 					views={[<EventDetail event={event} />, <EventMember event={event} />]}
-					titles={['Event Info', 'Interested']}
+					titles={[t('detail.eventInfo'), t('item.interested')]}
 					isBottomSheet={isTabletLandscape}
 				/>
 			)
@@ -70,11 +72,11 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 		<View style={styles.container}>
 			<View style={styles.header}>
 				<View style={[styles.section, styles.sectionRight]}></View>
-				<Text style={[styles.section, styles.sectionTitle]}>{`${listEventToShow?.length} Events`}</Text>
+				<Text style={[styles.section, styles.sectionTitle]}>{`${listEventToShow?.length} ${t('dashboard.title')}`}</Text>
 				<View style={[styles.section, styles.sectionRight]}>
 					{isCanManageEvent && (
 						<TouchableOpacity onPress={handlePressEventCreate}>
-							<Text style={[styles.emptyText, { color: baseColor.blurple, fontWeight: 'bold' }]}>Create</Text>
+							<Text style={[styles.emptyText, { color: baseColor.blurple, fontWeight: 'bold' }]}>{t('dashboard.createButton')}</Text>
 						</TouchableOpacity>
 					)}
 				</View>
@@ -88,12 +90,8 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 					<View style={styles.iconWrapper}>
 						<MezonIconCDN icon={IconCDN.calendarIcon} height={48} width={48} color={themeValue.text} />
 					</View>
-					<Text style={styles.emptyText}>There are no upcoming events.</Text>
-					<Text style={styles.emptyTextDescription}>
-						{
-							'Schedule an event for any planned activity in your server. You can give other people permission to create event in Server Settings > Roles '
-						}
-					</Text>
+					<Text style={styles.emptyText}>{t('dashboard.noEvent')}</Text>
+					<Text style={styles.emptyTextDescription}>{t('dashboard.noEventDescription')}</Text>
 				</View>
 			)}
 		</View>

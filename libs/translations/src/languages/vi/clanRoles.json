@@ -49,11 +49,11 @@
     "doNotSave": "Không lưu"
   },
   "roleColorPicker": {
-    "textBtnRole": "Màu Vai Trò",
-    "titleBS": "Chọn Màu",
-    "reset": "Đặt Lại",
+    "textBtnRole": "Màu vai trò",
+    "titleBS": "Chọn màu",
+    "reset": "Đặt lại",
     "save": "Lưu"
   },
-  "roleImagePicker": "Biểu tượng Role",
+  "roleImagePicker": "Biểu tượng role",
   "notifyEveryone": "Thông báo cho tất cả những người có quyền xem kênh này."
 }

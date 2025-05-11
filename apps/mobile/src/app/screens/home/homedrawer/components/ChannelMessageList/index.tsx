@@ -55,37 +55,27 @@ const ChannelListMessage = React.memo(
 				maxToRenderPerBatch={10}
 				windowSize={10}
 				onEndReachedThreshold={0.7}
-				// maintainVisibleContentPosition={{
-				// 	minIndexForVisible: 0,
-				// 	autoscrollToTopThreshold: 10
-				// }}
+				maintainVisibleContentPosition={{
+					minIndexForVisible: 0,
+					autoscrollToTopThreshold: 10
+				}}
 				ref={flatListRef}
-				// inverted
 				// overrideProps={{ isInvertedVirtualizedList: true }}
-				// showsVerticalScrollIndicator={false}
-				// data={messages || []}
 				onMomentumScrollEnd={handleScroll}
 				keyboardShouldPersistTaps={'handled'}
-				// contentContainerStyle={styles.listChannels}
-				// renderItem={renderItem}
 				// removeClippedSubviews={false}
 				// decelerationRate={'fast'}
-				// keyExtractor={keyExtractor}
-				// maxToRenderPerBatch={5}
 				// updateCellsBatchingPeriod={100}
-				// initialNumToRender={10}
-				// windowSize={21}
 				onEndReached={handleEndReached}
-				// onEndReachedThreshold={0.1}
 				// scrollEventThrottle={16}
 				// estimatedItemSize={220}
-				// viewabilityConfig={{
-				// 	minimumViewTime: 0,
-				// 	viewAreaCoveragePercentThreshold: 0,
-				// 	itemVisiblePercentThreshold: 0,
-				// 	waitForInteraction: false
-				// }}
-				// contentInsetAdjustmentBehavior="automatic"
+				viewabilityConfig={{
+					minimumViewTime: 0,
+					viewAreaCoveragePercentThreshold: 0,
+					itemVisiblePercentThreshold: 0,
+					waitForInteraction: false
+				}}
+				contentInsetAdjustmentBehavior="automatic"
 				ListHeaderComponent={isLoadMoreBottom && !isCannotLoadMore ? <ViewLoadMore /> : null}
 				ListFooterComponent={isLoadMoreTop && !isCannotLoadMore ? <ViewLoadMore /> : null}
 				onScrollToIndexFailed={(info) => {

@@ -73,7 +73,9 @@ const RoomView = ({
 				await localParticipant.setCameraEnabled(false);
 			} else {
 				try {
-					await localParticipant.setCameraEnabled(true);
+					await localParticipant.setCameraEnabled(true, {
+						facingMode: 'user'
+					});
 				} catch (enablederror) {
 					try {
 						const newVideoTrack = await createLocalVideoTrack();

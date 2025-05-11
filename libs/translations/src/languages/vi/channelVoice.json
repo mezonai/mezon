@@ -1,9 +1,9 @@
 {
     "joinChannelVoiceBS": {
-        "channelVoice": "channel voice",
+        "channelVoice": "kênh thoại",
         "noOne": "Chưa có ai ở đây!",
         "readyTalk": "Khi bạn sẵn sàng nói chuyện, chỉ cần tham gia vào.",
-        "joinVoice": "Tham gia Voice"
+        "joinVoice": "Tham gia kênh thoại"
     },
     "selectAudioOutput": {
         "title": "Chọn đầu ra âm thanh",
@@ -11,11 +11,11 @@
         "phone": "Điện thoại"
     },
     "channelVoiceRoom": {
-        "channelVoice": "channel voice",
-        "addPeople": "Thêm người vào cuộc trò chuyện giọng nói",
-        "leftTheGroup": "Đã rời nhóm, bạn đã được biết là đang ở đây!"
+        "channelVoice": "kênh thoại",
+        "addPeople": "Thêm người vào cuộc trò chuyện thoại",
+        "leftTheGroup": "Đã rời nhóm. Những người khác đã được thông báo về sự hiện diện của bạn!"
     },
-    "noChannelVoice": "Không có channel voice",
+    "noChannelVoice": "Không có kênh thoại",
     "chat": "Trò chuyện",
-    "noDisplay": "Không hiển thị channel voice"
+    "noDisplay": "Không hiển thị kênh thoại"
 }

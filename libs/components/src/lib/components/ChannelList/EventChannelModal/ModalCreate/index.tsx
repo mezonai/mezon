@@ -193,8 +193,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 			timeStart: formatToLocalDateString(contentSubmit.selectedDateStart || ''),
 			timeEnd: formatToLocalDateString(contentSubmit.selectedDateEnd || '')
 		};
-
-		return !isEqual(submittedContent, formattedCurrentEvent);
+		const changeTime =
+			formatTimeStringToHourFormat(currentEvent.start_time || '') !== contentSubmit.timeStart ||
+			formatTimeStringToHourFormat(currentEvent.end_time || '') !== contentSubmit.timeEnd;
+		return !isEqual(submittedContent, formattedCurrentEvent) || changeTime;
 	}, [
 		currentEvent?.title,
 		currentEvent?.address,
@@ -214,7 +216,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 		contentSubmit?.textChannelId,
 		contentSubmit?.repeatType,
 		contentSubmit?.selectedDateStart,
-		contentSubmit?.selectedDateEnd
+		contentSubmit?.selectedDateEnd,
+		contentSubmit?.timeStart,
+		contentSubmit?.timeEnd
 	]);
 
 	const handleUpdate = useCallback(async () => {

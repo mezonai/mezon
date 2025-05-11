@@ -20,7 +20,8 @@
         "giveACoffee": "Give A Coffee",
         "topicDiscussion": "Topic Discussion",
         "resend": "Resend",
-        "buzz": "Buzz!!"
+        "buzz": "Buzz!!",
+        "markMessage": "Mark Message"
     },
     "chatBox": {
         "replyingTo": "Replying to",
@@ -29,7 +30,8 @@
     "toast": {
         "copyText": "Copied Message Text",
         "attachmentIsLoading": "Attachment is loading, please wait a moment",
-        "pinMessage": "Message has been pinned"
+        "pinMessage": "Message has been pinned",
+        "markMessage": "Message has been marked"
     },
     "directMessage": {
         "you": "You"

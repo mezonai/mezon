@@ -31,7 +31,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 	setIsShowModalPanelClan,
 	rootRef
 }) => {
-	const [canManageClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
+	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 	const currentClanId = useSelector(selectCurrentClanId);
 	useEscapeKeyClose(rootRef, () => setIsShowModalPanelClan(false));
 	useOnClickOutside(rootRef, () => setIsShowModalPanelClan(false));

@@ -2,7 +2,7 @@
     "menu": {
         "watchMenu": {
             "title": "",
-            "markAsRead": "Đánh dấu là Đã đọc"
+            "markAsRead": "Đánh dấu là đã đọc"
         },
         "inviteMenu": {
             "title": "",
@@ -10,22 +10,22 @@
         },
         "notification": {
             "title": "",
-            "muteCategory": "Tắt tiếng Thể loại",
-            "notification": "Cài đặt Thông báo"
+            "muteCategory": "Tắt tiếng thông báo",
+            "notification": "Cài đặt thông báo"
         },
         "organizationMenu": {
             "title": "",
-            "createChannel": "Tạo Channel",
-            "edit": "Chỉnh sửa Thể loại",
-            "delete": "Xóa thể loại"
+            "createChannel": "Tạo kênh",
+            "edit": "Chỉnh sửa danh mục",
+            "delete": "Xóa danh mục"
         },
         "devMode": {
-            "title": "Chế độ Phát triển",
+            "title": "Chế độ phát triển",
             "copyServerID": "Sao chép ID Clan"
         },
         "modalConfirm": {
-            "title": "Xóa thể loại",
-            "content": "Bạn có chắc muốn xóa thể loại? Thay đổi này không thể hoàn tác",
+            "title": "Xóa danh mục",
+            "content": "Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể khôi phục.",
             "confirmText": "Xóa"
         }
     },

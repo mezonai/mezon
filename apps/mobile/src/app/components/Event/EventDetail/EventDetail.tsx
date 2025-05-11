@@ -14,6 +14,7 @@ import {
 import { EEventStatus, EPermission, sleep } from '@mezon/utils';
 import { ApiUserEventRequest } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
@@ -34,6 +35,7 @@ interface IEventDetailProps {
 export function EventDetail({ event }: IEventDetailProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { t } = useTranslation(['eventMenu']);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId2(state, event?.creator_id || ''));
 	const clans = useSelector(selectClanById(event?.clan_id || ''));
 	const { userId, userProfile } = useAuth();
@@ -145,7 +147,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 							<MezonIconCDN icon={IconCDN.bellIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 						)
 					}
-					title={isInterested ? 'UnInterested' : 'Interested'}
+					title={isInterested ? t('item.uninterested') : t('item.interested')}
 					fluid
 					border
 					onPress={handleToggleUserEvent}

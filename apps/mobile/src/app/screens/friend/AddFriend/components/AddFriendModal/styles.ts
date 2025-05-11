@@ -15,7 +15,8 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_10,
 			color: colors.textStrong,
 			paddingVertical: size.s_12,
-			fontSize: size.medium
+			fontSize: size.medium,
+			flex: 1
 		},
 		searchUsernameWrapper: {
 			backgroundColor: colors.secondary,

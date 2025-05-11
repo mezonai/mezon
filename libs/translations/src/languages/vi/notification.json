@@ -9,5 +9,7 @@
   },
   "removeNotification": "Xóa thông báo",
   "nothingHere": "Chưa có gì ở đây",
-  "comeBackNotify": "Quay lại để nhận thông báo về sự kiện, luồng và nhiều hơn nữa"
+  "comeBackNotify": "Quay lại để nhận thông báo về sự kiện và nhiều hơn thế nữa",
+  "repliedTo": "Trả lời: ",
+  "sender": "Người gửi: "
 }

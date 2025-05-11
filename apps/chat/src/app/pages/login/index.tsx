@@ -162,7 +162,7 @@ function Login() {
 							value={email}
 							onChange={handleEmailChange}
 							placeholder="Enter your email"
-							className={`dark:bg-[#1e1e1e] dark:border-gray-600 dark:placeholder-gray-400 `}
+							className={`dark:bg-[#1e1e1e] dark:border-gray-600 dark:placeholder-gray-400 text-black dark:text-white`}
 							readOnly={false}
 						/>
 						<div className="min-h-[20px]">{errors.email && <FormError message={errors.email} />}</div>

@@ -17,5 +17,10 @@
     },
     "headerRight": {
         "addFriends": "Add Friends"
+    },
+    "navigationTabs": {
+        "messages": "Messages",
+        "notifications": "Notifications",
+        "profile": "Profile"
     }
 }

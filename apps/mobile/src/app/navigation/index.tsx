@@ -7,17 +7,13 @@ import { I18nextProvider } from 'react-i18next';
 import 'react-native-svg';
 import RootNavigation from './RootNavigator';
 
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+const reactNavigationIntegration = Sentry.reactNavigationIntegration();
 
 Sentry.init({
 	dsn: process.env.NX_MOBILE_SENTRY_DSN,
 	tracesSampleRate: 1.0,
 	enabled: !__DEV__,
-	integrations: [
-		new Sentry.ReactNativeTracing({
-			routingInstrumentation
-		})
-	]
+	integrations: [reactNavigationIntegration]
 });
 
 // const codePushOptions = {

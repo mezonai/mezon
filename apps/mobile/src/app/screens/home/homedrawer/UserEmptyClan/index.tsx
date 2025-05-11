@@ -1,9 +1,10 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import { selectAllClans } from '@mezon/store';
 import { RootState } from '@mezon/store-mobile';
-import { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import Images from '../../../../../assets/Images';
 import CreateClanModal from '../components/CreateClanModal';
@@ -13,9 +14,14 @@ import { styles } from './styles';
 const UserEmptyClan = () => {
 	const clans = useSelector(selectAllClans);
 	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
-	const [isVisibleCreateClanModal, setIsVisibleCreateClanModal] = useState<boolean>(false);
 	const [isVisibleJoinClanModal, setIsVisibleJoinClanModal] = useState<boolean>(false);
 	const { t } = useTranslation('userEmptyClan');
+	const onCreateClanModal = useCallback(() => {
+		const data = {
+			children: <CreateClanModal />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	}, []);
 
 	if (clansLoadingStatus === 'loaded' && !clans?.length) {
 		return (
@@ -34,11 +40,10 @@ const UserEmptyClan = () => {
 					<TouchableOpacity onPress={() => setIsVisibleJoinClanModal(!isVisibleJoinClanModal)} style={styles.joinClan}>
 						<Text style={styles.textJoinClan}>{t('emptyClans.joinClan')}</Text>
 					</TouchableOpacity>
-					<TouchableOpacity onPress={() => setIsVisibleCreateClanModal(!isVisibleCreateClanModal)} style={styles.createClan}>
+					<TouchableOpacity onPress={onCreateClanModal} style={styles.createClan}>
 						<Text style={styles.textCreateClan}>{t('emptyClans.createClan')}</Text>
 					</TouchableOpacity>
 				</View>
-				<CreateClanModal visible={isVisibleCreateClanModal} setVisible={(value) => setIsVisibleCreateClanModal(value)} />
 				<JoinClanModal visible={isVisibleJoinClanModal} setVisible={(value) => setIsVisibleJoinClanModal(value)} />
 			</View>
 		);

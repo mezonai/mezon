@@ -33,6 +33,7 @@ const NavigationMain = memo(
 					try {
 						const hasThreeButtons = await NavigationBarModule.getNavigationBarStyle();
 						setIsThreeButtonNav(hasThreeButtons);
+						await NavigationBarModule.setNavigationBarTransparent();
 					} catch (error) {
 						console.error('Error getting navigation bar info:', error);
 					}
@@ -132,14 +133,6 @@ const NavigationMain = memo(
 	() => true
 );
 
-const CustomStatusBar = () => {
-	const { themeValue, themeBasic } = useTheme();
-	// eslint-disable-next-line eqeqeq
-	return (
-		<StatusBar animated backgroundColor={themeValue.secondary} barStyle={themeBasic == ThemeModeBase.DARK ? 'light-content' : 'dark-content'} />
-	);
-};
-
 const RootNavigation = (props) => {
 	const mezon = useMezon();
 	const { store, persistor } = useMemo(() => {
@@ -152,7 +145,6 @@ const RootNavigation = (props) => {
 	return (
 		<MezonStoreProvider store={store} loading={null} persistor={persistor}>
 			<ThemeProvider>
-				<CustomStatusBar />
 				<ChatContextProvider>
 					<WebRTCStreamProvider>
 						<DeviceProvider>

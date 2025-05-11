@@ -1,5 +1,5 @@
 {
-  "editStatus": "Chỉnh sửa trạng thái",
+  "editStatus": "Trạng thái",
   "save": "Lưu",
   "statusDuration": {
     "label": "Thời lượng trạng thái",
@@ -14,7 +14,7 @@
     "online": "Trực tuyến",
     "idle": "Rảnh",
     "doNotDisturb": "Không làm phiền",
-    "invisible": "Vô hình"
+    "invisible": "Ngoại tuyến (Ẩn)"
   },
   "setCustomStatus": "Đặt trạng thái tùy chỉnh",
   "onlineStatus": "Trạng thái trực tuyến",

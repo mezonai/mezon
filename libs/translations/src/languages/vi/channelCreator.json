@@ -7,7 +7,7 @@
       "title": "Tên kênh",
       "placeholder": "kenh-moi",
       "errorMessage": "Vui lòng nhập tên kênh hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
-      "duplicateChannelName": "Tên Channel đã có trong Clan. Vui lòng nhập tên khác."
+      "duplicateChannelName": "Tên kênh đã có trong clan. Vui lòng nhập tên khác."
     },
     "channelPrivate": {
       "title": "Kênh riêng tư",
@@ -15,19 +15,19 @@
       "descriptionVoice": "Bằng cách tạo một kênh thoại riêng tư, chỉ những thành viên và vai trò được chọn mới có quyền xem hoặc kết nối với kênh này."
     },
     "channelType": {
-      "title": "Loại Kênh",
+      "title": "Loại kênh",
       "text": {
         "title": "Văn bản",
         "description": "Đăng hình ảnh, GIF, huy hiệu, ý kiến và trò chơi chữ"
       },
       "voice": {
-        "title": "Giọng nói",
+        "title": "Thoại",
         "description": "Hẹn gặp nhau cùng với giọng nói, video và chia sẻ màn hình"
       }
     }
   },
   "channelVoiceType": {
-    "title": "Loại kênh giọng nói",
+    "title": "Loại kênh thoại",
     "mezon": "MEZON MEET",
     "gMeet": "GOOGLE MEET"
   }

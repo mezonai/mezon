@@ -4,7 +4,7 @@
             "headerTitle": "Bước 1 trong 3",
             "title": "Sự kiện của bạn ở đâu?",
             "subtitle": "Để không ai bị lạc đường đến nơi",
-            "description": "Bạn có thể cho người khác quyền tạo sự kiện trong Server > Cài đặt > Vai trò"
+            "description": "Bạn có thể cho người khác quyền tạo sự kiện trong Clan > Cài đặt > Vai trò"
         },
         "eventDetails": {
             "headerTitle": "Bước 2 trong 3",
@@ -27,8 +27,8 @@
     "fields": {
         "channelType": {
             "voiceChannel": {
-                "title": "Kênh Giọng Nói",
-                "description": "Giao lưu bằng giọng nói, video, chia sẻ màn hình và Go Live."
+                "title": "Kênh thoại",
+                "description": "Giao lưu thoại, video, chia sẻ màn hình và phát trực tiếp."
             },
             "somewhere": {
                 "title": "Nơi khác",
@@ -47,28 +47,28 @@
             "placeholder": "Thêm địa điểm, liên kết hoặc cái gì đó"
         },
         "eventName": {
-            "title": "Chủ đề Sự kiện",
+            "title": "Chủ đề sự kiện",
             "placeholder": "Sự kiện của bạn là gì?",
             "errorMessage": "Cần có chủ đề cho sự kiện"
         },
         "startDate": {
-            "title": "Ngày Bắt đầu",
-            "errorMessage": "Vui lòng chọn một ngày trong hoặc sau"
+            "title": "Ngày bắt đầu",
+              "errorMessage": "Vui lòng chọn ngày hiện tại hoặc ngày trong tương lai"
         },
         "startTime": {
-            "title": "Thời gian Bắt đầu",
+            "title": "Giờ bắt đầu",
             "errorMessage": "Vui lòng chọn một thời gian hợp lệ"
         },
         "endDate": {
-            "title": "Ngày Kết thúc",
-            "errorMessage": "Vui lòng chọn một ngày trong hoặc sau"
+            "title": "Ngày kết thúc",
+              "errorMessage": "Vui lòng chọn ngày hiện tại hoặc ngày trong tương lai"
         },
         "endTime": {
-            "title": "Thời gian Kết thúc",
+            "title": "Thời gian kết thúc",
             "errorMessage": "Vui lòng chọn một thời gian hợp lệ"
         },
         "eventFrequency": {
-            "title": "Tần suất Sự kiện",
+            "title": "Tần suất sự kiện",
             "noRepeat": "Không lặp lại",
             "weeklyOn": "Hàng tuần vào {{name}}",
             "everyOther": "Cách tuần {{name}}",
@@ -78,12 +78,12 @@
         },
         "description": {
             "title": "Mô tả",
-            "description": "Hãy cho mọi người biết thêm một chút về sự kiện của bạn. Markdown, dòng mới và liên kết được hỗ trợ."
+            "description": "Hãy cho mọi người biết thêm một chút về sự kiện của bạn."
         }
     },
     "actions": {
         "next": "Tiếp theo",
-        "create": "Tạo Sự kiện"
+        "create": "Tạo sự kiện"
     },
     "notify": {
         "locationBlank": "Cần có một địa điểm",

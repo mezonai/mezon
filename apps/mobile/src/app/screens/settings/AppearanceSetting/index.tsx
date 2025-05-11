@@ -3,8 +3,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
-import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
-import MezonSwitch from '../../../componentUI/MezonSwitch';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -30,59 +28,59 @@ export default function AppearanceSetting({ navigation }: SettingScreenProps<App
 									screen: APP_SCREEN.SETTINGS.APP_THEME
 								});
 							}
-						},
-						{
-							title: t('menu.theme.syncAcrossClients.title'),
-							description: t('menu.theme.syncAcrossClients.description'),
-							component: <MezonSwitch iconYesNo />
 						}
+						// {
+						// 	title: t('menu.theme.syncAcrossClients.title'),
+						// 	description: t('menu.theme.syncAcrossClients.description'),
+						// 	component: <MezonSwitch iconYesNo />
+						// }
 					]
 				}
 			] as IMezonMenuSectionProps[],
 		[theme]
 	);
 
-	const menuSearch = useMemo(
-		() =>
-			[
-				{
-					title: t('menu.search.title'),
-					items: [
-						{
-							title: t('menu.search.showResultCount.title'),
-							description: t('menu.search.showResultCount.description'),
-							component: <MezonSwitch iconYesNo />
-						}
-					]
-				}
-			] as IMezonMenuSectionProps[],
-		[]
-	);
+	// const menuSearch = useMemo(
+	// 	() =>
+	// 		[
+	// 			{
+	// 				title: t('menu.search.title'),
+	// 				items: [
+	// 					{
+	// 						title: t('menu.search.showResultCount.title'),
+	// 						description: t('menu.search.showResultCount.description'),
+	// 						component: <MezonSwitch iconYesNo />
+	// 					}
+	// 				]
+	// 			}
+	// 		] as IMezonMenuSectionProps[],
+	// 	[]
+	// );
 
-	const DMMessagePreviewOptions = useMemo(
-		() =>
-			[
-				{
-					title: t('fields.DMMessagePreview.AllMessages'),
-					value: 0
-				},
-				{
-					title: t('fields.DMMessagePreview.UnreadDMOnly'),
-					value: 1
-				},
-				{
-					title: t('fields.DMMessagePreview.None'),
-					value: 2
-				}
-			] as IMezonOptionData,
-		[]
-	);
+	// const DMMessagePreviewOptions = useMemo(
+	// 	() =>
+	// 		[
+	// 			{
+	// 				title: t('fields.DMMessagePreview.AllMessages'),
+	// 				value: 0
+	// 			},
+	// 			{
+	// 				title: t('fields.DMMessagePreview.UnreadDMOnly'),
+	// 				value: 1
+	// 			},
+	// 			{
+	// 				title: t('fields.DMMessagePreview.None'),
+	// 				value: 2
+	// 			}
+	// 		] as IMezonOptionData,
+	// 	[]
+	// );
 
 	return (
 		<View style={styles.container}>
 			<MezonMenu menu={menuTheme} />
-			<MezonOption data={DMMessagePreviewOptions} title={t('fields.DMMessagePreview.title')} />
-			<MezonMenu menu={menuSearch} />
+			{/* <MezonOption data={DMMessagePreviewOptions} title={t('fields.DMMessagePreview.title')} /> */}
+			{/* <MezonMenu menu={menuSearch} /> */}
 		</View>
 	);
 }

@@ -9,7 +9,7 @@
             "integrations": "Integrations",
             "emoji": "Emoji",
             "sticker": "Sticker",
-            "webhooks": "Webhooks",
+            "webhooks": "Webhook",
             "security": "Security",
             "permissionDenied": "You do not have permission to edit"
         },

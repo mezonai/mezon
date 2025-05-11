@@ -1,12 +1,12 @@
 {
   "userAction": {
     "transferFunds": "Chuyển tiền",
-    "sendMessage": "Gửi Tin Nhắn",
-    "voiceCall": "Gọi Thoại",
-    "videoCall": "Gọi Video",
-    "addFriend": "Kết Bạn",
-    "pending": "Đang Chờ",
-    "removeFriend": "Hủy Bạn"
+    "sendMessage": "Gửi tin nhắn",
+    "voiceCall": "Gọi thoại",
+    "videoCall": "Gọi video",
+    "addFriend": "Kết bạn",
+    "pending": "Đang chờ",
+    "removeFriend": "Hủy kết bạn"
   },
   "aboutMe": {
     "headerTitle": "GIỚI THIỆU",
@@ -15,29 +15,29 @@
     }
   },
   "kickUserClanModal": {
-    "kickFromServer": "Đuổi {{username}} khỏi Clan",
+    "kickFromServer": "Đuổi {{username}} khỏi clan",
     "description": "Bạn có chắc chắn muốn đuổi {{username}} khỏi clan? Họ có thể tham gia lại bằng lời mời mới.",
     "reasonKick": "LÝ DO ĐUỔI",
     "buttonName": "Đuổi"
   },
   "pendingContent": {
     "block": "Chặn",
-    "reportUserProfile": "Báo Cáo Hồ Sơ Người Dùng",
-    "acceptFriend": "Chấp Nhận Kết Bạn",
-    "cancelFriendRequest": "Hủy Yêu Cầu Kết Bạn",
-    "copyUsername": "Sao Chép Tên Người Dùng",
-    "copiedUserName": "Đã sao chép '{{username}}'"
+    "reportUserProfile": "Báo cáo hồ sơ người dùng",
+    "acceptFriend": "Chấp nhận kết bạn",
+    "cancelFriendRequest": "Hủy yêu cầu kết bạn",
+    "copyUsername": "Sao chép tên người dùng",
+    "copiedUserName": "Đã sao chép {{username}}"
   },
   "userInfoDM": {
     "menu": {
-      "removeFromGroup": "Xóa Khỏi Nhóm",
+      "removeFromGroup": "Xóa khỏi nhóm",
       "removeSuccess": "Đã xóa thành viên khỏi nhóm",
-      "removeFailed": "Xóa thanh viên khỏi nhóm không thành công"
+      "removeFailed": "Xóa thành viên khỏi nhóm không thành công"
     },
     "mezonMemberSince": "THÀNH VIÊN MEZON TỪ"
   },
   "incomingFriendRequest": "YÊU CẦU KẾT BẠN ĐANG ĐẾN",
-  "sendAddFriendSuccess": "Đã Gửi Yêu Cầu Kết Bạn",
-  "accept": "Chấp Nhận",
-  "ignore": "Bỏ Qua"
+  "sendAddFriendSuccess": "Đã gửi yêu cầu kết bạn",
+  "accept": "Chấp nhận",
+  "ignore": "Bỏ qua"
 }

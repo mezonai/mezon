@@ -44,7 +44,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
 			return permissionLevels[permission as EPermission] <= (maxPermissionLevel as number);
 		},
-		[currentClanId, maxPermissionLevel, permissionLevels]
+		[currentClanId, maxPermissionLevel, permissionLevels, isClanOwner]
 	);
 
 	const checkPermissions = useCallback(

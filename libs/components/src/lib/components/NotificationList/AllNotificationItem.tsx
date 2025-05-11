@@ -206,7 +206,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 								<span className="font-bold">{user?.user?.display_name || username}</span>
 								<span>{subjectText}</span>
 							</div>
-							<span className="text-zinc-400 text-[11px]">{convertTimeString(message.create_time as string)}</span>
+							<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time as string)}</span>
 						</div>
 					)}
 				</div>

@@ -270,6 +270,15 @@ export const categoriesSlice = createSlice({
 				state.byClans[clanId] = getInitialClanState();
 			}
 			state.byClans[clanId].categoryExpandState[categoryId] = expandState;
+		},
+		setCollapseAllCategory: (state, action: PayloadAction<{ clanId: string }>) => {
+			const { clanId } = action.payload;
+			if (!state.byClans[clanId]) {
+				state.byClans[clanId] = getInitialClanState();
+			}
+			Object.keys(state.byClans[clanId].categoryExpandState).map((cateName) => {
+				state.byClans[clanId].categoryExpandState[cateName] = false;
+			});
 		}
 	},
 	extraReducers: (builder) => {

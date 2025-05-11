@@ -1,8 +1,9 @@
 import { AudioSession, LiveKitRoom, TrackReference, useConnectionState, useLocalParticipant } from '@livekit/react-native';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectChannelById2, selectIsPiPMode, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
+import { Room, Track, createLocalVideoTrack } from 'livekit-client';
 import React, { memo, useEffect, useState } from 'react';
-import { AppState, Dimensions, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { AppState, NativeModules, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
@@ -11,8 +12,6 @@ import BluetoothManager from './BluetoothManager';
 import RoomView from './RoomView';
 import { style } from './styles';
 const { CustomAudioModule, KeepAwake, KeepAwakeIOS } = NativeModules;
-
-const { width, height } = Dimensions.get('window');
 
 const ConnectionMonitor = () => {
 	const connectionState = useConnectionState();
@@ -73,17 +72,38 @@ type headerProps = {
 const HeaderRoomView = memo(({ channel, onPressMinimizeRoom, onToggleSpeaker, isSpeakerOn }: headerProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { cameraTrack, isCameraEnabled } = useLocalParticipant();
+	const { cameraTrack, isCameraEnabled, localParticipant } = useLocalParticipant();
 
-	const handleSwitchCamera = () => {
-		if (cameraTrack && cameraTrack.track) {
-			if (typeof cameraTrack?.track?.mediaStreamTrack?._switchCamera === 'function') {
-				try {
-					cameraTrack?.track?.mediaStreamTrack?._switchCamera();
-				} catch (error) {
-					console.error(error);
+	const handleSwitchCamera = async () => {
+		try {
+			if (cameraTrack && cameraTrack.track) {
+				if (Platform.OS === 'ios') {
+					const videoPublication = localParticipant.getTrackPublication(Track.Source.Camera);
+					const videoTrack = videoPublication?.track;
+					const facingModeCurrent = videoPublication.track?.mediaStreamTrack?.getSettings?.()?.facingMode;
+					if (videoTrack) {
+						await localParticipant.unpublishTrack(videoTrack);
+					}
+					const newFacingMode = facingModeCurrent === 'user' ? 'environment' : 'user';
+					const devices = await Room.getLocalDevices('videoinput');
+					const targetCamera = devices.find((d) => d?.facing === (newFacingMode === 'user' ? 'front' : 'environment'));
+					const newTrack = await createLocalVideoTrack({
+						deviceId: targetCamera.deviceId,
+						facingMode: newFacingMode
+					});
+					await localParticipant.publishTrack(newTrack);
+				} else {
+					if (typeof cameraTrack?.track?.mediaStreamTrack?._switchCamera === 'function') {
+						try {
+							cameraTrack?.track?.mediaStreamTrack?._switchCamera();
+						} catch (error) {
+							console.error(error);
+						}
+					}
 				}
 			}
+		} catch (error) {
+			console.error(error);
 		}
 	};
 
@@ -101,7 +121,7 @@ const HeaderRoomView = memo(({ channel, onPressMinimizeRoom, onToggleSpeaker, is
 			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 				{isCameraEnabled && (
 					<TouchableOpacity onPress={() => handleSwitchCamera()} style={[styles.buttonCircle]}>
-						<MezonIconCDN icon={IconCDN.cameraFront} height={size.s_17} width={size.s_20} color={themeValue.white} />
+						<MezonIconCDN icon={IconCDN.cameraFront} height={size.s_24} width={size.s_24} color={themeValue.white} />
 					</TouchableOpacity>
 				)}
 				<TouchableOpacity onPress={() => onToggleSpeaker()} style={[styles.buttonCircle, isSpeakerOn && styles.buttonCircleActive]}>
@@ -134,6 +154,7 @@ function ChannelVoice({
 }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { width, height } = useWindowDimensions();
 	const channel = useAppSelector((state) => selectChannelById2(state, channelId));
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
 	const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(false);
@@ -215,20 +236,27 @@ function ChannelVoice({
 	}, [dispatch]);
 
 	useEffect(() => {
-		checkPermissions();
-		// Check initial state
-		BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
-			if (connected) toggleSpeakerByStatusBluetooth(connected);
-		});
+		if (Platform.OS === 'android') {
+			try {
+				checkPermissions();
+				// Check initial state
+				BluetoothManager.isBluetoothHeadsetConnected().then((connected) => {
+					if (connected) toggleSpeakerByStatusBluetooth(connected);
+				});
 
-		// Listen for changes
-		BluetoothManager.startListeningForConnectionChanges((connected) => {
-			if (connected) toggleSpeakerByStatusBluetooth(connected);
-		});
-
+				// Listen for changes
+				BluetoothManager.startListeningForConnectionChanges((connected) => {
+					if (connected) toggleSpeakerByStatusBluetooth(connected);
+				});
+			} catch (error) {
+				console.error('Error setting up Bluetooth:', error);
+			}
+		}
 		// Cleanup
 		return () => {
-			BluetoothManager.stopListeningForConnectionChanges();
+			if (Platform.OS === 'android') {
+				BluetoothManager.stopListeningForConnectionChanges();
+			}
 		};
 	}, []);
 

@@ -91,6 +91,14 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							>
 								Documents
 							</a>
+							<a
+								href={'clans/'}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="border-b-2 border-transparent shadow-none text-[16px] leading-[24px] text-[#7C92AF] font-semibold flex flex-row items-center px-[2px] hover:border-[#8FA7BF] hover:text-[#8FA7BF] focus:border-transparent focus:rounded-lg focus:shadow-[0px_0px_0px_4px_#678FFF]"
+							>
+								Discover
+							</a>
 						</div>
 					</div>
 					<div className="w-fit">

@@ -70,20 +70,20 @@ export const MezonModal = (props: IMezonModalProps) => {
 					{rightClose ? (
 						<View style={[styles.headerWrapper, isEmptyHeader && styles.bgDefault, headerStyles]}>
 							{visibleBackButton ? (
-								<Pressable onPress={() => onBack && onBack()}>
+								<Pressable onPress={() => onBack && onBack()} style={styles.buttonHeader}>
 									<ArrowLeftIcon height={size.s_20} width={size.s_20} />
 								</Pressable>
 							) : (
 								<View />
 							)}
-							<Pressable onPress={() => setVisible(false)}>
+							<Pressable onPress={() => setVisible(false)} style={styles.buttonHeader}>
 								<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.textStrong} height={size.s_24} width={size.s_24} />
 							</Pressable>
 						</View>
 					) : (
 						<View style={[styles.headerWrapper, isEmptyHeader && styles.bgDefault, headerStyles]}>
 							<View style={styles.headerContent}>
-								<Pressable onPress={() => setVisible(false)}>
+								<Pressable onPress={() => setVisible(false)} style={styles.buttonHeader}>
 									<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.textStrong} height={size.s_24} width={size.s_24} />
 								</Pressable>
 								{isTitleString ? (
