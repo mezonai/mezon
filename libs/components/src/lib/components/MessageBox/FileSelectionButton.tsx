@@ -9,9 +9,10 @@ export type FileSelectionButtonProps = {
 	currentClanId: string;
 	currentChannelId: string;
 	hasPermissionEdit: boolean;
+	onSendFile?: (fileInfo: { url: string; name: string; type: string; size: number }) => void;
 };
 
-function FileSelectionButton({ currentClanId, currentChannelId, hasPermissionEdit }: FileSelectionButtonProps) {
+function FileSelectionButton({ currentClanId, currentChannelId, hasPermissionEdit, onSendFile }: FileSelectionButtonProps) {
 	const dispatch = useAppDispatch();
 	const uploadedAttachmentsInChannel = useSelector(selectAttachmentByChannelId(currentChannelId))?.files || [];
 	const { setOverUploadingState } = useDragAndDrop();
@@ -36,6 +37,16 @@ function FileSelectionButton({ currentClanId, currentChannelId, hasPermissionEdi
 					files: updatedFiles
 				})
 			);
+			// Gọi callback gửi file qua chat nếu có
+			if (onSendFile && updatedFiles.length > 0) {
+				const file = updatedFiles[0];
+				onSendFile({
+					url: file.url || '',
+					name: file.filename || '',
+					type: file.filetype || '',
+					size: typeof file.size === 'number' ? file.size : 0
+				});
+			}
 			e.target.value = '';
 		}
 	};
