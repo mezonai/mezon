@@ -1,6 +1,6 @@
-import { useMemberStatus, useSeenMessagePool } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
-import { size } from '@mezon/mobile-ui';
+import { useChatSending, useMemberStatus, useSeenMessagePool } from '@mezon/core';
+import { ActionEmitEvent, IOption, Icons } from '@mezon/mobile-components';
+import { Colors, size } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
 	channelsActions,
@@ -14,11 +14,11 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { createImgproxyUrl } from '@mezon/utils';
+import { TypeMessage, createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import ImageNative from '../../../components/ImageNative';
@@ -27,6 +27,9 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
+import { ConfirmBuzzMessageModal } from '../../home/homedrawer/components/ConfirmBuzzMessage';
+import { OptionChannelHeader } from '../../home/homedrawer/components/HeaderOptions';
+import HeaderTooltip from '../../home/homedrawer/components/HeaderTooltip';
 
 interface HeaderProps {
 	from?: string;
@@ -103,6 +106,8 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 	const user = useSelector((state) => selectMemberClanByUserId2(state, currentDmGroup?.user_id?.[0]));
 	const status = getUserStatusByMetadata(user?.user?.metadata);
 
+	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+	const { sendMessage } = useChatSending({ mode, channelOrDirect: currentDmGroup });
 	const isModeDM = useMemo(() => {
 		return Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_DM;
 	}, [currentDmGroup?.type]);
@@ -151,6 +156,34 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		});
 	};
 
+	const headerOptions: IOption[] = [
+		{
+			title: 'buzz',
+			content: 'Buzz',
+			value: OptionChannelHeader.Buzz,
+			icon: <MezonIconCDN icon={IconCDN.buzz} color={Colors.textGray} height={size.s_18} width={size.s_18} />
+		}
+	];
+
+	const onPressOption = (option: IOption) => {
+		if (option?.value === OptionChannelHeader.Buzz) {
+			handleActionBuzzMessage();
+		}
+	};
+
+	const handleActionBuzzMessage = async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		await sleep(500);
+		const data = {
+			children: <ConfirmBuzzMessageModal onSubmit={handleBuzzMessage} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	};
+
+	const handleBuzzMessage = (text: string) => {
+		sendMessage({ t: text || 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+	};
+
 	return (
 		<View style={styles.headerWrapper}>
 			<Pressable onPress={handleBack} style={styles.backButton}>
@@ -192,6 +225,9 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 						<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 				)}
+				<View style={styles.iconOption}>
+					<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
+				</View>
 			</Pressable>
 		</View>
 	);

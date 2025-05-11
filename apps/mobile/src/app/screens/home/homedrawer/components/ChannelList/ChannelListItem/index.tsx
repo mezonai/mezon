@@ -33,8 +33,8 @@ export const ChannelListItem = React.memo((props: IChannelListItemProps) => {
 		);
 	}, [props?.data?.type]);
 	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, props?.data?.threadIds || []));
-
-	const shouldDisplay = isCategoryExpanded || isUnRead || isChannelVoice || isChannelActive || isHaveParentActive || hasUnread;
+	const shouldDisplay =
+		isCategoryExpanded || isUnRead || isChannelVoice || isChannelActive || isHaveParentActive || hasUnread || props?.data?.count_mess_unread > 0;
 
 	if (!shouldDisplay) return null;
 	return (

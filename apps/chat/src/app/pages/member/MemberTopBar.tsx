@@ -1,6 +1,5 @@
 import { useMemberContext } from '@mezon/core';
 import { Icons } from '@mezon/ui';
-import { Button } from 'flowbite-react';
 
 const MemberTopBar = () => {
 	const { searchQuery, setSearchQuery, isSort, setIsSort } = useMemberContext();
@@ -34,13 +33,13 @@ const MemberTopBar = () => {
 					</div>
 				</div>
 				<div>
-					<Button
-						className="h-8 rounded focus:ring-transparent bg-bgModifierHoverLight dark:bg-buttonSecondary hover:!bg-buttonSecondaryHover items-center dark:text-textDarkTheme text-textLightTheme"
+					<button
+						className="h-8 rounded text-sm font-medium flex gap-1 px-2 focus:ring-transparent bg-bgModifierHoverLight dark:bg-buttonSecondary hover:!bg-buttonSecondaryHover items-center dark:text-textDarkTheme text-textLightTheme"
 						onClick={toggleSortOrder}
 					>
 						<Icons.ConvertAccount className="rotate-90 mr-1 dark:text-textDarkTheme text-textLightTheme" />
 						<span>Sort</span>
-					</Button>
+					</button>
 				</div>
 			</div>
 		</div>

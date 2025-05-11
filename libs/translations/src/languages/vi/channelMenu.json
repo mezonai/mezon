@@ -2,7 +2,7 @@
   "menu": {
       "watchMenu": {
           "title": "",
-          "markAsRead": "Đánh dấu đã đọc"
+          "markAsRead": "Đánh dấu là đã đọc"
       },
       "inviteMenu": {
           "title": "",
@@ -15,34 +15,34 @@
           "title": "",
           "muteChannel": "Tắt thông báo kênh",
           "unMuteChannel": "Bật thông báo kênh",
-          "muteThread": "Tắt thông báo chuỗi",
-          "unMuteThread": "Bật thông báo chuỗi",
+          "muteThread": "Tắt thông báo chủ đề",
+          "unMuteThread": "Bật thông báo chủ đề",
           "notification": "Cài đặt thông báo"
       },
       "thread": {
         "title": "",
-        "threads": "Chuỗi",
-        "searchThreads": "Tìm kiếm threads",
-        "searchFiles": "Tìm kiếm files",
-        "searchCanvas": "Tìm kiếm tên Canvas"
+        "threads": "Chủ đề",
+        "searchThreads": "Tìm kiếm chủ đề",
+        "searchFiles": "Tìm kiếm tệp",
+        "searchCanvas": "Tìm kiếm tên canvas"
 
       },
       "organizationMenu": {
           "title": "",
           "edit": "Chỉnh sửa kênh",
           "deleteChannel": "Xóa kênh",
-          "duplicateChannel": "Nhân bản danh mục"
+          "duplicateChannel": "Nhân bản kênh"
       },
       "devMode": {
           "title": "Chế độ phát triển",
           "copyChannelID": "Sao chép ID kênh"
       },
       "manageThreadMenu": {
-          "editThread": "Chỉnh sửa chuỗi",
-          "deleteThread": "Xóa chuỗi",
-          "leaveThread": "Rời chuỗi",
-          "closeThread": "Đóng chuỗi",
-          "lockThread": "Khóa chuỗi",
+          "editThread": "Chỉnh sửa chủ đề",
+          "deleteThread": "Xóa chủ đề",
+          "leaveThread": "Rời chủ đề",
+          "closeThread": "Đóng chủ đề",
+          "lockThread": "Khóa chủ đề",
           "copyLink": "Sao chép liên kết"
       }
   },
@@ -51,8 +51,8 @@
   },
   "modalConfirm": {
       "thread": {
-          "title": "Xóa chuỗi {{threadName}}",
-          "content": "Bạn có chắc chắn muốn xóa chuỗi này không?",
+          "title": "Xóa chủ đề {{threadName}}",
+          "content": "Bạn có chắc chắn muốn xóa chủ đề này không?",
           "confirmText": "Có"
       },
       "channel": {
@@ -62,9 +62,9 @@
       }
   },
   "modalConFirmLeaveThread": {
-    "title": "Rời chuỗi",
-    "yesButton": "Rời chuỗi",
-    "textConfirm": "Bạn có chắc chắn muốn rời khỏi chuỗi này không? Bạn sẽ không thể nhận được tin nhắn từ chuỗi này khi đã rời khỏi."
+    "title": "Rời chủ đề",
+    "yesButton": "Rời chủ đề",
+    "textConfirm": "Bạn có chắc chắn muốn rời khỏi chủ đề này không? Bạn sẽ không thể nhận được tin nhắn từ chuỗi này khi đã rời khỏi."
   },
   "btnBadgeCount": "Mới",
   "favoriteChannel": "KÊNH YÊU THÍCH"

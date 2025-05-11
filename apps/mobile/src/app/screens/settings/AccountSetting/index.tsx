@@ -70,15 +70,15 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 				break;
 			case EAccountSettingType.DeleteAccount:
 				Alert.alert(
-					'Delete Account',
-					'Are you sure you want to delete this account?',
+					t('deleteAccountAlert.title'),
+					t('deleteAccountAlert.description'),
 					[
 						{
-							text: 'No',
+							text: t('deleteAccountAlert.noConfirm'),
 							style: 'cancel'
 						},
 						{
-							text: 'Yes',
+							text: t('deleteAccountAlert.yesConfirm'),
 							onPress: () => logout()
 						}
 					],
@@ -87,15 +87,15 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 				break;
 			case EAccountSettingType.DisableAccount:
 				Alert.alert(
-					'Disable Account',
-					'Are you sure you want to disable this account?',
+					t('disableAccountAlert.title'),
+					t('disableAccountAlert.description'),
 					[
 						{
-							text: 'No',
+							text: t('deleteAccountAlert.noConfirm'),
 							style: 'cancel'
 						},
 						{
-							text: 'Yes',
+							text: t('deleteAccountAlert.yesConfirm'),
 							onPress: () => logout()
 						}
 					],

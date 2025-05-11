@@ -1,6 +1,6 @@
 import { size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import Video from 'react-native-video';
@@ -14,6 +14,16 @@ export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 	const navigation = useNavigation<any>();
 	const [isBuffering, setIsBuffering] = useState(false);
 	const [isPlaying, setIsPlaying] = useState(false);
+	const [isReadyDisplay, setIsReadyDisplay] = useState(false);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setIsReadyDisplay(true);
+		}, 200);
+		return () => {
+			clearTimeout(timer);
+		};
+	}, []);
 
 	const handleClose = () => {
 		navigation.goBack();
@@ -27,43 +37,42 @@ export const RenderVideoDetail = React.memo(({ route }: { route: any }) => {
 		setIsBuffering(isBuffering);
 	};
 
-	if (!videoURL) return null;
-
 	return (
-		<View style={{ flex: 1, backgroundColor: '#000', paddingVertical: size.s_50, justifyContent: 'center', alignItems: 'center' }}>
+		<View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', paddingVertical: size.s_50, justifyContent: 'center', alignItems: 'center' }}>
 			<StatusBarHeight />
-			<Video
-				ref={videoRef}
-				source={{ uri: videoURL }}
-				style={{ width: '100%', height: '100%' }}
-				resizeMode="contain"
-				controls={true}
-				paused={false}
-				disableFocus={true}
-				muted={false}
-				onError={onError}
-				onBuffer={onBuffer}
-				ignoreSilentSwitch="ignore"
-				mixWithOthers="mix"
-				onReadyForDisplay={() => setIsPlaying(true)}
-				controlsStyles={{
-					hidePosition: false,
-					hidePlayPause: false,
-					hideForward: false,
-					hideRewind: false,
-					hideNext: false,
-					hidePrevious: false,
-					hideFullscreen: false,
-					hideSeekBar: false,
-					hideDuration: false,
-					hideNavigationBarOnFullScreenMode: true,
-					hideNotificationBarOnFullScreenMode: true,
-					hideSettingButton: true,
-					seekIncrementMS: 10000,
-					liveLabel: 'LIVE'
-				}}
-			/>
-
+			{!!videoURL && isReadyDisplay && (
+				<Video
+					ref={videoRef}
+					source={{ uri: videoURL }}
+					style={{ width: '100%', height: '100%' }}
+					resizeMode="contain"
+					controls={true}
+					paused={false}
+					disableFocus={true}
+					muted={false}
+					onError={onError}
+					onBuffer={onBuffer}
+					ignoreSilentSwitch="ignore"
+					mixWithOthers="mix"
+					onReadyForDisplay={() => setIsPlaying(true)}
+					controlsStyles={{
+						hidePosition: false,
+						hidePlayPause: false,
+						hideForward: false,
+						hideRewind: false,
+						hideNext: false,
+						hidePrevious: false,
+						hideFullscreen: false,
+						hideSeekBar: false,
+						hideDuration: false,
+						hideNavigationBarOnFullScreenMode: true,
+						hideNotificationBarOnFullScreenMode: true,
+						hideSettingButton: true,
+						seekIncrementMS: 10000,
+						liveLabel: 'LIVE'
+					}}
+				/>
+			)}
 			<TouchableOpacity onPress={handleClose} style={{ position: 'absolute', top: size.s_24, right: 0, padding: size.s_10 }}>
 				<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_40} width={size.s_40} />
 			</TouchableOpacity>

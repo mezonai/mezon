@@ -84,12 +84,15 @@ export const style = (colors: Attributes) =>
 			color: Colors.white
 		},
 		iconHeader: {
-			marginRight: size.s_16,
+			marginRight: size.s_4,
 			width: size.s_34,
 			height: size.s_34,
 			borderRadius: size.s_30,
 			backgroundColor: colors.secondaryLight,
 			alignItems: 'center',
 			justifyContent: 'center'
+		},
+		iconOption: {
+			marginRight: size.s_12
 		}
 	});

@@ -22,7 +22,6 @@ import MezonConfirm from '../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonInput from '../../componentUI/MezonInput';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
-import MezonOption from '../../componentUI/MezonOption';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 import { AddMemberOrRoleBS } from '../../screens/channelPermissionSetting/components/AddMemberOrRoleBS';
@@ -339,13 +338,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 
 			{/*<MezonSlider data={slowModeOptions} title={t('fields.channelSlowMode.title')} />*/}
 
-			{isChannel && channel?.type !== ChannelType.CHANNEL_TYPE_APP && (
-				<MezonOption
-					title={t('fields.channelHideInactivity.title')}
-					data={hideInactiveOptions}
-					bottomDescription={t('fields.channelHideInactivity.description')}
-				/>
-			)}
+			{/*{isChannel && channel?.type !== ChannelType.CHANNEL_TYPE_APP && (*/}
+			{/*	<MezonOption*/}
+			{/*		title={t('fields.channelHideInactivity.title')}*/}
+			{/*		data={hideInactiveOptions}*/}
+			{/*		bottomDescription={t('fields.channelHideInactivity.description')}*/}
+			{/*	/>*/}
+			{/*)}*/}
 
 			<MezonMenu menu={bottomMenu} />
 			<AddMemberOrRoleBS bottomSheetRef={bottomSheetRef} channel={channel} />

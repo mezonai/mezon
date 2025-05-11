@@ -1,5 +1,6 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker, UserRestrictionZone } from '@mezon/core';
 import {
+	categoriesActions,
 	defaultNotificationCategoryActions,
 	selectCurrentClan,
 	selectDefaultNotificationCategory,
@@ -35,9 +36,19 @@ interface IPanelCategoryProps {
 	onDeleteCategory?: () => void;
 	setIsShowPanelChannel: () => void;
 	openEditCategory: () => void;
+	toggleCollapseCategory?: () => void;
+	collapseCategory?: boolean;
 }
 
-const PanelCategory: React.FC<IPanelCategoryProps> = ({ coords, category, onDeleteCategory, setIsShowPanelChannel, openEditCategory }) => {
+const PanelCategory: React.FC<IPanelCategoryProps> = ({
+	coords,
+	category,
+	onDeleteCategory,
+	setIsShowPanelChannel,
+	openEditCategory,
+	toggleCollapseCategory,
+	collapseCategory
+}) => {
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [positionTop, setPositionTop] = useState(false);
 	const [canManageCategory] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
@@ -136,6 +147,9 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({ coords, category, onDele
 		}
 	}, [statusMarkAsReadCategory]);
 
+	const collapseAllCategory = () => {
+		dispatch(categoriesActions.setCollapseAllCategory({ clanId: category?.clan_id as string }));
+	};
 	return (
 		<div
 			ref={panelRef}
@@ -153,8 +167,8 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({ coords, category, onDele
 				</ItemPanel>
 			</GroupPanels>
 			<GroupPanels>
-				<ItemPanel children="Collapse Category" type={'checkbox'} />
-				<ItemPanel children="Collapse All Categories" />
+				<ItemPanel children="Collapse Category" type={'checkbox'} checked={collapseCategory} onClick={toggleCollapseCategory} />
+				<ItemPanel children="Collapse All Categories" onClick={collapseAllCategory} />
 			</GroupPanels>
 			<GroupPanels>
 				{defaultCategoryNotificationSetting?.active === ACTIVE || defaultCategoryNotificationSetting?.id === DEFAULT_ID ? (

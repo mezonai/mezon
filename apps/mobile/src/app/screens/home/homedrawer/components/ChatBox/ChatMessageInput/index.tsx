@@ -2,6 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	messagesActions,
 	selectAllAccount,
+	selectAnonymousMode,
 	selectCurrentClanId,
 	selectMemberClanByUserId2,
 	useAppDispatch,
@@ -14,6 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { Platform, TextInput, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
@@ -85,6 +88,7 @@ export const ChatMessageInput = memo(
 			const currentClanId = useSelector(selectCurrentClanId);
 			const userProfile = useSelector(selectAllAccount);
 			const userClanProfile = useAppSelector((state) => selectMemberClanByUserId2(state, userProfile?.user?.id));
+			const anonymousMode = useSelector(selectAnonymousMode);
 			const isAvailableSending = useMemo(() => {
 				return text?.length > 0 && text?.trim()?.length > 0;
 			}, [text]);
@@ -200,6 +204,11 @@ export const ChatMessageInput = memo(
 						<View style={styles.iconEmoji}>
 							<EmojiSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 						</View>
+						{mode !== ChannelStreamMode.STREAM_MODE_DM && mode !== ChannelStreamMode.STREAM_MODE_GROUP && anonymousMode && (
+							<View style={styles.iconAnonymous}>
+								<MezonIconCDN icon={IconCDN.anonymous} color={themeValue.text} />
+							</View>
+						)}
 					</View>
 
 					<ChatMessageSending
@@ -217,6 +226,7 @@ export const ChatMessageInput = memo(
 						voiceLinkRoomOnMessage={voiceLinkRoomOnMessage}
 						messageAction={messageAction}
 						clearInputAfterSendMessage={clearInputAfterSendMessage}
+						anonymousMode={anonymousMode}
 					/>
 				</View>
 			);

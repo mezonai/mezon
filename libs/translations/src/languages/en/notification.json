@@ -9,5 +9,7 @@
   },
   "removeNotification": "Remove Notification",
   "nothingHere":"Nothing here yet",
-  "comeBackNotify":"Come back for notifications on events , streams and more"
+  "comeBackNotify":"Come back for notifications on events , streams and more",
+  "repliedTo": "Replied To: ",
+  "sender": "Sender: "
 }

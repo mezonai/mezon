@@ -220,7 +220,8 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 				channelId: topicChannelId ? topicChannelId : channelId,
 				isFetchingLatestMessages: true,
 				noCache: true,
-				isClearMessage: true
+				isClearMessage: true,
+				toPresent: true
 			})
 		);
 		dispatch(messagesActions.setIdMessageToJump(null));

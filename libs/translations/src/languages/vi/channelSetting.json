@@ -1,24 +1,24 @@
 {
     "fields": {
         "channelName": {
-            "title": "Tên channel",
-            "placeholder": "Nhập tên channel",
+            "title": "Tên kênh",
+            "placeholder": "Nhập tên kênh",
             "errorMessage": "Vui lòng nhập tên kênh hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -)."
         },
         "threadName": {
-            "title": "Tên Thread",
-            "placeholder": "Nhập tên thread"
+            "title": "Tên chủ đề",
+            "placeholder": "Nhập tên chủ đề"
         },
         "channelDescription": {
-            "title": "Chủ đề của channel"
+            "title": "Mô tả của kênh"
         },
         "channelCategory": {
-            "title": "Category"
+            "title": "Danh mục kênh"
         },
         "channelPermission": {
             "title": "",
-            "permission": "Quyền hạn channel",
-            "description": "Thay đổi cài đặt quyền riêng tư và tùy chỉnh cách thành viên có thể tương tác với channel này."
+            "permission": "Quyền hạn kênh",
+            "description": "Thay đổi cài đặt quyền riêng tư và tùy chỉnh cách thành viên có thể tương tác với kênh này."
         },
         "privateChannelInvite": {
             "addMember": "Thêm thành viên"
@@ -30,8 +30,8 @@
             "invite": "Lời mời"
         },
         "channelSlowMode": {
-            "title": "Slowmode Cooldown",
-            "description": "Thành viên sẽ bị hạn chế chỉ gửi được một tin nhắn và tạo một chuỗi theo khoảng thời gian này, trừ khi họ có quyền Quản lý kênh hoặc Quản lý tin nhắn.",
+            "title": "Chế độ chậm",
+            "description": "Thành viên sẽ bị hạn chế chỉ gửi được một tin nhắn một lần trong khoảng thời gian này, trừ khi họ có quyền quản lý kênh hoặc quản lý tin nhắn.",
             "_5seconds": "5 giây",
             "_10seconds": "10 giây",
             "_15seconds": "15 giây",
@@ -60,27 +60,27 @@
         },
         "channelDelete": {
             "title": "",
-            "delete": "Xóa Channel"
+            "delete": "Xóa kênh"
         },
         "threadDelete": {
             "title": "",
-            "delete": "Xóa Thread"
+            "delete": "Xóa chủ đề"
         },
         "threadLeave": {
             "title": "",
-            "leave": "Rời chuỗi"
+            "leave": "Rời chủ đề"
         }
     },
     "confirm": {
         "delete": {
-            "content": "Bạn có chắc muốn xóa channel #{channelName} ?. Hành động này không thể khôi phục lại",
+            "content": "Bạn có chắc chắn muốn xóa kênh #{channelName} không? Hành động này không thể khôi phục.",
             "confirmText": "Xóa",
-            "title": "Xóa channel"
+            "title": "Xóa kênh"
         },
         "leave": {
-            "content": "Bạn có chắc muốn rời channel #{channelName} ?. Hành động này không thể khôi phục lại",
+            "content": "Bạn có chắc chắn muốn rời kênh #{channelName} không? Hành động này không thể khôi phục.",
             "confirmText": "Rời",
-            "title": "Rời channel"
+            "title": "Rời kênh"
         },
         "save": "Lưu"
     },
@@ -89,7 +89,7 @@
     },
     "channelPermission": {
         "permissionOverrides": "Ghi đè quyền",
-        "save": "Save",
+        "save": "Lưu",
         "generalChannelPermission": "QUYỀN TỔNG QUÁT KÊNH",
         "title": "Quyền truy cập",
         "basicView": "Cơ bản",
@@ -133,10 +133,10 @@
             "success": "Lưu thành công",
             "failed": "Lưu thất bại"
         },
-        "roleAndMemberEmpty": "không có Vai trò và Thành viên nào để ghi đè quyền"
+        "roleAndMemberEmpty": "không có vai trò và thành viên nào để ghi đè quyền"
     },
     "changeCategory": {
-        "title": "Thay đổi Category",
+        "title": "Thay đổi danh mục",
         "label": "CHUYỂN TỪ {{currentChannel}} TỚI"
     }
 }

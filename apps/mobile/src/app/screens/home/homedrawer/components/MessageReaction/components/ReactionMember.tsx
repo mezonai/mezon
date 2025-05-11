@@ -10,12 +10,13 @@ interface IReactionMemberProps {
 	userId: string;
 	onSelectUserId: (userId: string) => void;
 	channelId?: string;
+	count?: number;
 }
 
 export const ReactionMember = React.memo((props: IReactionMemberProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { userId, onSelectUserId, channelId } = props;
+	const { userId, onSelectUserId, channelId, count } = props;
 	const channelMemberList = useAppSelector((state) => selectAllChannelMembers(state, channelId || ''));
 	const user = useAppSelector((state) => selectMemberClanByUserId2(state, userId || ''));
 	const reactionMember = useMemo(() => {
@@ -48,10 +49,12 @@ export const ReactionMember = React.memo((props: IReactionMemberProps) => {
 					</View>
 				)}
 			</View>
-			<Text style={styles.memberName}>{reactionMember?.clan_nick || reactionMember?.user?.display_name || reactionMember?.user?.username}</Text>
-			{reactionMember?.user?.display_name || reactionMember?.user?.username ? (
-				<Text style={styles.mentionText}>@{reactionMember?.user?.display_name || reactionMember?.user?.username}</Text>
-			) : null}
+			<View style={styles.memberReactContainer}>
+				<Text style={styles.memberName}>
+					{reactionMember?.clan_nick || reactionMember?.user?.display_name || reactionMember?.user?.username}
+				</Text>
+				{count && <Text style={styles.memberReactCount}>x{count}</Text>}
+			</View>
 		</TouchableOpacity>
 	);
 });

@@ -1,10 +1,12 @@
 import { Colors, size } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BackHandler, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 const UpdateGateScreen = ({ route }) => {
+	const { t } = useTranslation(['setting']);
 	const storeUrl = route?.params?.storeUrl;
 
 	useFocusEffect(() => {
@@ -28,8 +30,8 @@ const UpdateGateScreen = ({ route }) => {
 				>
 					<FastImage source={require('../../../assets/images/bgRocket.png')} style={{ width: 350, height: 350 }} resizeMode={'cover'} />
 					<View>
-						<Text style={styles.title}>Out of Date Version</Text>
-						<Text style={styles.subTitle}>Let's update to have the best experience!</Text>
+						<Text style={styles.title}>{t('updateGate.outOfDateVersion')}</Text>
+						<Text style={styles.subTitle}>{t('updateGate.updateExperience')}</Text>
 					</View>
 				</View>
 				<TouchableOpacity onPress={onPress}>
@@ -44,7 +46,7 @@ const UpdateGateScreen = ({ route }) => {
 							alignItems: 'center'
 						}}
 					>
-						<Text style={styles.titleBtn}>Update Now</Text>
+						<Text style={styles.titleBtn}>{t('updateGate.updateNow')}</Text>
 					</View>
 				</TouchableOpacity>
 			</View>

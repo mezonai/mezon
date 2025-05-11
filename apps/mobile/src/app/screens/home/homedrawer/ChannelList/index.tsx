@@ -1,5 +1,12 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { channelsActions, selectCurrentChannelId, selectIsShowEmptyCategory, selectListChannelRenderByClanId, voiceActions } from '@mezon/store';
+import {
+	channelsActions,
+	clansActions,
+	selectCurrentChannelId,
+	selectIsShowEmptyCategory,
+	selectListChannelRenderByClanId,
+	voiceActions
+} from '@mezon/store';
 import { selectCurrentClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
 import { useFocusEffect } from '@react-navigation/native';
@@ -40,6 +47,7 @@ const ChannelList = () => {
 
 		const promise = [
 			dispatch(channelsActions.fetchChannels({ clanId: currentClan?.clan_id, noCache: true, isMobile: true })),
+			dispatch(clansActions.fetchClans()),
 			dispatch(
 				voiceActions.fetchVoiceChannelMembers({
 					clanId: currentClan?.clan_id ?? '',

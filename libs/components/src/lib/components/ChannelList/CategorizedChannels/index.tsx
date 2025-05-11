@@ -104,10 +104,12 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 				setIsShowPanelChannel={closeRightClickModal}
 				onDeleteCategory={openDeleteCategoryModal}
 				openEditCategory={handleOpenEditCategory}
+				toggleCollapseCategory={handleToggleCategory}
+				collapseCategory={!categoryExpandState}
 				category={category}
 			/>
 		);
-	}, [coords, category]);
+	}, [coords, category, categoryExpandState]);
 
 	const [openCategoryEdit, closeCategoryEdit] = useModal(() => {
 		return <CategorySetting onClose={closeCategoryEdit} category={category} />;

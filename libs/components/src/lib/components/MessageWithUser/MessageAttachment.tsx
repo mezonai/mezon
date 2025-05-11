@@ -58,7 +58,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 		if (
 			((attachment.filetype?.includes(EMimeTypes.mp4) || attachment.filetype?.includes(EMimeTypes.mov)) &&
 				!attachment.url?.includes(EMimeTypes.tenor)) ||
-			attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
+			(attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !attachment.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE))
 		) {
 			videos.push(attachment);
 			return;
@@ -206,8 +206,14 @@ const ImageAlbum = ({
 					resizeType: 'fit'
 				}),
 				uploaderData: {
-					name: currentImageUploader?.clan_nick || currentImageUploader?.user?.display_name || currentImageUploader?.user?.username || '',
-					avatar: (currentImageUploader?.clan_avatar || currentImageUploader?.user?.avatar_url) as string
+					name:
+						currentImageUploader?.clan_nick ||
+						currentImageUploader?.user?.display_name ||
+						currentImageUploader?.user?.username ||
+						'Anonymous',
+					avatar: (currentImageUploader?.clan_avatar ||
+						currentImageUploader?.user?.avatar_url ||
+						window.location.origin + '/assets/images/anonymous-avatar.png') as string
 				},
 				realUrl: attachmentData.url || '',
 				channelImagesData: {
@@ -240,8 +246,10 @@ const ImageAlbum = ({
 								currentImageUploader?.clan_nick ||
 								currentImageUploader?.user?.display_name ||
 								currentImageUploader?.user?.username ||
-								'',
-							avatar: (currentImageUploader?.clan_avatar || currentImageUploader?.user?.avatar_url) as string
+								'Anonymous',
+							avatar: (currentImageUploader?.clan_avatar ||
+								currentImageUploader?.user?.avatar_url ||
+								window.location.origin + '/assets/images/anonymous-avatar.png') as string
 						},
 						realUrl: attachmentData.url || '',
 						channelImagesData

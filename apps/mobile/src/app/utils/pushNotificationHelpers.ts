@@ -9,7 +9,14 @@ import {
 } from '@mezon/mobile-components';
 import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
-import { AndroidImportance, AndroidVisibility } from '@notifee/react-native/src/types/NotificationAndroid';
+import {
+	AndroidBadgeIconType,
+	AndroidCategory,
+	AndroidImportance,
+	AndroidVisibility,
+	NotificationAndroid
+} from '@notifee/react-native/src/types/NotificationAndroid';
+import { NotificationIOS } from '@notifee/react-native/src/types/NotificationIOS';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform } from 'react-native';
@@ -66,15 +73,17 @@ const openAppSettings = () => {
 };
 
 const getConfigDisplayNotificationAndroid = async (data: { [key: string]: string | object }) => {
-	const defaultConfig = {
+	const defaultConfig: NotificationAndroid = {
 		visibility: AndroidVisibility.PUBLIC,
 		channelId: 'default',
 		smallIcon: 'ic_notification',
 		color: '#000000',
 		sound: 'default',
 		largeIcon: data?.image,
+		smallIconLevel: 10,
 		importance: AndroidImportance.HIGH,
 		showTimestamp: true,
+		badgeIconType: AndroidBadgeIconType.LARGE,
 		pressAction: {
 			id: 'default',
 			launchActivity: 'com.mezon.mobile.MainActivity'
@@ -91,6 +100,9 @@ const getConfigDisplayNotificationAndroid = async (data: { [key: string]: string
 	return {
 		...defaultConfig,
 		channelId,
+		tag: channelId,
+		sortKey: channelId,
+		category: AndroidCategory.MESSAGE,
 		groupId: channelGroup?.groupId,
 		groupSummary: channelGroup?.isGroupSummary
 	};
@@ -99,6 +111,8 @@ const getConfigDisplayNotificationAndroid = async (data: { [key: string]: string
 const getOrCreateChannelGroup = async (channelId: string): Promise<any> => {
 	let groupId = '';
 	const group = await notifee.getChannelGroup(channelId);
+	const notifications = await notifee.getDisplayedNotifications();
+	const existInNotification = notifications?.some?.((item) => item?.notification?.android?.groupId === channelId);
 	if (group) {
 		groupId = group?.id;
 	}
@@ -109,7 +123,7 @@ const getOrCreateChannelGroup = async (channelId: string): Promise<any> => {
 
 	return {
 		groupId,
-		isGroupSummary: group === null
+		isGroupSummary: group === null || !existInNotification
 	};
 };
 
@@ -125,7 +139,7 @@ const createNotificationChannel = async (channelId: string, groupId: string): Pr
 };
 
 const getConfigDisplayNotificationIOS = async (data: { [key: string]: string | object }) => {
-	const defaultConfig = {
+	const defaultConfig: NotificationIOS = {
 		critical: true,
 		criticalVolume: 1.0,
 		sound: 'default',
@@ -145,8 +159,9 @@ const getConfigDisplayNotificationIOS = async (data: { [key: string]: string | o
 
 export const createLocalNotification = async (title: string, body: string, data: { [key: string]: string | object }) => {
 	try {
-		const configDisplayNotificationAndroid = Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
-		const configDisplayNotificationIOS = Platform.OS === 'ios' ? await getConfigDisplayNotificationIOS(data) : {};
+		const configDisplayNotificationAndroid: NotificationAndroid =
+			Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
+		const configDisplayNotificationIOS: NotificationIOS = Platform.OS === 'ios' ? await getConfigDisplayNotificationIOS(data) : {};
 		await notifee.displayNotification({
 			title: title || '',
 			body: body,

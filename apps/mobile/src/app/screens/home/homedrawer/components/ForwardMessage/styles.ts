@@ -2,6 +2,14 @@ import { Colors, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+	listContainer: {
+		height: '100%',
+		paddingHorizontal: size.s_16
+	},
+	inputSearch: {
+		borderRadius: size.s_8,
+		height: size.s_36
+	},
 	btn: {
 		flexDirection: 'row',
 		justifyContent: 'center',

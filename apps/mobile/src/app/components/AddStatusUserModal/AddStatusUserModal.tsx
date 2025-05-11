@@ -42,7 +42,7 @@ export const AddStatusUserModal = ({ isVisible, setIsVisible, userCustomStatus, 
 					value: 0
 				}
 			] as IMezonOptionData,
-		[]
+		[t]
 	);
 
 	useEffect(() => {

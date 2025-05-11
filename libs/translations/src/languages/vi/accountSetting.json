@@ -7,5 +7,17 @@
     "disableAccount": "Vô hiệu hóa tài khoản",
     "deleteAccount": "Xóa tài khoản",
     "accountInformation": "Thông tin tài khoản",
-    "doNotHaveBlockedUser": "Bạn không có người dùng nào bị chặn"
+    "doNotHaveBlockedUser": "Không có người dùng nào bị chặn",
+    "disableAccountAlert": {
+        "title": "Vô hiệu hoá tài khoản",
+        "description": "Bạn có chắn chắn muốn vô hiệu hoá tài khoản?",
+        "noConfirm": "Không",
+        "yesConfirm": "Có"
+    },
+    "deleteAccountAlert": {
+        "title": "Xoá tài khoản",
+        "description": "Bạn có chắn chắn muốn xoá tài khoản?",
+        "noConfirm": "Không",
+        "yesConfirm": "Có"
+    },
 }

@@ -14,6 +14,10 @@ export const style = (colors: Attributes) =>
 			marginBottom: size.s_6
 		},
 		wrapperCreateClanModal: {
+			flex: 1,
+			backgroundColor: colors.primary,
+			paddingHorizontal: size.s_20,
+			paddingTop: size.s_50,
 			width: '100%',
 			height: '100%'
 		},
@@ -70,7 +74,7 @@ export const style = (colors: Attributes) =>
 			marginBottom: size.s_6
 		},
 		community: {
-			fontSize: size.label,
+			fontSize: size.medium,
 			fontWeight: '500',
 			color: colors.text,
 			marginBottom: size.s_6
@@ -80,7 +84,8 @@ export const style = (colors: Attributes) =>
 		},
 		button: {
 			width: '100%',
-			height: size.s_40,
+			marginTop: size.s_10,
+			height: size.s_50,
 			backgroundColor: Colors.bgButton,
 			borderRadius: 50,
 			display: 'flex',

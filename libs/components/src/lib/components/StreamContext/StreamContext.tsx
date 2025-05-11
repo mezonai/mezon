@@ -8,7 +8,7 @@ interface WebRTCContextType {
 	connectionState: RTCIceConnectionState;
 	connect: () => Promise<void>;
 	disconnect: () => void;
-	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, gotifyToken: string) => void;
+	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => void;
 	streamVideoRef: React.RefObject<HTMLVideoElement>;
 	isStream: boolean;
 }
@@ -150,9 +150,9 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	}, []);
 
 	const handleChannelClick = useCallback(
-		(clanId: string, channelId: string, userId: string, streamId: string, username: string, gotifyToken: string) => {
+		(clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => {
 			const wsUrl = process.env.NX_CHAT_APP_STREAM_WS_URL;
-			const websocket = new WebSocket(`${wsUrl}/ws?username=${username}&token=${gotifyToken}`);
+			const websocket = new WebSocket(`${wsUrl}/ws?username=${username}&token=${accessToken}`);
 			try {
 				const peerConnection = initPeerConnection();
 				websocket.onopen = () => {

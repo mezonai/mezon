@@ -1,6 +1,7 @@
 import { attachmentActions, channelMembersActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import Canvas from '../../Canvas';
@@ -12,30 +13,31 @@ import AssetsHeader from '../AssetsHeader';
 import { threadDetailContext } from '../MenuThreadDetail';
 import styles from './style';
 
-const TabList = [
-	{
-		title: 'Members'
-	},
-	{
-		title: 'Media'
-	},
-	{
-		title: 'Files'
-	},
-	{
-		title: 'Pins'
-	},
-	{
-		title: 'Canvas'
-	}
-];
-
 export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) => {
 	const ref = useRef<ScrollView>();
+	const { t } = useTranslation(['common']);
 	const currentChannel = useContext(threadDetailContext);
 	const [tabActive, setTabActive] = useState<number>(0);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
+
+	const TabList = [
+		{
+			title: t('members')
+		},
+		{
+			title: t('media')
+		},
+		{
+			title: t('files')
+		},
+		{
+			title: t('pins')
+		},
+		{
+			title: 'Canvas'
+		}
+	];
 
 	const headerTablist = useMemo(() => {
 		if (

@@ -323,7 +323,7 @@ export const BaseMemberProfile = ({
 		}
 	}, [userProfile?.user?.metadata, metaDataDM, statusOnline, user?.user?.metadata]);
 	return (
-		<div className="relative group">
+		<div className="relative group w-full">
 			<div
 				ref={panelRef}
 				onMouseDown={handleMouseClick}

@@ -1,11 +1,11 @@
 {
-  "title": "Kênh Hạn Chế Độ Tuổi",
+  "title": "Kênh hạn chế độ tuổi",
   "des": "Kênh này chứa nội dung người lớn và được đánh dấu là hạn chế độ tuổi. Bạn có muốn tiếp tục không?",
-  "continue": "Tiếp Tục",
+  "continue": "Tiếp tục",
   "nope": "Không",
   "ageRestrictedForm": {
     "title": "Vui lòng xác nhận ngày sinh của bạn",
     "description": "Để đảm bảo an toàn cho người dùng, chúng tôi cần xác minh độ tuổi của bạn. Chúng tôi sẽ chỉ hỏi điều này một lần.",
-    "submit": "Xác Nhận"
+    "submit": "Xác nhận"
   }
 }

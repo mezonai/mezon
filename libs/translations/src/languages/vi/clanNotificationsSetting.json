@@ -1,31 +1,31 @@
 {
-  "muteClan": "Tắt tiếng máy chủ sẽ ngăn chỉ báo chưa đọc và thông báo xuất hiện trừ khi bạn được đề cập",
+     "muteClan": "Tắt thông báo của clan sẽ ẩn các chỉ báo tin nhắn chưa đọc và không hiển thị thông báo, trừ khi bạn được nhắc đến",
   "notifySettingOption": {
-      "title": "Cài Đặt Thông Báo Clan",
-      "allMessage": "Tất Cả Tin Nhắn",
-      "onlyMentions": "Chỉ @Đề Cập",
-      "nothing": "Không Có Gì"
+      "title": "Cài đặt thông báo clan",
+      "allMessage": "Tất cả tin nhắn",
+      "onlyMentions": "Chỉ @mention",
+      "nothing": "Không có gì"
   },
   "suppressOption": {
       "suppressEveryone": "Tắt tiếng @everyone và @here",
-      "suppressAllRole": "Tắt tiếng @đề cập Tất Cả Vai Trò",
-      "suppressHighlights": "Tắt tiếng Điểm Nổi Bật",
-      "subText": "Điểm nổi bật cung cấp các bản cập nhật thỉnh thoảng khi bạn bè của bạn đang trò chuyện trong clan mua, và hơn thế nữa."
+      "suppressAllRole": "Tắt tiếng @mention tất cả vai trò",
+      "suppressHighlights": "Tắt tiếng điểm nổi bật",
+      "subText": "Điểm nổi bật cung cấp các bản cập nhật thỉnh thoảng khi bạn bè của bạn đang trò chuyện trong clan mua và hơn thế nữa."
   },
   "muteEventOptions": {
-      "muteNewEvents": "Tắt Tiếng Sự Kiện Mới",
-      "mobilePushNotifications": "Thông Báo Đẩy Di Động"
+      "muteNewEvents": "Tắt tiếng sự kiện mới",
+      "mobilePushNotifications": "Thông báo đẩy di động"
   },
   "notificationOverrides": {
-      "title": "Ghi Đè Thông Báo",
-      "addChannelsAllCategory": "Thêm Tất Cả Kênh Vào Danh Mục"
+      "title": "Ghi đè thông báo",
+      "addChannelsAllCategory": "Thêm tất cả kênh vào danh mục"
   },
   "clanNotificationSettingDetail": {
-      "muteChannelSubText": "Bạn sẽ không nhận được thông báo từ các kênh đã tắt tiếng, và chúng sẽ xuất hiện trong danh sách kênh của bạn. Cài đặt này áp dụng trên tất cả các thiết bị của bạn.",
+      "muteChannelSubText": "Bạn sẽ không nhận được thông báo từ các kênh đã tắt tiếng. Cài đặt này áp dụng trên tất cả các thiết bị của bạn.",
       "youHaveMuted": "Bạn đã tắt tiếng kênh này đến"
   },
   "clanNotificationBS": {
-      "title": "Tắt Tiếng Clan Này"
+      "title": "Tắt tiếng clan này"
   },
-  "resetOverrides": "Đặt Lại Ghi Đè"
+  "resetOverrides": "Đặt lại ghi đè"
 }

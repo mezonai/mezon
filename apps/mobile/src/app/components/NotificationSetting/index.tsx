@@ -1,7 +1,6 @@
 import { IOptionsNotification, notifyLabels } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
-	notifiReactMessageActions,
 	notificationSettingActions,
 	selectCurrentChannelId,
 	selectCurrentClanId,
@@ -15,9 +14,7 @@ import { ChannelThreads, ENotificationTypes } from '@mezon/utils';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import MezonRadioButton from '../../componentUI/MezonRadioButton';
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox';
 import { style } from './NotificationSetting.styles';
 
@@ -100,23 +97,11 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 			}
 		}
 	};
-	const handleCheckboxPress = () => {
-		setIsChecked(!isChecked);
-		if (!isChecked) {
-			dispatch(notifiReactMessageActions.setNotifiReactMessage({ channel_id: channel?.channel_id || currentChannelId || '' }));
-		} else {
-			dispatch(notifiReactMessageActions.deleteNotifiReactMessage({ channel_id: channel?.channel_id || currentChannelId || '' }));
-		}
-	};
 
 	return (
 		<View style={styles.container}>
 			<Text style={styles.headerTitle}>{t('bottomSheet.title')}</Text>
 			<View style={styles.optionsSetting}>
-				<TouchableOpacity onPress={handleCheckboxPress} style={styles.option}>
-					<Text style={styles.labelOption}>{t('bottomSheet.labelOptions.reactionMessage')}</Text>
-					<MezonRadioButton checked={isChecked} />
-				</TouchableOpacity>
 				{radioBox?.map((item) => (
 					<FilterCheckbox item={item} key={`${item.id}`} defaultNotifyName={defaultNotifyName} onCheckboxPress={handleRadioBoxPress} />
 				))}

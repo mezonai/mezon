@@ -4,6 +4,7 @@ import { fetchDetailTransaction, selectDetailedger, useAppDispatch, useAppSelect
 import { formatNumber } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { style } from './styles';
@@ -15,6 +16,7 @@ interface ITransactionModalProps {
 export const TransactionModal = memo(({ transactionId, isMinus }: ITransactionModalProps) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
+	const { t } = useTranslation(['token']);
 	const detailLedger = useAppSelector((state) => selectDetailedger(state));
 	const styles = style(themeValue, isTabletLandscape);
 	const dispatch = useAppDispatch();
@@ -53,29 +55,29 @@ export const TransactionModal = memo(({ transactionId, isMinus }: ITransactionMo
 		<View style={styles.main}>
 			<View style={styles.container}>
 				<View style={styles.header}>
-					<Text style={styles.title}>{'Transaction Detail'}</Text>
+					<Text style={styles.title}>{t('historyTransaction.detail.title')}</Text>
 				</View>
 				<View style={styles.row}>
-					<Text style={styles.title}>{'Transaction ID'}</Text>
+					<Text style={styles.title}>{t('historyTransaction.detail.transactionId')}</Text>
 					<Text style={styles.description}>{detailLedger?.trans_id}</Text>
 				</View>
 				<View style={styles.row}>
-					<Text style={styles.title}>{'Time'}</Text>
+					<Text style={styles.title}>{t('historyTransaction.detail.time')}</Text>
 					<Text style={styles.description}>{formatDate}</Text>
 				</View>
 				<View style={styles.row}>
-					<Text style={styles.title}>{'Sender name'}</Text>
+					<Text style={styles.title}>{t('historyTransaction.detail.senderName')}</Text>
 					<Text style={styles.description}>{detailLedger?.sender_username}</Text>
 				</View>
 				<View style={styles.row}>
-					<Text style={styles.title}>{'Receiver name'}</Text>
+					<Text style={styles.title}>{t('historyTransaction.detail.receiverName')}</Text>
 					<Text style={styles.description}>{detailLedger?.receiver_username}</Text>
 				</View>
 				<View style={styles.row}>
-					<Text style={styles.title}>{'Amount'}</Text>
+					<Text style={styles.title}>{t('historyTransaction.detail.amount')}</Text>
 					<Text style={[styles.description, { color: isMinus ? baseColor.buzzRed : baseColor.bgSuccess }]}>{amount}</Text>
 				</View>
-				<Text style={styles.title}>{'Note'}</Text>
+				<Text style={styles.title}>{t('historyTransaction.detail.note')}</Text>
 				<View style={styles.noteField}>
 					<Text style={styles.note}>{note}</Text>
 				</View>

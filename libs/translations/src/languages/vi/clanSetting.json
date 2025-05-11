@@ -5,11 +5,11 @@
             "overview": "Tổng quan",
             "moderation": "Điều chỉnh",
             "auditLog": "Nhật ký chỉnh sửa",
-            "channels": "Channel",
+            "channels": "Kênh",
             "integrations": "Tích hợp",
             "emoji": "Emoji",
             "sticker": "Sticker",
-            "webhooks": "Webhooks",
+            "webhooks": "Webhook",
             "security": "Bảo mật",
             "permissionDenied": "Bạn không có quyền để chỉnh sửa"
         },
@@ -18,7 +18,7 @@
             "enableCommunity": "Kích hoạt cộng đồng"
         },
         "subscriptions": {
-            "title": "Gói đăng ký máy chủ",
+            "title": "Gói đăng ký clan",
             "getStarted": "Bắt đâu"
         },
         "userManagement": {

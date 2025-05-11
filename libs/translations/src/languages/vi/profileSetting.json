@@ -12,7 +12,7 @@
             "placeholder": ""
         },
         "clanName": {
-            "label": "Tên Clan",
+            "label": "Tên clan",
             "placeholder": ""
         },
         "pronouns": {
@@ -27,11 +27,11 @@
     "changedAlert": {
         "title": "Loại bỏ thay đổi chưa được lưu?",
         "description": "Có những thay đổi chưa được lưu, bạn có chắc muốn loại bỏ chúng?",
-        "discard": "Bỏ",
+        "discard": "Bỏ qua",
         "keepEditing": "Tiếp tục chỉnh sửa"
     },
-    "selectAClan": "Chọn Một Máy Chủ",
-    "searchClanPlaceholder": "Tìm kiếm Máy Chủ",
-    "updateProfileSuccess": "Cập nhật hồ sơ thành công",
-    "updateClanProfileSuccess": "Cập nhật hồ sơ máy chủ thành công"
+    "selectAClan": "Chọn một clan",
+    "searchClanPlaceholder": "Tìm kiếm clan",
+    "updateProfileSuccess": "Cập nhật hồ sơ cá nhân thành công",
+    "updateClanProfileSuccess": "Cập nhật hồ sơ clan thành công"
 }

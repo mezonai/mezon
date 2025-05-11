@@ -7,8 +7,8 @@
         "friendRequestSettings": "Cài đặt yêu cầu kết bạn",
         "language": "Ngôn ngữ",
         "profile": "Hồ sơ",
-        "newMessage": "Tin Nhắn Mới",
-        "newGroup": "Nhóm Mới",
+        "newMessage": "Tin nhắn mới",
+        "newGroup": "Nhóm mới",
         "addMembers": "Thêm thành viên",
         "appearance": "Giao diện",
         "topic": "Chủ đề",
@@ -16,5 +16,10 @@
     },
     "headerRight": {
         "addFriends": "Thêm bạn bè"
+    },
+    "navigationTabs": {
+        "messages": "Tin nhắn",
+        "notifications": "Thông báo",
+        "profile": "Hồ sơ"
     }
 }

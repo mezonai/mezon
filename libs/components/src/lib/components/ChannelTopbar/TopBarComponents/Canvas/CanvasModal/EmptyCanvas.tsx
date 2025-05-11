@@ -2,7 +2,6 @@ import { usePermissionChecker } from '@mezon/core';
 import { selectCurrentChannelId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EOverriddenPermission, EPermission } from '@mezon/utils';
-import { Button } from 'flowbite-react';
 import { useSelector } from 'react-redux';
 
 type EmptyCanvasProps = {
@@ -27,13 +26,12 @@ const EmptyCanvas = ({ onClick }: EmptyCanvasProps) => {
 				Stay focused on a conversation with a canvas - a temporary text channel.
 			</p>
 			{canManageThread && (
-				<Button
+				<button
 					onClick={handleCreateCanvas}
-					size="sm"
-					className="mt-6 h-10 font-medium text-sm rounded focus:ring-transparent bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover"
+					className="mt-6 py-3 px-2 font-medium text-sm rounded focus:ring-transparent bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover"
 				>
 					Create Canvas
-				</Button>
+				</button>
 			)}
 		</div>
 	);

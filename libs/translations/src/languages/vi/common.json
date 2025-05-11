@@ -1,4 +1,12 @@
 {
     "searchPlaceHolder": "Tìm kiếm",
-    "savedSuccessfully": "Đã lưu thành công"
+    "savedSuccessfully": "Đã lưu thành công",
+    "settings": "Cài đặt",
+    "search": "Tìm kiếm",
+    "muteNotification": "Tắt tiếng",
+    "thread": "Chủ đề",
+    "members": "Thành viên",
+    "media": "File phương tiện",
+    "files": "Tệp",
+    "pins": "Ghim"
 }

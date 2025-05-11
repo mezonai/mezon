@@ -22,7 +22,11 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			paddingVertical: Metrics.size.l,
+			paddingHorizontal: Metrics.size.l,
 			backgroundColor: colors.secondary
+		},
+		buttonHeader: {
+			flex: 1
 		},
 		headerContent: {
 			flexDirection: 'row',

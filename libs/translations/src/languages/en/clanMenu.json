@@ -40,9 +40,12 @@
         "notifications": "Notifications",
         "settings": "Settings"
     },
-
     "info": {
         "online": "Online",
         "members": "Members"
+    },
+    "common": {
+        "search": "Search",
+        "community": "Community"
     }
 }

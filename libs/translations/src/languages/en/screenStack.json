@@ -13,9 +13,9 @@
         "serverRoles": "Clan Roles",
         "notificationSetting": "Notification settings",
         "newOverride": "New Override",
-        "webhooks": "Webhooks",
+        "webhooks": "Webhook",
         "integrations": "Integrations",
-        "webhooksEdit": "Webhooks Edit",
+        "webhooksEdit": "Webhook Edit",
         "auditLog": "Audit Log",
         "filterByUser": "Filter By User",
         "filterByAction": "Filter By Action"

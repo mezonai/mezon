@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 
@@ -64,5 +64,3 @@ export const fcmReducer = fcmSlice.reducer;
 export const fcmActions = { ...fcmSlice.actions, registFcmDeviceToken };
 
 export const getFcmState = (rootState: { [FCM_FEATURE_KEY]: fcm }): fcm => rootState[FCM_FEATURE_KEY];
-
-export const selectGotifyToken = createSelector(getFcmState, (state) => state?.token);

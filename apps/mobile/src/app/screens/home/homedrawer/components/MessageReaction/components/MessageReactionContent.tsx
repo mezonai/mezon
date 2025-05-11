@@ -142,12 +142,13 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 				</View>
 				<FlashList
 					data={dataSenderEmojis}
-					renderItem={({ item, index }: { item: { sender_id: string }; index: number }) => {
+					renderItem={({ item, index }: { item: { sender_id: string; count: number }; index: number }) => {
 						return (
 							<View key={`${index}_${item.sender_id}_allReactionDataOnOneMessage`} style={{ marginBottom: size.s_10 }}>
 								<ReactionMember
 									userId={item.sender_id}
 									channelId={channelId}
+									count={item.count}
 									onSelectUserId={() => {
 										const data = {
 											snapPoints: ['60%', '90%'],

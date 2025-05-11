@@ -34,13 +34,13 @@ import { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMe
 import { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
+import { selectScrollOffsetByChannelId, selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
 import { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import { RootState } from '../store';
-
 const FETCH_MESSAGES_CACHED_TIME = 1000 * 60 * 60;
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -143,6 +143,7 @@ type FetchMessagesPayloadAction = {
 	viewingOlder?: boolean;
 	foundE2ee?: boolean;
 	fromCache?: boolean;
+	toPresent?: boolean;
 };
 
 export interface MessagesRootState {
@@ -213,6 +214,7 @@ type fetchMessageChannelPayload = {
 	isClearMessage?: boolean;
 	directTimeStamp?: DirectTimeStampArg;
 	viewingOlder?: boolean;
+	toPresent?: boolean;
 	topicId?: string;
 	foundE2ee?: boolean;
 };
@@ -286,7 +288,8 @@ export const fetchMessages = createAsyncThunk(
 			directTimeStamp,
 			viewingOlder,
 			topicId,
-			foundE2ee
+			foundE2ee,
+			toPresent
 		}: fetchMessageChannelPayload,
 		thunkAPI
 	) => {
@@ -345,7 +348,7 @@ export const fetchMessages = createAsyncThunk(
 
 			const oldMessages = channelMessagesAdapter.getSelectors().selectAll(state.messages.channelMessages[chlId] || { ids: [], entities: {} });
 
-			const lastLoadMessage = !fromCache ? response.messages.at(-1) : oldMessages[0];
+			const lastLoadMessage = !fromCache ? response.messages?.at(-1) || oldMessages[0] : oldMessages[0];
 			const hasMore = lastLoadMessage?.code !== EMessageCode.FIRST_MESSAGE;
 
 			thunkAPI.dispatch(messagesActions.setFirstMessageId({ channelId: chlId, firstMessageId: !hasMore ? lastLoadMessage?.id : null }));
@@ -382,7 +385,8 @@ export const fetchMessages = createAsyncThunk(
 				isFetchingLatestMessages,
 				isClearMessage,
 				viewingOlder,
-				foundE2ee
+				foundE2ee,
+				toPresent
 			};
 		} catch (error) {
 			captureSentryError(error, 'messages/fetchMessages');
@@ -742,16 +746,35 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	}
 });
 
+const SCROLL_OFFSET_THRESHOLD = 3000;
+
 export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (message: MessagesEntity, thunkAPI) => {
-	// ignore the message if in view older messages mode
-	const state = getMessagesState(getMessagesRootState(thunkAPI));
-	const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[message.channel_id];
+	if (!message?.channel_id) return;
+
+	const state = thunkAPI.getState() as RootState;
+	const channelId = message.channel_id;
+	const isViewingOlderMessages = getMessagesState(getMessagesRootState(thunkAPI))?.isViewingOlderMessagesByChannelId?.[channelId];
+	const isBottom = !selectShowScrollDownButton(state, channelId);
+	const scrollOffset = selectScrollOffsetByChannelId(state, channelId);
+
+	if (!message.isMe && scrollOffset > SCROLL_OFFSET_THRESHOLD) {
+		return;
+	}
 
 	if (isViewingOlderMessages) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));
 		return;
 	}
+
 	thunkAPI.dispatch(messagesActions.newMessage(message));
+
+	thunkAPI.dispatch(
+		messagesActions.addMessageToViewport({
+			channelId,
+			messageId: message.id,
+			keep50items: isBottom
+		})
+	);
 });
 
 type UpdateTypingArgs = {
@@ -968,9 +991,6 @@ export const messagesSlice = createSlice({
 
 						state.lastMessageByChannel[channelId] = lastMessage;
 
-						// update is viewing older messages
-						// state.isViewingOlderMessagesByChannelId[channelId] = computeIsViewingOlderMessagesByChannelId(state, channelId);
-
 						// remove sending message when receive new message by the same user
 						// potential bug: if the user send the same message multiple times
 						// or the sending message is the same as the received message from the server
@@ -1038,22 +1058,11 @@ export const messagesSlice = createSlice({
 		},
 		setManyLastMessages: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel[]>) => {
 			action.payload.forEach((message) => {
-				// update last message
 				state.lastMessageByChannel[message.channel_id] = message;
-
-				// update is viewing older messages
-				// state.isViewingOlderMessagesByChannelId[message.channel_id] = computeIsViewingOlderMessagesByChannelId(state, message.channel_id);
 			});
 		},
 		setLastMessage: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel>) => {
-			// update last message
 			state.lastMessageByChannel[action.payload.channel_id] = action.payload;
-
-			// update is viewing older messages
-			// state.isViewingOlderMessagesByChannelId[action.payload.channel_id] = computeIsViewingOlderMessagesByChannelId(
-			// 	state,
-			// 	action.payload.channel_id
-			// );
 		},
 		setViewingOlder: (state, action: PayloadAction<{ channelId: string; status: boolean }>) => {
 			const { channelId, status } = action.payload;
@@ -1106,7 +1115,7 @@ export const messagesSlice = createSlice({
 			};
 		},
 		UpdateChannelLastMessage: (state, action: PayloadAction<{ channelId: string }>) => {
-			const lastMess = state.channelMessages[action.payload.channelId]?.ids.at(-1);
+			const lastMess = state.channelMessages[action.payload.channelId]?.ids?.at(-1);
 			state.unreadMessagesEntries = {
 				...state.unreadMessagesEntries,
 				[action.payload.channelId]: lastMess || ''
@@ -1191,6 +1200,39 @@ export const messagesSlice = createSlice({
 		},
 		setLoadingJumpMessage: (state, action) => {
 			state.isLoadingJumpMessage = action.payload;
+		},
+		addMessageToViewport: (
+			state,
+			{
+				payload
+			}: PayloadAction<{
+				channelId: string;
+				messageId: string;
+				keep50items: boolean;
+			}>
+		) => {
+			const { channelId, messageId, keep50items } = payload;
+			const currentViewport = state.channelViewPortMessageIds[channelId] || [];
+
+			const updatedViewport =
+				currentViewport.length >= 50 ? [...currentViewport.slice(keep50items ? -49 : 1), messageId] : [...currentViewport, messageId];
+
+			state.channelViewPortMessageIds[channelId] = updatedViewport;
+
+			const firstId = state.firstMessageId[channelId];
+			if (firstId && !updatedViewport.includes(firstId)) {
+				state.firstMessageId[channelId] = null;
+			}
+		},
+		jumToPresent: (state, action) => {
+			const { channelId } = action.payload;
+			const messageIds = state.channelMessages[channelId]?.ids as string[];
+			if (messageIds?.length) {
+				state.channelViewPortMessageIds[channelId] = messageIds.slice(-50);
+			}
+		},
+		resetLoading: (state) => {
+			state.loadingStatus = 'loaded';
 		}
 	},
 	extraReducers: (builder) => {
@@ -1202,10 +1244,9 @@ export const messagesSlice = createSlice({
 				fetchMessages.fulfilled,
 				(state: MessagesState, action: PayloadAction<FetchMessagesPayloadAction, string, FetchMessagesMeta>) => {
 					const channelId = action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
-					const isFetchingLatestMessages = action.payload.isFetchingLatestMessages || false;
 					const isClearMessage = action.payload.isClearMessage || false;
+					const toPresent = action.payload.toPresent || false;
 					const fromCache = action.payload.fromCache || false;
-					const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId || ''];
 					const foundE2ee = action.payload.foundE2ee || false;
 					const lastSentMessageId = state.lastMessageByChannel[channelId]?.id;
 					state.loadingStatus = 'loaded';
@@ -1220,15 +1261,8 @@ export const messagesSlice = createSlice({
 
 					// const reversedMessages = action.payload.messages.reverse();
 
-					// fix later
-
-					// remove all messages if clear message is true
-					if (isClearMessage) {
-						handleRemoveManyMessages(state, channelId);
-					}
-
 					// remove all messages if ís fetching latest messages and is viewing older messages
-					if (isFetchingLatestMessages && isViewingOlderMessages) {
+					if (toPresent) {
 						handleRemoveManyMessages(state, channelId);
 					}
 
@@ -1241,14 +1275,33 @@ export const messagesSlice = createSlice({
 					});
 
 					const messageIds = state.channelMessages[channelId]?.ids as string[];
+
 					if (messageIds?.length <= 50) {
 						state.channelViewPortMessageIds[channelId] = messageIds;
 						const showFab = !!lastSentMessageId && !messageIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 						return;
 					} else {
+						const oldViewport = state.channelViewPortMessageIds[channelId] || [];
 						const offsetId = action.meta.arg.messageId;
-						const { newViewportIds } = getViewportSlice(messageIds, offsetId, direction);
+
+						let newViewportIds: string[] = [];
+
+						if (!offsetId) {
+							const messageId = oldViewport?.at(-1);
+							const index = messageIds.findIndex((item) => item === messageId);
+							if (state.isViewingOlderMessagesByChannelId[channelId] && oldViewport.length) {
+								return;
+							} else if (oldViewport.length) {
+								newViewportIds = [...oldViewport, ...messageIds.slice(index)];
+							} else {
+								newViewportIds = messageIds;
+							}
+						} else {
+							const viewport = getViewportSlice(messageIds, offsetId, direction);
+							newViewportIds = viewport.newViewportIds;
+						}
+
 						state.channelViewPortMessageIds[channelId] = newViewportIds;
 						const showFab = !!lastSentMessageId && !newViewportIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
@@ -1506,7 +1559,7 @@ export const selectLatestMessageId = createCachedSelector([getMessagesState, get
 });
 
 export const selectLastMessageIdByChannelId = createSelector(selectMessageIdsByChannelId, (ids) => {
-	return ids.at(-1);
+	return ids?.at(-1);
 });
 
 export const selectMessageIsLoading = createSelector(getMessagesState, (state) => state.loadingStatus === 'loading');
@@ -1558,7 +1611,7 @@ const handleSetManyMessages = ({
 		});
 	if (isClearMessage) {
 		// fix later
-		state.channelMessages[channelId] = channelMessagesAdapter.setAll(state.channelMessages[channelId], adapterPayload);
+		state.channelMessages[channelId] = channelMessagesAdapter.setMany(state.channelMessages[channelId], adapterPayload);
 	} else {
 		if (!adapterPayload.length) return;
 		state.channelMessages[channelId] = channelMessagesAdapter.setMany(state.channelMessages[channelId], adapterPayload);
@@ -1629,11 +1682,8 @@ const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: M
 };
 
 const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: MessagesState; channelId: string; adapterPayload: MessagesEntity }) => {
-	if (state.channelMessages[channelId]) {
+	if (state.channelMessages[channelId]?.ids?.length) {
 		state.channelMessages[channelId] = channelMessagesAdapter.addOne(state.channelMessages[channelId], adapterPayload);
-		if (Array.isArray(state.channelViewPortMessageIds[channelId])) {
-			state.channelViewPortMessageIds[channelId] = [...state.channelViewPortMessageIds[channelId], adapterPayload.id];
-		}
 	}
 };
 

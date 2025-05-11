@@ -1,5 +1,6 @@
 import { IUserStatus, OwnerIcon } from '@mezon/mobile-components';
 import { useColorsRoleById, useTheme } from '@mezon/mobile-ui';
+import { getStore, selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import { ChannelMembersEntity, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useContext, useMemo } from 'react';
@@ -37,13 +38,20 @@ export function MemberProfile({
 	const styles = style(themeValue);
 
 	const userInfo: any = useMemo(() => {
+		if (!isDMThread) {
+			const store = getStore();
+			const currentClanUser = selectMemberClanByUserId2(store.getState(), (user?.id || user?.user?.id) as string);
+			if (currentClanUser) {
+				return currentClanUser;
+			}
+		}
 		return user?.user || user;
-	}, [user]);
+	}, [isDMThread, user]);
 
 	const currentChannel = useContext(threadDetailContext);
 	const name = useMemo(() => {
 		if (userInfo) {
-			return nickName || userInfo?.display_name || userInfo?.username;
+			return nickName || userInfo?.display_name || userInfo?.username || userInfo.clan_nick || userInfo?.user?.username;
 		}
 	}, [nickName, userInfo]);
 	const userColorRolesClan = useColorsRoleById(userInfo?.id || '')?.highestPermissionRoleColor;
@@ -59,7 +67,12 @@ export function MemberProfile({
 	return (
 		<View style={{ ...styles.container }}>
 			{/* Avatar */}
-			<MezonAvatar avatarUrl={userInfo?.avatar_url} username={userInfo?.username} userStatus={userStatus} customStatus={status} />
+			<MezonAvatar
+				avatarUrl={userInfo?.clan_avatar || userInfo?.user?.avatar_url || userInfo?.avatar_url}
+				username={userInfo?.username}
+				userStatus={userStatus}
+				customStatus={status}
+			/>
 
 			{/* Name */}
 			<View style={{ ...styles.nameContainer, borderBottomWidth: 1 }}>

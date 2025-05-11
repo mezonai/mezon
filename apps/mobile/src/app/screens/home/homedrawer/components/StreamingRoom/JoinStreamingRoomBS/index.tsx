@@ -13,6 +13,7 @@ import {
 	selectClanById,
 	selectCurrentClanId,
 	selectCurrentStreamInfo,
+	selectSession,
 	selectStatusStream,
 	useAppDispatch,
 	videoStreamActions
@@ -42,6 +43,8 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 	const clanById = useSelector(selectClanById(channel?.clan_id || ''));
 	const { handleChannelClick } = useWebRTCStream();
 	const userProfile = useSelector(selectAllAccount);
+	const sessionUser = useSelector(selectSession);
+
 	const handleJoinVoice = () => {
 		requestAnimationFrame(async () => {
 			if (channel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
@@ -51,7 +54,8 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 						channel?.channel_id as string,
 						userProfile?.user?.id as string,
 						channel?.channel_id as string,
-						userProfile?.user?.username
+						userProfile?.user?.username,
+						sessionUser?.token as string
 					);
 					dispatch(
 						videoStreamActions.startStream({

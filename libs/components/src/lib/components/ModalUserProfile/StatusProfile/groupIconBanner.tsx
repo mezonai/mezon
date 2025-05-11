@@ -15,7 +15,7 @@ import { IUser } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { OpenModalProps } from '..';
-import { PopupFriend, PopupOption } from './PopupShortUser';
+import { PopupFriend } from './PopupShortUser';
 
 type GroupIconBannerProps = {
 	checkAddFriend?: number;
@@ -163,7 +163,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				</>
 			)}
 
-			<div
+			{/* <div
 				className="p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
 				onClick={(e) => {
 					handleDefault(e);
@@ -174,7 +174,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 					<Icons.ThreeDot defaultSize="size-4 iconWhiteImportant" />
 				</span>
 				{openModal.openOption && <PopupOption showPopupLeft={showPopupLeft} isMe={isMe} />}
-			</div>
+			</div> */}
 		</>
 	);
 };

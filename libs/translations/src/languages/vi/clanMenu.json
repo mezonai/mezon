@@ -2,25 +2,25 @@
     "menu": {
         "watchMenu": {
             "title": "",
-            "markAsRead": "Đánh dấu đã đọc",
-            "browseChannels": "Tìm channel"
+            "markAsRead": "Đánh dấu là đã đọc",
+            "browseChannels": "Tìm kênh"
         },
         "organizationMenu": {
             "title": "",
-            "createChannel": "Tạo channel",
-            "createCategory": "Tạo category",
-            "createEvent": "Tạo sự kiên"
+            "createChannel": "Tạo kênh",
+            "createCategory": "Tạo danh mục",
+            "createEvent": "Tạo sự kiện"
         },
         "optionsMenu": {
             "title": "",
             "editServerProfile": "Sửa hồ sơ clan",
-            "showAllChannels": "Hiện tất cả các channels",
-            "hideMutedChannels": "Ẩn tất cả các channels",
+            "showAllChannels": "Hiện tất cả các kênh",
+            "hideMutedChannels": "Ẩn tất cả các kênh",
             "allowDirectMessage": "Cho phép gửi tin nhắn trực tiếp",
             "allowMessageRequest": "Cho phép gửi yêu cầu tin nhắn",
             "reportServer": "Báo cáo clan",
             "leaveServer": "Rời clan",
-            "deleteClan": "Xóa Clan",
+            "deleteClan": "Xóa clan",
             "auditLog": "Nhật ký kiểm tra"
         },
         "optionShowEmptyCategories": {
@@ -43,5 +43,9 @@
     "info": {
         "online": "Trực tuyến",
         "members": "Thành viên"
+    },
+    "common": {
+        "search": "Tìm kiếm",
+        "community": "Cộng đồng"
     }
 }

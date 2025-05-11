@@ -2,7 +2,6 @@ import { selectCurrentChannelId, selectCurrentClan, selectCurrentClanId } from '
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { ValidateSpecialCharacters, fileTypeImage } from '@mezon/utils';
-import { Button } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ModalValidateFile from '../../../ModalValidateFile';
@@ -126,12 +125,12 @@ const ClanLogoName = ({ hasChanges, onUpload, onGetClanName, onHasChanges }: Cla
 				</div>
 				<div className="flex flex-3 flex-col ml-[10px]">
 					<p className="text-sm mb-2">We recommend an image of at least 512x512 for the clan.</p>
-					<Button
+					<button
 						onClick={handleOpenFile}
-						className="h-10 text-sm w-fit mt-2 rounded bg-bgLightModeThird text-textLightTheme dark:text-textDarkTheme border dark:border-buttonProfile hover:!bg-[#9e9e9e] dark:bg-transparent dark:hover:!bg-buttonProfile focus:!ring-transparent"
+						className="h-10 text-sm w-fit flex items-center px-2 justify-center mt-2 rounded bg-bgLightModeThird text-textLightTheme dark:text-textDarkTheme border dark:border-buttonProfile hover:!bg-[#9e9e9e] dark:bg-transparent dark:hover:!bg-buttonProfile focus:!ring-transparent"
 					>
 						Upload Image
-					</Button>
+					</button>
 				</div>
 			</div>
 			<div className="flex flex-1 flex-col">

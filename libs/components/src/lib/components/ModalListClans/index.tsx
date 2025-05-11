@@ -15,15 +15,16 @@ export type SidebarClanItemProps = {
 	active?: boolean;
 	onMouseDown?: (e: React.MouseEvent<HTMLDivElement>) => void;
 	className?: string;
+	overItemId?: string;
 };
 
-const SidebarClanItem = ({ option, active, onMouseDown, className = '' }: SidebarClanItemProps) => {
+const SidebarClanItem = ({ option, active, onMouseDown, className = '', overItemId }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
 	const badgeCountClan = useSelector(selectBadgeCountByClanId(option.clan_id ?? '')) || 0;
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
-	const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		const store = getStore();
 		const idsSelectedChannel = safeJSONParse(localStorage.getItem('remember_channel') || '{}');
 		const channelId = idsSelectedChannel[option.id] || option.welcome_channel_id;
@@ -46,46 +47,65 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '' }: Sideba
 		distanceToBottom: 0
 	});
 
-	const [openRightClickModal, closeRightClickModal] = useModal(() => {
-		return <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} clan={option} />;
-	}, [coords, option]);
+	const [openRightClickModal, closeRightClickModal] = useModal(
+		() => <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} clan={option} />,
+		[coords, option]
+	);
 
-	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+	const handleMouseClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		const mouseX = event.clientX;
 		const mouseY = event.clientY;
 		const windowHeight = window.innerHeight;
-		const distanceToBottom = windowHeight - event.clientY;
+		const distanceToBottom = windowHeight - mouseY;
 		setCoords({ mouseX, mouseY, distanceToBottom });
 		openRightClickModal();
 	};
 
 	return (
-		<div onMouseDown={onMouseDown} onContextMenu={handleMouseClick} data-id={option.id} className={`relative h-[40px] ${className}`}>
-			<button onClick={handleClick} draggable="false">
+		<div onMouseDown={onMouseDown} onContextMenu={handleMouseClick} data-id={option.id} className={`relative h-[40px] w-[40px] ${className}`}>
+			<button onClick={handleClick} draggable={false}>
 				<NavLinkComponent active={active}>
 					{option.logo ? (
 						<Image
-							draggable="false"
-							src={createImgproxyUrl(option.logo ?? '', { width: 100, height: 100, resizeType: 'fit' }) || ''}
+							draggable={false || 'false'}
+							src={
+								createImgproxyUrl(option.logo ?? '', {
+									width: 100,
+									height: 100,
+									resizeType: 'fit'
+								}) || ''
+							}
 							placeholder="blur"
 							blurdataurl={option.logo}
-							className="w-[40px] h-[40px] object-cover rounded-lg clan"
+							className={`
+								w-[40px] h-[40px] object-cover rounded-lg clan
+								${overItemId === option.id ? 'ring-2 ring-sky-400' : ''}
+							`}
 						/>
 					) : (
-						option.clan_name && (
-							<div className="w-[40px] h-[40px] dark:bg-bgSecondary bg-bgLightMode rounded-lg flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[20px] clan">
-								{(option.clan_name || '').charAt(0).toUpperCase()}
-							</div>
-						)
+						<div
+							className={`
+								w-[40px] h-[40px] rounded-lg flex items-center justify-center
+								text-[20px]
+								dark:bg-bgSecondary bg-bgLightMode
+								dark:text-contentSecondary text-textLightTheme
+								${overItemId === option.id ? 'ring-2 ring-sky-400' : ''}
+							`}
+						>
+							{option.clan_name?.charAt(0).toUpperCase()}
+						</div>
 					)}
 				</NavLinkComponent>
 			</button>
 
 			{badgeCountClan > 0 && (
 				<div
-					className={`flex items-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-5px] right-[2px] outline outline-[3px] outline-white dark:outline-bgSecondary500 ${
-						badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
-					}`}
+					className={`
+						flex items-center justify-center text-[12px] font-bold rounded-full
+						bg-colorDanger absolute bottom-[-5px] right-[2px]
+						outline outline-[3px] outline-white dark:outline-bgSecondary500
+						${badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'}
+					`}
 				>
 					{badgeCountClan >= 100 ? '99+' : badgeCountClan}
 				</div>

@@ -4,6 +4,7 @@ import {
 	authActions,
 	clansActions,
 	directActions,
+	emojiRecentActions,
 	friendsActions,
 	getStore,
 	listChannelsByUserActions,
@@ -14,7 +15,6 @@ import {
 	usersClanActions
 } from '@mezon/store';
 import { IWithError, sleep } from '@mezon/utils';
-import { emojiRecentActions } from 'libs/store/src/lib/emojiSuggestion/emojiRecent.slice';
 import { CustomLoaderFunction } from './appLoader';
 
 export interface IAuthLoaderData {
@@ -71,6 +71,7 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 		} else {
 			console.error('Session expired after 3 retries');
 			const redirectTo = getRedirectTo(initialPath);
+			dispatch(authActions.setLogout());
 			const redirect = redirectTo ? `/desktop/login?redirect=${redirectTo}` : '/desktop/login';
 			return { isLogin: !isRedirectLogin, redirect: isRedirectLogin ? redirect : '' } as IAuthLoaderData;
 		}

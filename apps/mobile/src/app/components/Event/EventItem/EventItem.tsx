@@ -5,6 +5,7 @@ import { EventManagementEntity, addUserEvent, deleteUserEvent, selectMemberClanB
 import { EEventStatus, createImgproxyUrl, sleep } from '@mezon/utils';
 import { ApiUserEventRequest } from 'mezon-js/api.gen';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonButton from '../../../componentUI/MezonButton2';
@@ -26,6 +27,7 @@ interface IEventItemProps {
 export function EventItem({ event, onPress, showActions = true, start }: IEventItemProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { t } = useTranslation(['eventMenu']);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId2(state, event?.creator_id || ''));
 	const { userId } = useAuth();
 	const [isInterested, setIsInterested] = useState<boolean>(false);
@@ -151,7 +153,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 									<MezonIconCDN icon={IconCDN.bellIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 								)
 							}
-							title={isInterested ? 'UnInterested' : 'Interested'}
+							title={isInterested ? t('item.uninterested') : t('item.interested')}
 							fluid
 							border
 							onPress={handleToggleUserEvent}

@@ -16,6 +16,7 @@ import { ChannelThreads, EBacktickType, IMessageSendPayload, normalizeString } f
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
@@ -32,6 +33,7 @@ interface IShareEventModalProps {
 export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
+	const { t } = useTranslation(['eventMenu']);
 	const styles = style(themeValue, isTabletLandscape);
 	const store = getStore();
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id || ''));
@@ -171,7 +173,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 		<View style={styles.main}>
 			<View style={styles.container}>
 				<View style={styles.header}>
-					<Text style={styles.title}>{'Share Event to friends'}</Text>
+					<Text style={styles.title}>{t('share.title')}</Text>
 				</View>
 				<View style={styles.row}>
 					<TextInput style={styles.textInput} value={shareLink} />
@@ -181,7 +183,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 				</View>
 
 				<MezonInput
-					placeHolder={'search'}
+					placeHolder={t('share.search')}
 					onTextChange={setSearchText}
 					value={searchText}
 					prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
@@ -196,7 +198,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 					estimatedItemSize={size.s_60}
 				/>
 				<TouchableOpacity style={styles.sendButton} onPress={handleSendMessageShare}>
-					<Text style={styles.buttonText}>Send{memberCount}</Text>
+					<Text style={styles.buttonText}>{t('share.share') + memberCount}</Text>
 				</TouchableOpacity>
 			</View>
 			<TouchableOpacity style={styles.backdrop} onPress={handleClose} />
