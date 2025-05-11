@@ -1,46 +1,46 @@
-import { MemberProfile } from '@mezon/components';
-import { useAppNavigation, useDirect } from '@mezon/core';
-import { ChannelMembersEntity } from '@mezon/store';
-import { IUserItemActivity, MemberProfileType, MetaDateStatusUser } from '@mezon/utils';
+import { AvatarImage } from '@mezon/components';
+import { ActivitiesEntity, selectActivityByUserId, useAppSelector } from '@mezon/store';
+import { IUserItemActivity, createImgproxyUrl } from '@mezon/utils';
 
 type ActivityProps = {
 	user?: IUserItemActivity;
 };
-const ActivityListItem = ({ user }: ActivityProps) => {
-	const { createDirectMessageWithUser } = useDirect();
-	const { toDmGroupPageFromFriendPage, navigate } = useAppNavigation();
 
-	const directMessageWithUser = async (userId: string) => {
-		const response = await createDirectMessageWithUser(userId);
-		if (response.channel_id) {
-			const directChat = toDmGroupPageFromFriendPage(response.channel_id, Number(response.type));
-			navigate(directChat);
-		}
-	};
+const ActivityListItem = ({ user }: ActivityProps) => {
+	const activityByUserId = useAppSelector(selectActivityByUserId(user?.user?.id || ''));
 
 	return (
-		<div className=" dark:border-borderDefault border-gray-300 group/list_friends">
-			<div
-				key={user?.user?.id}
-				onClick={() => directMessageWithUser(user?.user?.id ?? '')}
-				className="flex justify-between items-center cursor-pointer dark:hover:bg-gray-800 hover:bg-white rounded-lg"
-			>
-				<div key={user?.user?.id} className={'flex-1'}>
-					<MemberProfile
-						avatar={user?.user?.avatar_url ?? ''}
-						name={(user?.user?.display_name || user?.user?.username) ?? ''}
-						usernameAva={user?.user?.username ?? ''}
-						status={{ status: user?.user?.online, isMobile: false }}
-						isHideStatus={true}
-						isHideIconStatus={true}
-						isHideAnimation={true}
-						key={user?.user?.id}
-						numberCharacterCollapse={100}
-						positionType={MemberProfileType.LIST_ACTIVITY}
-						customStatus={(user?.user?.metadata as MetaDateStatusUser)?.status ?? ''}
-						isDM={true}
-						user={user as ChannelMembersEntity}
+		<div className="dark:border-borderDefault border-gray-300 group/list_friends">
+			<div key={user?.user?.id} className="flex justify-between items-center rounded-lg">
+				<ActivityItem user={user} activity={activityByUserId} />
+			</div>
+		</div>
+	);
+};
+
+const ActivityItem = ({ user, activity }: { user?: IUserItemActivity; activity?: ActivitiesEntity }) => {
+	const avatar = user?.user?.avatar_url ?? '';
+	const username = user?.user?.display_name || user?.user?.username || '';
+	const activityDescription = activity?.activity_description;
+	const activityName = activity?.activity_name;
+
+	return (
+		<div className="w-full">
+			<div className="flex items-center gap-[9px] relative dark:text-channelTextLabel text-colorTextLightMode">
+				<div className="relative">
+					<AvatarImage
+						alt={username}
+						username={username}
+						className="min-w-8 min-h-8 max-w-8 max-h-8"
+						classNameText="font-semibold"
+						srcImgProxy={createImgproxyUrl(avatar ?? '')}
+						src={avatar}
 					/>
+				</div>
+
+				<div className="flex flex-col font-medium flex-1">
+					<span className="text-base font-medium">{username}</span>
+					<p className="w-full text-[12px] line-clamp-1 break-all">{activityDescription || activityName}</p>
 				</div>
 			</div>
 		</div>

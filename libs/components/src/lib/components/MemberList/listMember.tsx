@@ -9,12 +9,12 @@ import {
 	selectTheme,
 	useAppSelector
 } from '@mezon/store';
-import { MemberProfileType, createImgproxyUrl, isLinuxDesktop, isWindowsDesktop, useSyncEffect, useWindowSize } from '@mezon/utils';
+import { createImgproxyUrl, isLinuxDesktop, isWindowsDesktop, useSyncEffect, useWindowSize } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage, useVirtualizer } from '../../components';
-import { ClanUserName, UserStatusIcon } from '../MemberProfile';
-import MemberItem from './MemberItem';
+import { UserStatusIcon } from '../MemberProfile';
+import { BaseMemberProfile, ClanUserName } from '../MemberProfile/MemberProfile2';
 
 const heightTopBar = 50;
 const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
@@ -34,7 +34,7 @@ const TempMemberItem = memo(({ id }: TempMemberItemProps) => {
 		<div className="cursor-pointer flex items-center gap-[9px] relative ">
 			<div className="relative">
 				<AvatarImage
-					alt={username}
+					alt={''}
 					username={user?.user?.username ?? username}
 					className="min-w-8 min-h-8 max-w-8 max-h-8"
 					classNameText="font-semibold"
@@ -47,7 +47,7 @@ const TempMemberItem = memo(({ id }: TempMemberItemProps) => {
 			</div>
 
 			<div className="flex flex-col font-medium">
-				<ClanUserName userId={user.user?.id} name={username} />
+				<ClanUserName userId={user.user?.id as string} name={username} />
 				<p className="dark:text-channelTextLabel text-black w-full text-[12px] line-clamp-1 break-all max-w-[176px] ">{userCustomStatus}</p>
 			</div>
 		</div>
@@ -61,22 +61,8 @@ type MemberItemProps = {
 
 const MemoizedMemberItem = memo((props: MemberItemProps) => {
 	const { id, temp } = props;
-	const user = useAppSelector((state) => selectMemberClanByUserId2(state, id));
-	const userMeta = useAppSelector((state) => selectClanMemberMetaUserId(state, id));
 
-	return temp ? (
-		<TempMemberItem id={id} />
-	) : (
-		<MemberItem
-			user={user}
-			name={user?.clan_nick || user?.user?.display_name || user?.user?.username}
-			positionType={MemberProfileType.MEMBER_LIST}
-			isDM={false}
-			listProfile={true}
-			isOffline={!userMeta?.online}
-			isMobile={userMeta?.isMobile}
-		/>
-	);
+	return temp ? <TempMemberItem id={id} /> : <BaseMemberProfile id={id} />;
 });
 
 const ListMember = () => {
@@ -105,8 +91,8 @@ const ListMember = () => {
 
 		const userIds = new Set(userChannels.map((item) => item.id));
 
-		const onlines = [];
-		const offlines = [];
+		const onlines: string[] = [];
+		const offlines: string[] = [];
 
 		for (const memberId of members.online) {
 			if (userIds.has(memberId)) {

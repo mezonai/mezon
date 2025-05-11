@@ -530,12 +530,17 @@ function MuteButton({ isLightMode }: { isLightMode: boolean }) {
 function PinButton({ isLightMode, mode }: { isLightMode: boolean; mode?: number }) {
 	const dispatch = useAppDispatch();
 	const isShowPinMessage = useSelector(selectIsPinModalVisible);
-	const pinRef = useRef<HTMLDivElement | null>(null);
 	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
-	const currentClanId = useSelector(selectCurrentClanId) as string;
-	const currentDmGroup = useSelector(selectCurrentDM);
 	const isShowPinBadge = useSelector(selectIsShowPinBadgeByChannelId(currentChannelId));
+
+	const pinRef = useRef<HTMLDivElement | null>(null);
+
 	const handleTogglePinMessage = async () => {
+		const store = getStore();
+		const state = store.getState();
+		const currentClanId = selectCurrentClanId(state) as string;
+		const currentDmGroup = selectCurrentDM(state);
+
 		if (!currentDmGroup?.id && !currentChannelId) {
 			return;
 		}
@@ -604,8 +609,11 @@ export function RedDot() {
 function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 	const dispatch = useDispatch();
 	const isActive = useSelector(selectIsShowMemberList);
-	const currentChannelId = useSelector(selectCurrentChannelId);
+
 	const handleClick = () => {
+		const store = getStore();
+		const state = store.getState();
+		const currentChannelId = selectCurrentChannelId(state);
 		dispatch(appActions.setIsShowMemberList(!isActive));
 		dispatch(searchMessagesActions.setIsSearchMessage({ channelId: currentChannelId as string, isSearchMessage: false }));
 	};

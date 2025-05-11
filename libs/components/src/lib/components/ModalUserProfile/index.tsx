@@ -13,10 +13,8 @@ import {
 	useUserMetaById
 } from '@mezon/core';
 import { EStateFriend, selectAccountCustomStatus, selectAllAccount, selectCurrentUserId, selectFriendStatus } from '@mezon/store';
-import { Icons } from '@mezon/ui';
-import { ActivitiesType, ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
+import { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import { ApiUserActivity } from 'mezon-js/api.gen';
 import { RefObject, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
@@ -27,8 +25,6 @@ import StatusProfile from './StatusProfile';
 import GroupIconBanner from './StatusProfile/groupIconBanner';
 import UserDescription from './UserDescription';
 import PendingFriend from './pendingFriend';
-
-const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
 type ModalUserProfileProps = {
 	userID?: string;
@@ -49,7 +45,6 @@ type ModalUserProfileProps = {
 	userStatusProfile?: string;
 	onClose: () => void;
 	rootRef?: RefObject<HTMLElement>;
-	activityByUserId?: ApiUserActivity;
 	isUserRemoved?: boolean;
 	checkAnonymous?: boolean;
 };
@@ -80,7 +75,6 @@ const ModalUserProfile = ({
 	isDM,
 	onClose,
 	rootRef,
-	activityByUserId,
 	isUserRemoved,
 	checkAnonymous
 }: ModalUserProfileProps) => {
@@ -193,18 +187,6 @@ const ModalUserProfile = ({
 		return message?.references?.[0].message_sender_username;
 	}, [userById, userID]);
 
-	const iconMap: Partial<Record<ActivitiesType, JSX.Element>> = {
-		[ActivitiesType.VISUAL_STUDIO_CODE]: <Icons.VisualStudioCode defaultSize="w-6 h-6" />,
-		[ActivitiesType.SPOTIFY]: <Icons.Spotify defaultSize="w-6 h-6" />,
-		[ActivitiesType.LOL]: <Icons.LoLGame defaultSize="w-6 h-6" />
-	};
-
-	const activityNames: { [key: number]: string } = {
-		[ActivitiesType.VISUAL_STUDIO_CODE]: 'Coding',
-		[ActivitiesType.SPOTIFY]: 'Music',
-		[ActivitiesType.LOL]: 'Gaming'
-	};
-
 	return (
 		<div tabIndex={-1} ref={profileRef} className={'outline-none ' + classWrapper} onClick={() => setOpenModal(initOpenModal)}>
 			<div
@@ -231,7 +213,6 @@ const ModalUserProfile = ({
 				userID={userID}
 				positionType={positionType}
 				isFooterProfile={isFooterProfile}
-				activityByUserId={activityByUserId}
 				userStatus={userStatus}
 				statusOnline={statusOnline}
 			/>
@@ -254,22 +235,6 @@ const ModalUserProfile = ({
 						<UserDescription title={ETileDetail.AboutMe} detail={userById?.user?.about_me as string} />
 					)}
 					{mode !== 4 && mode !== 3 && !isFooterProfile && <UserDescription title={ETileDetail.MemberSince} detail={timeFormatted} />}
-
-					{!isFooterProfile && userStatus?.status && activityByUserId && (
-						<div className="flex flex-col">
-							<div className="w-full border-b-[1px] dark:border-[#40444b] border-gray-200 p-2"></div>
-							<div className="font-bold tracking-wider text-xs pt-2">{ETileDetail.Actitity}</div>
-							<div className="flex gap-2 items-center">
-								<div className="">{iconMap[activityByUserId?.activity_type as ActivitiesType]}</div>
-								<div className="flex flex-col">
-									<div className='className="font-normal tracking-wider text-xs one-line'>
-										{activityNames[activityByUserId?.activity_type as number]}
-									</div>
-									<div className="font-normal tracking-wider text-xs one-line">{activityByUserId?.activity_description}</div>
-								</div>
-							</div>
-						</div>
-					)}
 
 					{isFooterProfile ? (
 						<StatusProfile userById={userById as ChannelMembersEntity} isDM={isDM} />
