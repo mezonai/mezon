@@ -14,6 +14,7 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { ChannelThreads, EOverriddenPermission, EPermission, sleep } from '@mezon/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
@@ -52,7 +53,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const getNotificationChannelSelected = useSelector(selectNotifiSettingsEntitiesById(channel?.channel_id));
 	const currentUserId = useSelector(selectCurrentUserId);
 
-	const isStreamingOrVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+	const isStreamOrVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
 	const isChannelUnmute = useMemo(() => {
 		return (
@@ -80,12 +81,17 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}, [channel.channel_id, channel?.clan_id]);
 
+	const handleCopyLink = () => {
+		Clipboard.setString(process.env.NX_CHAT_APP_REDIRECT_URI + `/chat/clans/${channel?.clan_id}/channels/${channel?.channel_id}`);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+	};
+
 	const watchMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.watchMenu.markAsRead'),
 			onPress: () => handleMarkAsRead(),
 			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
-			isShow: !isStreamingOrVoiceChannel
+			isShow: !isStreamOrVoiceChannel
 		}
 	];
 
@@ -97,6 +103,11 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
 			icon: <MezonIconCDN icon={IconCDN.favoriteFilledIcon} color={themeValue.textStrong} />
+		},
+		{
+			title: t('menu.inviteMenu.copyLink'),
+			onPress: () => handleCopyLink(),
+			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.textStrong} />
 		}
 		//TODO: update later
 		// {
@@ -158,7 +169,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			) : (
 				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
 			),
-			isShow: !isStreamingOrVoiceChannel
+			isShow: !isStreamOrVoiceChannel
 		},
 		{
 			title: t('menu.notification.notification'),
@@ -170,7 +181,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
 			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />,
-			isShow: !isStreamingOrVoiceChannel
+			isShow: !isStreamOrVoiceChannel
 		}
 	];
 
@@ -186,7 +197,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				});
 			},
 			icon: <MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.textStrong} />,
-			isShow: !isStreamingOrVoiceChannel
+			isShow: !isStreamOrVoiceChannel
 		}
 	];
 

@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectChannelById2, selectIsPiPMode, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
 import { Room, Track, createLocalVideoTrack } from 'livekit-client';
 import React, { memo, useEffect, useState } from 'react';
-import { AppState, Dimensions, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { AppState, NativeModules, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
@@ -12,8 +12,6 @@ import BluetoothManager from './BluetoothManager';
 import RoomView from './RoomView';
 import { style } from './styles';
 const { CustomAudioModule, KeepAwake, KeepAwakeIOS } = NativeModules;
-
-const { width, height } = Dimensions.get('window');
 
 const ConnectionMonitor = () => {
 	const connectionState = useConnectionState();
@@ -156,6 +154,7 @@ function ChannelVoice({
 }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { width, height } = useWindowDimensions();
 	const channel = useAppSelector((state) => selectChannelById2(state, channelId));
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
 	const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(false);
