@@ -34,7 +34,7 @@ import { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMe
 import { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
-import { selectScrollOffsetByChannelId, selectShowScrollDownButton } from '../channels/channels.slice';
+import { selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
@@ -746,8 +746,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	}
 });
 
-const SCROLL_OFFSET_THRESHOLD = 3000;
-
 export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (message: MessagesEntity, thunkAPI) => {
 	if (!message?.channel_id) return;
 
@@ -755,11 +753,6 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 	const channelId = message.channel_id;
 	const isViewingOlderMessages = getMessagesState(getMessagesRootState(thunkAPI))?.isViewingOlderMessagesByChannelId?.[channelId];
 	const isBottom = !selectShowScrollDownButton(state, channelId);
-	const scrollOffset = selectScrollOffsetByChannelId(state, channelId);
-
-	if (!message.isMe && scrollOffset > SCROLL_OFFSET_THRESHOLD) {
-		return;
-	}
 
 	if (isViewingOlderMessages) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));

@@ -61,5 +61,9 @@ export const style = (colors: Attributes) =>
 			fontSize: size.medium,
 			fontWeight: '500',
 			marginTop: size.s_10
+		},
+		headerLeftBtn: {
+			marginLeft: size.s_10,
+			padding: size.s_10
 		}
 	});

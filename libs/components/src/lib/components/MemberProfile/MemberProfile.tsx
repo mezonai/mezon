@@ -213,7 +213,7 @@ export const BaseMemberProfile = ({
 		if (user?.user?.metadata) {
 			return user?.user?.metadata;
 		}
-	}, [userProfile?.user?.metadata, metaDataDM, statusOnline, user?.user?.metadata]);
+	}, [metaDataDM, statusOnline, user?.user?.metadata]);
 	return (
 		<div className="relative group w-full">
 			<div

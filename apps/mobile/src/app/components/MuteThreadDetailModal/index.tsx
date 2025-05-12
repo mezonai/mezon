@@ -8,8 +8,7 @@ import { format } from 'date-fns';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
@@ -106,7 +105,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 							? t('notifySettingThreadModal.headerTitleMuteChannel')
 							: t('notifySettingThreadModal.headerTitleMuteThread')}
 				</Text>
-				<Text numberOfLines={1} style={{ color: themeValue.text, fontSize: size.medium, fontWeight: '400', width: '100%' }}>
+				<Text numberOfLines={1} style={{ color: themeValue.text, fontSize: size.medium, fontWeight: '400', maxWidth: '90%' }}>
 					{isDMThread
 						? currentChannel?.channel_label
 						: isChannel
@@ -114,7 +113,12 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 							: `"${currentChannel?.channel_label}"`}
 				</Text>
 			</View>
-		)
+		),
+		headerLeft: () => (
+			<TouchableOpacity style={styles.headerLeftBtn} onPress={() => navigation.goBack()}>
+				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			</TouchableOpacity>
+		),
 	});
 	const getNotificationChannelSelected = useSelector(selectNotifiSettingsEntitiesById(currentChannel?.channel_id));
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -210,7 +214,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 						}}
 						style={styles.wrapperUnmuteBox}
 					>
-						<MezonIconCDN icon={IconCDN.bellSlashIcon} width={20} height={20} style={{ marginRight: 20 }} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.bellSlashIcon} width={20} height={20} customStyle={{ marginRight: 20 }} color={themeValue.text} />
 						<Text
 							style={styles.option}
 						>{`${t('bottomSheet.unMute')} ${isDMThread ? currentChannel?.channel_label : isChannel ? `#${currentChannel?.channel_label}` : `"${currentChannel?.channel_label}"`} `}</Text>
