@@ -10,7 +10,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ParticipantMeetState, useMediaPermissions } from '@mezon/utils';
+import { ParticipantMeetState, handleCopyLink, useMediaPermissions } from '@mezon/utils';
 import isElectron from 'is-electron';
 import Tooltip from 'rc-tooltip';
 import React, { ReactNode, memo, useCallback } from 'react';
@@ -73,6 +73,11 @@ const VoiceInfo = React.memo(() => {
 		dispatch(voiceActions.setShowMicrophone(!showMicrophone));
 	}, [showMicrophone]);
 
+	const handleCopyVoiceLink = useCallback(() => {
+		const urlHost = window.location.host;
+		const linkVoice = `${urlHost}/chat/clans/${currentVoiceInfo?.clanId}/channels/${currentVoiceInfo?.channelId}`;
+		handleCopyLink(linkVoice);
+	}, []);
 	return (
 		<div
 			className={`flex flex-col gap-2 border-b-2 dark:border-borderDefault border-gray-300 px-4 py-2 hover:bg-gray-550/[0.16] shadow-sm transition
@@ -89,6 +94,9 @@ const VoiceInfo = React.memo(() => {
 							{voiceAddress.length > 30 ? `${voiceAddress.substring(0, 30)}...` : voiceAddress}
 						</div>
 					</button>
+				</div>
+				<div className="cursor-pointer" onClick={handleCopyVoiceLink}>
+					<Icons.CopyIcon />
 				</div>
 			</div>
 			<div className="flex items-centerg gap-4 justify-between">

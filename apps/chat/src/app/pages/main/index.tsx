@@ -23,7 +23,6 @@ import {
 	e2eeActions,
 	fetchDirectMessage,
 	getIsShowPopupForward,
-	listChannelsByUserActions,
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
 	selectAudioBusyTone,
@@ -231,7 +230,6 @@ function MyApp() {
 			if (event[prefixKey] && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
 				dispatch(fetchDirectMessage({}));
-				dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 				openSearchModal();
 			}
 			if (event[prefixKey] && event.shiftKey && event.key === 'Enter' && !directId) {
@@ -512,8 +510,7 @@ const ClansList = memo(() => {
 				return (
 					<div
 						key={clan.id}
-						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'
-							}`}
+						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'}`}
 						onMouseEnter={() => handleMouseEnter(clan.id)}
 						onMouseDown={(e) => handleMouseDown(e, clan.id)}
 					>

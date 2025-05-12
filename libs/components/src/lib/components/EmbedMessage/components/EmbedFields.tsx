@@ -53,7 +53,12 @@ export function EmbedFields({ fields, message_id, senderId, channelId }: EmbedFi
 							</div>
 							{field.inputs && (
 								<div className="flex flex-col gap-1 w-max-[500px]">
-									<InputEmbedByType component={field.inputs} messageId={message_id} senderId={senderId} />
+									<InputEmbedByType
+										component={field.inputs}
+										messageId={message_id}
+										senderId={senderId}
+										max_options={field.inputs.max_options}
+									/>
 								</div>
 							)}
 							<div className="flex gap-1">
@@ -82,9 +87,10 @@ type InputEmbedByType = {
 	messageId: string;
 	senderId: string;
 	component: SelectComponent | InputComponent | DatePickerComponent | RadioComponent | AnimationComponent;
+	max_options?: number;
 };
 
-const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) => {
+const InputEmbedByType = ({ messageId, senderId, component, max_options }: InputEmbedByType) => {
 	switch (component.type) {
 		case EMessageComponentType.INPUT:
 			return <MessageInput buttonId={component.id} messageId={messageId} senderId={senderId} input={component.component} />;
@@ -93,7 +99,15 @@ const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) 
 		case EMessageComponentType.DATEPICKER:
 			return <MessageDatePicker buttonId={component.id} messageId={messageId} senderId={senderId} datepicker={component.component} />;
 		case EMessageComponentType.RADIO:
-			return <EmbedOptionRatio key={component.id} idRadio={component.id} options={component.component} message_id={messageId} />;
+			return (
+				<EmbedOptionRatio
+					key={component.id}
+					idRadio={component.id}
+					options={component.component}
+					message_id={messageId}
+					max_options={max_options}
+				/>
+			);
 		case EMessageComponentType.ANIMATION:
 			return (
 				<EmbedAnimation
