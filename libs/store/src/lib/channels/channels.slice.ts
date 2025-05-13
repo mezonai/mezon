@@ -1528,10 +1528,9 @@ export const selectChannelFirst = createSelector(selectAllChannels, (channels) =
 
 export const selectChannelSecond = createSelector(selectAllChannels, (channels) => channels[1]);
 
-export const selectChannelsByClanId = createSelector(
-	[selectAllChannels, (state: RootState, clanId: string) => clanId],
-	(channels, clanId) => channels
-);
+export const selectChannelsByClanId = createSelector([getChannelsState, (state: RootState, clanId: string) => clanId], (state, clanId) => {
+	return selectAll(state.byClans[clanId]?.entities ?? channelsAdapter.getInitialState());
+});
 
 export const selectDefaultChannelIdByClanId = createSelector(
 	[selectAllChannels, (state: RootState, clanId: string) => clanId],
