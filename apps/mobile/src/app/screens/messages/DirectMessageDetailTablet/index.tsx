@@ -151,7 +151,6 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	const directMessageLoader = useCallback(async () => {
 		const store = await getStoreAsync();
 		await Promise.all([
-			store.dispatch(clansActions.setCurrentClanId('0')),
 			store.dispatch(
 				directActions.joinDirectMessage({
 					directMessageId: directMessageId,
@@ -186,9 +185,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 		let timeout: NodeJS.Timeout;
 		if (directMessageId) {
 			timeout = setTimeout(() => {
-				requestAnimationFrame(async () => {
-					await directMessageLoader();
-				});
+				directMessageLoader();
 			}, 100);
 		}
 

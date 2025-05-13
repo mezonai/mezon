@@ -9,7 +9,7 @@ export type IModeKeyboardPicker = 'text' | 'emoji' | 'attachment';
 interface IProps {
 	height: number;
 	children: React.ReactNode;
-	isStickyHeader?: boolean;
+	isStickyHeader: boolean;
 }
 
 const BottomKeyboardPicker = forwardRef(function BottomKeyboardPicker(

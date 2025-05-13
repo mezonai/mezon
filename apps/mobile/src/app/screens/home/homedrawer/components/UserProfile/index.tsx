@@ -4,8 +4,8 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
-	RolesClanEntity,
 	directActions,
+	RolesClanEntity,
 	selectAccountCustomStatus,
 	selectAllRolesClan,
 	selectDirectsOpenlist,
@@ -122,7 +122,8 @@ const UserProfile = React.memo(
 					if (isTabletLandscape) {
 						await dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
 						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-					} else {
+					}
+					else {
 						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 					}
 					return;
@@ -140,12 +141,7 @@ const UserProfile = React.memo(
 					message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
 				);
 				if (response?.channel_id) {
-					if (isTabletLandscape) {
-						await dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
-						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-					} else {
-						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
-					}
+					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 				}
 			},
 			[

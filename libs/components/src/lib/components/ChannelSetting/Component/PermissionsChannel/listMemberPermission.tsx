@@ -42,7 +42,7 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 			const filteredMembers = rawMembers.filter((member) => member.user && member.user.id && props.selectedUserIds.includes(member.user.id));
 			return filteredMembers.map((member) => ({ ...member.user, clanNick: member.clan_nick, clanAvatar: member.clan_avatar }));
 		}
-		const filteredMembers = rawMembers.filter((member) => member.userChannelId !== '0' && member.id);
+		const filteredMembers = rawMembers.filter((member) => member.userChannelId !== '0');
 		return filteredMembers.map((member) => ({ ...member.user, clanNick: member.clan_nick, clanAvatar: member.clan_avatar }));
 	}, [rawMembers]);
 
@@ -74,9 +74,6 @@ type ItemMemberPermissionProps = {
 
 const ItemMemberPermission = (props: ItemMemberPermissionProps) => {
 	const { id = '', username = '', displayName = '', clanName = '', clanAvatar = '', avatar = '', onDelete } = props;
-	console.log('displayName: ', displayName);
-	console.log('username: ', username);
-	console.log('id: ', id);
 	const [checkClanOwner] = useCheckOwnerForUser();
 	const isClanOwner = checkClanOwner(id);
 	const namePrioritize = getNameForPrioritize(clanName, displayName, username);

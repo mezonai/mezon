@@ -6,7 +6,6 @@ import React, { memo } from 'react';
 import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ImageListModal } from '../../../../../components/ImageListModal';
-import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { EmbedAuthor } from './EmbedAuthor';
 import { EmbedDescription } from './EmbedDescription';
 import { EmbedFields } from './EmbedFields';
@@ -21,12 +20,11 @@ type EmbedMessageProps = {
 
 export const EmbedMessage = memo(({ message_id, embed }: EmbedMessageProps) => {
 	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
-	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 
 	return (
-		<View style={[styles.container, isTabletLandscape && { width: '60%' }]}>
+		<View style={styles.container}>
 			<View style={[styles.sizeColor, !!color && { backgroundColor: color }]} />
 			<View style={styles.embed}>
 				<View style={styles.valueContainer}>
@@ -54,11 +52,7 @@ export const EmbedMessage = memo(({ message_id, embed }: EmbedMessageProps) => {
 							DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 						}}
 					>
-						<FastImage
-							source={{ uri: image?.url }}
-							style={[styles.imageWrapper, { aspectRatio: image?.width / image?.height || 1 }]}
-							resizeMode="cover"
-						/>
+						<FastImage source={{ uri: image?.url }} style={styles.imageWrapper} resizeMode="cover" />
 					</TouchableOpacity>
 				)}
 				{(!!timestamp || !!footer) && <EmbedFooter {...footer} timestamp={timestamp} />}

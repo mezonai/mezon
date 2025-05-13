@@ -64,8 +64,6 @@ jobs:
           NX_CHAT_APP_OAUTH2_RESPONSE_TYPE: ${{ secrets.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE }}
           NX_CHAT_APP_OAUTH2_SCOPE: ${{ secrets.NX_CHAT_APP_OAUTH2_SCOPE }}
           NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD: ${{ secrets.NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD }}
-          NX_CHAT_APP_API_GW_HOST: ${{ secrets.NX_CHAT_APP_API_GW_HOST }}
-          NX_CHAT_APP_API_GW_PORT: ${{ secrets.NX_CHAT_APP_API_GW_PORT }}
 
       - name: Push to MinIO
         run: |

@@ -1,6 +1,6 @@
 import { useCustomNavigate } from '@mezon/core';
 import { channelsActions, getStore, selectAppChannelById } from '@mezon/store';
-import { IEmbedProps, ObserveFn } from '@mezon/utils';
+import { IEmbedProps } from '@mezon/utils';
 import { useDispatch } from 'react-redux';
 import { EmbedMessage } from './EmbedMessage';
 
@@ -9,10 +9,9 @@ interface EmbedMessageWrapProps {
 	senderId?: string;
 	messageId?: string;
 	channelId: string;
-	observeIntersectionForLoading?: ObserveFn;
 }
 
-export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading }: EmbedMessageWrapProps) {
+export function EmbedMessageWrap({ embeds, senderId, messageId, channelId }: EmbedMessageWrapProps) {
 	const navigate = useCustomNavigate();
 	const dispatch = useDispatch();
 
@@ -66,7 +65,6 @@ export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, obser
 					message_id={messageId}
 					onClick={() => onEmbedClick(embed)}
 					channelId={channelId}
-					observeIntersectionForLoading={observeIntersectionForLoading}
 				/>
 			))}
 		</div>

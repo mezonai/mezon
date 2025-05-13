@@ -36,6 +36,7 @@ import {
 	STORAGE_CLAN_ID,
 	STORAGE_IS_DISABLE_LOAD_BACKGROUND,
 	STORAGE_MY_USER_ID,
+	getAppInfo,
 	load,
 	save,
 	setCurrentClanLoader
@@ -44,12 +45,10 @@ import notifee from '@notifee/react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import { AppState, DeviceEventEmitter, Platform, View } from 'react-native';
-import useTabletLandscape from '../hooks/useTabletLandscape';
-import { handleFCMToken, setupNotificationListeners } from '../utils/pushNotificationHelpers';
+import { handleFCMToken, setupCallKeep, setupNotificationListeners } from '../utils/pushNotificationHelpers';
 
 const RootListener = () => {
 	const isLoggedIn = useSelector(selectIsLogin);
-	const isTabletLandscape = useTabletLandscape();
 	const { handleReconnect } = useContext(ChatContext);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
@@ -57,8 +56,8 @@ const RootListener = () => {
 	const appStateRef = useRef(AppState.currentState);
 
 	useEffect(() => {
-		startupRunning(navigation, isTabletLandscape);
-	}, [isTabletLandscape, navigation]);
+		startupRunning(navigation);
+	}, [navigation]);
 
 	useEffect(() => {
 		if (isLoggedIn && hasInternet) {
@@ -78,8 +77,8 @@ const RootListener = () => {
 		}
 	}, [isLoggedIn]);
 
-	const startupRunning = async (navigation: any, isTabletLandscape: boolean) => {
-		await setupNotificationListeners(navigation, isTabletLandscape);
+	const startupRunning = async (navigation: any) => {
+		await setupNotificationListeners(navigation);
 		// if (Platform.OS === 'ios') {
 		// 	await setupCallKeep();
 		// }

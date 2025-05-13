@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { directActions, DirectEntity, selectDirectById, selectDirectsUnreadlist, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { DirectEntity, selectDirectById, selectDirectsUnreadlist, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../app/navigation/ScreenTypes';
-import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
 const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: number }) => {
@@ -18,8 +17,6 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 	const navigation = useNavigation<any>();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const isTabletLandscape = useTabletLandscape();
-	const dispatch = useAppDispatch();
 	const getBadge = (dm: DirectEntity) => {
 		switch (dm.type) {
 			case ChannelType.CHANNEL_TYPE_DM:
@@ -61,13 +58,8 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 		}
 	};
 
-	const navigateToDirectMessageMDetail = async () => {
-		if (isTabletLandscape) {
-			await dispatch(directActions.setDmGroupCurrentId(dm?.channel_id));
-			navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-		} else {
-			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: dm?.channel_id, from: APP_SCREEN.HOME });
-		}
+	const navigateToDirectMessageMDetail = () => {
+		navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: dm?.channel_id, from: APP_SCREEN.HOME });
 	};
 
 	return (

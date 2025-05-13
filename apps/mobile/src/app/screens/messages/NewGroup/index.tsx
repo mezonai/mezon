@@ -14,13 +14,11 @@ import { FriendListByAlphabet } from '../../../components/FriendListByAlphabet';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { UserInformationBottomSheet } from '../../../components/UserInformationBottomSheet';
 import { IconCDN } from '../../../constants/icon_cdn';
-import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { style } from './styles';
 
 export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: any }) => {
-	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const directMessage = route?.params?.directMessage as DirectEntity;
@@ -110,15 +108,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		);
 		const resPayload = response.payload as ApiCreateChannelDescRequest;
 		if (resPayload.channel_id) {
-			if (isTabletLandscape) {
-				await dispatch(directActions.setDmGroupCurrentId(resPayload.channel_id));
-				navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-			} else {
-				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
-					directMessageId: resPayload.channel_id,
-					from: APP_SCREEN.MESSAGES.NEW_GROUP
-				});
-			}
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: resPayload.channel_id, from: APP_SCREEN.MESSAGES.NEW_GROUP });
 		}
 	};
 

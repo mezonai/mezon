@@ -288,7 +288,6 @@ function MessageWithUser({
 
 						{Array.isArray(message?.content?.embed) && (
 							<EmbedMessageWrap
-								observeIntersectionForLoading={observeIntersectionForLoading}
 								embeds={message.content.embed}
 								senderId={message?.sender_id}
 								messageId={message?.id}

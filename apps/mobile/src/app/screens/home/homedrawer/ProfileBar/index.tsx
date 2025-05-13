@@ -30,7 +30,7 @@ const ProfileBar = () => {
 					source={{ uri: createImgproxyUrl(user?.userProfile?.user?.avatar_url ?? '', { width: 150, height: 150, resizeType: 'fit' }) }}
 					style={styles.imageWrapper}
 				/>
-				<UserStatus status={userStatus} iconSize={size.s_10} />
+				<UserStatus status={userStatus} iconSize={size.s_16} />
 			</View>
 			<View style={styles.userInfo}>
 				<Text style={styles.username}>{user?.userProfile?.user?.username}</Text>

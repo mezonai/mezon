@@ -1,7 +1,7 @@
 import { useDirect, useFriends } from '@mezon/core';
 import { ChevronIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { FriendsEntity, directActions, getStore, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
+import { FriendsEntity, getStore, selectDirectsOpenlist } from '@mezon/store-mobile';
 import { User } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,13 +14,11 @@ import { EFriendItemAction } from '../../../components/FriendItem';
 import { FriendListByAlphabet } from '../../../components/FriendListByAlphabet';
 import { UserInformationBottomSheet } from '../../../components/UserInformationBottomSheet';
 import { IconCDN } from '../../../constants/icon_cdn';
-import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { style } from './styles';
 
 export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
-	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [searchText, setSearchText] = useState<string>('');
@@ -29,7 +27,6 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 	const { friends: allUser } = useFriends();
 	const { createDirectMessageWithUser } = useDirect();
 	const store = getStore();
-	const dispatch = useAppDispatch();
 	const friendList: FriendsEntity[] = useMemo(() => {
 		return allUser.filter((user) => user.state === 0);
 	}, [allUser]);
@@ -58,12 +55,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 
 			const directMessage = listDM.find((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === user?.user?.id);
 			if (directMessage?.id) {
-				if (isTabletLandscape) {
-					await dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
-					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-				} else {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
-				}
+				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 				return;
 			}
 			const response = await createDirectMessageWithUser(
@@ -72,12 +64,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 				user?.user?.avatar_url
 			);
 			if (response?.channel_id) {
-				if (isTabletLandscape) {
-					await dispatch(directActions.setDmGroupCurrentId(response?.channel_id));
-					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-				} else {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
-				}
+				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 			}
 		},
 		[createDirectMessageWithUser, navigation, store]

@@ -112,8 +112,7 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 			token: sessionRef.current?.token ?? '',
 			refresh_token: sessionRef.current?.refresh_token ?? '',
 			created: sessionRef.current?.created ?? true,
-			is_remember: sessionRef.current?.is_remember ?? false,
-			api_url: sessionRef.current?.api_url as string
+			is_remember: sessionRef.current?.is_remember ?? false
 		});
 		try {
 			setIsLoading(true);

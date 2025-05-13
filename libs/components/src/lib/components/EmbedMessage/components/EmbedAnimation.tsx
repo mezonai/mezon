@@ -1,5 +1,4 @@
-import { ObserveFn, useIsIntersecting } from '@mezon/utils';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 type EmbedAnimationProps = {
 	url_image?: string;
@@ -10,13 +9,9 @@ type EmbedAnimationProps = {
 	duration?: number;
 	vertical?: boolean;
 	isResult?: number;
-	channelId: string;
-	observeIntersectionForLoading?: ObserveFn;
 };
 const WIDTH_BOX_ANIMATION_SMALL = 80;
 const BREAK_POINT_RESPONSIVE = 1200;
-const DEFAULT_HEIGH = 126;
-const DEFAULT_WIDTH = 133;
 export const EmbedAnimation = ({
 	url_image,
 	url_position,
@@ -25,13 +20,8 @@ export const EmbedAnimation = ({
 	repeat,
 	duration = 2,
 	vertical = false,
-	isResult,
-	channelId,
-	observeIntersectionForLoading
+	isResult
 }: EmbedAnimationProps) => {
-	const ref = useRef<HTMLDivElement>(null);
-	const isIntersecting = useIsIntersecting(ref, observeIntersectionForLoading);
-
 	useEffect(() => {
 		const fetchAnimationData = async () => {
 			if (!url_position) {
@@ -47,6 +37,10 @@ export const EmbedAnimation = ({
 				if (!isResult) {
 					const innerAnimation = makeAnimation(jsonPosition, poolItem, ratioWidth).animate;
 					style.innerHTML = `
+          .box_resize_${index}_${messageId}{
+            width : ${jsonPosition.frames[poolItem[index]].frame.w}px;
+            height : ${jsonPosition.frames[poolItem[index]].frame.h}px;
+          }
 
           .box_animation_${index}_${messageId} {
             background-image: url(${url_image});
@@ -61,24 +55,30 @@ export const EmbedAnimation = ({
 
             @media (max-width: ${BREAK_POINT_RESPONSIVE}px) {
               .box_resize_${index}_${messageId}{
-                width : ${jsonPosition.frames[poolItem[index]].frame.w * ratioWidth}px !important;
-                height : ${jsonPosition.frames[poolItem[index]].frame.h * ratioWidth}px !important;
+                width : ${jsonPosition.frames[poolItem[index]].frame.w * ratioWidth}px;
+                height : ${jsonPosition.frames[poolItem[index]].frame.h * ratioWidth}px;
                 background-size: ${(jsonPosition.meta.size.w / jsonPosition.frames[poolItem[index]].frame.w) * WIDTH_BOX_ANIMATION_SMALL}px ${((jsonPosition.meta.size.h / jsonPosition.frames[poolItem[index]].frame.h) * WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px;
               }
             }
               `;
 				} else {
 					style.innerHTML = `
+            .box_resize_${index}_${messageId}{
+              width : ${jsonPosition.frames[poolItem[index]].frame.w}px;
+              height : ${jsonPosition.frames[poolItem[index]].frame.h}px;
+            }
 
           .box_animation_${index}_${messageId} {
             background-image: url(${url_image});
             background-repeat : no-repeat;
             background-position: -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.x}px -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.y}px;
             }
+
+
               @media (max-width: ${BREAK_POINT_RESPONSIVE}px) {
               .box_resize_${index}_${messageId}{
-                width : ${WIDTH_BOX_ANIMATION_SMALL}px !important;
-                height : ${(WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px !important;
+                width : ${WIDTH_BOX_ANIMATION_SMALL}px;
+                height : ${(WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px;
                  background-size: ${(jsonPosition.meta.size.w / jsonPosition.frames[poolItem[index]].frame.w) * WIDTH_BOX_ANIMATION_SMALL}px ${((jsonPosition.meta.size.h / jsonPosition.frames[poolItem[index]].frame.h) * WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px;
                    background-position: -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.x * ratioWidth}px -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.y * ratioWidth}px;
                  }
@@ -90,21 +90,15 @@ export const EmbedAnimation = ({
 				div?.appendChild(style);
 			});
 		};
-		if (isIntersecting && !ref.current?.firstChild?.hasChildNodes()) {
-			fetchAnimationData();
-		}
-	}, [isIntersecting]);
+		fetchAnimationData();
+	}, []);
 
 	return (
-		<div ref={ref} id={`${messageId}_wrap_animation`} className={`rounded-md flex gap-2 ${vertical ? 'flex-col' : ''}`}>
+		<div id={`${messageId}_wrap_animation`} className={`rounded-md flex gap-2 ${vertical ? 'flex-col' : ''}`}>
 			{pool?.map((poolItem, index) => (
 				<div
 					key={`${messageId}_animation_${index}`}
 					id={`${messageId}_animation_${index}`}
-					style={{
-						height: DEFAULT_HEIGH,
-						width: DEFAULT_WIDTH
-					}}
 					className={`box_animation_${index}_${messageId} box_resize_${index}_${messageId}`}
 				></div>
 			))}

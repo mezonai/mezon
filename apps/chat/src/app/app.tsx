@@ -13,29 +13,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { preloadedState } from './mock/state';
 import { Routes } from './routes';
 
-const getMezonConfig = (): CreateMezonClientOptions => {
-	try {
-		const storedConfig = localStorage.getItem('mezon_session');
-		if (storedConfig) {
-			const parsedConfig = JSON.parse(storedConfig);
-			if (parsedConfig.host && parsedConfig.port) {
-				parsedConfig.key = process.env.NX_CHAT_APP_API_KEY as string;
-				return parsedConfig;
-			}
-		}
-	} catch (error) {
-		console.error('Failed to get Mezon config from localStorage:', error);
-	}
-
-	return {
-		host: process.env.NX_CHAT_APP_API_GW_HOST as string,
-		port: process.env.NX_CHAT_APP_API_GW_PORT as string,
-		key: process.env.NX_CHAT_APP_API_KEY as string,
-		ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
-	};
+const mezon: CreateMezonClientOptions = {
+	host: process.env.NX_CHAT_APP_API_HOST as string,
+	port: process.env.NX_CHAT_APP_API_PORT as string,
+	key: process.env.NX_CHAT_APP_API_KEY as string,
+	ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
 };
-
-const mezon = getMezonConfig();
 
 export const LoadingFallbackWrapper = () => <LoadingFallback />;
 

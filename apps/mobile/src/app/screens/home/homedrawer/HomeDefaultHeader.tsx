@@ -140,7 +140,7 @@ const HomeDefaultHeader = React.memo(
 							</TouchableOpacity>
 						)}
 						{!!currentChannel?.channel_label && (
-							<View style={[styles.channelContainer, isTabletLandscape && { paddingBottom: size.s_8, paddingLeft: size.s_8 }]}>
+							<View style={styles.channelContainer}>
 								{renderChannelIcon()}
 								<View>
 									<View style={styles.threadHeaderBox}>

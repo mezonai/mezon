@@ -1,11 +1,11 @@
 import { useAuth } from '@mezon/core';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { canvasAPIActions, selectCanvasCursors, selectCanvasIdsByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { LIMIT, normalizeString } from '@mezon/utils';
+import { normalizeString } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
@@ -24,7 +24,6 @@ const Canvas = memo(({ channelId, clanId }: { channelId: string; clanId: string 
 	const dispatch = useAppDispatch();
 	const [searchText, setSearchText] = useState('');
 	const [canvasPage, setCanvasPage] = useState(1);
-	const pagesRef = useRef<number[]>([]);
 
 	useEffect(() => {
 		fetchCanvas(canvasPage);
@@ -45,13 +44,8 @@ const Canvas = memo(({ channelId, clanId }: { channelId: string; clanId: string 
 	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, channelId));
 	const { countCanvas } = useAppSelector((state) => selectCanvasCursors(state, channelId ?? ''));
 	const pages = useMemo(() => {
-		if (!!countCanvas && countCanvas > 0) {
-			const totalPages = countCanvas === undefined ? 0 : Math.ceil(countCanvas / LIMIT);
-			const pageArray = Array.from({ length: totalPages }, (_, index) => index + 1);
-			pagesRef.current = pageArray;
-			return pageArray;
-		}
-		return pagesRef?.current;
+		const totalPages = countCanvas === undefined ? 0 : Math.ceil(countCanvas / 10);
+		return Array.from({ length: totalPages }, (_, index) => index + 1);
 	}, [countCanvas]);
 
 	const filterCanvas = useMemo(() => {

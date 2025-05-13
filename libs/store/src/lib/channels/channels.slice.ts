@@ -178,8 +178,7 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 		channelType !== ChannelType.CHANNEL_TYPE_CHANNEL &&
 		channelType !== ChannelType.CHANNEL_TYPE_DM &&
 		channelType !== ChannelType.CHANNEL_TYPE_GROUP &&
-		channelType !== ChannelType.CHANNEL_TYPE_THREAD &&
-		channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE
+		channelType !== ChannelType.CHANNEL_TYPE_THREAD
 	) {
 		return null;
 	}
@@ -193,7 +192,6 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 	} catch (error) {
 		captureSentryError(error, 'channels/joinChat');
 		return thunkAPI.rejectWithValue(error);
-
 	}
 });
 

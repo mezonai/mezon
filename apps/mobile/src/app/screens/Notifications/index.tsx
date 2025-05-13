@@ -19,7 +19,7 @@ import {
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { INotification, NotificationCategory, NotificationEntity, sleep, sortNotificationsByDate } from '@mezon/utils';
+import { INotification, NotificationCategory, NotificationEntity, sortNotificationsByDate } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode } from 'mezon-js';
@@ -201,12 +201,7 @@ const Notifications = () => {
 				await Promise.all(promises);
 
 				if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-					if (isTabletLandscape) {
-						await dispatch(directActions.setDmGroupCurrentId(notify?.content?.channel_id));
-						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-					} else {
-						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: notify?.content?.channel_id });
-					}
+					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: notify?.content?.channel_id });
 				} else if (Number(notify?.content?.topic_id) !== 0) {
 					navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 						screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
@@ -215,12 +210,7 @@ const Notifications = () => {
 					const dataSave = getUpdateOrAddClanChannelCache(notify?.content?.clan_id, notify?.content?.channel_id);
 					save(STORAGE_CLAN_ID, notify?.content?.clan_id);
 					save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-					if (isTabletLandscape) {
-						await sleep(1000);
-						navigation.goBack();
-					} else {
-						navigation.navigate(APP_SCREEN.HOME_DEFAULT);
-					}
+					navigation.navigate(APP_SCREEN.HOME_DEFAULT);
 				}
 				timeoutRef.current = setTimeout(() => {
 					store.dispatch(

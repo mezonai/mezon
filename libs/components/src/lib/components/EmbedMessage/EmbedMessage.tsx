@@ -1,4 +1,4 @@
-import { IEmbedProps, ObserveFn } from '@mezon/utils';
+import { IEmbedProps } from '@mezon/utils';
 import { EmbedAuthor } from './components/EmbedAuthor';
 import { EmbedDescription } from './components/EmbedDescription';
 import { EmbedFields } from './components/EmbedFields';
@@ -13,10 +13,9 @@ interface EmbedMessageProps {
 	message_id?: string;
 	onClick?: () => void;
 	channelId: string;
-	observeIntersectionForLoading?: ObserveFn;
 }
 
-export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, observeIntersectionForLoading }: EmbedMessageProps) {
+export function EmbedMessage({ embed, message_id, senderId, onClick, channelId }: EmbedMessageProps) {
 	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
 	return (
 		<div className="max-w-[520px] min-w-80 w-fit dark:bg-bgSecondary bg-white shadow-sm rounded-lg text-left relative mt-2 text-textLightTheme dark:text-textDarkTheme dark:border-none border">
@@ -28,13 +27,7 @@ export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, 
 						{title && <EmbedTitle title={title} url={url} onClick={onClick} />}
 						{description && <EmbedDescription description={description} />}
 						{fields && (
-							<EmbedFields
-								fields={fields}
-								message_id={message_id as string}
-								senderId={senderId as string}
-								channelId={channelId}
-								observeIntersectionForLoading={observeIntersectionForLoading}
-							/>
+							<EmbedFields fields={fields} message_id={message_id as string} senderId={senderId as string} channelId={channelId} />
 						)}
 					</div>
 					<div>{thumbnail && <EmbedThumbnail url={thumbnail.url} />}</div>

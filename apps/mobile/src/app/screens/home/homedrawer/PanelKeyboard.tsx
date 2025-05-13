@@ -105,7 +105,7 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 				}}
 			/>
 			{heightKeyboardShow !== 0 && typeKeyboardBottomSheet !== 'text' && (
-				<BottomKeyboardPicker height={heightKeyboardShow} ref={bottomPickerRef}>
+				<BottomKeyboardPicker height={heightKeyboardShow} ref={bottomPickerRef} isStickyHeader={typeKeyboardBottomSheet === 'emoji'}>
 					{typeKeyboardBottomSheet === 'emoji' ? (
 						<EmojiPicker
 							onDone={onClose}
