@@ -1,12 +1,15 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelUsersEntity, clansActions, getStore, selectChannelById, selectCurrentClanId, useAppSelector } from '@mezon/store-mobile';
+import { sleep } from '@mezon/utils';
+import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
+import useTabletLandscape from '../../hooks/useTabletLandscape';
 import IconChannel from '../IconChannel';
 import style from './ChannelItem.styles';
 
@@ -20,7 +23,9 @@ export const ChannelItem = React.memo(({ channelData }: ChannelItemProps) => {
 	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channel_label ? `(${parentChannel.channel_label})` : ''), [parentChannel]);
 	const styles = style(themeValue);
-	const handleOnPress = () => {
+	const navigation = useNavigation<any>();
+	const isTabletLandscape = useTabletLandscape();
+	const handleOnPress = async () => {
 		const store = getStore();
 		const clanIdStore = selectCurrentClanId(store.getState());
 
@@ -29,6 +34,10 @@ export const ChannelItem = React.memo(({ channelData }: ChannelItemProps) => {
 			store.dispatch(clansActions.changeCurrentClan({ clanId: channelData?.clan_id }));
 		}
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_ROUTER, { channel: channelData });
+		if (isTabletLandscape) {
+			await sleep(200);
+			navigation.goBack();
+		}
 	};
 	return (
 		<TouchableOpacity onPress={handleOnPress} style={{ marginBottom: size.s_20 }}>

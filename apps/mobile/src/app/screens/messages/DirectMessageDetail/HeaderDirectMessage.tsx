@@ -186,9 +186,11 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 	return (
 		<View style={styles.headerWrapper}>
-			<Pressable onPress={handleBack} style={styles.backButton}>
-				<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
-			</Pressable>
+			{!isTabletLandscape && (
+				<Pressable onPress={handleBack} style={styles.backButton}>
+					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
+				</Pressable>
+			)}
 			<Pressable style={styles.channelTitle} onPress={navigateToThreadDetail}>
 				{isTypeDMGroup ? (
 					<View style={styles.groupAvatar}>

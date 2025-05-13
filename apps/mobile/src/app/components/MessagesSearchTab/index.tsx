@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { getStoreAsync, ISearchMessage, searchMessagesActions, selectCurrentPage, useAppDispatch } from '@mezon/store-mobile';
-import { SIZE_PAGE_SEARCH } from '@mezon/utils';
+import { SIZE_PAGE_SEARCH, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -18,6 +18,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, Text, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
+import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageItem from '../../screens/home/homedrawer/MessageItem';
 import { EmptySearchPage } from '../EmptySearchPage';
@@ -34,6 +35,7 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 	const [pageSearch, setPageSearch] = useState(1);
 	const currentPage = useSelector(selectCurrentPage);
 	const navigation = useNavigation<any>();
+	const isTabletLandscape = useTabletLandscape();
 
 	const isDmOrGroup = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
@@ -104,7 +106,7 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 		}
 	};
 
-	const handleJumpMessage = (message: MessagesEntity) => {
+	const handleJumpMessage = async (message: MessagesEntity) => {
 		if (currentChannel?.channel_id !== message?.channel_id) {
 			handleJoinChannel(message?.clan_id, message?.channel_id);
 		}
@@ -120,7 +122,12 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 		if (isDmOrGroup) {
 			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: message?.channel_id });
 		} else {
-			navigation.navigate(APP_SCREEN.HOME_DEFAULT);
+			if (isTabletLandscape) {
+				await sleep(200);
+				navigation.goBack();
+			} else {
+				navigation.navigate(APP_SCREEN.HOME_DEFAULT);
+			}
 		}
 	};
 

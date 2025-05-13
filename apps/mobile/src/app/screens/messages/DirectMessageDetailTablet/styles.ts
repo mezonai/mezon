@@ -45,7 +45,8 @@ export const style = (colors: Attributes) =>
 		friendAvatar: {
 			width: size.s_30,
 			height: size.s_30,
-			borderRadius: 50,
+			borderRadius: size.s_50,
+			overflow: 'hidden',
 			overlayColor: colors.secondary
 		},
 		statusCircle: {
@@ -80,5 +81,14 @@ export const style = (colors: Attributes) =>
 			textAlign: 'center',
 			fontSize: size.h6,
 			color: Colors.white
+		},
+		iconHeader: {
+			marginRight: size.s_4,
+			width: size.s_34,
+			height: size.s_34,
+			borderRadius: size.s_30,
+			backgroundColor: colors.secondaryLight,
+			alignItems: 'center',
+			justifyContent: 'center'
 		}
 	});

@@ -98,10 +98,10 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	};
 
 	const handleDirectMessageWithUser = useCallback(
-		async (userId?: string) => {
-			if (!userId) return;
+		async (user?: ChannelMembersEntity) => {
+			if (!user?.id) return;
 
-			const response = await createDirectMessageWithUser(userId, currentUser?.user?.display_name, currentUser?.user?.avatar_url);
+			const response = await createDirectMessageWithUser(user?.id, user?.user?.display_name || user?.user?.username, user?.user?.avatar_url);
 			if (response?.channel_id) {
 				const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
 				navigate(directDM);
@@ -156,7 +156,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			},
 			handleMessage: () => {
 				if (user?.user?.id) {
-					handleDirectMessageWithUser(user.user.id);
+					handleDirectMessageWithUser(user);
 				}
 			},
 			handleAddFriend: () => {
