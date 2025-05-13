@@ -27,6 +27,7 @@ export interface ISession {
 	user_id?: string;
 	vars?: object;
 	is_remember?: boolean;
+	api_url: string;
 }
 
 export const initialAuthState: AuthState = {

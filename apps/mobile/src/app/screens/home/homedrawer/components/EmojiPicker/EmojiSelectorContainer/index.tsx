@@ -11,65 +11,27 @@ import {
 	SmilingFaceIcon,
 	debounce
 } from '@mezon/mobile-components';
-import { Colors, Metrics, baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectCurrentClan, selectDmGroupCurrentId } from '@mezon/store-mobile';
-import { IEmoji, getSrcEmoji } from '@mezon/utils';
+import { Colors, Metrics, size, useTheme } from '@mezon/mobile-ui';
+import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectDmGroupCurrentId } from '@mezon/store-mobile';
+import { IEmoji } from '@mezon/utils';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import { ScrollView } from 'react-native-gesture-handler';
+import { DeviceEventEmitter, FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
-import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
+import CategoryList from './components/CategoryList';
+import EmojiCategory from './components/EmojiCategory';
 import { style } from './styles';
 
 type EmojiSelectorContainerProps = {
 	onSelected: (emojiId: string, shortname: string) => void;
 	searchText?: string;
 	isReactMessage?: boolean;
-	onScroll?: (e: any) => void;
+	onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
 	handleBottomSheetExpand?: () => void;
 	handleBottomSheetCollapse?: () => void;
-};
-
-type DisplayByCategoriesProps = {
-	readonly categoryName?: string;
-	readonly onEmojiSelect: (emoji: IEmoji) => void;
-	readonly onEmojiHover?: (item: any) => void;
-	readonly emojisData: any[];
-};
-
-function DisplayByCategories({ emojisData, categoryName, onEmojiSelect, onEmojiHover }: DisplayByCategoriesProps) {
-	const { themeValue } = useTheme();
-	const styles = style(themeValue);
-	const emojisByCategoryName = emojisData;
-
-	return (
-		<View style={styles.displayByCategories}>
-			<Text style={styles.titleCategories}>{categoryName}</Text>
-			<EmojisPanel emojisData={emojisByCategoryName} onEmojiSelect={onEmojiSelect} onEmojiHover={onEmojiHover} />
-		</View>
-	);
-}
-
-const EmojisPanel: React.FC<DisplayByCategoriesProps> = ({ emojisData, onEmojiSelect }) => {
-	const isTabletLandscape = useTabletLandscape();
-	const { themeValue } = useTheme();
-	const styles = style(themeValue, isTabletLandscape);
-	return (
-		<View style={styles.emojisPanel}>
-			{emojisData.map((item, index) => {
-				return (
-					<TouchableOpacity style={styles.wrapperIconEmoji} key={index} onPress={() => onEmojiSelect(item)}>
-						<FastImage source={{ uri: getSrcEmoji(item?.id) }} style={styles.iconEmoji} resizeMode={'contain'} />
-					</TouchableOpacity>
-				);
-			})}
-		</View>
-	);
 };
 
 export default function EmojiSelectorContainer({
@@ -86,7 +48,7 @@ export default function EmojiSelectorContainer({
 	const [selectedCategory, setSelectedCategory] = useState<string>('');
 	const [emojisSearch, setEmojiSearch] = useState<IEmoji[]>();
 	const [keywordSearch, setKeywordSearch] = useState<string>('');
-	const refScrollView = useRef<ScrollView>(null);
+	const flatListRef = useRef<FlatList>(null);
 	const { t } = useTranslation('message');
 	const dispatch = useDispatch();
 	const channelId = useMemo(() => {
@@ -95,6 +57,19 @@ export default function EmojiSelectorContainer({
 
 		return currentDirectId ? currentDirectId : currentChannelId;
 	}, [store]);
+
+	const getEmojisByCategories = (emojis: IEmoji[], categoryParam: string) => {
+		if (emojis?.length === 0 || !categoryParam) {
+			return [];
+		}
+
+		return emojis
+			.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam))
+			.map((emoji) => ({
+				...emoji,
+				category: categoryParam
+			}));
+	};
 
 	const cateIcon = useMemo(() => {
 		const clanEmojis = categoryEmoji?.length
@@ -120,23 +95,13 @@ export default function EmojiSelectorContainer({
 			<HeartIcon color={themeValue.textStrong} />,
 			<RibbonIcon color={themeValue.textStrong} />
 		];
-	}, [themeValue]);
+	}, [categoryEmoji, themeValue]);
 
 	const categoriesWithIcons = useMemo(() => {
-		const currentClan = selectCurrentClan(store.getState());
 		return categoriesEmoji.map((category, index) => ({
-			displayName: category === 'Custom' && currentClan?.clan_name ? currentClan?.clan_name : category,
 			name: category,
 			icon: cateIcon[index],
-			emojis: emojis?.reduce((acc, emoji) => {
-				if (emoji?.category?.includes?.(category)) {
-					acc.push({
-						...emoji,
-						category: category
-					});
-				}
-				return acc;
-			}, [])
+			emojis: getEmojisByCategories(emojis, category)
 		}));
 	}, [categoriesEmoji, emojis, store]);
 
@@ -150,7 +115,6 @@ export default function EmojiSelectorContainer({
 	const handleEmojiSelect = useCallback(
 		async (emoji: IEmoji) => {
 			onSelected(emoji.id, emoji.shortname);
-			// setRecentEmoji(emoji, currentClan?.id || '0');
 			handleBottomSheetCollapse?.();
 			if (!isReactMessage) {
 				const emojiItemName = `:${emoji.shortname?.split(':').join('')}:`;
@@ -182,16 +146,22 @@ export default function EmojiSelectorContainer({
 		[]
 	);
 
-	return (
-		<ScrollView
-			ref={refScrollView}
-			showsVerticalScrollIndicator={false}
-			stickyHeaderIndices={[0]}
-			scrollEventThrottle={16}
-			onScroll={onScroll}
-			style={{ height: Metrics.screenHeight / (Platform.OS === 'ios' ? 1.4 : 1.03) }}
-			contentContainerStyle={{ paddingBottom: size.s_50 }}
-		>
+	const handleSelectCategory = useCallback(
+		(categoryName: string) => {
+			setSelectedCategory(categoryName);
+			const index = categoriesWithIcons.findIndex((item) => item.name === categoryName);
+			if (index > 0) {
+				flatListRef.current?.scrollToIndex({
+					index: index + 1,
+					animated: true
+				});
+			}
+		},
+		[categoriesWithIcons]
+	);
+
+	const ListCategoryArea = () => {
+		return (
 			<View style={{ backgroundColor: themeBasic === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>
 				<View style={styles.textInputWrapper}>
 					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={18} width={18} color={themeValue.text} />
@@ -203,58 +173,65 @@ export default function EmojiSelectorContainer({
 						onChangeText={debouncedSetSearchText}
 					/>
 				</View>
-				<ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					style={styles.wrapperCateContainer}
-					contentContainerStyle={styles.cateContainer}
-				>
-					{categoriesWithIcons.map((item, index) => (
-						<TouchableOpacity
-							key={index}
-							onPress={() => {
-								setSelectedCategory(item.name);
-								if (categoryRefs?.current?.[item?.name]?.position) {
-									refScrollView.current?.scrollTo({
-										y: categoryRefs.current[item.name].position - 130,
-										animated: true
-									});
-								}
-							}}
-							style={{
-								...styles.cateItem,
-								backgroundColor: item.name === selectedCategory ? baseColor.blurple : 'transparent'
-							}}
-						>
-							{item.icon}
-						</TouchableOpacity>
-					))}
-				</ScrollView>
-			</View>
 
-			{keywordSearch ? (
-				<EmojisPanel emojisData={emojisSearch || []} onEmojiSelect={handleEmojiSelect} />
-			) : (
-				categoriesWithIcons.map((item, index) => {
-					return (
-						<View
-							key={`${index}-${item.name}-emoji-pannel`}
-							onLayout={(event) => {
-								if (categoryRefs?.current?.[item?.name]?.position !== undefined) {
-									categoryRefs.current[item.name].position = event.nativeEvent.layout.y;
-								}
-							}}
-						>
-							<DisplayByCategories
-								key={index + item.name?.toString()}
-								emojisData={item.emojis}
-								onEmojiSelect={handleEmojiSelect}
-								categoryName={item.displayName}
-							/>
-						</View>
-					);
-				})
-			)}
-		</ScrollView>
+				<CategoryList categoriesWithIcons={categoriesWithIcons} selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
+			</View>
+		);
+	};
+
+	const data = useMemo(() => {
+		const listCategoryArea = [{ id: 'listCategoryArea' }];
+
+		if (keywordSearch) {
+			return [
+				listCategoryArea,
+				{
+					name: 'searchResults',
+					emojis: emojisSearch || []
+				}
+			];
+		}
+
+		return [listCategoryArea, ...categoriesWithIcons];
+	}, [emojisSearch, categoriesWithIcons]);
+
+	const renderItem = useCallback(
+		({ item, index }) => {
+			if (index === 0) {
+				return <ListCategoryArea />;
+			} else {
+				return (
+					<View
+					// onLayout={(event) => {
+					// 	if (categoryRefs?.current?.[item?.name]?.position !== undefined) {
+					// 		categoryRefs.current[item.name].position = event.nativeEvent.layout.y;
+					// 	}
+					// }}
+					>
+						<EmojiCategory emojisData={item.emojis} onEmojiSelect={handleEmojiSelect} categoryName={item.name} />
+					</View>
+				);
+			}
+		},
+		[categoryRefs]
+	);
+
+	return (
+		<FlatList
+			ref={flatListRef}
+			data={data}
+			keyExtractor={(item) => `${item.name}-emoji-panel`}
+			renderItem={renderItem}
+			stickyHeaderIndices={[1]}
+			scrollEventThrottle={16}
+			initialNumToRender={1}
+			maxToRenderPerBatch={1}
+			windowSize={10}
+			removeClippedSubviews={true}
+			disableVirtualization
+			style={{
+				minHeight: Metrics.screenHeight * (Platform.OS === 'ios' ? 1.4 : 1.03)
+			}}
+		/>
 	);
 }

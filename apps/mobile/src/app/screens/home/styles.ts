@@ -7,10 +7,10 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row'
 	},
 	containerDrawerContent: {
-		flex: 2
+		flex: 3
 	},
 	containerHomeDefault: {
-		flex: 5
+		flex: 7
 	},
 	drawerHeaderLeft: {
 		marginLeft: size.s_14,

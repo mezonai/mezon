@@ -223,7 +223,7 @@ export const isShowNotification = (currentChannelId, currentDmId, remoteMessage:
 	return true;
 };
 
-export const navigateToNotification = async (store: any, notification: any, navigation: any, time?: number) => {
+export const navigateToNotification = async (store: any, notification: any, navigation: any, isTabletLandscape = false, time?: number) => {
 	const link = notification?.data?.link;
 	const topicId = notification?.data?.topic;
 	if (link) {
@@ -277,7 +277,12 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			if (linkDirectMessageMatch) {
 				const messageId = linkDirectMessageMatch[1];
 				if (navigation) {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: messageId });
+					if (isTabletLandscape) {
+						await store.dispatch(directActions.setDmGroupCurrentId(messageId));
+						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+					} else {
+						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: messageId });
+					}
 				}
 				store.dispatch(appActions.setLoadingMainMobile(false));
 				setTimeout(() => {
@@ -316,21 +321,21 @@ const handleOpenTopicDiscustion = async (store: any, topicId: string, channelId:
 	}
 };
 
-const processNotification = async ({ notification, navigation, time = 0 }) => {
+const processNotification = async ({ notification, navigation, time = 0, isTabletLandscape = false }) => {
 	const store = await getStoreAsync();
 	save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
 	store.dispatch(appActions.setLoadingMainMobile(true));
 	store.dispatch(appActions.setIsFromFCMMobile(true));
 	if (time) {
 		setTimeout(() => {
-			navigateToNotification(store, notification, navigation, time);
+			navigateToNotification(store, notification, navigation, isTabletLandscape, time);
 		}, time);
 	} else {
-		navigateToNotification(store, notification, navigation);
+		navigateToNotification(store, notification, navigation, isTabletLandscape);
 	}
 };
 
-export const setupNotificationListeners = async (navigation) => {
+export const setupNotificationListeners = async (navigation, isTabletLandscape = false) => {
 	messaging()
 		.getInitialNotification()
 		.then(async (remoteMessage) => {
@@ -345,7 +350,8 @@ export const setupNotificationListeners = async (navigation) => {
 							processNotification({
 								notification: { ...resp?.notification, data: resp?.notification?.data },
 								navigation,
-								time: 1
+								time: 1,
+								isTabletLandscape
 							});
 						}
 					}
@@ -361,7 +367,8 @@ export const setupNotificationListeners = async (navigation) => {
 					processNotification({
 						notification: { ...remoteMessage?.notification, data: remoteMessage?.data },
 						navigation,
-						time: 1
+						time: 1,
+						isTabletLandscape
 					});
 				}
 			}
@@ -371,7 +378,8 @@ export const setupNotificationListeners = async (navigation) => {
 		processNotification({
 			notification: { ...remoteMessage?.notification, data: remoteMessage?.data },
 			navigation,
-			time: 0
+			time: 0,
+			isTabletLandscape
 		});
 	});
 
@@ -381,7 +389,8 @@ export const setupNotificationListeners = async (navigation) => {
 			processNotification({
 				notification: detail.notification,
 				navigation,
-				time: 1
+				time: 1,
+				isTabletLandscape
 			});
 		}
 	});
@@ -394,7 +403,8 @@ export const setupNotificationListeners = async (navigation) => {
 				processNotification({
 					notification: detail.notification,
 					navigation,
-					time: 1
+					time: 1,
+					isTabletLandscape
 				});
 				break;
 		}

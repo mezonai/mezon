@@ -1,7 +1,4 @@
-import { Colors, Metrics, size, useAnimatedState } from '@mezon/mobile-ui';
-import React, { useEffect } from 'react';
-import { Platform, View } from 'react-native';
-import { Flow } from 'react-native-animated-spinkit';
+import { View } from 'react-native';
 import EmojiSelectorContainer from '../EmojiSelectorContainer';
 
 type EmojiSelectorProps = {
@@ -20,35 +17,15 @@ export default function EmojiSelector({
 	handleBottomSheetExpand,
 	handleBottomSheetCollapse
 }: EmojiSelectorProps) {
-	const [isReadyForUse, setIsReadyForUse] = useAnimatedState<boolean>(false);
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setIsReadyForUse(true);
-		}, 200);
-		return () => timer && clearTimeout(timer);
-	}, []);
-
 	return (
 		<View>
-			{isReadyForUse ? (
-				<EmojiSelectorContainer
-					onScroll={onScroll}
-					handleBottomSheetExpand={handleBottomSheetExpand}
-					handleBottomSheetCollapse={handleBottomSheetCollapse}
-					onSelected={onSelected}
-					isReactMessage={isReactMessage}
-				/>
-			) : (
-				<View
-					style={{
-						alignItems: 'center',
-						paddingTop: size.s_40,
-						height: Metrics.screenHeight / (Platform.OS === 'ios' ? 1.4 : 1.3)
-					}}
-				>
-					<Flow color={Colors.bgViolet} />
-				</View>
-			)}
+			<EmojiSelectorContainer
+				onScroll={onScroll}
+				handleBottomSheetExpand={handleBottomSheetExpand}
+				handleBottomSheetCollapse={handleBottomSheetCollapse}
+				onSelected={onSelected}
+				isReactMessage={isReactMessage}
+			/>
 		</View>
 	);
 }
