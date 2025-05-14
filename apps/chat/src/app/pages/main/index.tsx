@@ -531,14 +531,14 @@ const ClansList = memo(() => {
 				if (group && expanded[id]) {
 					return (
 						<Fragment key={id}>
-							<div
-								className="w-[40px] h-[40px] mb-2 rounded-lg border border-gray-400 flex items-center justify-center bg-white cursor-pointer"
-								onClick={() => setExpanded((prev) => ({ ...prev, [id]: false }))}
-							>
-								<span className="text-xs font-bold text-gray-600">🔽</span>
-							</div>
 
 							<div className="flex flex-col items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+								<div
+									className="w-[40px] h-[40px] mb-2 rounded-lg border border-gray-400 flex items-center justify-center bg-white cursor-pointer"
+									onClick={() => setExpanded((prev) => ({ ...prev, [id]: false }))}
+								>
+									<span className="text-xs font-bold text-gray-600">🔽</span>
+								</div>
 								{group.clanIds.map((childId, childIndex) => {
 									const clan = clanMap[childId];
 									if (!clan) return null;
@@ -548,9 +548,7 @@ const ClansList = memo(() => {
 										<Fragment key={childId}>
 											{isDragging && (
 												<div
-													className={`h-[2px] w-[36px] rounded transition-all duration-150 ${
-														dropIndex === index ? 'bg-sky-500' : 'bg-transparent'
-													}`}
+													className={`h-[2px] w-[36px] rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
 													onMouseEnter={() => handleDragOverItem(index)}
 												/>
 											)}
@@ -583,9 +581,7 @@ const ClansList = memo(() => {
 						<Fragment key={id}>
 							{isDragging && (
 								<div
-									className={`h-[2px] w-[36px] rounded transition-all duration-150 ${
-										dropIndex === index ? 'bg-sky-500' : 'bg-transparent'
-									}`}
+									className={`h-[2px] w-[36px] rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
 									onMouseEnter={() => handleDragOverItem(index)}
 								/>
 							)}
@@ -611,9 +607,7 @@ const ClansList = memo(() => {
 					<Fragment key={id}>
 						{isDragging && (
 							<div
-								className={`h-[2px] my-1 mx-2 rounded transition-all duration-150 ${
-									dropIndex === index ? 'bg-sky-500' : 'bg-transparent'
-								}`}
+								className={`h-[2px] my-1 mx-2 rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
 								onMouseEnter={() => handleDragOverItem(index)}
 							/>
 						)}
@@ -654,6 +648,7 @@ const ClansList = memo(() => {
 			)}
 		</div>
 	);
+
 });
 
 const PreviewOnboardingMode = () => {

@@ -1,6 +1,5 @@
-// SidebarClanGroupItem.tsx
 import { useCustomNavigate } from '@mezon/core';
-import { appActions, getStore, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
+import { appActions, getStore, selectBadgeCountByClanId, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import { IClan, createImgproxyUrl } from '@mezon/utils';
 import React, { memo } from 'react';
@@ -21,20 +20,37 @@ export type SidebarClanGroupItemProps = {
 	overItemId?: string;
 };
 
-const SidebarClanGroupItem = ({ group, clanMap, active, expanded, onToggle, onMouseDown, className = '', overItemId }: SidebarClanGroupItemProps) => {
+const SidebarClanGroupItem = ({
+	group,
+	clanMap,
+	active,
+	expanded,
+	onToggle,
+	onMouseDown,
+	className = '',
+	overItemId,
+}: SidebarClanGroupItemProps) => {
 	const dispatch = useAppDispatch();
 	const navigate = useCustomNavigate();
+
 	const [coords, setCoords] = React.useState<Coords>({ mouseX: 0, mouseY: 0, distanceToBottom: 0 });
-	const defaultClan: IClan = { id: '' /* other properties */ };
+
+	const defaultClan: IClan = { id: '' };
 
 	const [openRightClickModal, closeRightClickModal] = useModal(
-		() => <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} clan={clanMap[group.clanIds[0]] || defaultClan} />,
+		() => (
+			<PanelClan
+				coords={coords}
+				setShowClanListMenuContext={closeRightClickModal}
+				clan={clanMap[group.clanIds[0]] || defaultClan}
+			/>
+		),
 		[coords]
 	);
+
 	const isShowDmProfile = useSelector((state) => selectIsUseProfileDM(getStore().getState()));
 
-	// Lấy tối đa 3 avatar chồng lên nhau
-	const avatars = group.clanIds.slice(0, 3).map((cid, idx) => {
+	const avatars = group.clanIds.slice(0, 4).map((cid, idx) => {
 		const clan = clanMap[cid];
 		if (!clan) return null;
 		return clan.logo ? (
@@ -57,7 +73,6 @@ const SidebarClanGroupItem = ({ group, clanMap, active, expanded, onToggle, onMo
 	});
 
 	const handleClick = () => {
-		// Ví dụ chuyển tới clan đầu tiên trong group khi nhấp
 		const firstClanId = group.clanIds[0];
 		if (firstClanId) {
 			const store = getStore();
@@ -81,12 +96,17 @@ const SidebarClanGroupItem = ({ group, clanMap, active, expanded, onToggle, onMo
 		setCoords({ mouseX, mouseY, distanceToBottom });
 		openRightClickModal();
 	};
+
+	const badgeCounts = useSelector((state: any) => group.clanIds.map((cid) => (selectBadgeCountByClanId(cid)(state) || 0)));
+	const badgeCountGroup = badgeCounts.reduce((sum, badge) => sum + badge, 0);
+
 	const displayIds = group.clanIds.slice(0, 4);
+
 	const cornerStyles = [
-		'absolute top-0 left-0', // góc trên trái
-		'absolute top-0 right-0', // góc trên phải
-		'absolute bottom-0 left-0', // góc dưới trái
-		'absolute bottom-0 right-0' // góc dưới phải
+		'absolute top-0 left-0',
+		'absolute top-0 right-0',
+		'absolute bottom-0 left-0',
+		'absolute bottom-0 right-0',
 	];
 
 	return (
@@ -98,12 +118,13 @@ const SidebarClanGroupItem = ({ group, clanMap, active, expanded, onToggle, onMo
 			onMouseDown={onMouseDown}
 			onContextMenu={handleContextMenu}
 			data-id={group.id}
-			className={`relative w-[40px] h-[40px] flex items-center justify-center cursor-pointer
-      rounded-lg transition-colors
-      ${className}
-      ${overItemId === group.id ? 'ring-2 ring-sky-400' : ''}
-      bg-gray-100 dark:bg-gray-800
-    `}
+			className={`
+				relative w-[40px] h-[40px] flex items-center justify-center cursor-pointer
+				rounded-lg transition-colors
+				${className}
+				${overItemId === group.id ? 'ring-2 ring-sky-400' : ''}
+				bg-gray-100 dark:bg-gray-800
+			`}
 		>
 			{displayIds.map((cid, idx) => {
 				const clan = clanMap[cid];
@@ -116,12 +137,25 @@ const SidebarClanGroupItem = ({ group, clanMap, active, expanded, onToggle, onMo
 						draggable={false}
 					/>
 				) : (
-					<div key={cid} className={`${cornerStyles[idx]} w-[20px] h-[20px] bg-gray-300 rounded-md border-2 border-white`} />
+					<div
+						key={cid}
+						className={`${cornerStyles[idx]} w-[20px] h-[20px] bg-gray-300 rounded-md border-2 border-white`}
+					/>
 				);
 			})}
 
-			{/* Mũi tên expand/ collapse */}
-			<span className="absolute inset-0 flex items-center justify-center text-xs font-bold">{expanded ? '▾' : '▸'}</span>
+			{badgeCountGroup > 0 && (
+				<div
+					className={`
+					flex items-center justify-center text-[12px] font-bold rounded-full
+					bg-colorDanger absolute bottom-[-5px] right-[-5px]
+					outline outline-[3px] outline-white dark:outline-bgSecondary500
+					${badgeCountGroup >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'}
+				`}
+				>
+					{badgeCountGroup >= 100 ? '99+' : badgeCountGroup}
+				</div>
+			)}
 		</div>
 	);
 };

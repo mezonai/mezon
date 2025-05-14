@@ -94,82 +94,124 @@ export function useClanDragAndDrop(clans: string[], setItems: (items: string[]) 
 			if (isDragging && draggedItem) {
 				const parentGroup = clanGroups.find((g) => g.clanIds.includes(draggedItem.id));
 
-				if (collisionItem) {
-					const isGroup = collisionItem.startsWith(GROUP_PREFIX);
+				if (draggedItem.type === DRAG_ITEM_TYPES.GROUP) {
+					if (collisionItem) {
+						const isClan = !collisionItem.startsWith(GROUP_PREFIX);
+						if (isClan) {
+							dispatch(
+								clansActions.addClanToGroup({
+									groupId: draggedItem.id,
+									clanId: collisionItem
+								})
+							);
 
-					if (isGroup) {
-						// ✅ TH1.1: Kéo vào 1 group → thêm vào group
-						dispatch(
-							clansActions.addClanToGroup({
-								groupId: collisionItem,
-								clanId: draggedItem.id
-							})
-						);
-
+							const newItems = clans.filter((id) => id !== collisionItem);
+							setItems(newItems);
+						}
+					} else if (dropIndex !== null) {
 						const newItems = clans.filter((id) => id !== draggedItem.id);
+						newItems.splice(dropIndex, 0, draggedItem.id);
 						setItems(newItems);
-					} else {
-						// ✅ TH1.2: Tạo group mới từ dragged + collision
-						const newGroupId = `${GROUP_PREFIX}${Date.now()}`;
 
+						const targetId = newItems[dropIndex + 1] || '';
 						dispatch(
-							clansActions.createClanGroup({
-								groupId: newGroupId,
-								clanIds: [draggedItem.id, collisionItem]
+							clansActions.reorderClan({
+								source: {
+									id: draggedItem.id,
+									type: DRAG_ITEM_TYPES.CLAN
+								},
+								target: targetId ? { id: targetId, type: DRAG_ITEM_TYPES.CLAN } : { id: '', type: DRAG_ITEM_TYPES.CLAN }
 							})
 						);
+					}
+				} else if (draggedItem.type === DRAG_ITEM_TYPES.CLAN) {
+					if (collisionItem) {
+						const isGroup = collisionItem.startsWith(GROUP_PREFIX);
+						if (isGroup) {
+							dispatch(
+								clansActions.addClanToGroup({
+									groupId: collisionItem,
+									clanId: draggedItem.id
+								})
+							);
 
-						const newItems = clans.filter((id) => id !== draggedItem.id && id !== collisionItem);
-						newItems.push(newGroupId);
+							const newItems = clans.filter((id) => id !== draggedItem.id);
+							setItems(newItems);
+						} else {
+							const newGroupId = `${GROUP_PREFIX}${Date.now()}`;
+							dispatch(
+								clansActions.createClanGroup({
+									groupId: newGroupId,
+									clanIds: [draggedItem.id, collisionItem]
+								})
+							);
+
+							const newItems = clans.filter((id) => id !== draggedItem.id && id !== collisionItem);
+							newItems.push(newGroupId);
+							setItems(newItems);
+						}
+					} else if (dropIndex !== null) {
+						const newItems = clans.filter((id) => id !== draggedItem.id);
+						newItems.splice(dropIndex, 0, draggedItem.id);
 						setItems(newItems);
 
-						const draggedGroup = clanGroups.find((g) => g.clanIds.includes(draggedItem.id));
-						if (draggedGroup) {
+						const targetId = newItems[dropIndex + 1] || '';
+						dispatch(
+							clansActions.reorderClan({
+								source: {
+									id: draggedItem.id,
+									type: DRAG_ITEM_TYPES.CLAN
+								},
+								target: targetId ? { id: targetId, type: DRAG_ITEM_TYPES.CLAN } : { id: '', type: DRAG_ITEM_TYPES.CLAN }
+							})
+						);
+					}
+				} else if (draggedItem.type === DRAG_ITEM_TYPES.CLAN_IN_GROUP) {
+					if (collisionItem) {
+						const parentGroup = clanGroups.find((g) => g.clanIds.includes(draggedItem.id));
+						if (parentGroup && parentGroup.clanIds.includes(collisionItem)) {
+							const oldIndex = parentGroup.clanIds.indexOf(draggedItem.id);
+							const newIndex = parentGroup.clanIds.indexOf(collisionItem);
+							if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+								const newClanIds = [...parentGroup.clanIds];
+								newClanIds.splice(oldIndex, 1);
+								newClanIds.splice(newIndex, 0, draggedItem.id);
+								dispatch(
+									clansActions.createClanGroup({
+										groupId: parentGroup.id,
+										clanIds: newClanIds
+									})
+								);
+							}
+						}
+					} else if (dropIndex !== null) {
+						const newItems = clans.filter((id) => id !== draggedItem.id);
+						newItems.splice(dropIndex, 0, draggedItem.id);
+						setItems(newItems);
+
+						if (parentGroup) {
 							dispatch(
 								clansActions.removeClanFromGroup({
-									groupId: draggedGroup.id,
+									groupId: parentGroup.id,
 									clanId: draggedItem.id
 								})
 							);
 						}
-						const collisionGroup = clanGroups.find((g) => g.clanIds.includes(collisionItem));
-						if (collisionGroup) {
-							dispatch(
-								clansActions.removeClanFromGroup({
-									groupId: collisionGroup.id,
-									clanId: collisionItem
-								})
-							);
-						}
-					}
-				} else if (dropIndex !== null) {
-					const newItems = clans.filter((id) => id !== draggedItem.id);
-					newItems.splice(dropIndex, 0, draggedItem.id);
-					setItems(newItems);
 
-					if (draggedItem.type !== DRAG_ITEM_TYPES.GROUP && parentGroup) {
+						const targetId = newItems[dropIndex + 1] || '';
 						dispatch(
-							clansActions.removeClanFromGroup({
-								groupId: parentGroup.id,
-								clanId: draggedItem.id
+							clansActions.reorderClan({
+								source: {
+									id: draggedItem.id,
+									type: DRAG_ITEM_TYPES.CLAN_IN_GROUP
+								},
+								target: targetId ? { id: targetId, type: DRAG_ITEM_TYPES.CLAN } : { id: '', type: DRAG_ITEM_TYPES.CLAN }
 							})
 						);
 					}
-
-					const targetId = newItems[dropIndex + 1] || '';
-					dispatch(
-						clansActions.reorderClan({
-							source: {
-								id: draggedItem.id,
-								type: parentGroup ? DRAG_ITEM_TYPES.CLAN_IN_GROUP : DRAG_ITEM_TYPES.CLAN
-							},
-							target: targetId ? { id: targetId, type: DRAG_ITEM_TYPES.CLAN } : { id: '', type: DRAG_ITEM_TYPES.CLAN }
-						})
-					);
 				}
 			}
 
-			// Reset
 			setStartPoint(null);
 			setDraggedItem(null);
 			setIsDragging(false);

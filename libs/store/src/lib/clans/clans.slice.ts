@@ -59,7 +59,7 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	inviteClanId?: string;
 	clansOrder?: string[];
 	clanGroups: ClanGroup[];
-	items: string[]; // Danh sách các clan ngoài các group
+	items: string[];
 }
 
 export const clansAdapter = createEntityAdapter<ClansEntity>();
@@ -264,7 +264,6 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				// thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,
@@ -312,7 +311,7 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	inviteClanId: undefined,
 	clansOrder: [],
 	clanGroups: [],
-	items: [] // Danh sách các clan ngoài các group
+	items: []
 });
 
 type UpdateClanBadgeCountPayload = {
@@ -357,7 +356,6 @@ export const clansSlice = createSlice({
 			const group = state.clanGroups.find((g) => g.id === groupId);
 			if (group && !group.clanIds.includes(clanId)) {
 				group.clanIds.push(clanId);
-				// Xoá clan khỏi danh sách ngoài (nếu còn)
 				state.items = state.items.filter((id) => id !== clanId);
 			}
 		},
