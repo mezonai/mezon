@@ -148,7 +148,7 @@ const SidebarClanGroupItem = ({
 				<div
 					className={`
 					flex items-center justify-center text-[12px] font-bold rounded-full
-					bg-colorDanger absolute bottom-[-5px] right-[-5px]
+					bg-colorDanger absolute bottom-[-5px] right-[-6px]
 					outline outline-[3px] outline-white dark:outline-bgSecondary500
 					${badgeCountGroup >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'}
 				`}
