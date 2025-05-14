@@ -10,6 +10,7 @@ import {
 	messagesActions,
 	notificationActions,
 	selectAllAccount,
+
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectCurrentClanId,
@@ -38,7 +39,7 @@ import {
 } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, Dimensions, Pressable, Text, View } from 'react-native';
@@ -181,15 +182,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const handleActionGiveACoffee = async () => {
 		onClose();
 		try {
-			const userProfile = selectAllAccount(store.getState());
-			const tokenInWallet = userProfile?.wallet ? safeJSONParse(userProfile?.wallet || '{}')?.value : 0;
-			if (TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10 > tokenInWallet) {
-				Toast.show({
-					type: 'error',
-					text1: 'Your amount exceeds wallet balance'
-				});
-				return;
-			}
 			if (userId !== message.sender_id) {
 				const coffeeEvent = {
 					channel_id: message.channel_id,
@@ -199,7 +191,18 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					sender_id: userId,
 					token_count: AMOUNT_TOKEN.TEN_TOKENS
 				};
+<<<<<<< HEAD
 				await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
+=======
+				const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
+				if (res?.meta?.requestStatus === 'rejected' || !res) {
+					Toast.show({
+						type: 'error',
+						text1: 'An error occurred, please try again'
+					});
+					return;
+				}
+>>>>>>> ced8227f3dc16f0e4a57000ceba5b6cff7125736
 				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji, userId);
 				const response = await createDirectMessageWithUser(
 					message?.sender_id,
@@ -524,7 +527,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		}
 		const mediaList =
 			message?.attachments?.length > 0 &&
-			message.attachments?.every((att) => att?.filetype?.includes('image') || att?.filetype?.includes('video'))
+				message.attachments?.every((att) => att?.filetype?.includes('image') || att?.filetype?.includes('video'))
 				? []
 				: [EMessageActionType.SaveImage, EMessageActionType.CopyMediaLink];
 

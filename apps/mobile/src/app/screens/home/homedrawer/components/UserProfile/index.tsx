@@ -5,10 +5,12 @@ import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	RolesClanEntity,
+	directActions,
 	selectAccountCustomStatus,
 	selectAllRolesClan,
 	selectDirectsOpenlist,
 	selectMemberClanByUserId2,
+	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR, IMessageWithUser } from '@mezon/utils';
@@ -24,6 +26,7 @@ import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import ImageNative from '../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from './UserProfile.styles';
 import ActivityAppComponent from './component/ActivityAppComponent';
@@ -58,6 +61,7 @@ export const formatDate = (dateString: string) => {
 
 const UserProfile = React.memo(
 	({ userId, user, onClose, checkAnonymous, message, showAction = true, showRole = true, currentChannel, directId }: userProfileProps) => {
+		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 		const { userProfile } = useAuth();
@@ -77,6 +81,7 @@ const UserProfile = React.memo(
 		const [isShowPendingContent, setIsShowPendingContent] = useState(false);
 		const { dismiss } = useBottomSheetModal();
 		const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
+		const dispatch = useAppDispatch();
 		const dmChannel = useMemo(() => {
 			return listDM?.find((dm) => dm?.id === directId);
 		}, [directId, listDM]);
@@ -114,7 +119,12 @@ const UserProfile = React.memo(
 			async (userId: string) => {
 				const directMessage = listDM?.find?.((dm) => dm?.user_id?.length === 1 && dm?.user_id[0] === userId);
 				if (directMessage?.id) {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
+					if (isTabletLandscape) {
+						await dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
+						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+					} else {
+						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
+					}
 					return;
 				}
 				const response = await createDirectMessageWithUser(
@@ -130,7 +140,12 @@ const UserProfile = React.memo(
 					message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
 				);
 				if (response?.channel_id) {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+					if (isTabletLandscape) {
+						await dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
+						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+					} else {
+						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+					}
 				}
 			},
 			[

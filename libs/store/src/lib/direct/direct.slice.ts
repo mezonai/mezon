@@ -47,8 +47,6 @@ export const createNewDirectMessage = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 			if (response) {
-				thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
-				thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
 				thunkAPI.dispatch(
 					directActions.upsertOne({
 						id: response.channel_id || '',
@@ -60,14 +58,16 @@ export const createNewDirectMessage = createAsyncThunk(
 					})
 				);
 				if (response.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE) {
-					await thunkAPI.dispatch(
-						channelsActions.joinChat({
-							clanId: '0',
-							channelId: response.channel_id as string,
-							channelType: response.type as number,
-							isPublic: false
-						})
-					);
+					setTimeout(async () => {
+						await thunkAPI.dispatch(
+							channelsActions.joinChat({
+								clanId: '0',
+								channelId: response.channel_id as string,
+								channelType: response.type as number,
+								isPublic: false
+							})
+						);
+					}, 1000);
 				}
 				return response;
 			} else {

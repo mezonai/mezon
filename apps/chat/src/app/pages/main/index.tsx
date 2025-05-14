@@ -24,7 +24,6 @@ import {
 	e2eeActions,
 	fetchDirectMessage,
 	getIsShowPopupForward,
-	listChannelsByUserActions,
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
 	selectAudioBusyTone,
@@ -233,7 +232,6 @@ function MyApp() {
 			if (event[prefixKey] && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
 				dispatch(fetchDirectMessage({}));
-				dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 				openSearchModal();
 			}
 			if (event[prefixKey] && event.shiftKey && event.key === 'Enter' && !directId) {
@@ -619,6 +617,7 @@ const ClansList = memo(() => {
 							) : null}
 						</div>
 					</Fragment>
+
 				);
 			})}
 

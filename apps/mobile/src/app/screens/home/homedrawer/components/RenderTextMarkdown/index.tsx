@@ -15,6 +15,7 @@ import { Dimensions, Linking, StyleSheet, Text, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomIcon from '../../../../../../../src/assets/CustomIcon';
 import ImageNative from '../../../../../components/ImageNative';
+import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
@@ -48,10 +49,16 @@ export const TYPE_MENTION = {
  * custom style for markdown
  * react-native-markdown-display/src/lib/styles.js to see more
  */
-const screenWidth = Dimensions.get('screen').width;
+const screenWidth = Dimensions.get('window').width;
 const codeBlockMaxWidth = screenWidth - size.s_70;
 
-export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, isLastMessage?: boolean, isBuzzMessage?: boolean) => {
+export const markdownStyles = (
+	colors: Attributes,
+	isUnReadChannel?: boolean,
+	isLastMessage?: boolean,
+	isBuzzMessage?: boolean,
+	isTabletLandscape?: boolean
+) => {
 	const commonHeadingStyle = {
 		color: isUnReadChannel ? colors.white : isBuzzMessage ? baseColor.buzzRed : colors.text,
 		fontSize: isLastMessage ? size.small : size.medium
@@ -88,7 +95,8 @@ export const markdownStyles = (colors: Attributes, isUnReadChannel?: boolean, is
 		},
 		fence: {
 			color: colors.text,
-			width: codeBlockMaxWidth,
+
+			width: isTabletLandscape ? codeBlockMaxWidth * 0.6 : codeBlockMaxWidth,
 			backgroundColor: colors.secondaryLight,
 			borderColor: colors.black,
 			borderRadius: size.s_4,
@@ -280,6 +288,7 @@ export const RenderTextMarkdownContent = ({
 	onLongPress
 }: IMarkdownProps) => {
 	const { themeValue } = useTheme();
+	const isTabletLandscape = useTabletLandscape();
 
 	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [] } = content || {};
 	let lastIndex = 0;
@@ -428,8 +437,23 @@ export const RenderTextMarkdownContent = ({
 						textParts.push(
 							<Text>
 								{s !== 0 && '\n'}
-								<View style={themeValue ? markdownStyles(themeValue).blockSpacing : {}}>
-									<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
+
+								<View
+									style={
+										themeValue
+											? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape)
+												.blockSpacing
+											: {}
+									}
+								>
+									<View
+										key={`pre-${index}`}
+										style={
+											themeValue
+												? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape).fence
+												: {}
+										}
+									>
 										<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>{contentInElement}</Text>
 									</View>
 								</View>
@@ -441,8 +465,23 @@ export const RenderTextMarkdownContent = ({
 						textParts.push(
 							<Text>
 								{s !== 0 && '\n'}
-								<View style={themeValue ? markdownStyles(themeValue).blockSpacing : {}}>
-									<View key={`pre-${index}`} style={themeValue ? markdownStyles(themeValue).fence : {}}>
+
+								<View
+									style={
+										themeValue
+											? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape)
+												.blockSpacing
+											: {}
+									}
+								>
+									<View
+										key={`pre-${index}`}
+										style={
+											themeValue
+												? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape).fence
+												: {}
+										}
+									>
 										<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>
 											{(contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
 												? contentInElement?.slice(3, -3)

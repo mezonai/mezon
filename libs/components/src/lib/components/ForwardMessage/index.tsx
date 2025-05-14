@@ -31,7 +31,7 @@ import {
 	normalizeString,
 	removeDuplicatesById
 } from '@mezon/utils';
-import { Button, Label, Modal } from 'flowbite-react';
+import { Label, Modal } from 'flowbite-react';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -388,19 +388,19 @@ const FooterButtonsModal = (props: FooterButtonsModalProps) => {
 	const { onClose, sentToMessage } = props;
 	return (
 		<div className="flex justify-end p-4 rounded-b gap-4">
-			<Button
-				className="h-10 px-4 rounded dark:bg-slate-500 bg-slate-500 hover:!underline focus:ring-transparent"
+			<button
+				className="py-2 h-10 px-4 rounded dark:bg-slate-500 bg-slate-500 hover:!underline focus:ring-transparent"
 				type="button"
 				onClick={onClose}
 			>
 				Cancel
-			</Button>
-			<Button
+			</button>
+			<button
 				onClick={sentToMessage}
-				className="h-10 px-4 rounded dark:bg-bgSelectItem bg-bgSelectItem hover:!bg-bgSelectItemHover focus:ring-transparent"
+				className="py-2 h-10 px-4 rounded dark:bg-bgSelectItem bg-bgSelectItem hover:!bg-bgSelectItemHover focus:ring-transparent"
 			>
 				Send
-			</Button>
+			</button>
 		</div>
 	);
 };

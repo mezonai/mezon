@@ -19,22 +19,21 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { AppState, DeviceEventEmitter, Image, Pressable, Text, View } from 'react-native';
+import { AppState, DeviceEventEmitter, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { UserStatus } from '../../../components/UserStatus';
-import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
 import { ChatMessageWrapper } from '../ChatMessageWrapper';
+import HeaderDirectMessage from '../DirectMessageDetail/HeaderDirectMessage';
 import { style } from './styles';
 
 function useChannelSeen(channelId: string, currentDmGroup: any) {
 	const dispatch = useAppDispatch();
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 	const lastMessageState = useSelector((state) => selectLastSeenMessageStateByChannelId(state, channelId as string));
 	const mounted = useRef('');
@@ -152,6 +151,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	const directMessageLoader = useCallback(async () => {
 		const store = await getStoreAsync();
 		await Promise.all([
+			store.dispatch(clansActions.setCurrentClanId('0')),
 			store.dispatch(
 				directActions.joinDirectMessage({
 					directMessageId: directMessageId,
@@ -186,7 +186,9 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 		let timeout: NodeJS.Timeout;
 		if (directMessageId) {
 			timeout = setTimeout(() => {
-				directMessageLoader();
+				requestAnimationFrame(async () => {
+					await directMessageLoader();
+				});
 			}, 100);
 		}
 
@@ -228,37 +230,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 
 	return (
 		<View style={styles.dmMessageContainer}>
-			<View style={styles.headerWrapper}>
-				<Pressable style={styles.channelTitle} onPress={() => navigateToThreadDetail()}>
-					{isTypeDMGroup ? (
-						<View style={styles.groupAvatar}>
-							<MezonIconCDN icon={IconCDN.groupIcon} width={18} height={18} />
-						</View>
-					) : (
-						<View style={styles.avatarWrapper}>
-							{dmAvatar ? (
-								<Image
-									source={{ uri: createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' }) }}
-									style={styles.friendAvatar}
-								/>
-							) : (
-								<View style={styles.wrapperTextAvatar}>
-									<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)}</Text>
-								</View>
-							)}
-							<UserStatus status={userStatus} customStatus={status} />
-						</View>
-					)}
-					<Text style={styles.titleText} numberOfLines={1}>
-						{dmLabel}
-					</Text>
-				</Pressable>
-				<View style={styles.actions}>
-					{/* TODO: update later */}
-					{/* <CallIcon />
-                    <MezonIconCDN icon={IconCDN.videoIcon} /> */}
-				</View>
-			</View>
+			<HeaderDirectMessage directMessageId={directMessageId} styles={styles} themeValue={themeValue} />
 			{directMessageId && <ChatMessageWrapper directMessageId={directMessageId} isModeDM={isModeDM} currentClanId={'0'} />}
 		</View>
 	);

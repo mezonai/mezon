@@ -28,6 +28,9 @@ interface MyVideoConferenceProps {
 	onFullScreen: () => void;
 	isExternalCalling?: boolean;
 	tracks?: TrackReferenceOrPlaceholder[];
+	isShowChatVoice?: boolean;
+	onToggleChat?: () => void;
+	currentChannel?: any;
 }
 
 export function MyVideoConference({
@@ -35,7 +38,10 @@ export function MyVideoConference({
 	onLeaveRoom,
 	onFullScreen,
 	isExternalCalling = false,
-	tracks: propTracks
+	tracks: propTracks,
+	isShowChatVoice,
+	onToggleChat,
+	currentChannel
 }: MyVideoConferenceProps) {
 	const lastAutoFocusedScreenShareTrack = useRef<TrackReferenceOrPlaceholder | null>(null);
 	const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -194,9 +200,7 @@ export function MyVideoConference({
 						</div>
 					)}
 					<div
-						className={`absolute top-0 left-0 w-full transition-opacity duration-300 ${
-							isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-						}`}
+						className={`absolute top-0 left-0 w-full transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
 					>
 						<div className="w-full h-[68px] flex justify-between items-center p-2 !pr-5">
 							<div className="flex justify-start gap-2">
@@ -249,13 +253,21 @@ export function MyVideoConference({
 										)}
 									</span>
 								</Tooltip>
+
+								<button
+									className="relative focus-visible:outline-none"
+									title="Chat"
+									onClick={onToggleChat}
+									style={{ marginLeft: 8 }}
+								>
+									<Icons.Chat className={isShowChatVoice ? 'text-white' : 'text-[#B5BAC1]'} />
+								</button>
 							</div>
 						</div>
 					</div>
 					<div
-						className={`absolute bottom-0 left-0 w-full transition-opacity duration-300 ${
-							isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-						}`}
+						className={`absolute bottom-0 left-0 w-full transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
+							}`}
 					>
 						<ControlBar isExternalCalling={isExternalCalling} onLeaveRoom={onLeaveRoom} onFullScreen={onFullScreen} />
 					</div>

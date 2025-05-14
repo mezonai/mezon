@@ -1,4 +1,4 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -19,6 +19,17 @@ export const style = (colors: Attributes) =>
 			fontWeight: '400',
 			color: colors.text,
 			marginBottom: size.s_20
+		},
+		saveButton: {
+			position: 'absolute',
+			right: size.s_20,
+			top: size.s_12,
+			justifyContent: 'center',
+			alignItems: 'center'
+		},
+		saveText: {
+			color: baseColor.blurple,
+			fontSize: size.s_14
 		}
 	});
 

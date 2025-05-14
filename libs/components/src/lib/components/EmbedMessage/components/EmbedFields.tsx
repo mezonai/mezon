@@ -4,6 +4,7 @@ import {
 	EMessageComponentType,
 	IFieldEmbed,
 	InputComponent,
+	ObserveFn,
 	RadioComponent,
 	SelectComponent
 } from '@mezon/utils';
@@ -19,9 +20,10 @@ interface EmbedFieldsProps {
 	message_id: string;
 	senderId: string;
 	channelId: string;
+	observeIntersectionForLoading?: ObserveFn;
 }
 
-export function EmbedFields({ fields, message_id, senderId, channelId }: EmbedFieldsProps) {
+export function EmbedFields({ fields, message_id, senderId, channelId, observeIntersectionForLoading }: EmbedFieldsProps) {
 	const groupedFields = useMemo(() => {
 		return fields.reduce<IFieldEmbed[][]>((acc, field) => {
 			if (!field.inline) {
@@ -53,7 +55,14 @@ export function EmbedFields({ fields, message_id, senderId, channelId }: EmbedFi
 							</div>
 							{field.inputs && (
 								<div className="flex flex-col gap-1 w-max-[500px]">
-									<InputEmbedByType component={field.inputs} messageId={message_id} senderId={senderId} />
+									<InputEmbedByType
+										component={field.inputs}
+										messageId={message_id}
+										senderId={senderId}
+										max_options={field.inputs.max_options}
+										channelId={channelId}
+										observeIntersectionForLoading={observeIntersectionForLoading}
+									/>
 								</div>
 							)}
 							<div className="flex gap-1">
@@ -82,9 +91,12 @@ type InputEmbedByType = {
 	messageId: string;
 	senderId: string;
 	component: SelectComponent | InputComponent | DatePickerComponent | RadioComponent | AnimationComponent;
+	max_options?: number;
+	channelId: string;
+	observeIntersectionForLoading?: ObserveFn;
 };
 
-const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) => {
+const InputEmbedByType = ({ messageId, senderId, component, max_options, channelId, observeIntersectionForLoading }: InputEmbedByType) => {
 	switch (component.type) {
 		case EMessageComponentType.INPUT:
 			return <MessageInput buttonId={component.id} messageId={messageId} senderId={senderId} input={component.component} />;
@@ -93,7 +105,15 @@ const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) 
 		case EMessageComponentType.DATEPICKER:
 			return <MessageDatePicker buttonId={component.id} messageId={messageId} senderId={senderId} datepicker={component.component} />;
 		case EMessageComponentType.RADIO:
-			return <EmbedOptionRatio key={component.id} idRadio={component.id} options={component.component} message_id={messageId} />;
+			return (
+				<EmbedOptionRatio
+					key={component.id}
+					idRadio={component.id}
+					options={component.component}
+					message_id={messageId}
+					max_options={max_options}
+				/>
+			);
 		case EMessageComponentType.ANIMATION:
 			return (
 				<EmbedAnimation
@@ -104,6 +124,8 @@ const InputEmbedByType = ({ messageId, senderId, component }: InputEmbedByType) 
 					duration={component.component.duration}
 					repeat={component.component.repeat}
 					isResult={component.component.isResult}
+					channelId={channelId}
+					observeIntersectionForLoading={observeIntersectionForLoading}
 				/>
 			);
 		default:

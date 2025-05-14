@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { ObserveFn, useIsIntersecting } from '@mezon/utils';
+import { useEffect, useRef } from 'react';
 
 type EmbedAnimationProps = {
 	url_image?: string;
@@ -9,9 +10,14 @@ type EmbedAnimationProps = {
 	duration?: number;
 	vertical?: boolean;
 	isResult?: number;
+	channelId: string;
+	observeIntersectionForLoading?: ObserveFn;
 };
 const WIDTH_BOX_ANIMATION_SMALL = 80;
 const BREAK_POINT_RESPONSIVE = 1200;
+
+const DEFAULT_HEIGH = 126;
+const DEFAULT_WIDTH = 133;
 export const EmbedAnimation = ({
 	url_image,
 	url_position,
@@ -20,8 +26,13 @@ export const EmbedAnimation = ({
 	repeat,
 	duration = 2,
 	vertical = false,
-	isResult
+	isResult,
+	channelId,
+	observeIntersectionForLoading
 }: EmbedAnimationProps) => {
+	const ref = useRef<HTMLDivElement>(null);
+	const isIntersecting = useIsIntersecting(ref, observeIntersectionForLoading);
+
 	useEffect(() => {
 		const fetchAnimationData = async () => {
 			if (!url_position) {
@@ -55,8 +66,9 @@ export const EmbedAnimation = ({
 
             @media (max-width: ${BREAK_POINT_RESPONSIVE}px) {
               .box_resize_${index}_${messageId}{
-                width : ${jsonPosition.frames[poolItem[index]].frame.w * ratioWidth}px;
-                height : ${jsonPosition.frames[poolItem[index]].frame.h * ratioWidth}px;
+
+                width : ${jsonPosition.frames[poolItem[index]].frame.w * ratioWidth}px !important;
+                height : ${jsonPosition.frames[poolItem[index]].frame.h * ratioWidth}px !important;
                 background-size: ${(jsonPosition.meta.size.w / jsonPosition.frames[poolItem[index]].frame.w) * WIDTH_BOX_ANIMATION_SMALL}px ${((jsonPosition.meta.size.h / jsonPosition.frames[poolItem[index]].frame.h) * WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px;
               }
             }
@@ -74,11 +86,10 @@ export const EmbedAnimation = ({
             background-position: -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.x}px -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.y}px;
             }
 
-
               @media (max-width: ${BREAK_POINT_RESPONSIVE}px) {
               .box_resize_${index}_${messageId}{
-                width : ${WIDTH_BOX_ANIMATION_SMALL}px;
-                height : ${(WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px;
+                width : ${WIDTH_BOX_ANIMATION_SMALL}px !important;
+                height : ${(WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px !important;
                  background-size: ${(jsonPosition.meta.size.w / jsonPosition.frames[poolItem[index]].frame.w) * WIDTH_BOX_ANIMATION_SMALL}px ${((jsonPosition.meta.size.h / jsonPosition.frames[poolItem[index]].frame.h) * WIDTH_BOX_ANIMATION_SMALL * jsonPosition.frames[poolItem[index]].frame.h) / jsonPosition.frames[poolItem[index]].frame.w}px;
                    background-position: -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.x * ratioWidth}px -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.y * ratioWidth}px;
                  }
@@ -90,31 +101,44 @@ export const EmbedAnimation = ({
 				div?.appendChild(style);
 			});
 		};
-		fetchAnimationData();
-	}, []);
+		if (isIntersecting && !ref.current?.firstChild?.hasChildNodes()) {
+			fetchAnimationData();
+		}
+	}, [isIntersecting]);
 
 	return (
+<<<<<<< HEAD
 		<div id={`${messageId}_wrap_animation`} className={`rounded-md flex gap-2 ${vertical ? 'flex-col' : ''}`}>
-			{pool?.map((poolItem, index) => (
-				<div
-					key={`${messageId}_animation_${index}`}
-					id={`${messageId}_animation_${index}`}
-					className={`box_animation_${index}_${messageId} box_resize_${index}_${messageId}`}
-				></div>
-			))}
-		</div>
-	);
+=======
+		<div ref={ref} id={`${messageId}_wrap_animation`} className={`rounded-md flex gap-2 ${vertical ? 'flex-col' : ''}`}>
+>>>>>>> ced8227f3dc16f0e4a57000ceba5b6cff7125736
+				{pool?.map((poolItem, index) => (
+					<div
+						key={`${messageId}_animation_${index}`}
+						id={`${messageId}_animation_${index}`}
+<<<<<<< HEAD
+=======
+					style={{
+						height: DEFAULT_HEIGH,
+						width: DEFAULT_WIDTH
+					}}
+>>>>>>> ced8227f3dc16f0e4a57000ceba5b6cff7125736
+						className={`box_animation_${index}_${messageId} box_resize_${index}_${messageId}`}
+					></div>
+				))}
+			</div>
+			);
 };
-export default EmbedAnimation;
+			export default EmbedAnimation;
 
 const makeAnimation = (data: TDataAnimation, poolImages: string[], ratio?: number) => {
 	const imageNumber = poolImages.length;
-	const ratioPotion = window.innerWidth < BREAK_POINT_RESPONSIVE && ratio ? ratio : 1;
-	let animate = '';
+			const ratioPotion = window.innerWidth < BREAK_POINT_RESPONSIVE && ratio ? ratio : 1;
+			let animate = '';
 	poolImages.map((key, index) => {
 		const frame = data.frames[key].frame;
-		if (!index) {
-			animate =
+			if (!index) {
+				animate =
 				animate +
 				`
       ${index * (100 / imageNumber)}%{
@@ -123,7 +147,7 @@ const makeAnimation = (data: TDataAnimation, poolImages: string[], ratio?: numbe
 
         `;
 		} else {
-			animate =
+				animate =
 				animate +
 				`${100 - (imageNumber - 1 - index) * (100 / imageNumber)}%{
         background-position : -${frame.x * ratioPotion}px -${frame.y * ratioPotion}px;
@@ -132,42 +156,42 @@ const makeAnimation = (data: TDataAnimation, poolImages: string[], ratio?: numbe
 		}
 	});
 
-	return {
-		animate: animate
+			return {
+				animate: animate
 	};
 };
-type TDataAnimation = {
-	frames: {
-		[key: string]: {
-			frame: {
+			type TDataAnimation = {
+				frames: {
+				[key: string]: {
+				frame: {
 				x: number;
-				y: number;
-				w: number;
-				h: number;
+			y: number;
+			w: number;
+			h: number;
 			};
 			rotated: boolean;
 			trimmed: boolean;
 			spriteSourceSize: {
 				x: number;
-				y: number;
-				w: number;
-				h: number;
+			y: number;
+			w: number;
+			h: number;
 			};
 			sourceSize: {
 				w: number;
-				h: number;
+			h: number;
 			};
 		};
 	};
-	meta: {
-		app: string;
-		version: string;
-		image: string;
-		format: string;
-		size: {
-			w: number;
+			meta: {
+				app: string;
+			version: string;
+			image: string;
+			format: string;
+			size: {
+				w: number;
 			h: number;
 		};
-		scale: string;
+			scale: string;
 	};
 };

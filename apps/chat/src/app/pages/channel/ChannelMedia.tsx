@@ -17,7 +17,8 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ||
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
-		currentChannel?.type === ChannelType.CHANNEL_TYPE_APP
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ||
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
 	) {
 		return (
 			<>

@@ -3,7 +3,7 @@ import {
 	EGuideType,
 	ETypeMission,
 	onboardingActions,
-	selectChannelsByClanId,
+	selectAllChannels,
 	selectCurrentClanId,
 	useAppDispatch,
 	useAppSelector
@@ -38,7 +38,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 		}
 	];
 	const currentClanId = useSelector(selectCurrentClanId);
-	const allChannel = useAppSelector((state) => selectChannelsByClanId(state, currentClanId as string));
+	const allChannel = useAppSelector(selectAllChannels);
 	const listMissionChannel = useMemo(() => {
 		return allChannel.filter((channel) => channel.channel_private !== ChannelStatusEnum.isPrivate);
 	}, [allChannel]);

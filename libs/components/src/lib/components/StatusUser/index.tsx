@@ -9,9 +9,9 @@ import { UserStatusIcon } from '../MemberProfile';
 
 type StatusUserProps = {
 	status?: { status?: boolean; isMobile?: boolean };
-	isMemberDMGroup: boolean;
-	isMemberChannel: boolean;
-	isListDm: boolean;
+	isMemberDMGroup?: boolean;
+	isMemberChannel?: boolean;
+	isListDm?: boolean;
 	directMessageValue?: directMessageValueProps;
 	userId?: string;
 	isTyping?: boolean;

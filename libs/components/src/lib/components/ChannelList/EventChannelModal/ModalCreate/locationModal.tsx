@@ -2,7 +2,6 @@ import { useEscapeKeyClose } from '@mezon/core';
 import { ChannelsEntity, selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ContenSubmitEventProps, OptionEvent, filterOptionReactSelect } from '@mezon/utils';
-import { Radio } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -67,7 +66,7 @@ const LocationModal = (props: LocationModalProps) => {
 		setContentSubmit((prev) => ({ ...prev, address: e.target.value, isPrivate: false }));
 	};
 
-	const onChangePrivateEvent = (e: any) => {
+	const onChangePrivateEvent = () => {
 		handleOption(OptionEvent.PRIVATE_EVENT);
 		setContentSubmit((prev) => ({ ...prev, isPrivate: true }));
 	};
@@ -162,76 +161,36 @@ const LocationModal = (props: LocationModalProps) => {
 			</div>
 			<div className={`flex flex-col mb-4 ${errorVoice ? 'gap-y-2' : 'gap-y-4'}`}>
 				{displaySelectVoiceOrLocation && (
-					<label
-						className={`w-full rounded flex justify-between items-center p-2 ${errorVoice ? 'bg-transparent opacity-80' : 'dark:bg-[#2B2D31] bg-bgLightModeButton'}`}
-						htmlFor="Speaker"
-					>
-						<div className="flex items-center gap-x-2">
-							<Icons.Speaker />
-							<div>
-								<h4 className={`font-semibold ${choiceSpeaker ? 'dark:text-white text-black' : 'text-slate-400'}`}>Voice Channel</h4>
-								<p className={choiceSpeaker ? 'dark:text-white text-black' : 'text-slate-400'}>
-									Hang out with voice, video, Screen Share and Go Live.
-								</p>
-							</div>
-						</div>
-
-						<Radio
-							checked={choiceSpeaker}
-							id="Speaker"
-							value="Speaker"
-							className="focus:outline-none focus:ring-0"
-							onChange={voicesChannel.length > 0 ? () => handleOption(OptionEvent.OPTION_SPEAKER) : () => {}}
-						/>
-					</label>
+					<TitleOptionEvent
+						icon={<Icons.Speaker />}
+						title="Voice Channel"
+						desc="Hang out with voice, video, Screen Share and Go Live."
+						choose={choiceSpeaker}
+						id="Speaker"
+						onChange={voicesChannel.length > 0 ? () => handleOption(OptionEvent.OPTION_SPEAKER) : () => {}}
+					/>
 				)}
 
 				{displaySelectVoiceOrLocation && (
-					<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor="Hashtag">
-						<div className="flex items-center gap-x-2">
-							<Icons.Location />
-							<div>
-								<h4 className={`font-semibold ${choiceLocation ? 'dark:text-white text-black' : 'text-slate-400'}`}>
-									Somewhere Else
-								</h4>
-								<p className={choiceLocation ? 'dark:text-white text-black' : 'text-slate-400'}>
-									Text channel, external link or in-person location.
-								</p>
-							</div>
-						</div>
-
-						<Radio
-							checked={choiceLocation}
-							id="Hashtag"
-							value="Hashtag"
-							className="focus:outline-none focus:ring-0"
-							onChange={() => handleOption(OptionEvent.OPTION_LOCATION)}
-						/>
-					</label>
+					<TitleOptionEvent
+						icon={<Icons.Location />}
+						title="Somewhere Else"
+						desc="Text channel, external link or in-person location."
+						choose={choiceLocation}
+						id="Hashtag"
+						onChange={() => handleOption(OptionEvent.OPTION_LOCATION)}
+					/>
 				)}
 
 				{displaySelectPrivate && (
-					<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor="Private">
-						<div className="flex items-center gap-x-2">
-							<Icons.SpeakerLocked />
-							<div>
-								<h4 className={`font-semibold ${choicePrivateEvent ? 'dark:text-white text-black' : 'text-slate-400'}`}>
-									Create Private Event
-								</h4>
-								<p className={choicePrivateEvent ? 'dark:text-white text-black' : 'text-slate-400'}>
-									Invite-only voice & video room!
-								</p>
-							</div>
-						</div>
-
-						<Radio
-							checked={choicePrivateEvent}
-							id="Private"
-							value="Private"
-							className="focus:outline-none focus:ring-0"
-							onChange={onChangePrivateEvent}
-						/>
-					</label>
+					<TitleOptionEvent
+						icon={<Icons.SpeakerLocked />}
+						title="Create Private Event"
+						desc="Invite-only voice & video room!"
+						choose={!!choicePrivateEvent}
+						id="Private"
+						onChange={onChangePrivateEvent}
+					/>
 				)}
 			</div>
 			{choiceSpeaker && (
@@ -282,6 +241,35 @@ const LocationModal = (props: LocationModalProps) => {
 				</>
 			)}
 		</div>
+	);
+};
+
+const TitleOptionEvent = ({
+	title,
+	desc,
+	choose,
+	icon,
+	onChange,
+	id
+}: {
+	title: string;
+	desc: string;
+	choose: boolean;
+	icon: JSX.Element;
+	onChange?: () => void;
+	id: string;
+}) => {
+	return (
+		<label className="w-full dark:bg-[#2B2D31] bg-bgLightModeButton rounded flex justify-between items-center p-2" htmlFor={id}>
+			<div className="flex items-center gap-x-2">
+				{icon}
+				<div>
+					<h4 className={`font-semibold ${choose ? 'dark:text-white text-black' : 'text-slate-400'}`}>{title}</h4>
+					<p className={choose ? 'dark:text-white text-black' : 'text-slate-400'}>{desc}</p>
+				</div>
+			</div>
+			<input type="radio" checked={choose} id={id} value={id} className="focus:outline-none focus:ring-0" onChange={onChange} />
+		</label>
 	);
 };
 

@@ -28,6 +28,7 @@ export interface AppState {
 	error?: string | null;
 	isShowMemberList: boolean;
 	isShowChatStream: boolean;
+	isShowChatVoice: boolean;
 	chatStreamWidth: number;
 	isShowCanvas: boolean;
 	isShowMemberListDM: boolean;
@@ -50,6 +51,7 @@ export const initialAppState: AppState = {
 	themeApp: 'dark',
 	isShowMemberList: true,
 	isShowChatStream: false,
+	isShowChatVoice: false,
 	chatStreamWidth: 0,
 	isShowCanvas: true,
 	isShowMemberListDM: true,
@@ -141,6 +143,9 @@ export const appSlice = createSlice({
 		},
 		setIsShowChatStream: (state, action) => {
 			state.isShowChatStream = action.payload;
+		},
+		setIsShowChatVoice: (state, action) => {
+			state.isShowChatVoice = action.payload;
 		},
 		setChatStreamWidth: (state, action) => {
 			state.chatStreamWidth = action.payload;
@@ -241,6 +246,8 @@ export const selectError = createSelector(getAppState, (state: AppState) => stat
 export const selectIsShowMemberList = createSelector(getAppState, (state: AppState) => state.isShowMemberList);
 
 export const selectIsShowChatStream = createSelector(getAppState, (state: AppState) => state.isShowChatStream);
+export const selectIsShowChatVoice = createSelector(getAppState, (state: AppState) => state.isShowChatVoice);
+
 
 export const selectChatStreamWidth = createSelector(getAppState, (state: AppState) => state.chatStreamWidth);
 

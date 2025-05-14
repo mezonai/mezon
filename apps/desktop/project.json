@@ -57,8 +57,7 @@
         "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
         "target": [
           "nsis",
-          "portable",
-          "appx"
+          "portable"
         ],
         "appId": "app.mezon.ai",
         "publish": [
@@ -209,8 +208,7 @@
           "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
           "target": [
             "nsis",
-            "portable",
-            "appx"
+            "portable"
           ],
           "appId": "app.mezon.ai",
           "publish": [
@@ -311,8 +309,7 @@
           "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
           "target": [
             "nsis",
-            "portable",
-            "appx"
+            "portable"
           ],
           "appId": "app.mezon.ai",
           "publish": [
