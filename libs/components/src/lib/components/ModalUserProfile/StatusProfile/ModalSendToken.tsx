@@ -1,7 +1,7 @@
 import { DirectEntity, ISendTokenDetailType, selectAllDirectMessages, selectAllUserClans } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
-import { Button, Label, Modal } from 'flowbite-react';
+import { Label, Modal } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -262,21 +262,21 @@ const ModalSendToken = ({
 						/>
 					</div>
 					<div className="flex justify-end p-4 rounded-b dark:bg-[#2B2D31] bg-[#dedede]">
-						<Button
-							className="h-10 px-4 rounded bg-transparent dark:bg-transparent hover:!bg-transparent hover:!underline focus:!ring-transparent dark:text-textDarkTheme text-textLightTheme"
+						<button
+							className="py-2 h-10 px-4 rounded bg-transparent dark:bg-transparent hover:!bg-transparent hover:!underline focus:!ring-transparent dark:text-textDarkTheme text-textLightTheme"
 							type="button"
 							onClick={onClose}
 						>
 							Cancel
-						</Button>
-						<Button
-							className="h-10 px-4 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover focus:!ring-transparent"
+						</button>
+						<button
+							className="py-2 h-10 px-4 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover focus:!ring-transparent"
 							type="button"
 							onClick={handleSendToken}
 							disabled={isButtonDisabled}
 						>
 							Send
-						</Button>
+						</button>
 					</div>
 				</div>
 			</div>

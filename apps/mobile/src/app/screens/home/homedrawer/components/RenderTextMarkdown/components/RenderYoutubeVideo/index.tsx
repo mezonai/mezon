@@ -1,6 +1,11 @@
 import { Attributes, size } from '@mezon/mobile-ui';
+<<<<<<< HEAD
 import { memo, useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, StyleSheet, Text, TextStyle, View } from 'react-native';
+=======
+import { memo, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, TextStyle, View, useWindowDimensions } from 'react-native';
+>>>>>>> 622917546b285395892b6f1ce820e2b453755a25
 import YoutubePlayer from 'react-native-youtube-iframe';
 
 type RenderYoutubeVideoProps = {
@@ -14,6 +19,7 @@ type RenderYoutubeVideoProps = {
 };
 
 const RenderYoutubeVideo = ({ key, videoId, contentInElement, onPress, onLongPress, linkStyle, themeValue }: RenderYoutubeVideoProps) => {
+<<<<<<< HEAD
 	const [isPortrait, setIsPortrait] = useState<boolean>(true);
 	const [isVideoReady, setIsVideoReady] = useState<boolean>(false);
 
@@ -29,6 +35,11 @@ const RenderYoutubeVideo = ({ key, videoId, contentInElement, onPress, onLongPre
 
 		return () => subscription?.remove();
 	}, []);
+=======
+	const [isVideoReady, setIsVideoReady] = useState<boolean>(false);
+	const { width, height } = useWindowDimensions();
+	const isLandscape = width > height;
+>>>>>>> 622917546b285395892b6f1ce820e2b453755a25
 
 	return (
 		<View
@@ -36,9 +47,15 @@ const RenderYoutubeVideo = ({ key, videoId, contentInElement, onPress, onLongPre
 			style={{
 				display: 'flex',
 				gap: size.s_8,
+<<<<<<< HEAD
 				marginTop: isPortrait ? -size.s_4 : -size.s_40,
 				marginLeft: isPortrait ? -size.s_4 : 0,
 				paddingBottom: isPortrait ? size.s_6 : size.s_22
+=======
+				marginTop: isLandscape ? -size.s_4 : -size.s_40,
+				marginLeft: isLandscape ? -size.s_4 : 0,
+				paddingBottom: isLandscape ? size.s_6 : size.s_22
+>>>>>>> 622917546b285395892b6f1ce820e2b453755a25
 			}}
 		>
 			<Text style={linkStyle} onPress={onPress} onLongPress={onLongPress}>

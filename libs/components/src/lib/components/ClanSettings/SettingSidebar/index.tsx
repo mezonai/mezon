@@ -1,10 +1,9 @@
 import { usePermissionChecker } from '@mezon/core';
-import { authActions, selectActionAuditLog, selectAllAccount, selectCurrentClan, selectUserAuditLog, useAppDispatch } from '@mezon/store';
+import { authActions, selectAllAccount, selectCurrentClan, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { ItemObjProps, ItemSetting, sideBarListItem } from '../ItemObj';
 import SettingItem from '../SettingItem';
 
@@ -19,9 +18,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [selectedButton, setSelectedButton] = useState<string | null>(currentSetting);
 	const currentClan = useSelector(selectCurrentClan);
 	const [isClanOwner, hasClanPermission] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
-	const auditLogFilterAction = useSelector(selectActionAuditLog);
-	const auditLogFilterUser = useSelector(selectUserAuditLog);
-	const navigate = useNavigate();
+
 	const userProfile = useSelector(selectAllAccount);
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {

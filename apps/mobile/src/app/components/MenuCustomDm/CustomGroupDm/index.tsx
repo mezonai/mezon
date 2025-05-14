@@ -1,9 +1,10 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, useAppDispatch } from '@mezon/store-mobile';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -20,12 +21,6 @@ const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channel
 		nameGroupRef.current = nameGroup;
 	}, [nameGroup]);
 
-	useEffect(() => {
-		return () => {
-			handleSave(nameGroupRef?.current);
-		};
-	}, []);
-
 	const handelChangeText = (text: string) => {
 		setNameGroup(text);
 	};
@@ -41,6 +36,11 @@ const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channel
 			};
 			await dispatch(channelsActions.updateChannel(updateChannel));
 		}
+	};
+
+	const onPressSaveGroup = () => {
+		handleSave(nameGroupRef?.current);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
 	return (
@@ -60,6 +60,9 @@ const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channel
 					<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
 				</View>
 			</View>
+			<Pressable style={styles.saveButton} onPress={onPressSaveGroup}>
+				<Text style={[styles.saveText, channelLabel === nameGroup && { opacity: 0.5 }]}>{t('save')}</Text>
+			</Pressable>
 			<Text style={styles.labelInput}>{t('groupName')}</Text>
 			<MezonInput value={nameGroup} onTextChange={handelChangeText} />
 		</View>

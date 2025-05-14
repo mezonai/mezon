@@ -35,6 +35,7 @@ import { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { selectScrollOffsetByChannelId, selectShowScrollDownButton } from '../channels/channels.slice';
+
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
@@ -424,11 +425,11 @@ export const loadMoreMessage = createAsyncThunk(
 
 			if (direction === Direction_Mode.BEFORE_TIMESTAMP) {
 				const lastScrollMessageId = selectLastLoadMessageIDByChannelId(chlId)(getMessagesRootState(thunkAPI));
-				const firstChannelMessageId = selectFirstMessageIdByChannelId(chlId)(getMessagesRootState(thunkAPI));
+				// const firstChannelMessageId = selectFirstMessageIdByChannelId(chlId)(getMessagesRootState(thunkAPI));
 
-				if (!lastScrollMessageId || lastScrollMessageId === firstChannelMessageId) {
-					return;
-				}
+				// if (!lastScrollMessageId || lastScrollMessageId === firstChannelMessageId) {
+				// 	return;
+				// }
 
 				if (topicId) {
 					return await thunkAPI.dispatch(
@@ -760,6 +761,7 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 	if (!message.isMe && scrollOffset > SCROLL_OFFSET_THRESHOLD) {
 		return;
 	}
+
 
 	if (isViewingOlderMessages) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));
@@ -1259,7 +1261,6 @@ export const messagesSlice = createSlice({
 
 					direction = direction || Direction_Mode.BEFORE_TIMESTAMP;
 
-					// const reversedMessages = action.payload.messages.reverse();
 
 					// remove all messages if ís fetching latest messages and is viewing older messages
 					if (toPresent) {
@@ -1294,6 +1295,7 @@ export const messagesSlice = createSlice({
 								return;
 							} else if (oldViewport.length) {
 								newViewportIds = [...oldViewport, ...messageIds.slice(index)];
+
 							} else {
 								newViewportIds = messageIds;
 							}

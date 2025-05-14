@@ -1,4 +1,4 @@
-import { Button, Label, Modal } from 'flowbite-react';
+import { Label, Modal } from 'flowbite-react';
 import { useState } from 'react';
 
 type ModalRemoveMemberClanProps = {
@@ -51,19 +51,19 @@ const ModalRemoveMemberClan = ({ openModal, username, onClose, onRemoveMember }:
 					</div>
 
 					<div className="flex justify-end p-4 rounded-b dark:bg-[#2B2D31] bg-bgLightSecondary">
-						<Button
-							className="dark:text-textDarkTheme text-channelTextareaLight h-10 px-4 rounded bg-transparent dark:bg-transparent hover:!bg-transparent hover:!underline focus:!ring-transparent"
+						<button
+							className="py-2 dark:text-textDarkTheme text-channelTextareaLight h-10 px-4 rounded bg-transparent dark:bg-transparent hover:!bg-transparent hover:!underline focus:!ring-transparent"
 							type="button"
 							onClick={onClose}
 						>
 							Cancel
-						</Button>
-						<Button
+						</button>
+						<button
 							onClick={handleSave}
-							className="h-10 px-4 rounded bg-colorDanger hover:!bg-colorDangerHover dark:bg-colorDanger dark:hover:!bg-colorDangerHover focus:!ring-transparent"
+							className="py-2 h-10 px-4 rounded bg-colorDanger hover:!bg-colorDangerHover dark:bg-colorDanger dark:hover:!bg-colorDangerHover focus:!ring-transparent"
 						>
 							Save
-						</Button>
+						</button>
 					</div>
 				</form>
 			</div>

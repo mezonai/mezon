@@ -178,7 +178,8 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 		channelType !== ChannelType.CHANNEL_TYPE_CHANNEL &&
 		channelType !== ChannelType.CHANNEL_TYPE_DM &&
 		channelType !== ChannelType.CHANNEL_TYPE_GROUP &&
-		channelType !== ChannelType.CHANNEL_TYPE_THREAD
+		channelType !== ChannelType.CHANNEL_TYPE_THREAD &&
+		channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE
 	) {
 		return null;
 	}
@@ -192,6 +193,7 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 	} catch (error) {
 		captureSentryError(error, 'channels/joinChat');
 		return thunkAPI.rejectWithValue(error);
+
 	}
 });
 
@@ -1528,10 +1530,9 @@ export const selectChannelFirst = createSelector(selectAllChannels, (channels) =
 
 export const selectChannelSecond = createSelector(selectAllChannels, (channels) => channels[1]);
 
-export const selectChannelsByClanId = createSelector(
-	[selectAllChannels, (state: RootState, clanId: string) => clanId],
-	(channels, clanId) => channels
-);
+export const selectChannelsByClanId = createSelector([getChannelsState, (state: RootState, clanId: string) => clanId], (state, clanId) => {
+	return selectAll(state.byClans[clanId]?.entities ?? channelsAdapter.getInitialState());
+});
 
 export const selectDefaultChannelIdByClanId = createSelector(
 	[selectAllChannels, (state: RootState, clanId: string) => clanId],

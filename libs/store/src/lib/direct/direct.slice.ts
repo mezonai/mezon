@@ -47,8 +47,6 @@ export const createNewDirectMessage = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 			if (response) {
-				thunkAPI.dispatch(directActions.setDmGroupCurrentId(response.channel_id ?? ''));
-				thunkAPI.dispatch(directActions.setDmGroupCurrentType(response.type ?? 0));
 				thunkAPI.dispatch(
 					directActions.upsertOne({
 						id: response.channel_id || '',

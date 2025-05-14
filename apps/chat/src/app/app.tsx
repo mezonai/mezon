@@ -6,8 +6,10 @@ import { captureSentryError } from '@mezon/logger';
 import { ACTIVE_WINDOW, DOWNLOAD_PROGRESS, TRIGGER_SHORTCUT, UPDATE_AVAILABLE, UPDATE_ERROR, electronBridge } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import 'react-contexify/ReactContexify.css';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { preloadedState } from './mock/state';
 import { Routes } from './routes';
 

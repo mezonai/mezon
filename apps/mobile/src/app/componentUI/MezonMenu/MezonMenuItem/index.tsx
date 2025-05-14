@@ -1,6 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ReactNode } from 'react';
-import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { IconCDN } from '../../../constants/icon_cdn';
 import MezonIconCDN from '../../MezonIconCDN';
 import { style } from './styles';
@@ -38,9 +39,8 @@ export default function MezonMenuItem({
 
 	return (
 		isShow && (
-			<TouchableOpacity
+			<Pressable
 				disabled={disabled}
-				activeOpacity={disabled ? 0.5 : 1}
 				onPress={() => {
 					onPress && onPress();
 				}}
@@ -56,7 +56,7 @@ export default function MezonMenuItem({
 					{previewValue && <Text style={styles.previewValue}>{previewValue}</Text>}
 					{expandable && <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />}
 				</View>
-			</TouchableOpacity>
+			</Pressable>
 		)
 	);
 }

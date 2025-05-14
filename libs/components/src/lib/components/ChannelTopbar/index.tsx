@@ -95,7 +95,7 @@ const TopBarChannelText = memo(() => {
 		setStatusMenu(true);
 	}, []);
 	const navigate = useCustomNavigate();
-
+	const dispatch = useAppDispatch();
 	const handleNavigateToParent = () => {
 		if (!channelParent?.id || !channelParent?.clan_id) {
 			return;
@@ -109,9 +109,33 @@ const TopBarChannelText = memo(() => {
 		}
 		return currentDmGroup?.channel_label;
 	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
+
+	const handleChangeGroupName = useCallback(
+		async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				dispatch(
+					channelsActions.updateChannel({
+						channel_id: currentDmGroup.channel_id as string,
+						category_id: '',
+						app_id: '',
+						channel_label: (e.target as HTMLTextAreaElement).value
+					})
+				);
+			}
+		},
+		[currentDmGroup]
+	);
+
+	const handleRestoreName = useCallback(
+		(e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
+			e.target.value = channelDmGroupLabel as string;
+		},
+		[channelDmGroupLabel]
+	);
 	return (
 		<>
-			<div className="justify-start items-center gap-1 flex ">
+			<div className="justify-start items-center gap-1 flex flex-1">
 				<div className="flex sbm:hidden pl-3 px-2" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
@@ -138,13 +162,20 @@ const TopBarChannelText = memo(() => {
 						</>
 					)
 				) : (
-					<div className="flex items-center gap-3">
+					<div className="flex items-center gap-3 flex-1">
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={currentDmGroup?.channel_avatar?.[0]}
 							avatarName={currentDmGroup?.channel_label?.at(0)}
 						/>
-						<p className="font-medium truncate one-line text-colorTextLightMode dark:text-contentPrimary">{channelDmGroupLabel}</p>
+						<textarea
+							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}`}
+							rows={1}
+							className={`${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent flex-1 outline-none resize-none w-full leading-10 truncate one-line text-colorTextLightMode dark:text-contentPrimary`}
+							defaultValue={channelDmGroupLabel}
+							onKeyDown={handleChangeGroupName}
+							onBlur={handleRestoreName}
+						></textarea>
 					</div>
 				)}
 			</div>
@@ -530,12 +561,17 @@ function MuteButton({ isLightMode }: { isLightMode: boolean }) {
 function PinButton({ isLightMode, mode }: { isLightMode: boolean; mode?: number }) {
 	const dispatch = useAppDispatch();
 	const isShowPinMessage = useSelector(selectIsPinModalVisible);
-	const pinRef = useRef<HTMLDivElement | null>(null);
 	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
-	const currentClanId = useSelector(selectCurrentClanId) as string;
-	const currentDmGroup = useSelector(selectCurrentDM);
 	const isShowPinBadge = useSelector(selectIsShowPinBadgeByChannelId(currentChannelId));
+
+	const pinRef = useRef<HTMLDivElement | null>(null);
+
 	const handleTogglePinMessage = async () => {
+		const store = getStore();
+		const state = store.getState();
+		const currentClanId = selectCurrentClanId(state) as string;
+		const currentDmGroup = selectCurrentDM(state);
+
 		if (!currentDmGroup?.id && !currentChannelId) {
 			return;
 		}
@@ -604,8 +640,11 @@ export function RedDot() {
 function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 	const dispatch = useDispatch();
 	const isActive = useSelector(selectIsShowMemberList);
-	const currentChannelId = useSelector(selectCurrentChannelId);
+
 	const handleClick = () => {
+		const store = getStore();
+		const state = store.getState();
+		const currentChannelId = selectCurrentChannelId(state);
 		dispatch(appActions.setIsShowMemberList(!isActive));
 		dispatch(searchMessagesActions.setIsSearchMessage({ channelId: currentChannelId as string, isSearchMessage: false }));
 	};

@@ -377,6 +377,7 @@ export interface IMessageComponent<T> {
 	type: EMessageComponentType;
 	id: string;
 	component: T;
+	max_options?: number;
 }
 
 export type ButtonComponent = IMessageComponent<IButtonMessage> & { type: EMessageComponentType.BUTTON };

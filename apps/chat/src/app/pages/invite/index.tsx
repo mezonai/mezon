@@ -71,6 +71,7 @@ export default function InvitePage() {
 					<div className="relative w-12 h-12 flex items-center justify-center">
 						{selectInvite?.clan_logo ? (
 							<img className="w-full h-full rounded-md" src={selectInvite.clan_logo} alt="" />
+
 						) : (
 							<div className="w-full h-full rounded-md bg-gray-700 flex items-center justify-center text-white text-3xl font-medium select-none">
 								{(selectInvite?.clan_name || 'M').charAt(0).toUpperCase()}

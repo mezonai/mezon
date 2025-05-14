@@ -5,10 +5,12 @@ import {
 	clansActions,
 	EMarkAsReadType,
 	getStore,
+	getStoreAsync,
 	listChannelRenderAction,
 	listChannelsByUserActions,
 	markAsReadProcessing,
 	RootState,
+	selectAllChannels,
 	selectChannelsByClanId,
 	selectChannelThreads,
 	selectCurrentClanId,
@@ -25,7 +27,7 @@ export function useMarkAsRead() {
 	const [statusMarkAsReadCategory, setStatusMarkAsReadCategory] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const [statusMarkAsReadClan, setStatusMarkAsReadClan] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const currentClanId = useAppSelector(selectCurrentClanId);
-	const channelsInClan = useAppSelector((state) => selectChannelsByClanId(state, currentClanId ?? ''));
+	const channelsInClan = useAppSelector(selectAllChannels);
 
 	const actionMarkAsRead = useCallback(
 		async (body: ApiMarkAsReadRequest) => {
@@ -160,7 +162,9 @@ export function useMarkAsRead() {
 			try {
 				await actionMarkAsRead(body);
 				setStatusMarkAsReadClan('success');
-				const channelIds = channelsInClan.map((item) => item.id);
+				const store = await getStoreAsync();
+				const channel = selectChannelsByClanId(store.getState(), clanId);
+				const channelIds = channel.map((item) => item.id);
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
 				dispatch(
 					channelsActions.resetChannelsCount({

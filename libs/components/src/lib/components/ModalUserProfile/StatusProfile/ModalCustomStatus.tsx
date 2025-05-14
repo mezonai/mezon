@@ -1,6 +1,6 @@
 import { useAppDispatch, userClanProfileActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { Button, Dropdown, Label, Modal } from 'flowbite-react';
+import { Dropdown, Label, Modal } from 'flowbite-react';
 import { ReactNode, useEffect, useState } from 'react';
 
 type ModalCustomStatusProps = {
@@ -133,20 +133,20 @@ const ModalCustomStatus = ({
 						</Dropdown>
 					</div>
 					<div className="flex justify-end p-4 rounded-b dark:bg-[#2B2D31] bg-[#dedede]">
-						<Button
-							className="h-10 px-4 rounded bg-transparent dark:bg-transparent hover:!bg-transparent hover:!underline focus:!ring-transparent dark:text-textDarkTheme text-textLightTheme"
+						<button
+							className="py-2 h-10 px-4 rounded bg-transparent dark:bg-transparent hover:!bg-transparent hover:!underline focus:!ring-transparent dark:text-textDarkTheme text-textLightTheme"
 							type="button"
 							onClick={onClose}
 						>
 							Cancel
-						</Button>
-						<Button
-							className="h-10 px-4 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover focus:!ring-transparent"
+						</button>
+						<button
+							className="py-2 h-10 px-4 rounded bg-bgSelectItem dark:bg-bgSelectItem hover:!bg-bgSelectItemHover focus:!ring-transparent"
 							type="button"
 							onClick={handleSaveCustomStatus}
 						>
 							Save
-						</Button>
+						</button>
 					</div>
 				</div>
 			</div>
