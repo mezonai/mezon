@@ -11,6 +11,7 @@ import {
 	MultiStepModalE2ee,
 	NavLinkComponent,
 	SearchModal,
+	SidebarClanGroupItem,
 	SidebarClanItem,
 	SidebarLogoItem,
 	Topbar
@@ -23,6 +24,7 @@ import {
 	e2eeActions,
 	fetchDirectMessage,
 	getIsShowPopupForward,
+	listChannelsByUserActions,
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
 	selectAudioBusyTone,
@@ -30,6 +32,7 @@ import {
 	selectAudioEndTone,
 	selectAudioRingTone,
 	selectChatStreamWidth,
+	selectClanGroups,
 	selectClanNumber,
 	selectClanView,
 	selectCloseMenu,
@@ -58,10 +61,10 @@ import {
 
 import { useWebRTCStream } from '@mezon/components';
 import { Icons } from '@mezon/ui';
-import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
+import { IClan, PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType, WebrtcSignalingType } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import ChannelStream from '../channel/ChannelStream';
@@ -230,6 +233,7 @@ function MyApp() {
 			if (event[prefixKey] && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
 				dispatch(fetchDirectMessage({}));
+				dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 				openSearchModal();
 			}
 			if (event[prefixKey] && event.shiftKey && event.key === 'Enter' && !directId) {
@@ -490,48 +494,161 @@ const ClansList = memo(() => {
 	const clans = useSelector(selectOrderedClans);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
+	const clanGroups = useSelector(selectClanGroups);
 
+	const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 	const [items, setItems] = useState<string[]>([]);
-	const { draggingState, handleMouseDown, handleMouseEnter } = useClanDragAndDrop(items, setItems);
+
+	const { draggingState, handleMouseDown, handleMouseEnter, handleDragOverItem } = useClanDragAndDrop(items, setItems, clanGroups);
+
+	const { isDragging, draggedItem, dragPosition, dropIndex, collisionItem } = draggingState;
 
 	useEffect(() => {
 		setItems(clans.map((c) => c.id));
 	}, [clans]);
 
-	const { isDragging, draggedItem, dragPosition, dragOffset } = draggingState;
-	const isActive = (clanId: string) => isClanView && currentClanId === clans.find((c) => c.id === clanId)?.clan_id;
+	const isActive = (clanId: string) => {
+		const clan = clans.find((c) => c.id === clanId);
+		if (!clan) return false;
+		return isClanView && currentClanId === clan.clan_id;
+	};
+
+	const clanMap = clans.reduce(
+		(acc, c) => {
+			acc[c.id] = c;
+			return acc;
+		},
+		{} as Record<string, IClan>
+	);
+
+	const draggingThis = (id: string) => isDragging && draggedItem?.id === id;
 
 	return (
-		<div className="flex flex-col gap-3 relative">
-			{items.map((id) => {
-				const clan = clans.find((c) => c.id === id)!;
-				const draggingThis = isDragging && draggedItem === clan?.id;
+		<div className="flex flex-col gap-2 px-2 relative">
+			{items.map((id, index) => {
+				const group = clanGroups.find((g) => g.id === id);
+				const isBeingDragged = draggingThis(id);
+				if (group && expanded[id]) {
+					return (
+						<Fragment key={id}>
+
+							<div className="flex flex-col items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+								<div
+									className="w-[40px] h-[40px] mb-2 rounded-lg border border-gray-400 flex items-center justify-center bg-white cursor-pointer"
+									onClick={() => setExpanded((prev) => ({ ...prev, [id]: false }))}
+								>
+									<span className="text-xs font-bold text-gray-600">🔽</span>
+								</div>
+								{group.clanIds.map((childId, childIndex) => {
+									const clan = clanMap[childId];
+									if (!clan) return null;
+									const isChildBeingDragged = draggingThis(clan.id);
+
+									return (
+										<Fragment key={childId}>
+											{isDragging && (
+												<div
+													className={`h-[2px] w-[36px] rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
+													onMouseEnter={() => handleDragOverItem(index)}
+												/>
+											)}
+											<div
+												className="w-[40px] h-[40px]"
+												onMouseDown={(e) => handleMouseDown(e, childId, 'clan-in-group')}
+												onMouseEnter={() => handleMouseEnter(childId)}
+											>
+												{isChildBeingDragged ? (
+													<div className="w-full h-full rounded-lg border-2 border-dashed border-gray-400 bg-sky-200 opacity-50" />
+												) : (
+													<SidebarClanItem
+														option={clan}
+														active={isActive(clan.id)}
+														className="w-full h-full"
+														overItemId={collisionItem ?? undefined}
+													/>
+												)}
+											</div>
+										</Fragment>
+									);
+								})}
+							</div>
+						</Fragment>
+					);
+				}
+
+				if (group) {
+					return (
+						<Fragment key={id}>
+							{isDragging && (
+								<div
+									className={`h-[2px] w-[36px] rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
+									onMouseEnter={() => handleDragOverItem(index)}
+								/>
+							)}
+							<div className="relative" onMouseDown={(e) => handleMouseDown(e, id, 'group')} onMouseEnter={() => handleMouseEnter(id)}>
+								{isBeingDragged ? (
+									<div className="w-[40px] h-[40px] rounded-lg border-2 border-dashed border-gray-400 bg-sky-200 opacity-50" />
+								) : (
+									<SidebarClanGroupItem
+										group={group}
+										clanMap={clanMap}
+										expanded={!!expanded[id]}
+										onToggle={() => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
+										className=""
+										overItemId={collisionItem ?? undefined}
+									/>
+								)}
+							</div>
+						</Fragment>
+					);
+				}
 
 				return (
-					<div
-						key={clan?.id}
-						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'}`}
-						onMouseEnter={() => handleMouseEnter(clan?.id)}
-						onMouseDown={(e) => handleMouseDown(e, clan?.id)}
-					>
-						<SidebarClanItem option={clan} active={isActive(clan?.id)} className={`${draggingThis ? 'opacity-0' : ''}`} />
-					</div>
+					<Fragment key={id}>
+						{isDragging && (
+							<div
+								className={`h-[2px] my-1 mx-2 rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
+								onMouseEnter={() => handleDragOverItem(index)}
+							/>
+						)}
+						<div className="relative" onMouseDown={(e) => handleMouseDown(e, id, 'clan')} onMouseEnter={() => handleMouseEnter(id)}>
+							{isBeingDragged ? (
+								<div className="w-[40px] h-[40px] rounded-lg border-2 border-dashed border-gray-400 bg-sky-200 opacity-50" />
+							) : clanMap[id] ? (
+								<SidebarClanItem option={clanMap[id]} active={isActive(id)} className="" overItemId={collisionItem ?? undefined} />
+							) : null}
+						</div>
+					</Fragment>
 				);
 			})}
+
+			{isDragging && (
+				<div
+					className={`h-[2px] my-1 mx-2 rounded transition-all duration-150 ${dropIndex === items.length ? 'bg-sky-500' : 'bg-transparent'}`}
+					onMouseEnter={() => handleDragOverItem(items.length)}
+				/>
+			)}
 
 			{isDragging && draggedItem && dragPosition && (
 				<div
 					className="fixed pointer-events-none z-50 w-[40px] h-[40px]"
 					style={{
-						left: `${dragPosition.x - dragOffset.x}px`,
-						top: `${dragPosition.y - dragOffset.y}px`
+						left: `${dragPosition.x - 20}px`,
+						top: `${dragPosition.y - 20}px`
 					}}
 				>
-					<SidebarClanItem option={clans.find((c) => c.id === draggedItem)!} active={false} />
+					{draggedItem.type === 'group' ? (
+						<div className="w-[40px] h-[40px] rounded-lg bg-purple-300 flex items-center justify-center text-xs font-bold text-white">
+							Group
+						</div>
+					) : draggedItem.type === 'clan' || draggedItem.type === 'clan-in-group' ? (
+						<SidebarClanItem option={clanMap[draggedItem.id]} active={false} className="w-[40px] h-[40px] opacity-60" />
+					) : null}
 				</div>
 			)}
 		</div>
 	);
+
 });
 
 const PreviewOnboardingMode = () => {

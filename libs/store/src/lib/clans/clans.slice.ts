@@ -26,6 +26,10 @@ export const CLANS_FEATURE_KEY = 'clans';
 export interface ClansEntity extends IClan {
 	id: string; // Primary ID
 }
+type ClanGroup = {
+	id: string;
+	clanIds: string[];
+};
 
 export const mapClanToEntity = (clanRes: ApiClanDesc) => {
 	return { ...clanRes, id: clanRes.clan_id || '' };
@@ -54,6 +58,8 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	inviteChannelId?: string;
 	inviteClanId?: string;
 	clansOrder?: string[];
+	clanGroups: ClanGroup[];
+	items: string[];
 }
 
 export const clansAdapter = createEntityAdapter<ClansEntity>();
@@ -258,7 +264,6 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				// thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,
@@ -304,7 +309,9 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	invitePeople: false,
 	inviteChannelId: undefined,
 	inviteClanId: undefined,
-	clansOrder: []
+	clansOrder: [],
+	clanGroups: [],
+	items: []
 });
 
 type UpdateClanBadgeCountPayload = {
@@ -328,7 +335,82 @@ export const clansSlice = createSlice({
 		updateClansOrder: (state, action: PayloadAction<string[]>) => {
 			state.clansOrder = action.payload;
 		},
+		createClanGroup: (state, action) => {
+			const { groupId, clanIds } = action.payload as { groupId: string; clanIds: string[] };
 
+			if (state.clanGroups.some((group) => group.id === groupId)) return;
+
+			const uniqueClanIds = Array.from(new Set(clanIds));
+
+			state.clanGroups.forEach((group) => {
+				group.clanIds = group.clanIds.filter((id) => !uniqueClanIds.includes(id));
+			});
+
+			state.clanGroups.push({
+				id: groupId,
+				clanIds: uniqueClanIds
+			});
+		},
+		addClanToGroup: (state, action: PayloadAction<{ groupId: string; clanId: string }>) => {
+			const { groupId, clanId } = action.payload;
+			const group = state.clanGroups.find((g) => g.id === groupId);
+			if (group && !group.clanIds.includes(clanId)) {
+				group.clanIds.push(clanId);
+				state.items = state.items.filter((id) => id !== clanId);
+			}
+		},
+		removeClanFromGroup: (state, action: PayloadAction<{ groupId: string; clanId: string }>) => {
+			const { groupId, clanId } = action.payload;
+			const group = state.clanGroups.find((g) => g.id === groupId);
+			if (group) {
+				group.clanIds = group.clanIds.filter((id) => id !== clanId);
+				if (group.clanIds.length === 0) {
+					state.clanGroups = state.clanGroups.filter((g) => g.id !== groupId);
+					state.items = state.items.filter((id) => id !== groupId);
+				}
+				state.items.push(clanId);
+			}
+		},
+		reorderClan: (
+			state,
+			action: PayloadAction<{
+				source: { id: string; type: 'clan' | 'clan-in-group' };
+				target: { id: string; type: 'clan' } | { id: ''; type: 'clan' };
+			}>
+		) => {
+			const { source, target } = action.payload;
+
+			if (source.type === 'clan-in-group') {
+				const parentGroup = state.clanGroups.find((group) => group.clanIds.includes(source.id));
+				if (parentGroup) {
+					parentGroup.clanIds = parentGroup.clanIds.filter((id) => id !== source.id);
+
+					if (parentGroup.clanIds.length === 0) {
+						state.clanGroups = state.clanGroups.filter((g) => g.id !== parentGroup.id);
+						state.items = state.items.filter((id) => id !== parentGroup.id);
+					}
+				}
+
+				if (!state.items.includes(source.id)) {
+					state.items.push(source.id);
+				}
+			}
+
+			if (source.type === 'clan' || source.type === 'clan-in-group') {
+				state.items = state.items.filter((id) => id !== source.id);
+
+				if (target.id === '') {
+					state.items.push(source.id);
+				} else {
+					const targetIndex = state.items.findIndex((id) => id === target.id);
+					if (targetIndex !== -1) {
+						state.items.splice(targetIndex, 0, source.id);
+					} else {
+						state.items.push(source.id);
+					}
+				}
+			}
+		},
 		toggleInvitePeople: (state, action: PayloadAction<{ status: boolean; clanId?: string; channelId?: string }>) => {
 			state.invitePeople = action.payload.status;
 			if (action.payload.status) {
@@ -516,7 +598,7 @@ export const selectClanNumber = createSelector(getClansState, (state) => state?.
 export const selectCurrentClanId = createSelector(getClansState, (state) => state.currentClanId);
 
 export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!(currentClanId && currentClanId !== '0'));
-
+export const selectClanGroups = (state: RootState) => state.clans.clanGroups;
 export const selectClansEntities = createSelector(getClansState, selectEntities);
 
 export const selectClanById = (id: string) => createSelector(selectClansEntities, (clansEntities) => clansEntities[id]);
