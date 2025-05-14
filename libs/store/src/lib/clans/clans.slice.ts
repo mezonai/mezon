@@ -339,6 +339,7 @@ export const clansSlice = createSlice({
 		createClanGroup: (state, action) => {
 			const { groupId, clanIds } = action.payload as { groupId: string; clanIds: string[] };
 
+
 			if (state.clanGroups.some((group) => group.id === groupId)) return;
 
 			const uniqueClanIds = Array.from(new Set(clanIds));

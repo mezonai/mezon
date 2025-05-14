@@ -1,5 +1,11 @@
 import { useCustomNavigate } from '@mezon/core';
-import { appActions, getStore, selectBadgeCountByClanId, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
+import {
+	appActions,
+	getStore,
+	selectBadgeCountByClanId,
+	selectIsUseProfileDM,
+	useAppDispatch
+} from '@mezon/store';
 import { Image } from '@mezon/ui';
 import { IClan, createImgproxyUrl } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
@@ -22,6 +28,7 @@ export type SidebarClanItemProps = {
 const SidebarClanItem = ({ option, active, onMouseDown, className = '', overItemId, badgeCountGroup }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
 	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clan_id ?? '')) || 0;
+
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
@@ -50,6 +57,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', overItem
 
 	const [openRightClickModal, closeRightClickModal] = useModal(
 		() => <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} clan={option} />,
+
 		[coords, option]
 	);
 
@@ -88,6 +96,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', overItem
 							w-[40px] h-[40px] object-cover rounded-lg clan
 							${overItemId === option.id ? 'ring-2 ring-sky-400' : ''}
 						`}
+
 						/>
 					) : (
 						<div
@@ -102,6 +111,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', overItem
 							{option.clan_name?.charAt(0).toUpperCase()}
 						</div>
 
+
 					)}
 				</NavLinkComponent>
 			</button>
@@ -114,6 +124,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', overItem
 					outline outline-[3px] outline-white dark:outline-bgSecondary500
 					${(badgeCountGroup || badgeCountClan) >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'}
 				`}
+
 				>
 					{(badgeCountGroup || badgeCountClan) >= 100 ? '99+' : (badgeCountGroup || badgeCountClan)}
 				</div>

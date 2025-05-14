@@ -2,6 +2,7 @@
 
 import { useCustomNavigate } from '@mezon/core';
 import { appActions, getStore, selectBadgeCountByClanId, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
+
 import { Image } from '@mezon/ui';
 import { IClan, createImgproxyUrl } from '@mezon/utils';
 import React, { memo } from 'react';
@@ -54,6 +55,7 @@ const SidebarClanGroupItem = ({
 	const isShowDmProfile = useSelector((state) => selectIsUseProfileDM(getStore().getState()));
 
 	const avatars = group.clanIds.slice(0, 4).map((cid, idx) => {
+
 		const clan = clanMap[cid];
 		if (!clan) return null;
 		return clan.logo ? (
@@ -76,6 +78,7 @@ const SidebarClanGroupItem = ({
 	});
 
 	const handleClick = () => {
+
 		const firstClanId = group.clanIds[0];
 		if (firstClanId) {
 			const store = getStore();
@@ -110,6 +113,7 @@ const SidebarClanGroupItem = ({
 		'absolute top-0 right-0',
 		'absolute bottom-0 left-0',
 		'absolute bottom-0 right-0',
+
 	];
 
 	return (
@@ -128,6 +132,7 @@ const SidebarClanGroupItem = ({
 				${overItemId === group.id ? 'ring-2 ring-sky-400' : ''}
 				bg-gray-100 dark:bg-gray-800
 			`}
+
 		>
 			{displayIds.map((cid, idx) => {
 				const clan = clanMap[cid];
@@ -161,6 +166,7 @@ const SidebarClanGroupItem = ({
 			)}
 		</div>
 	);
+
 };
 
 export default memo(SidebarClanGroupItem);

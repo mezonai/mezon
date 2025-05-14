@@ -6,6 +6,7 @@ import { DRAG_ITEM_TYPES, DRAG_THRESHOLD, DraggedItemType, GROUP_PREFIX } from '
 type DraggedItem = { id: string; type: DraggedItemType };
 
 export function useClanDragAndDrop(clans: string[], setItems: (items: string[]) => void, clanGroups: { id: string; clanIds: string[] }[]) {
+
 	const dispatch = useDispatch();
 
 	const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
@@ -62,6 +63,7 @@ export function useClanDragAndDrop(clans: string[], setItems: (items: string[]) 
 					if (id === draggedItem.id) continue;
 
 					if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+
 						foundCollision = id;
 						break;
 					}
@@ -223,6 +225,7 @@ export function useClanDragAndDrop(clans: string[], setItems: (items: string[]) 
 							})
 						);
 					}
+
 				}
 			}
 

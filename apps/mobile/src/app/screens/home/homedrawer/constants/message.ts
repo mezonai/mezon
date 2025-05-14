@@ -83,6 +83,6 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			id: 15,
 			title: t('message:actions.markMessage'),
 			type: EMessageActionType.MarkMessage
-		},
+		}
 	];
 };

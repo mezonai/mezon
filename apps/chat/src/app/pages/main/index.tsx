@@ -499,6 +499,7 @@ const ClansList = memo(() => {
 
 	const { draggingState, handleMouseDown, handleMouseEnter, handleDragOverItem } = useClanDragAndDrop(items, setItems, clanGroups);
 
+
 	const { isDragging, draggedItem, dragPosition, dropIndex, collisionItem } = draggingState;
 
 	useEffect(() => {
@@ -519,6 +520,7 @@ const ClansList = memo(() => {
 		{} as Record<string, IClan>
 	);
 
+
 	const draggingThis = (id: string) => isDragging && draggedItem?.id === id;
 
 	return (
@@ -537,6 +539,7 @@ const ClansList = memo(() => {
 								>
 									<span className="text-xs font-bold text-gray-600">🔽</span>
 								</div>
+
 								{group.clanIds.map((childId, childIndex) => {
 									const clan = clanMap[childId];
 									if (!clan) return null;
@@ -547,6 +550,7 @@ const ClansList = memo(() => {
 											{isDragging && (
 												<div
 													className={`h-[2px] w-[36px] rounded transition-all duration-150 ${dropIndex === index ? 'bg-sky-500' : 'bg-transparent'}`}
+
 													onMouseEnter={() => handleDragOverItem(index)}
 												/>
 											)}
@@ -570,6 +574,7 @@ const ClansList = memo(() => {
 									);
 								})}
 							</div>
+
 						</Fragment>
 					);
 				}
@@ -584,6 +589,7 @@ const ClansList = memo(() => {
 								/>
 							)}
 							<div className="relative" onMouseDown={(e) => handleMouseDown(e, id, 'group')} onMouseEnter={() => handleMouseEnter(id)}>
+
 								{isBeingDragged ? (
 									<div className="w-[40px] h-[40px] rounded-lg border-2 border-dashed border-gray-400 bg-sky-200 opacity-50" />
 								) : (
@@ -592,6 +598,7 @@ const ClansList = memo(() => {
 										clanMap={clanMap}
 										expanded={!!expanded[id]}
 										onToggle={() => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
+
 										className=""
 										overItemId={collisionItem ?? undefined}
 									/>
@@ -621,6 +628,7 @@ const ClansList = memo(() => {
 				);
 			})}
 
+
 			{isDragging && (
 				<div
 					className={`h-[2px] my-1 mx-2 rounded transition-all duration-150 ${dropIndex === items.length ? 'bg-sky-500' : 'bg-transparent'}`}
@@ -634,6 +642,7 @@ const ClansList = memo(() => {
 					style={{
 						left: `${dragPosition.x - 20}px`,
 						top: `${dragPosition.y - 20}px`
+
 					}}
 				>
 					{draggedItem.type === 'group' ? (
@@ -642,13 +651,17 @@ const ClansList = memo(() => {
 						</div>
 					) : draggedItem.type === 'clan' || draggedItem.type === 'clan-in-group' ? (
 						<SidebarClanItem option={clanMap[draggedItem.id]} active={false} className="w-[40px] h-[40px] opacity-60" />
+
 					) : null}
 				</div>
 			)}
+
 		</div>
 	);
 
 });
+
+
 
 const PreviewOnboardingMode = () => {
 	const dispatch = useDispatch();
