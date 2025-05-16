@@ -71,6 +71,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const flatListRef = useRef(null);
 	const timeOutRef = useRef(null);
 	const timeOutRef2 = useRef(null);
+	const [isShowJumpToPresent, setIsShowJumpToPresent] = useState(false);
 
 	const userId = useSelector(selectAllAccount)?.user?.id;
 
@@ -138,10 +139,6 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 		},
 		[messages?.length]
 	);
-
-	const isHaveJumpToPresent = useMemo(() => {
-		return (isViewingOldMessage || messages?.length >= LIMIT_MESSAGE * 3) && !!messages?.length;
-	}, [isViewingOldMessage, messages?.length]);
 
 	const onLoadMore = useCallback(
 		async (direction: ELoadMoreDirection) => {
@@ -234,13 +231,25 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 		}, 800);
 	}, [clanId, channelId, dispatch, topicChannelId]);
 
+	const handleSetShowJumpLast = useCallback(
+		(nativeEvent) => {
+			const { contentOffset } = nativeEvent;
+			const isLastMessageVisible = contentOffset.y >= 100;
+			if (isLastMessageVisible !== isShowJumpToPresent) {
+				setIsShowJumpToPresent(isLastMessageVisible);
+			}
+		},
+		[isShowJumpToPresent]
+	);
+
 	const handleScroll = useCallback(
 		async ({ nativeEvent }) => {
+			handleSetShowJumpLast(nativeEvent);
 			if (nativeEvent.contentOffset.y <= 0) {
 				await onLoadMore(ELoadMoreDirection.bottom);
 			}
 		},
-		[onLoadMore]
+		[handleSetShowJumpLast, onLoadMore]
 	);
 
 	return (
@@ -265,7 +274,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 					height: size.s_8
 				}}
 			/>
-			{isHaveJumpToPresent && (
+			{isShowJumpToPresent && (
 				<TouchableOpacity style={styles.btnScrollDown} onPress={handleJumpToPresent} activeOpacity={0.8}>
 					{isLoadingScrollBottom ? (
 						<ActivityIndicator size="small" color={themeValue.textStrong} />

@@ -1,6 +1,6 @@
 import { useAuth, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	EventManagementEntity,
 	addUserEvent,
@@ -21,6 +21,7 @@ import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonButton from '../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
+import ImageNative from '../../ImageNative';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { EventMenu } from '../EventMenu';
@@ -102,11 +103,28 @@ export function EventDetail({ event }: IEventDetailProps) {
 
 	return (
 		<View style={styles.container}>
+			{!!event?.logo && <ImageNative url={event?.logo} style={styles.cover} resizeMode="cover" />}
 			<EventTime event={event} eventStatus={EEventStatus.CREATED} />
-			{!!event?.channel_id && event.channel_id !== '0' && (
+			{!!event?.channel_id && event.channel_id !== '0' && !event?.is_private && (
+				<View style={styles.privateArea}>
+					<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
+						<Text style={styles.privateText}>Channel Event</Text>
+					</View>
+				</View>
+			)}
+
+			{event?.is_private && (
 				<View style={styles.privateArea}>
 					<View style={styles.privatePanel}>
 						<Text style={styles.privateText}>Private Event</Text>
+					</View>
+				</View>
+			)}
+
+			{!event?.is_private && !event?.channel_id && (
+				<View style={styles.privateArea}>
+					<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
+						<Text style={styles.privateText}>Clan Event</Text>
 					</View>
 				</View>
 			)}

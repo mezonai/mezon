@@ -51,7 +51,7 @@ export default function StickerSelector({ onSelected, onScroll }: StickerSelecto
 			scrollEventThrottle={16}
 			onScroll={onScroll}
 			style={{ maxHeight: Metrics.screenHeight / 1.07 }}
-			contentContainerStyle={{ paddingBottom: size.s_50 * 2 }}
+			contentContainerStyle={{ paddingBottom: size.s_10 * 2 }}
 		>
 			<ScrollView horizontal contentContainerStyle={styles.btnWrap}>
 				{categoryLogo?.map((item, index) => (

@@ -62,8 +62,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 
 	const shouldShowKickOption = !isSelf && (hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
 
-	const shouldShowRemoveFromThreadOption =
-		!isSelf && isPrivateThread && (isCreator || hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
+	const shouldShowRemoveFromThreadOption = !isSelf && (isCreator || hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
 
 	const friendStatus = useAppSelector(selectFriendStatus(currentUser?.user?.id || ''));
 
@@ -98,10 +97,10 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	};
 
 	const handleDirectMessageWithUser = useCallback(
-		async (userId?: string) => {
-			if (!userId) return;
+		async (user?: ChannelMembersEntity) => {
+			if (!user?.id) return;
 
-			const response = await createDirectMessageWithUser(userId, currentUser?.user?.display_name, currentUser?.user?.avatar_url);
+			const response = await createDirectMessageWithUser(user?.id, user?.user?.display_name || user?.user?.username, user?.user?.avatar_url);
 			if (response?.channel_id) {
 				const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
 				navigate(directDM);
@@ -112,7 +111,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 
 	const handleRemoveMemberFromThread = useCallback(
 		async (userId?: string) => {
-			if (!userId || !currentChannelId || !isPrivateThread) return;
+			if (!userId || !currentChannelId) return;
 
 			try {
 				await dispatch(
@@ -156,7 +155,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			},
 			handleMessage: () => {
 				if (user?.user?.id) {
-					handleDirectMessageWithUser(user.user.id);
+					handleDirectMessageWithUser(user);
 				}
 			},
 			handleAddFriend: () => {
@@ -248,9 +247,9 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 							<MemberMenuItem label="Remove Friend" onClick={currentHandlers.handleRemoveFriend} isWarning={true} />
 						)}
 
-						{shouldShow('kick') && <MemberMenuItem label="Kick" onClick={currentHandlers.handleKick} isWarning={true} />}
+						{!!shouldShow('kick') && <MemberMenuItem label="Kick" onClick={currentHandlers.handleKick} isWarning={true} />}
 
-						{shouldShow('removeFromThread') && (
+						{!!shouldShow('removeFromThread') && (
 							<MemberMenuItem
 								label={`Remove ${currentUser?.user?.username || 'User'} from thread`}
 								onClick={currentHandlers.handleRemoveFromThread}

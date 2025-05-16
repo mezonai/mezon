@@ -571,7 +571,7 @@ export const style = (colors: Attributes) =>
 			shadowOpacity: 0.3,
 			shadowRadius: 4.65,
 			elevation: 8,
-			zIndex: 1000
+			zIndex: 0
 		},
 		wrapperFooterImagesModal: {
 			flex: 1,

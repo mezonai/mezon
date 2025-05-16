@@ -1,6 +1,6 @@
 import { useColorsRoleById } from '@mezon/core';
 import { selectAllAccount, selectClanMemberMetaUserId, selectMemberClanByUserId2, selectMemberCustomStatusById2, useAppSelector } from '@mezon/store';
-import { EUserStatus, createImgproxyUrl } from '@mezon/utils';
+import { EUserStatus, UsersClanEntity, createImgproxyUrl } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { AvatarImage } from '../../components';
@@ -27,7 +27,19 @@ export const BaseMemberProfile = ({ id }: BaseMemberProfileProps) => {
 	};
 
 	const handleContextMenu = (event: React.MouseEvent) => {
-		showContextMenu(event, user);
+		const userTemplate: UsersClanEntity = {
+			...user,
+			id: id,
+			prioritizeName: username,
+			clan_avatar: avatar,
+			user: {
+				...user?.user,
+				username: user?.user?.username,
+				display_name: user?.user?.display_name,
+				avatar_url: user?.user?.avatar_url
+			}
+		};
+		showContextMenu(event, userTemplate);
 	};
 
 	const statusOnline = useMemo(() => {

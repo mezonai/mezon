@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Fonts, Metrics } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -50,5 +50,13 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.primary
 		},
 		titleMezonBtn: { fontSize: Fonts.size.h7, color: baseColor.white, fontWeight: '600' },
-		mezonBtn: { backgroundColor: baseColor.blurple }
+		mezonBtn: { backgroundColor: baseColor.blurple },
+		label: {
+			color: colors.text,
+			fontSize: Fonts.size.h7,
+			textTransform: 'uppercase',
+			fontWeight: 'bold',
+			marginBottom: size.s_4,
+			marginLeft: size.s_4
+		}
 	});

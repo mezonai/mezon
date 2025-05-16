@@ -7,8 +7,8 @@ import EmojisPanel from '../EmojisPanel';
 
 type EmojiCategoryProps = {
 	categoryName?: string;
-	emojisData: IEmoji[];
-	onEmojiSelect: (emoji: IEmoji) => void;
+	emojisData?: IEmoji[];
+	onEmojiSelect?: (emoji: IEmoji) => void;
 };
 
 const EmojiCategory: FC<EmojiCategoryProps> = ({ emojisData, categoryName, onEmojiSelect }) => {

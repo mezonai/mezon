@@ -4,6 +4,7 @@ import {
 	RootState,
 	appActions,
 	audioCallActions,
+	canvasAPIActions,
 	channelsActions,
 	getStore,
 	getStoreAsync,
@@ -95,7 +96,7 @@ const TopBarChannelText = memo(() => {
 		setStatusMenu(true);
 	}, []);
 	const navigate = useCustomNavigate();
-
+	const dispatch = useAppDispatch();
 	const handleNavigateToParent = () => {
 		if (!channelParent?.id || !channelParent?.clan_id) {
 			return;
@@ -109,9 +110,36 @@ const TopBarChannelText = memo(() => {
 		}
 		return currentDmGroup?.channel_label;
 	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
+
+	const handleChangeGroupName = useCallback(
+		async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				dispatch(
+					channelsActions.updateChannel({
+						channel_id: currentDmGroup.channel_id as string,
+						category_id: '',
+						app_id: '',
+						channel_label: (e.target as HTMLTextAreaElement).value
+					})
+				);
+			}
+		},
+		[currentDmGroup]
+	);
+
+	const handleRestoreName = useCallback(
+		(e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
+			e.target.value = channelDmGroupLabel as string;
+		},
+		[channelDmGroupLabel]
+	);
+	const handleCloseCanvas = () => {
+		dispatch(appActions.setIsShowCanvas(false));
+	};
 	return (
 		<>
-			<div className="justify-start items-center gap-1 flex ">
+			<div className="justify-start items-center gap-1 flex flex-1">
 				<div className="flex sbm:hidden pl-3 px-2" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
@@ -134,17 +162,25 @@ const TopBarChannelText = memo(() => {
 								isPrivate={!!channel?.channel_private}
 								label={channel?.channel_label || ''}
 								type={channel?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
+								onClick={handleCloseCanvas}
 							/>
 						</>
 					)
 				) : (
-					<div className="flex items-center gap-3">
+					<div className="flex items-center gap-3 flex-1">
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={currentDmGroup?.channel_avatar?.[0]}
 							avatarName={currentDmGroup?.channel_label?.at(0)}
 						/>
-						<p className="font-medium truncate one-line text-colorTextLightMode dark:text-contentPrimary">{channelDmGroupLabel}</p>
+						<textarea
+							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}`}
+							rows={1}
+							className={`${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent flex-1 outline-none resize-none w-full leading-10 truncate one-line text-colorTextLightMode dark:text-contentPrimary`}
+							defaultValue={channelDmGroupLabel}
+							onKeyDown={handleChangeGroupName}
+							onBlur={handleRestoreName}
+						></textarea>
 					</div>
 				)}
 			</div>
@@ -166,51 +202,53 @@ const TopBarChannelText = memo(() => {
 	);
 });
 
-const ChannelTopbarLabel = memo(({ type, label, isPrivate }: { type: ChannelType; label: string; isPrivate: boolean }) => {
-	const renderIcon = () => {
-		if (!isPrivate) {
+const ChannelTopbarLabel = memo(
+	({ type, label, isPrivate, onClick }: { type: ChannelType; label: string; isPrivate: boolean; onClick?: () => void }) => {
+		const renderIcon = () => {
+			if (!isPrivate) {
+				switch (type) {
+					case ChannelType.CHANNEL_TYPE_CHANNEL:
+						return <Icons.Hashtag />;
+					case ChannelType.CHANNEL_TYPE_THREAD:
+						return <Icons.ThreadIcon />;
+					case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
+						return <Icons.Speaker />;
+					case ChannelType.CHANNEL_TYPE_GMEET_VOICE:
+						return <Icons.Speaker />;
+					case ChannelType.CHANNEL_TYPE_STREAMING:
+						return <Icons.Stream />;
+					case ChannelType.CHANNEL_TYPE_APP:
+						return <Icons.AppChannelIcon />;
+					default:
+						return <Icons.Hashtag />;
+				}
+			}
 			switch (type) {
 				case ChannelType.CHANNEL_TYPE_CHANNEL:
-					return <Icons.Hashtag />;
+					return <Icons.HashtagLocked />;
 				case ChannelType.CHANNEL_TYPE_THREAD:
-					return <Icons.ThreadIcon />;
+					return <Icons.ThreadIconLocker />;
 				case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
-					return <Icons.Speaker />;
+					return <Icons.SpeakerLocked />;
 				case ChannelType.CHANNEL_TYPE_GMEET_VOICE:
-					return <Icons.Speaker />;
+					return <Icons.SpeakerLocked />;
 				case ChannelType.CHANNEL_TYPE_STREAMING:
 					return <Icons.Stream />;
 				case ChannelType.CHANNEL_TYPE_APP:
 					return <Icons.AppChannelIcon />;
 				default:
-					return <Icons.Hashtag />;
+					return <Icons.HashtagLocked />;
 			}
-		}
-		switch (type) {
-			case ChannelType.CHANNEL_TYPE_CHANNEL:
-				return <Icons.HashtagLocked />;
-			case ChannelType.CHANNEL_TYPE_THREAD:
-				return <Icons.ThreadIconLocker />;
-			case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
-				return <Icons.SpeakerLocked />;
-			case ChannelType.CHANNEL_TYPE_GMEET_VOICE:
-				return <Icons.SpeakerLocked />;
-			case ChannelType.CHANNEL_TYPE_STREAMING:
-				return <Icons.Stream />;
-			case ChannelType.CHANNEL_TYPE_APP:
-				return <Icons.AppChannelIcon />;
-			default:
-				return <Icons.HashtagLocked />;
-		}
-	};
+		};
 
-	return (
-		<div className="flex items-center text-lg gap-1 dark:text-white text-black">
-			<div className="w-6">{renderIcon()}</div>
-			<p className="text-base font-semibold leading-5 truncate">{label}</p>
-		</div>
-	);
-});
+		return (
+			<div className="flex items-center text-lg gap-1 dark:text-white text-black" onClick={onClick}>
+				<div className="w-6">{renderIcon()}</div>
+				<p className="text-base font-semibold leading-5 truncate">{label}</p>
+			</div>
+		);
+	}
+);
 
 const ChannelTopbarTools = memo(
 	({
@@ -249,6 +287,16 @@ const ChannelTopbarTools = memo(
 			}
 		};
 
+		const fetchCanvasChannel = async () => {
+			const store = await getStoreAsync();
+			const currentChannel = selectCurrentChannel(store.getState());
+			dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: currentChannel?.channel_id || '', clan_id: currentChannel?.clan_id || '' }));
+			if (currentChannel?.parent_id && currentChannel?.parent_id !== '0') {
+				dispatch(
+					canvasAPIActions.getChannelCanvasList({ channel_id: currentChannel?.parent_id || '', clan_id: currentChannel?.clan_id || '' })
+				);
+			}
+		};
 		return (
 			<div className={`items-center h-full flex`}>
 				{!isStream ? (
@@ -258,11 +306,11 @@ const ChannelTopbarTools = memo(
 							<MuteButton isLightMode={appearanceTheme === 'light'} />
 							<InboxButton isLightMode={appearanceTheme === 'light'} />
 							<PinButton mode={ChannelStreamMode.STREAM_MODE_CHANNEL} isLightMode={appearanceTheme === 'light'} />
-							<div onClick={() => setTurnOffThreadMessage()}>
+							<div onClick={setTurnOffThreadMessage}>
 								<ChannelListButton isLightMode={appearanceTheme === 'light'} />
 							</div>
 							{!isApp && <ThreadButton isLightMode={appearanceTheme === 'light'} />}
-							<CanvasButton isLightMode={appearanceTheme === 'light'} />
+							<CanvasButton onClick={fetchCanvasChannel} />
 						</div>
 						<div className="sbm:hidden mr-5">
 							<ChannelListButton />
@@ -422,12 +470,13 @@ function FileButton({ isLightMode }: { isLightMode: boolean }) {
 	);
 }
 
-function CanvasButton({ isLightMode }: { isLightMode: boolean }) {
+function CanvasButton({ onClick }: { onClick?: () => void }) {
 	const [isShowCanvas, setIsShowCanvas] = useState<boolean>(false);
 	const canvasRef = useRef<HTMLDivElement | null>(null);
 
-	const handleShowCanvas = () => {
+	const handleShowCanvas = async () => {
 		setIsShowCanvas(!isShowCanvas);
+		onClick?.();
 	};
 
 	const handleClose = useCallback(() => {

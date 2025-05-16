@@ -182,10 +182,10 @@ function ChannelMessages({
 			}
 
 			if (direction === ELoadMoreDirection.top) {
-				const hasMoreTop = selectHasMoreMessageByChannelId2(store.getState() as RootState, channelId);
-				if (!hasMoreTop) {
-					return;
-				}
+				// const hasMoreTop = selectHasMoreMessageByChannelId2(store.getState() as RootState, channelId);
+				// if (!hasMoreTop) {
+				// 	return;
+				// }
 			}
 
 			if (typeof cb === 'function') {

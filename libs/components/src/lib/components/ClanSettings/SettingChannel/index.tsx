@@ -11,13 +11,14 @@ import {
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
-import { Avatar, AvatarSizes, Dropdown, Pagination } from 'flowbite-react';
+import { Dropdown, Pagination } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
 import { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api.gen';
 import { useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { AnchorScroll } from '../../AnchorScroll/AnchorScroll';
+import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
 
 type ListChannelSettingProp = {
 	listChannel: ApiChannelSettingItem[];
@@ -277,7 +278,7 @@ const ItemInfor = ({
 					<div className="font-semibold pb-3 text-channelActiveLightColor dark:text-channelTextareaLight">List Member</div>
 					{userIds.map((member) => (
 						<div className="flex gap-3">
-							<AvatarUserShort id={member} key={member} hiddenTooltip={true} size={'md'} showName={true} />
+							<AvatarUserShort id={member} key={member} showName={true} />
 						</div>
 					))}
 				</div>
@@ -322,17 +323,12 @@ const ItemInfor = ({
 				</div>
 				<div className="flex-1 flex " onClick={handleShowAllMemberList}>
 					{privateChannel || isThread ? (
-						<Avatar.Group className={`flex flex-1 items-center gap-3 ${isThread ? '-ml-8' : ''}`}>
+						<AvatarGroup>
 							{userIds.slice(0, 3).map((member) => (
-								<AvatarUserShort id={member} key={member} hiddenTooltip={true} />
+								<AvatarUserShort id={member} key={member} />
 							))}
-							{userIds.length > 3 && (
-								<Avatar.Counter
-									total={userIds.length - 3}
-									className="h-4 w-6 dark:text-textPrimary text-textPrimaryLight ring-transparent dark:bg-bgTertiary bg-bgLightTertiary dark:hover:bg-bgTertiary hover:bg-bgLightTertiary"
-								/>
-							)}
-						</Avatar.Group>
+							{userIds.length > 3 && <AvatarCount number={userIds.length - 3} />}
+						</AvatarGroup>
 					) : (
 						<p className={`italic text-xs ${isThread ? '-ml-8' : ''}`}>(All Members)</p>
 					)}
@@ -362,17 +358,7 @@ const ItemInfor = ({
 	);
 };
 export default ListChannelSetting;
-export const AvatarUserShort = ({
-	id,
-	hiddenTooltip = false,
-	size = 'xs',
-	showName = false
-}: {
-	id: string;
-	hiddenTooltip?: boolean;
-	size?: keyof AvatarSizes;
-	showName?: boolean;
-}) => {
+export const AvatarUserShort = ({ id, showName = false }: { id: string; showName?: boolean }) => {
 	const member = useAppSelector((state) => selectMemberClanByUserId2(state, id));
 	const voiceClan = useAppSelector((state) => selectMemberClanByGoogleId(state, id ?? ''));
 	const clanAvatar = voiceClan?.clan_avatar || member?.clan_avatar;

@@ -285,6 +285,7 @@ export const canvasAPIActions = {
 export const getCanvasApiState = (rootState: { [CANVAS_API_FEATURE_KEY]: CanvasAPIState }): CanvasAPIState => rootState[CANVAS_API_FEATURE_KEY];
 
 export const getChannelIdCanvasAsSecondParam = (_: unknown, channelId: string) => channelId;
+export const getChannelIdCanvasAsParrent = (_: unknown, __: unknown, parrentChannelId?: string) => parrentChannelId;
 
 export const selectAllCanvas = createSelector(getCanvasApiState, (canvasState) => {
 	const res: CanvasAPIEntity[] = [];
@@ -294,13 +295,21 @@ export const selectAllCanvas = createSelector(getCanvasApiState, (canvasState) =
 	return res;
 });
 
-export const selectCanvasIdsByChannelId = createSelector([getCanvasApiState, getChannelIdCanvasAsSecondParam], (state, channelId) => {
-	const entities = state?.channelCanvas[channelId]?.entities || {};
-	return Object.values(entities).map((entity) => ({
-		...entity,
-		title: entity.title || 'Untitled'
-	}));
-});
+export const selectCanvasIdsByChannelId = createSelector(
+	[getCanvasApiState, getChannelIdCanvasAsSecondParam, getChannelIdCanvasAsParrent],
+	(state, channelId, parrentChannelId) => {
+		const canvastCurrent = state?.channelCanvas[channelId]?.entities || {};
+		let wrapCanvast = { ...canvastCurrent };
+		if (parrentChannelId) {
+			const canvasParrent = state?.channelCanvas[parrentChannelId]?.entities || {};
+			wrapCanvast = { ...wrapCanvast, ...canvasParrent };
+		}
+		return Object.values(wrapCanvast).map((entity) => ({
+			...entity,
+			title: entity.title || 'Untitled'
+		}));
+	}
+);
 
 export const selectCanvasEntityById = createSelector(
 	[getCanvasApiState, getChannelIdCanvasAsSecondParam, (_, __, canvasId) => canvasId],

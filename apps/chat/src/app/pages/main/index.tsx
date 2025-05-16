@@ -505,16 +505,16 @@ const ClansList = memo(() => {
 		<div className="flex flex-col gap-3 relative">
 			{items.map((id) => {
 				const clan = clans.find((c) => c.id === id)!;
-				const draggingThis = isDragging && draggedItem === clan.id;
+				const draggingThis = isDragging && draggedItem === clan?.id;
 
 				return (
 					<div
-						key={clan.id}
+						key={clan?.id}
 						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'}`}
-						onMouseEnter={() => handleMouseEnter(clan.id)}
-						onMouseDown={(e) => handleMouseDown(e, clan.id)}
+						onMouseEnter={() => handleMouseEnter(clan?.id)}
+						onMouseDown={(e) => handleMouseDown(e, clan?.id)}
 					>
-						<SidebarClanItem option={clan} active={isActive(clan.id)} className={`${draggingThis ? 'opacity-0' : ''}`} />
+						<SidebarClanItem option={clan} active={isActive(clan?.id)} className={`${draggingThis ? 'opacity-0' : ''}`} />
 					</div>
 				);
 			})}

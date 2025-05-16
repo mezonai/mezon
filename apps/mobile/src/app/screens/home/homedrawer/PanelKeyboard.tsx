@@ -1,4 +1,4 @@
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -114,7 +114,9 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 							messageActionNeedToResolve={messageActionNeedToResolve}
 						/>
 					) : typeKeyboardBottomSheet === 'attachment' ? (
-						<AttachmentPicker currentChannelId={props?.currentChannelId} currentClanId={props?.currentClanId} onCancel={onClose} />
+						<BottomSheetScrollView stickyHeaderIndices={[0]}>
+							<AttachmentPicker currentChannelId={props?.currentChannelId} currentClanId={props?.currentClanId} onCancel={onClose} />
+						</BottomSheetScrollView>
 					) : (
 						<View />
 					)}

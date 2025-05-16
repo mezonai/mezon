@@ -17,8 +17,6 @@ export const style = (colors: Attributes) =>
 			borderRadius: 50
 		},
 		selected: {
-			flex: 1,
-			flexBasis: 100,
 			borderRadius: 50,
 			paddingHorizontal: 20,
 			paddingVertical: 6

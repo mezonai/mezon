@@ -2,11 +2,13 @@ import { useEventManagement } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { EventManagementEntity } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
 import MezonMenu, { IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import styles from './styles';
 
 interface IEventMenuProps {
@@ -16,6 +18,7 @@ interface IEventMenuProps {
 export function EventMenu({ event }: IEventMenuProps) {
 	const { t } = useTranslation(['eventMenu']);
 	const { deleteEventManagement } = useEventManagement();
+	const navigation = useNavigation<any>();
 
 	const menu: IMezonMenuSectionProps[] = [
 		{
@@ -32,10 +35,21 @@ export function EventMenu({ event }: IEventMenuProps) {
 				// 	title: t('menu.markAsInterested'),
 				// 	onPress: () => reserve(),
 				// },
-				// {
-				// 	title: t('menu.editEvent'),
-				// 	onPress: () => reserve(),
-				// },
+				{
+					title: t('menu.editEvent'),
+					onPress: async () => {
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+						navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
+							screen: APP_SCREEN.MENU_CLAN.CREATE_EVENT,
+							params: {
+								onGoBack: () => {
+									DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+								},
+								eventId: event?.id
+							}
+						});
+					}
+				},
 				{
 					title: t('menu.cancelEvent'),
 					onPress: async () => {

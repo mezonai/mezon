@@ -64,5 +64,9 @@ export const style = (colors: Attributes) =>
 			color: baseColor.white,
 			fontSize: Fonts.size.h9,
 			lineHeight: Fonts.size.h8
+		},
+		cover: {
+			height: size.s_80,
+			width: '100%'
 		}
 	});

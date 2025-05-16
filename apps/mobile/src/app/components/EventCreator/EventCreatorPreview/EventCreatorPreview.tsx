@@ -1,9 +1,9 @@
 import { useAuth, useClans, useEventManagement } from '@mezon/core';
 import { Fonts, useTheme } from '@mezon/mobile-ui';
+import { eventManagementActions, useAppDispatch } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
-import { Platform, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -19,7 +19,9 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 	const myUser = useAuth();
 	const { createEventManagement } = useEventManagement();
 	const { currentClanId } = useClans();
-	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, isPrivate, onGoBack } = route.params || {};
+	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, isPrivate, logo, onGoBack, currentEvent } =
+		route.params || {};
+	const dispatch = useAppDispatch();
 
 	navigation.setOptions({
 		headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
@@ -48,19 +50,23 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 	async function handleCreate() {
 		const timeValueStart = startTime.toISOString();
 		const timeValueEnd = endTime.toISOString();
-		if (type === OptionEvent.OPTION_SPEAKER) {
-			await createEventManagement(
-				currentClanId || '',
-				channelId,
-				location,
-				title,
-				timeValueStart,
-				timeValueStart,
-				description,
-				'',
-				eventChannelId,
-				frequency,
-				isPrivate
+		if (currentEvent) {
+			await dispatch(
+				eventManagementActions.updateEventManagement({
+					event_id: currentEvent?.id,
+					start_time: timeValueStart,
+					end_time: timeValueEnd,
+					channel_voice_id: channelId,
+					address: location,
+					creator_id: myUser.userId,
+					title: title,
+					description: description,
+					channel_id: eventChannelId,
+					logo: logo,
+					channel_id_old: currentEvent?.channel_id,
+					repeat_type: frequency,
+					clan_id: currentEvent?.clan_id
+				})
 			);
 		} else {
 			await createEventManagement(
@@ -71,7 +77,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				timeValueStart,
 				timeValueEnd,
 				description,
-				'',
+				logo,
 				eventChannelId,
 				frequency,
 				isPrivate
@@ -95,7 +101,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 						title: title,
 						description: description,
 						channel_id: eventChannelId,
-						isPrivate: isPrivate
+						is_private: isPrivate
 					}}
 					showActions={false}
 					start={startTime.toISOString()}
@@ -113,7 +119,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 
 			<View style={styles.btnWrapper}>
 				<MezonButton
-					title={t('actions.create')}
+					title={currentEvent ? t('actions.edit') : t('actions.create')}
 					titleStyle={styles.titleMezonBtn}
 					type={EMezonButtonTheme.SUCCESS}
 					containerStyle={styles.mezonBtn}

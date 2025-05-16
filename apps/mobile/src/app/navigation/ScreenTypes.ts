@@ -1,5 +1,5 @@
 import { ETypeSearch, ICategoryChannelOption } from '@mezon/mobile-components';
-import { ChannelsEntity, DirectEntity, NotiChannelCategorySettingEntity } from '@mezon/store-mobile';
+import { ChannelsEntity, DirectEntity, EventManagementEntity, NotiChannelCategorySettingEntity } from '@mezon/store-mobile';
 import { ChannelThreads, ICategoryChannel, IChannel, IMessageWithUser, OptionEvent } from '@mezon/utils';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -210,6 +210,7 @@ type MenuClanStackParamList = {
 	};
 	[APP_SCREEN.MENU_CLAN.CREATE_EVENT]: {
 		onGoBack?: () => void;
+		eventId?: string;
 	};
 	[APP_SCREEN.MENU_CLAN.CREATE_EVENT_DETAILS]: {
 		type: OptionEvent;
@@ -218,6 +219,7 @@ type MenuClanStackParamList = {
 		eventChannelId: string;
 		isPrivate?: boolean;
 		onGoBack?: () => void;
+		currentEvent?: EventManagementEntity;
 	};
 	[APP_SCREEN.MENU_CLAN.CREATE_EVENT_PREVIEW]: {
 		type: OptionEvent;
@@ -230,7 +232,9 @@ type MenuClanStackParamList = {
 		frequency: number;
 		eventChannelId: string;
 		isPrivate?: boolean;
+		logo?: string;
 		onGoBack?: () => void;
+		currentEvent?: EventManagementEntity;
 	};
 	[APP_SCREEN.MENU_CLAN.SETTINGS]: { inviteRef: React.MutableRefObject<any> };
 	[APP_SCREEN.MENU_CLAN.OVERVIEW_SETTING]: undefined;

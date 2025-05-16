@@ -79,20 +79,23 @@
         "description": {
             "title": "Description",
             "description": "Tell people a little more about your event. Markdown, new lines, and links are supported."
-        }
+        },
+        "cover": "Image cover"
     },
     "actions": {
         "next": "Next",
-        "create": "Create Event"
+        "create": "Create Event",
+        "edit": "Update Event"
     },
     "notify": {
         "locationBlank": "A location is required",
         "titleBlank": "An event topic is required",
-        "time": "Invalid start time or end time"
+        "time": "Invalid start time or end time",
+        "type": "Event type is required"
     },
     "eventDetail": {
         "eventIsTaking": "Event is taking place!",
         "tenMinutesLeft": "10 minutes left. Join in!"
     },
-    "selectUser": "Select user to transfer"
+    "selectUser": "Select channel to create event"
 }

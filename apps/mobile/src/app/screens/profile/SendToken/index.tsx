@@ -411,7 +411,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 					<ViewShot
 						ref={viewToSnapshotRef}
 						options={{ fileName: 'send_money_success_mobile', format: 'png', quality: 1 }}
-						style={{ width: '100%', height: '100%' }}
+						style={{ flex: 1 }}
 					>
 						<View style={styles.fullscreenModal}>
 							<View style={styles.modalHeader}>

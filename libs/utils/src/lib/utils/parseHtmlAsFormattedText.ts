@@ -89,14 +89,15 @@ export function parseHtmlAsFormattedText(html: string): ApiFormattedText {
 	fragment.innerHTML = parseMarkdown(escapeHtml(parseMarkdownLinks(html)));
 
 	fixImageContent(fragment);
-	const text = fragment.innerText;
-	const trimShift = fragment.innerText.indexOf(text[0]);
+	const text = fragment.innerText.replace(/___#new_line___/g, '\n');
+	const trimShift = text.indexOf(text[0]);
 	let textIndex = -trimShift;
 	let recursionDeepness = 0;
 	const entities: ApiMessageEntity[] = [];
 
 	function addEntity(node: ChildNode) {
 		if (node.nodeType === Node.COMMENT_NODE) return;
+		node.textContent = node.textContent?.replace(/___#new_line___/g, '\n') || '';
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
 
 		if (entity) {
@@ -158,8 +159,12 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
 	// Pre
-	parsedHtml = parsedHtml.replace(/^`{3}[\n\r]?(.*?)[\n\r]?`{3}/gms, '<pre>$1</pre>');
-	parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
+	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, function (match, p1) {
+		return '<pre>' + p1.replace(/\n/g, '___#new_line___') + '</pre>';
+	});
+
+	// parsedHtml = parsedHtml.replace(/^`{3}[\n\r]?(.*?)[\n\r]?`{3}/gms, '<pre>$1</pre>');
+	// parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
 
 	// Code
 	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(code|pre)>)/g, '<code>$2</code>');
@@ -177,6 +182,7 @@ function parseMarkdownLinks(html: string) {
 	const parts = html.split(/(`{1,3})/);
 	let isInCode = false;
 	let result = '';
+
 	for (let i = 0; i < parts.length; i++) {
 		const part = parts[i];
 		if (part.match(/^`{1,3}$/)) {

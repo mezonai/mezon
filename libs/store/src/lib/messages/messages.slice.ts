@@ -424,11 +424,11 @@ export const loadMoreMessage = createAsyncThunk(
 
 			if (direction === Direction_Mode.BEFORE_TIMESTAMP) {
 				const lastScrollMessageId = selectLastLoadMessageIDByChannelId(chlId)(getMessagesRootState(thunkAPI));
-				const firstChannelMessageId = selectFirstMessageIdByChannelId(chlId)(getMessagesRootState(thunkAPI));
+				// const firstChannelMessageId = selectFirstMessageIdByChannelId(chlId)(getMessagesRootState(thunkAPI));
 
-				if (!lastScrollMessageId || lastScrollMessageId === firstChannelMessageId) {
-					return;
-				}
+				// if (!lastScrollMessageId || lastScrollMessageId === firstChannelMessageId) {
+				// 	return;
+				// }
 
 				if (topicId) {
 					return await thunkAPI.dispatch(
@@ -1252,8 +1252,6 @@ export const messagesSlice = createSlice({
 
 					direction = direction || Direction_Mode.BEFORE_TIMESTAMP;
 
-					// const reversedMessages = action.payload.messages.reverse();
-
 					// remove all messages if ís fetching latest messages and is viewing older messages
 					if (toPresent) {
 						handleRemoveManyMessages(state, channelId);
@@ -1277,16 +1275,22 @@ export const messagesSlice = createSlice({
 					} else {
 						const oldViewport = state.channelViewPortMessageIds[channelId] || [];
 						const offsetId = action.meta.arg.messageId;
-
 						let newViewportIds: string[] = [];
-
 						if (!offsetId) {
-							const messageId = oldViewport?.at(-1);
-							const index = messageIds.findIndex((item) => item === messageId);
 							if (state.isViewingOlderMessagesByChannelId[channelId] && oldViewport.length) {
 								return;
 							} else if (oldViewport.length) {
-								newViewportIds = [...oldViewport, ...messageIds.slice(index)];
+								const apiMessageIds = [...action.payload.messages].map((msg) => msg.id);
+								const newMessageIds = apiMessageIds.filter((id) => !oldViewport.includes(id));
+								const combinedViewport = [...oldViewport, ...newMessageIds];
+								newViewportIds = combinedViewport.sort((a, b) => {
+									const aEntity = state.channelMessages[channelId].entities[a];
+									const bEntity = state.channelMessages[channelId].entities[b];
+									if (aEntity && bEntity && aEntity?.create_time_seconds && bEntity?.create_time_seconds) {
+										return +aEntity.create_time_seconds - +bEntity.create_time_seconds;
+									}
+									return 0;
+								});
 							} else {
 								newViewportIds = messageIds;
 							}

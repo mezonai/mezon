@@ -43,8 +43,17 @@ function TextTab({ selected, title, onPress }: TextTabProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	return (
-		<View style={{ flex: 1 }}>
-			<TouchableOpacity onPress={onPress} style={{ backgroundColor: selected ? Colors.bgViolet : 'transparent', ...styles.selected }}>
+		<View style={{ flex: 1, height: size.s_30 }}>
+			<TouchableOpacity
+				onPress={onPress}
+				style={{
+					backgroundColor: selected ? Colors.bgViolet : 'transparent',
+					...styles.selected,
+					alignItems: 'center',
+					justifyContent: 'center',
+					height: '100%'
+				}}
+			>
 				<Text style={{ color: selected ? Colors.white : Colors.gray72, fontSize: Fonts.size.small, textAlign: 'center' }}>{title}</Text>
 			</TouchableOpacity>
 		</View>
@@ -215,7 +224,6 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 
 				{mode === 'emoji' ? (
 					<EmojiSelector
-						onScroll={onScroll}
 						handleBottomSheetExpand={handleBottomSheetExpand}
 						handleBottomSheetCollapse={handleBottomSheetCollapse}
 						onSelected={onSelectEmoji}

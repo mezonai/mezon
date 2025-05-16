@@ -18,7 +18,8 @@ const getMezonConfig = (): CreateMezonClientOptions => {
 		const storedConfig = localStorage.getItem('mezon_session');
 		if (storedConfig) {
 			const parsedConfig = JSON.parse(storedConfig);
-			if (parsedConfig.host && parsedConfig.port) {
+			if (parsedConfig.host) {
+				parsedConfig.port = parsedConfig.port || (process.env.NX_CHAT_APP_API_PORT as string);
 				parsedConfig.key = process.env.NX_CHAT_APP_API_KEY as string;
 				return parsedConfig;
 			}

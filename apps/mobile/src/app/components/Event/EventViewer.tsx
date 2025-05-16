@@ -74,11 +74,9 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 				<View style={[styles.section, styles.sectionRight]}></View>
 				<Text style={[styles.section, styles.sectionTitle]}>{`${listEventToShow?.length} ${t('dashboard.title')}`}</Text>
 				<View style={[styles.section, styles.sectionRight]}>
-					{isCanManageEvent && (
-						<TouchableOpacity onPress={handlePressEventCreate}>
-							<Text style={[styles.emptyText, { color: baseColor.blurple, fontWeight: 'bold' }]}>{t('dashboard.createButton')}</Text>
-						</TouchableOpacity>
-					)}
+					<TouchableOpacity onPress={handlePressEventCreate}>
+						<Text style={[styles.emptyText, { color: baseColor.blurple, fontWeight: 'bold' }]}>{t('dashboard.createButton')}</Text>
+					</TouchableOpacity>
 				</View>
 			</View>
 			{listEventToShow?.length > 0 ? (

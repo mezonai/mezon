@@ -69,27 +69,26 @@ export const MyQRCode = () => {
 					</Text>
 				</View>
 			</View>
-			{urlQRCode ? (
-				isTabletLandscape ? (
-					<View
-						style={{
-							height: size.s_100 * 3.6,
-							width: size.s_100 * 3.6,
-							backgroundColor: 'white',
-							alignSelf: 'center',
-							justifyContent: 'center',
-							marginVertical: size.s_40
-						}}
-					>
-						<FastImage source={{ uri: urlQRCode }} style={styles.imageQR} />
-					</View>
-				) : (
-					<FastImage source={{ uri: urlQRCode }} style={styles.imageQR} />
-				)
-			) : (
+			{!urlQRCode && (
 				<View style={{ height: size.s_100 * 2.5, alignItems: 'center', justifyContent: 'center' }}>
 					<Grid color={themeValue.text} size={size.s_50} />
 				</View>
+			)}
+			{isTabletLandscape ? (
+				<View
+					style={{
+						height: size.s_100 * 3.6,
+						width: size.s_100 * 3.6,
+						backgroundColor: 'white',
+						alignSelf: 'center',
+						justifyContent: 'center',
+						marginVertical: size.s_40
+					}}
+				>
+					<FastImage source={{ uri: urlQRCode || '' }} style={styles.imageQR} />
+				</View>
+			) : (
+				<FastImage source={{ uri: urlQRCode || '' }} style={styles.imageQR} />
 			)}
 			<View
 				style={{

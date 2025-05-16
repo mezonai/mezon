@@ -19,15 +19,15 @@ export type SidebarClanItemProps = {
 
 const SidebarClanItem = ({ option, active, onMouseDown, className = '' }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
-	const badgeCountClan = useSelector(selectBadgeCountByClanId(option.clan_id ?? '')) || 0;
+	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clan_id ?? '')) || 0;
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		const store = getStore();
 		const idsSelectedChannel = safeJSONParse(localStorage.getItem('remember_channel') || '{}');
-		const channelId = idsSelectedChannel[option.id] || option.welcome_channel_id;
-		const link = `/chat/clans/${option.id}${channelId ? `/channels/${channelId}` : ''}`;
+		const channelId = idsSelectedChannel[option?.id] || option?.welcome_channel_id;
+		const link = `/chat/clans/${option?.id}${channelId ? `/channels/${channelId}` : ''}`;
 		const isShowDmProfile = selectIsUseProfileDM(store.getState());
 
 		startTransition(() => {
@@ -60,21 +60,21 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '' }: Sideba
 	};
 
 	return (
-		<div onMouseDown={onMouseDown} onContextMenu={handleMouseClick} data-id={option.id} className={`relative h-[40px] ${className}`}>
+		<div onMouseDown={onMouseDown} onContextMenu={handleMouseClick} data-id={option?.id} className={`relative h-[40px] ${className}`}>
 			<button onClick={handleClick} draggable="false">
 				<NavLinkComponent active={active}>
-					{option.logo ? (
+					{option?.logo ? (
 						<Image
 							draggable="false"
-							src={createImgproxyUrl(option.logo ?? '', { width: 100, height: 100, resizeType: 'fit' }) || ''}
+							src={createImgproxyUrl(option?.logo ?? '', { width: 100, height: 100, resizeType: 'fit' }) || ''}
 							placeholder="blur"
-							blurdataurl={option.logo}
+							blurdataurl={option?.logo}
 							className="w-[40px] h-[40px] object-cover rounded-lg clan"
 						/>
 					) : (
-						option.clan_name && (
+						option?.clan_name && (
 							<div className="w-[40px] h-[40px] dark:bg-bgSecondary bg-bgLightMode rounded-lg flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[20px] clan">
-								{(option.clan_name || '').charAt(0).toUpperCase()}
+								{(option?.clan_name || '').charAt(0).toUpperCase()}
 							</div>
 						)
 					)}

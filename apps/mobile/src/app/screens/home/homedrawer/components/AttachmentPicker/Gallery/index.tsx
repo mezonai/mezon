@@ -3,10 +3,26 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import { MAX_FILE_SIZE } from '@mezon/utils';
-import { CameraRoll, PhotoIdentifier, iosRefreshGallerySelection, iosRequestReadWriteGalleryPermission } from '@react-native-camera-roll/camera-roll';
+import {
+	CameraRoll,
+	PhotoIdentifier,
+	cameraRollEventEmitter,
+	iosRefreshGallerySelection,
+	iosRequestReadWriteGalleryPermission
+} from '@react-native-camera-roll/camera-roll';
 import { iosReadGalleryPermission } from '@react-native-camera-roll/camera-roll/src/CameraRollIOSPermission';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, DeviceEventEmitter, Dimensions, Linking, PermissionsAndroid, Platform, View } from 'react-native';
+import {
+	ActivityIndicator,
+	Alert, AppState,
+	DeviceEventEmitter,
+	Dimensions,
+	EmitterSubscription,
+	Linking,
+	PermissionsAndroid,
+	Platform,
+	View
+} from 'react-native';
 import RNFS from 'react-native-fs';
 import { FlatList } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
@@ -45,6 +61,30 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			timerRef?.current && clearTimeout(timerRef.current);
 		};
 	}, []);
+
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', async (nextAppState) => {
+			if (nextAppState === 'active') {
+				loadPhotos(currentAlbums);
+			}
+		});
+
+		return () => {
+			subscription.remove();
+		};
+	}, [currentAlbums]);
+
+	useEffect(() => {
+		const subscription: EmitterSubscription = cameraRollEventEmitter.addListener('onLibrarySelectionChange', (_event) => {
+			loadPhotos(currentAlbums);
+		});
+
+		return () => {
+			if (subscription) {
+				subscription.remove();
+			}
+		};
+	}, [currentAlbums]);
 
 	const checkAndRequestPermissions = async () => {
 		const hasPermission = await requestPermission();

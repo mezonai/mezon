@@ -5,6 +5,7 @@
     <color name="primary_dark">#000000</color>
     <color name="primary_light">#FFFFFF</color>
     <color name="background">#141C2E</color>
+    <color name="purple">#6A28AE</color>
     <color name="notification_action_accept">#12B76A</color>
     <color name="notification_action_decline">#FF2525</color>
 </resources>

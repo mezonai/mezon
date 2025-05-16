@@ -2,7 +2,7 @@ import { Icons } from '@mezon/ui';
 import { ICategoryChannel } from '@mezon/utils';
 import React, { useState } from 'react';
 import ExitSetting from '../ChannelSetting/exitSetting';
-import { categorySettingItem, categorySettingList, ItemObjProps } from '../ClanSettings/ItemObj';
+import { ItemObjProps, categorySettingItem, categorySettingList } from '../ClanSettings/ItemObj';
 import CategorySettingSidebar from './CategorySettingSidebar';
 import OverviewSetting from './OverviewSetting';
 
@@ -13,7 +13,6 @@ interface ICategorySettingProps {
 
 export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, category }) => {
 	const [menu, setMenu] = useState(true);
-	const [isShowDeletePopup, setIsShowDeletePopup] = useState<boolean>(false);
 	const [currentSetting, setCurrentSetting] = useState<ItemObjProps>(categorySettingList[0]);
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
@@ -46,7 +45,6 @@ export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, cate
 						onClickItem={handleSettingItemClick}
 						handleMenu={(value: boolean) => setMenu(value)}
 						currentSetting={currentSetting}
-						setIsShowDeletePopup={() => setIsShowDeletePopup(true)}
 						category={category}
 					/>
 				</div>

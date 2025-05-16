@@ -229,8 +229,6 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			if (response?.token) {
 				setVisibleToken(response.token);
 			}
-
-			await dispatch(fetchApplications({ noCache: true }));
 		} catch (error) {
 			console.error('Failed to reset token:', error);
 		}

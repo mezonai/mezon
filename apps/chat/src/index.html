@@ -105,8 +105,11 @@
       const clanData = localStorage.getItem('persist:clans');
       const categoriesData = localStorage.getItem('persist:categories');
       const rememberChannelData = localStorage.getItem('remember_channel');
+      const mezonSession = localStorage.getItem('mezon_session');
+
       localStorage.clear();
 
+      mezonSession && localStorage.setItem('mezon_session', mezonSession);
       authData && localStorage.setItem('persist:auth', authData);
       appData && localStorage.setItem('persist:apps', appData);
       clanData && localStorage.setItem('persist:clans', clanData);

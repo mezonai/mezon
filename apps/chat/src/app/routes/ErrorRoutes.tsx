@@ -8,7 +8,7 @@ const ErrorRoutes = () => {
 	console.error(error);
 
 	const handleClick = () => {
-		restoreLocalStorage(['persist:auth', 'persist:apps', 'persist:categories', 'persist:clans']);
+		restoreLocalStorage(['persist:auth', 'mezon_session', 'persist:apps', 'persist:categories', 'persist:clans']);
 
 		if (isElectron()) {
 			window.location.href = window.location.pathname;

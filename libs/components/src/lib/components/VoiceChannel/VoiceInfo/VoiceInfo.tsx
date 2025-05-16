@@ -74,8 +74,7 @@ const VoiceInfo = React.memo(() => {
 	}, [showMicrophone]);
 
 	const handleCopyVoiceLink = useCallback(() => {
-		const urlHost = window.location.host;
-		const linkVoice = `${urlHost}/chat/clans/${currentVoiceInfo?.clanId}/channels/${currentVoiceInfo?.channelId}`;
+		const linkVoice = `${process.env.NX_DOMAIN_URL}/chat/clans/${currentVoiceInfo?.clanId}/channels/${currentVoiceInfo?.channelId}`;
 		handleCopyLink(linkVoice);
 	}, []);
 	return (

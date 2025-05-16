@@ -79,20 +79,23 @@
         "description": {
             "title": "Mô tả",
             "description": "Hãy cho mọi người biết thêm một chút về sự kiện của bạn."
-        }
+        },
+        "cover": "Ảnh bìa"
     },
     "actions": {
         "next": "Tiếp theo",
-        "create": "Tạo sự kiện"
+        "create": "Tạo sự kiện",
+        "edit": "Cập nhật sự kiện"
     },
     "notify": {
         "locationBlank": "Cần có một địa điểm",
         "titleBlank": "Cần có một chủ đề cho sự kiện",
-        "time": "Thời gian bắt đầu hoặc kết thúc không hợp lệ"
+        "time": "Thời gian bắt đầu hoặc kết thúc không hợp lệ",
+        "type": "Cần chọn loại sự kiện cần tổ chức"
     },
     "eventDetail": {
         "eventIsTaking": "Sự kiện đang diễn ra!",
         "tenMinutesLeft": "Còn 10 phút. Tham gia ngay!"
     },
-    "selectUser": "Chọn người dùng để chuyển khoản"
+    "selectUser": "Chọn channel để tạo sự kiện"
 }

@@ -30,11 +30,16 @@ const ClanSetting = (props: ModalSettingProps) => {
 		return listItemSetting.find((item) => item.id === currentSettingId);
 	}, [currentSettingId]);
 
+	const dispatch = useAppDispatch();
+	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
+
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
 		setCurrentSettingId(settingItem.id);
+		if (settingItem.id === ItemSetting.INTEGRATIONS && canManageClan) {
+			dispatch(fetchWebhooks({ channelId: '0', clanId: currentClanId }));
+			dispatch(fetchClanWebhooks({ clanId: currentClanId }));
+		}
 	};
-
-	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 
 	const [menu, setMenu] = useState(true);
 	const closeMenu = useSelector(selectCloseMenu);
@@ -64,13 +69,6 @@ const ClanSetting = (props: ModalSettingProps) => {
 				return <SettingOnBoarding onClose={onClose} />;
 		}
 	};
-	const dispatch = useAppDispatch();
-	useEffect(() => {
-		if (canManageClan) {
-			dispatch(fetchWebhooks({ channelId: '0', clanId: currentClanId }));
-			dispatch(fetchClanWebhooks({ clanId: currentClanId }));
-		}
-	}, [canManageClan, currentClanId, dispatch]);
 
 	useEffect(() => {
 		if (currentSettingId === ItemSetting.DELETE_SERVER) {

@@ -1,6 +1,6 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -39,8 +39,13 @@ export function EventLocation({ event }: IEventLocation) {
 		<View style={styles.container}>
 			{option === OptionEvent.OPTION_SPEAKER && (
 				<TouchableOpacity style={styles.inline} onPress={joinVoiceChannel}>
-					<MezonIconCDN icon={IconCDN.channelVoice} height={16} width={16} color={themeValue.textStrong} />
-					<Text style={styles.smallText}>{channelVoice?.channel_label || event?.meet_room?.room_name}</Text>
+					<MezonIconCDN
+						icon={event.is_private ? IconCDN.channelVoiceLock : IconCDN.channelVoice}
+						height={size.s_16}
+						width={size.s_16}
+						color={themeValue.textStrong}
+					/>
+					<Text style={styles.smallText}>{channelVoice?.channel_label || 'Private Room'}</Text>
 				</TouchableOpacity>
 			)}
 

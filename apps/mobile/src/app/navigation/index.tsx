@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react-native';
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
 // import codePush from 'react-native-code-push';
+import { load, STORAGE_SESSION_KEY } from '@mezon/mobile-components';
 import 'react-native-svg';
 import RootNavigation from './RootNavigator';
 
@@ -16,18 +17,29 @@ Sentry.init({
 	integrations: [reactNavigationIntegration]
 });
 
-// const codePushOptions = {
-// 	checkFrequency: codePush.CheckFrequency.MANUAL,
-// 	installMode: codePush.InstallMode.IMMEDIATE,
-// 	mandatoryInstallMode: codePush.InstallMode.IMMEDIATE
-// };
+const getMezonConfig = (): CreateMezonClientOptions => {
+	try {
+		const storedConfig = load(STORAGE_SESSION_KEY);
+		if (storedConfig) {
+			const parsedConfig = JSON.parse(storedConfig);
+			if (parsedConfig.host && parsedConfig.port) {
+				parsedConfig.key = process.env.NX_CHAT_APP_API_KEY as string;
+				return parsedConfig;
+			}
+		}
+	} catch (error) {
+		console.error('Failed to get Mezon config from localStorage:', error);
+	}
 
-const mezon: CreateMezonClientOptions = {
-	host: process.env.NX_CHAT_APP_API_HOST as string,
-	key: process.env.NX_CHAT_APP_API_KEY as string,
-	port: process.env.NX_CHAT_APP_API_PORT as string,
-	ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
+	return {
+		host: process.env.NX_CHAT_APP_API_GW_HOST as string,
+		port: process.env.NX_CHAT_APP_API_GW_PORT as string,
+		key: process.env.NX_CHAT_APP_API_KEY as string,
+		ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
+	};
 };
+
+const mezon = getMezonConfig();
 
 const App = (props) => {
 	return (

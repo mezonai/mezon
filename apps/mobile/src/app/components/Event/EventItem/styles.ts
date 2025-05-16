@@ -59,8 +59,16 @@ export const style = (colors: Attributes) =>
 			marginBottom: Metrics.size.m
 		},
 
-		privateArea: {
-			marginBottom: size.s_16
+		mainArea: {
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			marginBottom: size.s_10
+		},
+
+		eventLogo: {
+			height: '100%',
+			width: '30%'
 		},
 
 		privatePanel: {
@@ -69,8 +77,7 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			padding: size.s_2,
 			borderRadius: size.s_2,
-			paddingHorizontal: size.s_2,
-			position: 'absolute'
+			alignSelf: 'flex-start'
 		},
 
 		privateText: {

@@ -14,12 +14,12 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelMembersEntity, IChannel, IChannelMember, convertTimeMessage } from '@mezon/utils';
-import { Avatar } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
 import { MutableRefObject, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import AvatarGroup, { AvatarCount, AvatarRound } from '../../../../Avatar/AvatarGroup';
 import { Coords } from '../../../../ChannelLink';
 import SettingChannel from '../../../../ChannelSetting';
 import { useMessageSender } from '../../../../MessageWithUser/useMessageSender';
@@ -158,13 +158,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 				<div className="flex flex-col gap-1">
 					<p className="text-base font-semibold leading-5 dark:text-white text-black one-line">{thread?.channel_label}</p>
 					<div className="flex flex-row items-center h-6">
-						<Avatar
-							img={user?.clan_avatar ?? avatarImg}
-							rounded
-							size={'xs'}
-							theme={{ root: { size: { xs: 'w-4 h-4' } } }}
-							className="mr-2"
-						/>
+						<AvatarRound src={user?.clan_avatar ?? avatarImg} className="mr-2 h-4" />
 						<span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[#17AC86] text-sm font-semibold leading-4">
 							{user?.clan_nick ?? user?.user?.display_name ?? username}:&nbsp;
 						</span>
@@ -180,7 +174,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 				</div>
 				<div className="w-[120px]">
 					{threadMembers && (
-						<Avatar.Group className="flex gap-3 justify-end items-center">
+						<AvatarGroup className="flex gap-3 justify-end items-center">
 							{previewAvatarList?.map((avatar, index) => (
 								<img
 									key={(avatar.clan_avatar || avatar.user?.avatar_url || avatar.id) + index}
@@ -190,12 +184,9 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 								/>
 							))}
 							{threadMembers && threadMembers.length > 5 && (
-								<Avatar.Counter
-									total={threadMembers?.length - 5 > 50 ? 50 : threadMembers?.length - 5}
-									className="h-4 w-6 dark:text-bgLightPrimary text-bgPrimary ring-transparent dark:bg-bgTertiary bg-bgLightTertiary dark:hover:bg-bgTertiary hover:bg-bgLightTertiary"
-								/>
+								<AvatarCount number={threadMembers?.length - 5 > 50 ? 50 : threadMembers?.length - 5} />
 							)}
-						</Avatar.Group>
+						</AvatarGroup>
 					)}
 				</div>
 			</div>

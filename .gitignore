@@ -44,6 +44,7 @@ Thumbs.db
 # Contentlayer
 .contentlayer
 
+# env local
 .env.local
 
 # React Native

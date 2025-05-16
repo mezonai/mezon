@@ -11,17 +11,10 @@ interface ICategorySettingSidebarProps {
 	onClickItem: (settingItem: ItemObjProps) => void;
 	handleMenu: (value: boolean) => void;
 	currentSetting: ItemObjProps;
-	setIsShowDeletePopup: () => void;
 	category: ICategoryChannel;
 }
 
-const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
-	onClickItem,
-	handleMenu,
-	setIsShowDeletePopup,
-	currentSetting,
-	category
-}) => {
+const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({ onClickItem, handleMenu, currentSetting, category }) => {
 	const [showModal, setShowModal] = useState(false);
 	const { handleDeleteCategory } = useCategory();
 	const currenChannel = useSelector(selectCurrentChannel);

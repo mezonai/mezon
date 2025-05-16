@@ -1,4 +1,3 @@
-import { Avatar } from 'flowbite-react';
 import React, { memo, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -17,6 +16,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { ChannelThreads } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
+import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
 import { ChannelLink, ChannelLinkRef } from '../../ChannelLink';
 import { AvatarUserShort } from '../../ClanSettings/SettingChannel';
 import UserListVoiceChannel from '../../UserListVoiceChannel';
@@ -102,7 +102,12 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 			channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
 			channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 			channel.type !== ChannelType.CHANNEL_TYPE_APP &&
-			(isCategoryExpanded || isUnreadChannel || hasUnread || currentChannel?.id === channel.id || currentChannel?.parent_id === channel.id)
+			(isCategoryExpanded ||
+				isUnreadChannel ||
+				hasUnread ||
+				currentChannel?.id === channel.id ||
+				currentChannel?.parent_id === channel.id ||
+				channel?.count_mess_unread)
 		) {
 			return (
 				<div className={'pt-1'}>
@@ -161,16 +166,13 @@ interface ICollapsedMemberListProps {
 
 const CollapsedMemberList = ({ channelMemberList, isPttList }: ICollapsedMemberListProps) => {
 	return (
-		<Avatar.Group className={`flex gap-3 justify-start items-center ${isPttList ? 'pr-6' : 'px-6'}`}>
+		<AvatarGroup className={`${isPttList ? 'pr-6' : 'px-6'}`}>
 			{[...channelMemberList].slice(0, 5).map((member, index) => (
 				<AvatarUserShort id={member.user_id || ''} key={(member.user_id || '') + index} />
 			))}
 			{channelMemberList && channelMemberList.length > 5 && (
-				<Avatar.Counter
-					total={channelMemberList?.length - 5 > 50 ? 50 : channelMemberList?.length - 5}
-					className="h-6 w-6 dark:text-bgLightPrimary text-bgPrimary ring-transparent dark:bg-bgTertiary bg-bgLightTertiary dark:hover:bg-bgTertiary hover:bg-bgLightTertiary"
-				/>
+				<AvatarCount number={channelMemberList?.length - 5 > 50 ? 50 : channelMemberList?.length - 5} />
 			)}
-		</Avatar.Group>
+		</AvatarGroup>
 	);
 };

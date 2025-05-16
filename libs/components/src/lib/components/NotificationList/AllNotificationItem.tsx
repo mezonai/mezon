@@ -159,31 +159,29 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 					src={priorityAvatar ? priorityAvatar : message.avatar || user?.user?.avatar_url}
 				/>
 
-				<div className="h-full w-full">
-					<div>
-						<div className="flex flex-col gap-[2px] text-[12px] font-bold uppercase">
-							{category === NotificationCategory.MENTIONS ? (
-								clan?.clan_name ? (
-									<>
-										<span className="text-[13px]">
-											{isChannel ? `#${message.channel_label}` : `#${parentChannel.channel_label} > ${message.channel_label}`}
-										</span>
-										<span>
-											{clan.clan_name} {'>'} {isChannel ? `${message.category_name}` : `${parentChannel.category_name}`}
-										</span>
-									</>
-								) : (
-									'direct message'
-								)
-							) : category === NotificationCategory.MESSAGES ? (
-								clan?.clan_name
+				<div className="h-full max-w-[360px]">
+					<div className="flex flex-col gap-[2px] text-[12px] font-bold uppercase">
+						{category === NotificationCategory.MENTIONS ? (
+							clan?.clan_name ? (
+								<>
+									<span className="text-[13px]">
+										{isChannel ? `#${message.channel_label}` : `#${parentChannel.channel_label} > ${message.channel_label}`}
+									</span>
+									<span>
+										{clan.clan_name} {'>'} {isChannel ? `${message.category_name}` : `${parentChannel.category_name}`}
+									</span>
+								</>
 							) : (
-								''
-							)}
-						</div>
+								'direct message'
+							)
+						) : category === NotificationCategory.MESSAGES ? (
+							clan?.clan_name
+						) : (
+							''
+						)}
 					</div>
 					{category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES ? (
-						<div>
+						<div className="w-[85%]">
 							<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 							<MessageLine
 								messageId={message.message_id}

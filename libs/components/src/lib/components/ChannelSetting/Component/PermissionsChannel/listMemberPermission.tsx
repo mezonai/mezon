@@ -42,7 +42,7 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 			const filteredMembers = rawMembers.filter((member) => member.user && member.user.id && props.selectedUserIds.includes(member.user.id));
 			return filteredMembers.map((member) => ({ ...member.user, clanNick: member.clan_nick, clanAvatar: member.clan_avatar }));
 		}
-		const filteredMembers = rawMembers.filter((member) => member.userChannelId !== '0');
+		const filteredMembers = rawMembers.filter((member) => member.userChannelId !== '0' && member.id);
 		return filteredMembers.map((member) => ({ ...member.user, clanNick: member.clan_nick, clanAvatar: member.clan_avatar }));
 	}, [rawMembers]);
 

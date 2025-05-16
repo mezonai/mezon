@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { IconCDN } from '../../constants/icon_cdn';
 import MezonFakeInputBox, { IMezonFakeBoxProps } from '../MezonFakeBox';
@@ -9,15 +9,17 @@ import MezonOption, { IMezonOptionData } from '../MezonOption';
 import { style } from './styles';
 
 type IMezonSelectProps = Omit<IMezonFakeBoxProps, 'onPress' | 'postfixIcon' | 'value'> & {
-	onChange?: (value: number) => void;
+	onChange?: (value: number | string) => void;
 	data: IMezonOptionData;
+	initValue?: number | string;
 };
 
-export default function MezonSelect({ data, onChange, ...props }: IMezonSelectProps) {
+export default function MezonSelect({ data, onChange, initValue, ...props }: IMezonSelectProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [currentValue, setCurrentValue] = useState(data?.[0]?.value || 0);
-	const [currentContent, setCurrentContent] = useState(data?.[0]?.title || 'unknown');
+	const [currentValue, setCurrentValue] = useState(initValue || data?.[0]?.value || 0);
+	const initContent = useMemo(() => data?.find((item) => item?.value === initValue)?.title, [data, initValue]);
+	const [currentContent, setCurrentContent] = useState(initContent || data?.[0]?.title || 'unknown');
 
 	function handleChange(value: number) {
 		setCurrentValue(value);

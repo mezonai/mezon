@@ -11,6 +11,7 @@ import FastImage from 'react-native-fast-image';
 import MezonButton from '../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
+import ImageNative from '../../ImageNative';
 import { EventChannelDetail } from '../EventChannelTitle';
 import { EventLocation } from '../EventLocation';
 import { ShareEventModal } from '../EventShare';
@@ -113,34 +114,30 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 					</View>
 				</View>
 
-				{!!event?.channel_id && event.channel_id !== '0' && !event?.is_private && (
-					<View style={styles.privateArea}>
-						<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
-							<Text style={styles.privateText}>Channel Event</Text>
-						</View>
-					</View>
-				)}
+				<View style={styles.mainArea}>
+					<View style={styles.mainSec}>
+						{!!event?.channel_id && event.channel_id !== '0' && !event?.is_private && (
+							<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
+								<Text style={styles.privateText}>Channel Event</Text>
+							</View>
+						)}
 
-				{event?.is_private && (
-					<View style={styles.privateArea}>
-						<View style={styles.privatePanel}>
-							<Text style={styles.privateText}>Private Event</Text>
-						</View>
-					</View>
-				)}
+						{event?.is_private && (
+							<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
+								<Text style={styles.privateText}>Channel Event</Text>
+							</View>
+						)}
 
-				{!event?.is_private && !event?.channel_id && (
-					<View style={styles.privateArea}>
-						<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
-							<Text style={styles.privateText}>Clan Event</Text>
-						</View>
+						{!event?.is_private && !event?.channel_id && (
+							<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
+								<Text style={styles.privateText}>Clan Event</Text>
+							</View>
+						)}
+						<Text style={{ color: themeValue.textStrong }}>{event.title}</Text>
+						{event.description && <Text style={styles.description}>{event.description}</Text>}
+						<EventLocation event={event} />
 					</View>
-				)}
-
-				<View style={styles.mainSec}>
-					<Text style={{ color: themeValue.textStrong }}>{event.title}</Text>
-					{event.description && <Text style={styles.description}>{event.description}</Text>}
-					<EventLocation event={event} />
+					{event?.logo && <ImageNative url={event?.logo} style={styles.eventLogo} />}
 				</View>
 
 				{showActions && (

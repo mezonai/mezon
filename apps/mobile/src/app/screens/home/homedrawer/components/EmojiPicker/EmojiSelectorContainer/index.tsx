@@ -1,3 +1,4 @@
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useEmojiSuggestionContext } from '@mezon/core';
 import {
 	ActionEmitEvent,
@@ -14,9 +15,9 @@ import {
 import { Colors, Metrics, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import { IEmoji } from '@mezon/utils';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, Platform, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
@@ -29,13 +30,11 @@ type EmojiSelectorContainerProps = {
 	onSelected: (emojiId: string, shortname: string) => void;
 	searchText?: string;
 	isReactMessage?: boolean;
-	onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
 	handleBottomSheetExpand?: () => void;
 	handleBottomSheetCollapse?: () => void;
 };
 
 export default function EmojiSelectorContainer({
-	onScroll,
 	onSelected,
 	isReactMessage = false,
 	handleBottomSheetExpand,
@@ -48,9 +47,10 @@ export default function EmojiSelectorContainer({
 	const [selectedCategory, setSelectedCategory] = useState<string>('');
 	const [emojisSearch, setEmojiSearch] = useState<IEmoji[]>();
 	const [keywordSearch, setKeywordSearch] = useState<string>('');
-	const flatListRef = useRef<FlatList>(null);
+	const flatListRef = useRef(null);
 	const { t } = useTranslation('message');
 	const dispatch = useDispatch();
+
 	const channelId = useMemo(() => {
 		const currentDirectId = selectDmGroupCurrentId(store.getState());
 		const currentChannelId = selectCurrentChannelId(store.getState() as any);
@@ -84,6 +84,7 @@ export default function EmojiSelectorContainer({
 				)
 			: [];
 		return [
+			<MezonIconCDN icon={IconCDN.starIcon} color={themeValue.textStrong} />,
 			<MezonIconCDN icon={IconCDN.clockIcon} color={themeValue.textStrong} />,
 			...clanEmojis,
 			<SmilingFaceIcon height={size.s_24} width={size.s_24} color={themeValue.textStrong} />,
@@ -107,7 +108,7 @@ export default function EmojiSelectorContainer({
 
 	const categoryRefs = useRef(
 		categoriesEmoji.reduce((refs, item) => {
-			refs[item] = { position: 0 };
+			refs[item] = React.createRef<View>();
 			return refs;
 		}, {})
 	);
@@ -146,20 +147,6 @@ export default function EmojiSelectorContainer({
 		[]
 	);
 
-	const handleSelectCategory = useCallback(
-		(categoryName: string) => {
-			setSelectedCategory(categoryName);
-			const index = categoriesWithIcons.findIndex((item) => item.name === categoryName);
-			if (index > 0) {
-				flatListRef.current?.scrollToIndex({
-					index: index + 1,
-					animated: true
-				});
-			}
-		},
-		[categoriesWithIcons]
-	);
-
 	const ListCategoryArea = () => {
 		return (
 			<View style={{ backgroundColor: themeBasic === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>
@@ -174,63 +161,101 @@ export default function EmojiSelectorContainer({
 					/>
 				</View>
 
-				<CategoryList categoriesWithIcons={categoriesWithIcons} selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
+				<CategoryList categoriesWithIcons={categoriesWithIcons} selectedCategory={selectedCategory} />
 			</View>
 		);
 	};
 
 	const data = useMemo(() => {
-		const listCategoryArea = [{ id: 'listCategoryArea' }];
-
-		if (keywordSearch) {
+		if (emojisSearch?.length > 0 && keywordSearch) {
 			return [
-				listCategoryArea,
+				{ id: 'listCategoryArea', name: 'listCategoryArea' },
 				{
-					name: 'searchResults',
-					emojis: emojisSearch || []
+					id: 'haveResults',
+					name: 'Search results',
+					emojis: emojisSearch
+				}
+			];
+		} else if (emojisSearch?.length === 0 && keywordSearch) {
+			return [
+				{ id: 'listCategoryArea', name: 'listCategoryArea' },
+				{
+					id: 'noResult',
+					name: 'Search results',
+					emojis: []
 				}
 			];
 		}
 
-		return [listCategoryArea, ...categoriesWithIcons];
+		return [{ id: 'listCategoryArea', name: 'listCategoryArea' }, ...categoriesWithIcons];
 	}, [emojisSearch, categoriesWithIcons]);
 
-	const renderItem = useCallback(
-		({ item, index }) => {
-			if (index === 0) {
-				return <ListCategoryArea />;
-			} else {
-				return (
-					<View
-					// onLayout={(event) => {
-					// 	if (categoryRefs?.current?.[item?.name]?.position !== undefined) {
-					// 		categoryRefs.current[item.name].position = event.nativeEvent.layout.y;
-					// 	}
-					// }}
-					>
-						<EmojiCategory emojisData={item.emojis} onEmojiSelect={handleEmojiSelect} categoryName={item.name} />
-					</View>
-				);
+	const renderItem = useCallback(({ item, index }) => {
+		if (index === 0) {
+			return <ListCategoryArea />;
+		} else {
+			return (
+				<View ref={categoryRefs?.current?.[item?.name]}>
+					<EmojiCategory emojisData={item.emojis} onEmojiSelect={handleEmojiSelect} categoryName={item.name} />
+				</View>
+			);
+		}
+	}, []);
+
+	const handleSelectCategory = useCallback(
+		(categoryName: string) => {
+			if (!flatListRef.current || !data) return;
+
+			const targetIndex = data.findIndex((item) => item.name === categoryName);
+
+			if (targetIndex !== -1) {
+				try {
+					flatListRef.current?.scrollToIndex({
+						index: targetIndex,
+						animated: true
+					});
+					setSelectedCategory(categoryName);
+				} catch (error) {
+					console.warn('Scroll error:', error);
+				}
 			}
 		},
-		[categoryRefs]
+		[flatListRef, data]
 	);
 
+	useEffect(() => {
+		const scrollToCategoryListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SCROLL_TO_CATEGORY_EMOJI, ({ name }) =>
+			handleSelectCategory(name)
+		);
+
+		return () => {
+			scrollToCategoryListener.remove();
+		};
+	}, [handleSelectCategory]);
+
 	return (
-		<FlatList
+		<BottomSheetFlatList
 			ref={flatListRef}
 			data={data}
 			keyExtractor={(item) => `${item.name}-emoji-panel`}
 			renderItem={renderItem}
-			stickyHeaderIndices={[1]}
-			scrollEventThrottle={16}
+			stickyHeaderIndices={[0]}
 			initialNumToRender={1}
 			maxToRenderPerBatch={1}
 			windowSize={10}
-			removeClippedSubviews={true}
+			removeClippedSubviews={false}
 			disableVirtualization
-			style={{
-				minHeight: Metrics.screenHeight * (Platform.OS === 'ios' ? 1.4 : 1.03)
+			contentContainerStyle={{ minHeight: Metrics.screenHeight * (Platform.OS === 'ios' ? 1.4 : 0.91) }}
+			onScrollToIndexFailed={(info) => {
+				if (info?.highestMeasuredFrameIndex) {
+					const wait = new Promise((resolve) => setTimeout(resolve, 200));
+					if (info.highestMeasuredFrameIndex < info.index) {
+						flatListRef.current?.scrollToIndex({ index: info.highestMeasuredFrameIndex, animated: false });
+						wait.then(() => {
+							flatListRef.current?.scrollToIndex({ index: info.index, animated: false });
+						});
+					}
+				}
 			}}
 		/>
 	);

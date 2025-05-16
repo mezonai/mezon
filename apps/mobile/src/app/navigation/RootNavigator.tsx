@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 import { MezonStoreProvider, initStore } from '@mezon/store-mobile';
-import { useMezon } from '@mezon/transport';
+import { extractAndSaveConfig, useMezon } from '@mezon/transport';
 import { LinkingOptions, NavigationContainer, getStateFromPath } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContextProvider, EmojiSuggestionProvider, PermissionProvider } from '@mezon/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_SESSION_KEY, save } from '@mezon/mobile-components';
 import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
+import { Session } from 'mezon-js';
 import { DeviceEventEmitter, NativeModules, Platform, StatusBar } from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -22,6 +23,20 @@ import RootStack from './RootStack';
 import { APP_SCREEN } from './ScreenTypes';
 const { NavigationBarModule } = NativeModules;
 
+const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
+	try {
+		save(
+			STORAGE_SESSION_KEY,
+			JSON.stringify({
+				host,
+				port,
+				ssl: useSSL
+			})
+		);
+	} catch (error) {
+		console.error('Failed to save Mezon config to local storage:', error);
+	}
+};
 const NavigationMain = memo(
 	(props) => {
 		const { themeValue, themeBasic } = useTheme();
@@ -138,6 +153,10 @@ const RootNavigation = (props) => {
 	const { store, persistor } = useMemo(() => {
 		if (!mezon) {
 			return { store: null, persistor: null };
+		}
+		if (mezon?.sessionRef) {
+			const config = extractAndSaveConfig(mezon?.sessionRef as unknown as Session, true);
+			if (config) saveMezonConfigToStorage(config.host, config.port, config.useSSL);
 		}
 		return initStore(mezon, undefined);
 	}, [mezon]);

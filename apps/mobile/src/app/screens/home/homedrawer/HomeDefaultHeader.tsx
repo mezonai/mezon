@@ -140,7 +140,7 @@ const HomeDefaultHeader = React.memo(
 							</TouchableOpacity>
 						)}
 						{!!currentChannel?.channel_label && (
-							<View style={styles.channelContainer}>
+							<View style={[styles.channelContainer, isTabletLandscape && { paddingBottom: size.s_8, paddingLeft: size.s_8 }]}>
 								{renderChannelIcon()}
 								<View>
 									<View style={styles.threadHeaderBox}>
@@ -174,7 +174,9 @@ const HomeDefaultHeader = React.memo(
 				) : (
 					<View />
 				)}
-				<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
+				<View style={{position: 'relative', zIndex: 0}}>
+					<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
+				</View>
 			</View>
 		);
 	}

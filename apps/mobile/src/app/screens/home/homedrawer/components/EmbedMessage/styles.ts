@@ -31,7 +31,6 @@ export const style = (colors: Attributes) =>
 		},
 		imageWrapper: {
 			marginTop: size.s_6,
-			height: size.s_100 * 3,
 			width: '100%',
 			borderRadius: size.s_4,
 			marginBottom: size.s_10

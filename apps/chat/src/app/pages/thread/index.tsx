@@ -20,7 +20,7 @@ const ThreadsMain = () => {
 	useEscapeKey(() => setIsShowCreateThread(false));
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex flex-col h-full sbm:relative fixed sbm:w-auto w-full dark:bg-bgPrimary bg-bgLightPrimary z-50 sbm:z-10">
 			<ThreadHeader threadCurrentChannel={threadCurrentChannel} />
 			<ThreadBox />
 		</div>

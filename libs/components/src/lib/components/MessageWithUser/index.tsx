@@ -182,13 +182,13 @@ function MessageWithUser({
 						{
 							'pt-3': !isCombine || (message.code !== TypeMessage.CreatePin && message.references?.[0]?.message_ref_id)
 						},
-						{ 'dark:bg-[#383B47]': hasIncludeMention || checkMessageTargetToMoved },
+						{ '!dark:bg-[#383B47]': hasIncludeMention || checkMessageTargetToMoved },
 						{
-							'dark:bg-[#403D38] bg-[#EAB3081A]':
+							'!dark:bg-[#403D38] !bg-[#EAB3081A]':
 								(hasIncludeMention || checkReplied) && !messageReplyHighlight && !checkMessageTargetToMoved
 						},
-						{ 'bg-bgMessageReplyHighline': messageReplyHighlight },
-						isHighlight ? 'bg-[#383B47]' : ''
+						{ '!bg-bgMessageReplyHighline': messageReplyHighlight },
+						isHighlight ? '!bg-[#383B47]' : ''
 					)}
 					create_time={message.create_time}
 					showMessageHead={showMessageHead}
@@ -288,6 +288,7 @@ function MessageWithUser({
 
 						{Array.isArray(message?.content?.embed) && (
 							<EmbedMessageWrap
+								observeIntersectionForLoading={observeIntersectionForLoading}
 								embeds={message.content.embed}
 								senderId={message?.sender_id}
 								messageId={message?.id}

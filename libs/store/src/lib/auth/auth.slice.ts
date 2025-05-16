@@ -45,7 +45,7 @@ function normalizeSession(session: Session): ISession {
 
 export const authenticateApple = createAsyncThunk('auth/authenticateApple', async (token: string, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	const session = await mezon.authenticateApple(token);
+	const session = await mezon.authenticateMezon(token);
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
@@ -140,7 +140,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	await mezon?.logOutMezon(device_id, platform);
 	thunkAPI.dispatch(authActions.setLogout());
 	clearAllMemoizedFunctions();
-	restoreLocalStorage(['persist:auth', 'persist:apps', 'persist:categories']);
+	restoreLocalStorage(['persist:auth', 'mezon_session', 'persist:apps', 'persist:categories', 'persist:clans']);
 });
 
 export const createQRLogin = createAsyncThunk('auth/getQRCode', async (_, thunkAPI) => {

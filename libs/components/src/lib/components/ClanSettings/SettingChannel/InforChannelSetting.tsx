@@ -39,7 +39,7 @@ const ChannelSettingInforItem = ({ onClose, channelId }: ChannelSettingItemProps
 					<div className="flex">
 						{channel?.channel_private === ChannelStatusEnum.isPrivate ? (
 							<div className="flex w-full flex-wrap gap-2">
-								{channelSetting.user_ids?.map((userId) => <AvatarUserShort id={userId} size="md" />)}
+								{channelSetting.user_ids?.map((userId) => <AvatarUserShort id={userId} />)}
 							</div>
 						) : (
 							<p>(All Member In Clan)</p>

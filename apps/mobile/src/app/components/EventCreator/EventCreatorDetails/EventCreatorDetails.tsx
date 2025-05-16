@@ -1,17 +1,17 @@
-import { getDayName, getDayWeekName, getDayYearName, getNearTime } from '@mezon/mobile-components';
-import { Fonts, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, getDayName, getDayWeekName, getDayYearName, getNearTime } from '@mezon/mobile-components';
+import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { ERepeatType, OptionEvent } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton2';
 import MezonDateTimePicker from '../../../componentUI/MezonDateTimePicker';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonSelect from '../../../componentUI/MezonSelect';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
-import { ErrorInput } from '../../ErrorInput';
 import { style } from './styles';
 
 type CreateEventScreenDetails = typeof APP_SCREEN.MENU_CLAN.CREATE_EVENT_DETAILS;
@@ -19,7 +19,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t, i18n } = useTranslation(['eventCreator']);
-	const { type, channelId, location, eventChannelId, isPrivate, onGoBack } = route.params || {};
+	const { type, channelId, location, eventChannelId, isPrivate, onGoBack, currentEvent } = route.params || {};
 
 	const language = useMemo(() => (i18n.language === 'vi' ? 'vi' : 'en'), [i18n]);
 	const today = new Date();
@@ -48,15 +48,19 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 		navigation.navigate(APP_SCREEN.HOME);
 	}
 
-	const [eventTitle, setEventTitle] = useState<string>('');
-	const [eventDescription, setEventDescription] = useState<string>('');
-	const [startTime, setStartTime] = useState<Date>(getNearTime(120));
-	const [startDate, setStartDate] = useState<Date>(getNearTime(120));
+	const currentStartDate = currentEvent?.start_time ? new Date(currentEvent?.start_time) : undefined;
+	const currentEndDate = currentEvent?.end_time ? new Date(currentEvent?.end_time) : undefined;
+
+	const [eventTitle, setEventTitle] = useState<string>(currentEvent?.title || '');
+	const [eventDescription, setEventDescription] = useState<string>(currentEvent?.description || '');
+	const [startTime, setStartTime] = useState<Date>(currentStartDate || getNearTime(120));
+	const [startDate, setStartDate] = useState<Date>(currentStartDate || getNearTime(120));
 	const [combinedStartDateTime, setCombinedStartDateTime] = useState(new Date());
 	const [combinedEndDateTime, setCombinedEndDateTime] = useState(new Date());
-	const [endDate, setEndDate] = useState<Date>(getNearTime(240));
-	const [endTime, setEndTime] = useState<Date>(getNearTime(240));
-	const [eventFrequency, setEventFrequency] = useState<number>(0);
+	const [endDate, setEndDate] = useState<Date>(currentEndDate || getNearTime(240));
+	const [endTime, setEndTime] = useState<Date>(currentEndDate || getNearTime(240));
+	const [eventFrequency, setEventFrequency] = useState<number>(currentEvent?.repeat_type || 0);
+	const [eventLogo, setEventLogo] = useState<string>(currentEvent?.logo || '');
 	const [isValidEventTitle, setIsValidEventTitle] = useState<boolean>(true);
 
 	const options = useMemo(
@@ -91,6 +95,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 
 	function handleFrequencyChange(value: number) {
 		setEventFrequency(value);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}
 
 	const isErrorStartDate = useMemo(() => {
@@ -129,7 +134,9 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			frequency: eventFrequency,
 			eventChannelId: eventChannelId,
 			isPrivate: isPrivate,
-			onGoBack: onGoBack
+			logo: eventLogo,
+			onGoBack,
+			currentEvent: currentEvent
 		});
 	}
 
@@ -148,6 +155,10 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			setCombinedEndDateTime(newEndDateTime);
 		}
 	}, [startDate, startTime, endDate, endTime]);
+
+	const handleLoad = useCallback((url: string) => {
+		setEventLogo(url);
+	}, []);
 
 	const handleEventTitle = useCallback((value: string) => {
 		setEventTitle(value);
@@ -172,7 +183,6 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 							isValid={isValidEventTitle}
 							errorMessage={t('fields.eventName.errorMessage')}
 						/>
-
 						<View style={styles.inlineSec}>
 							<View style={{ flex: 2 }}>
 								<MezonDateTimePicker
@@ -197,32 +207,28 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 								/>
 							</View>
 						</View>
-
-						{type === OptionEvent.OPTION_LOCATION && (
-							<View style={styles.inlineSec}>
-								<View style={{ flex: 2 }}>
-									<MezonDateTimePicker
-										title={t('fields.endDate.title')}
-										onChange={setEndDate}
-										value={endDate}
-										keepTime
-										error={isErrorEndDate ? t('fields.endDate.errorMessage') : ''}
-									/>
-								</View>
-								<View style={{ flex: 1 }}>
-									<MezonDateTimePicker
-										title={t('fields.endTime.title')}
-										mode="time"
-										onChange={setEndTime}
-										value={endTime}
-										need24HourFormat={{ is24hourSource: 'locale' }}
-										needLocale={{ locale: 'vi' }}
-										error={isErrorEndTime ? t('fields.endTime.errorMessage') : ''}
-									/>
-								</View>
+						<View style={styles.inlineSec}>
+							<View style={{ flex: 2 }}>
+								<MezonDateTimePicker
+									title={t('fields.endDate.title')}
+									onChange={setEndDate}
+									value={endDate}
+									keepTime
+									error={isErrorEndDate ? t('fields.endDate.errorMessage') : ''}
+								/>
 							</View>
-						)}
-
+							<View style={{ flex: 1 }}>
+								<MezonDateTimePicker
+									title={t('fields.endTime.title')}
+									mode="time"
+									onChange={setEndTime}
+									value={endTime}
+									need24HourFormat={{ is24hourSource: 'locale' }}
+									needLocale={{ locale: 'vi' }}
+									error={isErrorEndTime ? t('fields.endTime.errorMessage') : ''}
+								/>
+							</View>
+						</View>
 						<MezonInput
 							label={t('fields.description.title')}
 							value={eventDescription}
@@ -231,8 +237,22 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 							textarea
 							placeHolder={t('fields.description.description')}
 						/>
-
-						<MezonSelect title={t('fields.eventFrequency.title')} titleUppercase data={options} onChange={handleFrequencyChange} />
+						<MezonSelect
+							title={t('fields.eventFrequency.title')}
+							titleUppercase
+							data={options}
+							onChange={handleFrequencyChange}
+							initValue={eventFrequency}
+						/>
+						<Text style={styles.label}>{t('fields.cover')}</Text>
+						<MezonImagePicker
+							defaultValue={eventLogo}
+							height={size.s_100 * 2}
+							width={'100%'}
+							onLoad={handleLoad}
+							showHelpText
+							autoUpload
+						/>
 					</View>
 				</ScrollView>
 			</View>

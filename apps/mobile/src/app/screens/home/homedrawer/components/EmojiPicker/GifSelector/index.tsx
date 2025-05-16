@@ -53,7 +53,7 @@ export default function GifSelector({ onSelected, searchText, onScroll }: GifSel
 			scrollEventThrottle={16}
 			onScroll={onScroll}
 			style={{ maxHeight: Metrics.screenHeight / 1.07 }}
-			contentContainerStyle={{ paddingBottom: size.s_50 * 2 }}
+			contentContainerStyle={{ paddingBottom: size.s_10 * 2 }}
 		>
 			{valueInputToCheckHandleSearch === '' ? (
 				<GifCategory loading={loadingStatusGifs === 'loading'} data={dataGifCategories} />

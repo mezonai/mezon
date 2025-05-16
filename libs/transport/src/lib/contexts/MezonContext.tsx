@@ -1,4 +1,3 @@
-import { DeviceUUID } from 'device-uuid';
 import { Client, DefaultSocket, Session, Socket } from 'mezon-js';
 import { WebSocketAdapterPb } from 'mezon-js-protobuf';
 import { ApiConfirmLoginRequest, ApiLoginIDResponse } from 'mezon-js/dist/api.gen';
@@ -24,6 +23,11 @@ type Sessionlike = {
 	created: boolean;
 	is_remember: boolean;
 	api_url: string;
+	expires_at?: number;
+	refresh_expires_at?: number;
+	created_at?: number;
+	username?: string;
+	user_id?: string;
 };
 
 const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
@@ -49,7 +53,7 @@ const clearSessionFromStorage = () => {
 	}
 };
 
-const extractAndSaveConfig = (session: Session | null) => {
+export const extractAndSaveConfig = (session: Session | null, isFromMobile?: boolean) => {
 	if (!session || !session.api_url) return null;
 	try {
 		const url = new URL(session.api_url);
@@ -57,7 +61,10 @@ const extractAndSaveConfig = (session: Session | null) => {
 		const port = url.port;
 		const useSSL = url.protocol === 'https:';
 
-		saveMezonConfigToStorage(host, port, useSSL);
+		// mobile will use AsyncStorage to save in source mobile app
+		if (!isFromMobile) {
+			saveMezonConfigToStorage(host, port, useSSL);
+		}
 
 		return { host, port, useSSL };
 	} catch (error) {
@@ -71,19 +78,22 @@ export type MezonContextValue = {
 	sessionRef: React.MutableRefObject<Session | null>;
 	socketRef: React.MutableRefObject<Socket | null>;
 	createClient: () => Promise<Client>;
-	authenticateDevice: (username: string) => Promise<Session>;
 	authenticateMezon: (token: string, isRemember?: boolean) => Promise<Session>;
 	createQRLogin: () => Promise<ApiLoginIDResponse>;
 	checkLoginRequest: (LoginRequest: ApiConfirmLoginRequest) => Promise<Session | null>;
 	confirmLoginRequest: (ConfirmRequest: ApiConfirmLoginRequest) => Promise<Session | null>;
-	authenticateApple: (token: string) => Promise<Session>;
 	authenticateEmail: (email: string, password: string) => Promise<Session>;
 
 	logOutMezon: (device_id?: string, platform?: string) => Promise<void>;
-	refreshSession: (session: Sessionlike) => Promise<Session>;
+	refreshSession: (session: Sessionlike) => Promise<Session | undefined>;
 	connectWithSession: (session: Sessionlike) => Promise<Session>;
 
 	reconnectWithTimeout: (clanId: string) => Promise<unknown>;
+};
+
+const isSessionExpired = (expiresAt: number): boolean => {
+	const now = Math.floor(Date.now() / 1000) + 5;
+	return now >= expiresAt;
 };
 
 const MezonContext = React.createContext<MezonContextValue>({} as MezonContextValue);
@@ -126,6 +136,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			throw new Error('Mezon client not initialized');
 		}
 		const session = await clientRef.current.checkLoginRequest(LoginRequest);
+		const config = extractAndSaveConfig(session, isFromMobile);
+		if (config) {
+			clientRef.current.setBasePath(config.host, config.port, config.useSSL);
+		}
+
 		const socket = await createSocket();
 		socketRef.current = socket;
 		return session;
@@ -138,7 +153,10 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		if (!sessionRef.current) {
 			throw new Error('Mezon session not initialized');
 		}
-		const session = await clientRef.current.confirmLogin(sessionRef.current, confirmRequest);
+		const useSSL = process.env.NX_CHAT_APP_API_SECURE === 'true';
+		const scheme = useSSL ? 'https://' : 'http://';
+		const basePath = `${scheme}${process.env.NX_CHAT_APP_API_GW_HOST}:${process.env.NX_CHAT_APP_API_GW_PORT}`;
+		const session = await clientRef.current.confirmLogin(sessionRef.current, basePath, confirmRequest);
 		return session;
 	}, []);
 
@@ -150,34 +168,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			const session = await clientRef.current.authenticateMezon(token, undefined, undefined, isFromMobile ? true : (isRemember ?? false));
 			sessionRef.current = session;
 
-			const config = extractAndSaveConfig(session);
-			if (config) {
-				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
-			}
-
-			const socket = await createSocket(); // Create socket after authentication
-			socketRef.current = socket;
-
-			if (!socketRef.current) {
-				return session;
-			}
-
-			const session2 = await socketRef.current.connect(session, true, isFromMobile ? '1' : '0');
-			sessionRef.current = session2;
-
-			return session;
-		},
-		[createSocket, isFromMobile]
-	);
-
-	const authenticateApple = useCallback(
-		async (token: string) => {
-			if (!clientRef.current) {
-				throw new Error('Mezon client not initialized');
-			}
-			const session = await clientRef.current.authenticateMezon(token);
-			sessionRef.current = session;
-			const config = extractAndSaveConfig(session);
+			const config = extractAndSaveConfig(session, isFromMobile);
 			if (config) {
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
@@ -243,30 +234,17 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					device_id || '',
 					platform || ''
 				);
-			}
 
-			sessionRef.current = null;
-			clearSessionFromStorage();
+				sessionRef.current = null;
+				clearSessionFromStorage();
+				clientRef.current.setBasePath(
+					process.env.NX_CHAT_APP_API_GW_HOST as string,
+					process.env.NX_CHAT_APP_API_GW_PORT as string,
+					process.env.NX_CHAT_APP_API_SECURE === 'true'
+				);
+			}
 		},
 		[socketRef]
-	);
-
-	const authenticateDevice = useCallback(
-		async (username: string) => {
-			if (!clientRef.current) {
-				throw new Error('Mezon client not initialized');
-			}
-
-			const deviceId = new DeviceUUID().get();
-
-			const session = await clientRef.current.authenticateMezon(deviceId, true, username);
-			sessionRef.current = session;
-
-			extractAndSaveConfig(session);
-
-			return session;
-		},
-		[clientRef]
 	);
 
 	const refreshSession = useCallback(
@@ -274,11 +252,22 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!clientRef.current) {
 				throw new Error('Mezon client not initialized');
 			}
+
+			if (session.expires_at && isSessionExpired(session.expires_at)) {
+				await logOutMezon();
+				throw new Error('Mezon client not initialized');
+			}
+
+			if (!clientRef.current.host || clientRef.current.host === process.env.NX_CHAT_APP_API_GW_HOST) {
+				await logOutMezon();
+				throw new Error('Mezon client not initialized');
+			}
+
 			const newSession = await clientRef.current.sessionRefresh(
 				new Session(session.token, session.refresh_token, session.created, session.api_url, session.is_remember)
 			);
 			sessionRef.current = newSession;
-			extractAndSaveConfig(newSession);
+			extractAndSaveConfig(newSession, isFromMobile);
 
 			if (!socketRef.current) {
 				return newSession;
@@ -288,7 +277,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			sessionRef.current = session2;
 			return newSession;
 		},
-		[clientRef, socketRef, isFromMobile]
+		[clientRef, socketRef, isFromMobile, logOutMezon]
 	);
 
 	const connectWithSession = useCallback(
@@ -297,7 +286,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 			sessionRef.current = session;
-			extractAndSaveConfig(session);
+			extractAndSaveConfig(session, isFromMobile);
 			if (!socketRef.current) {
 				return session;
 			}
@@ -371,7 +360,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						await socket.joinClanChat(clanId);
 						socketRef.current = socket;
 						sessionRef.current = connectedSession;
-						extractAndSaveConfig(connectedSession);
+						extractAndSaveConfig(connectedSession, isFromMobile);
 						return resolve(socket);
 					} catch (error) {
 						failCount++;
@@ -428,8 +417,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			createQRLogin,
 			checkLoginRequest,
 			confirmLoginRequest,
-			authenticateDevice,
-			authenticateApple,
 			refreshSession,
 			createSocket,
 			logOutMezon,
@@ -446,8 +433,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			createQRLogin,
 			checkLoginRequest,
 			confirmLoginRequest,
-			authenticateDevice,
-			authenticateApple,
 			refreshSession,
 			createSocket,
 			logOutMezon,

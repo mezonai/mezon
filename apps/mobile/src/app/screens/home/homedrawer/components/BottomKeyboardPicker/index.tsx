@@ -1,7 +1,8 @@
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { Ref, forwardRef, memo } from 'react';
+import { View } from 'react-native';
 import { style } from './styles';
 
 export type IModeKeyboardPicker = 'text' | 'emoji' | 'attachment';
@@ -28,9 +29,12 @@ const BottomKeyboardPicker = forwardRef(function BottomKeyboardPicker(
 				backgroundColor: themeBasic === 'light' ? themeValue.tertiary : themeValue.primary
 			}}
 		>
-			<BottomSheetScrollView stickyHeaderIndices={isStickyHeader ? [0] : []} style={styles.contentContainer}>
+			<View
+				// stickyHeaderIndices={isStickyHeader ? [0] : []}
+				style={styles.contentContainer}
+			>
 				{children}
-			</BottomSheetScrollView>
+			</View>
 		</BottomSheet>
 	);
 });
