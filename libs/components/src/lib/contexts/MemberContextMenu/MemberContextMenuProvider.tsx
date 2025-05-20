@@ -16,7 +16,6 @@ import { EPermission } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { CSSProperties, FC, createContext, useCallback, useContext, useState } from 'react';
 import { Menu, useContextMenu } from 'react-contexify';
-import 'react-contexify/dist/ReactContexify.css';
 import { useSelector } from 'react-redux';
 import { directMessageValueProps } from '../../components/DmList/DMListItem';
 import ModalRemoveMemberClan from '../../components/MemberProfile/ModalRemoveMemberClan';

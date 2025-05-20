@@ -1,4 +1,4 @@
-import { ClanHeader, DirectMessageList } from '@mezon/components';
+import { ClanHeader, DirectMessageContextMenuProvider, DirectMessageList } from '@mezon/components';
 import { clansActions, selectCloseMenu, selectStatusMenu } from '@mezon/store';
 import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { memo, useEffect } from 'react';
@@ -24,10 +24,12 @@ const Direct = () => {
 			<div
 				className={`flex-col flex w-[272px] dark:bg-bgSecondary bg-bgLightMode relative min-w-widthMenuMobile ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'max-sm:hidden') : ''}`}
 			>
-				<div className="contain-content">
-					<ClanHeader type={'direct'} />
-					<DirectMessageList />
-				</div>
+				<DirectMessageContextMenuProvider contextMenuId="dm-list-context">
+					<div className="contain-content">
+						<ClanHeader type={'direct'} />
+						<DirectMessageList />
+					</div>
+				</DirectMessageContextMenuProvider>
 			</div>
 			<MainContentDirect />
 			<Setting isDM={true} />

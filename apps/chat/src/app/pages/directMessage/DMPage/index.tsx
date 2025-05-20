@@ -1,5 +1,6 @@
 import {
 	DirectMessageBox,
+	DirectMessageContextMenuProvider,
 	FileUploadByDnD,
 	GifStickerEmojiPopup,
 	MemberListGroupChat,
@@ -306,12 +307,15 @@ const DirectMessage = () => {
 						</div>
 					</div>
 					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
-						<div
-							className={`contain-strict dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_50px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
-						>
-							<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
-						</div>
+						<DirectMessageContextMenuProvider contextMenuId="group-chat-context">
+							<div
+								className={`contain-strict dark:bg-bgSecondary bg-bgLightSecondary overflow-y-scroll h-[calc(100vh_-_50px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
+							>
+								<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
+							</div>
+						</DirectMessageContextMenuProvider>
 					)}
+
 					{Number(type) === ChannelType.CHANNEL_TYPE_DM && isUseProfileDM && (
 						<div
 							className={`dark:bg-bgTertiary bg-bgLightSecondary ${isUseProfileDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-widthDmProfile'}`}

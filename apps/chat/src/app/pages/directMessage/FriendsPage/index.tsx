@@ -1,3 +1,4 @@
+import { DirectMessageContextMenuProvider } from '@mezon/components';
 import { useEscapeKeyClose, useFriends, useMenu } from '@mezon/core';
 import {
 	FriendsEntity,
@@ -197,7 +198,9 @@ const FriendsPage = () => {
 								</span>
 							</div>
 							<div className="pl-8 overflow-hidden flex flex-1 pb-4">
-								<FriendList listFriendFilter={listFriendFilter} />
+								<DirectMessageContextMenuProvider contextMenuId="friend-list-context">
+									<FriendList listFriendFilter={listFriendFilter} />
+								</DirectMessageContextMenuProvider>
 							</div>
 						</>
 					)}
