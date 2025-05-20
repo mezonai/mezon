@@ -51,7 +51,7 @@ export const BaseMemberProfile = ({ id }: BaseMemberProfileProps) => {
 		}
 	}, [statusOnline, user?.user?.metadata]);
 
-	const isOffline = !userMeta?.online || !user.user?.online;
+	const isOffline = !userMeta?.online;
 	const isMobile = user.user?.is_mobile;
 
 	return (
