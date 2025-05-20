@@ -59,4 +59,24 @@ public class CustomAudioModule extends ReactContextBaseJavaModule {
             }
         }
     }
+
+    @ReactMethod
+    public void getAudioStatus(Callback callback) {
+        try {
+            boolean isSpeakerOn = audioManager.isSpeakerphoneOn();
+            boolean isBluetoothScoOn = audioManager.isBluetoothScoOn();
+            
+            String audioRoute = "earpiece";
+            if (isSpeakerOn) {
+                audioRoute = "speaker";
+            } else if (isBluetoothScoOn) {
+                audioRoute = "bluetooth";
+            }
+            
+            callback.invoke(null, audioRoute);
+        } catch (Exception e) {
+            e.printStackTrace();
+            callback.invoke("Error: " + e.getMessage());
+        }
+    }
 }
