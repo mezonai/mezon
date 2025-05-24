@@ -1,11 +1,11 @@
 import {
 	ActionEmitEvent,
-	STORAGE_CLAN_ID,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_IS_DISABLE_LOAD_BACKGROUND,
 	getUpdateOrAddClanChannelCache,
 	load,
-	save
+	save,
+	STORAGE_CLAN_ID,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE,
+	STORAGE_IS_DISABLE_LOAD_BACKGROUND
 } from '@mezon/mobile-components';
 import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions, usersClanActions } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
@@ -19,11 +19,19 @@ import {
 import { NotificationIOS } from '@notifee/react-native/src/types/NotificationIOS';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import { safeJSONParse } from 'mezon-js';
-import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform } from 'react-native';
+import { Alert, DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
-import { PERMISSIONS, RESULTS, requestMultiple } from 'react-native-permissions';
+import { PERMISSIONS, requestMultiple, RESULTS } from 'react-native-permissions';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
+
+// Type definitions
+interface VoIPManagerType {
+	registerForVoIPPushes(): Promise<string>;
+	getVoIPToken(): Promise<string>;
+	reportIncomingCall(callId: string, callerName: string, callerNumber: string, hasVideo: boolean): Promise<string>;
+	endCall(callId: string): Promise<string>;
+}
 
 export const checkNotificationPermission = async () => {
 	if (Platform.OS === 'ios') await notifee.requestPermission();
@@ -441,15 +449,16 @@ export const setupCallKeep = async () => {
 			}
 		};
 		await RNCallKeep.setup(options);
-		if (Platform.OS === 'android') {
-			RNCallKeep.registerPhoneAccount(options);
-			RNCallKeep.registerAndroidEvents();
-			RNCallKeep.setAvailable(true);
-		}
 		return true;
 	} catch (error) {
 		console.error('initializeCallKeep error:', (error as Error)?.message);
 	}
+};
+
+export const getVoIPToken = async () => {
+	const { VoIPManager } = NativeModules?.VoIPManager as { VoIPManager: VoIPManagerType };
+	await VoIPManager.registerForVoIPPushes();
+	return await VoIPManager.getVoIPToken();
 };
 
 const listRNCallKeep = async (bodyData: any) => {

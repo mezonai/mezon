@@ -17,11 +17,12 @@ type FcmDeviceTokenPayload = {
 	tokenId: string;
 	deviceId: string;
 	platform?: string;
+	voipToken?: string;
 };
 
 export const registFcmDeviceTokenCached = memoizeAndTrack(
-	(mezon: MezonValueContext, tokenId: string, deviceId: string, platform: string) =>
-		mezon.client.registFCMDeviceToken(mezon.session, tokenId, deviceId, platform || ''),
+	(mezon: MezonValueContext, tokenId: string, deviceId: string, platform: string, voipToken?: string) =>
+		mezon.client.registFCMDeviceToken(mezon.session, tokenId, deviceId, platform || '', voipToken || ''),
 	{
 		promise: true,
 		maxAge: REGIS_FCM_TOKEN_CACHED_TIME,
@@ -33,10 +34,10 @@ export const registFcmDeviceTokenCached = memoizeAndTrack(
 
 export const registFcmDeviceToken = createAsyncThunk(
 	'fcm/registFcmDeviceToken',
-	async ({ tokenId, deviceId, platform }: FcmDeviceTokenPayload, thunkAPI) => {
+	async ({ tokenId, deviceId, platform, voipToken }: FcmDeviceTokenPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await registFcmDeviceTokenCached(mezon, tokenId, deviceId, platform || '');
+			const response = await registFcmDeviceTokenCached(mezon, tokenId, deviceId, platform || '', voipToken || '');
 			if (!response) {
 				return thunkAPI.rejectWithValue(null);
 			}
