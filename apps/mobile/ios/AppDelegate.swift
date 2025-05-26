@@ -68,26 +68,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   // Add support for orientation handling
   func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    // Check if this is a React Native modal view controller
-    let windowController = window?.rootViewController
-    if windowController != nil {
-      // Special handling for React Native modal controllers to avoid crashes
-      if let controller = windowController,
-         NSStringFromClass(type(of: controller)).contains("RCTFabric") ||
-         NSStringFromClass(type(of: controller)).contains("RCTModal") {
-        // Allow all orientations for React Native modal controllers
-        return .all
+      // Check if any modal is currently presented
+      var currentController: UIViewController? = window?.rootViewController
+      while let presentedController = currentController?.presentedViewController {
+          currentController = presentedController
       }
-    }
-
-    // For regular views, enforce our orientation preferences
-    if UIDevice.current.userInterfaceIdiom == .pad {
-      // Lock iPads to landscape orientations
-      return .landscape
-    } else {
-      // For iPhones, use the stored orientation setting
-      return self.orientationLock
-    }
+      
+      // If we have a modal presented, allow all orientations to prevent crashes
+      if currentController != window?.rootViewController {
+          return .allButUpsideDown
+      }
+      
+      // No modal presented - apply device-specific rules
+      if UIDevice.current.userInterfaceIdiom == .pad {
+          return .landscape  // iPad landscape only
+      } else {
+          return .allButUpsideDown  // iPhone all orientations
+      }
   }
 
   // Set default orientation based on device type

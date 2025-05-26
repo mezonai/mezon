@@ -12,9 +12,10 @@ interface ModalCallProps {
 	dataCall: WebrtcSignalingFwd;
 	userId: string;
 	triggerCall: () => void;
+	clearCallState?: () => void;
 }
 
-const ModalCall = ({ dataCall, userId, triggerCall }: ModalCallProps) => {
+const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallProps) => {
 	const user = useUserByUserId(dataCall?.caller_id);
 	const mezon = useMezon();
 	const dispatch = useAppDispatch();
@@ -35,10 +36,15 @@ const ModalCall = ({ dataCall, userId, triggerCall }: ModalCallProps) => {
 
 	const handleCloseCall = async () => {
 		await mezon.socketRef.current?.forwardWebrtcSignaling(dataCall?.caller_id, 4, '', dataCall.channel_id ?? '', userId ?? '');
-		dispatch(DMCallActions.setIsInCall(false));
-		dispatch(audioCallActions.setIsEndTone(true));
-		dispatch(audioCallActions.setIsRingTone(false));
-		dispatch(DMCallActions.removeAll());
+
+		if (clearCallState) {
+			clearCallState();
+		} else {
+			dispatch(DMCallActions.setIsInCall(false));
+			dispatch(audioCallActions.setIsEndTone(true));
+			dispatch(audioCallActions.setIsRingTone(false));
+			dispatch(DMCallActions.removeAll());
+		}
 	};
 
 	return (

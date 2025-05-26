@@ -1,11 +1,11 @@
 import {
-	DmCalling,
+	DmCallManager,
 	FirstJoinPopup,
 	FooterProfile,
 	ForwardMessageModal,
+	GroupCallManager,
 	MessageContextMenuProvider,
 	MessageModalImage,
-	ModalCall,
 	ModalCreateClan,
 	ModalUnknowChannel,
 	MultiStepModalE2ee,
@@ -13,54 +13,41 @@ import {
 	SearchModal,
 	SidebarClanItem,
 	SidebarLogoItem,
-	Topbar
+	Topbar,
+	useWebRTCStream
 } from '@mezon/components';
 import { useAppParams, useAuth, useClanDragAndDrop, useMenu, useReference } from '@mezon/core';
 import {
-	DMCallActions,
 	accountActions,
-	audioCallActions,
 	e2eeActions,
 	fetchDirectMessage,
 	getIsShowPopupForward,
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
-	selectAudioBusyTone,
-	selectAudioDialTone,
-	selectAudioEndTone,
-	selectAudioRingTone,
 	selectChatStreamWidth,
 	selectClanNumber,
 	selectClanView,
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentClanId,
-	selectCurrentStartDmCall,
 	selectCurrentStreamInfo,
 	selectDirectsUnreadlist,
-	selectGroupCallId,
 	selectHasKeyE2ee,
-	selectIsInCall,
 	selectIsShowChatStream,
 	selectIsShowPopupQuickMess,
-	selectJoinedCall,
 	selectOnboardingMode,
 	selectOpenModalAttachment,
 	selectOpenModalE2ee,
 	selectOrderedClans,
-	selectSignalingDataByUserId,
 	selectStatusMenu,
 	selectTheme,
 	selectToastErrors,
-	useAppDispatch,
-	useAppSelector
+	useAppDispatch
 } from '@mezon/store';
-
-import { useWebRTCStream } from '@mezon/components';
 import { Icons } from '@mezon/ui';
 import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
-import { ChannelType, WebrtcSignalingType } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -99,7 +86,6 @@ function MyApp() {
 	const openModalAttachment = useSelector(selectOpenModalAttachment);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
-
 	const { userProfile } = useAuth();
 	const calculateJoinedTime = new Date().getTime() - new Date(userProfile?.user?.create_time ?? '').getTime();
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
@@ -108,121 +94,6 @@ function MyApp() {
 
 	const { currentURL, directId } = useAppParams();
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
-	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
-	const dataCall = useMemo(() => {
-		return signalingData?.[signalingData?.length - 1]?.signalingData;
-	}, [signalingData]);
-
-	const isInCall = useSelector(selectIsInCall);
-	const isPlayDialTone = useSelector(selectAudioDialTone);
-	const isPlayRingTone = useSelector(selectAudioRingTone);
-	const isPlayEndTone = useSelector(selectAudioEndTone);
-	const isPlayBusyTone = useSelector(selectAudioBusyTone);
-	const groupCallId = useSelector(selectGroupCallId);
-	const isJoinedCall = useSelector(selectJoinedCall);
-	const dialTone = useRef(new Audio('assets/audio/dialtone.mp3'));
-	const ringTone = useRef(new Audio('assets/audio/ringing.mp3'));
-	const endTone = useRef(new Audio('assets/audio/endcall.mp3'));
-	const busyTone = useRef(new Audio('assets/audio/busytone.mp3'));
-
-	const isDmCallInfo = useSelector(selectCurrentStartDmCall);
-	const dmCallingRef = useRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: boolean) => void }>(null);
-
-	useEffect(() => {
-		if (isDmCallInfo?.groupId) {
-			dmCallingRef.current?.triggerCall(isDmCallInfo?.isVideo);
-		}
-	}, [isDmCallInfo?.groupId, isDmCallInfo?.isVideo]);
-
-	useEffect(() => {
-		if (dataCall?.channel_id) {
-			dispatch(audioCallActions.setGroupCallId(dataCall?.channel_id));
-		}
-	}, [dataCall?.channel_id, dispatch]);
-
-	const triggerCall = (isVideoCall = false) => {
-		dmCallingRef.current?.triggerCall(isDmCallInfo?.isVideo, true);
-	};
-
-	const playAudio = (audioRef: React.RefObject<HTMLAudioElement>) => {
-		if (audioRef.current) {
-			audioRef.current.currentTime = 0;
-			audioRef.current.play().catch((error) => console.error('Audio playback error:', error));
-			audioRef.current.loop = true;
-		}
-	};
-
-	const stopAudio = (audioRef: React.RefObject<HTMLAudioElement>) => {
-		if (audioRef.current) {
-			audioRef.current.pause();
-			audioRef.current.currentTime = 0;
-		}
-	};
-
-	useEffect(() => {
-		if (!signalingData?.[signalingData?.length - 1] && !isInCall) {
-			dispatch(audioCallActions.setIsDialTone(false));
-			return;
-		}
-		switch (signalingData?.[signalingData?.length - 1]?.signalingData.data_type) {
-			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
-				if (!isPlayDialTone && !isInCall && !isJoinedCall) {
-					dispatch(audioCallActions.setIsRingTone(true));
-					dispatch(audioCallActions.setIsBusyTone(false));
-					dispatch(audioCallActions.setIsEndTone(false));
-				} else {
-					dispatch(audioCallActions.setIsDialTone(false));
-				}
-
-				break;
-			case WebrtcSignalingType.WEBRTC_SDP_ANSWER:
-				break;
-			case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE:
-				dispatch(audioCallActions.setIsRingTone(false));
-				dispatch(audioCallActions.setIsDialTone(false));
-				break;
-			// 	CANCEL CALL
-			case 4:
-				dispatch(DMCallActions.removeAll());
-				dispatch(audioCallActions.setIsRingTone(false));
-				dispatch(audioCallActions.setIsDialTone(false));
-				break;
-			default:
-				break;
-		}
-	}, [dispatch, isInCall, isPlayDialTone, signalingData]);
-
-	useEffect(() => {
-		if (isPlayDialTone) {
-			playAudio(dialTone);
-		} else {
-			stopAudio(dialTone);
-		}
-	}, [isPlayDialTone]);
-
-	useEffect(() => {
-		if (isPlayRingTone) {
-			playAudio(ringTone);
-		} else {
-			stopAudio(ringTone);
-		}
-	}, [isPlayRingTone]);
-
-	useEffect(() => {
-		if (isPlayEndTone) {
-			endTone.current.play().catch((error) => console.error('Audio playback error:', error));
-		} else {
-			endTone.current.pause();
-		}
-	}, [isPlayEndTone]);
-
-	useEffect(() => {
-		if (isPlayBusyTone) {
-			busyTone.current.play().catch((error) => console.error('Audio playback error:', error));
-		} else {
-			busyTone.current.pause();
-		}
-	}, [isPlayBusyTone]);
 
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
@@ -345,15 +216,9 @@ function MyApp() {
 					) : null}
 				</div>
 
-				{isPlayRingTone &&
-					!!dataCall &&
-					!isInCall &&
-					directId !== dataCall?.channel_id &&
-					dataCall?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && (
-						<ModalCall dataCall={dataCall} userId={userProfile?.user?.id || ''} triggerCall={triggerCall} />
-					)}
+				<DmCallManager userId={userProfile?.user?.id || ''} directId={directId} />
+				<GroupCallManager />
 
-				<DmCalling ref={dmCallingRef} dmGroupId={groupCallId} directId={directId || ''} />
 				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} onclose={() => setIsShowFirstJoinPopup(false)} />}

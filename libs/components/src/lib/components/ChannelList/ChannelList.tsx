@@ -276,8 +276,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 					listChannelRenderAction.sortChannelInCategory({
 						categoryId: data[dragIndex].category_id as string,
 						clanId: data[dragIndex].clan_id as string,
-						indexEnd: dragItemIndex.current!.indexEnd,
-						indexStart: dragIndex
+						indexEnd: dragItemIndex.current!.indexEnd - 1,
+						indexStart: dragIndex - 1
 					})
 				);
 			}
@@ -333,8 +333,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 									key={virtualRow.key}
 									data-index={virtualRow.index}
 									ref={virtualizer.measureElement}
-									id={`drag-detect-${item.id}`}
-									onDragEnter={(e) => handleDragEnter(virtualRow.index, e, `drag-detect-${item.id}`)}
+									id={`${item.category_id}-${item.id}`}
+									onDragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)}
 									onDragEnd={() => handleDragEnd(virtualRow.index)}
 								>
 									<CategorizedItem key={item.id} category={item} />
@@ -347,8 +347,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 										key={virtualRow.key}
 										data-index={virtualRow.index}
 										draggable
-										onDragStart={(e) => handleDragStart(virtualRow.index, e, `drag-detect-${item.id}`)}
-										onDragEnter={(e) => handleDragEnter(virtualRow.index, e, `drag-detect-${item.id}`)}
+										onDragStart={(e) => handleDragStart(virtualRow.index, e, `${item.category_id}-${item.id}`)}
+										onDragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)}
 										onDragEnd={() => handleDragEnd(virtualRow.index)}
 										ref={virtualizer.measureElement}
 									>
@@ -357,8 +357,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 											key={item.id}
 											channel={item as ChannelThreads}
 											permissions={permissions}
-											dragStart={(e) => handleDragStart(virtualRow.index, e, `drag-detect-${item.id}`)}
-											dragEnter={(e) => handleDragEnter(virtualRow.index, e, `drag-detect-${item.id}`)}
+											dragStart={(e) => handleDragStart(virtualRow.index, e, `${item.category_id}-${item.id}`)}
+											dragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)}
 										/>
 									</div>
 								);

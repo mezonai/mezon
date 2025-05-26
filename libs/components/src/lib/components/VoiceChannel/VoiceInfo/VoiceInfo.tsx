@@ -1,6 +1,8 @@
 import { useAppNavigation, useAuth } from '@mezon/core';
 import {
 	handleParticipantVoiceState,
+	selectDmGroupCurrent,
+	selectIsGroupCallActive,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
@@ -12,23 +14,38 @@ import {
 import { Icons } from '@mezon/ui';
 import { ParticipantMeetState, handleCopyLink, useMediaPermissions } from '@mezon/utils';
 import isElectron from 'is-electron';
+import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import React, { ReactNode, memo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useGroupCallSignaling, useGroupCallState } from '../../GroupCall';
 
 const VoiceInfo = React.memo(() => {
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
-	const { toChannelPage, navigate } = useAppNavigation();
+	const { toChannelPage, toDmGroupPage, navigate } = useAppNavigation();
 
 	const appearanceTheme = useSelector(selectTheme);
 
 	const currentVoiceInfo = useSelector(selectVoiceInfo);
+	const isGroupCallActive = useSelector(selectIsGroupCallActive);
+
+	const currentDmGroup = useSelector(selectDmGroupCurrent(currentVoiceInfo?.channelId || ''));
+
+	const groupCallState = useGroupCallState();
+	const groupCallSignaling = useGroupCallSignaling();
 
 	const redirectToVoice = () => {
 		if (currentVoiceInfo) {
-			const channelUrl = toChannelPage(currentVoiceInfo.channelId as string, currentVoiceInfo.clanId as string);
-			navigate(channelUrl);
+			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
+
+			if (isGroupCall) {
+				const groupUrl = toDmGroupPage(currentVoiceInfo.channelId as string, ChannelType.CHANNEL_TYPE_GROUP);
+				navigate(groupUrl);
+			} else {
+				const channelUrl = toChannelPage(currentVoiceInfo.channelId as string, currentVoiceInfo.clanId as string);
+				navigate(channelUrl);
+			}
 		}
 	};
 
@@ -44,8 +61,35 @@ const VoiceInfo = React.memo(() => {
 	};
 
 	const leaveVoice = async () => {
-		dispatch(voiceActions.resetVoiceSettings());
-		await participantMeetState(ParticipantMeetState.LEAVE, currentVoiceInfo?.clanId as string, currentVoiceInfo?.channelId as string);
+		if (currentVoiceInfo) {
+			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
+
+			if (isGroupCall) {
+				groupCallState.endGroupCall();
+
+				if (currentDmGroup?.user_id && userProfile?.user?.id) {
+					const participantLeftData = {
+						userId: userProfile.user.id,
+						userName: userProfile.user.display_name || userProfile.user.username,
+						timestamp: Date.now()
+					};
+
+					groupCallSignaling.sendParticipantLeft(
+						currentDmGroup.user_id,
+						participantLeftData,
+						currentVoiceInfo.channelId,
+						userProfile.user.id
+					);
+				}
+
+				dispatch(voiceActions.setJoined(false));
+				dispatch(voiceActions.setToken(''));
+			} else {
+				dispatch(voiceActions.resetVoiceSettings());
+			}
+
+			await participantMeetState(ParticipantMeetState.LEAVE, currentVoiceInfo.clanId, currentVoiceInfo.channelId);
+		}
 	};
 
 	const voiceAddress = `${currentVoiceInfo?.channelLabel} / ${currentVoiceInfo?.clanName}`;
@@ -74,9 +118,19 @@ const VoiceInfo = React.memo(() => {
 	}, [showMicrophone]);
 
 	const handleCopyVoiceLink = useCallback(() => {
-		const linkVoice = `${process.env.NX_DOMAIN_URL}/chat/clans/${currentVoiceInfo?.clanId}/channels/${currentVoiceInfo?.channelId}`;
-		handleCopyLink(linkVoice);
-	}, []);
+		if (currentVoiceInfo) {
+			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
+
+			let linkVoice: string;
+			if (isGroupCall) {
+				linkVoice = `${process.env.NX_DOMAIN_URL}/chat/direct/message/${currentVoiceInfo.channelId}/${ChannelType.CHANNEL_TYPE_GROUP}`;
+			} else {
+				linkVoice = `${process.env.NX_DOMAIN_URL}/chat/clans/${currentVoiceInfo.clanId}/channels/${currentVoiceInfo.channelId}`;
+			}
+
+			handleCopyLink(linkVoice);
+		}
+	}, [currentVoiceInfo, isGroupCallActive]);
 	return (
 		<div
 			className={`flex flex-col gap-2 border-b-2 dark:border-borderDefault border-gray-300 px-4 py-2 hover:bg-gray-550/[0.16] shadow-sm transition

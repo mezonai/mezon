@@ -95,31 +95,34 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog }
 		return !noCallBackTypes.includes(callLogType) || !isMe;
 	};
 	return (
-		<View style={styles.container}>
-			<View style={styles.wrapper}>
-				{getTitleText() ? (
-					<Text
-						style={[
-							styles.title,
-							[IMessageTypeCallLog.TIMEOUTCALL, IMessageTypeCallLog.REJECTCALL, IMessageTypeCallLog.CANCELCALL].includes(callLogType) &&
-								styles.titleRed
-						]}
-					>
-						{getTitleText()}
-					</Text>
-				) : null}
+		<View style={{ flexDirection: 'row' }}>
+			<View style={styles.container}>
+				<View style={styles.wrapper}>
+					{getTitleText() ? (
+						<Text
+							style={[
+								styles.title,
+								[IMessageTypeCallLog.TIMEOUTCALL, IMessageTypeCallLog.REJECTCALL, IMessageTypeCallLog.CANCELCALL].includes(
+									callLogType
+								) && styles.titleRed
+							]}
+						>
+							{getTitleText()}
+						</Text>
+					) : null}
 
-				<View style={styles.wrapperDescription}>
-					<View style={{ top: size.s_2 }}>{getIcon()}</View>
-					<Text style={styles.description}>{getDescriptionText()}</Text>
+					<View style={styles.wrapperDescription}>
+						<View style={{ top: size.s_2 }}>{getIcon()}</View>
+						<Text style={styles.description}>{getDescriptionText()}</Text>
+					</View>
 				</View>
-			</View>
 
-			{shouldShowCallBackButton() && (
-				<TouchableOpacity style={styles.btnCallBack} activeOpacity={1} onPress={onCallBack}>
-					<Text style={styles.titleCallBack}>{t('callLog.callBack')}</Text>
-				</TouchableOpacity>
-			)}
+				{shouldShowCallBackButton() && (
+					<TouchableOpacity style={styles.btnCallBack} activeOpacity={1} onPress={onCallBack}>
+						<Text style={styles.titleCallBack}>{t('callLog.callBack')}</Text>
+					</TouchableOpacity>
+				)}
+			</View>
 		</View>
 	);
 });

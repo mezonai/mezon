@@ -11,6 +11,7 @@ interface EmbedOptionRatioProps {
 	message_id: string;
 	idRadio: string;
 	max_options?: number;
+	disabled?: boolean;
 }
 
 export function EmbedOptionRatio({ options, message_id, idRadio, max_options }: EmbedOptionRatioProps) {
@@ -72,6 +73,7 @@ export function EmbedOptionRatio({ options, message_id, idRadio, max_options }: 
 							onCheckRatio={() => handleCheckedOption(index)}
 							checked={checked.includes(index)}
 							color={option.style}
+							disabled={option.disabled}
 						/>
 					</div>
 				))}

@@ -160,6 +160,7 @@ import { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'm
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
+import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
 
 type ChatContextProviderProps = {
 	children: React.ReactNode;
@@ -1678,6 +1679,22 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 	);
 
 	const onwebrtcsignalingfwd = useCallback(async (event: WebrtcSignalingFwd) => {
+		// Handle Group Call Events (>= 9)
+		if (event.data_type >= 9) {
+			const store = await getStoreAsync();
+			const state = store.getState() as unknown as RootState;
+
+			const handled = await handleGroupCallSocketEvent(event, state, {
+				dispatch,
+				socketRef,
+				userId
+			});
+
+			if (handled) {
+				return;
+			}
+		}
+
 		const store = await getStoreAsync();
 		const userCallId = selectUserCallId(store.getState() as unknown as RootState);
 		const isInCall = selectIsInCall(store.getState() as unknown as RootState);
@@ -1720,14 +1737,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			}
 			return;
 		}
-		dispatch(
-			DMCallActions.addOrUpdate({
-				calleeId: event?.receiver_id,
-				signalingData: event,
-				id: event?.caller_id,
-				callerId: event?.caller_id
-			})
-		);
+
+		if (signalingType <= 8) {
+			dispatch(
+				DMCallActions.addOrUpdate({
+					calleeId: event?.receiver_id,
+					signalingData: event,
+					id: event?.caller_id,
+					callerId: event?.caller_id
+				})
+			);
+		}
 	}, []);
 
 	const onuserstatusevent = useCallback(

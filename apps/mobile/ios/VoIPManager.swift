@@ -104,15 +104,25 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
     // MARK: - VoIP Notification Handling
 
     private func handleVoIPNotification(payload: PKPushPayload, completion: @escaping () -> Void) {
+        let appState = UIApplication.shared.applicationState
+
+         // Only proceed if the app is in the background or killed
+        guard appState == .background else {
+           print("App is in the foreground, skipping logic")
+           completion()
+           return
+        }
         let payloadDict = payload.dictionaryPayload
 
         guard let offerValue = payloadDict["offer"] else {
             print("No 'offer' key found in payload")
-            completion()
+            // Even if there's no offer, we need to report something to CallKit to avoid crash
+            reportDummyCall(completion: completion)
             return
         }
 
         var callerName = "Unknown"
+        var offer = ""
         var callerAvatar = ""
         var callerId = ""
         var channelId = ""
@@ -120,11 +130,13 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         if let offerString = offerValue as? String,
            let offerData = offerString.data(using: .utf8),
            let offerDict = try? JSONSerialization.jsonObject(with: offerData) as? [String: Any] {
+            offer = offerDict["offer"] as? String ?? ""
             callerName = offerDict["callerName"] as? String ?? "Unknown"
             callerAvatar = offerDict["callerAvatar"] as? String ?? ""
             callerId = offerDict["callerId"] as? String ?? ""
             channelId = offerDict["channelId"] as? String ?? ""
         } else if let offerDict = offerValue as? [String: Any] {
+            offer = offerDict["offer"] as? String ?? ""
             callerName = offerDict["callerName"] as? String ?? "Unknown"
             callerAvatar = offerDict["callerAvatar"] as? String ?? ""
             callerId = offerDict["callerId"] as? String ?? ""
@@ -132,17 +144,29 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         } else {
             print("Unexpected format for 'offer': \(type(of: offerValue))")
             dump(offerValue)
-            completion()
+            reportDummyCall(completion: completion)
             return
         }
+        
         print("Caller Name: \(callerName)")
         print("Caller Avatar: \(callerAvatar)")
         print("Caller ID: \(callerId)")
         print("Channel ID: \(channelId)")
-        // Report the incoming call to CallKeep
+        
+        if offer == "{\"offer\":\"CANCEL_CALL\"}" {
+            print("Cancel call received")
+            RNCallKeep.endCall(withUUID: "0731961b-415b-44f3-a960-dd94ef3372fc", reason: 6)
+            completion()
+            return
+        }
+
+        // Generate a unique UUID for each call
+        let callUUID = UUID().uuidString
+        
+        // Report the incoming call to CallKit - THIS IS MANDATORY to avoid crash
         RNCallKeep.reportNewIncomingCall(
-            "0731961b-415b-44f3-a960-dd94ef3372fc",
-            handle: callerId,
+            callUUID,
+            handle: callerId.isEmpty ? callerName : callerId,
             handleType: "generic",
             hasVideo: false,
             localizedCallerName: callerName,
@@ -153,10 +177,46 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
             fromPushKit: true,
             payload: payloadDict,
             withCompletionHandler: {
-                print("Incoming call reported successfully")
+                print("Incoming call reported successfully with UUID: \(callUUID)")
+                completion()
             }
         )
 
-        completion()
+        // Send event to React Native if listeners are available
+        if hasListeners {
+            sendEvent(withName: "VoIPNotificationReceived", body: [
+                "callerId": callerId,
+                "callerName": callerName,
+                "callerAvatar": callerAvatar,
+                "channelId": channelId,
+                "callUUID": callUUID,
+                "offer": offer
+            ])
+        }
+    }
+    
+    // Helper method to report a dummy call when payload is invalid
+    private func reportDummyCall(completion: @escaping () -> Void) {
+        let callUUID = UUID().uuidString
+        
+        RNCallKeep.reportNewIncomingCall(
+            callUUID,
+            handle: "Unknown",
+            handleType: "generic",
+            hasVideo: false,
+            localizedCallerName: "Unknown Caller",
+            supportsHolding: true,
+            supportsDTMF: true,
+            supportsGrouping: false,
+            supportsUngrouping: false,
+            fromPushKit: true,
+            payload: nil,
+            withCompletionHandler: {
+                print("Dummy call reported to avoid crash")
+                // Immediately end the dummy call
+                RNCallKeep.endCall(withUUID: callUUID, reason: 6)
+                completion()
+            }
+        )
     }
 }

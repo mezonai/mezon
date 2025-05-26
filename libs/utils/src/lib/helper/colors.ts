@@ -1,28 +1,11 @@
-/* eslint-disable eqeqeq */
-/* eslint-disable prefer-template */
-/* eslint-disable prefer-const */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable one-var */
-/* eslint-disable one-var-declaration-per-line */
-
 import { preloadImage } from './files';
 
 const LUMA_THRESHOLD = 128;
 
-/**
- * HEX > RGB
- * input: 'xxxxxx' (ex. 'ed15fa') case-insensitive
- * output: [r, g, b] ([0-255, 0-255, 0-255])
- */
 export function hex2rgb(param: string): [number, number, number] {
 	return [parseInt(param.substring(0, 2), 16), parseInt(param.substring(2, 4), 16), parseInt(param.substring(4, 6), 16)];
 }
 
-/**
- * RGB > HEX
- * input: [r, g, b] ([0-255, 0-255, 0-255])
- * output: 'xxxxxx' (ex. 'ff0000')
- */
 export function rgb2hex(param: [number, number, number]) {
 	const p0 = param[0].toString(16);
 	const p1 = param[1].toString(16);
@@ -46,13 +29,13 @@ export function rgb2hsb([r, g, b]: [number, number, number]): [number, number, n
 	g /= 255;
 	b /= 255;
 
-	let max = Math.max(r, g, b),
+	const max = Math.max(r, g, b),
 		min = Math.min(r, g, b);
 	let h!: number,
 		s: number,
 		v: number = max;
 
-	let d = max - min;
+	const d = max - min;
 	s = max == 0 ? 0 : d / max;
 
 	if (max == min) {
@@ -90,11 +73,11 @@ export function rgb2hsb([r, g, b]: [number, number, number]): [number, number, n
 export function hsb2rgb([h, s, v]: [number, number, number]): [number, number, number] {
 	let r!: number, g!: number, b!: number;
 
-	let i = Math.floor(h * 6);
-	let f = h * 6 - i;
-	let p = v * (1 - s);
-	let q = v * (1 - f * s);
-	let t = v * (1 - (1 - f) * s);
+	const i = Math.floor(h * 6);
+	const f = h * 6 - i;
+	const p = v * (1 - s);
+	const q = v * (1 - f * s);
+	const t = v * (1 - (1 - f) * s);
 
 	switch (i % 6) {
 		case 0:
@@ -141,7 +124,7 @@ export async function getAverageColor(url: string): Promise<[number, number, num
 	let height;
 	let i = -4;
 	let length;
-	let rgb: [number, number, number] = [0, 0, 0];
+	const rgb: [number, number, number] = [0, 0, 0];
 	let count = 0;
 
 	const canvas = document.createElement('canvas');
@@ -188,7 +171,6 @@ export function getColorLuma(rgbColor: [number, number, number]) {
 	return luma;
 }
 
-// Function was adapted from https://github.com/telegramdesktop/tdesktop/blob/35ff621b5b52f7e3553fb0f990ea13ade7101b8e/Telegram/SourceFiles/data/data_wall_paper.cpp#L518
 export function getPatternColor(rgbColor: [number, number, number]) {
 	let [hue, saturation, value] = rgb2hsb(rgbColor);
 

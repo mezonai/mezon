@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
-			width: size.s_150,
+			paddingHorizontal: size.s_4,
 			borderRadius: size.s_10,
 			overflow: 'hidden',
 			marginTop: size.s_4,

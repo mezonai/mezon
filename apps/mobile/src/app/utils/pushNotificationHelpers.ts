@@ -483,7 +483,7 @@ export const setupIncomingCall = async (body: string) => {
 	try {
 		const bodyData = safeJSONParse(body || '{}');
 		if (bodyData?.offer === 'CANCEL_CALL') {
-			const callID = '6cb67209-4ef9-48c0-a8dc-2cec6cd6261d';
+			const callID = '0731961b-415b-44f3-a960-dd94ef3372fc';
 			RNCallKeep.endCall(callID);
 			return;
 		}

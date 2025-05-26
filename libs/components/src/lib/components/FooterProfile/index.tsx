@@ -7,6 +7,7 @@ import {
 	giveCoffeeActions,
 	selectAccountCustomStatus,
 	selectCurrentClanId,
+	selectGroupCallJoined,
 	selectInfoSendToken,
 	selectIsElectronDownloading,
 	selectIsElectronUpdateAvailable,
@@ -234,6 +235,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
+	const GroupCallJoined = useSelector(selectGroupCallJoined);
 	const statusMenu = useSelector(selectStatusMenu);
 
 	const [openProfileModal, closeProfileModal] = useModal(() => {
@@ -259,7 +261,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		>
 			{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 			{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
-			{isVoiceJoined && <VoiceInfo />}
+			{(isVoiceJoined || GroupCallJoined) && <VoiceInfo />}
 			{(isElectronUpdateAvailable || IsElectronDownloading) && <UpdateButton isDownloading={!isElectronUpdateAvailable} />}
 			<div
 				className={`flex items-center gap-2 pr-4 pl-2 py-2 font-title text-[15px]

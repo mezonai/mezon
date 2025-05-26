@@ -130,7 +130,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					mentions: mentions,
 					attachments,
 					references,
-					anonymous: anonymousMode,
+					anonymous: getClanId !== '0' ? anonymousMode : false,
 					mentionEveryone,
 					senderId: currentUserId,
 					avatar: priorityAvatar,

@@ -266,7 +266,13 @@ const ChannelLinkComponent = ({
 					{channel.status === StatusVoiceChannel.No_Active && <Icons.LoadingSpinner />}
 				</span>
 			) : (
-				<Link to={channelPath} id={`drag-detect-${channel.id}`} onClick={handleClick} className="channel-link block" draggable="false">
+				<Link
+					to={channelPath}
+					id={`${channel.category_id}-${channel.id}`}
+					onClick={handleClick}
+					className="channel-link block"
+					draggable="false"
+				>
 					<span
 						ref={channelLinkRef}
 						className={`${classes[state]} pointer-events-none ${isActive ? 'dark:bg-bgModifierHover bg-bgLightModeButton' : ''}`}

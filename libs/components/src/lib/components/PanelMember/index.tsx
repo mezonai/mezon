@@ -33,9 +33,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { ChannelMembersEntity, EPermission, EUserSettings, FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
+import { ChannelMembersEntity, EPermission, EUserSettings } from '@mezon/utils';
 import { format } from 'date-fns';
-import { Dropdown } from 'flowbite-react';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MentionItem } from 'react-mentions';
@@ -44,7 +43,6 @@ import { useNavigate } from 'react-router-dom';
 import { Coords } from '../ChannelLink';
 import { directMessageValueProps } from '../DmList/DMListItem';
 import { DataMemberCreate } from '../DmList/MemberListGroupChat';
-import ItemPanel from '../PanelChannel/ItemPanel';
 import { EActiveType } from '../SettingProfile/SettingRightProfile';
 import GroupPanelMember from './GroupPanelMember';
 import ItemPanelMember from './ItemPanelMember';
@@ -154,10 +152,15 @@ const PanelMember = ({
 	};
 
 	const handleDirectMessageWithUser = async () => {
-		const response = await createDirectMessageWithUser(member?.user?.id || '');
+		const response = await createDirectMessageWithUser(
+			member?.user?.id || '',
+			member?.user?.display_name,
+			member?.user?.username,
+			member?.user?.avatar_url
+		);
 		if (response?.channel_id) {
 			const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
-			navigate('/' + directDM);
+			navigate(directDM);
 		}
 	};
 
@@ -346,10 +349,10 @@ const PanelMember = ({
 				<>
 					<GroupPanelMember>
 						<ItemPanelMember children="Mark As Read" onClick={() => handleMarkAsRead(directMessageValue?.dmID ?? '')} />
-						<ItemPanelMember
+						{/* <ItemPanelMember
 							children={!directMessageValue?.e2ee ? 'Enable E2EE' : 'Disable E2EE'}
 							onClick={() => handleEnableE2ee(directMessageValue?.dmID, directMessageValue?.e2ee)}
-						/>
+						/> */}
 						<ItemPanelMember children="Profile" onClick={handleOpenProfile} />
 						{/* {directMessageValue ? (
 							checkDm && <ItemPanelMember children="Call" />
@@ -379,7 +382,7 @@ const PanelMember = ({
 
 					{!isMemberDMGroup && (
 						<GroupPanelMember>
-							{!isSelf && !directMessageValue && <ItemPanelMember children="Mute" type="checkbox" />}
+							{/* {!isSelf && !directMessageValue && <ItemPanelMember children="Mute" type="checkbox" />} */}
 							{isSelf && <ItemPanelMember children="Edit Clan Profile" onClick={handleOpenClanProfileSetting} />}
 							{!isSelf && (
 								<>
@@ -398,7 +401,7 @@ const PanelMember = ({
 											}}
 										/>
 									)}
-									<ItemPanelMember children="Block" />
+									{/* <ItemPanelMember children="Block" /> */}
 								</>
 							)}
 						</GroupPanelMember>
@@ -421,7 +424,7 @@ const PanelMember = ({
 						</>
 					)}
 
-					{directMessageValue && (
+					{/* {directMessageValue && (
 						<GroupPanelMember>
 							{getNotificationChannelSelected?.active === 1 || getNotificationChannelSelected?.id === '0' ? (
 								<Dropdown
@@ -447,7 +450,7 @@ const PanelMember = ({
 								<ItemPanel children={nameChildren} onClick={() => muteOrUnMuteChannel(1)} subText={mutedUntil} />
 							)}
 						</GroupPanelMember>
-					)}
+					)} */}
 					{!isSelf && (hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner)) && (
 						<GroupPanelMember>
 							<ItemPanelMember onClick={handleRemoveMember} children={`Kick ${member?.user?.username}`} danger />

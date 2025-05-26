@@ -68,6 +68,7 @@ export * from './lib/reactionMessage/reactionMessage.slice';
 export * from './lib/roleclan/roleclan.slice';
 export * from './lib/searchmessages/searchmessage.slice';
 export * from './lib/settingSticker/settingSticker.slice';
+export * from './lib/slices/groupCall.slice';
 export * from './lib/store-mobile';
 export * from './lib/stream/usersStream.slice';
 export * from './lib/stream/videoStream.slice';

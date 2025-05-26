@@ -28,6 +28,7 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	voiceConnectionState: boolean;
 	fullScreen?: boolean;
 	isJoined: boolean;
+	isGroupCallJoined: boolean;
 	token: string;
 	stream: MediaStream | null | undefined;
 	showSelectScreenModal: boolean;
@@ -104,15 +105,16 @@ export const generateMeetTokenExternal = createAsyncThunk(
 export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
+	voiceInfo: null,
 	voiceChannelMember: [],
 	showMicrophone: false,
 	showCamera: false,
 	showScreen: false,
 	statusCall: false,
 	voiceConnectionState: false,
-	voiceInfo: null,
 	fullScreen: false,
 	isJoined: false,
+	isGroupCallJoined: false,
 	token: '',
 	stream: null,
 	showSelectScreenModal: false,
@@ -120,6 +122,7 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	guestUserId: undefined,
 	guestAccessToken: undefined,
 	joinCallExtStatus: 'not loaded',
+	isPiPMode: false,
 	openPopOut: false,
 	openChatBox: false,
 	externalGroup: false
@@ -141,6 +144,9 @@ export const voiceSlice = createSlice({
 		},
 		setJoined: (state, action) => {
 			state.isJoined = action.payload;
+		},
+		setGroupCallJoined: (state, action) => {
+			state.isGroupCallJoined = action.payload;
 		},
 		setToken: (state, action) => {
 			state.token = action.payload;
@@ -180,6 +186,7 @@ export const voiceSlice = createSlice({
 			state.voiceInfo = null;
 			state.fullScreen = false;
 			state.isJoined = false;
+			state.isGroupCallJoined = false;
 			state.token = '';
 			state.stream = null;
 			state.openPopOut = false;
@@ -290,6 +297,7 @@ export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): V
 export const selectAllVoice = createSelector(getVoiceState, selectAll);
 
 export const selectVoiceJoined = createSelector(getVoiceState, (state) => state.isJoined);
+export const selectGroupCallJoined = createSelector(getVoiceState, (state) => state.isGroupCallJoined);
 
 export const selectTokenJoinVoice = createSelector(getVoiceState, (state) => state.token);
 

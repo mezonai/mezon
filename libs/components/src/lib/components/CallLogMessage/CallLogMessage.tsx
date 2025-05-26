@@ -90,6 +90,8 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
 	const key = `${callLog.callLogType}_${senderId === userId ? 'SENDER' : 'RECEIVER'}`;
 
+	const shouldShowCallBack = callLog.showCallBack !== false;
+
 	const { icon, text, colorClass, bgClass } = iconMap[key] || {
 		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
 		text: `${username} started a ${callLog.isVideo ? 'video' : 'audio'} call`,
@@ -121,7 +123,19 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 
 	const handleStartCall = () => {
 		if (!isInCall) {
-			handleSend({ t: ``, callLog: { isVideo: callLog.isVideo, callLogType: IMessageTypeCallLog.STARTCALL } }, [], [], []);
+			handleSend(
+				{
+					t: `Started ${callLog.isVideo ? 'video' : 'voice'} call`,
+					callLog: {
+						isVideo: callLog.isVideo,
+						callLogType: IMessageTypeCallLog.STARTCALL,
+						showCallBack: false
+					}
+				},
+				[],
+				[],
+				[]
+			);
 			dispatch(audioCallActions.startDmCall({ groupId: channelId, isVideo: callLog.isVideo }));
 			dispatch(audioCallActions.setGroupCallId(channelId));
 			dispatch(audioCallActions.setUserCallId(currentDmGroup?.user_id?.[0]));
@@ -144,13 +158,15 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 						<div className="text-sm text-gray-600 dark:text-gray-300">{callLogMessage}</div>
 					</div>
 				</div>
-				<button
-					onClick={handleStartCall}
-					className={`flex justify-center items-center w-full text-center p-3 uppercase text-blue-500 font-normal`}
-					disabled={isInCall || isPlayDialTone || isPlayRingTone || isPlayBusyTone}
-				>
-					{CallLog.CALL_BACK}
-				</button>
+				{shouldShowCallBack && (
+					<button
+						onClick={handleStartCall}
+						className={`flex justify-center items-center w-full text-center p-3 uppercase text-blue-500 font-normal`}
+						disabled={isInCall || isPlayDialTone || isPlayRingTone || isPlayBusyTone}
+					>
+						{CallLog.CALL_BACK}
+					</button>
+				)}
 			</div>
 		</div>
 	);

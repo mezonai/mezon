@@ -53,6 +53,7 @@ const RoomView = ({
 	const { isCameraEnabled, isMicrophoneEnabled, isScreenShareEnabled, localParticipant } = useLocalParticipant();
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
+	const [isHiddenControl, setIsHiddenControl] = useState<boolean>(false);
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const screenCaptureRef = React.useRef(null);
 
@@ -253,20 +254,14 @@ const RoomView = ({
 
 	if (focusedScreenShare) {
 		return (
-			<View
-				style={
-					isPiPMode
-						? { width: '100%', flex: 1, alignItems: 'flex-start' }
-						: { width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }
-				}
-			>
-				<View style={{ height: (isPiPMode ? 2 : 3) * size.s_100, width: '100%' }}>
-					<ResumableZoom>
-						<View style={{ height: (isPiPMode ? 2 : 3) * size.s_100, width: marginWidth }}>
+			<View style={isPiPMode ? { width: '100%', flex: 1, alignItems: 'flex-start' } : { width: '100%', flex: 1, alignItems: 'center' }}>
+				<View style={{ height: isPiPMode ? 2 * 100 : '100%', width: '100%' }}>
+					<ResumableZoom onTap={() => setIsHiddenControl((prevState) => !prevState)}>
+						<View style={{ height: isPiPMode ? 2 * 100 : '100%', width: marginWidth }}>
 							<VideoTrack
 								trackRef={focusedScreenShare}
 								objectFit={isPiPMode ? 'cover' : 'contain'}
-								style={{ height: (isPiPMode ? 2 : 3) * size.s_100, width: '100%' }}
+								style={{ height: isPiPMode ? 2 * 100 : '100%', width: '100%' }}
 							/>
 						</View>
 					</ResumableZoom>
@@ -276,7 +271,7 @@ const RoomView = ({
 						<Icons.ArrowShrinkIcon height={size.s_16} />
 					</TouchableOpacity>
 				)}
-				{!isPiPMode && <RenderControlBar />}
+				{isPiPMode || isHiddenControl ? <View /> : <RenderControlBar />}
 			</View>
 		);
 	}

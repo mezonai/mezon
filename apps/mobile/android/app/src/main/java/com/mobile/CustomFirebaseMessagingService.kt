@@ -123,11 +123,12 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
         val callerAvatar = offerJson.optString("callerAvatar", "")
 
         // Create an intent for when user taps the notification (Answer)
-        val answerIntent = Intent(this, MainActivity::class.java).apply {
+        val answerIntent = Intent(this, CallActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             action = "ANSWER_CALL_ACTION"
             putExtra("action", "ANSWER_CALL")
             putExtra("notificationData", JSONObject(data).toString())
+            putExtra("stopVibration", true)
         }
         val answerPendingIntent = PendingIntent.getActivity(
             this, 0, answerIntent,
@@ -137,6 +138,7 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
         // Create an intent for decline button
         val declineIntent = Intent(this, NotificationActionReceiver::class.java).apply {
             action = "DECLINE_CALL_ACTION"
+            putExtra("cancelCall", true)
         }
         val declinePendingIntent = PendingIntent.getBroadcast(
             this, 1, declineIntent,
@@ -289,7 +291,9 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
         }
     }
 
-    private fun stopVibration() {
+    internal fun stopVibration() {
+        removeNotificationData()
+        // Also stop the service (as a fallback)
         val serviceIntent = Intent(this, VibrationService::class.java)
         stopService(serviceIntent)
     }

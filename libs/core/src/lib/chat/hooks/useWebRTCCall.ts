@@ -195,15 +195,20 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		return track?.kind === 'video' && (track?.label.toLowerCase().includes('screen') || track?.label.toLowerCase().includes('window'));
 	};
 
-	const getConstraintsLocal = async () => {
+	const getConstraintsLocal = async (isVideoCall: boolean) => {
 		let permissionCameraGranted = false;
 		let permissionMicroGranted = false;
 
 		const microphoneGranted = await requestMediaPermission('audio');
-		const cameraGranted = await requestMediaPermission('video');
-		if (cameraGranted === 'granted') {
-			permissionCameraGranted = true;
+
+		// Only request camera permission if this is a video call
+		if (isVideoCall) {
+			const cameraGranted = await requestMediaPermission('video');
+			if (cameraGranted === 'granted') {
+				permissionCameraGranted = true;
+			}
 		}
+
 		if (microphoneGranted !== 'granted') {
 			dispatch(
 				toastActions.addToast({
@@ -228,7 +233,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 		return {
 			audio: permissionMicroGranted,
-			video: permissionCameraGranted
+			video: isVideoCall && permissionCameraGranted
 		};
 	};
 
@@ -236,7 +241,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		try {
 			callTimeout?.current && clearTimeout(callTimeout.current);
 			if (!isAnswer) {
-				const constraints = await getConstraintsLocal();
+				const constraints = await getConstraintsLocal(isVideoCall);
 				const stream = await navigator.mediaDevices.getUserMedia(constraints);
 				const pc = initializePeerConnection();
 				if (isVideoCall) {
@@ -253,9 +258,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					}));
 				}
 
-				stream?.getVideoTracks()?.forEach?.((track) => {
-					track.enabled = isVideoCall;
-				});
+				// Video tracks are already properly configured via constraints
+				// No need to manually enable/disable them here
 				// Add tracks to peer connection
 				stream.getTracks().forEach((track) => {
 					pc.addTrack(track, stream);
@@ -292,7 +296,14 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					dispatch(
 						DMCallActions.updateCallLog({
 							channelId,
-							content: { t: '', callLog: { isVideo: isVideoCall, callLogType: IMessageTypeCallLog.TIMEOUTCALL } }
+							content: {
+								t: `${isVideoCall ? 'Video' : 'Voice'} call timed out`,
+								callLog: {
+									isVideo: isVideoCall,
+									callLogType: IMessageTypeCallLog.TIMEOUTCALL,
+									showCallBack: true
+								}
+							}
 						})
 					);
 					handleEndCall(true);
@@ -315,59 +326,86 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		}
 	};
 
-	// Handle offer
+	// Handle offer (both initial and renegotiation)
 	const handleOffer = async (signalingData: any) => {
-		const constraints = await getConstraintsLocal();
-		const stream = await navigator.mediaDevices.getUserMedia(constraints);
-		const pc = peerConnection?.current || initializePeerConnection();
-
-		if (isShowMeetDM) {
-			await mezon.socketRef.current?.forwardWebrtcSignaling(
-				dmUserId,
-				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
-				`{"cameraEnabled": true}`,
-				channelId,
-				userId
-			);
-			setControlState((prev) => ({
-				...prev,
-				cameraEnabled: true
-			}));
-		}
-		stream?.getVideoTracks()?.forEach?.((track) => {
-			track.enabled = isShowMeetDM;
-		});
-
-		stream.getTracks().forEach((track) => {
-			pc.addTrack(track, stream);
-		});
-
 		const offer = new RTCSessionDescription({
 			type: 'offer',
 			sdp: signalingData.sdp
 		});
 
-		await pc.setRemoteDescription(offer);
+		const pc = peerConnection?.current;
+		const isRenegotiation = !!pc && pc.connectionState !== 'new';
 
-		// Create and send answer
-		const answer = await pc.createAnswer();
-		await pc.setLocalDescription(answer);
-		const compressedAnswer = await compress(JSON.stringify(answer));
-		await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_ANSWER, compressedAnswer, channelId, userId);
-		if (localVideoRef.current) {
-			localVideoRef.current.srcObject = stream;
-		}
+		if (isRenegotiation) {
+			// Renegotiation: Just update remote description and create answer
+			await pc.setRemoteDescription(offer);
 
-		if (!peerConnection?.current) {
-			peerConnection.current = pc;
+			// Create and send answer
+			const answer = await pc.createAnswer();
+			await pc.setLocalDescription(answer);
+			const compressedAnswer = await compress(JSON.stringify(answer));
+			await mezon.socketRef.current?.forwardWebrtcSignaling(
+				dmUserId,
+				WebrtcSignalingType.WEBRTC_SDP_ANSWER,
+				compressedAnswer,
+				channelId,
+				userId
+			);
+		} else {
+			// Initial call: Setup new connection and streams
+			const constraints = await getConstraintsLocal(isShowMeetDM);
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			const newPc = pc || initializePeerConnection();
+
+			if (isShowMeetDM) {
+				await mezon.socketRef.current?.forwardWebrtcSignaling(
+					dmUserId,
+					WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
+					`{"cameraEnabled": true}`,
+					channelId,
+					userId
+				);
+				setControlState((prev) => ({
+					...prev,
+					cameraEnabled: true
+				}));
+			}
+
+			// Add tracks to peer connection
+			stream.getTracks().forEach((track) => {
+				newPc.addTrack(track, stream);
+			});
+
+			await newPc.setRemoteDescription(offer);
+
+			// Create and send answer
+			const answer = await newPc.createAnswer();
+			await newPc.setLocalDescription(answer);
+			const compressedAnswer = await compress(JSON.stringify(answer));
+			await mezon.socketRef.current?.forwardWebrtcSignaling(
+				dmUserId,
+				WebrtcSignalingType.WEBRTC_SDP_ANSWER,
+				compressedAnswer,
+				channelId,
+				userId
+			);
+
+			if (localVideoRef.current) {
+				localVideoRef.current.srcObject = stream;
+			}
+
+			if (!peerConnection?.current) {
+				peerConnection.current = newPc;
+			}
+
+			// Update state
+			setCallState({
+				localStream: stream,
+				remoteStream: null,
+				localScreenStream: null,
+				remoteScreenStream: null
+			});
 		}
-		// Update state
-		setCallState({
-			localStream: stream,
-			remoteStream: null,
-			localScreenStream: null,
-			remoteScreenStream: null
-		});
 	};
 
 	const handleAnswer = async (signalingData: any) => {
@@ -427,8 +465,15 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					DMCallActions.updateCallLog({
 						channelId: channelId || '',
 						content: {
-							t: '',
-							callLog: { isVideo: isShowMeetDM, callLogType }
+							t:
+								callLogType === IMessageTypeCallLog.TIMEOUTCALL
+									? `${isShowMeetDM ? 'Video' : 'Voice'} call timed out`
+									: `Declined ${isShowMeetDM ? 'video' : 'voice'} call`,
+							callLog: {
+								isVideo: isShowMeetDM,
+								callLogType,
+								showCallBack: callLogType === IMessageTypeCallLog.TIMEOUTCALL ? true : false // Timeout can retry, reject cannot
+							}
 						}
 					})
 				);
@@ -568,10 +613,11 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					DMCallActions.updateCallLog({
 						channelId: channelId,
 						content: {
-							t: timeCall,
+							t: `Call duration: ${timeCall}`,
 							callLog: {
 								isVideo: isShowMeetDM,
-								callLogType: IMessageTypeCallLog.FINISHCALL
+								callLogType: IMessageTypeCallLog.FINISHCALL,
+								showCallBack: true
 							}
 						}
 					})
@@ -619,31 +665,91 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			dispatch(toastActions.addToast({ message: 'Camera permission is required', type: 'warning', autoClose: 1000 }));
 			return;
 		}
+
+		const videoTracks = callState.localStream.getVideoTracks();
+		const newCameraState = !controlState.cameraEnabled;
+
+		if (videoTracks.length === 0 && newCameraState) {
+			try {
+				const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+				const videoTrack = videoStream.getVideoTracks()[0];
+
+				callState.localStream.addTrack(videoTrack);
+
+				const senders = peerConnection?.current?.getSenders() || [];
+				const videoSender = senders.find((sender) => sender.track?.kind === 'video');
+
+				if (!videoSender) {
+					peerConnection?.current?.addTrack(videoTrack, callState.localStream);
+				}
+
+				// Renegotiation needed when adding video track to voice call
+				if (peerConnection?.current) {
+					// Create new offer with video track
+					const offer = await peerConnection.current.createOffer();
+					await peerConnection.current.setLocalDescription(offer);
+
+					// Send new offer to remote peer
+					const compressedOffer = await compress(JSON.stringify(offer));
+					await mezon.socketRef.current?.forwardWebrtcSignaling(
+						dmUserId,
+						WebrtcSignalingType.WEBRTC_SDP_OFFER,
+						compressedOffer,
+						channelId,
+						userId
+					);
+				}
+			} catch (error) {
+				console.error('Error adding video track:', error);
+				return;
+			}
+		} else {
+			// Toggle existing video tracks
+			videoTracks.forEach((track) => {
+				track.enabled = newCameraState;
+			});
+
+			// If disabling video completely, may need renegotiation for some browsers
+			if (!newCameraState && peerConnection?.current) {
+				try {
+					// Create new offer reflecting video disabled state
+					const offer = await peerConnection.current.createOffer();
+					await peerConnection.current.setLocalDescription(offer);
+
+					// Send updated offer to remote peer
+					const compressedOffer = await compress(JSON.stringify(offer));
+					await mezon.socketRef.current?.forwardWebrtcSignaling(
+						dmUserId,
+						WebrtcSignalingType.WEBRTC_SDP_OFFER,
+						compressedOffer,
+						channelId,
+						userId
+					);
+				} catch (error) {
+					console.error('Error during renegotiation:', error);
+				}
+			}
+		}
+
+		// Send signaling with the new state
 		await mezon.socketRef.current?.forwardWebrtcSignaling(
 			dmUserId,
 			WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
-			`{"cameraEnabled": ${!controlState.cameraEnabled}}`,
+			`{"cameraEnabled": ${newCameraState}}`,
 			channelId,
 			userId
 		);
 
-		const videoTracks = callState.localStream.getVideoTracks();
-		try {
-			videoTracks.forEach((track) => {
-				track.enabled = !track.enabled;
-			});
-
-			if (localVideoRef.current) {
-				localVideoRef.current.srcObject = callState.localStream;
-			}
-		} catch (error) {
-			console.error('Error adding video track:', error);
+		// Update video element
+		if (localVideoRef.current) {
+			localVideoRef.current.srcObject = callState.localStream;
 		}
 
-		dispatch(DMCallActions.setIsShowMeetDM(!isShowMeetDM));
+		// Update all states consistently
+		dispatch(DMCallActions.setIsShowMeetDM(newCameraState));
 		setControlState((prev) => ({
 			...prev,
-			cameraEnabled: !prev.cameraEnabled
+			cameraEnabled: newCameraState
 		}));
 	};
 

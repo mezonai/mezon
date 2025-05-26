@@ -1,5 +1,5 @@
-import { AvatarImage, Coords, ModalRemoveMemberClan } from '@mezon/components';
-import { useChannelMembersActions, useMemberContext, usePermissionChecker, useRoles } from '@mezon/core';
+import { AvatarImage, Coords, ModalRemoveMemberClan, PanelMember, UserProfileModalInner } from '@mezon/components';
+import { useChannelMembersActions, useMemberContext, useOnClickOutside, usePermissionChecker, useRoles } from '@mezon/core';
 import {
 	RolesClanEntity,
 	selectCurrentChannelId,
@@ -11,9 +11,10 @@ import {
 	usersClanActions
 } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_ID, createImgproxyUrl } from '@mezon/utils';
+import { ChannelMembersEntity, DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_ID, createImgproxyUrl } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
-import { useMemo, useRef, useState } from 'react';
+import { MouseEvent, useMemo, useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import RoleNameCard from './RoleNameCard';
 
@@ -83,30 +84,59 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 		mouseY: 0,
 		distanceToBottom: 0
 	});
-	// const [openPanelMember, closePanelMember] = useModal(() => {
-	// 	const member: ChannelMembersEntity = {
-	// 		id: userId,
-	// 		user_id: userId,
-	// 		user: {
-	// 			username: username,
-	// 			id: userId
-	// 		}
-	// 	};
-	// 	return (
-	// 		<PanelMember coords={coords} onClose={closePanelMember} onRemoveMember={handleClickRemoveMember} isMemberChannel={true} member={member} />
-	// 	);
-	// }, [coords]);
 
-	// const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
-	// 	setCoords({
-	// 		mouseX: e.clientX,
-	// 		mouseY: e.clientY,
-	// 		distanceToBottom: window.innerHeight - e.clientY
-	// 	});
-	// 	openPanelMember();
-	// };
+	const [openUserProfile, closeUserProfile] = useModal(() => {
+		return (
+			<UserProfileModalInner
+				userId={userId as string}
+				onClose={closeUserProfile}
+				isDM={false}
+				user={{
+					id: userId,
+					user_id: userId,
+					user: {
+						id: userId,
+						username: username
+					}
+				}}
+				avatar={avatar}
+			/>
+		);
+	}, [userId, username, avatar]);
 
-	// useOnClickOutside(itemRef, closePanelMember);
+	const [openPanelMember, closePanelMember] = useModal(() => {
+		const member: ChannelMembersEntity = {
+			id: userId,
+			user_id: userId,
+			user: {
+				username: username,
+				id: userId,
+				display_name: displayName,
+				avatar_url: avatar
+			}
+		};
+		return (
+			<PanelMember
+				coords={coords}
+				onClose={closePanelMember}
+				onRemoveMember={handleClickRemoveMember}
+				isMemberChannel={true}
+				member={member}
+				onOpenProfile={openUserProfile}
+			/>
+		);
+	}, [coords, openUserProfile]);
+
+	const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+		setCoords({
+			mouseX: e.clientX,
+			mouseY: e.clientY,
+			distanceToBottom: window.innerHeight - e.clientY
+		});
+		openPanelMember();
+	};
+
+	useOnClickOutside(itemRef, closePanelMember);
 	const handleClickRemoveMember = () => {
 		setOpenModalRemoveMember(true);
 	};
@@ -120,7 +150,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 		<>
 			<div
 				className="flex flex-row justify-between items-center h-[48px] border-b-[1px] dark:border-borderDivider border-buttonLightTertiary last:border-b-0"
-				// onContextMenu={handleContextMenu}
+				onContextMenu={handleContextMenu}
 				ref={itemRef}
 			>
 				<div className="flex-3 p-1">

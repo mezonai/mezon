@@ -381,28 +381,43 @@ export const listChannelRenderSlice = createSlice({
 				const itemOrder = state.listChannelRender[clanId][indexStart];
 				const itemTarget = state.listChannelRender[clanId][indexEnd];
 				const channelThreadOrder = state.listChannelRender[clanId].filter((item) => {
-					if ((item as IChannel).id === itemOrder.id || (item as IChannel).parent_id === itemOrder.id) {
+					if (
+						((item as IChannel).id === itemOrder.id || (item as IChannel).parent_id === itemOrder.id) &&
+						item.category_id !== FAVORITE_CATEGORY_ID
+					) {
 						return {
 							...item
 						};
 					}
 				});
 				const channelThreadTarget = state.listChannelRender[clanId].filter((item) => {
-					if ((item as IChannel).id === itemTarget.id || (item as IChannel).parent_id === itemTarget.id) {
+					if (
+						((item as IChannel).id === itemTarget.id || (item as IChannel).parent_id === itemTarget.id) &&
+						item.category_id !== FAVORITE_CATEGORY_ID
+					) {
 						return {
 							...item
 						};
 					}
 				});
 
-				state.listChannelRender[clanId].splice(indexStart, channelThreadOrder.length);
-				state.listChannelRender[clanId].join();
-				state.listChannelRender[clanId].splice(
-					indexStart < indexEnd ? indexEnd - channelThreadOrder.length + channelThreadTarget.length : indexEnd + channelThreadTarget.length,
-					0,
-					...channelThreadOrder
-				);
-				state.listChannelRender[clanId].join();
+				if (categoryId !== FAVORITE_CATEGORY_ID) {
+					state.listChannelRender[clanId].splice(indexStart, channelThreadOrder.length);
+					state.listChannelRender[clanId].join();
+					state.listChannelRender[clanId].splice(
+						indexStart < indexEnd
+							? indexEnd - channelThreadOrder.length + channelThreadTarget.length
+							: indexEnd + channelThreadTarget.length,
+						0,
+						...channelThreadOrder
+					);
+					state.listChannelRender[clanId].join();
+				} else {
+					state.listChannelRender[clanId].splice(indexStart, 1);
+					state.listChannelRender[clanId].join();
+					state.listChannelRender[clanId].splice(indexStart < indexEnd ? indexEnd : indexEnd + 1, 0, itemOrder);
+					state.listChannelRender[clanId].join();
+				}
 			}
 		}
 	}

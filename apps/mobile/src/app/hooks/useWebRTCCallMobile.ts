@@ -4,7 +4,7 @@ import { sessionConstraints } from '@mezon/mobile-components';
 import { DMCallActions, selectDmGroupCurrent, useAppDispatch } from '@mezon/store';
 import { RootState, audioCallActions } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { IMessageSendPayload, IMessageTypeCallLog } from '@mezon/utils';
+import { IMessageSendPayload, IMessageTypeCallLog, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
@@ -79,6 +79,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		speaker: false
 	});
 	const dialToneRef = useRef<Sound | null>(null);
+	const pendingCandidatesRef = useRef<(RTCIceCandidate | null)[]>([]);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode: mode });
@@ -139,6 +140,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		pc.addEventListener('icecandidate', async (event) => {
 			if (event?.candidate) {
 				setPendingCandidates((prev) => [...prev, event.candidate]);
+				pendingCandidatesRef.current = [...(pendingCandidatesRef?.current || []), event.candidate];
 			}
 		});
 
@@ -308,6 +310,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		const answer = await pc.createAnswer();
 		await pc.setLocalDescription(answer);
 		const compressedAnswer = await compress(JSON.stringify(answer));
+		await sleep(500); // Wait for the stream to be ready
 		await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_ANSWER, compressedAnswer, channelId, userId);
 
 		if (!peerConnection?.current) {
@@ -322,18 +325,24 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	const handleAnswer = async (signalingData: any) => {
 		if (!peerConnection?.current) return;
 		await peerConnection?.current.setRemoteDescription(new RTCSessionDescription(signalingData));
+		const dataPendingCandidates = pendingCandidates?.length
+			? pendingCandidates
+			: pendingCandidatesRef?.current?.length
+				? pendingCandidatesRef?.current
+				: [];
 
 		// Add stored ICE candidates
-		if (pendingCandidates) {
+		if (dataPendingCandidates?.length > 0) {
 			await mezon.socketRef.current?.forwardWebrtcSignaling(
 				dmUserId,
 				WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-				JSON.stringify(pendingCandidates?.[pendingCandidates?.length - 1]),
+				JSON.stringify(dataPendingCandidates?.[dataPendingCandidates?.length - 1]),
 				channelId,
 				userId
 			);
+			setPendingCandidates([]);
+			pendingCandidatesRef.current = [];
 		}
-		setPendingCandidates([]);
 	};
 
 	const handleICECandidate = async (data: any) => {
@@ -344,8 +353,13 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				const candidate = new RTCIceCandidate(data);
 				await peerConnection?.current?.addIceCandidate(candidate);
 
-				if (pendingCandidates) {
-					for (const candidateItem of pendingCandidates) {
+				const dataPendingCandidates = pendingCandidates?.length
+					? pendingCandidates
+					: pendingCandidatesRef?.current?.length
+						? pendingCandidatesRef?.current
+						: [];
+				if (dataPendingCandidates) {
+					for (const candidateItem of dataPendingCandidates) {
 						await mezon.socketRef.current?.forwardWebrtcSignaling(
 							dmUserId,
 							WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
@@ -354,6 +368,8 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 							userId
 						);
 					}
+					setPendingCandidates([]);
+					pendingCandidatesRef.current = [];
 				}
 			} else {
 				console.error('Invalid ICE candidate data:', data);

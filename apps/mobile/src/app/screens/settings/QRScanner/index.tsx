@@ -9,7 +9,7 @@ import { safeJSONParse } from 'mezon-js';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, Linking, PermissionsAndroid, Platform, Text, TouchableOpacity, View } from 'react-native';
-import { Camera } from 'react-native-camera-kit';
+import { Camera, CameraType } from 'react-native-camera-kit';
 import { launchImageLibrary } from 'react-native-image-picker';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -208,6 +208,7 @@ export const QRScanner = () => {
 		<View style={styles.wrapper}>
 			<Camera
 				key={cameraKey}
+				cameraType={CameraType.Back}
 				showFrame={false}
 				onReadCode={(event) => {
 					const qrValue = event?.nativeEvent?.codeStringValue;

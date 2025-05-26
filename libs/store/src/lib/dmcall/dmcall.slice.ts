@@ -174,7 +174,12 @@ export const selectDMVoiceEntities = createSelector(getDMCallState, selectEntiti
 
 export const selectSignalingDataByUserId = createSelector([selectDMVoiceEntities, (state, userId) => userId], (entities, userId) => {
 	const dmcalls = Object.values(entities);
-	return dmcalls.filter((dmcall) => (dmcall && dmcall.signalingData?.receiver_id === userId) || dmcall.calleeId === userId);
+	return dmcalls.filter((dmcall) => {
+		const isForUser = (dmcall && dmcall.signalingData?.receiver_id === userId) || dmcall.calleeId === userId;
+		// Only include DM call events (data_type <= 8), exclude group call events (>= 9)
+		const isDMCallEvent = dmcall?.signalingData?.data_type <= 8;
+		return isForUser && isDMCallEvent;
+	});
 });
 
 export const selectIsMuteMicrophone = createSelector(getDMCallState, (state: DMCallState) => state.isMuteMicrophone);

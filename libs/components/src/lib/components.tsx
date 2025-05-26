@@ -92,6 +92,7 @@ export { default as FailLoginModal } from './components/FailLoginModal';
 export { default as ModalRemoveMemberClan } from './components/MemberProfile/ModalRemoveMemberClan';
 export { default as processMention } from './components/MessageBox/ReactionMentionInput/processMention';
 export { default as PanelMember } from './components/PanelMember';
+export { default as UserProfileModalInner } from './components/UserProfileModalInner';
 
 export * from './components/ThumbnailAttachmentRender';
 
@@ -123,3 +124,13 @@ export * from './components/virtual-core/useVirtualizer';
 export * from './components/PreJoinCalling/ControlButton';
 export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
+
+export * from './components/GroupCall';
+export * from './components/GroupCall/GroupCallComponent';
+export { default as GroupPopupNotiCall } from './components/GroupCall/GroupPopupNotiCall';
+export { default as PreCallInterface } from './components/GroupCall/PreCallInterface';
+export { CallControls } from './components/GroupCall/components/CallControls';
+export { CallStatus } from './components/GroupCall/components/CallStatus';
+
+export * from './components/DmCall';
+export { DmCallManager } from './components/DmCall/DmCallManager';

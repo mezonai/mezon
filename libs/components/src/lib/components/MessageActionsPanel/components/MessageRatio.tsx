@@ -6,9 +6,10 @@ type MessageRatioButtonProps = {
 	name: string;
 	checked: boolean;
 	color?: EButtonMessageStyle;
+	disabled?: boolean;
 };
 
-export const MessageRatioButton: React.FC<MessageRatioButtonProps> = ({ name, onCheckRatio, checked, color }) => {
+export const MessageRatioButton: React.FC<MessageRatioButtonProps> = ({ name, onCheckRatio, checked, color, disabled = false }) => {
 	const buttonColor = useMemo(() => {
 		if (color) {
 			switch (color) {
@@ -34,6 +35,7 @@ export const MessageRatioButton: React.FC<MessageRatioButtonProps> = ({ name, on
 			className={`!border-2 border-channelTextLabel ${checked ? buttonColor : null} flex flex-row  w-5 h-5 justify-center  items-center dark:text-textPrimary text-textPrimaryLight rounded-full text-sm text-left !bg-transparent flex-shrink-0`}
 		>
 			<input
+				disabled={disabled}
 				name={name}
 				type="radio"
 				className={`appearance-none w-3 h-3 text-white bg-transparent cursor-pointer relative rounded-full

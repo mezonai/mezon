@@ -317,6 +317,7 @@ export interface IMessageRatioOption {
 	name?: string;
 	value: string;
 	style?: EButtonMessageStyle;
+	disabled?: boolean;
 }
 
 export interface IMessageInput {
@@ -365,6 +366,7 @@ export interface IMessageGridItem {
 export interface IMessageCallLog {
 	isVideo: boolean;
 	callLogType: IMessageTypeCallLog;
+	showCallBack?: boolean;
 }
 
 export enum EMessageSelectType {
