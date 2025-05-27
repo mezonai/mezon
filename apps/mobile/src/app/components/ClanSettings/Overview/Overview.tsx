@@ -65,7 +65,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 
 	const channelsList = useSelector(selectAllChannels);
 	const listChannelWithoutVoice = channelsList.filter(
-		(channel) => channel?.clan_id === currentClan?.clan_id && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
+		(channel) =>
+			!channel?.channel_private &&
+			channel?.clan_id === currentClan?.clan_id &&
+			channel?.type === ChannelType?.CHANNEL_TYPE_CHANNEL &&
+			channel?.channel_id !== selectedChannelMessage?.channel_id
 	);
 
 	useEffect(() => {
@@ -96,6 +100,10 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		if (message) {
 			setSystemMessage(message);
 			setUpdateSystemMessageRequest(message);
+			const selectedChannel = listChannelWithoutVoice?.find((channel) => channel?.channel_id === message?.channel_id);
+			if (selectedChannel) {
+				setSelectedChannelMessage(selectedChannel);
+			}
 		}
 	};
 
@@ -226,7 +234,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const openBottomSheetSystemChannel = () => {
 		const data = {
 			heightFitContent: true,
-			children: <ChannelsMessageSystem onSelectChannel={handleSelectChannel} />
+			children: <ChannelsMessageSystem onSelectChannel={handleSelectChannel} listChannelWithoutVoice={listChannelWithoutVoice} />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
@@ -254,11 +262,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		{
 			title: t('menu.systemMessage.channel'),
 			expandable: true,
-			component: (
-				<Text style={{ color: 'white', fontSize: 11 }}>
-					{selectedChannelMessage?.channel_label || listChannelWithoutVoice[0]?.channel_label}
-				</Text>
-			),
+			component: <Text style={{ color: 'white', fontSize: 11 }}>{selectedChannelMessage?.channel_label}</Text>,
 			onPress: openBottomSheetSystemChannel,
 			disabled: disabled
 		},
@@ -379,16 +383,18 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 				<MezonImagePicker
 					disabled={disabled}
 					defaultValue={banner}
-					height={200}
-					width={width - 40}
+					height={size.s_200}
+					width={width - size.s_40}
 					onLoad={handleLoad}
 					showHelpText
 					autoUpload
 				/>
 
-				<Pressable style={{ position: 'absolute', right: size.s_14, top: size.s_2 }} onPress={handleClearBanner}>
-					<MezonIconCDN icon={IconCDN.circleXIcon} height={25} width={25} color={themeValue.white} />
-				</Pressable>
+				{banner && (
+					<Pressable style={{ position: 'absolute', right: size.s_14, top: size.s_2 }} onPress={handleClearBanner}>
+						<MezonIconCDN icon={IconCDN.circleXIcon} height={25} width={25} color={themeValue.white} />
+					</Pressable>
+				)}
 
 				<View style={{ marginVertical: 10 }}>
 					<MezonInput

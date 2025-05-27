@@ -1,6 +1,7 @@
 import { getFirstMessageOfTopic, selectMemberClanByUserId2, threadsActions, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
+	EBacktickType,
 	ETypeLinkMedia,
 	IExtendedMessage,
 	IMessageWithUser,
@@ -135,19 +136,44 @@ const MessageText = ({
 	isOnlyContainEmoji?: boolean;
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
 }) => {
+	let patchedContent = content;
+	if ((!content?.mk || content.mk.length === 0) && Array.isArray(content?.lk) && content.lk.length > 0) {
+		patchedContent = {
+			...content,
+			mk: content.lk.map(lkItem => ({ ...lkItem, type: EBacktickType.LINK }))
+		};
+	}
+
 	const attachmentOnMessage = message.attachments;
-
 	const contentToMessage = message.content?.t;
-
 	const checkOneLinkImage =
 		attachmentOnMessage?.length === 1 &&
 		attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
 		attachmentOnMessage[0].url === contentToMessage?.trim();
 	const showEditted = !message.hide_editted && !isSearchMessage;
+
+	const linkFromMarkdown = patchedContent?.mk?.find?.(item => item.type === EBacktickType.LINK);
+	let displayLine = lines;
+	if ((!lines || lines.length === 0) && linkFromMarkdown && typeof linkFromMarkdown.s === 'number' && typeof linkFromMarkdown.e === 'number') {
+		let linkFromLk = '';
+		if (Array.isArray(message?.content?.lk) && typeof message?.content?.lk[0] === 'string') {
+			linkFromLk = message?.content?.lk[0];
+		}
+		displayLine = typeof message?.content?.t === 'string' && message?.content?.t.length > 0
+			? message?.content?.t
+			: linkFromLk;
+		if (!displayLine && message?.content?.t === '') {
+			const raw = message?.content?.t || '';
+			displayLine = raw.substring(linkFromMarkdown.s, linkFromMarkdown.e);
+		}
+	}
+
+	const hasLinkMarkdown = !!linkFromMarkdown;
+
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
-			{lines?.length > 0 ? (
+			{(displayLine?.length > 0 || hasLinkMarkdown) ? (
 				<MessageLine
 					isEditted={showEditted}
 					isHideLinkOneImage={checkOneLinkImage}
@@ -155,7 +181,7 @@ const MessageText = ({
 					isSearchMessage={isSearchMessage}
 					isOnlyContainEmoji={isOnlyContainEmoji}
 					isJumMessageEnabled={false}
-					content={content as any} // fix later
+					content={patchedContent as any} // fix later
 					mode={mode}
 					code={message.code}
 					onCopy={onCopy}

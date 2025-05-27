@@ -456,9 +456,13 @@ export const setupCallKeep = async () => {
 };
 
 export const getVoIPToken = async () => {
-	const { VoIPManager } = NativeModules?.VoIPManager as { VoIPManager: VoIPManagerType };
-	await VoIPManager.registerForVoIPPushes();
-	return await VoIPManager.getVoIPToken();
+	try {
+		const VoIPManager = NativeModules?.VoIPManager as VoIPManagerType;
+		await VoIPManager.registerForVoIPPushes();
+		return await VoIPManager.getVoIPToken();
+	} catch (e) {
+		return '';
+	}
 };
 
 const listRNCallKeep = async (bodyData: any) => {

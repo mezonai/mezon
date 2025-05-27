@@ -58,7 +58,8 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 			}
 			const response = await createDirectMessageWithUser(
 				user?.user?.id,
-				user?.user?.display_name || user?.user?.username,
+				user?.user?.display_name,
+				user?.user?.username,
 				user?.user?.avatar_url
 			);
 			if (response?.channel_id) {

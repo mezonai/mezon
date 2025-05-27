@@ -117,7 +117,8 @@ export const FriendList = React.memo(
 		const directMessageWithUser = async (user: Receiver) => {
 			const response = await createDirectMessageWithUser(
 				user?.user?.id,
-				user?.user?.display_name || user?.user?.username,
+				user?.user?.display_name,
+				user?.user?.username,
 				user?.user?.avatar_url
 			);
 			if (response?.channel_id) {

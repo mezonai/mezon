@@ -8,6 +8,8 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
 
     private var pushRegistry: PKPushRegistry?
     private var hasListeners = false
+    private let notificationDataKey = "notificationDataCalling"
+    private let activeCallUUIDKey = "activeCallUUID"
 
     override init() {
         super.init()
@@ -59,6 +61,55 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         resolve(tokenString)
     }
 
+    @objc
+    func getStoredNotificationData(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        if let data = UserDefaults.standard.object(forKey: notificationDataKey) as? [String: Any] {
+            resolve(data)
+        } else {
+            resolve(NSNull())
+        }
+    }
+
+    @objc
+    func clearStoredNotificationData(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        UserDefaults.standard.removeObject(forKey: notificationDataKey)
+        UserDefaults.standard.synchronize()
+        resolve("Notification data cleared")
+    }
+  
+    @objc
+    func getActiveCallUUID(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        if let uuid = UserDefaults.standard.string(forKey: activeCallUUIDKey) {
+            resolve(uuid)
+        } else {
+            resolve(NSNull())
+        }
+    }
+  
+    private func storeNotificationData(_ data: [String: Any]) {
+        UserDefaults.standard.set(data, forKey: notificationDataKey)
+        UserDefaults.standard.synchronize()
+        print("Notification data stored: \(data)")
+    }
+  
+    private func clearStoredNotificationDataInternal() {
+         UserDefaults.standard.removeObject(forKey: notificationDataKey)
+         UserDefaults.standard.synchronize()
+         print("Stored notification data cleared internally")
+    }
+
+     // Helper method to store active call UUID
+     private func storeActiveCallUUID(_ uuid: String) {
+         UserDefaults.standard.set(uuid, forKey: activeCallUUIDKey)
+         UserDefaults.standard.synchronize()
+         print("Active call UUID stored: \(uuid)")
+     }
+     
+     // Helper method to get active call UUID
+     private func getActiveCallUUID() -> String? {
+         return UserDefaults.standard.string(forKey: activeCallUUIDKey)
+     }
+  
     // MARK: - Private Methods
 
     private func setupPushRegistry() {
@@ -120,6 +171,7 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
             reportDummyCall(completion: completion)
             return
         }
+        let callUUID = UUID().uuidString
 
         var callerName = "Unknown"
         var offer = ""
@@ -147,22 +199,38 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
             reportDummyCall(completion: completion)
             return
         }
-        
+
         print("Caller Name: \(callerName)")
         print("Caller Avatar: \(callerAvatar)")
         print("Caller ID: \(callerId)")
         print("Channel ID: \(channelId)")
+        print("offer \(offer)")
         
-        if offer == "{\"offer\":\"CANCEL_CALL\"}" {
+        if offer == "CANCEL_CALL" {
             print("Cancel call received")
+            if let activeUUID = getActiveCallUUID() {
+                print("Ending call with UUID: \(activeUUID)")
+                RNCallKeep.endCall(withUUID: activeUUID, reason: 6)
+            } else {
+                print("No active call UUID found, cannot end call")
+            }
             RNCallKeep.endCall(withUUID: "0731961b-415b-44f3-a960-dd94ef3372fc", reason: 6)
             completion()
             return
         }
 
-        // Generate a unique UUID for each call
-        let callUUID = UUID().uuidString
-        
+        // Prepare notification data to store
+         let notificationData: [String: Any] = [
+             "callerId": callerId,
+             "callerName": callerName,
+             "callerAvatar": callerAvatar,
+             "channelId": channelId,
+             "callUUID": callUUID,
+             "offer": offer
+         ]
+
+        storeNotificationData(notificationData)
+        storeActiveCallUUID(callUUID)
         // Report the incoming call to CallKit - THIS IS MANDATORY to avoid crash
         RNCallKeep.reportNewIncomingCall(
             callUUID,
@@ -181,18 +249,6 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
                 completion()
             }
         )
-
-        // Send event to React Native if listeners are available
-        if hasListeners {
-            sendEvent(withName: "VoIPNotificationReceived", body: [
-                "callerId": callerId,
-                "callerName": callerName,
-                "callerAvatar": callerAvatar,
-                "channelId": channelId,
-                "callUUID": callUUID,
-                "offer": offer
-            ])
-        }
     }
     
     // Helper method to report a dummy call when payload is invalid

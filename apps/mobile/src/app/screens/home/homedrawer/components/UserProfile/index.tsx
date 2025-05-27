@@ -129,14 +129,8 @@ const UserProfile = React.memo(
 				}
 				const response = await createDirectMessageWithUser(
 					userId,
-					message?.display_name ||
-						message?.user?.username ||
-						user?.user?.display_name ||
-						user?.user?.username ||
-						user?.display_name ||
-						user?.username ||
-						userById?.user?.display_name ||
-						userById?.user?.username,
+					message?.display_name || user?.user?.display_name || user?.display_name || userById?.user?.display_name,
+					message?.user?.username || user?.user?.username || user?.username || userById?.user?.username,
 					message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
 				);
 				if (response?.channel_id) {
@@ -150,6 +144,8 @@ const UserProfile = React.memo(
 			},
 			[
 				createDirectMessageWithUser,
+				dispatch,
+				isTabletLandscape,
 				listDM,
 				message?.avatar,
 				message?.display_name,

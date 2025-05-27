@@ -1,8 +1,12 @@
-import { DMCallActions, selectCurrentUserId, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import { isEmpty } from '@mezon/mobile-components';
+import { appActions, DMCallActions, selectCurrentUserId, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { sleep } from '@mezon/utils';
+import { useNavigation } from '@react-navigation/native';
+import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { AppState, Platform, View } from 'react-native';
+import { AppState, NativeModules, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import NotificationPreferences from '../../utils/NotificationPreferences';
 import CallingModal from '../CallingModal';
 
@@ -11,10 +15,11 @@ const CallingModalWrapper = () => {
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const dispatch = useAppDispatch();
 	const appStateRef = useRef(AppState.currentState);
+	const navigation = useNavigation<any>();
 
 	const handleAppStateChangeListener = useCallback(
 		(nextAppState: typeof AppState.currentState) => {
-			if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active' && Platform.OS === 'android') {
+			if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
 				const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
 				if (latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
 					getDataCall();
@@ -27,31 +32,50 @@ const CallingModalWrapper = () => {
 	);
 
 	useEffect(() => {
-		const appStateSubscription = Platform.OS === 'android' ? AppState.addEventListener('change', handleAppStateChangeListener) : undefined;
+		const appStateSubscription = AppState.addEventListener('change', (nextAppState) => {
+			handleAppStateChangeListener(nextAppState);
+		});
 		return () => {
 			appStateSubscription && appStateSubscription.remove();
 		};
 	}, [handleAppStateChangeListener]);
 
 	useEffect(() => {
-		if (Platform.OS === 'android') {
-			const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
-			if (latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
-				// RNNotificationCall.declineCall('6cb67209-4ef9-48c0-a8dc-2cec6cd6261d');
-			} else {
-				getDataCall();
-			}
+		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
+		if (latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
+			// RNNotificationCall.declineCall('6cb67209-4ef9-48c0-a8dc-2cec6cd6261d');
+		} else {
+			getDataCall();
 		}
 	}, [signalingData]);
 
-	const getDataCall = async () => {
-		try {
+	const getDataCallStorage = async () => {
+		if (Platform.OS === 'android') {
 			const notificationData = await NotificationPreferences.getValue('notificationDataCalling');
-			if (!notificationData) return;
+			if (!notificationData) return {};
 
 			const notificationDataParse = safeJSONParse(notificationData || '{}');
-			const data = safeJSONParse(notificationDataParse?.offer || '{}');
+			return safeJSONParse(notificationDataParse?.offer || '{}');
+		} else {
+			const VoIPManager = NativeModules?.VoIPManager;
+			if (!VoIPManager) {
+				console.error('VoIPManager is not available');
+				return {};
+			}
+			const storedData = await VoIPManager.getStoredNotificationData();
+			if (!storedData) return {};
+
+			return storedData;
+		}
+	};
+	const getDataCall = async () => {
+		try {
+			const data = await getDataCallStorage();
+			if (isEmpty(data)) return;
 			if (data?.offer !== 'CANCEL_CALL' && !!data?.offer) {
+				if (Platform.OS === 'ios') {
+					dispatch(appActions.setLoadingMainMobile(true));
+				}
 				const signalingData = {
 					channel_id: data?.channelId,
 					receiver_id: userId,
@@ -67,13 +91,39 @@ const CallingModalWrapper = () => {
 						callerId: data?.callerId
 					})
 				);
-			} else if (notificationData) {
-				await NotificationPreferences.clearValue('notificationDataCalling');
+
+				if (Platform.OS === 'ios') {
+					await sleep(1000);
+					dispatch(appActions.setLoadingMainMobile(false));
+					navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+						screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
+						params: {
+							receiverId: data?.callerId,
+							receiverAvatar: data?.callerAvatar,
+							directMessageId: data?.channelId,
+							isAnswerCall: true
+						}
+					});
+					await clearUpStorageCalling();
+				}
 			} else {
-				/* empty */
+				await clearUpStorageCalling();
 			}
 		} catch (error) {
 			console.error('Failed to retrieve data', error);
+		}
+	};
+
+	const clearUpStorageCalling = async () => {
+		if (Platform.OS === 'android') {
+			await NotificationPreferences.clearValue('notificationDataCalling');
+		} else {
+			const VoIPManager = NativeModules?.VoIPManager;
+			if (VoIPManager) {
+				await VoIPManager.clearStoredNotificationData();
+			} else {
+				console.error('VoIPManager is not available');
+			}
 		}
 	};
 

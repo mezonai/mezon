@@ -34,6 +34,10 @@ const extractChannelParams = (url: string) => {
 	return null;
 };
 
+const isGoogleMapsLink = (url?: string) => {
+	return url?.startsWith('https://www.google.com/maps?') || url?.startsWith('https://maps.google.com/maps?') || url?.startsWith('https://www.google.com/maps?q=');
+};
+
 export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	content,
 	isJumMessageEnabled,
@@ -94,12 +98,21 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 
 	return (
 		<div className={`inline dark:text-white text-colorTextLightMode ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}>
-			{isLink && (
-				// eslint-disable-next-line jsx-a11y/anchor-is-valid
+			{isLink && content && isGoogleMapsLink(content) ? (
+				<a
+					onClick={() => onClickLink(content)}
+					rel="noopener noreferrer"
+					className="text-blue-500 cursor-pointer break-words underline tagLink"
+					target="_blank"
+				>
+					<span>A location was shared with you. Tap to open the map</span>
+				</a>
+			) : isLink && (
 				<a
 					onClick={() => onClickLink(content ?? '')}
 					rel="noopener noreferrer"
 					className="text-blue-500 cursor-pointer break-words underline tagLink"
+					target="_blank"
 				>
 					{content}
 				</a>
@@ -148,9 +161,8 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, i
 			style={{ display: posInPinOrNotification ? '' : 'inline', padding: 2, margin: 0 }}
 		>
 			<code
-				className={`w-full font-sans ${
-					posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
-				} ${posInPinOrNotification && isLightMode ? 'pin-msg-modeLight' : posInPinOrNotification && !isLightMode ? 'pin-msg' : null}`}
+				className={`w-full font-sans ${posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
+					} ${posInPinOrNotification && isLightMode ? 'pin-msg-modeLight' : posInPinOrNotification && !isLightMode ? 'pin-msg' : null}`}
 				style={{ wordWrap: 'break-word', overflowWrap: 'break-word', whiteSpace: posInPinOrNotification ? 'normal' : 'break-spaces' }}
 			>
 				{contentBacktick.trim() === '' ? contentBacktick : contentBacktick.trim()}

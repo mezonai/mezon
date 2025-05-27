@@ -6,13 +6,14 @@ import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { WebrtcSignalingType } from 'mezon-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
+import { NativeModules, Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
 import { TYPING_DARK_MODE, TYPING_LIGHT_MODE } from '../../../assets/lottie';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
+import NotificationPreferences from '../../utils/NotificationPreferences';
 import { style } from './styles';
 
 const CallingModal = () => {
@@ -73,6 +74,7 @@ const CallingModal = () => {
 			});
 		} else {
 			setIsVisible(false);
+			clearUpStorageCalling();
 			stopAndReleaseSound();
 			Vibration.cancel();
 		}
@@ -104,6 +106,7 @@ const CallingModal = () => {
 
 	const onDeniedCall = async () => {
 		dispatch(DMCallActions.removeAll());
+		clearUpStorageCalling();
 		setIsVisible(false);
 		stopAndReleaseSound();
 		Vibration.cancel();
@@ -115,6 +118,19 @@ const CallingModal = () => {
 			latestSignalingEntry?.signalingData?.channel_id,
 			userId
 		);
+	};
+
+	const clearUpStorageCalling = async () => {
+		if (Platform.OS === 'android') {
+			await NotificationPreferences.clearValue('notificationDataCalling');
+		} else {
+			const VoIPManager = NativeModules?.VoIPManager;
+			if (VoIPManager) {
+				await VoIPManager.clearStoredNotificationData();
+			} else {
+				console.error('VoIPManager is not available');
+			}
+		}
 	};
 
 	if (!isVisible) {

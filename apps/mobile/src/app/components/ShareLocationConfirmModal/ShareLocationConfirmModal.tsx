@@ -2,7 +2,7 @@ import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
-import { IMessageSendPayload, filterEmptyArrays, processText } from '@mezon/utils';
+import { EBacktickType, IMessageSendPayload, filterEmptyArrays, processText } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +46,11 @@ const ShareLocationConfirmModal = ({ mode, channelId, geoLocation }: { mode: Cha
 			hg: [],
 			ej: [],
 			lk: links || [],
-			mk: [],
+			mk: [{
+				s: 0,
+				e: googleMapsLink.length,
+				type: EBacktickType.LINK
+			}],
 			vk: []
 		};
 		await sendMessage(filterEmptyArrays(payloadSendMessage), [], [], [], false, false, true);

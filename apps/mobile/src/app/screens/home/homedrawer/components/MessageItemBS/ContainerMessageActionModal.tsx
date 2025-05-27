@@ -198,11 +198,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					return;
 				}
 				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji, userId);
-				const response = await createDirectMessageWithUser(
-					message?.sender_id,
-					message?.user?.name || message?.user?.username,
-					message?.avatar
-				);
+				const response = await createDirectMessageWithUser(message?.sender_id, message?.user?.name, message?.user?.username, message?.avatar);
 				if (response?.channel_id) {
 					sendInviteMessage(
 						`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,

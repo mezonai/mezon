@@ -271,18 +271,37 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 				dragItemIndex.current = null;
 				return;
 			}
+			let countEmptyCategory = 0;
+
+			if (!isShowEmptyCategory && listChannelRender) {
+				for (let index = 0; index < listChannelRender.length - 1; index++) {
+					const channel = listChannelRender[index];
+
+					if (channel.id === data[dragIndex].id) {
+						break;
+					}
+
+					const current = listChannelRender[index] as ICategoryChannel;
+					const next = listChannelRender[index + 1] as ICategoryChannel;
+
+					if (current?.channels !== undefined && next?.channels !== undefined) {
+						countEmptyCategory++;
+					}
+				}
+			}
+
 			if (dragIndex - dragItemIndex.current!.indexEnd >= 2 || dragIndex < dragItemIndex.current!.indexEnd) {
 				dispatch(
 					listChannelRenderAction.sortChannelInCategory({
 						categoryId: data[dragIndex].category_id as string,
 						clanId: data[dragIndex].clan_id as string,
-						indexEnd: dragItemIndex.current!.indexEnd - 1,
-						indexStart: dragIndex - 1
+						indexEnd: dragItemIndex.current!.indexEnd - 1 + countEmptyCategory,
+						indexStart: dragIndex - 1 + countEmptyCategory
 					})
 				);
 			}
 		},
-		[data]
+		[data, isShowEmptyCategory]
 	);
 
 	return (

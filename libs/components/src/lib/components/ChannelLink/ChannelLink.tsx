@@ -238,7 +238,7 @@ const ChannelLinkComponent = ({
 			role="button"
 			onDragStart={(e) => dragStart(e)}
 			onDragEnd={(e) => dragEnter(e)}
-			className={`relative group z-10 dark:bg-bgSecondary bg-bgLightSecondary ${showWhiteDot ? 'before:content-[""] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute dark:before:bg-channelActiveColor before:bg-channelActiveLightColor before:top-3' : ''}`}
+			className={`relative group z-10 mt-[2px] dark:bg-bgSecondary bg-bgLightSecondary ${showWhiteDot ? 'before:content-[""] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute dark:before:bg-channelActiveColor before:bg-channelActiveLightColor before:top-3' : ''}`}
 		>
 			{channelType === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? (
 				<span
@@ -270,13 +270,10 @@ const ChannelLinkComponent = ({
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className="channel-link block"
+					className={`channel-link block ${classes[state]} ${isActive ? 'dark:bg-bgModifierHover bg-bgLightModeButton' : ''}`}
 					draggable="false"
 				>
-					<span
-						ref={channelLinkRef}
-						className={`${classes[state]} pointer-events-none ${isActive ? 'dark:bg-bgModifierHover bg-bgLightModeButton' : ''}`}
-					>
+					<span ref={channelLinkRef} className={`flex flex-row items-center rounded relative flex-1 pointer-events-none`}>
 						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
 
 						<div className={`relative  ${channel.type !== ChannelType.CHANNEL_TYPE_STREAMING ? 'mt-[-5px]' : ''}`}>

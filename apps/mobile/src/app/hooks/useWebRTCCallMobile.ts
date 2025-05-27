@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import { BackHandler, NativeModules, Platform } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
@@ -108,15 +108,26 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	}, [callState.localStream, callState.remoteStream]);
 
 	useEffect(() => {
-		if (Platform.OS === 'android') {
-			NotificationPreferences.clearValue('notificationDataCalling');
-		}
+		clearUpStorageCalling();
 		return () => {
 			endCallTimeout.current && clearTimeout(endCallTimeout.current);
 			endCallTimeout.current = null;
 			timeStartConnected.current = null;
 		};
 	}, []);
+
+	const clearUpStorageCalling = async () => {
+		if (Platform.OS === 'android') {
+			await NotificationPreferences.clearValue('notificationDataCalling');
+		} else {
+			const VoIPManager = NativeModules?.VoIPManager;
+			if (VoIPManager) {
+				await VoIPManager.clearStoredNotificationData();
+			} else {
+				console.error('VoIPManager is not available');
+			}
+		}
+	};
 
 	const handleSend = useCallback(
 		(

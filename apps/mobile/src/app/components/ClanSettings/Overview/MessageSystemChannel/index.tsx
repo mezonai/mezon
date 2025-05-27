@@ -1,26 +1,19 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, selectAllChannels, selectCurrentClanId } from '@mezon/store-mobile';
-import { ChannelType } from 'mezon-js';
+import { ChannelsEntity } from '@mezon/store-mobile';
 import { memo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
 import { style } from './styles';
 
 interface ChannelsMessageSystemProps {
+	listChannelWithoutVoice: ChannelsEntity[];
 	onSelectChannel?: (channel: ChannelsEntity) => void;
 }
 
-const ChannelsMessageSystem = ({ onSelectChannel }: ChannelsMessageSystemProps) => {
+const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: ChannelsMessageSystemProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const channelsList = useSelector(selectAllChannels);
-	const currentClanId = useSelector(selectCurrentClanId);
-
-	const listChannelWithoutVoice = channelsList.filter(
-		(channel) => channel?.clan_id === currentClanId && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
-	);
 
 	const selectChannel = (item: ChannelsEntity) => {
 		onSelectChannel(item);
@@ -51,10 +44,9 @@ const ChannelsMessageSystem = ({ onSelectChannel }: ChannelsMessageSystemProps) 
 	};
 
 	return (
-		<View>
+		<View style={{ height: size.s_615 }}>
 			<FlatList
 				data={listChannelWithoutVoice}
-				scrollEnabled={false}
 				keyExtractor={(item, index) => `channel_system:${item?.channel_id}_${index}`}
 				renderItem={renderItem}
 			/>
