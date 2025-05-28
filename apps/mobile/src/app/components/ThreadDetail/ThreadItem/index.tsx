@@ -38,6 +38,7 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 	const isTabletLandscape = useTabletLandscape();
 
 	const { username } = useMessageSender(user);
+
 	const handleNavigateThread = async (thread?: ThreadsEntity) => {
 		const clanId = thread?.clan_id;
 		const store = await getStoreAsync();
@@ -87,9 +88,11 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 			<View style={{ flex: 1, flexGrow: 1, flexShrink: 1 }}>
 				<Text style={styles.threadName}>{thread?.channel_label}</Text>
 				<View style={styles.threadContent}>
-					<Text numberOfLines={1} style={styles.textThreadCreateBy}>
-						{username}
-					</Text>
+					{username && (
+						<Text numberOfLines={1} style={styles.textThreadCreateBy}>
+							{username}
+						</Text>
+					)}
 					<Text numberOfLines={1} ellipsizeMode="tail" style={styles.messageContent}>
 						{lastSentMessage}
 					</Text>

@@ -57,9 +57,16 @@ const ImageEditor = React.memo(({ imageSource, onClose, setImageObject, setImage
 			const scaleX = (bgCanvas.width / img.width) * baseZoomFactor;
 			const scaleY = (bgCanvas.height / img.height) * baseZoomFactor;
 			const scaleFactor = Math.min(scaleX, scaleY) * zoom;
+			let imgWidth = 0;
+			let imgHeight = 0;
 
-			const imgWidth = img.width * scaleFactor;
-			const imgHeight = img.height * scaleFactor;
+			if (img.width > img.height) {
+				imgWidth = img.width * scaleFactor <= 292 ? 292 : img.width * scaleFactor;
+				imgHeight = img.width * scaleFactor <= 292 ? (imgWidth * img.height) / img.width : img.height * scaleFactor;
+			} else {
+				imgHeight = img.height * scaleFactor <= 292 ? 292 : img.height * scaleFactor;
+				imgWidth = img.height * scaleFactor <= 292 ? (imgHeight * img.width) / img.height : img.width * scaleFactor;
+			}
 
 			// Center image
 			const centerX = bgCanvas.width / 2;

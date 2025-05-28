@@ -161,7 +161,8 @@ const GroupCallComponent = memo(
 							clanId: callGroup?.clan_id as string,
 							clanName: callGroup?.clan_name as string,
 							channelId: callGroup?.channel_id as string,
-							channelLabel: callGroup?.channel_label as string
+							channelLabel: callGroup?.channel_label as string,
+							channelPrivate: callGroup?.channel_private as number
 						})
 					);
 

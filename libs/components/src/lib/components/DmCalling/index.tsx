@@ -77,13 +77,10 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		handleEndCall,
 		toggleAudio,
 		toggleVideo,
-		toggleScreenShare,
 		handleSignalingMessage,
 		handleOtherCall,
 		localVideoRef,
 		remoteVideoRef,
-		localScreenVideoRef,
-		remoteScreenVideoRef,
 		changeAudioInputDevice,
 		changeAudioOutputDevice,
 		currentInputDevice,
@@ -131,11 +128,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	useImperativeHandle(ref, () => ({
 		triggerCall
 	}));
-
-	const handleShowShareScreenToggle = () => {
-		toggleScreenShare();
-		dispatch(DMCallActions.setIsShowShareScreen(!isShowShareScreen));
-	};
 
 	const handleMuteToggle = () => {
 		toggleAudio();
@@ -367,16 +359,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								<Icons.IconMeetDM
 									className={`${!isShowMeetDM ? 'text-bgPrimary dark:text-white' : 'text-white dark:text-bgTertiary'}`}
 									isShowMeetDM={!isShowMeetDM}
-									isShowLine={true}
-								/>
-							</div>
-							<div
-								className={`h-[56px] w-[56px] rounded-full flex items-center justify-center cursor-pointer  ${isShowShareScreen ? 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
-								onClick={handleShowShareScreenToggle}
-							>
-								<Icons.ShareScreen
-									className={`${isShowShareScreen ? 'text-bgPrimary dark:text-white' : 'text-white dark:text-bgTertiary'}`}
-									isShowShareScreen={isShowShareScreen}
 									isShowLine={true}
 								/>
 							</div>

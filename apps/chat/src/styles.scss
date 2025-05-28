@@ -1219,3 +1219,14 @@ input:-webkit-autofill:active {
 .lk-participant-media-video[data-lk-local-participant='false'][data-lk-source='camera'] {
 	transform: rotateY(180deg) !important;
 }
+
+@keyframes floatUp {
+	0% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(-150px);
+		opacity: 0;
+	}
+}

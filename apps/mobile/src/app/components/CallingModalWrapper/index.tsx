@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { AppState, NativeModules, Platform, View } from 'react-native';
+import RNCallKeep from 'react-native-callkeep';
 import { useSelector } from 'react-redux';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import NotificationPreferences from '../../utils/NotificationPreferences';
@@ -23,6 +24,10 @@ const CallingModalWrapper = () => {
 				const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
 				if (latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
 					getDataCall();
+				} else {
+					if (Platform.OS === 'ios') {
+						RNCallKeep.endAllCalls();
+					}
 				}
 			}
 
@@ -70,6 +75,9 @@ const CallingModalWrapper = () => {
 	};
 	const getDataCall = async () => {
 		try {
+			if (Platform.OS === 'ios') {
+				RNCallKeep.endAllCalls();
+			}
 			const data = await getDataCallStorage();
 			if (isEmpty(data)) return;
 			if (data?.offer !== 'CANCEL_CALL' && !!data?.offer) {
@@ -93,7 +101,7 @@ const CallingModalWrapper = () => {
 				);
 
 				if (Platform.OS === 'ios') {
-					await sleep(1000);
+					await sleep(3000);
 					dispatch(appActions.setLoadingMainMobile(false));
 					navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 						screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,

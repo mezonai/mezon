@@ -21,6 +21,7 @@ import { CarouselLayout } from './FocusLayout/CarouselLayout/CarouselLayout';
 import { FocusLayout, FocusLayoutContainer } from './FocusLayout/FocusLayoutContainer';
 import { GridLayout } from './GridLayout/GridLayout';
 import { ParticipantTile } from './ParticipantTile/ParticipantTile';
+import { ReactionCallHandler } from './Reaction';
 
 interface MyVideoConferenceProps {
 	channelLabel?: string;
@@ -151,6 +152,7 @@ export function MyVideoConference({
 	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
 	return (
 		<div className="lk-video-conference flex-1">
+			<ReactionCallHandler currentChannel={currentChannel} />
 			<LayoutContextProvider value={layoutContext}>
 				<div className="lk-video-conference-inner relative " onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
 					{!focusTrack ? (
@@ -254,22 +256,23 @@ export function MyVideoConference({
 									</span>
 								</Tooltip>
 
-								<button
-									className="relative focus-visible:outline-none"
-									title="Chat"
-									onClick={onToggleChat}
-									style={{ marginLeft: 8 }}
-								>
+								<button className="relative focus-visible:outline-none" title="Chat" onClick={onToggleChat} style={{ marginLeft: 8 }}>
 									<Icons.Chat className={isShowChatVoice ? 'text-white' : 'text-[#B5BAC1]'} />
 								</button>
 							</div>
 						</div>
 					</div>
 					<div
-						className={`absolute bottom-0 left-0 w-full transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-							}`}
+						className={`absolute bottom-0 left-0 w-full transition-opacity duration-300 ${
+							isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
+						}`}
 					>
-						<ControlBar isExternalCalling={isExternalCalling} onLeaveRoom={onLeaveRoom} onFullScreen={onFullScreen} />
+						<ControlBar
+							isExternalCalling={isExternalCalling}
+							onLeaveRoom={onLeaveRoom}
+							onFullScreen={onFullScreen}
+							currentChannel={currentChannel}
+						/>
 					</div>
 				</div>
 			</LayoutContextProvider>

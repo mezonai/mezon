@@ -87,7 +87,8 @@ const ChannelVoice = memo(
 							clanId: currentClan?.clan_id as string,
 							clanName: currentClan?.clan_name as string,
 							channelId: currentChannel?.channel_id as string,
-							channelLabel: currentChannel?.channel_label as string
+							channelLabel: currentChannel?.channel_label as string,
+							channelPrivate: currentChannel?.channel_private as number
 						})
 					);
 				} else {
@@ -138,66 +139,64 @@ const ChannelVoice = memo(
 		const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
 		const isOnMenu = useSelector(selectStatusMenu);
 		return (
-			<>
-				<div
-					className={`${!isChannelMezonVoice || showModalEvent || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-30`}
-					style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
-				>
-					{token === '' || !serverUrl ? (
+			<div
+				className={`${!isChannelMezonVoice || showModalEvent || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-30`}
+				style={{ width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }}
+			>
+				{token === '' || !serverUrl ? (
+					<PreJoinVoiceChannel
+						channel={currentChannel || undefined}
+						roomName={currentChannel?.meeting_code}
+						loading={loading}
+						handleJoinRoom={handleJoinRoom}
+					/>
+				) : (
+					<>
 						<PreJoinVoiceChannel
 							channel={currentChannel || undefined}
 							roomName={currentChannel?.meeting_code}
 							loading={loading}
 							handleJoinRoom={handleJoinRoom}
+							isCurrentChannel={isShow}
 						/>
-					) : (
-						<>
-							<PreJoinVoiceChannel
-								channel={currentChannel || undefined}
-								roomName={currentChannel?.meeting_code}
-								loading={loading}
-								handleJoinRoom={handleJoinRoom}
-								isCurrentChannel={isShow}
-							/>
 
-							<LiveKitRoom
-								ref={containerRef}
-								id="livekitRoom"
-								key={token}
-								className={`${!isShow || isOpenPopOut ? '!hidden' : ''} ${isVoiceFullScreen ? '!fixed !inset-0 !z-50 !w-screen !h-screen' : ''} flex`}
-								audio={showMicrophone}
-								video={showCamera}
-								token={token}
-								serverUrl={serverUrl}
-								data-lk-theme="default"
-							>
-								<div className="flex-1 relative flex">
-									<MyVideoConference
-										channelLabel={currentChannel?.channel_label as string}
-										onLeaveRoom={handleLeaveRoom}
-										onFullScreen={handleFullScreen}
-										isShowChatVoice={isShowChatVoice}
-										onToggleChat={toggleChat}
-										currentChannel={currentChannel}
-									/>
-									<EmojiSuggestionProvider>
-										{isShowChatVoice && (
-											<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
-												<ChatStream currentChannel={currentChannel} />
-											</div>
-										)}</EmojiSuggestionProvider>
-								</div>
-
-							</LiveKitRoom>
-							{isOpenPopOut && (
-								<div className="flex items-center justify-center h-full w-full text-center text-lg font-semibold text-gray-500">
-									You are currently in the popout window
-								</div>
-							)}
-						</>
-					)}
-				</div>
-			</>
+						<LiveKitRoom
+							ref={containerRef}
+							id="livekitRoom"
+							key={token}
+							className={`${!isShow || isOpenPopOut ? '!hidden' : ''} ${isVoiceFullScreen ? '!fixed !inset-0 !z-50 !w-screen !h-screen' : ''} flex`}
+							audio={showMicrophone}
+							video={showCamera}
+							token={token}
+							serverUrl={serverUrl}
+							data-lk-theme="default"
+						>
+							<div className="flex-1 relative flex">
+								<MyVideoConference
+									channelLabel={currentChannel?.channel_label as string}
+									onLeaveRoom={handleLeaveRoom}
+									onFullScreen={handleFullScreen}
+									isShowChatVoice={isShowChatVoice}
+									onToggleChat={toggleChat}
+									currentChannel={currentChannel}
+								/>
+								<EmojiSuggestionProvider>
+									{isShowChatVoice && (
+										<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
+											<ChatStream currentChannel={currentChannel} />
+										</div>
+									)}
+								</EmojiSuggestionProvider>
+							</div>
+						</LiveKitRoom>
+						{isOpenPopOut && (
+							<div className="flex items-center justify-center h-full w-full text-center text-lg font-semibold text-gray-500">
+								You are currently in the popout window
+							</div>
+						)}
+					</>
+				)}
+			</div>
 		);
 	},
 	() => true

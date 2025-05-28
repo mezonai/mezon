@@ -43,6 +43,7 @@ export type EmojiCustomPanelOptions = {
 	setBuzzInputRequest?: (value: RequestInput) => void;
 	toggleEmojiPanel?: () => void;
 	isFromTopicView?: boolean;
+	onEmojiSelect?: (emoji: string, emojiId: string) => void;
 };
 
 const searchEmojis = (emojis: IEmoji[], searchTerm: string) => {
@@ -166,6 +167,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					toggleEmojiPanel();
 				}
 			}
+			if (props.onEmojiSelect) {
+				props.onEmojiSelect(emojiPicked, emojiId);
+			}
 		},
 		[
 			subPanelActive,
@@ -187,7 +191,8 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			buzzInputRequest?.mentionRaw,
 			buzzInputRequest?.valueTextInput,
 			setBuzzInputRequest,
-			toggleEmojiPanel
+			toggleEmojiPanel,
+			props.onEmojiSelect
 		]
 	);
 

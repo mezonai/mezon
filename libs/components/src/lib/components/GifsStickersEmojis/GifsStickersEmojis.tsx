@@ -26,6 +26,13 @@ export type GifStickerEmojiPopupOptions = {
 	setBuzzInputRequest?: (value: RequestInput) => void;
 	toggleEmojiPanel?: () => void;
 	isTopic?: boolean;
+	onEmojiSelect?: (emoji: string, emojiId: string) => void;
+	showTabs?: {
+		gifs?: boolean;
+		stickers?: boolean;
+		emojis?: boolean;
+		sounds?: boolean;
+	};
 };
 
 export const GifStickerEmojiPopup = ({
@@ -35,7 +42,9 @@ export const GifStickerEmojiPopup = ({
 	buzzInputRequest,
 	setBuzzInputRequest,
 	toggleEmojiPanel,
-	isTopic = false
+	isTopic = false,
+	onEmojiSelect,
+	showTabs = { gifs: true, stickers: true, emojis: true, sounds: true }
 }: GifStickerEmojiPopupOptions) => {
 	const { subPanelActive, setSubPanelActive, setValueInputSearch } = useGifsStickersEmoji();
 	const idMessageRefReaction = useSelector(selectIdMessageRefReaction);
@@ -109,7 +118,7 @@ export const GifStickerEmojiPopup = ({
 		<div onClick={(e) => e.stopPropagation()} className={containerClassName}>
 			<div className="w-full">
 				{!idMessageRefReaction && emojiAction !== EmojiPlaces.EMOJI_EDITOR_BUZZ && (
-					<TabBar subPanelActive={subPanelActive} onTabClick={handleTabClick} />
+					<TabBar subPanelActive={subPanelActive} onTabClick={handleTabClick} showTabs={showTabs} />
 				)}
 				<InputSearch />
 			</div>
@@ -129,38 +138,62 @@ export const GifStickerEmojiPopup = ({
 					setBuzzInputRequest={setBuzzInputRequest}
 					toggleEmojiPanel={toggleEmojiPanel}
 					isTopic={fromTopic}
+					onEmojiSelect={onEmojiSelect}
 				/>
 			</div>
 		</div>
 	);
 };
 
-const TabBar = React.memo(({ subPanelActive, onTabClick }: { subPanelActive: SubPanelName; onTabClick: (tab: SubPanelName) => void }) => {
-	const getTabClassName = useCallback((isActive: boolean) => {
-		return `relative px-2 mx-2 rounded-md ${
-			isActive
-				? 'font-semibold dark:text-white text-black'
-				: 'dark:text-gray-300 text-colorTextLightMode dark:hover:text-white hover:text-black'
-		}`;
-	}, []);
+const TabBar = React.memo(
+	({
+		subPanelActive,
+		onTabClick,
+		showTabs = { gifs: true, stickers: true, emojis: true, sounds: true }
+	}: {
+		subPanelActive: SubPanelName;
+		onTabClick: (tab: SubPanelName) => void;
+		showTabs?: {
+			gifs?: boolean;
+			stickers?: boolean;
+			emojis?: boolean;
+			sounds?: boolean;
+		};
+	}) => {
+		const getTabClassName = useCallback((isActive: boolean) => {
+			return `relative px-2 mx-2 rounded-md ${
+				isActive
+					? 'font-semibold dark:text-white text-black'
+					: 'dark:text-gray-300 text-colorTextLightMode dark:hover:text-white hover:text-black'
+			}`;
+		}, []);
 
-	return (
-		<div className="flex justify-start flex-row mt-3 border-b border-blue-500 pb-1 pt-1 max-sm:justify-evenly">
-			<button className={getTabClassName(subPanelActive === SubPanelName.GIFS)} onClick={() => onTabClick(SubPanelName.GIFS)}>
-				Gifs
-			</button>
-			<button className={getTabClassName(subPanelActive === SubPanelName.STICKERS)} onClick={() => onTabClick(SubPanelName.STICKERS)}>
-				Stickers
-			</button>
-			<button className={getTabClassName(subPanelActive === SubPanelName.EMOJI)} onClick={() => onTabClick(SubPanelName.EMOJI)}>
-				Emojis
-			</button>
-			<button className={getTabClassName(subPanelActive === SubPanelName.SOUNDS)} onClick={() => onTabClick(SubPanelName.SOUNDS)}>
-				Sounds
-			</button>
-		</div>
-	);
-});
+		return (
+			<div className="flex justify-start flex-row mt-3 border-b border-blue-500 pb-1 pt-1 max-sm:justify-evenly">
+				{showTabs.gifs && (
+					<button className={getTabClassName(subPanelActive === SubPanelName.GIFS)} onClick={() => onTabClick(SubPanelName.GIFS)}>
+						Gifs
+					</button>
+				)}
+				{showTabs.stickers && (
+					<button className={getTabClassName(subPanelActive === SubPanelName.STICKERS)} onClick={() => onTabClick(SubPanelName.STICKERS)}>
+						Stickers
+					</button>
+				)}
+				{showTabs.emojis && (
+					<button className={getTabClassName(subPanelActive === SubPanelName.EMOJI)} onClick={() => onTabClick(SubPanelName.EMOJI)}>
+						Emojis
+					</button>
+				)}
+				{showTabs.sounds && (
+					<button className={getTabClassName(subPanelActive === SubPanelName.SOUNDS)} onClick={() => onTabClick(SubPanelName.SOUNDS)}>
+						Sounds
+					</button>
+				)}
+			</div>
+		);
+	}
+);
 
 const ContentPanel = React.memo(
 	({
@@ -176,7 +209,8 @@ const ContentPanel = React.memo(
 		buzzInputRequest,
 		setBuzzInputRequest,
 		toggleEmojiPanel,
-		isTopic
+		isTopic,
+		onEmojiSelect
 	}: {
 		subPanelActive: SubPanelName;
 		channelOrDirect?: ApiChannelDescription;
@@ -191,6 +225,7 @@ const ContentPanel = React.memo(
 		setBuzzInputRequest?: (value: RequestInput) => void;
 		toggleEmojiPanel?: () => void;
 		isTopic: boolean;
+		onEmojiSelect?: (emoji: string, emojiId: string) => void;
 	}) => {
 		const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 		const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
@@ -236,6 +271,7 @@ const ContentPanel = React.memo(
 						setBuzzInputRequest={setBuzzInputRequest}
 						toggleEmojiPanel={toggleEmojiPanel}
 						isFromTopicView={!!isTopic}
+						onEmojiSelect={onEmojiSelect}
 					/>
 				</div>
 			);

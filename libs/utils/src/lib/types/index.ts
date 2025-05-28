@@ -1497,6 +1497,7 @@ export type IvoiceInfo = {
 	clanName: string;
 	channelId: string;
 	channelLabel: string;
+	channelPrivate: number;
 };
 
 export type ImageSourceObject = {

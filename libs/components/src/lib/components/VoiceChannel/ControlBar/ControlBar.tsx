@@ -6,6 +6,7 @@ import {
 	useTracks
 } from '@livekit/components-react';
 import {
+	selectGroupCallJoined,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
@@ -17,15 +18,21 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
+import { EmojiPlaces, requestMediaPermission, useMediaPermissions } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 
+import { EmojiSuggestionProvider } from '@mezon/core';
 import isElectron from 'is-electron';
 import { LocalTrackPublication, RoomEvent, Track } from 'livekit-client';
+import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { usePopup } from '../../DraggablePopup/usePopup';
+import { GifStickerEmojiPopup } from '../../GifsStickersEmojis';
 import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
+import { ReactionChannelInfo } from '../MyVideoConference/Reaction/types';
+import { useSendReaction } from '../MyVideoConference/Reaction/useSendReaction';
 import VoicePopout from '../VoicePopout/VoicePopout';
 import { BackgroundEffectsMenu } from './BackgroundEffectsMenu';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
@@ -40,6 +47,7 @@ interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
 	isExternalCalling?: boolean;
+	currentChannel?: ReactionChannelInfo;
 }
 
 export function ControlBar({
@@ -49,13 +57,18 @@ export function ControlBar({
 	onDeviceError,
 	onLeaveRoom,
 	onFullScreen,
-	isExternalCalling
+	isExternalCalling,
+	currentChannel
 }: ControlBarProps) {
 	const dispatch = useAppDispatch();
 	const isTooLittleSpace = useMediaQuery('max-width: 760px');
 	const audioScreenTrackRef = useRef<LocalTrackPublication | null>(null);
 
 	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
+
+	const isGroupCall = useSelector(selectGroupCallJoined);
+
+	const sendEmojiReaction = useSendReaction({ currentChannel: currentChannel });
 
 	const screenTrackRef = useRef<LocalTrackPublication | null>(null);
 	const isDesktop = isElectron();
@@ -270,15 +283,43 @@ export function ControlBar({
 		dispatch(voiceActions.setToggleChatBox());
 	}, []);
 
+	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
+
+	const handleEmojiSelect = useCallback(
+		(emoji: string, emojiId: string) => {
+			sendEmojiReaction(emoji, emojiId);
+			setShowEmojiPanel(false);
+		},
+		[sendEmojiReaction]
+	);
+
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-sbm:!hidden max-md:flex-col">
 			<div className="flex justify-start gap-4 max-md:hidden">
-				<span>
-					<Icons.VoiceSoundControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
-				</span>
-				<span>
-					<Icons.VoiceEmojiControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1] " />
-				</span>
+				{!isGroupCall && (
+					<Tooltip
+						placement="topLeft"
+						trigger={['click']}
+						overlayClassName="w-auto"
+						visible={showEmojiPanel}
+						onVisibleChange={setShowEmojiPanel}
+						overlay={
+							<EmojiSuggestionProvider>
+								<GifStickerEmojiPopup
+									showTabs={{ emojis: true }}
+									mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+									emojiAction={EmojiPlaces.EMOJI_REACTION}
+									onEmojiSelect={handleEmojiSelect}
+								/>
+							</EmojiSuggestionProvider>
+						}
+						destroyTooltipOnHide
+					>
+						<div>
+							<Icons.VoiceEmojiControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
+						</div>
+					</Tooltip>
+				)}
 			</div>
 			<div className="flex justify-center gap-3 flex-1">
 				{visibleControls.microphone && (

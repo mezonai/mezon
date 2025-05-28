@@ -13,6 +13,7 @@ const VoicePopout: React.FC<{
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
 	const voiceInfo = useSelector(selectVoiceInfo);
+
 	const dispatch = useAppDispatch();
 	const { userProfile } = useAuth();
 
@@ -74,6 +75,11 @@ const VoicePopout: React.FC<{
 					onLeaveRoom={handleLeaveRoom}
 					onFullScreen={handleFullScreen}
 					tracks={tracks}
+					currentChannel={{
+						channel_id: voiceInfo?.channelId || '',
+						clan_id: voiceInfo?.clanId || '',
+						channelPrivate: voiceInfo?.channelPrivate || 0
+					}}
 				/>
 			</LiveKitRoom>
 		</div>
