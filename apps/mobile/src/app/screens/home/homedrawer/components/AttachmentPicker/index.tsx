@@ -51,7 +51,7 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 			if (file?.size >= MAX_FILE_SIZE) {
 				Toast.show({
 					type: 'error',
-					text1: 'File size cannot exceed 50MB!'
+					text1: `Maximum allowed size is ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`
 				});
 				return;
 			}
