@@ -89,7 +89,7 @@ export const style = (colors: Attributes) =>
 		},
 		closeButton: {
 			paddingHorizontal: size.s_20,
-			paddingVertical: size.s_6
+			paddingVertical: size.s_6,
 		},
 		closeButtonText: {
 			fontSize: size.s_18,

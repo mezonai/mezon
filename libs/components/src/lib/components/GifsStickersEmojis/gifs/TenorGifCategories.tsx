@@ -38,6 +38,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 	const [dataToRenderGifs, setDataToRenderGifs] = useState<any>();
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
+
 	const ontrendingClickingStatus = () => {
 		setClickedTrendingGif(true);
 		setShowCategories(false);

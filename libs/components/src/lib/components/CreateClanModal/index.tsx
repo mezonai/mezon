@@ -96,14 +96,16 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 	const handleCreateClan = async () => {
 		const res = await createClans(nameClan.trim(), urlImage);
 		if (res && res.clan_id) {
-			const result = await dispatch(channelsActions.fetchChannels({ clanId: res.clan_id, noCache: true }));
+			const result = await dispatch(
+				channelsActions.fetchChannels({ clanId: res.clan_id, noCache: true })
+			);
 			const channels = (result?.payload as any)?.channels || [];
 			if (channels.length > 0) {
 				const firstChannel = channels[0];
 				dispatch(
 					channelsActions.setCurrentChannelId({
 						clanId: res.clan_id,
-						channelId: firstChannel.channel_id
+						channelId: firstChannel.channel_id,
 					})
 				);
 				navigate(toChannelPage(firstChannel.channel_id, res.clan_id));

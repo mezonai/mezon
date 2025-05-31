@@ -188,7 +188,9 @@ const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
 						}}
 					/>
 				) : (
-					<ItemProfile username={allAccount?.username} onClick={handleSwitchAccount} />
+					<>
+						<ItemProfile username={allAccount?.username} onClick={handleSwitchAccount} />
+					</>
 				)}
 			</Dropdown>
 			{isShowModalWithdraw && <SettingRightWithdraw onClose={handleCloseWithdrawModal} />}
