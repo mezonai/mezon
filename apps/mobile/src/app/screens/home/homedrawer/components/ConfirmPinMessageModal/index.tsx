@@ -63,7 +63,13 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 	return (
-		<Modal visible={isVisible} animationType={'fade'} transparent={true} onRequestClose={onClose}>
+		<Modal
+			visible={isVisible}
+			animationType={'fade'}
+			transparent={true}
+			onRequestClose={onClose}
+			supportedOrientations={['portrait', 'landscape']}
+		>
 			<View style={styles.wrapper}>
 				<View style={[styles.container, isTabletLandscape && { maxWidth: '40%' }]}>
 					<View>

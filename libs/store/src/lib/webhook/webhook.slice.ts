@@ -57,7 +57,7 @@ export const fetchWebhooks = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchWebhooksCached.clear(mezon, channelId, clanId);
+				fetchWebhooksCached.delete(mezon, channelId, clanId);
 			}
 			const response = await fetchWebhooksCached(mezon, channelId, clanId);
 			if (Date.now() - response.time > 100) {

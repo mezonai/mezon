@@ -17,6 +17,11 @@ jobs:
         run: |
            yarn
 
+      - name: Reset Nx cache
+        run: |
+          echo "Resetting Nx cache"
+          yarn nx reset
+
       - name: Change prod environment
         run: |
           del apps/desktop/src/assets/linux-icon.icns
@@ -64,7 +69,7 @@ jobs:
           NX_CHAT_APP_OAUTH2_RESPONSE_TYPE: ${{ secrets.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE }}
           NX_CHAT_APP_OAUTH2_SCOPE: ${{ secrets.NX_CHAT_APP_OAUTH2_SCOPE }}
           NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD: ${{ secrets.NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD }}
-          
+
       - name: Push to MinIO
         run: |
           powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/latest.yml mezon/mezon/release/latest.yml'"

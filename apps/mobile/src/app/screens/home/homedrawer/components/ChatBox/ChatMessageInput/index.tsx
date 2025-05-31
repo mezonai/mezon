@@ -105,6 +105,7 @@ export const ChatMessageInput = memo(
 			}, [onSendSuccess, ref]);
 
 			const handleTyping = useCallback(async () => {
+				if (anonymousMode) return;
 				dispatch(
 					messagesActions.sendTypingUser({
 						clanId: currentClanId || '',
@@ -115,6 +116,7 @@ export const ChatMessageInput = memo(
 					})
 				);
 			}, [
+				anonymousMode,
 				channelId,
 				currentClanId,
 				dispatch,

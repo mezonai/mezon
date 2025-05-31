@@ -1,10 +1,11 @@
 import { useAuth } from '@mezon/core';
+import { STORAGE_MY_USER_ID, STORAGE_SESSION_KEY, remove, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { appActions, useAppDispatch } from '@mezon/store-mobile';
+import { accountActions, appActions, useAppDispatch } from '@mezon/store-mobile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react';
 import { useEffect, useMemo, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import WebView from 'react-native-webview';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
@@ -27,11 +28,16 @@ const NewLoginScreen = () => {
 	const [authUri, setAuthUri] = useState(null);
 	const { loginByEmail } = useAuth();
 	const dispatch = useAppDispatch();
+	const [webKey, setWebKey] = useState(0);
+	const resetWebView = () => {
+		setWebKey((prev) => prev + 1);
+	};
 
 	useEffect(() => {
+		remove(STORAGE_SESSION_KEY);
 		const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
 		setAuthUri(authUrl);
-	}, []);
+	}, [OAUTH2_AUTHORIZE_URL, RESPONSE_TYPE, SCOPE, STATE]);
 
 	const handleShouldNavigationStateChange = (newNavState) => {
 		if (newNavState?.url?.includes('code') && newNavState?.url?.includes('state')) {
@@ -44,13 +50,17 @@ const NewLoginScreen = () => {
 						try {
 							const res = await loginByEmail(code);
 							if (res === 'Invalid session') {
-								if (Platform.OS === 'android') {
-									Toast.show({
-										type: 'error',
-										text1: 'Login Failed',
-										text2: 'Invalid email or password'
-									});
-								}
+								Toast.show({
+									type: 'error',
+									text1: 'Login Failed',
+									text2: 'Invalid email or password'
+								});
+								dispatch(accountActions.setAccount(null));
+								resetWebView();
+								await AsyncStorage.clear();
+							}
+							if (res?.user_id) {
+								save(STORAGE_MY_USER_ID, res?.user_id?.toString());
 							}
 							dispatch(appActions.setLoadingMainMobile(false));
 						} catch (error) {
@@ -71,6 +81,8 @@ const NewLoginScreen = () => {
 			{authUri && (
 				<View style={styles.webView}>
 					<WebView
+						incognito={true}
+						key={webKey}
 						originWhitelist={['*']}
 						style={styles.supperContainer}
 						source={{ uri: authUri }}

@@ -1,5 +1,5 @@
-import { useAppNavigation, useClans } from '@mezon/core';
-import { checkDuplicateNameClan, selectAllAccount, selectCurrentChannelId, selectCurrentClanId, useAppDispatch } from '@mezon/store';
+import { toChannelPage, useAppNavigation, useClans } from '@mezon/core';
+import { channelsActions, checkDuplicateNameClan, selectAllAccount, selectCurrentChannelId, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, InputField, Modal } from '@mezon/ui';
 import { DEBOUNCE_TYPING_TIME, LIMIT_SIZE_UPLOAD_IMG, ValidateSpecialCharacters, fileTypeImage } from '@mezon/utils';
@@ -93,13 +93,26 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 		});
 	};
 
-	const handleCreateClan = () => {
-		createClans(nameClan.trim(), urlImage).then((res) => {
-			if (res && res.clan_id) {
-				navigate(toClanPage(res.clan_id || ''));
+	const handleCreateClan = async () => {
+		const res = await createClans(nameClan.trim(), urlImage);
+		if (res && res.clan_id) {
+			const result = await dispatch(channelsActions.fetchChannels({ clanId: res.clan_id, noCache: true }));
+			const channels = (result?.payload as any)?.channels || [];
+			if (channels.length > 0) {
+				const firstChannel = channels[0];
+				dispatch(
+					channelsActions.setCurrentChannelId({
+						clanId: res.clan_id,
+						channelId: firstChannel.channel_id
+					})
+				);
+				navigate(toChannelPage(firstChannel.channel_id, res.clan_id));
+			} else {
+				navigate(toClanPage(res.clan_id));
 			}
-		});
+		}
 	};
+
 	const handleClose = useCallback(() => {
 		onClose();
 		setUrlImage('');
@@ -149,7 +162,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 					/>
 					{checkvalidate !== EValidateListMessage.VALIDATED && <p className="text-[#e44141] text-xs italic font-thin">{checkvalidate}</p>}
 					<span className="text-[14px] text-contentTertiary">
-						By creating a clan, you agree to Mezon’s <span className="text-contentBrandLight">Community Guidelines</span>.
+						By creating a clan, you agree to Mezon's <span className="text-contentBrandLight">Community Guidelines</span>.
 					</span>
 				</div>
 			</div>

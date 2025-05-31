@@ -51,7 +51,7 @@ export const fetchStickerByUserId = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchStickerByUserIdCached.clear(mezon);
+				fetchStickerByUserIdCached.delete(mezon);
 			}
 
 			const response = await fetchStickerByUserIdCached(mezon);

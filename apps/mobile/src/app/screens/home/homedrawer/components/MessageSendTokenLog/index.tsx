@@ -19,7 +19,9 @@ const MessageSendTokenLog = memo(({ messageContent }: MessageSendTokenLogProps) 
 	const description = descriptionData.join(' | ');
 
 	const handleTransaction = () => {
-		navigation.navigate(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.HISTORY_TRANSACTION });
+		navigation.push(APP_SCREEN.WALLET, {
+			activeScreen: 'history'
+		});
 	};
 
 	return (

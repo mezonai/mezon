@@ -15,13 +15,14 @@ import {
 	selectDirectsOpenlist,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { TypeMessage, formatMoney } from '@mezon/utils';
+import { TypeMessage, formatMoney, formatNumber } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Modal, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import ViewShot from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
@@ -31,7 +32,7 @@ import MezonInput from '../../../componentUI/MezonInput';
 import Backdrop from '../../../components/BottomSheetRootListener/backdrop';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { useImage } from '../../../hooks/useImage';
-import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { Sharing } from '../../settings/Sharing';
 import { style } from './styles';
 
@@ -47,8 +48,7 @@ const formatTokenAmount = (amount: any) => {
 	const numericValue = parseInt(sanitizedText, 10) || 0;
 	return numericValue.toLocaleString();
 };
-type ScreenSendToken = typeof APP_SCREEN.SETTINGS.SEND_TOKEN;
-export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<ScreenSendToken>) => {
+export const SendTokenScreen = ({ navigation, route }: any) => {
 	const { t } = useTranslation(['token']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -189,7 +189,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 				});
 				setDisableButton(false);
 			} else {
-				if (directMessageId) {
+				if (!directMessageId) {
 					sendInviteMessage(
 						`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
 						directMessageId,
@@ -197,11 +197,11 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 						TypeMessage.SendToken
 					);
 				} else {
-					const receiver = mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser;
+					const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
 					const response = await createDirectMessageWithUser(
-						receiver?.id,
-						receiver?.username?.[0],
-						receiver?.username?.[0],
+						receiver?.id || receiver?.receiver_id,
+						receiver?.username?.[0] || receiver?.receiver_name,
+						receiver?.username?.[0] || receiver?.receiver_name,
 						receiver?.avatar_url
 					);
 					if (response?.channel_id) {
@@ -362,18 +362,47 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 		<View style={styles.container}>
 			<ScrollView style={styles.form}>
 				<Text style={styles.heading}>{t('sendToken')}</Text>
+				<LinearGradient
+					start={{ x: 1, y: 1 }}
+					end={{ x: 0, y: 1 }}
+					colors={[themeValue.secondaryLight, themeValue.colorAvatarDefault]}
+					style={styles.cardWallet}
+				>
+					<View style={styles.cardWalletWrapper}>
+						<View style={styles.cardWalletLine}>
+							<Text style={styles.cardTitle}>{t('debitAccount')}</Text>
+							<Text style={styles.cardTitle}>{userProfile?.user?.username || userProfile?.user?.display_name}</Text>
+						</View>
+						<View style={styles.cardWalletLine}>
+							<Text style={styles.cardTitle}>{t('balance')}</Text>
+							<Text style={styles.cardAmount}>{tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}</Text>
+						</View>
+					</View>
+				</LinearGradient>
 				<View>
 					<Text style={styles.title}>{t('sendTokenTo')}</Text>
 					<TouchableOpacity
 						disabled={!!jsonObject?.receiver_id}
-						style={[styles.textField, { height: size.s_50 }]}
+						style={[
+							styles.textField,
+							{
+								height: size.s_40,
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								paddingRight: size.s_10
+							}
+						]}
 						onPress={handleOpenBottomSheet}
 					>
 						<Text style={styles.username}>
 							{/*eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
 							{/*@ts-expect-error*/}
-							{jsonObject?.receiver_id ? jsonObject?.receiver_name || 'KOMU' : selectedUser?.username}
+							{jsonObject?.receiver_id ? jsonObject?.receiver_name || 'KOMU' : selectedUser?.username || t('selectAccount')}
 						</Text>
+						{!jsonObject?.receiver_id && (
+							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+						)}
 					</TouchableOpacity>
 				</View>
 				<View>
@@ -409,7 +438,7 @@ export const SendTokenScreen = ({ navigation, route }: SettingScreenProps<Screen
 			<Pressable style={styles.button} onPress={sendToken} disabled={disableButton}>
 				<Text style={styles.buttonTitle}>{t('sendToken')}</Text>
 			</Pressable>
-			<Modal visible={showConfirmModal}>
+			<Modal visible={showConfirmModal} supportedOrientations={['portrait', 'landscape']}>
 				{fileShared && isShowModalShare ? (
 					<Sharing data={fileShared} onClose={onCloseFileShare} />
 				) : (

@@ -7,7 +7,18 @@ import LottieView from 'lottie-react-native';
 import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import * as React from 'react';
 import { memo, useEffect, useRef } from 'react';
-import { BackHandler, DeviceEventEmitter, Image, ImageBackground, Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
+import {
+	BackHandler,
+	DeviceEventEmitter,
+	Image,
+	ImageBackground,
+	NativeModules,
+	Platform,
+	Text,
+	TouchableOpacity,
+	Vibration,
+	View
+} from 'react-native';
 import { Bounce } from 'react-native-animated-spinkit';
 import { useSelector } from 'react-redux';
 import { useSendSignaling } from '../../components/CallingGroupModal';
@@ -180,6 +191,13 @@ const IncomingHomeScreen = memo((props: any) => {
 	};
 
 	const onJoinCall = async () => {
+		if (Platform.OS === 'android') {
+			try {
+				NativeModules?.CallStateModule?.setIsInCall?.(true);
+			} catch (error) {
+				console.error('Error calling native methods:', error);
+			}
+		}
 		if (dataCallGroup) {
 			await handleJoinCallGroup(dataCallGroup);
 			setIsInGroupCall(true);
@@ -219,7 +237,7 @@ const IncomingHomeScreen = memo((props: any) => {
 				isGroupCall: true,
 				clanId: ''
 			};
-			await sleep(2000);
+			await sleep(1000);
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 			const joinAction = {
 				participant_id: userId,
@@ -242,17 +260,17 @@ const IncomingHomeScreen = memo((props: any) => {
 
 	return (
 		<ImageBackground source={BG_CALLING} style={styles.container}>
-			<ChannelVoicePopup />
+			<ChannelVoicePopup isFromNativeCall={true} />
 			{/* Caller Info */}
 			<View style={styles.headerCall}>
-				<Text style={styles.callerName}>{'Incoming Call'}</Text>
+				<Text style={styles.callerName}>{dataCallGroup ? 'Group ' : ''}Incoming Call</Text>
 				<Image
 					source={{
-						uri: dataCalling?.callerAvatar || AVATAR_DEFAULT
+						uri: dataCallGroup?.groupAvatar || dataCalling?.callerAvatar || AVATAR_DEFAULT
 					}}
 					style={styles.callerImage}
 				/>
-				<Text style={styles.callerInfo}>{dataCalling?.callerName || ''}</Text>
+				<Text style={styles.callerInfo}>{dataCallGroup?.groupName || dataCalling?.callerName || ''}</Text>
 			</View>
 
 			{/* Decline and Answer Buttons */}

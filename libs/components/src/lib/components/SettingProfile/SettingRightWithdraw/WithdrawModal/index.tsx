@@ -219,13 +219,13 @@ const WithDrawModal = ({ onClose, totalToken, userId, onRefetch }: IProp) => {
 		});
 	};
 	async function switchNetwork(chainId: number) {
-		if (!window.ethereum) {
+		if (!(window as any).ethereum) {
 			toast.error('MetaMask is not installed!');
 			return;
 		}
 
 		try {
-			await window.ethereum.request({
+			await (window as any).ethereum.request({
 				method: 'wallet_switchEthereumChain',
 				params: [{ chainId: ethers.toBeHex(chainId) }]
 			});

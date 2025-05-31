@@ -24,6 +24,7 @@ import ChannelVoicePopup from '../../screens/home/homedrawer/components/ChannelV
 import { RenderVideoDetail } from '../../screens/home/homedrawer/components/RenderVideoDetail';
 import StreamingWrapper from '../../screens/home/homedrawer/components/StreamingWrapper';
 import { DirectMessageDetailScreen } from '../../screens/messages/DirectMessageDetail';
+import { WalletScreen } from '../../screens/wallet';
 import NotificationPreferences from '../../utils/NotificationPreferences';
 import { APP_SCREEN } from '../ScreenTypes';
 import { AuthenticationLoader } from './AuthenticationLoader';
@@ -236,6 +237,7 @@ export const Authentication = memo(() => {
 						}}
 					/>
 					<RootStack.Screen name={APP_SCREEN.CHANNEL_APP} component={ChannelAppScreen} />
+					<RootStack.Screen name={APP_SCREEN.WALLET} component={WalletScreen} />
 				</RootStack.Navigator>
 				<CallingModalWrapper />
 				<CallingModalGroupWrapper />

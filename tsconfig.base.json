@@ -18,6 +18,8 @@
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
+		"typeRoots": ["node_modules/@types"],
+		"types": ["node"],
 		"paths": {
 			"@mezon/assets": ["libs/assets/src/index.ts"],
 			"@mezon/components": ["libs/components/src/index.ts"],
@@ -37,5 +39,6 @@
 			"react": ["./node_modules/@types/react"]
 		}
 	},
+	"include": ["global.d.ts"],
 	"exclude": ["node_modules", "tmp"]
 }

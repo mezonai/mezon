@@ -44,7 +44,7 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchDefaultNotificationCategoryCached.clear(mezon, categoryId);
+				fetchDefaultNotificationCategoryCached.delete(mezon, categoryId);
 			}
 			const response = await fetchDefaultNotificationCategoryCached(mezon, categoryId);
 
@@ -218,7 +218,7 @@ export const fetchChannelCategorySetting = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchChannelCategorySettingCached.clear(mezon, clanId);
+				fetchChannelCategorySettingCached.delete(mezon, clanId);
 			}
 			const response = await fetchChannelCategorySettingCached(mezon, clanId);
 

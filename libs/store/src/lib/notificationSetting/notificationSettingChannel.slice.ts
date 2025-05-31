@@ -50,7 +50,7 @@ export const getNotificationSetting = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchNotificationSettingCached.clear(mezon, channelId);
+				fetchNotificationSettingCached.delete(mezon, channelId);
 			}
 			const response = await fetchNotificationSettingCached(mezon, channelId);
 			if (Date.now() - response.time > 1000) {

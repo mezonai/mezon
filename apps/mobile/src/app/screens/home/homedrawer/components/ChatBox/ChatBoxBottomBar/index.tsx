@@ -196,8 +196,8 @@ export const ChatBoxBottomBar = memo(
 				} else {
 					textFormat = `${textChange?.endsWith(' ') ? textChange : textChange + ' '}${shortName?.toString()}`;
 				}
-				setTextChange(textFormat);
-				await handleTextInputChange(textFormat);
+				setTextChange(textFormat + ' ');
+				await handleTextInputChange(textFormat + ' ');
 			},
 			[textChange]
 		);

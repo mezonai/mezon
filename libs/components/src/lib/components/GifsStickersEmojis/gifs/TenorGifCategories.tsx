@@ -1,5 +1,5 @@
 import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifs, useGifsStickersEmoji } from '@mezon/core';
-import { referencesActions, selectAnonymousMode, selectDataReferences } from '@mezon/store';
+import { referencesActions, selectDataReferences } from '@mezon/store';
 import { Loading } from '@mezon/ui';
 import { IGifCategory, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
@@ -38,8 +38,6 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 	const [dataToRenderGifs, setDataToRenderGifs] = useState<any>();
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
-	const anonymousMode = useSelector(selectAnonymousMode);
-
 	const ontrendingClickingStatus = () => {
 		setClickedTrendingGif(true);
 		setShowCategories(false);
@@ -65,7 +63,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 
 	const handleClickGif = (giftUrl: string) => {
 		if (isReplyAction) {
-			sendMessage({ t: '' }, [], [{ url: giftUrl }], [dataReferences], undefined, anonymousMode);
+			sendMessage({ t: '' }, [], [{ url: giftUrl }], [dataReferences], undefined);
 			dispatch(
 				referencesActions.setDataReferences({
 					channelId: currentId as string,
@@ -73,7 +71,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 				})
 			);
 		} else {
-			sendMessage({ t: '' }, [], [{ url: giftUrl, filetype: 'gif' }], [], undefined, anonymousMode);
+			sendMessage({ t: '' }, [], [{ url: giftUrl, filetype: 'gif' }], [], undefined);
 		}
 		setSubPanelActive(SubPanelName.NONE);
 	};

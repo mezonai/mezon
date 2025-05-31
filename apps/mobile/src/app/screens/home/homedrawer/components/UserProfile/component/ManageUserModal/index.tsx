@@ -149,7 +149,7 @@ export const ManageUserModal = memo(({ user, visible, onclose, profileSetting }:
 	// );
 
 	return (
-		<Modal visible={visible} animationType={'slide'} statusBarTranslucent={true}>
+		<Modal visible={visible} animationType={'slide'} statusBarTranslucent={true} supportedOrientations={['portrait', 'landscape']}>
 			<View style={{ flex: 1, backgroundColor: themeValue?.charcoal, paddingTop: size.s_40 }}>
 				<View
 					style={{

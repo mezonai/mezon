@@ -62,7 +62,6 @@ import {
 	isPublicChannel
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import 'react-contexify/ReactContexify.css';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import DynamicContextMenu from './DynamicContextMenu';

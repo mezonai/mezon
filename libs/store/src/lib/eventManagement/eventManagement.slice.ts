@@ -52,7 +52,7 @@ export const fetchEventManagement = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
-				fetchEventManagementCached.clear(mezon, clanId);
+				fetchEventManagementCached.delete(mezon, clanId);
 			}
 
 			const response = await fetchEventManagementCached(mezon, clanId);

@@ -35,7 +35,7 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 		return () => {
 			if (timeoout) clearTimeout(timeoout);
 		};
-	}, [listMentions]);
+	}, [listMentions, currentChannel?.channel_id]);
 
 	return null;
 });

@@ -82,7 +82,7 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		if (noCache) {
-			fetchTopicsCached.clear(mezon, clanId);
+			fetchTopicsCached.delete(mezon, clanId);
 		}
 		const response = await fetchTopicsCached(mezon, clanId);
 		if (Date.now() - response.time > 100) {

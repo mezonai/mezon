@@ -269,12 +269,9 @@ const UserProfile = React.memo(
 				note: t('userAction.transferFunds'),
 				canEdit: true
 			});
-
-			navigation.push(APP_SCREEN.SETTINGS.STACK, {
-				screen: APP_SCREEN.SETTINGS.SEND_TOKEN,
-				params: {
-					formValue: payload
-				}
+			navigation.push(APP_SCREEN.WALLET, {
+				activeScreen: 'transfer',
+				formValue: payload
 			});
 			if (onClose && typeof onClose === 'function') {
 				onClose();

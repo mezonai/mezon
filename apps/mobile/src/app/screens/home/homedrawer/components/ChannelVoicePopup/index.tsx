@@ -1,5 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
+import { size } from '@mezon/mobile-ui';
 import {
 	appActions,
 	generateMeetToken,
@@ -17,7 +18,7 @@ import { Animated, DeviceEventEmitter, Keyboard, PanResponder } from 'react-nati
 import { useSelector } from 'react-redux';
 import ChannelVoice from '../ChannelVoice';
 
-const ChannelVoicePopup = () => {
+const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
 	const pan = useRef(new Animated.ValueXY()).current;
 	const isDragging = useRef(false);
@@ -181,6 +182,7 @@ const ChannelVoicePopup = () => {
 	}, [isAnimationComplete, voicePlay]);
 
 	const handlePressMinimizeRoom = useCallback(() => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		isFullScreen.current = false;
 		handleResizeStreamRoom();
 	}, []);
@@ -192,8 +194,10 @@ const ChannelVoicePopup = () => {
 			style={[
 				pan?.getLayout(),
 				{
-					zIndex: 999999,
-					position: 'absolute'
+					zIndex: 999,
+					position: 'absolute',
+					width: isAnimationComplete ? '100%' : size.s_100 * 2,
+					height: isAnimationComplete ? '100%' : size.s_150
 				}
 			]}
 		>
@@ -206,6 +210,7 @@ const ChannelVoicePopup = () => {
 				onPressMinimizeRoom={handlePressMinimizeRoom}
 				isGroupCall={isGroupCall}
 				participantsCount={participantsCount}
+				isFromNativeCall={isFromNativeCall}
 			/>
 		</Animated.View>
 	);

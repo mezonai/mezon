@@ -18,6 +18,11 @@ jobs:
           node -v
           yarn
 
+      - name: Reset Nx cache
+        run: |
+          echo "Resetting Nx cache"
+          yarn nx reset
+
       - name: Change prod environment
         run: |
           rm -rf apps/desktop/src/assets/linux-icon.icns

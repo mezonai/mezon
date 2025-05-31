@@ -68,7 +68,7 @@ import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './po
 import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/roleclan.slice';
 import { SEARCH_MESSAGES_FEATURE_KEY, searchMessageReducer } from './searchmessages/searchmessage.slice';
 import { settingStickerReducer } from './settingSticker/settingSticker.slice';
-import groupCallReducer from './slices/groupCall.slice';
+import { groupCallReducer } from './slices/groupCall.slice';
 import { usersStreamReducer } from './stream/usersStream.slice';
 import { videoStreamReducer } from './stream/videoStream.slice';
 import { systemMessageReducer } from './systemMessages/systemMessage.slice';

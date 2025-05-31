@@ -320,6 +320,7 @@ const MessageItem = React.memo(
 								avatar={messageAvatar}
 								username={usernameMessage}
 								isShow={!isCombine || !!message?.references?.length || showUserInformation}
+								isAnonymous={checkAnonymous}
 							/>
 						)}
 

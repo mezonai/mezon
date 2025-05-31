@@ -3,6 +3,7 @@ import {
 	ChannelsEntity,
 	TOKEN_FAILED_STATUS,
 	TOKEN_SUCCESS_STATUS,
+	authActions,
 	channelMembersActions,
 	giveCoffeeActions,
 	selectAccountCustomStatus,
@@ -208,6 +209,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 
 	useEffect(() => {
 		loadParamsSendTokenFromURL();
+		dispatch(authActions.checkFormatSession());
 	}, []);
 
 	useEffect(() => {

@@ -2,8 +2,6 @@ import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
-import { HistoryTransactionScreen } from '../../../screens/profile/HistoryTransaction';
-import { SendTokenScreen } from '../../../screens/profile/SendToken';
 import { Settings } from '../../../screens/settings';
 import { AccountSetting } from '../../../screens/settings/AccountSetting';
 import { BlockedUsers } from '../../../screens/settings/AccountSetting/BlockedUsers';
@@ -132,28 +130,6 @@ export const SettingStacks = ({}: any) => {
 					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.primary
-					}
-				}}
-			/>
-			<Stack.Screen
-				name={APP_SCREEN.SETTINGS.SEND_TOKEN}
-				component={SendTokenScreen}
-				options={{
-					headerTitle: '',
-					gestureEnabled: Platform.OS === 'ios',
-					headerStyle: {
-						backgroundColor: themeValue.primary
-					}
-				}}
-			/>
-			<Stack.Screen
-				name={APP_SCREEN.SETTINGS.HISTORY_TRANSACTION}
-				component={HistoryTransactionScreen}
-				options={{
-					headerTitle: t('settingStack.historyTransaction'),
-					gestureEnabled: Platform.OS === 'ios',
-					headerStyle: {
-						backgroundColor: themeValue.secondary
 					}
 				}}
 			/>

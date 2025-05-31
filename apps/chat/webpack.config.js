@@ -3,8 +3,30 @@ const { composePlugins, withNx } = require('@nx/webpack');
 const { withReact } = require('@nx/react');
 const { merge } = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
+const dotenv = require('dotenv');
+const fs = require('fs');
+
+const envFile = process.env.ENV_FILE || '.env';
+const envPath = path.resolve(__dirname, envFile);
+let envVars = {};
+
+if (fs.existsSync(envPath)) {
+  const envConfig = dotenv.config({ path: envPath });
+  if (envConfig.parsed) {
+    Object.keys(envConfig.parsed).forEach(key => {
+      if (key.startsWith('NX_')) {
+        envVars[`process.env.${key}`] = JSON.stringify(envConfig.parsed[key]);
+      }
+    });
+  }
+}
+
+
+envVars['process.env.NODE_ENV'] = JSON.stringify(process.env.NODE_ENV || 'development');
 
 const EXTERNALS_SCRIPTS = [];
 
@@ -20,17 +42,25 @@ module.exports = composePlugins(
   withReact({
     // Uncomment this line if you don't want to use SVGR
     // See: https://react-svgr.com/
-    // svgr: false
+    svgr: false
   }),
   (config) => {
+    // Workaround for Nx React plugin findIndex bug
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+
     // Update the webpack config as needed here.
     // e.g. `config.plugins.push(new MyPlugin())`
     config.plugins = config.plugins || [];
+
+    // Add DefinePlugin to inject environment variables
+    config.plugins.push(new webpack.DefinePlugin(envVars));
+
     config.plugins.push(new NodePolyfillPlugin());
-    
+
     config.resolve = config.resolve || {};
     config.resolve.fallback = { "fs": false };
-    
+
     config.plugins.push(
       new CopyWebpackPlugin({
         patterns: [
@@ -48,14 +78,14 @@ module.exports = composePlugins(
         ],
       })
     );
-    
+
     config.devServer = config.devServer || {};
-    
+
     config.devServer.static = {
       directory: path.join(__dirname, 'src/assets'),
       publicPath: '/',
     };
-    
+
     config.devServer.historyApiFallback = {
       rewrites: [
         {
@@ -64,7 +94,7 @@ module.exports = composePlugins(
         },
       ],
     };
-    
+
     return merge(config, {
       ignoreWarnings: [/Failed to parse source map/]
     });

@@ -169,7 +169,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			) : (
 				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.text} />
 			),
-			isShow: !isStreamOrVoiceChannel
+			isShow: true
 		},
 		{
 			title: t('menu.notification.notification'),
@@ -181,7 +181,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
 			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />,
-			isShow: !isStreamOrVoiceChannel
+			isShow: true
 		}
 	];
 

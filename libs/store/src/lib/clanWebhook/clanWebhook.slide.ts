@@ -39,7 +39,7 @@ export const fetchClanWebhooks = createAsyncThunk('integration/fetchClanWebhooks
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		if (noCache) {
-			fetchClanWebhooksCached.clear(mezon, clanId);
+			fetchClanWebhooksCached.delete(mezon, clanId);
 		}
 		const response = await fetchClanWebhooksCached(mezon, clanId);
 		return response.list_clan_webhooks;

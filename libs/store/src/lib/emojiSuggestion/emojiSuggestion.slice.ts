@@ -77,7 +77,7 @@ export const fetchEmoji = createAsyncThunk('emoji/fetchEmoji', async ({ noCache 
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		if (noCache) {
-			fetchEmojiCached.clear(mezon);
+			fetchEmojiCached.delete(mezon);
 		}
 		const response = await fetchEmojiCached(mezon);
 

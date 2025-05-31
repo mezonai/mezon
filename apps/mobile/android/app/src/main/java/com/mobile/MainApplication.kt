@@ -22,6 +22,7 @@ import com.mezon.mobile.DeviceUtilsPackage;
 import com.mezon.mobile.BluetoothPackage;
 import com.mezon.mobile.NavigationBarPackage;
 import com.mezon.mobile.NotificationPreferencesPackage;
+import com.mezon.mobile.CallStatePackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 
@@ -45,6 +46,7 @@ class MainApplication : Application(), ReactApplication {
               add(NotificationPreferencesPackage())
               add(ReactNativeFirebaseAnalyticsPackage())
               add(RNScreensPackage())
+              add(CallStatePackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"

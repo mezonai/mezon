@@ -35,7 +35,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 
 		text: {
 			color: colors.text,
-			fontSize: isTabletLandscape ? size.label : size.medium
+			fontSize: isTabletLandscape ? size.label : size.s_14
 		},
 
 		token: {
@@ -45,7 +45,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		whiteText: {
 			color: Colors.white,
 			marginLeft: 10,
-			fontSize: isTabletLandscape ? size.label : size.medium
+			fontSize: isTabletLandscape ? size.label : size.s_14
 		},
 
 		textTitle: {

@@ -25,15 +25,17 @@ export const style = (colors: Attributes) =>
 			gap: size.s_10
 		},
 		textField: {
-			backgroundColor: colors.bgInputPrimary,
-			borderRadius: size.s_10,
+			backgroundColor: colors.secondaryLight,
+			borderRadius: size.s_6,
 			justifyContent: 'center',
-			paddingHorizontal: size.s_6
+			paddingHorizontal: size.s_4,
+			borderWidth: 0.3,
+			borderColor: colors.textDisabled
 		},
 		title: {
 			color: colors.text,
 			marginTop: size.s_10,
-			marginBottom: size.s_6
+			marginBottom: size.s_10
 		},
 		heading: {
 			color: colors.textStrong,
@@ -43,8 +45,8 @@ export const style = (colors: Attributes) =>
 		},
 		textInput: {
 			paddingHorizontal: size.s_10,
-			fontSize: size.s_16,
-			height: size.s_50,
+			fontSize: size.s_14,
+			height: size.s_40,
 			color: colors.text
 		},
 		button: {
@@ -54,9 +56,9 @@ export const style = (colors: Attributes) =>
 			backgroundColor: '#5e65ee',
 			height: size.s_50,
 			width: '90%',
-			bottom: size.s_20,
+			bottom: size.s_30,
 			marginHorizontal: size.s_20,
-			borderRadius: size.s_50
+			borderRadius: size.s_14
 		},
 		buttonTitle: {
 			color: 'white',
@@ -146,6 +148,33 @@ export const style = (colors: Attributes) =>
 			gap: size.s_4
 		},
 		textActionMore: {
+			color: colors.white
+		},
+		cardWallet: {
+			borderRadius: size.s_10,
+			marginBottom: size.s_20,
+			backgroundColor: colors.border,
+			borderWidth: 0.3,
+			borderColor: colors.textDisabled
+		},
+		cardWalletWrapper: {
+			padding: size.s_16,
+			paddingVertical: size.s_14,
+			gap: size.s_14
+		},
+		cardWalletLine: {
+			flexDirection: 'row',
+			alignItems: 'flex-end',
+			justifyContent: 'space-between'
+		},
+		cardTitle: {
+			fontSize: size.s_12,
+			fontWeight: '600',
+			color: colors.text
+		},
+		cardAmount: {
+			fontSize: size.s_18,
+			fontWeight: 'bold',
 			color: colors.white
 		}
 	});

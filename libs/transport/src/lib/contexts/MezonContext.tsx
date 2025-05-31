@@ -8,7 +8,7 @@ const MAX_WEBSOCKET_FAILS = 8;
 const MIN_WEBSOCKET_RETRY_TIME = 3000;
 const MAX_WEBSOCKET_RETRY_TIME = 300000;
 const JITTER_RANGE = 2000;
-const SESSION_STORAGE_KEY = 'mezon_session';
+export const SESSION_STORAGE_KEY = 'mezon_session';
 
 type MezonContextProviderProps = {
 	children: React.ReactNode;
@@ -257,12 +257,12 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				sessionRef.current = null;
 				if (clearSession) {
 					clearSessionFromStorage();
+					clientRef.current.setBasePath(
+						process.env.NX_CHAT_APP_API_GW_HOST as string,
+						process.env.NX_CHAT_APP_API_GW_PORT as string,
+						process.env.NX_CHAT_APP_API_SECURE === 'true'
+					);
 				}
-				clientRef.current.setBasePath(
-					process.env.NX_CHAT_APP_API_GW_HOST as string,
-					process.env.NX_CHAT_APP_API_GW_PORT as string,
-					process.env.NX_CHAT_APP_API_SECURE === 'true'
-				);
 			}
 		},
 		[socketRef]
@@ -296,6 +296,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			const newSession = await clientRef.current.sessionRefresh(
 				new Session(session.token, session.refresh_token, session.created, session.api_url, session.is_remember)
 			);
+
 			sessionRef.current = newSession;
 			extractAndSaveConfig(newSession, isFromMobile);
 

@@ -59,7 +59,7 @@ export const fetchListChannelsByUser = createAsyncThunk<{ channels: ChannelUsers
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchListChannelsByUserCached.clear(mezon);
+				fetchListChannelsByUserCached.delete(mezon);
 			}
 			const response = await fetchListChannelsByUserCached(mezon);
 			if (!response?.channeldesc) {

@@ -4,8 +4,6 @@ import { Icons, Image } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import IconDarkMode from '../../assets/icons/IconDarkMode.png';
-import IconLightMode from '../../assets/icons/IconLightMode.png';
 import { useAppearance } from '../context/AppearanceContext';
 
 interface IHeaderProps {
@@ -55,12 +53,16 @@ const Header = ({ toggleSideBar }: IHeaderProps) => {
 						width={28}
 						height={28}
 					/>
-					<span className="text-[12px] font-bold dark:text-textPrimary text-colorTextLightMode">MEZON</span>
+					<span className="text-[12px] font-bold dark:text-textPrimary text-colorTextLightMode">MEZON 11</span>
 				</Link>
 			</div>
 			<div className="flex flex-row items-center justify-center relative">
 				<button onClick={toggleDarkMode} className="mr-4">
-					<img src={isDarkMode ? IconDarkMode : IconLightMode} alt="Toggle Dark Mode" className="w-6 h-6 bg-white" />
+					<img
+						src={isDarkMode ? '../../assets/icons/IconDarkMode.png' : '../../assets/icons/IconLightMode.png'}
+						alt="Toggle Dark Mode"
+						className="w-6 h-6 bg-white"
+					/>
 				</button>
 				<div onClick={handleAvatarClick}>
 					{userProfile?.user?.avatar_url ? (

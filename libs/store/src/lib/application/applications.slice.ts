@@ -67,7 +67,7 @@ export const fetchApplications = createAsyncThunk('adminApplication/fetchApplica
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		if (noCache) {
-			fetchApplicationsCached.clear(mezon);
+			fetchApplicationsCached.delete(mezon);
 		}
 		const response = await fetchApplicationsCached(mezon);
 		return response;

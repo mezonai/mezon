@@ -27,6 +27,8 @@ import org.json.JSONArray
 import android.app.ActivityManager
 import android.media.MediaPlayer
 import android.os.PowerManager
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
 
 class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
 
@@ -177,6 +179,7 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
             .setColorized(true)
             .setOngoing(true)
             .setAutoCancel(true)
+            .setTimeoutAfter(50000)
             .setDeleteIntent(dismissPendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setVibrate(longArrayOf(0, 500, 1000, 500))
@@ -251,6 +254,11 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
     }
 
     private fun cancelCallNotification() {
+        val isInCall = CallStateModule.getIsInCall()
+        if (isInCall) {
+            Log.d(TAG, "User is in call, skipping cancelCallNotification")
+            return // Do nothing if user is currently in a call
+        }
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(NOTIFICATION_ID)
         stopVibration()

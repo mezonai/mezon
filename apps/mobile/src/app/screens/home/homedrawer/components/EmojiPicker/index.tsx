@@ -1,4 +1,4 @@
-import { TouchableOpacity, TouchableWithoutFeedback } from '@gorhom/bottom-sheet';
+import { TouchableWithoutFeedback } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending, useGifsStickersEmoji } from '@mezon/core';
 import { debounce, isEmpty } from '@mezon/mobile-components';
@@ -18,6 +18,7 @@ import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js
 import React, { MutableRefObject, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Platform, Text, TextInput, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
@@ -45,7 +46,7 @@ function TextTab({ selected, title, onPress }: TextTabProps) {
 	const styles = style(themeValue);
 	return (
 		<View style={{ flex: 1, height: size.s_30 }}>
-			<TouchableOpacity
+			<Pressable
 				onPress={onPress}
 				style={{
 					backgroundColor: selected ? Colors.bgViolet : 'transparent',
@@ -56,7 +57,7 @@ function TextTab({ selected, title, onPress }: TextTabProps) {
 				}}
 			>
 				<Text style={{ color: selected ? Colors.white : Colors.gray72, fontSize: Fonts.size.small, textAlign: 'center' }}>{title}</Text>
-			</TouchableOpacity>
+			</Pressable>
 		</View>
 	);
 }
@@ -200,7 +201,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 				{mode !== 'emoji' && (
 					<View style={{ flexDirection: 'row', gap: size.s_10, width: '100%', alignItems: 'center' }}>
 						{mode === 'gif' && !!valueInputToCheckHandleSearch && (
-							<TouchableOpacity
+							<Pressable
 								style={{ paddingVertical: size.s_10 }}
 								onPress={() => {
 									setSearchText('');
@@ -208,7 +209,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 								}}
 							>
 								<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.text} />
-							</TouchableOpacity>
+							</Pressable>
 						)}
 
 						<View style={styles.textInputWrapper}>

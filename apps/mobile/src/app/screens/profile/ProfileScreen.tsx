@@ -1,6 +1,6 @@
 import { useFriends, useMemberStatus } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, CheckIcon, Icons } from '@mezon/mobile-components';
+import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
 	accountActions,
@@ -43,8 +43,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const styles = style(themeValue, isTabletLandscape);
 	const { friends: allUser } = useFriends();
 	const { color } = useMixImageColor(userProfile?.user?.avatar_url);
-	const { t } = useTranslation('profile');
+	const { t } = useTranslation(['profile']);
 	const { t: tUser } = useTranslation('customUserStatus');
+	const { t: tStack } = useTranslation('screenStack');
 	const [isVisibleAddStatusUserModal, setIsVisibleAddStatusUserModal] = useState<boolean>(false);
 	const userCustomStatus = useSelector(selectAccountCustomStatus);
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -236,21 +237,13 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				</View>
 			)}
 
-			<ScrollView style={styles.contentWrapper}>
+			<ScrollView style={styles.contentWrapper} contentContainerStyle={{ paddingBottom: size.s_100 }}>
 				<View style={styles.contentContainer}>
 					<TouchableOpacity style={styles.viewInfo} onPress={showUserStatusBottomSheet}>
 						<Text style={styles.textName}>{userProfile?.user?.display_name}</Text>
 						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 					<Text style={styles.text}>{userProfile?.user?.username}</Text>
-					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}>
-						<CheckIcon width={size.s_14} height={size.s_14} color={Colors.azureBlue} />
-						<TouchableOpacity style={styles.token} onPress={showSendTokenBottomSheet}>
-							<Text
-								style={styles.text}
-							>{`${t('token')} ${tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}`}</Text>
-						</TouchableOpacity>
-					</View>
 					{userCustomStatus ? (
 						<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 							<TouchableOpacity
@@ -264,6 +257,53 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							</Pressable>
 						</View>
 					) : null}
+					<TouchableOpacity onPress={showSendTokenBottomSheet} style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+						<CheckIcon width={size.s_20} height={size.s_20} color={Colors.azureBlue} />
+						<View style={styles.token}>
+							<Text style={styles.text}>
+								{`${t('token')} ${tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}`}
+							</Text>
+						</View>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => {
+							navigation.push(APP_SCREEN.WALLET, {
+								activeScreen: 'transfer'
+							});
+						}}
+						style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}
+					>
+						<Icons.SendMoney height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						<View style={styles.token}>
+							<Text style={styles.text}>{tStack('settingStack.sendToken')}</Text>
+						</View>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => {
+							navigation.push(APP_SCREEN.WALLET);
+						}}
+						style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}
+					>
+						<View style={{ transform: [{ rotate: '180deg' }] }}>
+							<Icons.SendMoney height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						</View>
+						<View style={styles.token}>
+							<Text style={styles.text}>{tStack('settingStack.withdrawToken')}</Text>
+						</View>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => {
+							navigation.push(APP_SCREEN.WALLET, {
+								activeScreen: 'history'
+							});
+						}}
+						style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}
+					>
+						<Icons.History height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						<View style={styles.token}>
+							<Text style={styles.text}>{tStack('settingStack.historyTransaction')}</Text>
+						</View>
+					</TouchableOpacity>
 					{!isTabletLandscape && (
 						<View style={styles.buttonList}>
 							<MezonButton

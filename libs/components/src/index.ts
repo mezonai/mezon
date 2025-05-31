@@ -1,6 +1,7 @@
 import { Canvas } from './lib/components';
 
 export * from './lib/components';
+export * from './lib/components/ClanGroup';
 export * from './lib/contexts/DirectMessageContextMenu';
 export * from './lib/contexts/MemberContextMenu';
 

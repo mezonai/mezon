@@ -1,4 +1,5 @@
 import {
+	ClanGroup,
 	DmCallManager,
 	FirstJoinPopup,
 	FooterProfile,
@@ -16,9 +17,11 @@ import {
 	Topbar,
 	useWebRTCStream
 } from '@mezon/components';
-import { useAppParams, useAuth, useClanDragAndDrop, useMenu, useReference } from '@mezon/core';
+import { useAppParams, useAuth, useClanGroupDragAndDrop, useMenu, useReference } from '@mezon/core';
 import {
+	ClanGroupItem,
 	accountActions,
+	clansActions,
 	e2eeActions,
 	fetchDirectMessage,
 	getIsShowPopupForward,
@@ -27,6 +30,7 @@ import {
 	selectChatStreamWidth,
 	selectClanNumber,
 	selectClanView,
+	selectClansEntities,
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentClanId,
@@ -38,7 +42,7 @@ import {
 	selectOnboardingMode,
 	selectOpenModalAttachment,
 	selectOpenModalE2ee,
-	selectOrderedClans,
+	selectOrderedClansWithGroups,
 	selectStatusMenu,
 	selectTheme,
 	selectToastErrors,
@@ -322,7 +326,7 @@ const SidebarMenu = memo(
 				id="menu"
 			>
 				<div
-					className={`top-0 left-0 right-0 flex flex-col items-center py-4 px-3 overflow-y-auto hide-scrollbar ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : 'h-dvh'} `}
+					className={`top-0 left-0 right-0 flex flex-col items-center py-4 overflow-y-auto hide-scrollbar ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : 'h-dvh'} `}
 				>
 					<div className="flex flex-col items-center">
 						<SidebarLogoItem />
@@ -352,47 +356,217 @@ const SidebarMenu = memo(
 );
 
 const ClansList = memo(() => {
-	const clans = useSelector(selectOrderedClans);
+	const dispatch = useAppDispatch();
+	const orderedClansWithGroups = useSelector(selectOrderedClansWithGroups);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
+	const allClansEntities = useSelector(selectClansEntities);
 
-	const [items, setItems] = useState<string[]>([]);
-	const { draggingState, handleMouseDown, handleMouseEnter } = useClanDragAndDrop(items, setItems);
+	const [items, setItems] = useState<ClanGroupItem[]>([]);
+	const { draggingState, handleMouseDown, handleMouseEnter } = useClanGroupDragAndDrop(items, setItems);
 
 	useEffect(() => {
-		setItems(clans.map((c) => c.id));
-	}, [clans]);
+		dispatch(clansActions.initializeClanGroupOrder());
+	}, [dispatch]);
 
-	const { isDragging, draggedItem, dragPosition, dragOffset } = draggingState;
-	const isActive = (clanId: string) => isClanView && currentClanId === clans.find((c) => c.id === clanId)?.clan_id;
+	useEffect(() => {
+		setItems(
+			orderedClansWithGroups
+				.filter((item): item is NonNullable<typeof item> => item != null)
+				.map((item) => ({
+					type: item.type,
+					id: item.id,
+					clanId: item.type === 'clan' ? item.clan?.id : undefined,
+					groupId: item.type === 'group' && 'group' in item ? item.group?.id : undefined
+				}))
+		);
+	}, [orderedClansWithGroups]);
+
+	const { isDragging, draggedItem, dragPosition, dragOffset, overItem, dropZone, groupIntent, draggedFromGroup } = draggingState;
+
+	const isActive = (clanId: string) => isClanView && currentClanId === clanId;
+
+	const handleItemMouseEnter = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
+		if (isDragging) {
+			const rect = e.currentTarget.getBoundingClientRect();
+			const mouseY = e.pageY || e.clientY;
+			handleMouseEnter(id, mouseY, rect);
+		}
+	};
+
+	const handleClanMouseDown = (e: React.MouseEvent<HTMLDivElement>, clanId: string, fromGroup: { groupId: string; clanId: string }) => {
+		handleMouseDown(e, clanId, fromGroup);
+	};
 
 	return (
 		<div className="flex flex-col gap-3 relative">
-			{items.map((id) => {
-				const clan = clans.find((c) => c.id === id)!;
-				const draggingThis = isDragging && draggedItem === clan?.id;
+			{orderedClansWithGroups
+				.filter((item): item is NonNullable<typeof item> => item != null)
+				.map((item, index) => {
+					const draggingThis = isDragging && draggedItem === item.id;
+					const isOverThis = isDragging && overItem === item.id;
+					const isGroupIntentTarget = groupIntent?.targetId === item.id;
 
-				return (
-					<div
-						key={clan?.id}
-						className={`relative transition-all duration-200 ${draggingThis ? 'opacity-0 h-0 overflow-hidden my-0' : isDragging && draggingState.overItem === clan.id ? 'my-8' : 'my-0'}`}
-						onMouseEnter={() => handleMouseEnter(clan?.id)}
-						onMouseDown={(e) => handleMouseDown(e, clan?.id)}
-					>
-						<SidebarClanItem option={clan} active={isActive(clan?.id)} className={`${draggingThis ? 'opacity-0' : ''}`} />
-					</div>
-				);
-			})}
+					let hoverEffect = '';
+					let dropIndicator = null;
 
+					if (isOverThis && dropZone) {
+						switch (dropZone) {
+							case 'top':
+								hoverEffect = 'border-t-4 border-blue-500';
+								dropIndicator = (
+									<div className="absolute -top-2 left-0 right-0 h-1 bg-blue-500 rounded-full animate-pulse shadow-md" />
+								);
+								break;
+							case 'bottom':
+								hoverEffect = 'border-b-4 border-blue-500';
+								dropIndicator = (
+									<div className="absolute -bottom-2 left-0 right-0 h-1 bg-blue-500 rounded-full animate-pulse shadow-md" />
+								);
+								break;
+							case 'center':
+								if (isGroupIntentTarget) {
+									hoverEffect = 'ring-4 ring-green-400 ring-opacity-90 bg-green-200 dark:bg-green-700/50 transform scale-105';
+								} else {
+									hoverEffect = 'ring-2 ring-green-300 ring-opacity-70 bg-green-100 dark:bg-green-800/30';
+								}
+								break;
+						}
+					}
+
+					const gapId = `gap-${index}`;
+					const isOverGap = isDragging && overItem === gapId;
+
+					const draggedFromGroupStyling = draggedFromGroup && draggedFromGroup.clanId === item.id ? 'opacity-50 transform scale-95' : '';
+
+					return (
+						<div key={item.id}>
+							{index === 0 && (
+								<div
+									className={`h-3 w-full relative transition-all duration-200 ${isOverGap ? 'bg-blue-100 dark:bg-blue-900/30' : ''}`}
+									onMouseEnter={(e) => {
+										if (isDragging) {
+											const rect = e.currentTarget.getBoundingClientRect();
+											const mouseY = e.pageY || e.clientY;
+											handleMouseEnter(gapId, mouseY, rect);
+										}
+									}}
+									onMouseMove={(e) => {
+										if (isDragging) {
+											const rect = e.currentTarget.getBoundingClientRect();
+											const mouseY = e.pageY || e.clientY;
+											handleMouseEnter(gapId, mouseY, rect);
+										}
+									}}
+								>
+									{isOverGap && (
+										<div className="absolute top-1/2 left-0 right-0 h-1 bg-blue-500 rounded-full animate-pulse shadow-md transform -translate-y-1/2" />
+									)}
+								</div>
+							)}
+
+							<div
+								className={`${item.type === 'group' && item.group.isExpanded ? '' : 'px-2'} relative transition-all duration-200 ${hoverEffect} ${draggedFromGroupStyling}`}
+								onMouseEnter={(e) => handleItemMouseEnter(e, item.id)}
+								onMouseMove={(e) => handleItemMouseEnter(e, item.id)}
+								onMouseDown={(e) => handleMouseDown(e, item.id)}
+							>
+								{item.type === 'clan' && item.clan ? (
+									<SidebarClanItem
+										option={item.clan}
+										active={isActive(item.clan.clan_id || '')}
+										className={`transition-all duration-200 ${draggingThis ? 'opacity-30' : ''} ${
+											isGroupIntentTarget && dropZone === 'center' ? 'animate-pulse' : ''
+										}`}
+									/>
+								) : item.type === 'group' && 'group' in item && item.group ? (
+									<div onMouseEnter={(e) => handleItemMouseEnter(e, item.id)} onMouseMove={(e) => handleItemMouseEnter(e, item.id)}>
+										<ClanGroup
+											group={item.group}
+											className={`transition-all duration-200 ${draggingThis ? 'opacity-30' : ''} ${
+												isGroupIntentTarget ? 'animate-pulse' : ''
+											}`}
+											isGroupIntent={isGroupIntentTarget}
+											onMouseDown={(e) => handleMouseDown(e, item.id)}
+											onClanMouseDown={handleClanMouseDown}
+										/>
+									</div>
+								) : null}
+
+								{dropIndicator}
+
+								{isOverThis && dropZone === 'center' && isGroupIntentTarget && (
+									<div className="absolute inset-0 pointer-events-none">
+										<div className="absolute top-[15%] bottom-[15%] left-0 right-0 border-2 border-dashed border-green-400 rounded bg-green-200/20 dark:bg-green-400/10" />
+									</div>
+								)}
+							</div>
+
+							{(() => {
+								const nextGapId = `gap-${index + 1}`;
+								const isOverNextGap = isDragging && overItem === nextGapId;
+
+								return (
+									<div
+										className={`h-3 w-full relative transition-all duration-200 ${isOverNextGap ? 'bg-blue-100 dark:bg-blue-900/30' : ''}`}
+										onMouseEnter={(e) => {
+											if (isDragging) {
+												const rect = e.currentTarget.getBoundingClientRect();
+												const mouseY = e.pageY || e.clientY;
+												handleMouseEnter(nextGapId, mouseY, rect);
+											}
+										}}
+										onMouseMove={(e) => {
+											if (isDragging) {
+												const rect = e.currentTarget.getBoundingClientRect();
+												const mouseY = e.pageY || e.clientY;
+												handleMouseEnter(nextGapId, mouseY, rect);
+											}
+										}}
+									>
+										{isOverNextGap && (
+											<div className="absolute top-1/2 left-0 right-0 h-1 bg-blue-500 rounded-full animate-pulse shadow-md transform -translate-y-1/2" />
+										)}
+									</div>
+								);
+							})()}
+						</div>
+					);
+				})}
+
+			{/* Floating dragged item */}
 			{isDragging && draggedItem && dragPosition && (
 				<div
-					className="fixed pointer-events-none z-50 w-[40px] h-[40px]"
+					className="fixed pointer-events-none z-50 w-[40px] h-[40px] transform rotate-3 shadow-lg"
 					style={{
 						left: `${dragPosition.x - dragOffset.x}px`,
 						top: `${dragPosition.y - dragOffset.y}px`
 					}}
 				>
-					<SidebarClanItem option={clans.find((c) => c.id === draggedItem)!} active={false} />
+					{(() => {
+						if (draggedFromGroup) {
+							const draggedClan = orderedClansWithGroups
+								.filter((item): item is NonNullable<typeof item> => item != null)
+								.find((item) => item.type === 'group' && 'group' in item && item.group?.clanIds.includes(draggedFromGroup.clanId));
+
+							if (draggedClan && draggedClan.type === 'group' && 'group' in draggedClan) {
+								const clan = allClansEntities[draggedFromGroup.clanId];
+								if (clan) {
+									return <SidebarClanItem option={clan} active={false} className="opacity-80" />;
+								}
+							}
+						} else {
+							const draggedItemData = orderedClansWithGroups
+								.filter((item): item is NonNullable<typeof item> => item != null)
+								.find((item) => item.id === draggedItem);
+							if (draggedItemData?.type === 'clan' && draggedItemData.clan) {
+								return <SidebarClanItem option={draggedItemData.clan} active={false} className="opacity-80" />;
+							} else if (draggedItemData?.type === 'group' && 'group' in draggedItemData && draggedItemData.group) {
+								return <ClanGroup group={draggedItemData.group} className="opacity-80" />;
+							}
+						}
+						return null;
+					})()}
 				</div>
 			)}
 		</div>

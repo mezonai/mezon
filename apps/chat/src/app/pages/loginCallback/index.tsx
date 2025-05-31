@@ -1,6 +1,6 @@
 import { FailLoginModal } from '@mezon/components';
 import { useAppNavigation } from '@mezon/core';
-import { authActions, selectAllAuth, useAppDispatch } from '@mezon/store';
+import { authActions, selectAllAuth, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { useEffect } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 
 const LoginCallback = () => {
 	const [searchParams] = useSearchParams();
+	const isLogin = useSelector(selectIsLogin);
 	const code = searchParams.get('code');
 	const dispatch = useAppDispatch();
 	const { navigate } = useAppNavigation();
@@ -23,6 +24,12 @@ const LoginCallback = () => {
 				navigate('/login');
 				return;
 			}
+
+			if (isLogin) {
+				navigate('/login/callback');
+				return;
+			}
+
 			try {
 				const action = await dispatch(authActions.authenticateMezon(code));
 

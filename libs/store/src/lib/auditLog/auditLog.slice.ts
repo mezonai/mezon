@@ -58,7 +58,7 @@ export const auditLogList = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
-				fetchAuditLogCached.clear(mezon, actionLog, userId, clanId, date_log);
+				fetchAuditLogCached.delete(mezon, actionLog, userId, clanId, date_log);
 			}
 			const response = await fetchAuditLogCached(mezon, actionLog, userId, clanId, date_log);
 			return response;

@@ -14,7 +14,13 @@ const ModalConfirmRecord = ({ visible, onBack, onConfirm }: IModalConfirmRecordP
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	return (
-		<Modal statusBarTranslucent={true} animationType="fade" transparent={true} visible={visible}>
+		<Modal
+			statusBarTranslucent={true}
+			animationType="fade"
+			transparent={true}
+			visible={visible}
+			supportedOrientations={['portrait', 'landscape']}
+		>
 			<View style={styles.modalContainer}>
 				<View style={[styles.modalContent, { backgroundColor: themeValue.white }]}>
 					<Text style={styles.modalText}>{t('confirmDeleteRecording')}</Text>

@@ -22,10 +22,54 @@ jobs:
           echo "Node directory: ${nv:1}"
           source ~/.bashrc
           yarn
+
+      - name: Reset Nx cache
+        run: |
+          echo "Resetting Nx cache"
+          yarn nx reset
+
       - name: Build
         run: |
           echo "Build"
           yarn build:chat
+        env:
+          NX_CHAT_APP_API_HOST: ${{ secrets.NX_CHAT_APP_API_HOST_DEV }}
+          NX_CHAT_APP_API_PORT: ${{ secrets.NX_CHAT_APP_API_PORT_DEV }}
+          NX_CHAT_APP_API_KEY: ${{ secrets.NX_CHAT_APP_API_KEY_DEV }}
+          NX_CHAT_APP_API_SECURE: ${{ secrets.NX_CHAT_APP_API_SECURE_DEV }}
+          NX_CHAT_APP_GOOGLE_CLIENT_ID: ${{ secrets.NX_CHAT_APP_GOOGLE_CLIENT_ID_DEV }}
+          NX_CHAT_APP_REDIRECT_URI: ${{ secrets.NX_CHAT_APP_REDIRECT_URI_DEV }}
+          NX_CHAT_APP_FCM_API_KEY: ${{ secrets.NX_CHAT_APP_FCM_API_KEY_DEV }}
+          NX_CHAT_APP_FCM_AUTH_DOMAIN: ${{ secrets.NX_CHAT_APP_FCM_AUTH_DOMAIN_DEV }}
+          NX_CHAT_APP_FCM_PROJECT_ID: ${{ secrets.NX_CHAT_APP_FCM_PROJECT_ID_DEV }}
+          NX_CHAT_APP_FCM_STORAGE_BUCKET: ${{ secrets.NX_CHAT_APP_FCM_STORAGE_BUCKET_DEV }}
+          NX_CHAT_APP_FCM_MESSAGING_SENDER_ID: ${{ secrets.NX_CHAT_APP_FCM_MESSAGING_SENDER_ID_DEV }}
+          NX_CHAT_APP_FCM_APP_ID: ${{ secrets.NX_CHAT_APP_FCM_APP_ID_DEV }}
+          NX_CHAT_APP_FCM_MEASUREMENT_ID: ${{ secrets.NX_CHAT_APP_FCM_MEASUREMENT_ID_DEV }}
+          NX_CHAT_APP_FCM_VAPID_KEY: ${{ secrets.NX_CHAT_APP_FCM_VAPID_KEY_DEV }}
+          NX_CHAT_APP_API_TENOR_KEY: ${{ secrets.NX_CHAT_APP_API_TENOR_KEY_DEV }}
+          NX_CHAT_APP_API_CLIENT_KEY_CUSTOM: ${{ secrets.NX_CHAT_APP_API_CLIENT_KEY_CUSTOM_DEV }}
+          NX_CHAT_SENTRY_DNS: ${{ secrets.NX_CHAT_SENTRY_DNS_DEV }}
+          NX_CHAT_APP_ANNONYMOUS_USER_ID: ${{ secrets.NX_CHAT_APP_ANNONYMOUS_USER_ID_DEV }}
+          NX_CHAT_APP_NOTIFICATION_WS_URL: ${{ secrets.NX_CHAT_APP_NOTIFICATION_WS_URL_DEV }}
+          NX_CHAT_SENTRY_DSN: ${{ secrets.NX_CHAT_SENTRY_DSN_DEV }}
+          NX_IMGPROXY_BASE_URL: ${{ secrets.NX_IMGPROXY_BASE_URL }}
+          NX_IMGPROXY_KEY: ${{ secrets.NX_IMGPROXY_KEY }}
+          NX_WEBRTC_ICESERVERS_URL: ${{ secrets.NX_WEBRTC_ICESERVERS_URL_DEV }}
+          NX_WEBRTC_ICESERVERS_USERNAME: ${{ secrets.NX_WEBRTC_ICESERVERS_USERNAME_DEV }}
+          NX_WEBRTC_ICESERVERS_CREDENTIAL: ${{ secrets.NX_WEBRTC_ICESERVERS_CREDENTIAL_DEV }}
+          NX_CHAT_APP_STREAM_WS_URL: ${{ secrets.NX_CHAT_APP_STREAM_WS_URL }}
+          NX_CHAT_APP_MEET_WS_URL: ${{ secrets.NX_CHAT_APP_MEET_WS_URL }}
+          NX_CHAT_APP_MEZON_TREASURY_URL: ${{ secrets.NX_CHAT_APP_MEZON_TREASURY_URL }}
+          NX_CHAT_APP_API_MEZONTREASURY_KEY: ${{ secrets.NX_CHAT_APP_API_MEZONTREASURY_KEY }}
+          NX_CHAT_APP_CONTRACT_ADDRESS: ${{ secrets.NX_CHAT_APP_CONTRACT_ADDRESS }}
+          NX_CHAT_APP_MEZON_TREASURY_URL_NETWORK: ${{ secrets.NX_CHAT_APP_MEZON_TREASURY_URL_NETWORK }}
+          NX_CHAT_APP_OAUTH2_AUTHORIZE_URL: ${{ secrets.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL }}
+          NX_CHAT_APP_OAUTH2_CLIENT_ID: ${{ secrets.NX_CHAT_APP_OAUTH2_CLIENT_ID }}
+          NX_CHAT_APP_OAUTH2_REDIRECT_URI: ${{ secrets.NX_CHAT_APP_OAUTH2_REDIRECT_URI }}
+          NX_CHAT_APP_OAUTH2_RESPONSE_TYPE: ${{ secrets.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE }}
+          NX_CHAT_APP_OAUTH2_SCOPE: ${{ secrets.NX_CHAT_APP_OAUTH2_SCOPE }}
+          NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD: ${{ secrets.NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD }}
 
   deploy:
     runs-on: mezone-fe-dev

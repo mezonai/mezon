@@ -40,7 +40,7 @@ export const fetchHashtagDm = createAsyncThunk('channels/fetchHashtagDm', async 
 	try {
 		const mezon = await ensureClient(getMezonCtx(thunkAPI));
 		if (noCache) {
-			fetchHashtagDmCached.clear(mezon, userIds);
+			fetchHashtagDmCached.delete(mezon, userIds);
 		}
 		const response = await fetchHashtagDmCached(mezon, userIds);
 		if (!response?.hashtag_dm) {

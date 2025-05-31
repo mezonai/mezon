@@ -22,6 +22,11 @@ jobs:
           echo "Node directory: ${nv:1}"
           yarn
 
+      - name: Reset Nx cache
+        run: |
+          echo "Resetting Nx cache"
+          yarn nx reset
+
       - name: Change prod environment
         run: |
           rm -rf apps/chat/.env

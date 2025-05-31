@@ -43,7 +43,7 @@ export const getDefaultNotificationClan = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
-				fetchDefaultNotificationClanCached.clear(mezon, clanId);
+				fetchDefaultNotificationClanCached.delete(mezon, clanId);
 			}
 			const response = await fetchDefaultNotificationClanCached(mezon, clanId);
 			if (!response) {

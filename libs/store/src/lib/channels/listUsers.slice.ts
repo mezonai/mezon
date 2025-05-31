@@ -49,7 +49,7 @@ export const fetchListUsersByUser = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchListUsersByUserCached.clear(mezon);
+				fetchListUsersByUserCached.delete(mezon);
 			}
 			const response = await fetchListUsersByUserCached(mezon);
 			if (!response?.users) {

@@ -98,7 +98,7 @@ export const fetchMaxChannelPermission = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchMaxChannelPermissionCached.clear(mezon, clanId, channelId);
+				fetchMaxChannelPermissionCached.delete(mezon, clanId, channelId);
 			}
 			const response = await fetchMaxChannelPermissionCached(mezon, clanId, channelId);
 			if (response && response.permissions?.permissions) {

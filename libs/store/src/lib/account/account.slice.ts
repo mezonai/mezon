@@ -40,7 +40,7 @@ export const getUserProfile = createAsyncThunk<IUserAccount, { noCache: boolean 
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
 	const noCache = arg?.noCache ?? false;
 	if (noCache) {
-		fetchUserProfileCached.clear(mezon);
+		fetchUserProfileCached.delete(mezon);
 	}
 	const response = await fetchUserProfileCached(mezon);
 	if (!response) {

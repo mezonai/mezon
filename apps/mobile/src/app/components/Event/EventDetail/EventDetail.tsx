@@ -41,6 +41,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 	const clans = useSelector(selectClanById(event?.clan_id || ''));
 	const { userId, userProfile } = useAuth();
 	const [isInterested, setIsInterested] = useState<boolean>(false);
+	const [eventInterested, setEventInterested] = useState<number>(event?.user_ids?.length || 0);
 	const [isClanOwner, hasClanPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
@@ -94,8 +95,10 @@ export function EventDetail({ event }: IEventDetailProps) {
 
 		if (isInterested) {
 			dispatch(deleteUserEvent(request));
+			setEventInterested(eventInterested - 1);
 		} else {
 			dispatch(addUserEvent(request));
+			setEventInterested(eventInterested + 1);
 		}
 
 		setIsInterested(!isInterested);
@@ -141,8 +144,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 
 					<View style={styles.inline}>
 						<MezonIconCDN icon={IconCDN.bellIcon} height={16} width={16} color={themeValue.text} />
-						<Text style={styles.smallText}>{event?.user_ids?.length}</Text>
-						<Text style={styles.smallText}>{event?.user_ids?.length > 1 ? 'people are interested' : 'person is interested'}</Text>
+						<Text style={styles.smallText}>{eventInterested}</Text>
+						<Text style={styles.smallText}>{eventInterested > 1 ? 'people are interested' : 'person is interested'}</Text>
 					</View>
 
 					<View style={styles.inline}>

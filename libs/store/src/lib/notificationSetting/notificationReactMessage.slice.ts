@@ -42,7 +42,7 @@ export const getNotifiReactMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchNotifiReactMessageCached.clear(mezon, channelId);
+				fetchNotifiReactMessageCached.delete(mezon, channelId);
 			}
 			const response = await fetchNotifiReactMessageCached(mezon, channelId);
 			if (!response) {

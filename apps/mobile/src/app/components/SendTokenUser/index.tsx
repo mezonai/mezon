@@ -16,7 +16,9 @@ export const SendTokenUser = forwardRef(() => {
 		() => [
 			{
 				onPress: () => {
-					navigation.push(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.SEND_TOKEN });
+					navigation.push(APP_SCREEN.WALLET, {
+						activeScreen: 'transfer'
+					});
 					dismiss();
 				},
 				title: t('settingStack.sendToken'),
@@ -31,7 +33,9 @@ export const SendTokenUser = forwardRef(() => {
 			},
 			{
 				onPress: () => {
-					navigation.navigate(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.HISTORY_TRANSACTION });
+					navigation.push(APP_SCREEN.WALLET, {
+						activeScreen: 'history'
+					});
 					dismiss();
 				},
 				title: t('settingStack.historyTransaction'),

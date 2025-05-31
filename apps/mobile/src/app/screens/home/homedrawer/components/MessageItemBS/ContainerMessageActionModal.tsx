@@ -57,11 +57,16 @@ import { ReportMessageModal } from '../ReportMessageModal';
 import { RecentEmojiMessageAction } from './RecentEmojiMessageAction';
 import { style } from './styles';
 
+enum ReactionType {
+	NONE = 0,
+	VIDEO = 1
+}
+
 export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
-	const { type, message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', handleBottomSheetExpand } = props;
+	const { type, message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', handleBottomSheetExpand, channelId, clanId } = props;
 	const { socketRef } = useMezon();
 	const store = getStore();
 
@@ -85,6 +90,10 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const onClose = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
+
+	const isInMezonMeet = useMemo(() => {
+		return message ? false : true;
+	}, [message]);
 
 	const onCloseModalConfirm = useCallback(() => {
 		setCurrentMessageActionType(null);
@@ -632,6 +641,34 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const onSelectEmoji = useCallback(
 		async (emoji_id: string, emoij: string) => {
+			if (!message && isOnlyEmojiPicker) {
+				if (!socketRef.current) return;
+				socketRef.current.writeChatMessage(
+					clanId,
+					channelId,
+					2,
+					false,
+					{
+						t: emoij + ' ',
+						ej: [
+							{
+								emojiid: emoji_id,
+								s: 0,
+								e: emoij.length
+							}
+						],
+						vr: ReactionType.VIDEO
+					},
+					[],
+					[],
+					[],
+					undefined,
+					undefined,
+					undefined
+				);
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				return;
+			}
 			await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij, userId);
 		},
 		[handleReact, message?.id, mode, userId]

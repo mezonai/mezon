@@ -138,11 +138,7 @@ const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
 					children="Withdraw"
 					startIcon={<Icons.SendMoney className="transform scale-x-[-1] scale-y-[-1]" />}
 				/>
-				<ItemStatus
-					onClick={handleOpenHistoryModal}
-					children="History Transaction"
-					startIcon={<Icons.History className="bg-green-500" />}
-				/>
+				<ItemStatus onClick={handleOpenHistoryModal} children="History Transaction" startIcon={<Icons.History className="bg-green-500" />} />
 				<Dropdown
 					trigger="click"
 					dismissOnClick={true}
@@ -185,14 +181,14 @@ const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
 					<ItemStatus
 						children="Manage Accounts"
 						onClick={() => {
-							openModalAddAccount();
-							modalRef.current = true;
+							if (isElectron()) {
+								openModalAddAccount();
+								modalRef.current = true;
+							}
 						}}
 					/>
 				) : (
-					<>
-						<ItemProfile username={allAccount?.username} onClick={handleSwitchAccount} />
-					</>
+					<ItemProfile username={allAccount?.username} onClick={handleSwitchAccount} />
 				)}
 			</Dropdown>
 			{isShowModalWithdraw && <SettingRightWithdraw onClose={handleCloseWithdrawModal} />}
@@ -214,9 +210,9 @@ const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: strin
 			onClick={(e) => {
 				e.stopPropagation();
 			}}
-			className="w-[100dvw] h-[100dvh] bg-black relative z-30 flex items-center justify-center"
+			className="w-[100dvw] h-[100dvh] bg-black relative z-30 flex items-center justify-center bg-opacity-60"
 		>
-			<form className="space-y-2">
+			<form className="space-y-2 bg-black p-12 rounded-lg w-[400px]">
 				<label htmlFor="email" className="block text-sm font-medium text-black dark:text-gray-300">
 					Email<span className="text-red-500">*</span>
 				</label>
@@ -264,9 +260,9 @@ const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: strin
 								></path>
 								<path
 									fill="currentColor"
-									fill-rule="evenodd"
+									fillRule="evenodd"
 									d="M22.89 11.7c.07.2.07.4 0 .6C22.27 13.9 19.1 21 12 21c-7.11 0-10.27-7.11-10.89-8.7a.83.83 0 0 1 0-.6C1.73 10.1 4.9 3 12 3c7.11 0 10.27 7.11 10.89 8.7Zm-4.5-3.62A15.11 15.11 0 0 1 20.85 12c-.38.88-1.18 2.47-2.46 3.92C16.87 17.62 14.8 19 12 19c-2.8 0-4.87-1.38-6.39-3.08A15.11 15.11 0 0 1 3.15 12c.38-.88 1.18-2.47 2.46-3.92C7.13 6.38 9.2 5 12 5c2.8 0 4.87 1.38 6.39 3.08Z"
-									clip-rule="evenodd"
+									clipRule="evenodd"
 								></path>
 							</svg>
 						</button>
@@ -275,8 +271,7 @@ const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: strin
 				<div className="min-h-[20px]"></div>
 				<button
 					type="submit"
-					className="w-full px-4 py-2 rounded-md font-medium focus:outline-none
-          bg-gray-400 text-white cursor-not-allowed dark:bg-gray-600 dark:text-gray-300"
+					className="w-full px-4 py-2 font-medium focus:outline-none text-white cursor-pointer bg-[#1024D4] rounded-lg  text-[16px] leading-[24px] hover:bg-[#0C1AB2] focus:bg-[#281FB5] whitespace-nowrap"
 					onClick={handleAddAccount}
 				>
 					Log In

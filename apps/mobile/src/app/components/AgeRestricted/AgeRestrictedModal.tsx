@@ -28,7 +28,7 @@ const AgeRestrictedModal = () => {
 	if (!isShowAgeRestricted) return <View></View>;
 
 	return (
-		<Modal visible={isShowAgeRestricted}>
+		<Modal visible={isShowAgeRestricted} supportedOrientations={['portrait', 'landscape']}>
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: themeValue.secondary }}>
 				{userProfile?.user?.dob === '0001-01-01T00:00:00Z' ? (
 					<AgeRestrictedForm onClose={closeBackdrop} />

@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'styles/tooltip.scss';
+@import './styles/tooltip.css';
+
 @font-face {
 	font-family: 'gg sans';
 	src: url('./assets/fonts/ggsans-Normal.woff2') format('woff2');

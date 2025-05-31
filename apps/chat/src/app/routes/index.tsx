@@ -27,6 +27,8 @@ import InitialRoutes from './InititalRoutes';
 import ProtectedRoutes from './ProtectedRoutes';
 import ThreadsRoutes from './ThreadsRoutes';
 
+import { Canvas } from '@mezon/components';
+
 const AppLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/AppLayout'));
 const GuessLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/GuessLayout'));
 const MainLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/MainLayout'));
@@ -37,7 +39,6 @@ const ClanIndex = lazy(() => import(/* webpackChunkName: "clan-index" */ '../pag
 const ChannelIndex = lazy(() => import(/* webpackChunkName: "channel-index" */ '../pages/channel/ChannelIndex'));
 const DirectMessageIndex = lazy(() => import(/* webpackChunkName: "dm-index" */ '../pages/directMessage/DirectMessageIndex'));
 const ChannelAppLayoutMobile = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/ChannelAppLayoutMobile'));
-const Canvas = lazy(() => import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.default.Canvas })));
 const PreJoinCalling = lazy(() => import(/* webpackChunkName: "ui-components" */ '../pages/meeting'));
 
 const AppDirectory = lazy(() => import(/* webpackChunkName: "app-pages" */ '../pages/AppDirectory'));
@@ -68,6 +69,9 @@ const SuspenseFallback = () => {
 
 	return null;
 };
+
+// Add a simple HydrateFallback component for the initial hydration
+const HydrateFallback = () => null;
 
 const RouterMonitor = () => {
 	const navigation = useNavigation();
@@ -109,6 +113,7 @@ export const Routes = memo(() => {
 				path: '',
 				loader: loaderWithStore(appLoader),
 				shouldRevalidate: shouldRevalidateApp,
+				HydrateFallback: HydrateFallback,
 				element: (
 					<Suspense fallback={<SuspenseFallback />}>
 						<RouterMonitor />

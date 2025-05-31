@@ -33,7 +33,7 @@ export const TransactionModal = memo(({ transactionId, isMinus }: ITransactionMo
 
 	const note = useMemo(() => {
 		const noteData = safeJSONParse(detailLedger?.metadata);
-		return noteData?.note || '';
+		return noteData?.note || detailLedger?.metadata || '';
 	}, [detailLedger?.metadata]);
 
 	const amount = useMemo(() => {

@@ -64,7 +64,7 @@ export const MezonModal = (props: IMezonModalProps) => {
 	const isEmptyHeader = !title || !confirmText;
 
 	return (
-		<Modal visible={visible} animationType={animationType} transparent={true}>
+		<Modal visible={visible} animationType={animationType} transparent={true} supportedOrientations={['portrait', 'landscape']}>
 			<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
 				<View style={[styles.container, containerStyle]}>
 					{rightClose ? (

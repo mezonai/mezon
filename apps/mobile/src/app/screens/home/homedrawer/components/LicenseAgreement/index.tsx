@@ -30,7 +30,7 @@ const LicenseAgreement = () => {
 	};
 
 	return (
-		<Modal visible={isShowLicenseAgreement} transparent={true}>
+		<Modal visible={isShowLicenseAgreement} transparent={true} supportedOrientations={['portrait', 'landscape']}>
 			<View style={styles.wrapper}>
 				<View style={[styles.sheetContainer, isTabletLandscape && { maxWidth: '40%' }]}>
 					<View style={styles.headerModal}>

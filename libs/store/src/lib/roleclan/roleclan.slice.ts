@@ -62,7 +62,7 @@ export const fetchRolesClan = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (noCache) {
-				fetchRolesClanCached.clear(mezon, clanId || '');
+				fetchRolesClanCached.delete(mezon, clanId || '');
 			}
 			const response = await fetchRolesClanCached(mezon, clanId || '');
 			if (!response?.roles?.roles) {

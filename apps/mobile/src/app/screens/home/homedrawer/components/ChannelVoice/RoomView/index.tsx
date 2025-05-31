@@ -77,6 +77,16 @@ const RoomView = ({
 	const isShowPreCallInterface = useSelector(selectIsShowPreCallInterface);
 
 	useEffect(() => {
+		const subscription = focusedScreenShare
+			? Dimensions.addEventListener('change', () => {
+					setIsHiddenControl((prevState) => !prevState);
+				})
+			: null;
+
+		return () => subscription?.remove();
+	}, [focusedScreenShare]);
+
+	useEffect(() => {
 		if (localParticipant) {
 			loadLocalDefaults();
 		}
@@ -262,8 +272,8 @@ const RoomView = ({
 
 	const RenderControlBar = () => {
 		return (
-			<View style={[styles.menuFooter, { bottom: Platform.OS === 'ios' || isTabletLandscape ? size.s_100 : size.s_70 }]}>
-				<View style={{ gap: size.s_16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: size.s_6 }}>
+			<View style={[styles.menuFooter, { bottom: Platform.OS === 'ios' || isTabletLandscape ? size.s_150 : size.s_20, zIndex: 2 }]}>
+				<View style={{ gap: size.s_10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: size.s_6 }}>
 					<TouchableOpacity onPress={handleToggleCamera} style={styles.menuIcon}>
 						{isCameraEnabled ? <MezonIconCDN icon={IconCDN.videoIcon} /> : <MezonIconCDN icon={IconCDN.videoSlashIcon} />}
 					</TouchableOpacity>

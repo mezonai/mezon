@@ -11,15 +11,16 @@ interface IProps {
 	avatar: string;
 	username: string;
 	isShow: boolean;
+	isAnonymous?: boolean;
 }
-export const AvatarMessage = React.memo(({ isShow, onPress, onLongPress, id, username, avatar }: IProps) => {
+export const AvatarMessage = React.memo(({ isShow, onPress, onLongPress, id, username, avatar, isAnonymous }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 
 	if (isShow) {
 		return (
 			<Pressable onPress={onPress} onLongPress={onLongPress} style={styles.wrapperAvatar}>
-				{avatar ? (
+				{avatar || isAnonymous ? (
 					<MezonAvatar avatarUrl={avatar} username={username} />
 				) : (
 					<View style={styles.avatarMessageBoxDefault}>

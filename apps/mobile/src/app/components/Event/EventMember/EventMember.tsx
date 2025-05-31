@@ -1,6 +1,6 @@
 import { useMemberStatus } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
-import { EventManagementEntity, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
+import { EventManagementEntity, selectEventById, selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { Text, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
@@ -37,5 +37,7 @@ const Avatar = ({ id, index }: { id: string; index: number }) => {
 export function EventMember({ event }: IEventMemberProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	return <View style={styles.container}>{event?.user_ids?.map((uid, index) => <Avatar id={uid} index={index} />)}</View>;
+	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clan_id ?? '', event?.id ?? ''));
+
+	return <View style={styles.container}>{currentEvent?.user_ids?.map((uid, index) => <Avatar id={uid} index={index} />)}</View>;
 }

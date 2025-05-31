@@ -2,7 +2,7 @@ import { BottomSheetModalProps, BottomSheetScrollView, BottomSheetModal as Origi
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, DeviceEventEmitter, Keyboard, NativeEventSubscription, Text, View } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Keyboard, NativeEventSubscription, StyleProp, Text, View, ViewStyle } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Backdrop from './backdrop';
 import { style } from './styles';
@@ -36,6 +36,8 @@ const useBottomSheetState = () => {
 	const [headerRight, setHeaderRight] = useState<any>(null);
 	const [titleSize, setTitleSize] = useState<string>(null);
 	const [hiddenHeaderIndicator, setHiddenHeaderIndicator] = useState<boolean>(false);
+	const [containerStyle, setContainerStyle] = useState<StyleProp<ViewStyle>>(null);
+	const [backdropStyle, setBackdropStyle] = useState<StyleProp<ViewStyle>>(null);
 
 	const clearDataBottomSheet = () => {
 		setSnapPoints(['90%']);
@@ -46,6 +48,8 @@ const useBottomSheetState = () => {
 		setHeaderRight(null);
 		setTitleSize(null);
 		setHiddenHeaderIndicator(false);
+		setContainerStyle(null);
+		setBackdropStyle(null);
 	};
 
 	return {
@@ -57,6 +61,8 @@ const useBottomSheetState = () => {
 		headerRight,
 		titleSize,
 		hiddenHeaderIndicator,
+		containerStyle,
+		backdropStyle,
 		setSnapPoints,
 		setHeightFitContent,
 		setChildren,
@@ -65,7 +71,9 @@ const useBottomSheetState = () => {
 		setHeaderRight,
 		setTitleSize,
 		clearDataBottomSheet,
-		setHiddenHeaderIndicator
+		setHiddenHeaderIndicator,
+		setContainerStyle,
+		setBackdropStyle
 	};
 };
 
@@ -79,6 +87,8 @@ const BottomSheetRootListener = () => {
 		headerRight,
 		titleSize,
 		hiddenHeaderIndicator,
+		containerStyle,
+		backdropStyle,
 		setSnapPoints,
 		setHeightFitContent,
 		setChildren,
@@ -87,7 +97,9 @@ const BottomSheetRootListener = () => {
 		setHeaderRight,
 		setTitleSize,
 		clearDataBottomSheet,
-		setHiddenHeaderIndicator
+		setHiddenHeaderIndicator,
+		setContainerStyle,
+		setBackdropStyle
 	} = useBottomSheetState();
 
 	const ref = useRef<OriginalBottomSheet>();
@@ -106,6 +118,8 @@ const BottomSheetRootListener = () => {
 		if (data?.headerRight) setHeaderRight(data.headerRight);
 		if (data?.setTitleSize) setTitleSize(data.setTitleSize);
 		if (data?.hiddenHeaderIndicator) setHiddenHeaderIndicator(data.hiddenHeaderIndicator);
+		if (data?.containerStyle) setContainerStyle(data.containerStyle);
+		if (data?.backdropStyle) setBackdropStyle(data.backdropStyle);
 		ref?.current?.present();
 	};
 
@@ -148,10 +162,11 @@ const BottomSheetRootListener = () => {
 			index={0}
 			animateOnMount
 			backgroundStyle={styles.backgroundStyle}
-			backdropComponent={(prop) => <Backdrop {...prop} />}
+			backdropComponent={(prop) => <Backdrop {...prop} style={backdropStyle} />}
 			enableDynamicSizing={heightFitContent}
 			handleIndicatorStyle={styles.handleIndicator}
 			style={styles.container}
+			containerStyle={containerStyle}
 			onChange={handleSheetPositionChange}
 			handleComponent={
 				hiddenHeaderIndicator
