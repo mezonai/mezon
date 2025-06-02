@@ -7,7 +7,7 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import AttachmentSwitcher from '../../AttachmentPicker/AttachmentSwitcher';
 import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
-import { style } from '../ChatBoxBottomBar/style';
+import { style } from '../MentionTextInput/style';
 
 interface IChatMessageLeftAreaProps {
 	isAvailableSending: boolean;

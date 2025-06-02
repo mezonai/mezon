@@ -7,98 +7,86 @@ import { FC, memo, useEffect, useMemo, useState } from 'react';
 import { LayoutAnimation, Pressable, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import { EMessageActionType } from '../../screens/home/homedrawer/enums';
-import { IMessageActionNeedToResolve } from '../../screens/home/homedrawer/types';
 import SuggestItem from './SuggestItem';
 
 export interface MentionSuggestionsProps {
 	keyword?: string;
 	onSelect: (user: MentionDataProps) => void;
-	messageActionNeedToResolve: IMessageActionNeedToResolve | null;
-	onAddMentionMessageAction?: (mentionData: MentionDataProps[]) => void;
-	mentionTextValue?: string;
 	listMentions: MentionDataProps[];
 }
 
-const Suggestions: FC<MentionSuggestionsProps> = memo(
-	({ keyword, onSelect, messageActionNeedToResolve, onAddMentionMessageAction, listMentions }) => {
-		const [listMentionData, setListMentionData] = useState([]);
-		useEffect(() => {
-			if (messageActionNeedToResolve?.type === EMessageActionType.Mention) {
-				onAddMentionMessageAction(listMentions);
-			}
-		}, [messageActionNeedToResolve]);
+const Suggestions: FC<MentionSuggestionsProps> = memo(({ keyword, onSelect, listMentions }) => {
+	const [listMentionData, setListMentionData] = useState([]);
 
-		const filterMentionList = debounce(() => {
-			if (!listMentions?.length) {
-				setListMentionData([]);
-				return;
-			}
-			LayoutAnimation.configureNext(LayoutAnimation.create(200, LayoutAnimation.Types['easeInEaseOut'], LayoutAnimation.Properties['opacity']));
-			const mentionSearchText = keyword?.toLocaleLowerCase();
+	const filterMentionList = debounce(() => {
+		if (!listMentions?.length) {
+			setListMentionData([]);
+			return;
+		}
+		LayoutAnimation.configureNext(LayoutAnimation.create(200, LayoutAnimation.Types['easeInEaseOut'], LayoutAnimation.Properties['opacity']));
+		const mentionSearchText = keyword?.toLocaleLowerCase();
 
-			const filterMatchedMentions = (mentionData: MentionDataProps) => {
-				return (
-					normalizeString(mentionData?.display)?.toLocaleLowerCase()?.includes(mentionSearchText) ||
-					normalizeString(mentionData?.username)?.toLocaleLowerCase()?.includes(mentionSearchText)
-				);
-			};
-
-			const filteredUserMentions = listMentions
-				.filter(filterMatchedMentions)
-				.sort((a, b) => compareObjects(a, b, mentionSearchText, 'display', 'display'))
-				.map((item) => ({
-					...item,
-					name: item?.display
-				}));
-			setListMentionData(filteredUserMentions || []);
-		}, 300);
-
-		useEffect(() => {
-			filterMentionList();
-		}, [keyword, listMentions]);
-
-		const handleSuggestionPress = (user: MentionDataProps) => {
-			onSelect(user as MentionDataProps);
+		const filterMatchedMentions = (mentionData: MentionDataProps) => {
+			return (
+				normalizeString(mentionData?.display)?.toLocaleLowerCase()?.includes(mentionSearchText) ||
+				normalizeString(mentionData?.username)?.toLocaleLowerCase()?.includes(mentionSearchText)
+			);
 		};
-		return (
-			<FlatList
-				style={{ maxHeight: 200 }}
-				data={listMentionData}
-				renderItem={({ item }) => {
-					if (!item?.display) return <View />;
-					return (
-						<Pressable onPress={() => handleSuggestionPress(item)}>
-							<SuggestItem
-								isRoleUser={item?.isRoleUser}
-								isDisplayDefaultAvatar={true}
-								name={item?.display ?? ''}
-								avatarUrl={item.avatarUrl}
-								subText={item?.username}
-								color={item?.color}
-							/>
-						</Pressable>
-					);
-				}}
-				keyExtractor={(_, index) => `${index}_mention_suggestion`}
-				onEndReachedThreshold={0.1}
-				keyboardShouldPersistTaps="handled"
-				windowSize={5}
-				initialNumToRender={5}
-				maxToRenderPerBatch={10}
-				updateCellsBatchingPeriod={10}
-				decelerationRate={'fast'}
-				disableVirtualization={true}
-				removeClippedSubviews={true}
-				getItemLayout={(_, index) => ({
-					length: size.s_50,
-					offset: size.s_50 * index,
-					index
-				})}
-			/>
-		);
-	}
-);
+
+		const filteredUserMentions = listMentions
+			.filter(filterMatchedMentions)
+			.sort((a, b) => compareObjects(a, b, mentionSearchText, 'display', 'display'))
+			.map((item) => ({
+				...item,
+				name: item?.display
+			}));
+		setListMentionData(filteredUserMentions || []);
+	}, 300);
+
+	useEffect(() => {
+		filterMentionList();
+	}, [keyword, listMentions]);
+
+	const handleSuggestionPress = (user: MentionDataProps) => {
+		onSelect(user as MentionDataProps);
+	};
+	return (
+		<FlatList
+			style={{ maxHeight: 200 }}
+			data={listMentionData}
+			renderItem={({ item }) => {
+				if (!item?.display) return <View />;
+				return (
+					<Pressable onPress={() => handleSuggestionPress(item)}>
+						<SuggestItem
+							isRoleUser={item?.isRoleUser}
+							isDisplayDefaultAvatar={true}
+							name={item?.display ?? ''}
+							avatarUrl={item.avatarUrl}
+							subText={''}
+							color={item?.color}
+						/>
+					</Pressable>
+				);
+			}}
+			keyExtractor={(_, index) => `${index}_mention_suggestion`}
+			onEndReachedThreshold={0.1}
+			keyboardShouldPersistTaps="handled"
+			windowSize={5}
+			initialNumToRender={5}
+			maxToRenderPerBatch={10}
+			updateCellsBatchingPeriod={10}
+			decelerationRate={'fast'}
+			disableVirtualization={true}
+			removeClippedSubviews={true}
+			getItemLayout={(_, index) => ({
+				length: size.s_50,
+				offset: size.s_50 * index,
+				index
+			})}
+		/>
+	);
+});
 
 export type ChannelsMention = {
 	id: string;
@@ -112,11 +100,10 @@ export interface MentionHashtagSuggestionsProps {
 	// channelId: string;
 	keyword?: string;
 	onSelect: (user: MentionDataProps) => void;
-	directMessageId: string;
 	mode: number;
 }
 
-const HashtagSuggestions: FC<MentionHashtagSuggestionsProps> = memo(({ keyword, onSelect, directMessageId, mode }) => {
+const HashtagSuggestions: FC<MentionHashtagSuggestionsProps> = memo(({ keyword, onSelect, mode }) => {
 	const channels = useSelector(selectAllChannels);
 	const commonChannelDms = useSelector(selectAllHashtagDm);
 	const [channelsMentionData, setChannelsMentionData] = useState([]);

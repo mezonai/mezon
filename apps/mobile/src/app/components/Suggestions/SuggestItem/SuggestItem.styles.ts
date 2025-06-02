@@ -66,7 +66,7 @@ export const style = (colors: Attributes) =>
 		},
 		channelWrapper: {
 			flexDirection: 'row',
-			flexBasis: '50%',
+			width: '100%',
 			gap: size.s_8
 		},
 		channelBusyText: {

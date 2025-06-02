@@ -44,7 +44,7 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../../../types';
-import { style } from '../ChatBoxBottomBar/style';
+import { style } from '../MentionTextInput/style';
 import { BaseRecordAudioMessage } from '../RecordAudioMessage';
 
 interface IChatMessageSendingProps {

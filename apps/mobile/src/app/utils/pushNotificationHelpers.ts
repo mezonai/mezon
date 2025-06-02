@@ -5,7 +5,8 @@ import {
 	save,
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_IS_DISABLE_LOAD_BACKGROUND
+	STORAGE_IS_DISABLE_LOAD_BACKGROUND,
+	STORAGE_MY_USER_ID
 } from '@mezon/mobile-components';
 import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions, usersClanActions } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
@@ -167,7 +168,8 @@ const getConfigDisplayNotificationIOS = async (data: { [key: string]: string | o
 
 export const createLocalNotification = async (title: string, body: string, data: { [key: string]: string | object }) => {
 	try {
-		if (['video call', 'audio call', 'Untitled message'].some((text) => body?.includes?.(text))) return;
+		const myUserId = load(STORAGE_MY_USER_ID);
+		if (['video call', 'audio call', 'Untitled message'].some((text) => body?.includes?.(text)) || myUserId === data?.sender) return;
 		const configDisplayNotificationAndroid: NotificationAndroid =
 			Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
 		const configDisplayNotificationIOS: NotificationIOS = Platform.OS === 'ios' ? await getConfigDisplayNotificationIOS(data) : {};

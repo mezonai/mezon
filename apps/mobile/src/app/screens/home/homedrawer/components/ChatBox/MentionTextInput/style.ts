@@ -46,5 +46,28 @@ export const style = (colors: Attributes) =>
 			top: -size.s_10,
 			right: -size.s_10,
 			transform: [{ rotate: '45deg' }]
+		},
+		inputWrapper: {
+			position: 'relative',
+			flex: 1,
+			flexDirection: 'row',
+			paddingHorizontal: size.s_6
+		},
+		input: {
+			alignItems: 'center',
+			flex: 1,
+			justifyContent: 'center'
+		},
+		suggestions: {
+			position: 'absolute',
+			bottom: size.s_70,
+			left: 0,
+			right: 0,
+			maxHeight: size.s_615,
+			backgroundColor: colors.primary,
+			borderTopColor: colors.secondaryLight,
+			borderRadius: size.s_8,
+			overflow: 'hidden',
+			zIndex: 10
 		}
 	});
