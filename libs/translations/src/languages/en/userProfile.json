@@ -22,6 +22,7 @@
   },
   "pendingContent": {
     "block": "Block",
+    "unblock": "Unblock",
     "reportUserProfile": "Report User Profile",
     "acceptFriend": "Accept Friend",
     "cancelFriendRequest": "Cancel Friend Request",
@@ -35,6 +36,17 @@
       "removeFailed": "Failed to remove from Group"
     },
     "mezonMemberSince": "MEZON MEMBER SINCE"
+  },
+  "notification": {
+        "blockUser": {
+            "success": "User blocked successfully",
+            "error": "Failed to block user"
+        },
+        "unblockUser": {
+            "success": "User unblocked successfully",
+            "error": "Failed to unblock user"
+        },
+        "systemError": "An error occurred, please try again later"
   },
   "incomingFriendRequest": "INCOMING FRIEND REQUEST",
   "sendAddFriendSuccess": "Friend Request Sent",

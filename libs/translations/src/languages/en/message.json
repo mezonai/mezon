@@ -86,6 +86,7 @@
     },
     "newMessages": "NEW MESSAGES",
     "noSendMessagePermission": "You don't have permission to send message",
+    "blockedUserMessage": "Can't contact this user on Mezon",
     "messageInputPlaceHolder": "Write message...",
     "shareLocationModal": {
       "sendThisLocation": "Send this location to",

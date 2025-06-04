@@ -21,6 +21,7 @@ interface IChatBoxProps {
 	canSendMessage?: boolean;
 	onShowKeyboardBottomSheet?: (isShow: boolean, type?: string) => void;
 	isPublic: boolean;
+	isFriendTargetBlocked?: boolean;
 }
 
 export const ChatBoxMain = memo((props: IChatBoxProps) => {
@@ -83,7 +84,7 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 			{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
 				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={deleteMessageActionNeedToResolve} />
 			)}
-			{!props?.canSendMessage && !isDM ? (
+			{(!props?.canSendMessage && !isDM) || (props?.isFriendTargetBlocked && isDM) ? (
 				<View
 					style={{
 						zIndex: 10,
@@ -103,10 +104,11 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 					>
 						<Text
 							style={{
-								color: themeValue.textDisabled
+								color: themeValue.textDisabled,
+								textAlign: 'center'
 							}}
 						>
-							{t('noSendMessagePermission')}
+							{props?.isFriendTargetBlocked && isDM ? t('blockedUserMessage') : t('noSendMessagePermission')}
 						</Text>
 					</View>
 				</View>

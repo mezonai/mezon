@@ -13,11 +13,24 @@
         "unMuteConversation": "UnMute Conversation",
         "notificationSettings": "Notification Settings",
         "disableE2EE": "Disable E2EE",
-        "enableE2EE": "Enable E2EE"
+        "enableE2EE": "Enable E2EE",
+        "blockUser": "Block User",
+        "unblockUser": "Unblock User"
     },
     "confirm": {
         "title": "Leave {{groupName}}",
         "content": "Are you sure you want to leave {{groupName}}? You won't be able to rejoin this group unless you are re-invited.",
         "confirmText": "Yes"
+    },
+    "notification": {
+        "blockUser": {
+            "success": "User blocked successfully",
+            "error": "Failed to block user"
+        },
+        "unblockUser": {
+            "success": "User unblocked successfully",
+            "error": "Failed to unblock user"
+        },
+        "systemError": "An error occurred, please try again later"
     }
 }

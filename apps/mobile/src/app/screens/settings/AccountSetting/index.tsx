@@ -8,7 +8,16 @@ import {
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
 } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { authActions, channelsActions, clansActions, getStoreAsync, messagesActions } from '@mezon/store-mobile';
+import {
+	authActions,
+	channelsActions,
+	clansActions,
+	EStateFriend,
+	getStoreAsync,
+	messagesActions,
+	selectAllFriends,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, FlatList, Platform, Text, TouchableOpacity, View } from 'react-native';
@@ -37,6 +46,9 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 	const { userProfile } = useAuth();
 	const styles = style(themeValue);
 	const { t } = useTranslation('accountSetting');
+
+	const allFriends = useAppSelector(selectAllFriends);
+	const blockedUsersCount = allFriends?.filter((friend) => friend?.state === EStateFriend.BLOCK)?.length;
 
 	const logout = async () => {
 		const store = await getStoreAsync();
@@ -123,7 +135,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 		const usersOptions: IAccountOption[] = [
 			{
 				title: t('blockedUsers'),
-				description: '0', //TODO: get blocked count
+				description: blockedUsersCount.toString(),
 				type: EAccountSettingType.BlockedUsers
 			}
 		];
@@ -143,7 +155,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			usersOptions,
 			accountManagementOptions
 		};
-	}, [t, userProfile?.user?.username]);
+	}, [t, userProfile?.user?.username, blockedUsersCount]);
 
 	return (
 		<View style={styles.container}>

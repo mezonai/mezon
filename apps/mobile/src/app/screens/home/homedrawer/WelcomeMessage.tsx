@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Pressable, Text, TouchableOpacity, View } from 'react-native';
-
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useFriends } from '@mezon/core';
+import { CheckIcon, CloseIcon } from '@mezon/mobile-components';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	EStateFriend,
 	friendsActions,
@@ -14,8 +13,10 @@ import {
 } from '@mezon/store-mobile';
 import { ChannelStatusEnum, IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -39,6 +40,7 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 	const currenChannel = useCurrentChannel(channelId) as IChannel;
 	const [isCountBadge, setIsCountBadge] = useState(false);
 	const [remainingCount, setRemainingCount] = useState(null);
+	const { blockFriend, unBlockFriend } = useFriends();
 
 	const userName: string = useMemo(() => {
 		return typeof currenChannel?.usernames === 'string' ? currenChannel?.usernames : currenChannel?.usernames?.[0] || '';
@@ -115,6 +117,66 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 		store.dispatch(friendsActions.sendRequestDeleteFriend(body));
 	};
 
+	const handleBlockFriend = async () => {
+		try {
+			const targetId = currenChannel?.user_id?.[0];
+			const targetUsername = userName;
+
+			const userData = {
+				avatar_url: currenChannel?.channel_avatar?.[0] || '',
+				display_name: currenChannel?.channel_label || '',
+				username: userName || ''
+			};
+
+			const isBlocked = await blockFriend(targetUsername, targetId, userData);
+
+			if (isBlocked) {
+				Toast.show({
+					type: 'success',
+					props: {
+						text2: t('notification.blockUser.success'),
+						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					}
+				});
+			} else {
+				Toast.show({
+					type: 'error',
+					props: {
+						text2: t('notification.blockUser.error'),
+						leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					}
+				});
+			}
+		} catch (error) {
+			console.error('Error blocking friend:', error);
+		}
+	};
+
+	const handleUnblockFriend = async () => {
+		try {
+			const targetId = currenChannel?.user_id?.[0];
+			const targetUsername = userName;
+
+			unBlockFriend(targetUsername, targetId);
+
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('notification.unblockUser.success'),
+					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+				}
+			});
+		} catch (error) {
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('notification.unblockUser.error'),
+					leadingIcon: <CloseIcon color={Colors.green} width={20} height={20} />
+				}
+			});
+		}
+	};
+
 	return (
 		<View style={[styles.wrapperWelcomeMessage, isDMGroup && styles.wrapperCenter]}>
 			{isDM ? (
@@ -164,31 +226,50 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 					{/* TODO: Mutual server */}
 					{!isDMGroup && (
 						<View style={styles.friendActions}>
-							{checkAddFriend === EStateFriend.FRIEND ? (
-								<TouchableOpacity style={styles.deleteFriendButton} onPress={handleRemoveFriend}>
-									<Text style={styles.buttonText}>{t('userAction.removeFriend')}</Text>
+							{checkAddFriend === EStateFriend.BLOCK ? (
+								<TouchableOpacity style={styles.blockButton} onPress={handleUnblockFriend}>
+									<Text style={styles.buttonText}>{t('pendingContent.unblock')}</Text>
 								</TouchableOpacity>
+							) : checkAddFriend === EStateFriend.FRIEND ? (
+								<View style={{ flexDirection: 'row', gap: size.s_10 }}>
+									<TouchableOpacity style={styles.deleteFriendButton} onPress={handleRemoveFriend}>
+										<Text style={styles.buttonText}>{t('userAction.removeFriend')}</Text>
+									</TouchableOpacity>
+									<TouchableOpacity style={styles.blockButton} onPress={handleBlockFriend}>
+										<Text style={styles.buttonText}>{t('pendingContent.block')}</Text>
+									</TouchableOpacity>
+								</View>
 							) : checkAddFriend === EStateFriend.OTHER_PENDING ? (
-								<View style={[styles.addFriendButton, { opacity: 0.6 }]}>
-									<Text style={styles.buttonText}>{t('sendAddFriendSuccess')}</Text>
+								<View style={{ flexDirection: 'row', gap: size.s_10 }}>
+									<View style={[styles.addFriendButton, { opacity: 0.6 }]}>
+										<Text style={styles.buttonText}>{t('sendAddFriendSuccess')}</Text>
+									</View>
+									<TouchableOpacity style={styles.blockButton} onPress={handleBlockFriend}>
+										<Text style={styles.buttonText}>{t('pendingContent.block')}</Text>
+									</TouchableOpacity>
 								</View>
 							) : checkAddFriend === EStateFriend.MY_PENDING ? (
-								<View style={styles.friendActions}>
+								<View style={{ flexDirection: 'row', gap: size.s_10 }}>
 									<TouchableOpacity style={styles.addFriendButton} onPress={handleAcceptFriend}>
 										<Text style={styles.buttonText}>{t('accept')}</Text>
 									</TouchableOpacity>
 									<TouchableOpacity style={styles.blockButton} onPress={handleRemoveFriend}>
 										<Text style={styles.buttonText}>{t('ignore')}</Text>
 									</TouchableOpacity>
+									<TouchableOpacity style={styles.blockButton} onPress={handleBlockFriend}>
+										<Text style={styles.buttonText}>{t('pendingContent.block')}</Text>
+									</TouchableOpacity>
 								</View>
 							) : (
-								<TouchableOpacity style={styles.addFriendButton} onPress={handleAddFriend}>
-									<Text style={styles.buttonText}>{t('userAction.addFriend')}</Text>
-								</TouchableOpacity>
+								<View style={{ flexDirection: 'row', gap: size.s_10 }}>
+									<TouchableOpacity style={styles.addFriendButton} onPress={handleAddFriend}>
+										<Text style={styles.buttonText}>{t('userAction.addFriend')}</Text>
+									</TouchableOpacity>
+									<TouchableOpacity style={styles.blockButton} onPress={handleBlockFriend}>
+										<Text style={styles.buttonText}>{t('pendingContent.block')}</Text>
+									</TouchableOpacity>
+								</View>
 							)}
-							<Pressable style={styles.blockButton}>
-								<Text style={styles.buttonText}>{t('pendingContent.block')}</Text>
-							</Pressable>
 						</View>
 					)}
 				</View>

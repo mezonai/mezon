@@ -1,4 +1,5 @@
 import {
+	EStateFriend,
 	friendsActions,
 	requestAddFriendParam,
 	selectAllFriends,
@@ -52,12 +53,26 @@ export function useFriends() {
 	);
 
 	const blockFriend = useCallback(
-		(username: string, id: string) => {
+		async (
+			username: string,
+			id: string,
+			userData?: {
+				avatar_url?: string;
+				display_name?: string;
+				username?: string;
+			}
+		) => {
 			const body = {
 				usernames: [username],
 				ids: [id]
 			};
-			dispatch(friendsActions.sendRequestBlockFriend(body));
+			const response = await dispatch(friendsActions.sendRequestBlockFriend(body));
+
+			if (response?.meta?.requestStatus === 'fulfilled') {
+				dispatch(friendsActions.updateFriendState({ userId: id, friendState: EStateFriend.BLOCK, userData }));
+				return true;
+			}
+			return false;
 		},
 		[dispatch]
 	);

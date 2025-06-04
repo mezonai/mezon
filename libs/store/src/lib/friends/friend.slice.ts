@@ -124,7 +124,6 @@ export const sendRequestBlockFriend = createAsyncThunk('friends/requestBlockFrie
 	if (!response) {
 		return thunkAPI.rejectWithValue([]);
 	}
-	thunkAPI.dispatch(friendsActions.fetchListFriends({}));
 	return response;
 });
 
@@ -166,6 +165,36 @@ export const friendsSlice = createSlice({
 				friendMeta.user.metadata = friendMeta.user.metadata || {};
 				//TODO: thai fix later
 				(friendMeta.user.metadata as any).user_status = user_status;
+			}
+		},
+		updateFriendState: (
+			state,
+			action: PayloadAction<{
+				userId: string;
+				friendState: EStateFriend;
+				userData?: {
+					avatar_url?: string;
+					display_name?: string;
+					username?: string;
+				};
+			}>
+		) => {
+			const { userId, friendState, userData } = action.payload;
+			const friend = state.entities[userId];
+
+			if (friend) {
+				friend.state = friendState;
+			} else {
+				friendsAdapter.addOne(state, {
+					id: userId,
+					state: friendState,
+					user: {
+						id: userId,
+						avatar_url: userData?.avatar_url,
+						display_name: userData?.display_name,
+						username: userData?.username
+					}
+				});
 			}
 		}
 	},

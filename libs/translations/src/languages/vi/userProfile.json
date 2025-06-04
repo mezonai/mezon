@@ -22,6 +22,7 @@
   },
   "pendingContent": {
     "block": "Chặn",
+    "unblock": "Bỏ chặn",
     "reportUserProfile": "Báo cáo hồ sơ người dùng",
     "acceptFriend": "Chấp nhận kết bạn",
     "cancelFriendRequest": "Hủy yêu cầu kết bạn",
@@ -36,6 +37,17 @@
     },
     "mezonMemberSince": "THÀNH VIÊN MEZON TỪ"
   },
+   "notification": {
+        "blockUser": {
+            "success": "Chặn người dùng thành công",
+            "error": "Không thể chặn người dùng"
+        },
+        "unblockUser": {
+            "success": "Bỏ chặn người dùng thành công",
+            "error": "Không thể bỏ chặn người dùng"
+        },
+        "systemError": "Có lỗi xảy ra, vui lòng thử lại sau"
+    },
   "incomingFriendRequest": "YÊU CẦU KẾT BẠN ĐANG ĐẾN",
   "sendAddFriendSuccess": "Đã gửi yêu cầu kết bạn",
   "accept": "Chấp nhận",

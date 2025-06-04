@@ -13,11 +13,24 @@
         "unMuteConversation": "Bật thông báo",
         "notificationSettings": "Cài đặt thông báo",
         "disableE2EE": "Tắt mã hóa E2EE",
-        "enableE2EE": "Bật mã hóa E2EE"
+        "enableE2EE": "Bật mã hóa E2EE",
+        "blockUser": "Chặn người dùng",
+        "unblockUser": "Bỏ chặn người dùng"
     },
     "confirm": {
         "title": "Rời khỏi {{groupName}}",
         "content": "Bạn có chắc chắn muốn rời khỏi {{groupName}} không? Bạn sẽ không thể tham gia lại nhóm này trừ khi được mời lại.",
         "confirmText": "Vâng"
+    },
+    "notification": {
+        "blockUser": {
+            "success": "Chặn người dùng thành công",
+            "error": "Không thể chặn người dùng"
+        },
+        "unblockUser": {
+            "success": "Bỏ chặn người dùng thành công",
+            "error": "Không thể bỏ chặn người dùng"
+        },
+        "systemError": "Có lỗi xảy ra, vui lòng thử lại sau"
     }
 }

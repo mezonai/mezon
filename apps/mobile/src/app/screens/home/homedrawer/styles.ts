@@ -718,7 +718,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_16
 		},
 		blockButton: {
-			backgroundColor: colors.channelNormal,
+			backgroundColor: Colors.red,
 			justifyContent: 'center',
 			alignItems: 'center',
 			paddingHorizontal: size.s_12,

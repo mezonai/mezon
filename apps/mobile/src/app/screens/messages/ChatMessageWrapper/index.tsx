@@ -1,6 +1,7 @@
 import { useTheme } from '@mezon/mobile-ui';
+import { EStateFriend, selectDirectById, selectFriendStatus, useAppSelector } from '@mezon/store-mobile';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import ChannelMessages from '../../home/homedrawer/ChannelMessages';
@@ -25,6 +26,18 @@ export const ChatMessageWrapper = memo(({ directMessageId, isModeDM, currentClan
 		}
 	}, []);
 
+	const directMessage = useAppSelector((state) => selectDirectById(state, directMessageId));
+
+	const targetUserId = useMemo(() => {
+		return isModeDM ? directMessage?.user_id?.[0] : '';
+	}, [directMessage?.user_id, isModeDM]);
+
+	const friendStatus = useAppSelector(selectFriendStatus(targetUserId));
+
+	const isFriendBlocked = useMemo(() => {
+		return friendStatus === EStateFriend?.BLOCK;
+	}, [friendStatus]);
+
 	return (
 		<KeyboardAvoidingView
 			style={styles.content}
@@ -46,6 +59,7 @@ export const ChatMessageWrapper = memo(({ directMessageId, isModeDM, currentClan
 					threadIcon: true
 				}}
 				isPublic={false}
+				isFriendTargetBlocked={isFriendBlocked}
 			/>
 			<PanelKeyboard
 				ref={panelKeyboardRef}

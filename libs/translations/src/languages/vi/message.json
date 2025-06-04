@@ -86,6 +86,7 @@
   },
   "newMessages": "TIN NHẮN MỚI",
   "noSendMessagePermission": "Bạn không có quyền gửi tin nhắn",
+  "blockedUserMessage": "Hiện không liên lạc được với người này trên Mezon",
   "messageInputPlaceHolder": "Nhập tin nhắn...",
   "shareLocationModal": {
       "sendThisLocation": "Gửi vị trí này tới",

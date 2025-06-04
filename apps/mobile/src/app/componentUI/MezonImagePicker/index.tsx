@@ -1,17 +1,15 @@
 import { QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannel } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { setTimeout } from '@testing-library/react-native/build/helpers/timers';
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { DimensionValue, Platform, StyleProp, Text, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native-gesture-handler';
 import { openCropper } from 'react-native-image-crop-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
-import { IconCDN } from '../../constants/icon_cdn';
 import MezonClanAvatar from '../MezonClanAvatar';
-import MezonIconCDN from '../MezonIconCDN';
 import { style as _style } from './styles';
 
 export interface IFile {
@@ -178,7 +176,7 @@ export default memo(
 		}));
 
 		return (
-			<TouchableOpacity onPress={handlePress} disabled={disabled}>
+			<Pressable onPress={handlePress} disabled={disabled}>
 				<View style={styles.bannerContainer}>
 					<View style={[styles.bannerWrapper, { height, width }, rounded && { borderRadius: 999 }, style]}>
 						{localValue ? (
@@ -190,7 +188,7 @@ export default memo(
 						)}
 					</View>
 				</View>
-			</TouchableOpacity>
+			</Pressable>
 		);
 	})
 );
