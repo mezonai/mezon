@@ -67,37 +67,31 @@ export const markdownStyles = (
 		heading1: {
 			color: colors.text,
 			fontSize: size.h1,
-			lineHeight: size.h1 + size.s_8,
 			fontWeight: '600'
 		},
 		heading2: {
 			color: colors.text,
 			fontSize: size.h2,
-			lineHeight: size.h2 + size.s_8,
 			fontWeight: '600'
 		},
 		heading3: {
 			color: colors.text,
 			fontSize: size.h3,
-			lineHeight: size.h3 + size.s_8,
 			fontWeight: '600'
 		},
 		heading4: {
 			color: colors.text,
 			fontSize: size.h4,
-			lineHeight: size.h4 + size.s_8,
 			fontWeight: '600'
 		},
 		heading5: {
 			color: colors.text,
 			fontSize: size.h5,
-			lineHeight: size.h5 + size.s_8,
 			fontWeight: '600'
 		},
 		heading6: {
 			color: colors.text,
 			fontSize: size.h6,
-			lineHeight: size.h6 + size.s_8,
 			fontWeight: '600'
 		},
 		body: commonHeadingStyle,
@@ -156,7 +150,8 @@ export const markdownStyles = (
 		editedText: {
 			fontSize: size.small,
 			color: colors.textDisabled,
-			marginTop: size.s_2
+			marginTop: size.s_2,
+			marginBottom: size.s_2
 		},
 		mention: {
 			fontSize: size.medium,
@@ -292,6 +287,45 @@ const renderChannelIcon = (channelType: number, channelId: string, themeValue: A
 	return null;
 };
 
+const renderTextPalainContain = (themeValue: Attributes, text: string) => {
+	const lines = text?.split('\n');
+	const headingFormattedLines = [];
+	let hasHeadings = false;
+
+	lines.forEach((line, idx) => {
+		const headingMatch = line.match(/^#{1,6}\s+.+$/);
+		if (headingMatch && themeValue) {
+			hasHeadings = true;
+			const level = line.indexOf(' ');
+			const headingText = line.substring(level).trim();
+
+			headingFormattedLines.push(
+				<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue)?.[`heading${level}`] : {}]}>
+					{headingText}
+					{lines?.length !== 1 && idx < lines.length && '\n'}
+				</Text>
+			);
+		} else {
+			headingFormattedLines.push(
+				<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
+					{line}
+					{lines?.length !== 1 && idx < lines.length && '\n'}
+				</Text>
+			);
+		}
+	});
+
+	if (!hasHeadings) {
+		return (
+			<Text key="text-end" style={[themeValue ? markdownStyles(themeValue).body : {}]}>
+				{text}
+			</Text>
+		);
+	} else {
+		return <Text>{headingFormattedLines}</Text>;
+	}
+};
+
 export const RenderTextMarkdownContent = ({
 	content,
 	isEdited,
@@ -334,11 +368,7 @@ export const RenderTextMarkdownContent = ({
 		const contentInElement = t?.substring(s, e);
 
 		if (lastIndex < s) {
-			textParts.push(
-				<Text key={`text-${index}`} style={themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}}>
-					{t?.slice(lastIndex, s).replace(/^\n|\n$/, '')}
-				</Text>
-			);
+			textParts.push(renderTextPalainContain(themeValue, t?.slice(lastIndex, s) ?? ''));
 		}
 
 		switch (element?.kindOf) {
@@ -458,13 +488,6 @@ export const RenderTextMarkdownContent = ({
 
 					case EBacktickType.PRE:
 					case EBacktickType.TRIPLE: {
-						const lines = (
-							contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
-								? contentInElement.slice(3, -3)
-								: contentInElement
-						)
-							?.replace(/^\n+|\n+$/g, '')
-							?.split('\n');
 						textParts.push(
 							<Text>
 								{s !== 0 && '\n'}
@@ -484,31 +507,12 @@ export const RenderTextMarkdownContent = ({
 												: {}
 										}
 									>
-										{lines.map((line, idx) => {
-											const headingMatch = line.match(/^#{1,6}\s+.+$/);
-											if (headingMatch && themeValue) {
-												const level = line.indexOf(' ');
-												const headingText = line.substring(level).trim();
-
-												return (
-													<Text
-														key={`line-${idx}`}
-														style={[
-															markdownStyles(themeValue).code_block,
-															markdownStyles(themeValue)?.[`heading${level}`]
-														]}
-													>
-														{headingText}
-													</Text>
-												);
-											}
-
-											return (
-												<Text key={`line-${idx}`} style={themeValue ? markdownStyles(themeValue).code_block : {}}>
-													{line}
-												</Text>
-											);
-										})}
+										<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>
+											{(contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
+												? contentInElement?.slice(3, -3)
+												: contentInElement
+											)?.replace(/^\n+|\n+$/g, '')}
+										</Text>
 									</View>
 								</View>
 							</Text>
@@ -650,11 +654,7 @@ export const RenderTextMarkdownContent = ({
 	});
 
 	if (lastIndex < (t?.length ?? 0)) {
-		textParts.push(
-			<Text key="text-end" style={[themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).body : {}]}>
-				{t?.slice(lastIndex).replace(/^\n|\n$/, '')}
-			</Text>
-		);
+		textParts.push(renderTextPalainContain(themeValue, t?.slice(lastIndex).replace(/^\n|\n$/, '')));
 	}
 
 	return (
@@ -683,7 +683,7 @@ export const RenderTextMarkdownContent = ({
 				/>
 			)}
 
-			<View style={{ flexDirection: 'row', gap: size.s_6, flexWrap: 'wrap' }}>
+			<View style={{ flexDirection: 'row', gap: size.s_6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 				<View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 					{textParts?.length > 0 && <Text>{textParts}</Text>}
 					{markdownBlackParts?.length > 0 && markdownBlackParts.map((item) => item)}
