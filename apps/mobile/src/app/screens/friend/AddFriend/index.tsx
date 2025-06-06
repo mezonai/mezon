@@ -74,14 +74,13 @@ export const AddFriendScreen = () => {
 				/>
 			</View>
 			<Text style={styles.whiteText}>{t('addFriend.incomingFriendRequest')}</Text>
-			<View style={styles.groupWrapper}>
-				<FlatList
-					data={receivedFriendRequestList}
-					ItemSeparatorComponent={SeparatorWithLine}
-					keyExtractor={(friend) => friend.id.toString()}
-					renderItem={({ item }) => <FriendItem friend={item} handleFriendAction={handleFriendAction} />}
-				/>
-			</View>
+			<FlatList
+				style={{ flex: 1 }}
+				data={receivedFriendRequestList}
+				ItemSeparatorComponent={SeparatorWithLine}
+				keyExtractor={(friend) => friend.id.toString()}
+				renderItem={({ item }) => <FriendItem friend={item} handleFriendAction={handleFriendAction} />}
+			/>
 
 			<AddFriendModal type={currentAddFriendType} onClose={() => setCurrentAddFriendType(null)} />
 			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} />

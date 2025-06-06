@@ -97,7 +97,7 @@ export const ChatMessageSending = memo(
 		const dispatch = useAppDispatch();
 		const styles = style(themeValue);
 		const store = getStore();
-		const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(channelId ?? ''));
+		const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, channelId));
 		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 		const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
 		const { membersOfChild, membersOfParent, addMemberToThread, joinningToThread } = useChannelMembers({

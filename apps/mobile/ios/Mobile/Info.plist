@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AVInitialRouteSharingPolicy</key>
+	<string>LongFormAudio</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
@@ -134,10 +136,8 @@
 		<string>remote-notification</string>
 		<string>audio</string>
 		<string>voip</string>
-        <string>picture-in-picture</string>
+		<string>picture-in-picture</string>
 	</array>
-	<key>AVInitialRouteSharingPolicy</key>
-    <string>LongFormAudio</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

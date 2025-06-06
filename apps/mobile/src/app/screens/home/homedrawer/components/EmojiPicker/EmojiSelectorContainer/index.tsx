@@ -245,7 +245,7 @@ export default function EmojiSelectorContainer({
 			windowSize={10}
 			removeClippedSubviews={false}
 			disableVirtualization
-			contentContainerStyle={{ minHeight: Metrics.screenHeight * (Platform.OS === 'ios' ? 1.4 : 0.91) }}
+			contentContainerStyle={Platform.OS === 'android' && { minHeight: Metrics.screenHeight * 0.91 }}
 			onScrollToIndexFailed={(info) => {
 				if (info?.highestMeasuredFrameIndex) {
 					const wait = new Promise((resolve) => setTimeout(resolve, 200));
