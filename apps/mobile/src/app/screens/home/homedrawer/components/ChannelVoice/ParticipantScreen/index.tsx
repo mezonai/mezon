@@ -49,7 +49,12 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 						isPiPMode && { height: size.s_150, width: size.s_150 + size.s_50 }
 					]}
 				>
-					<VideoTrack objectFit={isPiPMode ? 'cover' : 'contain'} trackRef={screenTrackRef} style={styles.participantView} />
+					<VideoTrack
+						objectFit={isPiPMode ? 'cover' : 'contain'}
+						trackRef={screenTrackRef}
+						style={styles.participantView}
+						iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+					/>
 					{!isPiPMode && (
 						<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 							<Icons.ShareScreenIcon height={size.s_14} />
@@ -83,7 +88,11 @@ const ParticipantItem = ({ participant, tracks, isFocusedScreen, setFocusedScree
 						isPiPMode && { height: size.s_60 * 2, width: size.s_100 }
 					]}
 				>
-					<VideoTrack trackRef={videoTrackRef} style={styles.participantView} />
+					<VideoTrack
+						trackRef={videoTrackRef}
+						style={styles.participantView}
+						iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+					/>
 					<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 						{participant.isMicrophoneEnabled ? (
 							<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />

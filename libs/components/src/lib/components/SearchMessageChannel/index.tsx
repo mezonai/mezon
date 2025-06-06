@@ -285,8 +285,9 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 	return (
 		<div className="relative hidden sbm:block " ref={inputRef}>
 			<div
-				className={`transition-all duration-300 ${expanded ? 'w-80' : 'w-40'
-					} h-8 pl-2 pr-2 py-3 dark:bg-bgTertiary bg-bgLightTertiary rounded items-center inline-flex`}
+				className={`transition-all duration-300 ${
+					expanded ? 'w-80' : 'w-40'
+				} h-8 pl-2 pr-2 py-3 dark:bg-bgTertiary bg-bgLightTertiary rounded items-center inline-flex`}
 			>
 				<MentionsInput
 					inputRef={searchRef}
@@ -294,7 +295,7 @@ const SearchMessageChannel = ({ mode }: SearchMessageChannelProps) => {
 					value={valueInputSearch ?? ''}
 					style={appearanceTheme === 'light' ? lightMentionsInputStyle : darkMentionsInputStyle}
 					onChange={handleChange}
-					className="w-full mr-[10px] dark:bg-transparent bg-transparent dark:text-white text-colorTextLightMode rounded-md focus-visible:!border-0 focus-visible:!outline-none focus-visible:[&>*]:!outline-none"
+					className="none-draggable-area w-full mr-[10px] dark:bg-transparent bg-transparent dark:text-white text-colorTextLightMode rounded-md focus-visible:!border-0 focus-visible:!outline-none focus-visible:[&>*]:!outline-none"
 					allowSpaceInQuery={true}
 					singleLine={true}
 					onClick={handleInputClick}

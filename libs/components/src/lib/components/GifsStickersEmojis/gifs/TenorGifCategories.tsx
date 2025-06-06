@@ -1,10 +1,10 @@
 import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifs, useGifsStickersEmoji } from '@mezon/core';
-import { referencesActions, selectDataReferences } from '@mezon/store';
+import { referencesActions, selectDataReferences, useAppSelector } from '@mezon/store';
 import { Loading } from '@mezon/ui';
 import { IGifCategory, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import FeaturedGifs from './FeaturedGifs';
 import GifCategory from './GifCategory';
 
@@ -38,7 +38,6 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 	const [dataToRenderGifs, setDataToRenderGifs] = useState<any>();
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
-
 	const ontrendingClickingStatus = () => {
 		setClickedTrendingGif(true);
 		setShowCategories(false);
@@ -46,7 +45,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 	};
 
 	const currentId = useCurrentInbox()?.channel_id;
-	const dataReferences = useSelector(selectDataReferences(currentId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
 	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const dispatch = useDispatch();
 

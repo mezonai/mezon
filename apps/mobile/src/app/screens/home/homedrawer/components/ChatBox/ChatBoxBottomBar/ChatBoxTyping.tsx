@@ -28,7 +28,6 @@ export const ChatBoxTyping = memo(({ textChange, mode = 2, channelId = '', isPub
 
 	const handleTyping = async () => {
 		if (anonymousMode) return;
-		console.log('log  => messagesActions.sendTypingUser');
 		dispatch(
 			messagesActions.sendTypingUser({
 				clanId: currentClanId || '',
@@ -73,7 +72,9 @@ export const ChatBoxTyping = memo(({ textChange, mode = 2, channelId = '', isPub
 	};
 
 	useEffect(() => {
-		handleTypingMessage();
+		if (textChange) {
+			handleTypingMessage();
+		}
 	}, [textChange]);
 
 	return <View />;

@@ -46,7 +46,7 @@ export function extractIdsFromUrl(url: string) {
 	return { clanId, channelId, canvasId };
 }
 
-const formatMarkdownHeadings = (text: string): React.ReactNode[] => {
+const formatMarkdownHeadings = (text: string, isReply: boolean): React.ReactNode[] => {
 	if (!text) return [text];
 
 	const lines = text.split('\n');
@@ -63,7 +63,10 @@ const formatMarkdownHeadings = (text: string): React.ReactNode[] => {
 			switch (headingLevel) {
 				case 1:
 					formattedLines.push(
-						<h1 key={`h1-${index}`} className="text-4xl my-1 font-bold dark:text-white text-colorTextLightMode">
+						<h1
+							key={`h1-${index}`}
+							className={`${isReply ? 'text-sm' : 'text-4xl'} my-1 font-bold dark:text-white text-colorTextLightMode`}
+						>
 							{headingText}
 						</h1>
 					);
@@ -119,13 +122,14 @@ const formatMarkdownHeadings = (text: string): React.ReactNode[] => {
 	return formattedLines;
 };
 
-const FormattedPlainText: React.FC<{ text: string; isSearchMessage?: boolean; messageId?: string; keyPrefix: string }> = ({
+const FormattedPlainText: React.FC<{ text: string; isSearchMessage?: boolean; messageId?: string; keyPrefix: string; isReply: boolean }> = ({
 	text,
 	isSearchMessage,
 	messageId,
-	keyPrefix
+	keyPrefix,
+	isReply
 }) => {
-	const formattedContent = formatMarkdownHeadings(text);
+	const formattedContent = formatMarkdownHeadings(text, isReply);
 	if (formattedContent.length === 1 && typeof formattedContent[0] === 'string') {
 		return <PlainText isSearchMessage={isSearchMessage} text={text} />;
 	}
@@ -221,6 +225,7 @@ export const MessageLine = ({
 						isSearchMessage={isSearchMessage}
 						messageId={messageId}
 						keyPrefix="plain"
+						isReply={!!isReply}
 					/>
 				);
 			}
@@ -418,6 +423,7 @@ export const MessageLine = ({
 					isSearchMessage={isSearchMessage}
 					messageId={messageId}
 					keyPrefix="plain"
+					isReply={!!isReply}
 				/>
 			);
 		}

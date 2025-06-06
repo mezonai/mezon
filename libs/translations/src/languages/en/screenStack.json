@@ -35,6 +35,8 @@
         "blockedUsers": "Blocked Users",
         "sendToken": "Transfer Funds",
         "withdrawToken": "Withdraw",
-        "historyTransaction": "History Transaction"
+        "historyTransaction": "History Transaction",
+        "quit": "Quit",
+        "menu": "Menu"
     }
 }

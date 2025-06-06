@@ -1,5 +1,5 @@
 import { useChatSending, useEscapeKey } from '@mezon/core';
-import { referencesActions, selectDataReferences, selectSession, useAppDispatch } from '@mezon/store';
+import { referencesActions, selectDataReferences, selectSession, useAppDispatch, useAppSelector } from '@mezon/store';
 import { IMessageSendPayload, blankReferenceObj } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { memo, useCallback, useMemo, useRef } from 'react';
@@ -22,7 +22,7 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: direct, mode: mode });
 	// TODO: move selector to store
 	const sessionUser = useSelector(selectSession);
-	const dataReferences = useSelector(selectDataReferences(directParamId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, directParamId ?? ''));
 	const dispatch = useAppDispatch();
 
 	const chatboxRef = useRef<HTMLDivElement | null>(null);

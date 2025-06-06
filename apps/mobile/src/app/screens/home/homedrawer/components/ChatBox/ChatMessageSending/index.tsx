@@ -64,6 +64,16 @@ interface IChatMessageSendingProps {
 	voiceLinkRoomOnMessage?: MutableRefObject<ILinkVoiceRoomOnMessage[]>;
 	anonymousMode?: boolean;
 }
+const isPayloadEmpty = (payload: IMessageSendPayload): boolean => {
+	return (
+		(!payload.t || payload?.t?.trim() === '') && // Check if text is empty
+		(!payload?.hg || payload?.hg?.length === 0) && // Check if hashtags array is empty
+		(!payload?.ej || payload?.ej?.length === 0) && // Check if emojis array is empty
+		(!payload?.mk || payload?.mk?.length === 0) && // Check if markdown array is empty
+		!payload?.cid &&
+		!payload?.tp
+	);
+};
 
 export const ChatMessageSending = memo(
 	({
@@ -192,13 +202,11 @@ export const ChatMessageSending = memo(
 				cid: messageActionNeedToResolve?.targetMessage?.content?.cid,
 				tp: messageActionNeedToResolve?.targetMessage?.content?.tp
 			};
-
-			const payloadThreadSendMessage: IPayloadThreadSendMessage = {
-				content: payloadSendMessage,
-				mentions: simplifiedMentionList,
-				attachments: [],
-				references: []
-			};
+			const isEmpty = isPayloadEmpty(payloadSendMessage);
+			if (isEmpty && !attachmentDataRef?.length) {
+				console.error('Message is empty, not sending');
+				return;
+			}
 			const { targetMessage, type } = messageActionNeedToResolve || {};
 			const reference = targetMessage
 				? ([
@@ -230,6 +238,12 @@ export const ChatMessageSending = memo(
 
 			const sendMessageAsync = async () => {
 				if ([EMessageActionType.CreateThread].includes(messageAction)) {
+					const payloadThreadSendMessage: IPayloadThreadSendMessage = {
+						content: payloadSendMessage,
+						mentions: simplifiedMentionList,
+						attachments: [],
+						references: []
+					};
 					DeviceEventEmitter.emit(ActionEmitEvent.SEND_MESSAGE, payloadThreadSendMessage);
 				} else {
 					if (type === EMessageActionType.EditMessage) {

@@ -8,6 +8,8 @@ import { lazy, Suspense, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { ModalDeleteMess, RenderAttachmentThumbnail } from '../../components';
+import { usePopup } from '../DraggablePopup';
+import { PDFFooter, PDFHeader } from '../PDFViewer';
 const PDFViewerModal = lazy(() => import('../PDFViewer').then((module) => ({ default: module.PDFViewerModal })));
 
 export type MessageImage = {
@@ -94,16 +96,36 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 
 	const appearanceTheme = useSelector(selectTheme);
 
-	const [showPDFViewer, closePDFViewer] = useModal(() => {
-		if (isPDF && attachmentData.url) {
-			return (
-				<Suspense fallback={<PDFLoadingFallback />}>
-					<PDFViewerModal isOpen={true} onClose={closePDFViewer} pdfUrl={attachmentData.url as string} filename={attachmentData.filename} />
-				</Suspense>
-			);
+	const createPDFHeader = (closePopup: () => void, maximizeToggle: () => void) => {
+		return isPDF ? <PDFHeader filename={attachmentData.filename || 'Document'} onClose={closePopup} onMaximize={maximizeToggle} /> : undefined;
+	};
+
+	const createPDFFooter = (closePopup: () => void, maximizeToggle: () => void) => {
+		return isPDF ? <PDFFooter filename={attachmentData.filename || 'Document'} /> : undefined;
+	};
+
+	const [openPDFViewer, closePDFViewer] = usePopup(
+		({ closePopup }: { closePopup: () => void }) => {
+			if (isPDF && attachmentData.url) {
+				return (
+					<Suspense fallback={<PDFLoadingFallback />}>
+						<PDFViewerModal isOpen={true} onClose={closePopup} pdfUrl={attachmentData.url as string} filename={attachmentData.filename} />
+					</Suspense>
+				);
+			}
+			return null;
+		},
+		{
+			customHeaderFactory: ({ closePopup, maximizeToggle }) => createPDFHeader(closePopup, maximizeToggle),
+			customFooterFactory: ({ closePopup, maximizeToggle }) => createPDFFooter(closePopup, maximizeToggle),
+			initialPosition: 'center',
+			initialWidth: 800,
+			initialHeight: 600,
+			minWidth: 600,
+			minHeight: 400,
+			popupId: `pdf-viewer-${attachmentData.filename}-${attachmentData.url}`
 		}
-		return null;
-	}, [isPDF, attachmentData.url, attachmentData.filename]);
+	);
 
 	const [showModal, closeModal] = useModal(() => {
 		if (message && mode) {
@@ -165,7 +187,7 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 						)}
 						{isPDF && (
 							<button
-								onClick={showPDFViewer}
+								onClick={openPDFViewer}
 								className="px-3 py-1 text-sm rounded transition-all duration-200 text-white bg-[#5865f2] hover:opacity-90"
 								title="View PDF"
 							>

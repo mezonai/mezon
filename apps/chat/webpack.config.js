@@ -80,6 +80,21 @@ module.exports = composePlugins(
             to: 'pdf.worker.min.mjs',
             noErrorOnMissing: true,
           },
+          {
+            from: path.resolve(__dirname, '../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+            to: 'assets/pdf.worker.min.mjs',
+            noErrorOnMissing: true,
+          },
+          {
+            from: path.resolve(__dirname, '../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+            to: 'pdf.worker.min.js',
+            noErrorOnMissing: true,
+          },
+          {
+            from: path.resolve(__dirname, '../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+            to: 'assets/pdf.worker.min.js',
+            noErrorOnMissing: true,
+          },
         ],
       })
     );

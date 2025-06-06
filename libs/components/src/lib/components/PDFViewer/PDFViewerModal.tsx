@@ -5,27 +5,60 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { PDFContent } from './PDFContent';
 import { PDFControls } from './PDFControls';
-import { PDFHeader } from './PDFHeader';
-import { PDFStatusBar } from './PDFStatusBar';
 import type { PDFDocumentProxy, PDFViewerModalProps } from './types';
 
-let pdfjsPath = '';
-if (isElectron()) {
-	const pathParts = window.location.pathname.split('/');
-	const chatIndex = pathParts.findIndex((part) => part === 'chat');
-	if (chatIndex !== -1) {
-		const appPath = pathParts.slice(0, chatIndex + 1).join('/');
-		pdfjsPath = `file://${appPath}/pdf.worker.min.mjs`;
+function getPDFWorkerPath(): string {
+	if (isElectron()) {
+		const pathParts = window.location.pathname.split('/');
+		const chatIndex = pathParts.findIndex((part) => part === 'chat');
+		if (chatIndex !== -1) {
+			const appPath = pathParts.slice(0, chatIndex + 1).join('/');
+			return `file://${appPath}/pdf.worker.min.mjs`;
+		} else {
+			return 'file://' + window.location.pathname.replace(/\/index\.html.*$/, '/pdf.worker.min.mjs');
+		}
 	} else {
-		pdfjsPath = 'file://' + window.location.pathname.replace(/\/index\.html.*$/, '/pdf.worker.min.mjs');
+		const baseUrl = window.location.origin;
+		const possiblePaths = [`${baseUrl}/pdf.worker.min.mjs`, `${baseUrl}/assets/pdf.worker.min.mjs`];
+		return possiblePaths[0];
 	}
-} else {
-	pdfjsPath = '/pdf.worker.min.mjs';
 }
 
-pdfjs.GlobalWorkerOptions.workerSrc = pdfjsPath;
+async function validateWorkerPath(path: string): Promise<boolean> {
+	try {
+		const response = await fetch(path, { method: 'HEAD' });
+		return response.ok;
+	} catch {
+		return false;
+	}
+}
 
-console.log(pdfjsPath, 'pdfjsPath');
+async function setupPDFWorker(): Promise<void> {
+	if (isElectron()) {
+		pdfjs.GlobalWorkerOptions.workerSrc = getPDFWorkerPath();
+		return;
+	}
+
+	const baseUrl = window.location.origin;
+
+	const possiblePaths = [
+		`${baseUrl}/pdf.worker.min.mjs`,
+		`${baseUrl}/assets/pdf.worker.min.mjs`,
+		`${baseUrl}/pdf.worker.min.js`,
+		`${baseUrl}/assets/pdf.worker.min.js`,
+		`https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+	];
+
+	for (const path of possiblePaths) {
+		const isValid = await validateWorkerPath(path);
+		if (isValid) {
+			pdfjs.GlobalWorkerOptions.workerSrc = path;
+			return;
+		}
+	}
+
+	pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
 
 export const PDFViewerModal: FC<PDFViewerModalProps> = ({ isOpen, onClose, pdfUrl, filename = 'Document.pdf' }) => {
 	const [numPages, setNumPages] = useState<number>();
@@ -35,6 +68,28 @@ export const PDFViewerModal: FC<PDFViewerModalProps> = ({ isOpen, onClose, pdfUr
 	const [error, setError] = useState<string | null>(null);
 	const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
 	const [containerWidth, setContainerWidth] = useState<number>();
+	const [workerReady, setWorkerReady] = useState<boolean>(false);
+
+	useEffect(() => {
+		let mounted = true;
+
+		setupPDFWorker()
+			.then(() => {
+				if (mounted) {
+					setWorkerReady(true);
+				}
+			})
+			.catch((error) => {
+				console.error('Failed to setup PDF worker:', error);
+				if (mounted) {
+					setError('Failed to initialize PDF viewer');
+				}
+			});
+
+		return () => {
+			mounted = false;
+		};
+	}, []);
 
 	useEffect(() => {
 		if (!containerRef) return;
@@ -42,7 +97,7 @@ export const PDFViewerModal: FC<PDFViewerModalProps> = ({ isOpen, onClose, pdfUr
 		const resizeObserver = new ResizeObserver((entries) => {
 			const [entry] = entries;
 			if (entry) {
-				setContainerWidth(entry.contentRect.width);
+				// setContainerWidth(entry.contentRect.width);
 			}
 		});
 
@@ -90,9 +145,6 @@ export const PDFViewerModal: FC<PDFViewerModalProps> = ({ isOpen, onClose, pdfUr
 			if (!isOpen) return;
 
 			switch (event.key) {
-				case 'Escape':
-					onClose();
-					break;
 				case 'ArrowLeft':
 					setPageNumber((prev) => Math.max(prev - 1, 1));
 					break;
@@ -120,7 +172,7 @@ export const PDFViewerModal: FC<PDFViewerModalProps> = ({ isOpen, onClose, pdfUr
 					break;
 			}
 		},
-		[isOpen, onClose, numPages]
+		[isOpen, numPages]
 	);
 
 	useEffect(() => {
@@ -138,39 +190,43 @@ export const PDFViewerModal: FC<PDFViewerModalProps> = ({ isOpen, onClose, pdfUr
 
 	if (!isOpen) return null;
 
-	return (
-		<div
-			className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50"
-			onClick={(e) => e.target === e.currentTarget && onClose()}
-		>
-			<div className="relative w-[95vw] h-[95vh] max-w-6xl bg-white dark:bg-[#36393f] rounded-lg shadow-xl flex flex-col">
-				<PDFHeader filename={filename} onClose={onClose} />
-
-				<PDFControls
-					pageNumber={pageNumber}
-					numPages={numPages}
-					scale={scale}
-					onPrevPage={goToPrevPage}
-					onNextPage={goToNextPage}
-					onZoomIn={zoomIn}
-					onZoomOut={zoomOut}
-					onResetZoom={resetZoom}
-				/>
-
-				<PDFContent
-					pdfUrl={pdfUrl}
-					pageNumber={pageNumber}
-					scale={scale}
-					loading={loading}
-					error={error}
-					containerWidth={containerWidth}
-					onDocumentLoadSuccess={onDocumentLoadSuccess}
-					onDocumentLoadError={onDocumentLoadError}
-					onContainerRef={setContainerRef}
-				/>
-
-				{!loading && !error && <PDFStatusBar filename={filename} />}
+	if (!workerReady) {
+		return (
+			<div className="flex items-center justify-center bg-black bg-opacity-50">
+				<div className="relative w-[95vw] h-[95vh] max-w-6xl bg-white dark:bg-[#36393f] rounded-lg shadow-xl flex items-center justify-center">
+					<div className="flex flex-col items-center space-y-4">
+						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+						<p className="text-sm text-gray-600 dark:text-gray-300">Initializing PDF viewer...</p>
+					</div>
+				</div>
 			</div>
+		);
+	}
+
+	return (
+		<div className="w-full h-full bg-white dark:bg-[#36393f] flex flex-col">
+			<PDFControls
+				pageNumber={pageNumber}
+				numPages={numPages}
+				scale={scale}
+				onPrevPage={goToPrevPage}
+				onNextPage={goToNextPage}
+				onZoomIn={zoomIn}
+				onZoomOut={zoomOut}
+				onResetZoom={resetZoom}
+			/>
+
+			<PDFContent
+				pdfUrl={pdfUrl}
+				pageNumber={pageNumber}
+				scale={scale}
+				loading={loading}
+				error={error}
+				containerWidth={containerWidth}
+				onDocumentLoadSuccess={onDocumentLoadSuccess}
+				onDocumentLoadError={onDocumentLoadError}
+				onContainerRef={setContainerRef}
+			/>
 		</div>
 	);
 };

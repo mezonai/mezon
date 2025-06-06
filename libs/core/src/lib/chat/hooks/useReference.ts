@@ -5,7 +5,8 @@ import {
 	selectOpenOptionMessageState,
 	selectOpenThreadMessageState,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -14,7 +15,7 @@ export function useReference(channelId?: string) {
 	const dispatch = useAppDispatch();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
 	const openOptionMessageState = useSelector(selectOpenOptionMessageState);
-	const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(channelId ?? ''));
+	const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, channelId ?? ''));
 
 	const checkAttachment = useMemo(() => {
 		return attachmentFilteredByChannelId?.files?.length > 0;

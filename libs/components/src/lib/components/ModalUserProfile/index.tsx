@@ -240,7 +240,7 @@ const ModalUserProfile = ({
 					{mode !== 4 && mode !== 3 && !isFooterProfile && <UserDescription title={ETileDetail.MemberSince} detail={timeFormatted} />}
 
 					{isFooterProfile ? (
-						<StatusProfile userById={userById as ChannelMembersEntity} isDM={isDM} modalRef={modalRef} />
+						<StatusProfile userById={userById as ChannelMembersEntity} isDM={isDM} modalRef={modalRef} onClose={onClose} />
 					) : (
 						mode !== 4 && mode !== 3 && !hiddenRole && userById && <RoleUserProfile userID={userID} />
 					)}

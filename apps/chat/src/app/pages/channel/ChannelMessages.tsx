@@ -128,7 +128,7 @@ function ChannelMessages({
 	const messageIds = useAppSelector((state) => selectMessageIdsByChannelId2(state, channelId));
 	const idMessageNotified = useSelector(selectMessageNotified);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const dataReferences = useSelector(selectDataReferences(channelId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, channelId ?? ''));
 	const lastMessageId = lastMessage?.id;
 	const lastMessageUnreadId = useAppSelector((state) => selectUnreadMessageIdByChannelId(state, channelId as string));
 	const userActiveScroll = useRef<boolean>(false);

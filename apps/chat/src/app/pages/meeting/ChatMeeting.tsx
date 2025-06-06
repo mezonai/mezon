@@ -21,7 +21,7 @@ const ChatStreamExternal = () => {
 	return (
 		<>
 			{openChatBox && (
-				<div className="max-w-[480px] bg-[#111] min-w-[300px] w-1/4 h-full flex-col flex p-2 py-4 gap-2">
+				<div className="max-w-[480px] bg-[#111] min-w-[300px] w-1/4 h-full flex-col flex p-2 py-4 gap-2 select-text">
 					<div className="flex-1 bg-bgPrimary rounded-md flex flex-col gap-2 overflow-y-auto thread-scroll">
 						{chatMessages.map((message) => (
 							<MessageItem message={message} />

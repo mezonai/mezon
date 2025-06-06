@@ -38,6 +38,7 @@ export interface IForwardIObject {
 	name?: string;
 	avatar?: string;
 	clanName?: string;
+	isChannelPublic?: boolean;
 }
 
 const ForwardMessageScreen = () => {
@@ -77,7 +78,8 @@ const ForwardMessageScreen = () => {
 			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.channel_avatar?.[0] : 'assets/images/avatar-group.png',
 			name: dm?.channel_label,
 			clanId: '',
-			clanName: ''
+			clanName: '',
+			isChannelPublic: false
 		};
 	};
 
@@ -88,7 +90,8 @@ const ForwardMessageScreen = () => {
 			avatar: '#',
 			name: channel?.channel_label,
 			clanId: channel?.clan_id,
-			clanName: channel?.clan_name
+			clanName: channel?.clan_name,
+			isChannelPublic: !channel?.channel_private || false
 		};
 	};
 
@@ -186,7 +189,7 @@ const ForwardMessageScreen = () => {
 		if (!selectedForwardObjectsRef.current?.length) return;
 		try {
 			for (const selectedObjectSend of selectedForwardObjectsRef.current) {
-				const { type, channelId, clanId = '' } = selectedObjectSend;
+				const { type, channelId, clanId = '', isChannelPublic } = selectedObjectSend;
 				switch (type) {
 					case ChannelType.CHANNEL_TYPE_DM:
 						sendForwardMessage('', channelId, ChannelStreamMode.STREAM_MODE_DM, false, message);
@@ -195,7 +198,7 @@ const ForwardMessageScreen = () => {
 						sendForwardMessage('', channelId, ChannelStreamMode.STREAM_MODE_GROUP, false, message);
 						break;
 					case ChannelType.CHANNEL_TYPE_CHANNEL:
-						sendForwardMessage(clanId, channelId, ChannelStreamMode.STREAM_MODE_CHANNEL, isPublic, message);
+						sendForwardMessage(clanId, channelId, ChannelStreamMode.STREAM_MODE_CHANNEL, isChannelPublic, message);
 						break;
 					default:
 						break;

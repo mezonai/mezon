@@ -11,7 +11,7 @@ interface UseDefaultHandlersParams {
 	muteOrUnMuteChannel: (channelId: string, active: number) => void;
 	handleEnableE2ee: (directId?: string, e2ee?: number) => Promise<void>;
 	handleRemoveMemberFromGroup: (userId: string, channelId: string) => Promise<void>;
-	handleLeaveDmGroup: (channelId: string) => Promise<void>;
+	handleLeaveDmGroup: (channelId: string, isLastOne: boolean) => Promise<void>;
 }
 
 export function useDefaultHandlers({
@@ -78,7 +78,8 @@ export function useDefaultHandlers({
 				},
 				handleLeaveGroup: () => {
 					const channelId = user?.channelId || user.channel_id;
-					handleLeaveDmGroup(channelId);
+					const isLastOne = (user?.user_id?.length || 0) <= 1;
+					handleLeaveDmGroup(channelId, isLastOne);
 				}
 			};
 		},

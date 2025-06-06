@@ -23,7 +23,7 @@ const CustomDrawer = ({ onClose, onChangeActiveScreen, navigation, activeScreen 
 			<SafeAreaView style={styles.drawerContent}>
 				{/* Header */}
 				<View style={[styles.drawerHeader]}>
-					<Text style={[styles.headerTitle]}>Menu</Text>
+					<Text style={[styles.headerTitle]}>{tStack('settingStack.menu')}</Text>
 					<TouchableOpacity onPress={onClose} style={styles.closeButton}>
 						<Text style={styles.closeButtonText}>✕</Text>
 					</TouchableOpacity>
@@ -67,7 +67,7 @@ const CustomDrawer = ({ onClose, onChangeActiveScreen, navigation, activeScreen 
 						}}
 					>
 						<MezonIconCDN icon={IconCDN.doorExitIcon} color={baseColor.redStrong} width={size.s_20} height={size.s_20} />
-						<Text style={[styles.menuText, { color: baseColor.redStrong }]}>Quit</Text>
+						<Text style={[styles.menuText, { color: baseColor.redStrong }]}>{tStack('settingStack.quit')}</Text>
 					</TouchableOpacity>
 				</View>
 			</SafeAreaView>

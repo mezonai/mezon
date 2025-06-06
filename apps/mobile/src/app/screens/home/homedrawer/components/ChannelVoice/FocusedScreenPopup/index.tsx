@@ -34,6 +34,7 @@ const FocusedScreenPopup = ({ sortedParticipants, tracks, localParticipant }) =>
 							objectFit="contain"
 							trackRef={screenTrackRef}
 							style={{ height: size.s_150, width: '100%', alignSelf: 'center' }}
+							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 						/>
 					</View>
 				</View>
@@ -47,7 +48,11 @@ const FocusedScreenPopup = ({ sortedParticipants, tracks, localParticipant }) =>
 			return (
 				<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 					<View style={{ height: size.s_150, width: '100%', alignSelf: 'center' }}>
-						<VideoTrack trackRef={selfScreenTrackRef} style={{ height: size.s_150, width: '100%', alignSelf: 'center' }} />
+						<VideoTrack
+							trackRef={selfScreenTrackRef}
+							style={{ height: size.s_150, width: '100%', alignSelf: 'center' }}
+							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+						/>
 					</View>
 				</View>
 			);
@@ -61,7 +66,11 @@ const FocusedScreenPopup = ({ sortedParticipants, tracks, localParticipant }) =>
 			return (
 				<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 					<View style={{ height: size.s_150, width: '100%', alignSelf: 'center' }}>
-						<VideoTrack trackRef={videoTrackRef} style={{ height: 100, width: '100%', alignSelf: 'center' }} />
+						<VideoTrack
+							trackRef={videoTrackRef}
+							style={{ height: 100, width: '100%', alignSelf: 'center' }}
+							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+						/>
 					</View>
 				</View>
 			);
@@ -74,7 +83,11 @@ const FocusedScreenPopup = ({ sortedParticipants, tracks, localParticipant }) =>
 			return (
 				<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 					<View style={{ height: 100, width: '100%', alignSelf: 'center' }}>
-						<VideoTrack trackRef={videoTrackRef} style={{ height: 100, width: '100%', alignSelf: 'center' }} />
+						<VideoTrack
+							trackRef={videoTrackRef}
+							style={{ height: 100, width: '100%', alignSelf: 'center' }}
+							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+						/>
 					</View>
 				</View>
 			);

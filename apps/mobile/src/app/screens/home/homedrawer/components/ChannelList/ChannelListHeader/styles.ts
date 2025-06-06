@@ -49,7 +49,8 @@ export const style = (colors: Attributes) =>
 			borderBottomColor: colors.border,
 			backgroundColor: colors.secondary,
 			paddingHorizontal: size.s_12,
-			elevation: 10
+			elevation: 10,
+			zIndex: 2
 		},
 		wrapperSearch: {
 			flex: 1,

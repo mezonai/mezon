@@ -2,7 +2,7 @@ import { useAuth, useClanProfileSetting } from '@mezon/core';
 import { checkDuplicateClanNickName, selectUserClanProfileByClanID, toastActions, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { InputField } from '@mezon/ui';
-import { ImageSourceObject, MAX_FILE_SIZE_1MB, fileTypeImage, resizeFileImage } from '@mezon/utils';
+import { ImageSourceObject, MAX_FILE_SIZE_1MB, fileTypeImage } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -110,17 +110,17 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 				return;
 			}
 			setIsLoading(true);
-			let imageAvatarResize = file;
-			if (!file.name.endsWith('.gif')) {
-				imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
-			}
+			// let imageAvatarResize = file;
+			// if (!file.name.endsWith('.gif')) {
+			// 	imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
+			// }
 			const attachment = await handleUploadFile(
 				clientRef.current,
 				sessionRef.current,
 				clanId || '0',
 				userProfile?.user?.id || '0',
-				imageAvatarResize.name,
-				imageAvatarResize
+				file.name,
+				file
 			);
 			setUrlImage(attachment.url || '');
 			setFlagOption(attachment.url !== userProfile?.user?.avatar_url);

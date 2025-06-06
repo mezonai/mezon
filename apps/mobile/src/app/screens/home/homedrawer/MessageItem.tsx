@@ -378,7 +378,13 @@ const MessageItem = React.memo(
 										) : null}
 										{!!message?.content?.embed?.length &&
 											message?.content?.embed?.map((embed, index) => (
-												<EmbedMessage message_id={message?.id} embed={embed} key={`message_embed_${message?.id}_${index}`} />
+												<EmbedMessage
+													message_id={message?.id}
+													channel_id={message?.channel_id}
+													embed={embed}
+													key={`message_embed_${message?.id}_${index}`}
+													onLongPress={handleLongPressMessage}
+												/>
 											))}
 										{!!message?.content?.components?.length &&
 											message?.content.components?.map((component, index) => (

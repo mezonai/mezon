@@ -5,13 +5,16 @@ import { ApiAccount, ApiChannelAppResponse } from 'mezon-js/api.gen';
 import { useEffect, useRef } from 'react';
 
 type GetUserHashInfo = (appId: string) => Promise<any>;
+type ToggleMicrophoneFunction = (enabled: boolean) => Promise<void>;
 
 const useMiniAppEventListener = (
 	appChannel: ApiChannelAppResponse | null,
 	allRolesInClan: RolesClanEntity[],
 	userChannels: ChannelMembersEntity[],
 	userProfile: ApiAccount | null | undefined,
-	getUserHashInfo: GetUserHashInfo
+	getUserHashInfo: GetUserHashInfo,
+	microphoneEnabled: boolean,
+	toggleMicrophone: ToggleMicrophoneFunction
 ) => {
 	const dispatch = useAppDispatch();
 	const miniAppRef = useRef<HTMLIFrameElement | null>(null);
@@ -125,6 +128,22 @@ const useMiniAppEventListener = (
 					);
 					break;
 				}
+				case MiniAppEventType.CHECK_MICROPHONE_STATUS: {
+					miniAppRef.current?.contentWindow?.postMessage(
+						JSON.stringify({ eventType: MiniAppEventType.MICROPHONE_STATUS, eventData: { status: microphoneEnabled } }),
+						appChannel.app_url
+					);
+					break;
+				}
+				case MiniAppEventType.TOGGLE_MICROPHONE: {
+					const { on } = eventData.eventData || {};
+					try {
+						await toggleMicrophone(on);
+					} catch (error) {
+						console.error(error);
+					}
+					break;
+				}
 				default:
 					break;
 			}
@@ -132,7 +151,7 @@ const useMiniAppEventListener = (
 
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
-	}, [appChannel?.app_url, userProfile, allRolesInClan, userChannels, dispatch]);
+	}, [appChannel?.app_url, userProfile, allRolesInClan, userChannels, dispatch, microphoneEnabled, toggleMicrophone]);
 
 	return { miniAppRef };
 };

@@ -20,6 +20,7 @@ import {
 	selectHasInternetMobile,
 	selectIsFromFCMMobile,
 	selectIsLogin,
+	selectSession,
 	settingClanStickerActions,
 	useAppDispatch,
 	userStatusActions,
@@ -42,7 +43,7 @@ import {
 } from '@mezon/mobile-components';
 import notifee from '@notifee/react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType } from 'mezon-js';
+import { ChannelType, Session } from 'mezon-js';
 import { AppState, DeviceEventEmitter, Platform, View } from 'react-native';
 import useTabletLandscape from '../hooks/useTabletLandscape';
 import { getVoIPToken, handleFCMToken, setupCallKeep, setupNotificationListeners } from '../utils/pushNotificationHelpers';
@@ -91,12 +92,37 @@ const RootListener = () => {
 		await mainLoaderTimeout({ isFromFCM });
 	};
 
+	const activeAgainLoaderBackground = useCallback(async () => {
+		try {
+			const store = getStore();
+			const currentClanId = selectCurrentClanId(store.getState() as any);
+			dispatch(appActions.setLoadingMainMobile(false));
+			if (currentClanId) {
+				const promise = [
+					dispatch(
+						voiceActions.fetchVoiceChannelMembers({
+							clanId: currentClanId ?? '',
+							channelId: '',
+							channelType: ChannelType.CHANNEL_TYPE_GMEET_VOICE || ChannelType.CHANNEL_TYPE_MEZON_VOICE
+						})
+					),
+					dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true, isMobile: true })),
+					dispatch(directActions.fetchDirectMessage({ noCache: true }))
+				];
+				await Promise.allSettled(promise);
+			}
+			await notifee.cancelAllNotifications();
+			return null;
+		} catch (error) {
+			/* empty */
+		}
+	}, [dispatch]);
+
 	const messageLoaderBackground = useCallback(async () => {
 		try {
 			const store = getStore();
 			const currentChannelId = selectCurrentChannelId(store.getState() as any);
 			const currentClanId = selectCurrentClanId(store.getState() as any);
-			handleReconnect('Initial reconnect attempt');
 			dispatch(appActions.setLoadingMainMobile(false));
 			if (currentChannelId) {
 				dispatch(
@@ -109,33 +135,22 @@ const RootListener = () => {
 					})
 				);
 			}
-			const promise = [
-				dispatch(
-					voiceActions.fetchVoiceChannelMembers({
-						clanId: currentClanId ?? '',
-						channelId: '',
-						channelType: ChannelType.CHANNEL_TYPE_GMEET_VOICE || ChannelType.CHANNEL_TYPE_MEZON_VOICE
-					})
-				),
-				dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true, isMobile: true })),
-				dispatch(directActions.fetchDirectMessage({ noCache: true }))
-			];
-			await Promise.allSettled(promise);
-			await notifee.cancelAllNotifications();
 			return null;
 		} catch (error) {
 			/* empty */
 		}
-	}, [dispatch, handleReconnect]);
+	}, [dispatch]);
 
 	const handleAppStateChange = useCallback(
 		async (state: string) => {
 			const store = getStore();
+			handleReconnect('Initial reconnect attempt timeout');
 			const isFromFCM = await load(STORAGE_IS_DISABLE_LOAD_BACKGROUND);
 			// Note: if is DM
 			const currentDirectId = selectDmGroupCurrentId(store.getState());
 			const isFromFcmMobile = selectIsFromFCMMobile(store.getState());
 			if (state === 'active' && !currentDirectId) {
+				await activeAgainLoaderBackground();
 				if (isFromFCM?.toString() === 'true' || isFromFcmMobile) {
 					/* empty */
 				} else {
@@ -143,7 +158,7 @@ const RootListener = () => {
 				}
 			}
 		},
-		[messageLoaderBackground]
+		[activeAgainLoaderBackground, handleReconnect, messageLoaderBackground]
 	);
 
 	useEffect(() => {
@@ -214,9 +229,19 @@ const RootListener = () => {
 				return;
 			}
 			const fcmtoken = await handleFCMToken();
+			const store = getStore();
+			const session = selectSession(store.getState());
 			const voipToken = Platform.OS === 'ios' ? await getVoIPToken() : '';
 			if (fcmtoken) {
-				dispatch(fcmActions.registFcmDeviceToken({ tokenId: fcmtoken, deviceId: username, platform: Platform.OS, voipToken }));
+				dispatch(
+					fcmActions.registFcmDeviceToken({
+						session: session as Session,
+						tokenId: fcmtoken,
+						deviceId: username,
+						platform: Platform.OS,
+						voipToken
+					})
+				);
 			}
 		} catch (error) {
 			console.error('Error loading FCM config:', error);

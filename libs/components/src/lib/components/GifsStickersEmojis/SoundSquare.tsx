@@ -5,7 +5,7 @@ import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { MessageAudio } from '../MessageWithUser/MessageAudio/MessageAudio';
 
 type ChannelMessageBoxProps = {
@@ -234,7 +234,7 @@ function SoundSquare({ channel, mode, onClose, isTopic = false }: ChannelMessage
 		fromTopic: isTopic
 	});
 	const currentId = useCurrentInbox()?.channel_id;
-	const dataReferences = useSelector(selectDataReferences(currentId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
 	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const { valueInputToCheckHandleSearch, subPanelActive, setSubPanelActive } = useGifsStickersEmoji();
 	const [searchedSounds, setSearchSounds] = useState<ExtendedApiMessageAttachment[]>([]);

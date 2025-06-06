@@ -204,9 +204,9 @@ const DraggableModalTabItem: React.FC<DraggableModalTabItemProps> = ({ app, hand
 								{isJoinVoice && (
 									<button onClick={() => dispatch(channelAppActions.setEnableVoice(!isTalking))}>
 										{isTalking ? (
-											<Icons.MicDisable className="size-4 text-red-600" />
-										) : (
 											<Icons.MicEnable className="size-4 dark:hover:text-white hover:text-black dark:text-[#B5BAC1] text-colorTextLightMode" />
+										) : (
+											<Icons.MicDisable className="size-4 text-red-600" />
 										)}
 									</button>
 								)}

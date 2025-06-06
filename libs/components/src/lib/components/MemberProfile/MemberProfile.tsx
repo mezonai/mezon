@@ -221,7 +221,7 @@ export const SimpleMemberProfile = (props: BaseMemberProfileProps) => {
 };
 
 export const BaseMemberProfile = (props: BaseMemberProfileProps) => {
-	const { showContextMenu, setCurrentUser } = useDirectMessageContextMenu();
+	const { showContextMenu } = useDirectMessageContextMenu();
 
 	const handleClick = (event: React.MouseEvent) => {
 		props.onClick?.(event);
@@ -236,7 +236,6 @@ export const BaseMemberProfile = (props: BaseMemberProfileProps) => {
 		}
 
 		if (user) {
-			setCurrentUser(user);
 			showContextMenu(event, user);
 		}
 	};

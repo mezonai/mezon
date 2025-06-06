@@ -171,7 +171,7 @@ const ChannelVoice = memo(
 							serverUrl={serverUrl}
 							data-lk-theme="default"
 						>
-							<div className="flex-1 relative flex">
+							<div className="flex-1 relative flex overflow-hidden">
 								<MyVideoConference
 									channelLabel={currentChannel?.channel_label as string}
 									onLeaveRoom={handleLeaveRoom}

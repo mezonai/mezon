@@ -12,12 +12,14 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Image, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../componentUI/MezonAvatar';
 import { MezonButton } from '../../componentUI/MezonButton';
@@ -157,6 +159,32 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 			children: <SendTokenUser />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
+
+	const copyUserId = () => {
+		const userId = userProfile?.user?.id;
+		if (!userId || userId.trim() === '') {
+			Toast.show({
+				type: 'error',
+				text1: t('emptyId')
+			});
+			return;
+		}
+		try {
+			Clipboard.setString(userId);
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('copySuccess'),
+					leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={Colors.textLink} />
+				}
+			});
+		} catch (error) {
+			Toast.show({
+				type: 'error',
+				text1: t('errorCopy', { error: error })
+			});
+		}
 	};
 
 	return (
@@ -346,6 +374,17 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					<MezonAvatar avatarUrl="" username="" height={size.s_30} width={size.s_30} stacks={firstFriendImageList} />
 					<MezonIconCDN
 						icon={IconCDN.chevronSmallRightIcon}
+						width={size.s_18}
+						height={size.s_18}
+						customStyle={{ marginLeft: size.s_4 }}
+						color={themeValue.textStrong}
+					/>
+				</TouchableOpacity>
+
+				<TouchableOpacity style={[styles.contentContainer, styles.imgList]} onPress={copyUserId}>
+					<Text style={styles.textTitle}>{t('copyUserId')}</Text>
+					<MezonIconCDN
+						icon={IconCDN.idIcon}
 						width={size.s_18}
 						height={size.s_18}
 						customStyle={{ marginLeft: size.s_4 }}

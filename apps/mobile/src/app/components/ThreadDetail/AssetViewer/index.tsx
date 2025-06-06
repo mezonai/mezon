@@ -61,7 +61,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 	);
 
 	return (
-		<>
+		<View style={styles.wrapper}>
 			<AssetsHeader tabActive={tabActive} onChange={handelHeaderTabChange} tabList={headerTablist} />
 			<View style={styles.container}>
 				<ScrollView horizontal pagingEnabled ref={ref} scrollEventThrottle={100}>
@@ -97,6 +97,6 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 					)}
 				</ScrollView>
 			</View>
-		</>
+		</View>
 	);
 });

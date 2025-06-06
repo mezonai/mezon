@@ -51,6 +51,7 @@ export const DirectMessageDetailScreen = ({ navigation, route }: { navigation: a
 		dispatch(clansActions.setCurrentClanId(currentClanIdCached));
 		// Rejoin previous clan (other than 0) when exiting the DM detail screen
 		dispatch(clansActions.joinClan({ clanId: currentClanIdCached }));
+		handleReconnect('DM detail reconnect attempt');
 	};
 
 	const directMessageLoader = async () => {

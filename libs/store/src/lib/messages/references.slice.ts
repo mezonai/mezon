@@ -61,7 +61,33 @@ export const referencesSlice = createSlice({
 
 		setDataReferences(state, action: PayloadAction<{ channelId: string; dataReferences: ApiMessageRef }>) {
 			if (action.payload !== null) {
-				state.dataReferences[action.payload.channelId] = action.payload.dataReferences;
+				const { channelId, dataReferences } = action.payload;
+				if (state.dataReferences[channelId]) {
+					delete state.dataReferences[channelId];
+				}
+				state.dataReferences[channelId] = dataReferences;
+			}
+		},
+
+		clearDataReferences(state, action: PayloadAction<string>) {
+			const channelId = action.payload;
+			if (channelId && state.dataReferences[channelId]) {
+				delete state.dataReferences[channelId];
+			}
+		},
+
+		resetAfterReply(state, action: PayloadAction<string>) {
+			const channelId = action.payload;
+			if (channelId) {
+				if (state.dataReferences[channelId]) {
+					delete state.dataReferences[channelId];
+				}
+				if (state.openEditMessageState) {
+					state.openEditMessageState = false;
+				}
+				if (state.idMessageRefEdit) {
+					state.idMessageRefEdit = '';
+				}
 			}
 		},
 
@@ -162,6 +188,12 @@ export const referencesSlice = createSlice({
 		},
 		setGeolocation(state, action) {
 			state.geoLocation = action.payload;
+		},
+		resetEditReplyStates(state) {
+			state.openEditMessageState = false;
+			state.idMessageRefEdit = '';
+			state.idMessageRefReaction = '';
+			state.idMessageMention = '';
 		}
 	},
 	extraReducers: (builder) => {
@@ -194,10 +226,9 @@ export const selectAllReferences = createSelector(getReferencesState, selectAll)
 
 export const selectReferencesEntities = createSelector(getReferencesState, selectEntities);
 
-export const selectDataReferences = (channelId: string) =>
-	createSelector(getReferencesState, (state: ReferencesState) => {
-		return state.dataReferences[channelId] || '';
-	});
+export const selectDataReferences = createSelector([getReferencesState, (_, channelId: string) => channelId], (state: ReferencesState, channelId) => {
+	return state.dataReferences[channelId] || '';
+});
 
 export const selectOpenEditMessageState = createSelector(getReferencesState, (state: ReferencesState) => state.openEditMessageState);
 
@@ -209,7 +240,9 @@ export const selectMessageMetionId = createSelector(getReferencesState, (state: 
 
 export const selectAttachmentAfterUpload = createSelector(getReferencesState, (state: ReferencesState) => state.attachmentAfterUpload);
 
-export const selectAttachmentByChannelId = (channelId: string) =>
-	createSelector(selectAttachmentAfterUpload, (attachmentAfterUpload) => attachmentAfterUpload[channelId] || null);
+export const selectAttachmentByChannelId = createSelector(
+	[selectAttachmentAfterUpload, (_, channelId: string) => channelId],
+	(attachmentAfterUpload, channelId) => attachmentAfterUpload[channelId] || null
+);
 
 export const selectGeolocation = createSelector(getReferencesState, (state: ReferencesState) => state.geoLocation);

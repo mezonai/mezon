@@ -6,5 +6,9 @@
     "aboutMe": "About Me",
     "editServer": "Edit Clan Profile",
     "editUser": "Edit User Profile",
-    "token": "Balance:"
+    "token": "Balance:",
+    "copyUserId": "Copy User ID",
+    "copySuccess": "User ID Copied",
+    "emptyId": "Invalid User ID",
+    "errorCopy": "Error when copy User ID: #{{error}}"
 }

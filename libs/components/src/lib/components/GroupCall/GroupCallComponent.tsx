@@ -6,7 +6,6 @@ import {
 	DMCallActions,
 	appActions,
 	generateMeetToken,
-	handleParticipantVoiceState,
 	selectDmGroupCurrent,
 	selectGroupCallJoined,
 	selectIsShowChatVoice,
@@ -24,7 +23,6 @@ import {
 } from '@mezon/store';
 import { GroupVideoConference } from '../VoiceChannel/MyVideoConference/GroupVideoConference';
 
-import { ParticipantMeetState } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -66,19 +64,6 @@ const GroupCallComponent = memo(
 
 		const isDmGroup = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP;
 		const isDm = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM;
-
-		const participantMeetState = async (state: ParticipantMeetState, clanId?: string, channelId?: string): Promise<void> => {
-			if (!clanId || !channelId || !userProfile?.user?.id) return;
-
-			await dispatch(
-				handleParticipantVoiceState({
-					clan_id: clanId,
-					channel_id: channelId,
-					display_name: userProfile?.user?.display_name ?? '',
-					state
-				})
-			);
-		};
 
 		const handleJoinRoom = async (isVideoCallParam = false) => {
 			const videoEnabled = isVideoCallParam || groupCall.state.isVideoCall;
@@ -149,7 +134,7 @@ const GroupCallComponent = memo(
 						// handleLeaveRoom();
 					}
 
-					await participantMeetState(ParticipantMeetState.JOIN, callGroup?.clan_id as string, callGroup?.channel_id as string);
+					// await participantMeetState(ParticipantMeetState.JOIN, callGroup?.clan_id as string, callGroup?.channel_id as string);
 
 					dispatch(voiceActions.setShowMicrophone(true));
 					dispatch(voiceActions.setShowCamera(videoEnabled));
@@ -245,7 +230,7 @@ const GroupCallComponent = memo(
 			dispatch(voiceActions.resetVoiceSettings());
 			groupCall.audio.stopAllAudio();
 
-			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
+			// await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
 		}, [dispatch, voiceInfo, currentDmGroup, showCamera, userProfile, groupCall]);
 
 		const handleFullScreen = useCallback(() => {

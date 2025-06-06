@@ -12,7 +12,7 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
-import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, resizeFileImage } from '@mezon/utils';
+import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -124,17 +124,13 @@ const SettingRightUser = ({
 			}
 			setIsLoading(true);
 
-			let resizeFile = file;
-			if (!file.name.endsWith('.gif')) {
-				resizeFile = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
-			}
 			const attachment = await handleUploadFile(
 				clientRef.current,
 				sessionRef.current,
 				currentClanId || '0',
 				userProfile?.user?.id || '0',
-				resizeFile.name,
-				resizeFile
+				file.name,
+				file
 			);
 			setUrlImage(attachment?.url || '');
 			setFlags(true);

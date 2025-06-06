@@ -51,7 +51,7 @@ const Suggestions: FC<MentionSuggestionsProps> = memo(({ keyword, onSelect, list
 	};
 	return (
 		<FlatList
-			style={{ maxHeight: 200 }}
+			style={{ maxHeight: size.s_220 }}
 			data={listMentionData}
 			renderItem={({ item }) => {
 				if (!item?.display) return <View />;
@@ -143,7 +143,7 @@ const HashtagSuggestions: FC<MentionHashtagSuggestionsProps> = memo(({ keyword, 
 
 	return (
 		<FlatList
-			style={{ maxHeight: 200 }}
+			style={{ maxHeight: size.s_220 }}
 			data={channelsMentionData}
 			renderItem={({ item }) => (
 				<Pressable onPress={() => handleSuggestionPress(item)}>
@@ -157,6 +157,7 @@ const HashtagSuggestions: FC<MentionHashtagSuggestionsProps> = memo(({ keyword, 
 				</Pressable>
 			)}
 			keyExtractor={(_, index) => `${index}_hashtag_suggestion`}
+			initialNumToRender={5}
 			onEndReachedThreshold={0.1}
 			keyboardShouldPersistTaps="handled"
 			windowSize={10}
@@ -213,13 +214,14 @@ const EmojiSuggestion: FC<IEmojiSuggestionProps> = memo(({ keyword, onSelect }) 
 
 	return (
 		<FlatList
-			style={{ maxHeight: 200 }}
+			style={{ maxHeight: size.s_220 }}
 			data={formattedEmojiData}
 			renderItem={({ item }) => (
 				<Pressable onPress={() => handleEmojiSuggestionPress(item)}>
 					<SuggestItem isDisplayDefaultAvatar={false} name={`:${item?.shortname?.split?.(':')?.join('')}:` ?? ''} emojiId={item?.id} />
 				</Pressable>
 			)}
+			initialNumToRender={5}
 			onEndReachedThreshold={0.1}
 			keyboardShouldPersistTaps="handled"
 			keyExtractor={(_, index) => `${index}_emoji_suggestion`}

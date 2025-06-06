@@ -5,7 +5,7 @@ import { SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ClanSticker } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type ChannelMessageBoxProps = {
 	channel: ApiChannelDescription | undefined;
@@ -48,7 +48,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const { valueInputToCheckHandleSearch, subPanelActive } = useGifsStickersEmoji();
 	const [searchedStickers, setSearchStickers] = useState<ClanSticker[]>([]);
 	const currentId = useCurrentInbox()?.channel_id;
-	const dataReferences = useSelector(selectDataReferences(currentId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
 	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const dispatch = useDispatch();
 

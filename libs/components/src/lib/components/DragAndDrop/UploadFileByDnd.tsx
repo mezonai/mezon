@@ -1,9 +1,8 @@
 import { useDragAndDrop } from '@mezon/core';
-import { referencesActions, selectAttachmentByChannelId, useAppDispatch } from '@mezon/store';
+import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { DragEvent } from 'react';
-import { useSelector } from 'react-redux';
 import DragAndDropUI from './DragAndDropUI';
 
 type FileUploadByDnDOpt = {
@@ -12,7 +11,7 @@ type FileUploadByDnDOpt = {
 
 function FileUploadByDnD({ currentId }: FileUploadByDnDOpt) {
 	const dispatch = useAppDispatch();
-	const uploadedAttachmentsInChannel = useSelector(selectAttachmentByChannelId(currentId))?.files || [];
+	const uploadedAttachmentsInChannel = useAppSelector((state) => selectAttachmentByChannelId(state, currentId))?.files || [];
 
 	const { setDraggingState, setOverUploadingState } = useDragAndDrop();
 

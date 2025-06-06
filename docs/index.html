@@ -197,7 +197,7 @@
 <body>
   <h1>Mezon SDK Technical Documentation</h1>
   <p>Mezon Development Team</p>
-  <p>April 21, 2025</p>
+  <p>June 02, 2025</p>
 
   <h2>Introduction</h2>
   <p>The Mezon SDK provides developers with a simple and efficient way to interact with the Mezon platform. This
@@ -260,15 +260,19 @@
 
   <h4>Parameters</h4>
   <ul>
-    <li><code>event</code>: An object of type <code>Message</code> containing information about the received message.
-      The structure of the <code>Message</code> object will depend on the specific event type. Common properties might
-      include:
+    <li><code>event</code>: An object of type <code>ChannelMessage</code> containing information about the received
+      message. The structure of the <code>ChannelMessage</code> object will depend on the specific event type. Common
+      properties might include:
       <ul>
-        <li><code>data</code>: The payload of the message.</li>
-        <li><code>senderId</code>: The ID of the entity that sent the message.</li>
-        <li><code>timestamp</code>: The timestamp of when the message was sent.</li>
-        <li><code>channelId</code>: The ID of the channel the message belongs to.</li>
-        <li><code>type</code>: The type of the message.</li>
+        <li><code>clan_id</code>: The ID of the clan the message belongs to.</li>
+        <li><code>channel_id</code>: The ID of the channel the message belongs to.</li>
+        <li><code>sender_id</code>: The ID of the entity that sent the message.</li>
+        <li><code>message_id</code>: The ID of message.</li>
+        <li><code>content</code>: The content of the message.</li>
+        <li><code>mentions</code>: The list of user mentioned in the message.</li>
+        <li><code>attachments</code>: The list of attachment attached in the message.</li>
+        <li><code>references</code>: The list of message the message is replying to.</li>
+        <li><code>create_time_seconds</code>: The timestamp of when the message was sent.</li>
         <li><em>Other properties specific to the event type.</em></li>
       </ul>
     </li>
@@ -295,7 +299,7 @@
 
   <h3>3. Initiating a Channel Object</h3>
   <p>The <code>channel</code> object provides methods for interacting with specific channels on the Mezon platform. The
-    <code>Find</code> method allows you to retrieve a reference to a channel using its unique identifier.
+    <code>fetch</code> method allows you to retrieve a reference to a channel using its unique identifier.
   </p>
 
   <h4>Syntax</h4>
@@ -307,8 +311,8 @@
 
   <h4>Parameters</h4>
   <ul>
-    <li><code>channel_id</code>: A string or number representing the unique identifier of the channel you want to
-      interact with.</li>
+    <li><code>channel_id</code>: A string representing the unique identifier of the channel you want to interact with.
+    </li>
   </ul>
 
   <h4>Return Value</h4>
@@ -321,10 +325,10 @@
   <h4>Example</h4>
   <pre class="code-block">
         <code class="language-javascript">
+            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannelId</span> <span class="code-keyword">=</span> <span class="code-string">"group-chat-123"</span>;</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannel</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">myChannelId</span>);</span>
             <span class="code-line"><span class="code-variable">console</span>.<span class="code-variable">log</span>(<span class="code-string">"Channel object:"</span>, <span class="code-variable">myChannel</span>);</span>
-            <span class="code-line"></span>
-                 <span class="code-line"><span class="code-comment">// send message to myChannel</span></span>
+            <span class="code-line"><span class="code-comment">// send message to myChannel</span></span>
             <span class="code-line"><span class="code-comment">await myChannel.send({t: "Hello everyone!"});</span></span>
         </code>
     </pre>
@@ -597,3 +601,4 @@ curl --location 'https://webhook.mezon.ai/webhooks/1839225926886363136/MTcyNzM0M
 <span class="interface-line">};</span>
 </code>
     </pre>
+</body>

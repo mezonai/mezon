@@ -7,7 +7,8 @@ import {
 	selectIsSearchMessage,
 	selectIsShowMemberList,
 	selectOpenThreadMessageState,
-	selectThreadCurrentChannel
+	selectThreadCurrentChannel,
+	useAppSelector
 } from '@mezon/store';
 import { MentionReactInputProps } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -27,8 +28,8 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 	const { addMemberToThread, joinningToThread } = useChannelMembers({ channelId: currentChannelId, mode: props.mode ?? 0 });
 	const { isPrivate, nameValueThread, valueThread, isShowCreateThread } = useThreads();
 	const currTopicId = useSelector(selectCurrentTopicId);
-	const dataReferences = useSelector(selectDataReferences(currentChannelId ?? ''));
-	const dataReferencesTopic = useSelector(selectDataReferences(currTopicId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentChannelId ?? ''));
+	const dataReferencesTopic = useAppSelector((state) => selectDataReferences(state, currTopicId ?? ''));
 
 	const { draftRequest, updateDraft } = useDraftCompose(
 		props.isThread || props.isTopic ? currentChannelId + String(props.isThread || props.isTopic) : (currentChannelId as string)

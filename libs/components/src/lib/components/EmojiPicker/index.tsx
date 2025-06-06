@@ -140,9 +140,6 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 				dispatch(emojiSuggestionActions.setSuggestionEmojiObjPicked({ shortName: '', id: '', isReset: true }));
 				setAddEmojiActionChatbox(!addEmojiState);
 				setSuggestionEmojiObjPicked(emojiId, emojiPicked, props.isFromTopicView);
-				if (!shiftPressedState) {
-					setSubPanelActive(SubPanelName.NONE);
-				}
 			}
 			if (props.emojiAction === EmojiPlaces.EMOJI_EDITOR_BUZZ) {
 				const lastIndexOfInputPlainText = (buzzInputRequest?.content ?? '')?.length;

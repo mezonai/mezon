@@ -530,7 +530,7 @@ export const jumpToMessage = createAsyncThunk(
 			}
 
 			const state = thunkAPI.getState() as RootState;
-			if (clanId && state.channels.byClans[clanId]?.currentChannelId !== channelId) {
+			if (state.clans.currentClanId !== clanId || (clanId && state.channels.byClans[clanId]?.currentChannelId !== channelId)) {
 				let channelPath = `/chat/clans/${clanId}/channels/${channelId}`;
 				if (clanId === '0') {
 					channelPath = `/chat/direct/message/${channelId}/${mode}`;
@@ -719,7 +719,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
 
 		if (!isViewingOlderMessages) {
-			thunkAPI.dispatch(messagesActions.newMessage(fakeMess));
+			thunkAPI.dispatch(messagesActions.addNewMessage(fakeMess));
 		}
 
 		const res = await sendWithRetry(1);
@@ -1531,11 +1531,6 @@ export const selectChannelDraftMessage = createCachedSelector([getMessagesState,
 export const selectFirstMessageId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState.firstMessageId[channelId] ?? '';
 });
-
-export const selectFirstMessageIdByChannelId = (channelId: string) =>
-	createSelector(getMessagesState, (state) => {
-		return state.firstMessageId[channelId] || '';
-	});
 
 // select selectLatestMessage's id
 export const selectLatestMessageId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {

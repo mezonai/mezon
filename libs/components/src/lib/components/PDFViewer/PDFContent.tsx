@@ -30,7 +30,7 @@ export const PDFContent: React.FC<PDFContentProps> = ({
 	};
 
 	return (
-		<div className="flex-1 overflow-auto p-4 flex justify-center bg-white dark:bg-[#36393f]" ref={onContainerRef}>
+		<div className="thread-scroll flex-1 overflow-auto p-4 flex justify-center bg-white dark:bg-[#36393f]" ref={onContainerRef}>
 			{loading && (
 				<div className="flex items-center justify-center h-full">
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5865f2]" />
@@ -58,24 +58,11 @@ export const PDFContent: React.FC<PDFContentProps> = ({
 						file={pdfUrl}
 						onLoadSuccess={onDocumentLoadSuccess}
 						onLoadError={onDocumentLoadError}
-						loading={
-							<div className="flex items-center justify-center p-8">
-								<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5865f2]" />
-							</div>
-						}
+						loading={<div></div>}
 						options={pdfOptions}
 						className="react-pdf__Document"
 					>
-						<Page
-							pageNumber={pageNumber}
-							width={getPageWidth()}
-							loading={
-								<div className="flex items-center justify-center p-8">
-									<div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#5865f2]" />
-								</div>
-							}
-							className="react-pdf__Page"
-						/>
+						<Page pageNumber={pageNumber} width={getPageWidth()} loading={<div></div>} className="react-pdf__Page" />
 					</Document>
 				</div>
 			)}

@@ -13,7 +13,7 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 	onZoomOut,
 	onResetZoom
 }) => (
-	<div className="flex items-center justify-between px-3 border-b border-gray-200 dark:border-[#202225] bg-gray-50 dark:bg-[#2f3136]">
+	<div className="flex items-center justify-between px-4 border-b border-gray-200 dark:border-[#202225] bg-gray-50 dark:bg-[#2f3136]">
 		<div className="flex items-center space-x-2">
 			<button
 				onClick={onPrevPage}
@@ -51,13 +51,6 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 				title="Zoom in (Ctrl + +)"
 			>
 				<Icons.PlusIcon defaultSize="w-4 h-4" />
-			</button>
-			<button
-				onClick={onResetZoom}
-				className="px-3 py-1 text-sm rounded transition-all duration-200 text-white bg-[#5865f2] hover:opacity-90"
-				title="Reset zoom (Ctrl + 0)"
-			>
-				Reset
 			</button>
 		</div>
 	</div>

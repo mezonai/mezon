@@ -11,7 +11,7 @@ interface UseMenuHandlersParams {
 	isLastOne: boolean;
 }
 
-export function useMenuHandlers({ userProfile, hasKeyE2ee, directId, openUserProfile, isLastOne }: UseMenuHandlersParams) {
+export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHandlersParams) {
 	const dispatch = useAppDispatch();
 	const { addFriend, deleteFriend } = useFriends();
 	const { createDirectMessageWithUser } = useDirect();
@@ -67,7 +67,7 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId, openUserPro
 	);
 
 	const handleLeaveDmGroup = useCallback(
-		async (channelId: string) => {
+		async (channelId: string, isLastOne: boolean) => {
 			if (!channelId) return;
 
 			const isLeaveOrDeleteGroup = isLastOne
@@ -84,7 +84,7 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId, openUserPro
 
 			await dispatch(directActions.remove(channelId));
 		},
-		[dispatch, navigate, userProfile?.user?.id, isLastOne, directId]
+		[dispatch, navigate, userProfile?.user?.id, directId]
 	);
 
 	const handleEnableE2ee = useCallback(

@@ -56,7 +56,6 @@ export const style = (colors: Attributes) =>
 		},
 		inputStyle: {
 			maxHeight: size.s_40 * 3,
-			lineHeight: size.s_20,
 			width: '100%',
 			borderBottomWidth: 0,
 			borderRadius: size.s_20,

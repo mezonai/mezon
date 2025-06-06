@@ -32,7 +32,7 @@ const TopicDiscussionBox = () => {
 	const sessionUser = useSelector(selectSession);
 	const currentTopicId = useSelector(selectCurrentTopicId);
 	const [isFetchMessageDone, setIsFetchMessageDone] = useState(false);
-	const dataReferences = useSelector(selectDataReferences(currentTopicId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentTopicId ?? ''));
 	const currentInputChannelId = currentTopicId || CREATING_TOPIC;
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(currentInputChannelId);
 	const { setOverUploadingState } = useDragAndDrop();

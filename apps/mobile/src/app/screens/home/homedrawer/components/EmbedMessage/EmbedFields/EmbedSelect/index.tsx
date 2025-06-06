@@ -21,8 +21,8 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 	const [selectedOptions, setSelectedOptions] = useState<IMessageSelectOption[]>([]);
 
 	const checkMultipleSelect = useMemo(() => {
-		return (!!select.min_options && select.min_options > 1) || (!!select.max_options && select.max_options >= 2);
-	}, [select.min_options, select.max_options]);
+		return (!!select?.min_options && select?.min_options > 1) || (!!select?.max_options && select?.max_options >= 2);
+	}, [select?.min_options, select.max_options]);
 	useEffect(() => {
 		if (select.valueSelected) {
 			handleChangeDataInput(select.valueSelected.value, buttonId);

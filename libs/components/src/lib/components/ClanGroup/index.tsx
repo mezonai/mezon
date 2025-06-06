@@ -8,6 +8,7 @@ import {
 	selectClansEntities,
 	selectCurrentClanId
 } from '@mezon/store';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarClanItem from '../ModalListClans';
 
@@ -212,7 +213,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 					<div className="w-full h-full">
 						{displayClans[0].logo ? (
 							<img
-								src={displayClans[0].logo}
+								src={createImgproxyUrl(displayClans[0].logo || '', { width: 100, height: 100, resizeType: 'fill-down' })}
 								alt={displayClans[0].clan_name || ''}
 								className="w-full h-full object-cover rounded-lg"
 								draggable="false"
@@ -231,7 +232,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 									<div key={clan.id} className="w-1/2 h-full">
 										{clan.logo ? (
 											<img
-												src={clan.logo}
+												src={createImgproxyUrl(clan.logo, { width: 100, height: 100, resizeType: 'fill-down' })}
 												alt={clan.clan_name || ''}
 												className="w-full h-full object-cover"
 												draggable="false"
@@ -253,7 +254,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 									<div key={clan.id} className="w-full h-full">
 										{clan.logo ? (
 											<img
-												src={clan.logo}
+												src={createImgproxyUrl(clan.logo || '', { width: 100, height: 100, resizeType: 'fill-down' })}
 												alt={clan.clan_name || ''}
 												className="w-full h-full object-cover"
 												draggable="false"

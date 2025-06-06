@@ -12,7 +12,8 @@ import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.mezon.mobile.CustomClientFactory;
 import com.zoontek.rnbootsplash.RNBootSplash;
 import android.app.NotificationManager
-import android.content.Context
+import android.content.Context;
+import android.util.DisplayMetrics;
 
 class MainActivity : ReactActivity() {
 
@@ -22,14 +23,23 @@ class MainActivity : ReactActivity() {
    */
   override fun getMainComponentName(): String = "Mobile"
 
+  fun isTablet(context: Context): Boolean {
+    val metrics = context.resources.displayMetrics
+    val widthInches = metrics.widthPixels / metrics.xdpi
+    val heightInches = metrics.heightPixels / metrics.ydpi
+    val screenSize =
+        Math.sqrt(
+            (widthInches.toDouble() * widthInches.toDouble()) +
+                (heightInches.toDouble() * heightInches.toDouble())
+        )
+    return screenSize >= 7.0
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     RNBootSplash.init(this, R.style.BootTheme)
     super.onCreate(null);
 
-    val isTablet = (this.resources.configuration.screenLayout and
-            Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
-
-    if (isTablet) {
+    if (isTablet(this)) {
       requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     } else {
       requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_USER

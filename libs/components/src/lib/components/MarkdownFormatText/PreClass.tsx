@@ -1,6 +1,5 @@
-import { Icons } from '@mezon/ui';
 import { useEffect, useState } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { ButtonCopy } from '../../components';
 
 interface IPreClassProps {
 	children?: any;
@@ -22,9 +21,10 @@ const PreClass = ({ children, isInPinMsg }: IPreClassProps) => {
 		<pre
 			className={`pre dark:text-white text-colorTextLightMode bg-bgLightSecondary dark:bg-bgSecondary border border-[#E3E5E8] dark:border-[#1E1F22] ${isInPinMsg ? 'flex items-start' : ''}`}
 		>
-			<CopyToClipboard text={children.props.children} onCopy={() => setCopied(true)}>
-				<button className="icon copy-icon">{copied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}</button>
-			</CopyToClipboard>
+			<ButtonCopy
+				copyText={children.props.children}
+				className={`absolute top-2 !rounded-full overflow-hidden dark:border-black dark:shadow-[#000000]  `}
+			/>
 			<code className={`code ${isInPinMsg ? 'whitespace-pre-wrap block break-words' : ''}`}>
 				{children.props.children?.toString()?.split('```')}
 			</code>

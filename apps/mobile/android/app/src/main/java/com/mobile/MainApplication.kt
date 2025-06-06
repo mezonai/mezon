@@ -24,7 +24,6 @@ import com.mezon.mobile.NavigationBarPackage;
 import com.mezon.mobile.NotificationPreferencesPackage;
 import com.mezon.mobile.CallStatePackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
-import com.swmansion.rnscreens.RNScreensPackage;
 
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 
@@ -45,7 +44,6 @@ class MainApplication : Application(), ReactApplication {
               add(NavigationBarPackage())
               add(NotificationPreferencesPackage())
               add(ReactNativeFirebaseAnalyticsPackage())
-              add(RNScreensPackage())
               add(CallStatePackage())
             }
 

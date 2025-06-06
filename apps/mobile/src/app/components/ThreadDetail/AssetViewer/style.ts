@@ -2,12 +2,13 @@ import { Dimensions, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
 	container: {
-		width: '100%',
-		flexGrow: 1,
-		flexBasis: 500,
-		overflow: 'hidden'
+		overflow: 'hidden',
+		flex: 1
 	},
-	widthTab: { width: Dimensions.get('window').width }
+	widthTab: { width: Dimensions.get('window').width },
+	wrapper: {
+		flex: 1
+	}
 });
 
 export default styles;

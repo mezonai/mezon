@@ -49,7 +49,7 @@ const ModalSendToken = ({
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const listDM = dmGroupChatList.filter((groupChat) => groupChat.type === ChannelType.CHANNEL_TYPE_DM);
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const [searchTerm, setSearchTerm] = useState(infoSendToken?.receiver_name || '');
+	const [searchTerm, setSearchTerm] = useState('');
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [tokenNumber, setTokenNumber] = useState('');
 	const [noteSendToken, setNoteSendToken] = useState('');
@@ -58,6 +58,10 @@ const ModalSendToken = ({
 		if (!openModal) {
 			setSearchTerm('');
 			setToken(0);
+		}
+		if (openModal) {
+			setSearchTerm('');
+			setSelectedUserId('');
 		}
 	}, [openModal]);
 
@@ -78,10 +82,7 @@ const ModalSendToken = ({
 		const value = e.target.value;
 		setSearchTerm(value);
 		setIsDropdownOpen(true);
-
-		if (selectedUserId) {
-			setSelectedUserId('');
-		}
+		setSelectedUserId('');
 	};
 
 	const handleSelectUser = (id: string, name: string) => {
@@ -148,11 +149,12 @@ const ModalSendToken = ({
 	}, [token, selectedUserId, note]);
 
 	const handleSendToken = () => {
-		const userData = filteredUsers.find((user) => user.username === searchTerm) || '';
-		handleSaveSendToken(userData?.id, userData?.username, userData?.avatar_url, userData?.display_name);
+		const userData = mergedUsers.find((user) => user.id === selectedUserId);
+		if (!userData) return;
+		handleSaveSendToken(userData.id, userData.username, userData.avatar_url, userData.display_name);
 	};
 
-	const selectedUser = filteredUsers.find((user) => user.username === searchTerm);
+	const selectedUser = mergedUsers.find((user) => user.id === selectedUserId);
 
 	return (
 		<Modal className="bg-bgModalDark" theme={{ content: { base: 'w-[480px]' } }} show={openModal} dismissible={true} onClose={onClose}>
@@ -300,7 +302,7 @@ const ModalSendToken = ({
 						className="flex-1 h-12 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium transition-all flex items-center justify-center gap-2"
 						type="button"
 						onClick={handleSendToken}
-						disabled={isButtonDisabled || !selectedUser || token <= 0}
+						disabled={isButtonDisabled || !selectedUserId || token <= 0}
 					>
 						<Icons.DollarIcon isWhite className="w-4 h-4" />
 						Send Tokens

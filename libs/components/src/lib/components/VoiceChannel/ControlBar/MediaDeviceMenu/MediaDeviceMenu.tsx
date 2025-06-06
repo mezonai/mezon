@@ -80,7 +80,7 @@ export function MediaDeviceMenu({
 				{props.children}
 			</button>
 			{!props.disabled && (
-				<div className="lk-device-menu" ref={tooltip} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
+				<div className="lk-device-menu" ref={tooltip} style={{ visibility: isOpen ? 'visible' : 'hidden', bottom: '0px', top: 'auto' }}>
 					{kind && (
 						<MediaDeviceSelect
 							initialSelection={initialSelection}

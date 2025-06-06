@@ -1,5 +1,6 @@
 import { toChannelPage, useChatSending, useCustomNavigate, useGifsStickersEmoji, useMenu, usePathMatch } from '@mezon/core';
 import {
+	DMCallActions,
 	DirectEntity,
 	RootState,
 	appActions,
@@ -40,7 +41,8 @@ import {
 	toastActions,
 	topicsActions,
 	useAppDispatch,
-	useAppSelector
+	useAppSelector,
+	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, IMessageTypeCallLog, SubPanelName, createImgproxyUrl } from '@mezon/utils';
@@ -112,6 +114,8 @@ const TopBarChannelText = memo(() => {
 		return currentDmGroup?.channel_label;
 	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
 
+	const [isEditing, setIsEditing] = useState(false);
+
 	const handleChangeGroupName = useCallback(
 		async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 			if (e.key === 'Enter') {
@@ -124,17 +128,29 @@ const TopBarChannelText = memo(() => {
 						channel_label: (e.target as HTMLTextAreaElement).value
 					})
 				);
+				setIsEditing(false);
+			}
+			if (e.key === 'Escape') {
+				setIsEditing(false);
 			}
 		},
-		[currentDmGroup]
+		[currentDmGroup, dispatch]
 	);
 
 	const handleRestoreName = useCallback(
 		(e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
 			e.target.value = channelDmGroupLabel as string;
+			setIsEditing(false);
 		},
 		[channelDmGroupLabel]
 	);
+
+	const handleStartEditing = useCallback(() => {
+		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			setIsEditing(true);
+		}
+	}, [currentDmGroup?.type]);
+
 	const handleCloseCanvas = () => {
 		dispatch(appActions.setIsShowCanvas(false));
 	};
@@ -174,14 +190,25 @@ const TopBarChannelText = memo(() => {
 							avatar={currentDmGroup?.channel_avatar?.[0]}
 							avatarName={currentDmGroup?.channel_label?.at(0)}
 						/>
-						<textarea
-							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}`}
-							rows={1}
-							className={`${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent flex-1 outline-none resize-none w-full leading-10 truncate one-line text-colorTextLightMode dark:text-contentPrimary`}
-							defaultValue={channelDmGroupLabel}
-							onKeyDown={handleChangeGroupName}
-							onBlur={handleRestoreName}
-						></textarea>
+						{isEditing ? (
+							<textarea
+								key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}`}
+								rows={1}
+								className={`none-draggable-area cursor-text font-medium bg-transparent flex-1 outline-none resize-none w-full leading-10 truncate one-line text-colorTextLightMode dark:text-contentPrimary`}
+								defaultValue={channelDmGroupLabel}
+								onKeyDown={handleChangeGroupName}
+								onBlur={handleRestoreName}
+							></textarea>
+						) : (
+							<div
+								key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
+								className={`overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent outline-none leading-10 text-colorTextLightMode dark:text-contentPrimary max-w-[250px] min-w-0`}
+								onClick={handleStartEditing}
+								title={channelDmGroupLabel}
+							>
+								{channelDmGroupLabel}
+							</div>
+						)}
 					</div>
 				)}
 			</div>
@@ -243,7 +270,7 @@ const ChannelTopbarLabel = memo(
 		};
 
 		return (
-			<div className="flex items-center text-lg gap-1 dark:text-white text-black" onClick={onClick}>
+			<div className="none-draggable-area flex items-center text-lg gap-1 dark:text-white text-black" onClick={onClick}>
 				<div className="w-6">{renderIcon()}</div>
 				<p className="text-base font-semibold leading-5 truncate">{label}</p>
 			</div>
@@ -351,6 +378,8 @@ const DmTopbarTools = memo(() => {
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode: mode });
 	const isInCall = useSelector(selectIsInCall);
+	const isGroupCallActive = useSelector((state: RootState) => state.groupCall?.isGroupCallActive || false);
+	const voiceInfo = useSelector((state: RootState) => state.voice?.voiceInfo || null);
 	const handleSend = useCallback(
 		(
 			content: IMessageSendPayload,
@@ -387,7 +416,19 @@ const DmTopbarTools = memo(() => {
 
 	const handleStartCall = (isVideoCall = false) => {
 		if (currentDmGroup.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			if (!isInCall) {
+			if (isGroupCallActive && (voiceInfo as any)?.channelId === currentDmGroup.channel_id) {
+				dispatch(voiceActions.setOpenPopOut(false));
+				dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
+				dispatch(voiceActions.setShowCamera(isVideoCall));
+
+				dispatch(audioCallActions.setIsRingTone(false));
+				dispatch(audioCallActions.setIsBusyTone(false));
+				dispatch(audioCallActions.setIsEndTone(false));
+				dispatch(audioCallActions.setIsDialTone(false));
+				return;
+			}
+
+			if (!isInCall && !isGroupCallActive) {
 				if (!currentDmGroup.channel_id) {
 					dispatch(toastActions.addToast({ message: 'Group channel ID is missing', type: 'error', autoClose: 3000 }));
 					return;
@@ -433,7 +474,33 @@ const DmTopbarTools = memo(() => {
 				dispatch(audioCallActions.setGroupCallId(currentDmGroup.channel_id));
 				dispatch(audioCallActions.setIsBusyTone(false));
 			} else {
-				dispatch(toastActions.addToast({ message: 'You are on another call', type: 'warning', autoClose: 3000 }));
+				const isSameGroup = (voiceInfo as any)?.channelId === currentDmGroup.channel_id;
+
+				if (isSameGroup) {
+					dispatch(voiceActions.setOpenPopOut(false));
+					dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
+					dispatch(voiceActions.setShowCamera(isVideoCall));
+
+					dispatch(audioCallActions.setIsRingTone(false));
+					dispatch(audioCallActions.setIsBusyTone(false));
+					dispatch(audioCallActions.setIsEndTone(false));
+					dispatch(audioCallActions.setIsDialTone(false));
+
+					dispatch(
+						groupCallActions.showPreCallInterface({
+							groupId: currentDmGroup.channel_id || '',
+							isVideo: isVideoCall
+						})
+					);
+				} else {
+					dispatch(
+						toastActions.addToast({
+							message: 'You are on another call',
+							type: 'warning',
+							autoClose: 3000
+						})
+					);
+				}
 			}
 			return;
 		}
@@ -778,7 +845,7 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 	};
 	const rootRef = useRef<HTMLDivElement>(null);
 	return (
-		<div onClick={handleOpenAddToGroupModal} ref={rootRef} className="cursor-pointer">
+		<div onClick={handleOpenAddToGroupModal} ref={rootRef} className="none-draggable-area cursor-pointer">
 			{openAddToGroup && (
 				<div className="relative">
 					<CreateMessageGroup

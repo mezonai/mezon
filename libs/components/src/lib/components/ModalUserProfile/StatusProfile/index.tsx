@@ -21,6 +21,7 @@ import { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { ButtonCopy } from '../../../components';
 import HistoryTransaction from '../../HistoryTransaction';
 import SettingRightWithdraw from '../../SettingProfile/SettingRightWithdraw';
 import ItemProfile from './ItemProfile';
@@ -31,8 +32,9 @@ type StatusProfileProps = {
 	userById: ChannelMembersEntity | null;
 	isDM?: boolean;
 	modalRef: React.MutableRefObject<boolean>;
+	onClose: () => void;
 };
-const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
+const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps) => {
 	const dispatch = useAppDispatch();
 	const allAccount = useSelector(selectOthersSession);
 	const user = userById?.user;
@@ -124,9 +126,6 @@ const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
 			navigate('/chat/direct/friend');
 		}
 	};
-	const handleCopyID = useCallback(() => {
-		navigator.clipboard.writeText(userProfile?.user?.id || '');
-	}, [userProfile]);
 
 	const handleOpenSwitchAccount = useCallback(() => {
 		if (isElectron()) {
@@ -154,7 +153,7 @@ const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
 					trigger="click"
 					dismissOnClick={true}
 					renderTrigger={() => (
-						<div>
+						<div className="capitalize">
 							<ItemStatus children={status} dropdown startIcon={statusIcon(status)} />
 						</div>
 					)}
@@ -198,7 +197,8 @@ const StatusProfile = ({ userById, isDM, modalRef }: StatusProfileProps) => {
 					)}
 				</Dropdown>
 			)}
-			<ItemStatus onClick={handleCopyID} children="Copy User ID" dropdown={false} startIcon={<Icons.CopyIcon />} />
+
+			<ButtonCopy copyText={userProfile?.user?.id || ''} title="Copy User ID" className="py-[6px]" />
 
 			{isShowModalWithdraw && <SettingRightWithdraw onClose={handleCloseWithdrawModal} />}
 			{isShowModalHistory && <HistoryTransaction onClose={handleCloseHistoryModal} />}

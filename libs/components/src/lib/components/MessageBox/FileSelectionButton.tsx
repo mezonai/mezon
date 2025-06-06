@@ -1,9 +1,8 @@
 import { useDragAndDrop } from '@mezon/core';
-import { referencesActions, selectAttachmentByChannelId, useAppDispatch } from '@mezon/store';
+import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { useSelector } from 'react-redux';
 
 export type FileSelectionButtonProps = {
 	currentClanId: string;
@@ -13,7 +12,7 @@ export type FileSelectionButtonProps = {
 
 function FileSelectionButton({ currentClanId, currentChannelId, hasPermissionEdit }: FileSelectionButtonProps) {
 	const dispatch = useAppDispatch();
-	const uploadedAttachmentsInChannel = useSelector(selectAttachmentByChannelId(currentChannelId))?.files || [];
+	const uploadedAttachmentsInChannel = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId))?.files || [];
 	const { setOverUploadingState } = useDragAndDrop();
 	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {

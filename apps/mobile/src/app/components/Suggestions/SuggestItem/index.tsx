@@ -129,7 +129,9 @@ const SuggestItem = memo(({ channelId, avatarUrl, name, subText, isDisplayDefaul
 
 				{isRoleUser || name?.startsWith('here') ? renderRoleUser() : renderChannelBusy()}
 			</View>
-			<Text style={styles.subText}>{subText}</Text>
+			<Text style={styles.subText} numberOfLines={1}>
+				{subText}
+			</Text>
 		</View>
 	);
 });

@@ -1,4 +1,4 @@
-import { AppDispatch, RootState, audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall } from '@mezon/store';
+import { AppDispatch, RootState, audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
 import { Socket, WebrtcSignalingFwd, safeJSONParse } from 'mezon-js';
 
 export interface GroupCallSocketHandlerOptions {
@@ -41,6 +41,7 @@ export const handleGroupCallSocketEvent = async (
 		const isInCall = selectIsInCall(state);
 		const isGroupCallActive = selectIsGroupCallActive(state);
 		const isInAnyCall = isInCall || isGroupCallActive;
+		const currentVoiceInfo = selectVoiceInfo(state);
 
 		const parseCallData = (jsonData: string, eventType: string): ParsedCallData => {
 			try {
@@ -89,6 +90,37 @@ export const handleGroupCallSocketEvent = async (
 				const callData = parseCallData(event?.json_data as string, 'GROUP_CALL_OFFER');
 				const isVideoCall = callData?.is_video === true;
 
+				const isInSameGroup = currentVoiceInfo?.channelId === event.channel_id && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
+
+				if (isInSameGroup) {
+					dispatch(audioCallActions.setIsRingTone(false));
+					dispatch(audioCallActions.setIsBusyTone(false));
+					dispatch(audioCallActions.setIsEndTone(false));
+					dispatch(audioCallActions.setIsDialTone(false));
+					dispatch(groupCallActions.startGroupCall());
+
+					if (socketRef.current && event.caller_id) {
+						const answerData = {
+							is_video: isVideoCall,
+							group_id: event.channel_id,
+							caller_id: userId,
+							caller_name: currentVoiceInfo?.channelLabel || 'User',
+							action: 'auto_join',
+							timestamp: Date.now()
+						};
+
+						socketRef.current.forwardWebrtcSignaling(
+							event.caller_id,
+							10, // GROUP_CALL_ANSWER
+							JSON.stringify(answerData),
+							event.channel_id,
+							userId || ''
+						);
+					}
+
+					return true;
+				}
+
 				if (!isInAnyCall) {
 					// User is free - show incoming call UI
 					dispatch(audioCallActions.setIsRingTone(true));
@@ -110,7 +142,7 @@ export const handleGroupCallSocketEvent = async (
 						})
 					);
 				} else {
-					// User is busy - send busy signal
+					// User is busy in different call - send busy signal
 					sendBusySignal(callData, isVideoCall);
 				}
 				break;

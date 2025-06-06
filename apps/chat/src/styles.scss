@@ -1048,7 +1048,8 @@ input:-webkit-autofill:active {
 	-webkit-app-region: no-drag;
 }
 
-.draggable-area * {
+.draggable-area button,
+input {
 	-webkit-app-region: no-drag;
 }
 

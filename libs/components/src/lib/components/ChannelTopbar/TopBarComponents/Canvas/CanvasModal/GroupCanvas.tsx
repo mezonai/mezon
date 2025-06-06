@@ -1,9 +1,8 @@
 import { useAuth } from '@mezon/core';
 import { appActions, canvasActions, canvasAPIActions, selectIdCanvas, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
 import { ICanvas } from '@mezon/utils';
+import { ButtonCopy } from 'libs/components/src/lib/components';
 import { useState } from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 type GroupCanvasProps = {
@@ -62,14 +61,10 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 					{canvas.title ? canvas.title : 'Untitled'}
 				</div>
 			</Link>
-			<CopyToClipboard text={process.env.NX_CHAT_APP_REDIRECT_URI + link} onCopy={() => setIsCopied(true)}>
-				<button
-					style={{ top: '9px' }}
-					className={`absolute top-0 dark:border-black dark:shadow-[#000000] bg-white dark:bg-transparent shadow-emoji_item-delete font-bold w-6 h-6 flex items-center justify-center rounded-full ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}`}
-				>
-					{isCopied ? <Icons.PasteIcon /> : <Icons.CopyIcon className="w-4 h-4" />}
-				</button>
-			</CopyToClipboard>
+			<ButtonCopy
+				copyText={process.env.NX_CHAT_APP_REDIRECT_URI + link}
+				className={`absolute top-2 !rounded-full overflow-hidden dark:border-black dark:shadow-[#000000] ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}  `}
+			/>
 			{!isDisableDelCanvas && (
 				<button
 					title="Delete Canvas"

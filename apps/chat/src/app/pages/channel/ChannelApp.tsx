@@ -1,5 +1,7 @@
-import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, VideoConference } from '@livekit/components-react';
+import { GridLayout, LiveKitRoom, ParticipantTile, RoomAudioRenderer, useLocalParticipant, useTracks } from '@livekit/components-react';
 import {
+	TOKEN_FAILED_STATUS,
+	TOKEN_SUCCESS_STATUS,
 	channelAppActions,
 	generateMeetToken,
 	getStore,
@@ -17,18 +19,26 @@ import {
 	selectInfoSendToken,
 	selectLiveToken,
 	selectSendTokenEvent,
-	TOKEN_FAILED_STATUS,
-	TOKEN_SUCCESS_STATUS,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
 import { ApiChannelAppResponseExtend, MiniAppEventType, ParticipantMeetState } from '@mezon/utils';
+import { Track } from 'livekit-client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useMiniAppEventListener from './useMiniAppEventListener';
 
-export function VideoRoom({ token, serverUrl }: { token: string; serverUrl: string | undefined }) {
+function AudioConference() {
+	const tracks = useTracks([{ source: Track.Source.Microphone, withPlaceholder: true }], { onlySubscribed: false });
+	return (
+		<GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
+			<ParticipantTile />
+		</GridLayout>
+	);
+}
+
+export function AudiRoom({ token, serverUrl }: { token: string; serverUrl: string | undefined }) {
 	const enableMic = useSelector(selectEnableMic);
 
 	return (
@@ -50,17 +60,8 @@ export function VideoRoom({ token, serverUrl }: { token: string; serverUrl: stri
 					overflow: 'hidden'
 				}}
 			>
-				<VideoConference
-					style={{
-						position: 'absolute',
-						top: 0,
-						left: 0,
-						width: '100%',
-						height: '100%',
-						objectFit: 'cover'
-					}}
-				/>
-				<VideoControls />
+				<AudioConference />
+				<AudioControls />
 			</div>
 		</LiveKitRoom>
 	);
@@ -92,6 +93,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 	const userProfile = useSelector(selectAllAccount);
 	const userChannels = useAppSelector((state) => selectAllUsersByUser(state));
 	const roomId = useAppSelector((state) => selectGetRoomId(state, appChannel?.channel_id));
+	const enableMic = useSelector(selectEnableMic);
 
 	const isJoinVoice = useSelector(selectEnableCall);
 	const token = useSelector(selectLiveToken);
@@ -153,7 +155,22 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		[dispatch, appChannel?.app_url]
 	);
 
-	const { miniAppRef } = useMiniAppEventListener(appChannel, allRolesInClan, userChannels, userProfile, getUserHashInfo);
+	const toggleMicrophone = useCallback(
+		async (enabled: boolean) => {
+			dispatch(channelAppActions.setEnableVoice(enabled));
+		},
+		[dispatch]
+	);
+
+	const { miniAppRef } = useMiniAppEventListener(
+		appChannel,
+		allRolesInClan,
+		userChannels,
+		userProfile,
+		getUserHashInfo,
+		enableMic,
+		toggleMicrophone
+	);
 
 	const handleTokenResponse = () => {
 		const infoSendToken = selectInfoSendToken(store.getState());
@@ -232,7 +249,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 
 			{token && (
 				<div className="hidden">
-					<VideoRoom token={token} serverUrl={serverUrl} />
+					<AudiRoom token={token} serverUrl={serverUrl} />
 				</div>
 			)}
 		</div>
@@ -243,7 +260,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 	);
 });
 
-function VideoControls() {
+function AudioControls() {
 	const enableVideo = useSelector(selectEnableVideo);
 	const enableMic = useSelector(selectEnableMic);
 	const { localParticipant } = useLocalParticipant();

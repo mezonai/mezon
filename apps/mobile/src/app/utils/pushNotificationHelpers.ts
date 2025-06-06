@@ -288,8 +288,8 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			if (linkDirectMessageMatch) {
 				const messageId = linkDirectMessageMatch[1];
 				if (navigation) {
+					await store.dispatch(directActions.setDmGroupCurrentId(messageId));
 					if (isTabletLandscape) {
-						await store.dispatch(directActions.setDmGroupCurrentId(messageId));
 						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 					} else {
 						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: messageId });

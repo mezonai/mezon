@@ -26,7 +26,9 @@ const LoginCallback = () => {
 			}
 
 			if (isLogin) {
-				navigate('/login/callback');
+				const targetUrl = redirectUrl;
+				dispatch(authActions.setRedirectUrl(null));
+				navigate(targetUrl || '/chat/direct/friends');
 				return;
 			}
 

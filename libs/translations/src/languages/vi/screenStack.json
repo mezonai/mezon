@@ -35,6 +35,8 @@
     "blockedUsers": "Người dùng bị chặn",
     "sendToken": "Chuyển khoản",
     "withdrawToken": "Rút tiền",
-    "historyTransaction": "Lịch sử giao dịch"
+    "historyTransaction": "Lịch sử giao dịch",
+    "quit": "Thoát",
+    "menu": "Danh mục"
   }
 }

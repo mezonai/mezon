@@ -61,7 +61,10 @@ export const MessagesStacks = ({}: any) => {
 				name={APP_SCREEN.MESSAGES.NEW_GROUP}
 				component={NewGroupScreen}
 				options={{
-					headerShown: false
+					headerShown: false,
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					}
 				}}
 			/>
 

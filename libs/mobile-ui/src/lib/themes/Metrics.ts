@@ -1,6 +1,6 @@
 import { Dimensions, Platform } from 'react-native';
 
-export const { width, height } = Dimensions.get('window');
+export const { width, height } = Dimensions.get('screen');
 
 //Guideline sizes are based on standard ~5" screen mobile device
 const guidelineBaseWidth = 375;
@@ -82,4 +82,5 @@ const propsToStyle = <T = Record<string, number | string>>(arrStyle: Array<T>) =
 		);
 };
 
-export { CONTAINER_FLUID_SPACING, CONTAINER_SPACING, Metrics, horizontalScale, moderateScale, propsToStyle, verticalScale };
+export { CONTAINER_FLUID_SPACING, CONTAINER_SPACING, horizontalScale, Metrics, moderateScale, propsToStyle, verticalScale };
+

@@ -18,7 +18,6 @@ import {
 	selectShowModalSendToken,
 	selectStatusMenu,
 	selectTheme,
-	selectUpdateToken,
 	selectVoiceJoined,
 	useAppDispatch,
 	userClanProfileActions
@@ -57,7 +56,6 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const appearanceTheme = useSelector(selectTheme);
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const myProfile = useAuth();
-	const getTokenSocket = useSelector(selectUpdateToken(myProfile?.userId as string));
 
 	const userCustomStatus: { status: string; user_status: EUserStatus } = useMemo(() => {
 		const metadata = myProfile.userProfile?.user?.metadata;
@@ -162,7 +160,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			return;
 		}
 
-		if (token > Number(tokenInWallet) + Number(getTokenSocket)) {
+		if (token > Number(tokenInWallet)) {
 			setError('Your amount exceeds wallet balance');
 			return;
 		}

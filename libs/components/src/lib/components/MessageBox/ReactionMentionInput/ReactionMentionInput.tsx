@@ -1,7 +1,7 @@
-import { useReference } from '@mezon/core';
+import { useGifsStickersEmoji, useReference } from '@mezon/core';
 import {
-	channelMembersActions,
 	ChannelsEntity,
+	channelMembersActions,
 	emojiSuggestionActions,
 	getStore,
 	referencesActions,
@@ -24,50 +24,56 @@ import {
 	selectStatusMenu,
 	selectTheme,
 	threadsActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import {
-	addMention,
-	adjustPos,
-	blankReferenceObj,
 	CHANNEL_INPUT_ID,
 	ChannelMembersEntity,
-	checkIsThread,
-	convertMentionOnfile,
 	EBacktickType,
 	ETypeMEntion,
-	extractCanvasIdsFromText,
-	filterEmptyArrays,
-	filterMentionsWithAtSign,
-	formatMentionsToString,
 	GENERAL_INPUT_ID,
-	getDisplayMention,
 	IEmojiOnMessage,
 	IHashtagOnMessage,
 	ILongPressType,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageWithUser,
-	MentionDataProps,
-	MentionReactInputProps,
 	MEZON_MENTIONS_COPY_KEY,
 	MIN_THRESHOLD_CHARS,
+	MentionDataProps,
+	MentionReactInputProps,
+	RequestInput,
+	SubPanelName,
+	TITLE_MENTION_HERE,
+	ThreadStatus,
+	addMention,
+	adjustPos,
+	blankReferenceObj,
+	checkIsThread,
+	convertMentionOnfile,
+	extractCanvasIdsFromText,
+	filterEmptyArrays,
+	filterMentionsWithAtSign,
+	formatMentionsToString,
+	getDisplayMention,
 	parseHtmlAsFormattedText,
 	processMarkdownEntities,
-	RequestInput,
 	searchMentionsHashtag,
 	threadError,
-	ThreadStatus,
-	TITLE_MENTION_HERE,
 	updateMentionPositions
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Mention as MentionComponent, MentionItem, MentionsInput as MentionsInputComponent } from 'react-mentions';
 import { useSelector } from 'react-redux';
-import { ChatBoxToolbarWrapper } from './components';
 import CustomModalMentions from './CustomModalMentions';
+import lightMentionsInputStyle from './LightRmentionInputStyle';
+import darkMentionsInputStyle from './RmentionInputStyle';
+import mentionStyle from './RmentionStyle';
+import SuggestItem from './SuggestItem';
+import { ChatBoxToolbarWrapper } from './components';
 import {
 	useClickUpToEditMessage,
 	useEmojiPicker,
@@ -78,11 +84,7 @@ import {
 	usePasteMentions,
 	useUndoRedoHistory
 } from './hooks';
-import lightMentionsInputStyle from './LightRmentionInputStyle';
 import processMention from './processMention';
-import darkMentionsInputStyle from './RmentionInputStyle';
-import mentionStyle from './RmentionStyle';
-import SuggestItem from './SuggestItem';
 import { getCanvasTitles } from './utils/canvas';
 
 const MentionsInput = MentionsInputComponent as any;
@@ -151,10 +153,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const isShowEmojiPicker = !props.isThread;
 
 	const currTopicId = useSelector(selectCurrentTopicId);
-	const dataReferences = useSelector(selectDataReferences(props.currentChannelId ?? ''));
-	const dataReferencesTopic = useSelector(selectDataReferences(currTopicId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, props.currentChannelId ?? ''));
+	const dataReferencesTopic = useAppSelector((state) => selectDataReferences(state, currTopicId ?? ''));
 
-	const attachmentFilteredByChannelId = useSelector(selectAttachmentByChannelId(!props.isTopic ? props.currentChannelId! : currTopicId!));
+	const attachmentFilteredByChannelId = useAppSelector((state) =>
+		selectAttachmentByChannelId(state, !props.isTopic ? props.currentChannelId! : currTopicId!)
+	);
 
 	const isDm = props.mode === ChannelStreamMode.STREAM_MODE_DM;
 
@@ -181,6 +185,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		editorRef,
 		isTopic: props.isTopic
 	});
+
+	const { setSubPanelActive } = useGifsStickersEmoji();
 
 	useFocusManager({
 		editorRef,
@@ -328,14 +334,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					anonymousMessage,
 					mentionEveryone
 				);
-
 				setMentionEveryone(false);
-				dispatch(
-					referencesActions.setDataReferences({
-						channelId: props.currentChannelId ?? '',
-						dataReferences: blankReferenceObj
-					})
-				);
+				dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
 				dispatch(threadsActions.setNameValueThread({ channelId: props.currentChannelId as string, nameValue: '' }));
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
@@ -371,7 +371,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					anonymousMessage,
 					mentionEveryone
 				);
-
 				setMentionEveryone(false);
 				dispatch(
 					referencesActions.setDataReferences({
@@ -392,7 +391,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					anonymousMessage,
 					mentionEveryone
 				);
-
 				setMentionEveryone(false);
 				dispatch(threadsActions.setNameValueThread({ channelId: props.currentChannelId as string, nameValue: '' }));
 				setMentionData([]);
@@ -421,6 +419,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setDisplayPlaintext('');
 			setDisplayPlaintext('');
 			setIsPasteMulti(false);
+			setSubPanelActive(SubPanelName.NONE);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -437,12 +436,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			addMemberToThread,
 			currentChannel,
 			props.currentChannelId,
-			valueThread?.content.t,
-			valueThread?.mentions,
-			valueThread?.attachments,
-			valueThread?.references,
 			setOpenThreadMessageState,
-			updateDraft
+			updateDraft,
+			setSubPanelActive
 		]
 	);
 

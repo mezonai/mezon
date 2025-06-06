@@ -25,10 +25,6 @@ export interface PDFHeaderProps {
 	onClose: () => void;
 }
 
-export interface PDFStatusBarProps {
-	filename: string;
-}
-
 export interface PDFContentProps {
 	pdfUrl: string;
 	pageNumber: number;

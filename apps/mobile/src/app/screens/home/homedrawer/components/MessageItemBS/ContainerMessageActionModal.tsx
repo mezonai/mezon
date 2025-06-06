@@ -348,8 +348,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.FORWARD_MESSAGE,
 			params: {
-				message: message,
-				isPublic: isPublicChannel(currentChannel)
+				message: message
 			}
 		});
 	};

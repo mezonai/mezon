@@ -181,6 +181,7 @@ export const ChatBoxBottomBar = memo(
 		const onSendSuccess = useCallback(() => {
 			textValueInputRef.current = '';
 			setTextChange('');
+			setMentionTextValue('');
 			mentionsOnMessage.current = [];
 			hashtagsOnMessage.current = [];
 			onDeleteMessageActionNeedToResolve();
@@ -224,10 +225,10 @@ export const ChatBoxBottomBar = memo(
 				if (convertRef.current) {
 					return;
 				}
-				textValueInputRef.current = 'converting to txt file...';
 				convertRef.current = true;
 				await onConvertToFiles(text);
-				textValueInputRef.current = 'converted';
+				textValueInputRef.current = '';
+				setTextChange('');
 				return;
 			}
 

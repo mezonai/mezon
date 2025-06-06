@@ -67,6 +67,7 @@ export * from './resetScroll';
 export * from './schedulers';
 export * from './select';
 export * from './signals';
+export * from './toggleSelection';
 export * from './transform';
 export * from './windowEnvironment';
 export * from './windowSize';

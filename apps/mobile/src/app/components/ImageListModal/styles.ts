@@ -41,5 +41,9 @@ export const style = (colors: Attributes) =>
 			width: '100%',
 			height: '100%',
 			borderRadius: 3
+		},
+		option: {
+			flexDirection: 'row',
+			gap: size.s_20
 		}
 	});

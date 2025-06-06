@@ -9,7 +9,8 @@ import {
 	selectDataReferences,
 	selectMissionDone,
 	selectOnboardingByClan,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, ThreadValue, blankReferenceObj } from '@mezon/utils';
@@ -35,7 +36,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const appDispatch = useAppDispatch();
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: channel, mode });
 	const anonymousMode = useSelector(selectAnonymousMode);
-	const dataReferences = useSelector(selectDataReferences(channelId ?? ''));
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, channelId ?? ''));
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
 	const currentClan = useSelector(selectCurrentClan);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));

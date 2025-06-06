@@ -308,6 +308,7 @@ const RoomView = ({
 								trackRef={focusedScreenShare}
 								objectFit={isPiPMode ? 'cover' : 'contain'}
 								style={{ height: isPiPMode ? 2 * 100 : '100%', width: '100%' }}
+								iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 							/>
 						</View>
 					</ResumableZoom>

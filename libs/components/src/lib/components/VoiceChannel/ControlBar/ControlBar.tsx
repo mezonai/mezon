@@ -285,10 +285,20 @@ export function ControlBar({
 
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
+	useEffect(() => {
+		if (!showEmojiPanel) return;
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Esc') {
+				setShowEmojiPanel(false);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [showEmojiPanel]);
+
 	const handleEmojiSelect = useCallback(
 		(emoji: string, emojiId: string) => {
 			sendEmojiReaction(emoji, emojiId);
-			setShowEmojiPanel(false);
 		},
 		[sendEmojiReaction]
 	);
