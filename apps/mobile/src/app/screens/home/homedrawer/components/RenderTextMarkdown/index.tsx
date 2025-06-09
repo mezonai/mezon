@@ -287,7 +287,7 @@ const renderChannelIcon = (channelType: number, channelId: string, themeValue: A
 	return null;
 };
 
-const renderTextPalainContain = (themeValue: Attributes, text: string) => {
+const renderTextPalainContain = (themeValue: Attributes, text: string, lastIndex: number, isLastText = false) => {
 	const lines = text?.split('\n');
 	const headingFormattedLines = [];
 	let hasHeadings = false;
@@ -299,17 +299,26 @@ const renderTextPalainContain = (themeValue: Attributes, text: string) => {
 			const level = line.indexOf(' ');
 			const headingText = line.substring(level).trim();
 
-			headingFormattedLines.push(
-				<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue)?.[`heading${level}`] : {}]}>
-					{headingText}
-					{lines?.length !== 1 && idx < lines.length && '\n'}
-				</Text>
-			);
+			if (level) {
+				headingFormattedLines.push(
+					<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue)?.[`heading${level}`] : {}]}>
+						{headingText}
+						{idx !== lines.length - 1 || !lastIndex ? '\n' : ''}
+					</Text>
+				);
+			} else {
+				headingFormattedLines.push(
+					<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
+						{line}
+						{idx !== lines.length - 1 || !lastIndex ? '\n' : ''}
+					</Text>
+				);
+			}
 		} else {
 			headingFormattedLines.push(
 				<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
 					{line}
-					{lines?.length !== 1 && idx < lines.length && '\n'}
+					{idx !== lines.length - 1 || !lastIndex ? '\n' : ''}
 				</Text>
 			);
 		}
@@ -317,7 +326,7 @@ const renderTextPalainContain = (themeValue: Attributes, text: string) => {
 
 	if (!hasHeadings) {
 		return (
-			<Text key="text-end" style={[themeValue ? markdownStyles(themeValue).body : {}]}>
+			<Text key={`text-end_${lastIndex}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
 				{text}
 			</Text>
 		);
@@ -368,7 +377,7 @@ export const RenderTextMarkdownContent = ({
 		const contentInElement = t?.substring(s, e);
 
 		if (lastIndex < s) {
-			textParts.push(renderTextPalainContain(themeValue, t?.slice(lastIndex, s) ?? ''));
+			textParts.push(renderTextPalainContain(themeValue, t?.slice(lastIndex, s) ?? '', index));
 		}
 
 		switch (element?.kindOf) {
@@ -654,7 +663,7 @@ export const RenderTextMarkdownContent = ({
 	});
 
 	if (lastIndex < (t?.length ?? 0)) {
-		textParts.push(renderTextPalainContain(themeValue, t?.slice(lastIndex).replace(/^\n|\n$/, '')));
+		textParts.push(renderTextPalainContain(themeValue, t?.slice(lastIndex).replace(/^\n|\n$/, ''), lastIndex, true));
 	}
 
 	return (
