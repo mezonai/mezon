@@ -300,15 +300,15 @@ const renderTextPalainContain = (themeValue: Attributes, text: string, lastIndex
 	}
 
 	lines.forEach((line, idx) => {
-		const headingMatch = line.match(/^#{1,6}\s+.+$/);
+		const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
 		if (headingMatch && themeValue) {
 			hasHeadings = true;
-			const level = line.indexOf(' ');
-			const headingText = line.substring(level).trim();
+			const headingLevel = headingMatch[1].length;
+			const headingText = headingMatch[2].trim();
 
-			if (level) {
+			if (headingLevel) {
 				headingFormattedLines.push(
-					<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue)?.[`heading${level}`] : {}]}>
+					<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue)?.[`heading${headingLevel}`] : {}]}>
 						{headingText}
 						{idx !== lines.length - 1 || !isLastText ? '\n' : ''}
 					</Text>
