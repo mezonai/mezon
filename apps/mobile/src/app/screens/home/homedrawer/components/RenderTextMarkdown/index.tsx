@@ -311,14 +311,14 @@ const renderTextPalainContain = (themeValue: Attributes, text: string, lastIndex
 				headingFormattedLines.push(
 					<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue)?.[`heading${level}`] : {}]}>
 						{headingText}
-						{idx !== lines.length - 1 || !lastIndex ? '\n' : ''}
+						{idx !== lines.length - 1 || !isLastText ? '\n' : ''}
 					</Text>
 				);
 			} else {
 				headingFormattedLines.push(
 					<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
 						{line}
-						{idx !== lines.length - 1 || !lastIndex ? '\n' : ''}
+						{idx !== lines.length - 1 || !isLastText ? '\n' : ''}
 					</Text>
 				);
 			}
@@ -326,7 +326,7 @@ const renderTextPalainContain = (themeValue: Attributes, text: string, lastIndex
 			headingFormattedLines.push(
 				<Text key={`line-${idx}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
 					{line}
-					{idx !== lines.length - 1 || !lastIndex ? '\n' : ''}
+					{idx !== lines.length - 1 || !isLastText ? '\n' : ''}
 				</Text>
 			);
 		}
