@@ -143,11 +143,11 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 					disabled={true}
 				/>
 				<ItemStatus onClick={handleSendToken} children="Transfer Funds" startIcon={<Icons.SendMoney />} />
-				<ItemStatus
+				{/* <ItemStatus
 					onClick={handleOpenWithdrawModal}
 					children="Withdraw"
 					startIcon={<Icons.SendMoney className="transform scale-x-[-1] scale-y-[-1]" />}
-				/>
+				/> */}
 				<ItemStatus onClick={handleOpenHistoryModal} children="History Transaction" startIcon={<Icons.History className="bg-green-500" />} />
 				<Dropdown
 					trigger="click"

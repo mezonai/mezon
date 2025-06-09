@@ -4,6 +4,7 @@ import { join } from 'path';
 import App from './app/app';
 
 const assetsDir = join(__dirname, 'assets', 'desktop-taskbar.ico');
+const assetsDirLinux = join(__dirname, 'assets', 'tray-icon-linux.png');
 
 export class TrayIcon {
 	private tray?: Tray;
@@ -21,8 +22,11 @@ export class TrayIcon {
 	init = (isQuitting) => {
 		App.application.whenReady().then(() => {
 			//const trayIcon = nativeImage.createFromPath(assetsDir);
-			this.tray = new Tray(assetsDir);
-
+			if (process.platform == 'linux') {
+				this.tray = new Tray(assetsDirLinux);
+			} else {
+				this.tray = new Tray(assetsDir);
+			}
 			const template: (MenuItem | MenuItemConstructorOptions)[] = [
 				{
 					label: 'Check for updates',

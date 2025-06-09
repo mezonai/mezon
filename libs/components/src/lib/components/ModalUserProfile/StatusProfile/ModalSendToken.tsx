@@ -1,8 +1,7 @@
-import { DirectEntity, ISendTokenDetailType, selectAllDirectMessages, selectAllUserClans } from '@mezon/store';
+import { FriendsEntity, ISendTokenDetailType, selectAllFriends, selectAllUserClans } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
 import { Label, Modal } from 'flowbite-react';
-import { ChannelType } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage, useVirtualizer } from '../../../components';
@@ -46,10 +45,10 @@ const ModalSendToken = ({
 	isButtonDisabled
 }: ModalSendTokenProps) => {
 	const usersClan = useSelector(selectAllUserClans);
-	const dmGroupChatList = useSelector(selectAllDirectMessages);
-	const listDM = dmGroupChatList.filter((groupChat) => groupChat.type === ChannelType.CHANNEL_TYPE_DM);
+	const friends = useSelector(selectAllFriends);
+
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const [searchTerm, setSearchTerm] = useState('');
+	const [searchTerm, setSearchTerm] = useState(infoSendToken?.receiver_name || '');
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [tokenNumber, setTokenNumber] = useState('');
 	const [noteSendToken, setNoteSendToken] = useState('');
@@ -115,13 +114,13 @@ const ModalSendToken = ({
 			}
 		});
 
-		directMessages.forEach((itemDM: DirectEntity) => {
-			const userId = itemDM?.user_id?.[0] ?? '';
+		directMessages.forEach((itemDM: FriendsEntity) => {
+			const userId = itemDM?.user?.id ?? '';
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,
-					username: itemDM?.usernames?.[0] ?? '',
-					avatar_url: itemDM?.channel_avatar?.[0] ?? ''
+					username: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
+					avatar_url: itemDM?.user?.avatar_url ?? ''
 				});
 			}
 		});
@@ -129,7 +128,7 @@ const ModalSendToken = ({
 		return Array.from(userMap.values());
 	};
 
-	const mergedUsers = mergeUniqueUsers(usersClan, listDM);
+	const mergedUsers = mergeUniqueUsers(usersClan, friends);
 
 	const filteredUsers = mergedUsers.filter((user: any) => user.username?.toLowerCase().includes(searchTerm.toLowerCase()) && user.id !== userId);
 

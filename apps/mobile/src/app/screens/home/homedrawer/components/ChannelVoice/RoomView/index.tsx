@@ -24,8 +24,10 @@ import { useNavigation } from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import { Track, createLocalAudioTrack, createLocalVideoTrack } from 'livekit-client';
 import LottieView from 'lottie-react-native';
+import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { DeviceEventEmitter, Dimensions, NativeModules, Platform, Text, TouchableOpacity, View, findNodeHandle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { ResumableZoom } from 'react-native-zoom-toolkit';
 import { useSelector } from 'react-redux';
@@ -34,6 +36,8 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
+import { EMessageBSToShow } from '../../../enums';
+import { ContainerMessageActionModal } from '../../MessageItemBS/ContainerMessageActionModal';
 import FocusedScreenPopup from '../FocusedScreenPopup';
 import ParticipantScreen from '../ParticipantScreen';
 import { style } from '../styles';
@@ -75,6 +79,7 @@ const RoomView = ({
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const screenCaptureRef = React.useRef(null);
 	const isShowPreCallInterface = useSelector(selectIsShowPreCallInterface);
+	const insets = useSafeAreaInsets();
 
 	useEffect(() => {
 		const subscription = focusedScreenShare
@@ -266,13 +271,38 @@ const RoomView = ({
 		await jumpToChannel(channelId, clanId);
 	};
 
+	const handleOpenEmojiPicker = () => {
+		const data = {
+			snapPoints: ['45%', '75%'],
+			children: (
+				<ContainerMessageActionModal
+					message={undefined}
+					mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+					type={EMessageBSToShow.MessageAction}
+					senderDisplayName={''}
+					isOnlyEmojiPicker={true}
+					channelId={voiceInfo?.channelId}
+					clanId={voiceInfo?.clanId}
+				/>
+			),
+			containerStyle: { zIndex: 1001 },
+			backdropStyle: { zIndex: 1000 }
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
+
 	useEffect(() => {
 		onFocusedScreenChange(focusedScreenShare);
 	}, [focusedScreenShare, onFocusedScreenChange]);
 
 	const RenderControlBar = () => {
 		return (
-			<View style={[styles.menuFooter, { bottom: Platform.OS === 'ios' || isTabletLandscape ? size.s_150 : size.s_20, zIndex: 2 }]}>
+			<View
+				style={[
+					styles.menuFooter,
+					{ bottom: Platform.OS === 'ios' ? (focusedScreenShare ? size.s_20 : insets.top + size.s_60) : size.s_20, zIndex: 2 }
+				]}
+			>
 				<View style={{ gap: size.s_10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: size.s_6 }}>
 					<TouchableOpacity onPress={handleToggleCamera} style={styles.menuIcon}>
 						{isCameraEnabled ? <MezonIconCDN icon={IconCDN.videoIcon} /> : <MezonIconCDN icon={IconCDN.videoSlashIcon} />}
@@ -313,11 +343,19 @@ const RoomView = ({
 						</View>
 					</ResumableZoom>
 				</View>
-				{!isPiPMode && (
-					<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
-						<Icons.ArrowShrinkIcon height={size.s_16} />
-					</TouchableOpacity>
-				)}
+				<View style={[styles.wrapperHeaderFocusSharing]}>
+					{!isPiPMode && (
+						<TouchableOpacity style={[styles.focusIcon]} onPress={() => handleOpenEmojiPicker()}>
+							<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_16} width={size.s_24} color={'white'} />
+						</TouchableOpacity>
+					)}
+					{!isPiPMode && (
+						<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
+							<Icons.ArrowShrinkIcon height={size.s_16} />
+						</TouchableOpacity>
+					)}
+				</View>
+
 				{isPiPMode || isHiddenControl ? <View /> : <RenderControlBar />}
 			</View>
 		);
@@ -329,12 +367,7 @@ const RoomView = ({
 			{!isAnimationComplete ? (
 				<FocusedScreenPopup sortedParticipants={sortedParticipants} tracks={tracks} localParticipant={localParticipant} />
 			) : (
-				<ParticipantScreen
-					sortedParticipants={sortedParticipants}
-					tracks={tracks}
-					isFocusedScreen={focusedScreenShare}
-					setFocusedScreenShare={setFocusedScreenShare}
-				/>
+				<ParticipantScreen sortedParticipants={sortedParticipants} tracks={tracks} setFocusedScreenShare={setFocusedScreenShare} />
 			)}
 			{isAnimationComplete && isGroupCall && participants.length <= 1 && isShowPreCallInterface && (
 				<View style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: size.s_100 * 2 }}>
@@ -347,7 +380,7 @@ const RoomView = ({
 					<Text style={styles.text}>{`${participantsCount} members will be notified`}</Text>
 				</View>
 			)}
-			{isAnimationComplete && <RenderControlBar />}
+			{isAnimationComplete && !isPiPMode && <RenderControlBar />}
 			{screenCapturePickerView}
 		</View>
 	);

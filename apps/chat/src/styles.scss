@@ -354,7 +354,8 @@ input:-webkit-autofill:active {
 // css replyMessage
 .replyMessage {
 	svg {
-		min-width: 32px;
+		width: 16px !important;
+		height: 16px !important;
 	}
 }
 

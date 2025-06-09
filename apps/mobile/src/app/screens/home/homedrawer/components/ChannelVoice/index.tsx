@@ -143,7 +143,7 @@ const HeaderRoomView = memo(
 			}
 		};
 
-		const handleOpentEmojiPicker = () => {
+		const handleOpenEmojiPicker = () => {
 			const data = {
 				snapPoints: ['45%', '75%'],
 				children: (
@@ -178,7 +178,7 @@ const HeaderRoomView = memo(
 
 				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 					{!isGroupCall && (
-						<TouchableOpacity onPress={handleOpentEmojiPicker} style={[styles.buttonCircle]}>
+						<TouchableOpacity onPress={handleOpenEmojiPicker} style={[styles.buttonCircle]}>
 							<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_24} width={size.s_24} color={themeValue.white} />
 						</TouchableOpacity>
 					)}

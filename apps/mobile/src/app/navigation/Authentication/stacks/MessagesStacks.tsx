@@ -72,7 +72,10 @@ export const MessagesStacks = ({}: any) => {
 				name={APP_SCREEN.MESSAGES.CHAT_STREAMING}
 				component={ChatBoxStreamComponent}
 				options={{
-					title: t('headerTitle.chat')
+					title: t('headerTitle.chat'),
+					headerStyle: {
+						backgroundColor: themeValue.secondaryWeight
+					}
 				}}
 			/>
 			<Stack.Screen

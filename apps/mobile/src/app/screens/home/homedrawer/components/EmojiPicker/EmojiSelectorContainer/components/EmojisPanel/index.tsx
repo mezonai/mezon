@@ -17,18 +17,12 @@ const EmojisPanel: FC<EmojisPanelProps> = ({ emojisData, onEmojiSelect }) => {
 	const styles = style(themeValue, isTabletLandscape);
 
 	const renderEmoji = ({ item }: { item: IEmoji }) => (
-		<TouchableOpacity style={styles.wrapperIconEmoji} key={item.id} onPress={() => onEmojiSelect(item)}>
+		<TouchableOpacity style={styles.wrapperIconEmoji} key={`${item.id}_EmojisPanel`} onPress={() => onEmojiSelect(item)}>
 			<FastImage source={{ uri: getSrcEmoji(item?.id) }} style={styles.iconEmoji} resizeMode={'contain'} />
 		</TouchableOpacity>
 	);
 
-	return (
-		<View style={styles.emojisPanel}>
-			{emojisData?.length > 0 && emojisData.map((item) => (
-				renderEmoji({ item })
-			))}
-		</View>
-	);
+	return <View style={styles.emojisPanel}>{emojisData?.length > 0 && emojisData.map((item) => renderEmoji({ item }))}</View>;
 };
 
 export default memo(EmojisPanel);

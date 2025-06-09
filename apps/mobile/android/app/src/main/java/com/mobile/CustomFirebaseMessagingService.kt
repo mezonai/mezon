@@ -49,10 +49,8 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        Log.d(TAG, "Received FCM message from: ${remoteMessage.from}")
         val isAppInForeground = isAppInForeground()
         if (isAppInForeground) {
-            Log.d(TAG, "App is in foreground")
             return
         }
 
@@ -60,8 +58,6 @@ class CustomFirebaseMessagingService : ReactNativeFirebaseMessagingService() {
         val data = remoteMessage.data
         if (data.isNotEmpty()) {
             val offer = data["offer"]
-            Log.d(TAG, "Notification data onMessageReceived: $data")
-            Log.d(TAG, "Notification data OFFER onMessageReceived: $offer")
             if (offer != null) {
                 if (offer == "{\"offer\":\"CANCEL_CALL\"}") {
                     cancelCallNotification()
