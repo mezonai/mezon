@@ -150,8 +150,7 @@ export const markdownStyles = (
 		editedText: {
 			fontSize: size.small,
 			color: colors.textDisabled,
-			marginTop: size.s_2,
-			marginBottom: size.s_2
+			marginTop: size.s_2
 		},
 		mention: {
 			fontSize: size.medium,
