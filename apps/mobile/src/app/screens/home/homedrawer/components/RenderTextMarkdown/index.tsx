@@ -292,6 +292,14 @@ const renderTextPalainContain = (themeValue: Attributes, text: string, lastIndex
 	const headingFormattedLines = [];
 	let hasHeadings = false;
 
+	if (!lines?.length) {
+		return (
+			<Text key={`text-end_${lastIndex}`} style={[themeValue ? markdownStyles(themeValue).body : {}]}>
+				{text}
+			</Text>
+		);
+	}
+
 	lines.forEach((line, idx) => {
 		const headingMatch = line.match(/^#{1,6}\s+.+$/);
 		if (headingMatch && themeValue) {
