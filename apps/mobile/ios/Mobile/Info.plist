@@ -136,7 +136,6 @@
 		<string>remote-notification</string>
 		<string>audio</string>
 		<string>voip</string>
-		<string>picture-in-picture</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>

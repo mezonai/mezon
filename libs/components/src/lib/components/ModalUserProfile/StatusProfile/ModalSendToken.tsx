@@ -13,7 +13,7 @@ type ModalSendTokenProps = {
 	token: number;
 	setToken: (token: number) => void;
 	setSelectedUserId: (id: string) => void;
-	handleSaveSendToken: (id: string, username?: string, avatar?: string, display_name?: string) => void;
+	handleSaveSendToken: (id?: string, username?: string, avatar?: string, display_name?: string) => void;
 	setNote: (note: string) => void;
 	error: string | null;
 	userSearchError: string | null;
@@ -60,7 +60,6 @@ const ModalSendToken = ({
 			setToken(0);
 		}
 		if (openModal) {
-			setSearchTerm('');
 			setSelectedUserId('');
 		}
 	}, [openModal]);
@@ -150,8 +149,7 @@ const ModalSendToken = ({
 
 	const handleSendToken = () => {
 		const userData = mergedUsers.find((user) => user.id === selectedUserId);
-		if (!userData) return;
-		handleSaveSendToken(userData.id, userData.username, userData.avatar_url, userData.display_name);
+		handleSaveSendToken(userData?.id, userData?.username, userData?.avatar_url, userData?.display_name);
 	};
 
 	const selectedUser = mergedUsers.find((user) => user.id === selectedUserId);
@@ -286,8 +284,6 @@ const ModalSendToken = ({
 							onChange={handleChangeNote}
 						/>
 					</div>
-
-
 				</div>
 
 				<div className="p-6 border-t dark:border-gray-700 border-gray-200 flex gap-3">

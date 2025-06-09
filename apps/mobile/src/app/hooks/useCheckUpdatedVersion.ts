@@ -20,7 +20,7 @@ export const useCheckUpdatedVersion = () => {
 
 			if (check.detail === 'remote > local') {
 				setNeedUpdate(true);
-				navigation.navigate(APP_SCREEN.SERVERS.STACK, {
+				navigation.replace(APP_SCREEN.SERVERS.STACK, {
 					screen: APP_SCREEN.SERVERS.UPDATE_GATE,
 					params: { storeUrl: Platform.OS === 'ios' ? process.env.NX_APP_STORE_URL : process.env.NX_GOOGLE_PLAY_URL }
 				});

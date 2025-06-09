@@ -4,13 +4,12 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
-			maxWidth: '90%',
 			borderRadius: size.s_12,
-			overflow: 'hidden',
 			marginTop: size.s_4,
 			paddingHorizontal: size.s_12,
 			paddingVertical: size.s_12,
-			backgroundColor: colors.secondaryLight
+			backgroundColor: colors.secondaryLight,
+			marginRight: size.s_80
 		},
 		info: {
 			flexDirection: 'row',
@@ -19,7 +18,7 @@ export const style = (colors: Attributes) =>
 		title: {
 			color: colors.text,
 			fontSize: size.s_14,
-			marginBottom: size.s_2,
+			marginBottom: size.s_4,
 			fontWeight: 'bold'
 		},
 		lightTitle: {

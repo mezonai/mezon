@@ -2,12 +2,14 @@ import { Colors, size } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackHandler, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BackHandler, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import useTabletLandscape from '../../hooks/useTabletLandscape';
 
 const UpdateGateScreen = ({ route }) => {
 	const { t } = useTranslation(['setting']);
 	const storeUrl = route?.params?.storeUrl;
+	const isTabletLandscape = useTabletLandscape();
 
 	useFocusEffect(() => {
 		const backAction = () => true;
@@ -19,38 +21,42 @@ const UpdateGateScreen = ({ route }) => {
 	const onPress = () => Linking.openURL(storeUrl);
 
 	return (
-		<Modal visible={true}>
-			<View style={styles.container}>
-				<View />
+		<View style={styles.container}>
+			<View />
+			<View
+				style={{
+					alignSelf: 'center',
+					marginBottom: size.s_50
+				}}
+			>
+				<FastImage
+					source={require('../../../assets/images/bgRocket.png')}
+					style={{ width: size.s_300, height: size.s_300 }}
+					resizeMode={'cover'}
+				/>
+				<View>
+					<Text style={styles.title}>{t('updateGate.outOfDateVersion')}</Text>
+					<Text style={styles.subTitle}>{t('updateGate.updateExperience')}</Text>
+				</View>
+			</View>
+			<TouchableOpacity onPress={onPress}>
 				<View
 					style={{
-						alignSelf: 'center',
-						marginBottom: size.s_50
+						backgroundColor: Colors.white,
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						paddingHorizontal: size.s_10,
+						height: size.s_50,
+						width: isTabletLandscape ? '50%' : '100%',
+						borderRadius: size.s_50,
+						alignItems: 'center',
+						alignSelf: 'center'
 					}}
 				>
-					<FastImage source={require('../../../assets/images/bgRocket.png')} style={{ width: 350, height: 350 }} resizeMode={'cover'} />
-					<View>
-						<Text style={styles.title}>{t('updateGate.outOfDateVersion')}</Text>
-						<Text style={styles.subTitle}>{t('updateGate.updateExperience')}</Text>
-					</View>
+					<Text style={styles.titleBtn}>{t('updateGate.updateNow')}</Text>
 				</View>
-				<TouchableOpacity onPress={onPress}>
-					<View
-						style={{
-							backgroundColor: Colors.white,
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							paddingHorizontal: size.s_10,
-							height: size.s_50,
-							borderRadius: size.s_50,
-							alignItems: 'center'
-						}}
-					>
-						<Text style={styles.titleBtn}>{t('updateGate.updateNow')}</Text>
-					</View>
-				</TouchableOpacity>
-			</View>
-		</Modal>
+			</TouchableOpacity>
+		</View>
 	);
 };
 
