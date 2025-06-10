@@ -286,15 +286,35 @@ export function ControlBar({
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
 	useEffect(() => {
-		if (!showEmojiPanel) return;
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'Escape' || e.key === 'Esc') {
+				if (showEmojiPanel) {
+					setShowEmojiPanel(false);
+					e.preventDefault();
+					if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+					else e.stopPropagation();
+					return false;
+				}
+				if (isFullScreen && typeof onFullScreen === 'function') {
+					onFullScreen();
+				}
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown, true);
+		return () => window.removeEventListener('keydown', handleKeyDown, true);
+	}, [showEmojiPanel, isFullScreen, onFullScreen]);
+
+	useEffect(() => {
+		if (!(showEmojiPanel && isFullScreen)) return;
+		const handleClickOutside = (e: MouseEvent) => {
+			const popup = document.getElementById('emoji-popup-fullscreen');
+			if (popup && !popup.contains(e.target as Node)) {
 				setShowEmojiPanel(false);
 			}
 		};
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [showEmojiPanel]);
+		window.addEventListener('mousedown', handleClickOutside);
+		return () => window.removeEventListener('mousedown', handleClickOutside);
+	}, [showEmojiPanel, isFullScreen]);
 
 	const handleEmojiSelect = useCallback(
 		(emoji: string, emojiId: string) => {
@@ -307,28 +327,55 @@ export function ControlBar({
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-sbm:!hidden max-md:flex-col">
 			<div className="flex justify-start gap-4 max-md:hidden">
 				{!isGroupCall && (
-					<Tooltip
-						placement="topLeft"
-						trigger={['click']}
-						overlayClassName="w-auto"
-						visible={showEmojiPanel}
-						onVisibleChange={setShowEmojiPanel}
-						overlay={
-							<EmojiSuggestionProvider>
-								<GifStickerEmojiPopup
-									showTabs={{ emojis: true }}
-									mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-									emojiAction={EmojiPlaces.EMOJI_REACTION}
-									onEmojiSelect={handleEmojiSelect}
-								/>
-							</EmojiSuggestionProvider>
-						}
-						destroyTooltipOnHide
-					>
-						<div>
-							<Icons.VoiceEmojiControlIcon className="cursor-pointer hover:text-white text-[#B5BAC1]" />
-						</div>
-					</Tooltip>
+					<div className="z-50" style={{ position: 'relative' }}>
+						<Icons.VoiceEmojiControlIcon
+							className="cursor-pointer hover:text-white text-[#B5BAC1] z-50"
+							onClick={() => setShowEmojiPanel((v) => !v)}
+						/>
+						{showEmojiPanel && (
+							isFullScreen ? (
+								<div
+									id="emoji-popup-fullscreen"
+									style={{
+										position: 'fixed',
+										bottom: 40,
+										left: 30,
+										zIndex: 9999,
+									}}
+								>
+									<EmojiSuggestionProvider>
+										<GifStickerEmojiPopup
+											showTabs={{ emojis: true }}
+											mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+											emojiAction={EmojiPlaces.EMOJI_REACTION}
+											onEmojiSelect={handleEmojiSelect}
+										/>
+									</EmojiSuggestionProvider>
+								</div>
+							) : (
+									<Tooltip
+										placement="topLeft"
+										trigger={['click']}
+										overlayClassName="w-auto"
+										visible={showEmojiPanel}
+										onVisibleChange={setShowEmojiPanel}
+										overlay={
+											<EmojiSuggestionProvider>
+												<GifStickerEmojiPopup
+													showTabs={{ emojis: true }}
+													mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+													emojiAction={EmojiPlaces.EMOJI_REACTION}
+													onEmojiSelect={handleEmojiSelect}
+												/>
+											</EmojiSuggestionProvider>
+										}
+										destroyTooltipOnHide
+									>
+										<div></div>
+									</Tooltip>
+							)
+						)}
+					</div>
 				)}
 			</div>
 			<div className="flex justify-center gap-3 flex-1">
