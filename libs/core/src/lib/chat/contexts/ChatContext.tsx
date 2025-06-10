@@ -224,7 +224,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onvoiceleaved = useCallback(
 		(voice: VoiceLeavedEvent) => {
-			dispatch(voiceActions.remove(voice.id));
+			dispatch(voiceActions.remove(voice.voice_user_id + voice.voice_channel_id));
 		},
 		[dispatch]
 	);
@@ -1966,38 +1966,47 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		]
 	);
 
-	const timerIdRef = useRef<NodeJS.Timeout | null>(null);
-
 	const handleReconnect = useCallback(
 		async (socketType: string) => {
-			if (timerIdRef.current) {
-				clearTimeout(timerIdRef.current);
+			if (socketRef.current?.isOpen()) {
+				return;
 			}
-			timerIdRef.current = setTimeout(async () => {
-				if (socketRef.current?.isOpen()) return;
-				const id = Date.now().toString();
-				const errorMessage = 'Cannot reconnect to the socket. Please restart the app.';
-				try {
-					const store = getStore();
-					const clanIdActive = selectCurrentClanId(store.getState());
-					const socket = await reconnectWithTimeout(clanIdActive ?? '');
 
-					if (socket === 'RECONNECTING') return;
+			try {
+				const store = getStore();
+				const clanIdActive = selectCurrentClanId(store.getState());
+				const socket = await reconnectWithTimeout(clanIdActive ?? '');
 
-					if (!socket) {
-						dispatch(toastActions.addToast({ message: errorMessage, type: 'warning', autoClose: false }));
-						throw Error('socket not init');
-					}
-					dispatch(appActions.refreshApp({ id }));
-					setCallbackEventFn(socket as Socket);
-				} catch (error) {
-					// eslint-disable-next-line no-console
-					dispatch(toastActions.addToast({ message: errorMessage, type: 'warning', autoClose: false }));
-					captureSentryError(error, 'SOCKET_RECONNECT');
+				if (socket === 'RECONNECTING') {
+					return;
 				}
-			}, 5000);
+
+				if (!socket) {
+					dispatch(
+						toastActions.addToast({
+							message: 'Cannot reconnect to the socket. Please restart the app.',
+							type: 'warning',
+							autoClose: false
+						})
+					);
+					return;
+				}
+
+				const id = Date.now().toString();
+				dispatch(appActions.refreshApp({ id }));
+				setCallbackEventFn(socket as Socket);
+			} catch (error) {
+				dispatch(
+					toastActions.addToast({
+						message: 'Cannot reconnect to the socket. Please restart the app.',
+						type: 'warning',
+						autoClose: false
+					})
+				);
+				captureSentryError(error, 'SOCKET_RECONNECT');
+			}
 		},
-		[reconnectWithTimeout, setCallbackEventFn]
+		[reconnectWithTimeout, setCallbackEventFn, dispatch]
 	);
 
 	const ondisconnect = useCallback(() => {
@@ -2014,6 +2023,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		setCallbackEventFn(socket);
 
 		return () => {
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.onVoiceReactionMessage = () => {};
+
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onchannelmessage = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function

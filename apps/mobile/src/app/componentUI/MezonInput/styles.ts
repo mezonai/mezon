@@ -34,7 +34,7 @@ export const style = (colors: Attributes) =>
 			color: colors.text,
 			fontSize: size.medium,
 			fontWeight: 'bold',
-			marginBottom: 5
+			marginBottom: Fonts.size.s_10
 		},
 
 		input: {

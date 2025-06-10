@@ -6,9 +6,10 @@ import {
 	TrackReferenceOrPlaceholder,
 	useCreateLayoutContext,
 	usePinnedTracks,
+	useRoomContext,
 	useTracks
 } from '@livekit/components-react';
-import { selectCurrentClan, topicsActions, useAppDispatch } from '@mezon/store';
+import { selectCurrentClan, topicsActions, useAppDispatch, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { RoomEvent, Track } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
@@ -150,6 +151,19 @@ export function MyVideoConference({
 	}, []);
 
 	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
+	const room = useRoomContext();
+
+	useEffect(() => {
+		const handleDisconnected = () => {
+			dispatch(voiceActions.resetVoiceSettings());
+		};
+
+		room?.on('disconnected', handleDisconnected);
+
+		return () => {
+			room?.off('disconnected', handleDisconnected);
+		};
+	}, [room]);
 	return (
 		<div className="lk-video-conference flex-1">
 			<ReactionCallHandler currentChannel={currentChannel} />

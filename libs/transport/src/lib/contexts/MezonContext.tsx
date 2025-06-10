@@ -1,13 +1,14 @@
-import { Client, DefaultSocket, Session, Socket } from 'mezon-js';
+import { Client, Session, Socket } from 'mezon-js';
 import { WebSocketAdapterPb } from 'mezon-js-protobuf';
 import { ApiConfirmLoginRequest, ApiLoginIDResponse } from 'mezon-js/dist/api.gen';
 import React, { useCallback } from 'react';
 import { CreateMezonClientOptions, createClient as createMezonClient } from '../mezon';
 
-const MAX_WEBSOCKET_FAILS = 8;
-const MIN_WEBSOCKET_RETRY_TIME = 3000;
-const MAX_WEBSOCKET_RETRY_TIME = 300000;
-const JITTER_RANGE = 2000;
+const MAX_WEBSOCKET_FAILS = 15;
+const MIN_WEBSOCKET_RETRY_TIME = 1000;
+const MAX_WEBSOCKET_RETRY_TIME = 30000;
+const JITTER_RANGE = 1000;
+const FAST_RETRY_ATTEMPTS = 5;
 export const SESSION_STORAGE_KEY = 'mezon_session';
 
 type MezonContextProviderProps = {
@@ -328,115 +329,80 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		[clientRef, socketRef, isFromMobile]
 	);
 
-	const abortControllerRef = React.useRef<AbortController | null>(null);
-	const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
-
-	const reconnect = React.useCallback(
-		async (clanId: string) => {
-			if (!clientRef.current) {
-				return Promise.resolve(null);
-			}
-
-			const session = sessionRef.current;
-
-			if (!session) {
-				return Promise.resolve(null);
-			}
-
-			if (!socketRef.current) {
-				return Promise.resolve(null);
-			}
-
-			if (abortControllerRef.current) {
-				abortControllerRef.current.abort();
-			}
-
-			abortControllerRef.current = new AbortController();
-			const signal = abortControllerRef.current.signal;
-
-			// eslint-disable-next-line no-async-promise-executor
-			return new Promise(async (resolve, reject) => {
-				let failCount = 0;
-
-				signal.addEventListener('abort', () => {
-					if (timeoutIdRef.current) {
-						clearTimeout(timeoutIdRef.current);
-						return resolve('RECONNECTING');
-					}
-				});
-
-				const retry = async () => {
-					if (failCount >= MAX_WEBSOCKET_FAILS) {
-						return reject('Cannot reconnect to the socket. Please restart the app.');
-					}
-
-					try {
-						if (socketRef.current && socketRef.current.isOpen()) {
-							return resolve(socketRef.current);
-						}
-
-						const socket = await createSocket();
-						const newSession = await clientRef?.current?.sessionRefresh(
-							new Session(session.token, session.refresh_token, session.created, session.api_url, session.is_remember ?? false)
-						);
-
-						const connectedSession = await socket.connect(
-							newSession || session,
-							true,
-							isFromMobile ? '1' : '0',
-							DefaultSocket.DefaultConnectTimeoutMs,
-							signal
-						);
-
-						await socket.joinClanChat(clanId);
-						socketRef.current = socket;
-						sessionRef.current = connectedSession;
-						extractAndSaveConfig(connectedSession, isFromMobile);
-						return resolve(socket);
-					} catch (error) {
-						failCount++;
-						const retryTime = isFromMobile
-							? 0
-							: Math.min(MIN_WEBSOCKET_RETRY_TIME * Math.pow(2, failCount), MAX_WEBSOCKET_RETRY_TIME) + Math.random() * JITTER_RANGE;
-						await new Promise((res) => {
-							timeoutIdRef.current = setTimeout(res, retryTime);
-						});
-
-						if (socketRef.current && socketRef.current.isOpen()) {
-							return resolve(socketRef.current);
-						}
-						await retry();
-					}
-				};
-
-				if (socketRef.current && socketRef.current.isOpen()) {
-					return resolve(socketRef.current);
-				}
-				await retry();
-			});
-		},
-		[createSocket, isFromMobile]
-	);
-
-	const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+	const reconnectingRef = React.useRef<boolean>(false);
 
 	const reconnectWithTimeout = React.useCallback(
-		(clanId: string) => {
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
+		async (clanId: string) => {
+			if (reconnectingRef.current) {
+				return 'RECONNECTING';
 			}
 
 			if (socketRef.current && socketRef.current.isOpen()) {
-				return Promise.resolve(socketRef.current);
+				return socketRef.current;
 			}
 
-			return new Promise((resolve, reject) => {
-				timeoutRef.current = setTimeout(() => {
-					reconnect(clanId).then(resolve).catch(reject);
-				}, 500);
-			});
+			if (!clientRef.current || !sessionRef.current) {
+				return null;
+			}
+
+			reconnectingRef.current = true;
+
+			try {
+				let failCount = 0;
+
+				while (failCount < MAX_WEBSOCKET_FAILS) {
+					try {
+						if (socketRef.current && socketRef.current.isOpen()) {
+							return socketRef.current;
+						}
+
+						const socket = await createSocket();
+						const newSession = await clientRef.current.sessionRefresh(
+							new Session(
+								sessionRef.current.token,
+								sessionRef.current.refresh_token,
+								sessionRef.current.created,
+								sessionRef.current.api_url,
+								sessionRef.current.is_remember ?? false
+							)
+						);
+
+						const connectedSession = await socket.connect(newSession || sessionRef.current, true, isFromMobile ? '1' : '0');
+						await socket.joinClanChat(clanId);
+
+						socketRef.current = socket;
+						sessionRef.current = connectedSession;
+						extractAndSaveConfig(connectedSession, isFromMobile);
+
+						return socket;
+					} catch (error) {
+						failCount++;
+
+						if (failCount >= MAX_WEBSOCKET_FAILS) {
+							throw new Error('Cannot reconnect to the socket. Please restart the app.');
+						}
+
+						let retryTime: number;
+
+						if (isFromMobile) {
+							retryTime = 1000;
+						} else if (failCount <= FAST_RETRY_ATTEMPTS) {
+							retryTime = MIN_WEBSOCKET_RETRY_TIME + Math.random() * JITTER_RANGE;
+						} else {
+							const exponentialTime = MIN_WEBSOCKET_RETRY_TIME * Math.pow(2, failCount - FAST_RETRY_ATTEMPTS);
+							retryTime = Math.min(exponentialTime, MAX_WEBSOCKET_RETRY_TIME) + Math.random() * JITTER_RANGE;
+						}
+
+						await new Promise((resolve) => setTimeout(resolve, retryTime));
+					}
+				}
+
+				throw new Error('Max reconnection attempts reached');
+			} finally {
+				reconnectingRef.current = false;
+			}
 		},
-		[reconnect, socketRef]
+		[createSocket, isFromMobile]
 	);
 
 	const value = React.useMemo<MezonContextValue>(

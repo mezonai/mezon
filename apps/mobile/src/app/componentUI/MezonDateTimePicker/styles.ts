@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -44,7 +44,14 @@ export const style = (colors: Attributes) =>
 		btnHeaderBS: { padding: Metrics.size.l },
 		textError: {
 			color: colors.white,
-			fontSize: size.label,
+			fontSize: size.small,
 			fontWeight: '400'
+		},
+		wrapperError: {
+			width: '100%',
+			backgroundColor: Colors.textRed,
+			marginTop: size.s_6,
+			padding: size.s_6,
+			borderRadius: size.s_8
 		}
 	});

@@ -1,5 +1,5 @@
 import { ActionEmitEvent, getNearTime } from '@mezon/mobile-components';
-import { Colors, ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
+import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, StyleProp, Text, View, ViewStyle } from 'react-native';
@@ -89,7 +89,7 @@ export default memo(function MezonDateTimePicker({
 		return (
 			<View>
 				{error && (
-					<View style={{ backgroundColor: Colors.textRed, marginHorizontal: size.s_20, padding: size.s_10, borderRadius: size.s_8 }}>
+					<View style={styles.wrapperError}>
 						<Text style={styles.textError}>{error}</Text>
 						<Text style={styles.textError}>{formatDate(new Date())}</Text>
 					</View>

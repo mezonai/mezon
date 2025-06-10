@@ -8,7 +8,6 @@ interface UseMenuHandlersParams {
 	hasKeyE2ee: boolean;
 	directId: string;
 	openUserProfile: () => void;
-	isLastOne: boolean;
 }
 
 export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHandlersParams) {

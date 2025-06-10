@@ -14,7 +14,6 @@ import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
 import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
-import debounce from 'lodash.debounce';
 import { memo, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -34,17 +33,31 @@ const GlobalEventListener = () => {
 
 	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
 	useEffect(() => {
-		const reconnectSocket = debounce(() => {
-			if (document.visibilityState === 'visible') {
-				handleReconnect('Socket disconnected event, attempting to reconnect...');
+		let timeoutId: NodeJS.Timeout | null = null;
+
+		const reconnectSocket = () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
 			}
-		}, 100);
+
+			timeoutId = setTimeout(() => {
+				if (document.visibilityState === 'visible' && !document.hidden) {
+					handleReconnect('Window focus/online event, attempting to reconnect...');
+				}
+			}, 3000);
+		};
 
 		window.addEventListener('focus', reconnectSocket);
 		window.addEventListener('online', reconnectSocket);
+		document.addEventListener('visibilitychange', reconnectSocket);
+
 		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
 			window.removeEventListener('focus', reconnectSocket);
 			window.removeEventListener('online', reconnectSocket);
+			document.removeEventListener('visibilitychange', reconnectSocket);
 		};
 	}, [handleReconnect]);
 

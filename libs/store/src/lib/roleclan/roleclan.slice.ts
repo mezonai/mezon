@@ -43,7 +43,7 @@ type GetRolePayload = {
 
 export const fetchRolesClanCached = memoizeAndTrack(
 	async (mezon: MezonValueContext, clanId: string) => {
-		const response = await mezon.client.listRoles(mezon.session, clanId, '500', '1', '');
+		const response = await mezon.client.listRoles(mezon.session, clanId, 500, 1, '');
 		return { ...response, time: Date.now() };
 	},
 	{

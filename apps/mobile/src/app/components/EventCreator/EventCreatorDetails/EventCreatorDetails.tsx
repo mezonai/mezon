@@ -167,7 +167,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	return (
 		<View style={styles.container}>
 			<View style={styles.feedSection}>
-				<ScrollView>
+				<ScrollView showsVerticalScrollIndicator={false}>
 					<View style={styles.headerSection}>
 						<Text style={styles.title}>{t('screens.eventDetails.title')}</Text>
 						<Text style={styles.subtitle}>{t('screens.eventDetails.subtitle')}</Text>

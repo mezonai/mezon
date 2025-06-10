@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import { generateBasePath } from '@mezon/transport';
-import { IChannelMember, IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
+import { IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { ApiGenerateMeetTokenResponse } from 'mezon-js/api.gen';
@@ -20,7 +20,6 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	voiceChannelMember: IChannelMember[];
 	showMicrophone: boolean;
 	showCamera: boolean;
 	showScreen: boolean;
@@ -42,7 +41,9 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	externalGroup?: boolean;
 }
 
-export const voiceAdapter = createEntityAdapter<VoiceEntity>();
+export const voiceAdapter = createEntityAdapter({
+	selectId: (voice: VoiceEntity) => voice.user_id + voice.voice_channel_id
+});
 
 type fetchVoiceChannelMembersPayload = {
 	clanId: string;
@@ -65,7 +66,7 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 				return [];
 			}
 
-			const members = response.voice_channel_users.map((channelRes) => {
+			const members: VoiceEntity[] = response.voice_channel_users.map((channelRes) => {
 				return {
 					user_id: channelRes.user_id || '',
 					clan_id: clanId,
@@ -74,7 +75,7 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 					participant: channelRes.participant || '',
 					voice_channel_label: '',
 					last_screenshot: '',
-					id: channelRes.id || ''
+					id: channelRes.user_id || ''
 				};
 			});
 
@@ -106,7 +107,6 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
 	voiceInfo: null,
-	voiceChannelMember: [],
 	showMicrophone: false,
 	showCamera: false,
 	showScreen: false,
@@ -132,14 +132,17 @@ export const voiceSlice = createSlice({
 	name: VOICE_FEATURE_KEY,
 	initialState: initialVoiceState,
 	reducers: {
-		add: voiceAdapter.addOne,
+		add: voiceAdapter.upsertOne,
 		addMany: voiceAdapter.addMany,
-		remove: voiceAdapter.removeOne,
+		remove: (state, action: PayloadAction<string>) => {
+			const keyRemove = action.payload;
+			voiceAdapter.removeOne(state, keyRemove);
+		},
 		voiceEnded: (state, action: PayloadAction<string>) => {
 			const channelId = action.payload;
 			const idsToRemove = Object.values(state.entities)
 				.filter((member) => member?.voice_channel_id === channelId)
-				.map((member) => member?.id);
+				.map((member) => member?.id + member?.voice_channel_id);
 			voiceAdapter.removeMany(state, idsToRemove);
 		},
 		setJoined: (state, action) => {
@@ -224,7 +227,6 @@ export const voiceSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchVoiceChannelMembers.fulfilled, (state: VoiceState, action: PayloadAction<any>) => {
-				state.voiceChannelMember = action.payload;
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchVoiceChannelMembers.rejected, (state: VoiceState, action) => {
@@ -290,7 +292,7 @@ export const voiceActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll } = voiceAdapter.getSelectors();
+const { selectAll, selectEntities } = voiceAdapter.getSelectors();
 
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
@@ -315,8 +317,8 @@ export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => st
 
 const selectChannelId = (_: RootState, channelId: string) => channelId;
 
-export const selectVoiceChannelMembersByChannelId = createSelector([selectAllVoice, selectChannelId], (entities, channelId) => {
-	return entities.filter((member) => member && member.voice_channel_id === channelId);
+export const selectVoiceChannelMembersByChannelId = createSelector([selectAllVoice, selectChannelId], (members, channelId) => {
+	return members.filter((member) => member && member.voice_channel_id === channelId);
 });
 export const selectStreamScreen = createSelector(getVoiceState, (state) => state.stream);
 

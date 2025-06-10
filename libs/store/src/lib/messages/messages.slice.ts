@@ -530,7 +530,14 @@ export const jumpToMessage = createAsyncThunk(
 			}
 
 			const state = thunkAPI.getState() as RootState;
-			if (state.clans.currentClanId !== clanId || (clanId && state.channels.byClans[clanId]?.currentChannelId !== channelId)) {
+			const currentClanId = state.clans?.currentClanId;
+			const isDirectMessage = !clanId && currentClanId === '0';
+
+			const isClanChanged = currentClanId !== clanId;
+			const isChannelChanged = clanId && state.channels.byClans[clanId]?.currentChannelId !== channelId;
+			const shouldNavigate = !isDirectMessage && (isClanChanged || (clanId && isChannelChanged));
+
+			if (shouldNavigate) {
 				let channelPath = `/chat/clans/${clanId}/channels/${channelId}`;
 				if (clanId === '0') {
 					channelPath = `/chat/direct/message/${channelId}/${mode}`;

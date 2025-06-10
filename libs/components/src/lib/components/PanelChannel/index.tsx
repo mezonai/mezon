@@ -322,6 +322,12 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			setIsShowPanelChannel(false);
 		}
 	}, [statusMarkAsReadChannel]);
+
+	const shouldShowNotificationSettings =
+		channel &&
+		channel.type !== undefined &&
+		(channel.type === typeChannel.text || channel.type === typeChannel.thread || (isThread && channel.parent_id && channel.parent_id !== '0'));
+
 	return (
 		<div
 			ref={panelRef}
@@ -386,7 +392,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 							<ItemPanel children={nameChildren} onClick={() => muteOrUnMuteChannel(1)} subText={mutedUntil} />
 						)}
 
-						{channel?.type === typeChannel.text && (
+						{shouldShowNotificationSettings && (
 							<Dropdown
 								trigger="hover"
 								dismissOnClick={false}
@@ -468,7 +474,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 						) : (
 							<ItemPanel children={nameChildren} onClick={() => muteOrUnMuteChannel(1)} subText={mutedUntil} />
 						)}
-						{(channel.type === typeChannel.text || channel.type === typeChannel.thread) && (
+
+						{shouldShowNotificationSettings && (
 							<Dropdown
 								trigger="hover"
 								dismissOnClick={false}

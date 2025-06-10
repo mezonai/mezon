@@ -4,6 +4,7 @@ import { EntityState, createAsyncThunk, createEntityAdapter, createSelector, cre
 import { safeJSONParse } from 'mezon-js';
 import { ApiMessageReaction } from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx } from '../helpers';
+import { toastActions } from '../toasts';
 
 export const REACTION_FEATURE_KEY = 'reaction';
 
@@ -74,7 +75,34 @@ export type WriteMessageReactionArgs = {
 const reactionQueue: Array<() => Promise<void>> = [];
 let isProcessingReactionQueue = false;
 
-async function processReactionQueue() {
+const createTimeoutPromise = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> => {
+	return Promise.race([
+		promise,
+		new Promise<never>((_, reject) => {
+			setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
+		})
+	]);
+};
+
+const retryWithBackoff = async <T>(fn: () => Promise<T>, maxRetries = 3, baseDelay = 1000): Promise<T> => {
+	let lastError: Error;
+
+	for (let i = 0; i < maxRetries; i++) {
+		try {
+			return await fn();
+		} catch (error) {
+			lastError = error as Error;
+			if (i < maxRetries - 1) {
+				const delayTime = baseDelay * Math.pow(2, i);
+				await new Promise((resolve) => setTimeout(resolve, delayTime));
+			}
+		}
+	}
+
+	throw lastError!;
+};
+
+async function processReactionQueue(dispatch?: any) {
 	if (isProcessingReactionQueue || reactionQueue.length === 0) return;
 	isProcessingReactionQueue = true;
 	while (reactionQueue.length > 0) {
@@ -83,7 +111,15 @@ async function processReactionQueue() {
 			try {
 				await action();
 			} catch (e) {
+				console.error('Reaction queue processing failed:', e);
 				captureSentryError(e, 'messages/writeMessageReaction');
+				dispatch(
+					toastActions.addToast({
+						message: 'Socket has issue. Cannot react right now.',
+						type: 'warning',
+						autoClose: 3000
+					})
+				);
 			}
 		}
 	}
@@ -122,20 +158,30 @@ export const writeMessageReaction = createAsyncThunk(
 					throw new Error('Client is not initialized');
 				}
 
-				await socket.writeMessageReaction(
-					id,
-					clanId,
-					channelId,
-					mode,
-					isPublic,
-					messageId,
-					emoji_id,
-					emoji,
-					count,
-					messageSenderId,
-					actionDelete,
-					topic_id,
-					emoji_recent_id
+				await retryWithBackoff(
+					async () => {
+						return await createTimeoutPromise(
+							socket.writeMessageReaction(
+								id,
+								clanId,
+								channelId,
+								mode,
+								isPublic,
+								messageId,
+								emoji_id,
+								emoji,
+								count,
+								messageSenderId,
+								actionDelete,
+								topic_id,
+								emoji_recent_id
+							),
+							2000,
+							'Message reaction operation timed out'
+						);
+					},
+					1,
+					1000
 				);
 
 				const emojiLastest: EmojiStorage = {
@@ -148,13 +194,14 @@ export const writeMessageReaction = createAsyncThunk(
 				};
 				saveRecentEmoji(emojiLastest);
 			} catch (error) {
+				console.error('WriteMessageReaction failed:', error);
 				captureSentryError(error, 'messages/writeMessageReaction');
-				thunkAPI.rejectWithValue(error);
+				throw error;
 			}
 		};
 
 		reactionQueue.push(action);
-		processReactionQueue();
+		processReactionQueue(thunkAPI.dispatch);
 	}
 );
 

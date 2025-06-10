@@ -29,7 +29,7 @@ export default function MezonSelect({ data, onChange, initValue, ...props }: IMe
 
 	function handlePress() {
 		const dataBottomSheet = {
-			heightFitContent: true,
+			snapPoints: ['90%'],
 			title: props.title,
 			children: (
 				<View style={styles.bsContainer}>
