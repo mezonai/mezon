@@ -118,14 +118,14 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const channelIcon = (type: ChannelType, isPrivate: boolean) => {
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isPrivate) {
-				return <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_24} width={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_24} width={size.s_24} color={themeValue.text} />;
 			}
-			return <MezonIconCDN icon={IconCDN.channelText} height={size.s_24} width={size.s_24} />;
+			return <MezonIconCDN icon={IconCDN.channelText} height={size.s_24} width={size.s_24} color={themeValue.text} />;
 		} else {
 			if (isPrivate) {
-				return <MezonIconCDN icon={IconCDN.threadLockIcon} height={size.s_24} width={size.s_24} />;
+				return <MezonIconCDN icon={IconCDN.threadLockIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />;
 			}
-			return <MezonIconCDN icon={IconCDN.threadIcon} height={size.s_24} width={size.s_24} />;
+			return <MezonIconCDN icon={IconCDN.threadIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />;
 		}
 	};
 

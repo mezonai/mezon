@@ -175,8 +175,8 @@ export const AddFriendModal = React.memo((props: IAddFriendModal) => {
 		return (
 			<View>
 				{/* TODO: update later */}
-				<Text style={styles.whiteText}>Find Your Friend</Text>
-				<Text style={styles.whiteText}>Let's see which of your contacts are already on Mezon</Text>
+				<Text style={styles.whiteText}>{t('addFriend.findYourFriend')}</Text>
+				<Text style={styles.whiteText}>{t('addFriend.letAlready')}</Text>
 			</View>
 		);
 	};
