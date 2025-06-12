@@ -14,10 +14,10 @@ const Backdrop = ({ onBackdropPress, ...props }: CustomBackdropProps) => {
 
 	const containerStyle = useMemo(
 		() => [
-			props.style,
 			{
 				backgroundColor: baseColor.black
 			},
+			props.style,
 			containerAnimatedStyle
 		],
 		[props.style, containerAnimatedStyle]

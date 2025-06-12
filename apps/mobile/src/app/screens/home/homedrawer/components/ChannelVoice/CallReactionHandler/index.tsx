@@ -18,9 +18,7 @@ type reactProps = {
 export const CallReactionHandler = memo(({ channel, isAnimatedCompleted }: reactProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-
 	const [displayedEmojis, setDisplayedEmojis] = useState<any[]>([]);
-
 	const { socketRef } = useMezon();
 
 	useEffect(() => {
@@ -31,38 +29,72 @@ export const CallReactionHandler = memo(({ channel, isAnimatedCompleted }: react
 			if (channel?.channel_id === message?.channel_id) {
 				try {
 					const emojis = message.emojis || [];
-					emojis.forEach((emojiId, index) => {
+					emojis.forEach((emojiId) => {
 						if (emojiId) {
-							const startX = Math.random() * (width - size.s_100 * 2);
-							const translateY = new Animated.Value(0);
-							const opacity = new Animated.Value(1);
+							Array.from({ length: 10 }).forEach((_, index) => {
+								const startX = Math.random() * (width - size.s_100 * 2);
+								const baseTranslateY = new Animated.Value(0);
+								const translateX = new Animated.Value(0);
+								const scale = new Animated.Value(1);
+								const opacity = new Animated.Value(0);
+								const rotation = new Animated.Value(0);
+								const finalRotation = Math.random() * 30 - 15;
+								const randomZoom = 1 + Math.random();
 
-							const newEmoji = {
-								id: `${Date.now()}-${index}`,
-								emoji: '',
-								emojiId: emojiId,
-								startX,
-								translateY,
-								opacity
-							};
+								const newEmoji = {
+									id: `${Date.now()}-${emojiId}-${index}`,
+									emojiId,
+									startX,
+									baseTranslateY,
+									translateX,
+									scale,
+									opacity,
+									rotation
+								};
 
-							setDisplayedEmojis((prev) => [...prev, newEmoji]);
+								setDisplayedEmojis((prev) => [...prev, newEmoji]);
 
-							Animated.parallel([
-								Animated.timing(translateY, {
-									toValue: -height * 0.6,
-									duration: 5000,
-									easing: Easing.out(Easing.quad),
-									useNativeDriver: true
-								}),
-								Animated.timing(opacity, {
-									toValue: 0,
-									duration: 5000,
-									easing: Easing.linear,
-									useNativeDriver: true
-								})
-							]).start(() => {
-								setDisplayedEmojis((prev) => prev.filter((item) => item.id !== newEmoji.id));
+								Animated.sequence([
+									Animated.delay(index * 300),
+									Animated.parallel([
+										Animated.sequence([
+											Animated.timing(opacity, {
+												toValue: 1,
+												duration: 500,
+												useNativeDriver: true
+											}),
+											Animated.timing(opacity, {
+												toValue: 0,
+												duration: 1500,
+												useNativeDriver: true
+											})
+										]),
+										Animated.timing(baseTranslateY, {
+											toValue: -height * 0.6,
+											duration: 2000,
+											useNativeDriver: true
+										}),
+										Animated.timing(translateX, {
+											toValue: Math.random() * 50 - 25,
+											duration: 2000,
+											useNativeDriver: true
+										}),
+										Animated.timing(scale, {
+											toValue: randomZoom,
+											duration: 2000,
+											easing: Easing.out(Easing.quad),
+											useNativeDriver: true
+										}),
+										Animated.timing(rotation, {
+											toValue: finalRotation,
+											duration: 2000,
+											easing: Easing.linear,
+											useNativeDriver: true
+										})
+									])
+								]).start(() => {
+									setDisplayedEmojis((prev) => prev.filter((item) => item.id !== newEmoji.id));
+								});
 							});
 						}
 					});
@@ -92,7 +124,17 @@ export const CallReactionHandler = memo(({ channel, isAnimatedCompleted }: react
 						position: 'absolute',
 						bottom: 0,
 						left: item.startX,
-						transform: [{ translateY: item.translateY }],
+						transform: [
+							{ translateY: item.baseTranslateY },
+							{ translateX: item.translateX },
+							{ scale: item.scale },
+							{
+								rotate: item.rotation.interpolate({
+									inputRange: [-15, 15],
+									outputRange: ['-15deg', '15deg']
+								})
+							}
+						],
 						opacity: item.opacity,
 						alignItems: 'center'
 					}}

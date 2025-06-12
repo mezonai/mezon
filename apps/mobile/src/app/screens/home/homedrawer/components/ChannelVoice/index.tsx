@@ -158,7 +158,7 @@ const HeaderRoomView = memo(
 					/>
 				),
 				containerStyle: { zIndex: 1001 },
-				backdropStyle: { zIndex: 1000 }
+				backdropStyle: { zIndex: 1000, backgroundColor: 'rgba(0, 0, 0, 0.2)', opacity: 0.1 }
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		};
