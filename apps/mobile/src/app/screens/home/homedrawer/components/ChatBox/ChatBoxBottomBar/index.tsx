@@ -2,6 +2,7 @@
 import {
 	ActionEmitEvent,
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES,
+	adjustCursorPosition,
 	convertMentionsToText,
 	formatContentEditMessage,
 	getChannelHashtag,
@@ -167,13 +168,32 @@ export const ChatBoxBottomBar = memo(
 		const handleEventAfterEmojiPicked = useCallback(
 			async (shortName: string) => {
 				let textFormat;
+				let cursorPosition = cursorPositionRef.current || 0;
+				let textSpacing = 0;
+				cursorPosition = adjustCursorPosition(textChange, cursorPosition);
 				if (!textValueInputRef?.current?.length && !textChange.length) {
 					textFormat = shortName?.toString();
 				} else {
-					textFormat = `${textChange?.endsWith(' ') ? textChange : textChange + ' '}${shortName?.toString()}`;
+					const textBefore = textChange?.slice(0, cursorPosition);
+					const textAfter = textChange?.slice(cursorPosition);
+
+					let textBeforeFormat = textBefore;
+					if (textBefore.length > 0 && !textBefore.endsWith(' ')) {
+						textBeforeFormat = textBefore + ' ';
+						textSpacing += 1;
+					}
+
+					let textAfterFormat = textAfter;
+					if (!textAfter.startsWith(' ')) {
+						textAfterFormat = ' ' + textAfter;
+						textSpacing += 1;
+					}
+
+					textFormat = textBeforeFormat + shortName + textAfterFormat;
 				}
-				setTextChange(textFormat + ' ');
-				await handleTextInputChange(textFormat + ' ');
+				setTextChange(textFormat);
+				cursorPositionRef.current = cursorPositionRef?.current || 0 + shortName.length + textSpacing;
+				await handleTextInputChange(textFormat);
 			},
 			[textChange]
 		);
@@ -486,7 +506,7 @@ export const ChatBoxBottomBar = memo(
 								ref={inputRef}
 								multiline
 								onChangeText={
-									(mentionsOnMessage?.current || hashtagsOnMessage?.current)?.length
+									mentionsOnMessage?.current?.length || hashtagsOnMessage?.current?.length
 										? textInputProps?.onChangeText
 										: handleTextInputChange
 								}

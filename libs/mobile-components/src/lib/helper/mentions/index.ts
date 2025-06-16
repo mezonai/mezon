@@ -124,3 +124,26 @@ export const formatContentEditMessage = (message: IMessageWithUser) => {
 
 	return { formatContentDraft, emojiPicked };
 };
+
+export const adjustCursorPosition = (text: string, pos: number): number => {
+	const mentionRegex = /({@}|{#})\[([^\]]+)\]\((\d+)\)/g;
+	let offset = 0;
+	let match: RegExpExecArray | null;
+
+	while ((match = mentionRegex.exec(text)) !== null) {
+		const originalTokenStart = match.index;
+		const originalTokenLength = match[0].length;
+		const prefixOriginal = text.slice(0, originalTokenStart);
+		const prefixDisplay = convertMentionsToText(prefixOriginal);
+		const displayTokenStart = prefixDisplay.length;
+		const displayToken = match[1] === '{@}' ? `@[${match[2]}]` : `<#${match[2]}>`;
+		const displayTokenLength = displayToken.length;
+		const displayTokenEnd = displayTokenStart + displayTokenLength;
+		if (pos >= displayTokenEnd) {
+			offset += originalTokenLength - displayTokenLength;
+		} else if (pos >= displayTokenStart && pos < displayTokenEnd) {
+			return originalTokenStart + originalTokenLength;
+		}
+	}
+	return pos + offset;
+};
