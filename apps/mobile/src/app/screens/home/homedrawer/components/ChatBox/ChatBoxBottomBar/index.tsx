@@ -192,7 +192,7 @@ export const ChatBoxBottomBar = memo(
 					textFormat = textBeforeFormat + shortName + textAfterFormat;
 				}
 				setTextChange(textFormat);
-				cursorPositionRef.current = cursorPositionRef?.current || 0 + shortName.length + textSpacing;
+				cursorPositionRef.current = (cursorPositionRef.current || 0) + shortName.length + textSpacing;
 				await handleTextInputChange(textFormat);
 			},
 			[textChange]
@@ -229,6 +229,7 @@ export const ChatBoxBottomBar = memo(
 			[onShowKeyboardBottomSheet]
 		);
 		const handleTextInputChange = async (text: string) => {
+			console.log('xtttt', text);
 			const store = getStore();
 			setTextChange(text);
 			textValueInputRef.current = text;
