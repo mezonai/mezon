@@ -14,13 +14,13 @@ const LIST_FRIEND_CACHED_TIME = 1000 * 60 * 60;
 const LIMIT_FRIEND = 1000;
 
 export interface FriendsEntity extends Friend {
+	key: string;
 	id: string;
-	source_id?: string;
 }
 
 export interface IFriend extends Friend {
+	key: string;
 	id: string;
-	source_id?: string;
 }
 
 interface IStatusSentMobile {
@@ -35,7 +35,13 @@ export enum EStateFriend {
 }
 
 export const mapFriendToEntity = (FriendRes: Friend) => {
-	return { ...FriendRes, id: FriendRes?.user?.id || '', source_id: FriendRes?.source_id || '' };
+	const uniqueId = `${FriendRes?.user?.id}_${FriendRes?.source_id}`;
+	return {
+		...FriendRes,
+		key: uniqueId,
+		id: FriendRes?.user?.id || '',
+		source_id: FriendRes?.source_id || ''
+	};
 };
 export interface FriendsState extends EntityState<FriendsEntity, string> {
 	loadingStatus: LoadingStatus;
@@ -45,7 +51,7 @@ export interface FriendsState extends EntityState<FriendsEntity, string> {
 }
 
 export const friendsAdapter = createEntityAdapter({
-	selectId: (friend: FriendsEntity) => friend.id || ''
+	selectId: (friend: FriendsEntity) => friend.key || ''
 });
 
 export const fetchListFriendsCached = memoizeAndTrack(
@@ -142,9 +148,10 @@ export const friendsSlice = createSlice({
 	name: FRIEND_FEATURE_KEY,
 	initialState: initialFriendsState,
 	reducers: {
-		add: friendsAdapter.addOne,
-		remove: friendsAdapter.removeOne,
-		upsertMany: friendsAdapter.upsertMany,
+		remove: (state, action: PayloadAction<string>) => {
+			const keyToRemove = state?.ids?.find((key) => state?.entities?.[key]?.user?.id === action.payload);
+			keyToRemove && friendsAdapter.removeOne(state, keyToRemove);
+		},
 		changeCurrentStatusTab: (state, action: PayloadAction<string>) => {
 			state.currentTabStatus = action.payload;
 		},
@@ -153,7 +160,8 @@ export const friendsSlice = createSlice({
 		},
 		setManyStatusUser: (state, action: PayloadAction<StatusUserArgs[]>) => {
 			action.payload.forEach((statusUser) => {
-				const friend = state.entities[statusUser.userId];
+				const key = state?.ids?.find((key) => state?.entities?.[key]?.user?.id === statusUser.userId);
+				const friend = key ? state?.entities?.[key] : null;
 				if (friend?.user && statusUser) {
 					friend.user.online = statusUser.online;
 					friend.user.is_mobile = statusUser.isMobile;
@@ -162,7 +170,8 @@ export const friendsSlice = createSlice({
 		},
 		updateUserStatus: (state, action: PayloadAction<{ userId: string; user_status: any }>) => {
 			const { userId, user_status } = action.payload;
-			const friendMeta = state.entities[userId];
+			const key = state?.ids?.find((key) => state?.entities?.[key]?.user?.id === userId);
+			const friendMeta = key ? state?.entities?.[key] : null;
 			if (friendMeta) {
 				friendMeta.user = friendMeta.user || {};
 				friendMeta.user.metadata = friendMeta.user.metadata || {};
@@ -179,7 +188,10 @@ export const friendsSlice = createSlice({
 			}>
 		) => {
 			const { userId, friendState, sourceId } = action.payload;
-			const friend = state.entities[userId];
+			const key = state?.ids?.find((key) => {
+				return state?.entities?.[key]?.source_id === userId || state?.entities?.[key]?.user?.id === userId;
+			});
+			const friend = key ? state?.entities?.[key] : null;
 
 			if (friend) {
 				friend.state = friendState;
@@ -219,27 +231,24 @@ export const friendsActions = {
 	sendRequestBlockFriend
 };
 
-const { selectAll, selectById } = friendsAdapter.getSelectors();
+const { selectAll } = friendsAdapter.getSelectors();
 
 export const getFriendsState = (rootState: { [FRIEND_FEATURE_KEY]: FriendsState }): FriendsState => rootState[FRIEND_FEATURE_KEY];
 export const selectAllFriends = createSelector(getFriendsState, selectAll);
 export const selectStatusSentMobile = createSelector(getFriendsState, (state) => state.statusSentMobile);
-export const selectFriendStatus = (userID: string) =>
+export const selectFriendStatus = (userId: string) =>
 	createSelector(getFriendsState, (state) => {
-		const friend = selectById(state, userID);
+		const friends = selectAll(state);
+		const friend = friends?.find((friend) => friend?.user?.id === userId);
 		return friend?.state;
 	});
 export const selectBlockedUsers = createSelector([selectAllFriends, selectCurrentUserId], (friends, currentUserId) =>
-	friends.filter((friend) => friend?.state === EStateFriend.BLOCK && friend?.id !== currentUserId && friend?.source_id === currentUserId)
+	friends.filter((friend) => friend?.state === EStateFriend.BLOCK && friend?.user?.id !== currentUserId && friend?.source_id === currentUserId)
 );
 export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (friends) =>
 	friends.filter((friend) => friend?.state === EStateFriend.BLOCK)
 );
-export const selectFriendById = createSelector([selectAllFriends, (state, userId: string) => userId], (friends, userId) => {
-	const friendAsTarget = friends.find((friend) => friend?.user?.id === userId);
-	if (friendAsTarget) return friendAsTarget;
-
-	const friendAsSource = friends.find((friend) => friend?.source_id === userId);
-	return friendAsSource;
-});
+export const selectFriendById = createSelector([selectAllFriends, (state, userId: string) => userId], (friends, userId) =>
+	friends.find((friend) => friend?.user?.id === userId || friend?.source_id === userId)
+);
 export const selectCurrentTabStatus = createSelector(getFriendsState, (state) => state.currentTabStatus);
