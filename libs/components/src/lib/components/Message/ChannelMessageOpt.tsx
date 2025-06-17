@@ -426,7 +426,16 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 	const { userId } = useAuth();
 	const messageId = message.id;
 
-	const handleItemClick = useCallback(() => {
+	const handleItemClick = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		const messageContainer = findParentByClass(e.target as HTMLElement, 'message-container');
+		if (messageContainer) {
+			const mouseLeaveEvent = new MouseEvent('mouseleave', {
+				bubbles: true,
+				cancelable: true,
+			});
+			messageContainer.dispatchEvent(mouseLeaveEvent);
+		}
+
 		dispatch(reactionActions.setReactionRightState(false));
 		dispatch(referencesActions.setOpenEditMessageState(true));
 		dispatch(referencesActions.setIdReferenceMessageEdit(messageId));
