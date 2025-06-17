@@ -16,7 +16,9 @@
         "disableE2EE": "Disable E2EE",
         "enableE2EE": "Enable E2EE",
         "blockUser": "Block User",
-        "unblockUser": "Unblock User"
+        "unblockUser": "Unblock User",
+        "removeFriend": "Remove Friend",
+        "addFriend": "Add Friend"
     },
     "confirm": {
         "title": "Leave {{groupName}}",

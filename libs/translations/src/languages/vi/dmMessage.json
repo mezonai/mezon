@@ -16,7 +16,9 @@
         "disableE2EE": "Tắt mã hóa E2EE",
         "enableE2EE": "Bật mã hóa E2EE",
         "blockUser": "Chặn người dùng",
-        "unblockUser": "Bỏ chặn người dùng"
+        "unblockUser": "Bỏ chặn người dùng",
+        "removeFriend": "Xóa bạn",
+        "addFriend": "Thêm bạn"
     },
     "confirm": {
         "title": "Rời khỏi {{groupName}}",

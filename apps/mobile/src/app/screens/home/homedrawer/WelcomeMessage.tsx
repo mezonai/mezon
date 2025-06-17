@@ -249,7 +249,7 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 								))}
 
 							{(infoFriend?.state === EStateFriend.FRIEND || didIBlockUser) && (
-								<TouchableOpacity style={styles.blockButton} onPress={didIBlockUser ? handleUnblockFriend : handleBlockFriend}>
+								<TouchableOpacity style={styles.deleteFriendButton} onPress={didIBlockUser ? handleUnblockFriend : handleBlockFriend}>
 									<Text style={styles.buttonText}>{didIBlockUser ? t('pendingContent.unblock') : t('pendingContent.block')}</Text>
 								</TouchableOpacity>
 							)}

@@ -20,7 +20,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 
 	const handleUnblockFriend = async (user: FriendsEntity) => {
 		try {
-			const isUnblocked = await unBlockFriend(user?.user?.username, user?.id);
+			const isUnblocked = await unBlockFriend(user?.user?.username, user?.user?.id);
 			if (isUnblocked) {
 				Toast.show({
 					type: 'success',
