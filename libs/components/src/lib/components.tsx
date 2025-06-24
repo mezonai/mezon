@@ -88,7 +88,6 @@ export { AnchorScroll } from './components/AnchorScroll/AnchorScroll';
 export { default as ListChannelSetting } from './components/ClanSettings/SettingChannel/index';
 export { default as LeaveGroupModal } from './components/LeaveGroupModal/index';
 
-export { default as BotMenuManager } from './components/BotMenuManager';
 export { default as ModalDeleteMess } from './components/DeleteMessageModal/ModalDeleteMess';
 export { default as FailLoginModal } from './components/FailLoginModal';
 export { default as ModalRemoveMemberClan } from './components/MemberProfile/ModalRemoveMemberClan';

@@ -48,7 +48,6 @@ import {
 } from './messageLine';
 
 export * from './base';
-export * from './bot-menu';
 export * from './config';
 export * from './htmlCanvas';
 export * from './media';
