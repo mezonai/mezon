@@ -8,11 +8,11 @@ import {
 	save
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentClanId, selectMemberClanByUserId2, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store-mobile';
+import { selectCurrentClanId, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -107,24 +107,23 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 			<View style={{ alignItems: 'center', gap: size.s_6, marginTop: size.s_20 }}>
 				<View
 					style={{
-						width: voiceChannelMembers.length === 0 ? size.s_100 : size.s_200,
-						height: size.s_100,
+						paddingVertical: size.s_10,
 						justifyContent: 'center',
-						alignItems: 'center',
-						borderRadius: voiceChannelMembers.length === 0 ? size.s_100 : size.s_40,
-						backgroundColor: themeValue.tertiary
+						alignItems: 'center'
 					}}
 				>
 					{voiceChannelMembers?.length === 0 ? (
-						<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_36} height={size.s_36} color={themeValue.textStrong} />
+						<View style={styles.iconVoice}>
+							<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_36} height={size.s_36} color={themeValue.textStrong} />
+						</View>
 					) : (
 						<View style={{ flexDirection: 'row' }}>
-							{voiceChannelMembers?.slice(0,3)?.map((m) => {
-								return <VoiceChannelAvatar key={m.user_id} userId={m.user_id} />;
+							{voiceChannelMembers?.slice?.(0, 3)?.map((m) => {
+								return <VoiceChannelAvatar key={`${m.user_id}_user_join_voice`} userId={m.user_id} />;
 							})}
 							{badge > 0 && (
 								<View style={styles.badgeContainer}>
-									<Text style={styles.text}>+{badge}</Text>
+									<Text style={styles.textBadge}>+{badge}</Text>
 								</View>
 							)}
 						</View>

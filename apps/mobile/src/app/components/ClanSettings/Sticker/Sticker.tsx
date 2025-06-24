@@ -1,7 +1,6 @@
 import { QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { createSticker, useAppDispatch } from '@mezon/store';
-import { selectCurrentClanId, selectStickerByClanId } from '@mezon/store-mobile';
+import { createSticker, selectCurrentClanId, selectStickersByClanId, useAppDispatch } from '@mezon/store-mobile';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -9,22 +8,22 @@ import { Buffer as BufferMobile } from 'buffer';
 import { ApiClanStickerAddRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Platform, ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 import { openCropper } from 'react-native-image-crop-picker';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../componentUI/MezonButton2';
-import { IFile, handleSelectImage } from '../../../componentUI/MezonImagePicker';
+import { handleSelectImage, IFile } from '../../../componentUI/MezonImagePicker';
 import { StickerList } from './StickerList';
 import { style } from './styles';
 
-export function StickerSetting() {
+export function StickerSetting({ navigation }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const timerRef = useRef<any>(null);
 	const { sessionRef, clientRef } = useMezon();
 	const currentClanId = useSelector(selectCurrentClanId) || '';
-	const listSticker = useSelector(selectStickerByClanId(currentClanId));
+	const listSticker = useSelector(selectStickersByClanId(currentClanId));
 	const availableLeft = useMemo(() => 50 - listSticker?.length, [listSticker]);
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['clanStickerSetting']);
@@ -129,29 +128,27 @@ export function StickerSetting() {
 	}, [currentClanId, dispatch, handleUploadImage, t]);
 
 	return (
-		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<View style={styles.container}>
-				<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ backgroundColor: themeValue.primary }}>
-					<MezonButton
-						title={t('btn.upload')}
-						type={EMezonButtonTheme.SUCCESS}
-						size={EMezonButtonSize.MD}
-						rounded={true}
-						containerStyle={styles.btn}
-						onPress={handleUploadSticker}
-						titleStyle={styles.btnTitle}
-					/>
+		<View style={styles.container}>
+			<ScrollView contentContainerStyle={{ backgroundColor: themeValue.primary }}>
+				<MezonButton
+					title={t('btn.upload')}
+					type={EMezonButtonTheme.SUCCESS}
+					size={EMezonButtonSize.MD}
+					rounded={true}
+					containerStyle={styles.btn}
+					onPress={handleUploadSticker}
+					titleStyle={styles.btnTitle}
+				/>
 
-					<Text style={styles.text}>{t('content.description')}</Text>
-					<Text style={[styles.text, styles.textTitle]}>{t('content.requirements')}</Text>
-					<Text style={styles.text}>{t('content.reqType')}</Text>
-					<Text style={styles.text}>{t('content.reqDim')}</Text>
-					<Text style={styles.text}>{t('content.reqSize')}</Text>
+				<Text style={styles.text}>{t('content.description')}</Text>
+				<Text style={[styles.text, styles.textTitle]}>{t('content.requirements')}</Text>
+				<Text style={styles.text}>{t('content.reqType')}</Text>
+				<Text style={styles.text}>{t('content.reqDim')}</Text>
+				<Text style={styles.text}>{t('content.reqSize')}</Text>
 
-					<Text style={[styles.text, styles.textTitle]}>{t('content.available', { left: availableLeft })}</Text>
-					<StickerList listSticker={listSticker} clanID={currentClanId} />
-				</ScrollView>
-			</View>
-		</TouchableWithoutFeedback>
+				<Text style={[styles.text, styles.textTitle]}>{t('content.available', { left: availableLeft })}</Text>
+				<StickerList listSticker={listSticker} clanID={currentClanId} />
+			</ScrollView>
+		</View>
 	);
 }

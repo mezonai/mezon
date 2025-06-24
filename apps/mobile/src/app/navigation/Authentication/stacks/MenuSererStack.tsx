@@ -18,6 +18,8 @@ import { Webhooks } from '../../../components/ClanSettings/Integrations/Webhooks
 import { WebhooksEdit } from '../../../components/ClanSettings/Integrations/Webhooks/WebhooksEdit';
 import { MemberSetting } from '../../../components/ClanSettings/Member';
 import { ClanOverviewSetting } from '../../../components/ClanSettings/Overview';
+import { SoundBoardSetting } from '../../../components/ClanSettings/SoundSticker';
+import { CreateSoundScreen } from '../../../components/ClanSettings/SoundSticker/CreateSoundBoard';
 import { StickerSetting } from '../../../components/ClanSettings/Sticker';
 import { EventCreatorDetails } from '../../../components/EventCreator/EventCreatorDetails';
 import { EventCreatorPreview } from '../../../components/EventCreator/EventCreatorPreview';
@@ -250,6 +252,20 @@ export const MenuClanStacks = ({}: any) => {
 				}}
 			/>
 			<Stack.Screen name={APP_SCREEN.MENU_CLAN.WEBHOOKS_EDIT} component={WebhooksEdit} />
+			<Stack.Screen
+				name={APP_SCREEN.MENU_CLAN.SOUND_STICKER}
+				component={SoundBoardSetting}
+				options={{
+					headerTitle: t('menuClanStack.sound')
+				}}
+			/>
+			<Stack.Screen
+				name={APP_SCREEN.MENU_CLAN.CREATE_SOUND}
+				component={CreateSoundScreen}
+				options={{
+					headerTitle: t('menuClanStack.createSound')
+				}}
+			/>
 		</Stack.Navigator>
 	);
 };

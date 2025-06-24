@@ -18,7 +18,9 @@
         "webhooksEdit": "Webhook Edit",
         "auditLog": "Audit Log",
         "filterByUser": "Filter By User",
-        "filterByAction": "Filter By Action"
+        "filterByAction": "Filter By Action",
+        "sound": "Sound Sticker",
+        "createSound": "Create Sound Sticker"
     },
     "menuChannelStack": {
         "channelSetting": "Channel Settings",

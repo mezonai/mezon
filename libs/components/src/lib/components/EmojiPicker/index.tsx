@@ -293,6 +293,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 				<div className="w-9 h-9 py-2 max-sm:hidden flex flex-row justify-center items-center dark:hover:bg-[#41434A] hover:bg-bgLightModeButton hover:rounded-md">
 					<Icons.Star defaultSize="w-7 h-7" />
 				</div>
+				<div className="w-9 h-9 py-2 dark:text-textPrimary max-sm:hidden flex flex-row justify-center items-center dark:hover:bg-[#41434A] hover:bg-bgLightModeButton hover:rounded-md">
+					<Icons.MarketIcons />
+				</div>
 				<hr className=" bg-gray-200 border w-full max-sm:h-full max-sm:w-[1px] max-sm:hidden" />
 				{categoriesWithIcons.map((item, index) => {
 					return (

@@ -98,6 +98,14 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			},
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.sticker} color={themeValue.text} />
+		},
+		{
+			title: t('menu.settings.sound'),
+			onPress: async () => {
+				navigation.navigate(APP_SCREEN.MENU_CLAN.SOUND_STICKER);
+			},
+			expandable: true,
+			icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
 		}
 		// {
 		// 	title: t('menu.settings.webhooks'),

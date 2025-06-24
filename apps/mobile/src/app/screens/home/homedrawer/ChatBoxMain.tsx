@@ -19,7 +19,6 @@ interface IChatBoxProps {
 	};
 	directMessageId?: string;
 	canSendMessage?: boolean;
-	onShowKeyboardBottomSheet?: (isShow: boolean, type?: string) => void;
 	isPublic: boolean;
 	isFriendTargetBlocked?: boolean;
 }
@@ -122,7 +121,6 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 					mode={props?.mode}
 					hiddenIcon={props?.hiddenIcon}
 					messageAction={props?.messageAction}
-					onShowKeyboardBottomSheet={props?.onShowKeyboardBottomSheet}
 					isPublic={props?.isPublic}
 				/>
 			)}

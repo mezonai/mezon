@@ -2,7 +2,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannel } from '@mezon/store-mobile';
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
@@ -11,20 +11,13 @@ import { APP_SCREEN, AppStackScreenProps } from '../../../../../../navigation/Sc
 import ChannelMessages from '../../../ChannelMessages';
 import { ChatBox } from '../../../ChatBox';
 import PanelKeyboard from '../../../PanelKeyboard';
-import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 import { style } from './styles';
 type ChatBoxStreamScreen = typeof APP_SCREEN.MESSAGES.STACK;
 
 const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>) => {
-	const panelKeyboardRef = useRef(null);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const onShowKeyboardBottomSheet = useCallback((isShow: boolean, type?: IModeKeyboardPicker) => {
-		if (panelKeyboardRef?.current) {
-			panelKeyboardRef.current?.onShowKeyboardBottomSheet(isShow, type);
-		}
-	}, []);
 
 	const onHandlerStateChange = useCallback((event: { nativeEvent: { translationX: any; velocityX: any } }) => {
 		const { translationX, velocityX } = event.nativeEvent;
@@ -56,10 +49,9 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 				}}
 				channelId={currentChannel?.channel_id}
 				mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-				onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
 				isPublic={isPublicChannel(currentChannel)}
 			/>
-			<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+			<PanelKeyboard currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 		</KeyboardAvoidingView>
 	);
 };

@@ -1,0 +1,18 @@
+{
+    "button": {
+        "upload": "Upload Sound",
+        "delete": "Delete"
+    },
+    "content": {
+        "description": "Only accepts .mp3, .wav files, maximum 1MB. Use memorable names for sound effects. Sound effects will be used in clan notifications or events.",
+        "requirements": "Upload Requirements",
+        "reqSize": "- No larger than 1024KB.",
+        "audioFile": "Audio file",
+        "audioName": "Sound Name",
+        "preview": "Preview"
+    },
+    "toast": {
+        "errorSizeLimit": "Image size limit exceeded 1MB",
+        "errorFileType": "Invalid file type. Only .mp3, .mpeg and .wav files are allowed."
+    }
+}

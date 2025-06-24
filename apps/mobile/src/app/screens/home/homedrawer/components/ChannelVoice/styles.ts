@@ -143,8 +143,7 @@ export const style = (colors: Attributes) =>
 			left: '15%',
 			alignSelf: 'center',
 			right: size.s_20,
-			height: '40%',
-			zIndex: 1
+			height: '40%'
 		},
 		animatedEmoji: {
 			height: size.s_40,

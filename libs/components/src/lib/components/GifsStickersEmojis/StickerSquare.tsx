@@ -1,7 +1,15 @@
 import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
-import { MediaType, referencesActions, selectAllStickerSuggestion, selectCurrentClan, selectDataReferences, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	MediaType,
+	referencesActions,
+	selectAllStickerSuggestion,
+	selectCurrentClan,
+	selectDataReferences,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { SubPanelName, blankReferenceObj } from '@mezon/utils';
+import { FOR_SALE_CATE, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ClanSticker } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -29,6 +37,7 @@ type StickerPanel = {
 	type?: string;
 	url?: string;
 	id?: string;
+	forSale?: boolean;
 };
 
 const searchStickers = (stickers: ClanSticker[], searchTerm: string) => {
@@ -39,9 +48,10 @@ const searchStickers = (stickers: ClanSticker[], searchTerm: string) => {
 
 function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessageBoxProps) {
 	const allStickers = useAppSelector(selectAllStickerSuggestion);
-	const clanStickers = useMemo(() => allStickers.filter(sticker =>
-		(sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER
-	), [allStickers]);
+	const clanStickers = useMemo(
+		() => allStickers.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER),
+		[allStickers]
+	);
 
 	const { sendMessage } = useChatSending({
 		channelOrDirect: channel,
@@ -126,6 +136,12 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				px-1 md:items-start pb-1 rounded max-sbm:flex-col
 				items-center min-h-[25rem]"
 				>
+					<button
+						onClick={(e) => scrollToCategory(e, FOR_SALE_CATE)}
+						className="flex justify-center items-center max-sm:px-1 w-9 h-9 rounded-lg hover:bg-[#41434A]"
+					>
+						<Icons.MarketIcons />
+					</button>
 					{categoryLogo.map((avt) => (
 						<button
 							key={avt.id}
@@ -202,14 +218,30 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 				<div className="w-auto pb-2 px-2">
 					<div className="grid grid-cols-3 gap-4">
 						{stickerList.map((sticker: StickerPanel) => (
-							<img
-								key={sticker.id}
-								src={sticker.url}
-								alt="sticker"
-								className="w-full h-full aspect-square object-cover cursor-pointer dark:hover:bg-bgDisable hover:bg-bgLightModeButton hover:rounded-lg border border-bgHoverMember rounded-lg"
-								onClick={() => onClickSticker(sticker)}
-								role="button"
-							/>
+							<div
+								className="group relative w-full h-full aspect-square overflow-hidden flex items-center rounded-lg"
+								key={sticker.url}
+							>
+								<img
+									src={sticker.url}
+									alt="sticker"
+									className={`w-full h-full aspect-square object-cover dark:hover:bg-bgDisable hover:bg-bgLightModeButton border border-bgHoverMember rounded-lg cursor-pointer ${sticker.id === '0' ? 'blur-sm' : ''}`}
+									onClick={() => (sticker.id !== '0' ? onClickSticker(sticker) : null)}
+									role="button"
+								/>
+								{sticker.id === '0' ? (
+									<>
+										<Icons.LockIcon
+											defaultSize="text-white absolute w-16 h-16 left-8 pointer-events-none block group-hover:hidden"
+											defaultFill="white"
+										/>
+										<Icons.UnLockIcon
+											defaultSize="text-white absolute w-16 h-16 left-8 pointer-events-none hidden group-hover:block"
+											defaultFill="white"
+										/>
+									</>
+								) : null}
+							</div>
 						))}
 					</div>
 				</div>

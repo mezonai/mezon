@@ -15,7 +15,6 @@ import { ChatBox } from './ChatBox';
 import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
 import PanelKeyboard from './PanelKeyboard';
-import { IModeKeyboardPicker } from './components/BottomKeyboardPicker';
 import LicenseAgreement from './components/LicenseAgreement';
 import { style } from './styles';
 // HomeDefault check
@@ -30,23 +29,15 @@ const HomeDefault = React.memo(
 		const channelType = props?.channelType;
 		const timeoutRef = useRef<any>(null);
 		const navigation = useNavigation<any>();
-		const panelKeyboardRef = useRef(null);
 
 		const isChannelApp = channelType === ChannelType.CHANNEL_TYPE_APP;
-
-		const onShowKeyboardBottomSheet = useCallback((isShow: boolean, type?: IModeKeyboardPicker) => {
-			if (panelKeyboardRef?.current) {
-				panelKeyboardRef.current?.onShowKeyboardBottomSheet(isShow, type);
-			}
-		}, []);
 
 		const onOpenDrawer = useCallback(() => {
 			requestAnimationFrame(async () => {
 				navigation.navigate(APP_SCREEN.BOTTOM_BAR);
-				onShowKeyboardBottomSheet(false, 'text');
 				Keyboard.dismiss();
 			});
-		}, [navigation, onShowKeyboardBottomSheet]);
+		}, [navigation]);
 
 		const [isShowSettingNotifyBottomSheet, setIsShowSettingNotifyBottomSheet] = useState<boolean>(false);
 
@@ -73,7 +64,7 @@ const HomeDefault = React.memo(
 			<KeyboardAvoidingView
 				style={styles.channelView}
 				behavior={'padding'}
-				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
+				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
 			>
 				{Platform.OS === 'ios' && <LicenseAgreement />}
 				<DrawerListener />
@@ -90,13 +81,12 @@ const HomeDefault = React.memo(
 				<ChatBox
 					channelId={channelId}
 					mode={isThread ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-					onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
 					hiddenIcon={{
 						threadIcon: channelType === ChannelType.CHANNEL_TYPE_THREAD
 					}}
 					isPublic={isPublicChannel}
 				/>
-				<PanelKeyboard ref={panelKeyboardRef} currentChannelId={channelId} currentClanId={clanId} />
+				<PanelKeyboard currentChannelId={channelId} currentClanId={clanId} />
 
 				<AgeRestrictedModal />
 			</KeyboardAvoidingView>

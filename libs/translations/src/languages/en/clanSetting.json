@@ -11,7 +11,8 @@
             "sticker": "Sticker",
             "webhooks": "Webhook",
             "security": "Security",
-            "permissionDenied": "You do not have permission to edit"
+            "permissionDenied": "You do not have permission to edit",
+            "sound": "Sound Sticker"
         },
         "community": {
             "title": "Community",

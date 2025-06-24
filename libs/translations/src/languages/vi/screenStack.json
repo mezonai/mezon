@@ -18,7 +18,9 @@
     "webhooksEdit": "Chỉnh sửa webhook",
     "auditLog": "Nhật ký kiểm tra",
     "filterByUser": "Lọc theo người dùng",
-    "filterByAction": "Lọc theo hành động"
+    "filterByAction": "Lọc theo hành động",
+    "sound": "Hiệu ứng âm thanh",
+    "createSound": "Tạo hiệu ứng âm thanh"
   },
   "menuChannelStack": {
     "channelSetting": "Cài đặt kênh",

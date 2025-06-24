@@ -78,8 +78,8 @@ export const UsersClanSlice = createSlice({
 			UsersClanAdapter.updateOne(state, {
 				id: userId,
 				changes: {
-					clan_nick: clanNick || dataCurrent.clan_nick,
-					clan_avatar: clanAvt || dataCurrent.clan_avatar
+					clan_nick: clanNick || dataCurrent?.clan_nick,
+					clan_avatar: clanAvt || dataCurrent?.clan_avatar
 				}
 			});
 		},

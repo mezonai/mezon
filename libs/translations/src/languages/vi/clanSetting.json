@@ -11,7 +11,8 @@
             "sticker": "Sticker",
             "webhooks": "Webhook",
             "security": "Bảo mật",
-            "permissionDenied": "Bạn không có quyền để chỉnh sửa"
+            "permissionDenied": "Bạn không có quyền để chỉnh sửa",
+            "sound": "Hiệu ứng âm thanh"
         },
         "community": {
             "title": "Cộng đồng",

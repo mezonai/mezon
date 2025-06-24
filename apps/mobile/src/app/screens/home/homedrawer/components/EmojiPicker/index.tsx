@@ -2,8 +2,9 @@ import { TouchableWithoutFeedback } from '@gorhom/bottom-sheet';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending, useGifsStickersEmoji } from '@mezon/core';
 import { debounce, isEmpty } from '@mezon/mobile-components';
-import { Colors, Fonts, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, Fonts, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
+	MediaType,
 	getStoreAsync,
 	gifsActions,
 	selectAnonymousMode,
@@ -75,6 +76,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 	const [mode, setMode] = useState<ExpressionType>('emoji');
 	const [searchText, setSearchText] = useState<string>('');
 	const { t } = useTranslation('message');
+	const [stickerMode, setStickerMode] = useState<MediaType>(MediaType.STICKER);
 
 	const dmMode = currentDirectMessage
 		? Number(currentDirectMessage?.user_id?.length === 1 ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP)
@@ -146,7 +148,12 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		if (type === 'gif') {
 			handleSend({ t: '' }, [], [{ url: data }], isEmpty(messageRef) ? [] : [messageRef]);
 		} else if (type === 'sticker') {
-			handleSend({ t: '' }, [], [{ url: data?.url, filetype: 'image/gif', filename: data?.id }], isEmpty(messageRef) ? [] : [messageRef]);
+			handleSend(
+				{ t: '' },
+				[],
+				[{ url: data?.url, filetype: stickerMode === MediaType.STICKER ? 'image/gif' : 'audio/mpeg', filename: data?.id }],
+				isEmpty(messageRef) ? [] : [messageRef]
+			);
 		} else {
 			/* empty */
 		}
@@ -189,6 +196,14 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		handleSelected('emoji', url);
 	}, []);
 
+	const changeStickerMode = useCallback(() => {
+		if (stickerMode === MediaType.STICKER) {
+			setStickerMode(MediaType.AUDIO);
+		} else {
+			setStickerMode(MediaType.STICKER);
+		}
+	}, [stickerMode]);
+
 	return (
 		<TouchableWithoutFeedback onPressIn={handleInputSearchBlur}>
 			<View style={styles.container}>
@@ -222,6 +237,22 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 								onChangeText={debouncedSetSearchText}
 							/>
 						</View>
+
+						{mode === 'sticker' && (
+							<Pressable
+								style={[
+									{ paddingVertical: size.s_10, backgroundColor: baseColor.blurple, padding: size.s_10, borderRadius: size.s_4 },
+									stickerMode === MediaType.STICKER && { backgroundColor: themeValue.secondaryLight }
+								]}
+								onPress={() => {
+									setSearchText('');
+									setValueInputSearch('');
+									changeStickerMode();
+								}}
+							>
+								<MezonIconCDN icon={IconCDN.channelVoice} height={20} width={20} color={themeValue.text} />
+							</Pressable>
+						)}
 					</View>
 				)}
 
@@ -235,7 +266,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 				) : mode === 'gif' ? (
 					<GifSelector onScroll={onScroll} onSelected={(url) => handleSelected('gif', url)} searchText={searchText} />
 				) : (
-					<StickerSelector onScroll={onScroll} onSelected={(sticker) => handleSelected('sticker', sticker)} />
+					<StickerSelector onScroll={onScroll} onSelected={(sticker) => handleSelected('sticker', sticker)} mediaType={stickerMode} />
 				)}
 			</View>
 		</TouchableWithoutFeedback>

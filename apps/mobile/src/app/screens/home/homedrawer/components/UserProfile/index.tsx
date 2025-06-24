@@ -1,4 +1,3 @@
-import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
@@ -83,7 +82,6 @@ const UserProfile = React.memo(
 		const userCustomStatus = useMemberCustomStatus(userId || user?.id || '');
 		const { friends: allUser = [], acceptFriend, deleteFriend, addFriend } = useFriends();
 		const [isShowPendingContent, setIsShowPendingContent] = useState(false);
-		const { dismiss } = useBottomSheetModal();
 		const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 		const dispatch = useAppDispatch();
 		const dmChannel = useMemo(() => {
@@ -182,7 +180,6 @@ const UserProfile = React.memo(
 				onClose();
 			}
 			directMessageWithUser(userId || user?.id);
-			dismiss();
 		};
 
 		const actionList = [
@@ -292,7 +289,6 @@ const UserProfile = React.memo(
 			if (onClose && typeof onClose === 'function') {
 				onClose();
 			}
-			dismiss();
 		};
 
 		if (isShowPendingContent) {

@@ -3,7 +3,7 @@ import { messagesActions, selectCurrentChannel, selectCurrentClanId, selectCurre
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
@@ -12,7 +12,6 @@ import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBar
 import ChannelMessages from '../../ChannelMessages';
 import { ChatBox } from '../../ChatBox';
 import PanelKeyboard from '../../PanelKeyboard';
-import { IModeKeyboardPicker } from '../BottomKeyboardPicker';
 import TopicHeader from './TopicHeader/TopicHeader';
 import { style } from './styles';
 
@@ -21,7 +20,6 @@ export default function TopicDiscussion() {
 	const currentTopicId = useSelector(selectCurrentTopicId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const panelKeyboardRef = useRef(null);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 
@@ -67,12 +65,6 @@ export default function TopicDiscussion() {
 		};
 	}, [currentChannel?.channel_id, dispatch]);
 
-	const onShowKeyboardBottomSheet = useCallback((isShow: boolean, type?: IModeKeyboardPicker) => {
-		if (panelKeyboardRef?.current) {
-			panelKeyboardRef.current?.onShowKeyboardBottomSheet(isShow, type);
-		}
-	}, []);
-
 	const onHandlerStateChange = useCallback(
 		(event: { nativeEvent: { translationX: any; velocityX: any } }) => {
 			const { translationX, velocityX } = event.nativeEvent;
@@ -114,13 +106,12 @@ export default function TopicDiscussion() {
 				<ChatBox
 					channelId={currentChannel?.channel_id}
 					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-					onShowKeyboardBottomSheet={onShowKeyboardBottomSheet}
 					hiddenIcon={{
 						threadIcon: currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD
 					}}
 					isPublic={isPublicChannel(currentChannel)}
 				/>
-				<PanelKeyboard ref={panelKeyboardRef} currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+				<PanelKeyboard currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 			</KeyboardAvoidingView>
 		</View>
 	);

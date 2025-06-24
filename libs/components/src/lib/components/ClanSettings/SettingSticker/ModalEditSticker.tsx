@@ -1,7 +1,7 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { createSticker, emojiSuggestionActions, selectCurrentClanId, updateSticker, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
-import { Button, Icons, InputField } from '@mezon/ui';
+import { Button, Checkbox, Icons, InputField } from '@mezon/ui';
 import { LIMIT_SIZE_UPLOAD_IMG, resizeFileImage } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ClanEmoji, ClanSticker } from 'mezon-js';
@@ -130,14 +130,15 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 		if (!file.name.endsWith('.gif')) {
 			resizeFile = (await resizeFileImage(file, dimension.maxWidth, dimension.maxHeight, 'file')) as File;
 		}
-
+		const isForSale = isForSaleRef.current?.checked;
 		handleUploadEmoticon(client, session, path, resizeFile).then(async (attachment: ApiMessageAttachment) => {
 			const request: ApiClanStickerAddRequest = {
 				id: id,
 				category: category,
 				clan_id: currentClanId,
 				shortname: isSticker ? editingGraphic.shortname : ':' + editingGraphic.shortname + ':',
-				source: attachment.url
+				source: attachment.url,
+				is_for_sale: isForSale
 			};
 
 			const requestData = {
@@ -173,6 +174,8 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, handleCloseModal);
+
+	const isForSaleRef = useRef<HTMLInputElement | null>(null);
 
 	return (
 		<>
@@ -248,10 +251,16 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 						</div>
 					</div>
 				</div>
-				<div className={`absolute w-full h-[54px] bottom-0 flex items-end justify-end select-none`}>
+				<div className={`absolute w-full h-[54px] bottom-0 flex items-end justify-end select-none gap-2`}>
+					<div className="flex items-center flex-1 h-full gap-2">
+						<Checkbox ref={isForSaleRef} id="sale_item" className="accent-blue-600 w-4 h-4" />
+						<label htmlFor="sale_item" className="!text-textPrimaryLight dark:!text-textPrimary">
+							This is for sale
+						</label>
+					</div>
 					<Button
 						label="Never Mind"
-						className="dark:text-textPrimary !text-textPrimaryLight rounded px-4 py-1.5 hover:underline hover:bg-transparent bg-transparent "
+						className=" !text-textPrimaryLight dark:!text-textPrimary  rounded px-4 py-1.5 hover:underline hover:bg-transparent bg-transparent"
 						onClick={handleCloseModal}
 					/>
 					<Button

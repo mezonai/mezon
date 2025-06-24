@@ -1,10 +1,11 @@
 import { useClans } from '@mezon/core';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { APP_SCREEN } from '../../../../../../../navigation/ScreenTypes';
 import { EProfileTab } from '../../../../../../../screens/settings/ProfileSetting';
 import { style } from './EditUserProfileBtn.styles';
@@ -20,6 +21,7 @@ const EditUserProfileBtn = ({ user }: { user: ChannelMembersEntity }) => {
 	}, [currentClan?.creator_id, user?.user?.id]);
 
 	const navigateToUserProfileSetting = (profileTab: EProfileTab) => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.PROFILE, params: { profileTab } });
 	};
 

@@ -652,7 +652,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			callback(
 				searchMentionsHashtag(
 					search,
-					!isEphemeralMode ? props.listMentions || [] : props.listMentions?.filter((item) => item.display !== '@here') || []
+					!isEphemeralMode ? props.listMentions || [] : props.listMentions?.filter((item) => item.display !== TITLE_MENTION_HERE) || []
 				)
 			);
 		},
@@ -830,7 +830,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						data={handleSearchUserMention}
 						trigger="@"
 						displayTransform={(id: any, display: any) => {
-							return display === '@here' ? `${display}` : `@${display}`;
+							return display === TITLE_MENTION_HERE ? `${display}` : `@${display}`;
 						}}
 						renderSuggestion={(suggestion: MentionDataProps) => {
 							return (
@@ -838,12 +838,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 									valueHightLight={valueHighlight}
 									avatarUrl={suggestion.avatarUrl}
 									subText={
-										suggestion.display === '@here'
+										suggestion.display === TITLE_MENTION_HERE
 											? 'Notify everyone who has permission to see this channel'
 											: (suggestion.username ?? '')
 									}
-									subTextStyle={(suggestion.display === '@here' ? 'normal-case' : 'lowercase') + ' text-xs'}
-									showAvatar={suggestion.display !== '@here'}
+									subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
+									showAvatar={suggestion.display !== TITLE_MENTION_HERE}
 									display={suggestion.display}
 									emojiId=""
 									color={suggestion.color}

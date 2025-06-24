@@ -291,8 +291,11 @@ function ChannelVoice({
 		const subscription = AppState.addEventListener('change', async (state) => {
 			if (state === 'background') {
 				if (Platform.OS === 'android') {
-					NativeModules.PipModule.enablePipMode();
-					dispatch(voiceActions.setPiPModeMobile(true));
+					const isPipSupported = await NativeModules.PipModule.isPipSupported();
+					if (isPipSupported) {
+						NativeModules.PipModule.enablePipMode();
+						dispatch(voiceActions.setPiPModeMobile(true));
+					}
 				}
 			} else {
 				if (Platform.OS === 'android') {
@@ -434,13 +437,21 @@ function ChannelVoice({
 
 	return (
 		<View>
-			{isAnimationComplete && !focusedScreenShare && <StatusBarHeight />}
+			{isAnimationComplete && !focusedScreenShare && !isPiPMode && <StatusBarHeight />}
 			<View
-				style={{
-					width: isAnimationComplete ? '100%' : size.s_100 * 2,
-					height: isAnimationComplete ? '100%' : size.s_150,
-					backgroundColor: themeValue?.primary
-				}}
+				style={[
+					{
+						width: isAnimationComplete ? '100%' : size.s_100 * 2,
+						height: isAnimationComplete ? '100%' : size.s_150,
+						backgroundColor: isAnimationComplete ? themeValue?.primary : themeValue?.secondary
+					},
+					!isAnimationComplete && {
+						borderWidth: 1,
+						borderColor: themeValue?.textDisabled,
+						borderRadius: size.s_10,
+						overflow: 'hidden'
+					}
+				]}
 			>
 				<LiveKitRoom serverUrl={serverUrl} token={token} connect={true}>
 					{isAnimationComplete && !focusedScreenShare && !isPiPMode && (
@@ -454,7 +465,9 @@ function ChannelVoice({
 						/>
 					)}
 					<ConnectionMonitor />
-					{!isGroupCall && <CallReactionHandler channel={channel} isAnimatedCompleted={isAnimationComplete} />}
+					{!isGroupCall && !isPiPMode && isAnimationComplete && (
+						<CallReactionHandler channel={channel} isAnimatedCompleted={isAnimationComplete} />
+					)}
 					<RoomView
 						channelId={channelId}
 						clanId={clanId}

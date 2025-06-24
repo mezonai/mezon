@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, DeviceEventEmitter, Keyboard, Platform, View } from 'react-native';
 import AttachmentPicker from './components/AttachmentPicker';
 import BottomKeyboardPicker, { IModeKeyboardPicker } from './components/BottomKeyboardPicker';
@@ -13,9 +13,9 @@ interface IProps {
 	currentChannelId: string;
 	currentClanId: string;
 }
-const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
+const PanelKeyboard = React.memo((props: IProps) => {
 	const { themeValue, themeBasic } = useTheme();
-	const [keyboardHeight, setKeyboardHeight] = useState<number>(Platform.OS === 'ios' ? 345 : 274);
+	const keyboardHeight = Platform.OS === 'ios' ? 365 : 300;
 	const [heightKeyboardShow, setHeightKeyboardShow] = useState<number>(0);
 	const [typeKeyboardBottomSheet, setTypeKeyboardBottomSheet] = useState<IModeKeyboardPicker>('text');
 	const bottomPickerRef = useRef<BottomSheet>(null);
@@ -49,26 +49,15 @@ const PanelKeyboard = React.forwardRef((props: IProps, ref) => {
 		[animatedHeight, keyboardHeight]
 	);
 
-	const keyboardWillShow = useCallback(
-		(event) => {
-			if (keyboardHeight !== event.endCoordinates.height) {
-				setKeyboardHeight(event.endCoordinates.height <= 300 ? 300 : event.endCoordinates.height);
-			}
-		},
-		[keyboardHeight]
-	);
-
 	useEffect(() => {
-		const keyboardListener = Keyboard.addListener('keyboardDidShow', keyboardWillShow);
+		const eventListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, ({ isShow = false, mode = '' }) => {
+			onShowKeyboardBottomSheet(isShow, mode as IModeKeyboardPicker);
+		});
 
 		return () => {
-			keyboardListener.remove();
+			eventListener.remove();
 		};
-	}, [keyboardWillShow]);
-
-	useImperativeHandle(ref, () => ({
-		onShowKeyboardBottomSheet
-	}));
+	}, [onShowKeyboardBottomSheet]);
 
 	const onClose = useCallback(
 		(isFocusKeyboard = true) => {

@@ -1,7 +1,7 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { useChannelMembers } from '@mezon/core';
 import { ChannelMembersEntity, selectAllRolesClan, selectChannelById, selectRolesByChannelId, useAppSelector } from '@mezon/store';
-import { EVERYONE_ROLE_ID, ID_MENTION_HERE, MentionDataProps, getNameForPrioritize } from '@mezon/utils';
+import { EVERYONE_ROLE_ID, ID_MENTION_HERE, MentionDataProps, TITLE_MENTION_HERE, getNameForPrioritize } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiRole } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -44,9 +44,9 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 			})) ?? [];
 		const hardcodedUser: MentionDataProps = {
 			id: ID_MENTION_HERE,
-			display: '@here',
+			display: TITLE_MENTION_HERE,
 			avatarUrl: '',
-			username: '@here'
+			username: TITLE_MENTION_HERE
 		};
 		const sortedMentionList = [...mentionList].sort((a, b) => {
 			const displayA = a.display?.toLowerCase() || '';
@@ -68,7 +68,7 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 		if (channelMode === ChannelStreamMode.STREAM_MODE_CHANNEL || channelMode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return [...sortedMentionList, ...roleMentions, hardcodedUser];
 		} else {
-			return [...sortedMentionList];
+			return [...sortedMentionList, hardcodedUser];
 		}
 	}, [channelMode, membersOfParent, rolesToUse]);
 

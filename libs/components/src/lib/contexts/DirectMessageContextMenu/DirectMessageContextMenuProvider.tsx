@@ -146,7 +146,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 			<Menu id={contextMenuId} style={menuStyles} animation={false}>
 				{currentHandlers && (
 					<>
-						<MemberMenuItem label="Profile" onClick={currentHandlers.handleViewProfile} />
+						{isDm && <MemberMenuItem label="Profile" onClick={currentHandlers.handleViewProfile} />}
 
 						{channelId && <MemberMenuItem label="Mark as Read" onClick={currentHandlers.handleMarkAsRead} />}
 

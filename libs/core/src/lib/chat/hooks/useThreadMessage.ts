@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { getWebUploadedAttachments, IMessageSendPayload, uniqueUsers } from '@mezon/utils';
+import { getMobileUploadedAttachments, getWebUploadedAttachments, IMessageSendPayload, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
@@ -49,7 +49,8 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			mentions?: Array<ApiMessageMention>,
 			attachments?: Array<ApiMessageAttachment>,
 			references?: Array<ApiMessageRef>,
-			thread?: ApiChannelDescription
+			thread?: ApiChannelDescription,
+			isMobile = false
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
@@ -62,7 +63,18 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			let uploadedFiles: ApiMessageAttachment[] = [];
 			// Check if there are attachments
 			if (attachments && attachments.length > 0) {
-				uploadedFiles = await getWebUploadedAttachments({ attachments, channelId, clanId: currentClanId, client, session });
+				if (isMobile) {
+					try {
+						uploadedFiles = await getMobileUploadedAttachments({ attachments, channelId, clanId: currentClanId, client, session });
+					} catch (error: any) {
+						console.error('Error uploading attachments:', error);
+						if (error?.code === 'ENOENT') {
+							uploadedFiles = attachments;
+						}
+					}
+				} else {
+					uploadedFiles = await getWebUploadedAttachments({ attachments, channelId, clanId: currentClanId, client, session });
+				}
 			}
 
 			await socket.writeChatMessage(

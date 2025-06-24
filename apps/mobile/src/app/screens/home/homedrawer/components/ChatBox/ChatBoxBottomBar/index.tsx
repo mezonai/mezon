@@ -46,7 +46,7 @@ import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 import EmojiSwitcher from '../../EmojiPicker/EmojiSwitcher';
 import { renderTextContent } from '../../RenderTextContent';
 import { ChatBoxListener } from '../ChatBoxListener';
-import { ChatMessageLeftArea } from '../ChatMessageLeftArea';
+import { ChatMessageLeftArea, IChatMessageLeftAreaRef } from '../ChatMessageLeftArea';
 import { ChatMessageSending } from '../ChatMessageSending';
 import { ChatBoxTyping } from './ChatBoxTyping';
 import { style } from './style';
@@ -83,7 +83,6 @@ interface IChatInputProps {
 	messageActionNeedToResolve: IMessageActionNeedToResolve | null;
 	messageAction?: EMessageActionType;
 	onDeleteMessageActionNeedToResolve?: () => void;
-	onShowKeyboardBottomSheet?: (isShow: boolean, type?: string) => void;
 	isPublic: boolean;
 }
 
@@ -95,7 +94,6 @@ export const ChatBoxBottomBar = memo(
 		messageActionNeedToResolve,
 		messageAction,
 		onDeleteMessageActionNeedToResolve,
-		onShowKeyboardBottomSheet,
 		isPublic = false
 	}: IChatInputProps) => {
 		const { themeValue } = useTheme();
@@ -107,7 +105,6 @@ export const ChatBoxBottomBar = memo(
 
 		const [mentionTextValue, setMentionTextValue] = useState('');
 		const [listMentions, setListMentions] = useState<MentionDataProps[]>([]);
-		const [isShowAttachControl, setIsShowAttachControl] = useState<boolean>(false);
 		const [isFocus, setIsFocus] = useState<boolean>(false);
 		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<IModeKeyboardPicker>('text');
 		const [textChange, setTextChange] = useState<string>('');
@@ -121,6 +118,7 @@ export const ChatBoxBottomBar = memo(
 		const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 		const mentionsOnMessage = useRef<IMentionOnMessage[]>([]);
 		const hashtagsOnMessage = useRef<IHashtagOnMessage[]>([]);
+		const chatMessageLeftAreaRef = useRef<IChatMessageLeftAreaRef>(null);
 
 		const inputTriggersConfig = useMemo(() => {
 			const isDM = [ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
@@ -196,18 +194,21 @@ export const ChatBoxBottomBar = memo(
 			);
 		}, [dispatch, onDeleteMessageActionNeedToResolve, resetCachedText, channelId]);
 
-		const handleKeyboardBottomSheetMode = useCallback(
-			(mode: IModeKeyboardPicker) => {
-				setModeKeyBoardBottomSheet(mode);
-				if (mode === 'emoji' || mode === 'attachment') {
-					onShowKeyboardBottomSheet(true, mode);
-				} else {
-					inputRef && inputRef.current && inputRef.current.focus();
-					onShowKeyboardBottomSheet(false);
-				}
-			},
-			[onShowKeyboardBottomSheet]
-		);
+		const handleKeyboardBottomSheetMode = useCallback((mode: IModeKeyboardPicker) => {
+			setModeKeyBoardBottomSheet(mode);
+			if (mode === 'emoji' || mode === 'attachment') {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+					isShow: true,
+					mode
+				});
+			} else {
+				inputRef && inputRef.current && inputRef.current.focus();
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+					isShow: false,
+					mode: ''
+				});
+			}
+		}, []);
 		const handleTextInputChange = async (text: string) => {
 			const store = getStore();
 			setTextChange(text);
@@ -291,7 +292,7 @@ export const ChatBoxBottomBar = memo(
 			mentionsOnMessage.current = mentionList;
 			setMentionTextValue(text);
 			textValueInputRef.current = convertedHashtag;
-			setIsShowAttachControl(false);
+			chatMessageLeftAreaRef?.current?.setAttachControlVisibility(false);
 		};
 
 		const handleSelectionChange = (selection: { start: number; end: number }) => {
@@ -416,13 +417,19 @@ export const ChatBoxBottomBar = memo(
 
 		const handleInputFocus = () => {
 			setModeKeyBoardBottomSheet('text');
-			onShowKeyboardBottomSheet(false);
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+				isShow: false,
+				mode: ''
+			});
 		};
 
 		const handleInputBlur = () => {
-			setIsShowAttachControl(false);
+			chatMessageLeftAreaRef.current?.setAttachControlVisibility(false);
 			if (modeKeyBoardBottomSheet === 'text') {
-				onShowKeyboardBottomSheet(false);
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+					isShow: false,
+					mode: ''
+				});
 			}
 		};
 
@@ -472,8 +479,7 @@ export const ChatBoxBottomBar = memo(
 				<ChatBoxListener mode={mode} />
 				<View style={styles.containerInput}>
 					<ChatMessageLeftArea
-						isShowAttachControl={isShowAttachControl}
-						setIsShowAttachControl={setIsShowAttachControl}
+						ref={chatMessageLeftAreaRef}
 						isAvailableSending={textChange?.length > 0}
 						isShowCreateThread={!hiddenIcon?.threadIcon}
 						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}

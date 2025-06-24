@@ -54,7 +54,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isA
 			{message.references?.[0].message_ref_id ? (
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />
-					<div className="flex flex-row gap-1 pb-2 pr-12 items-center w-full">
+					<div className="flex flex-row gap-1 pr-12 items-center w-full">
 						<div onClick={onClick} className="w-5 h-5">
 							<AvatarImage
 								className="w-5 h-5"
@@ -78,7 +78,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isA
 						<div className="gap-1 flex flex-row items-center w-full">
 							<span
 								onClick={onClick}
-								className=" text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
+								className="h-6 text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
 							>
 								{!isClanView ? message?.references?.[0]?.message_sender_display_name || messageUsernameSenderRef : nameShowed}
 							</span>
@@ -93,7 +93,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, mode, isA
 									<Icons.ImageThumbnail />
 								</div>
 							) : (
-								<div className="h-6 overflow-hidden flex-1 leading-6">
+								<div className="h-6 overflow-hidden flex-1">
 									<MessageLine
 										isEditted={false}
 										isTokenClickAble={false}

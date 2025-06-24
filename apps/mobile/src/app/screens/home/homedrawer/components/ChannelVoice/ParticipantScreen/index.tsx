@@ -44,11 +44,11 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 						styles.userView,
 						!isGridLayout ? { width: '100%', height: size.s_150 + size.s_100 } : { width: '48%', height: size.s_150 },
 						isTabletLandscape && { height: size.s_150 + size.s_100 },
-						isPiPMode && { height: size.s_150, width: size.s_150 + size.s_50 }
+						isPiPMode && { height: size.s_90, width: size.s_200 + size.s_10 }
 					]}
 				>
 					<VideoTrack
-						objectFit={isPiPMode ? 'cover' : 'contain'}
+						objectFit={'contain'}
 						trackRef={screenTrackRef}
 						style={styles.participantView}
 						iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
@@ -88,9 +88,9 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 					/>
 					<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 						{participant.isMicrophoneEnabled ? (
-							<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
+							<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.white} />
 						) : (
-							<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
+							<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.white} />
 						)}
 						<Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>
 					</View>
@@ -119,14 +119,14 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 					{!isPiPMode && (
 						<View style={styles.wrapperUser}>
 							{participant.isMicrophoneEnabled ? (
-								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
+								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.white} />
 							) : (
-								<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
+								<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.white} />
 							)}
 							{isLoading ? (
 								<Icons.LoadingIcon width={24} height={24} />
 							) : (
-								<Text numberOfLines={2} style={styles.subTitle}>
+								<Text numberOfLines={1} style={styles.subTitle}>
 									{voiceUsername || 'Unknown'}
 								</Text>
 							)}

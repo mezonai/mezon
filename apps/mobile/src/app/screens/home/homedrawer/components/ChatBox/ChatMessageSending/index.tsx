@@ -241,7 +241,7 @@ export const ChatMessageSending = memo(
 					const payloadThreadSendMessage: IPayloadThreadSendMessage = {
 						content: payloadSendMessage,
 						mentions: simplifiedMentionList,
-						attachments: [],
+						attachments: attachmentDataRef || [],
 						references: []
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.SEND_MESSAGE, payloadThreadSendMessage);

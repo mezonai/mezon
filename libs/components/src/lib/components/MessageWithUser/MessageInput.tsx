@@ -14,6 +14,7 @@ import {
 	IMentionOnMessage,
 	IMessageSendPayload,
 	MentionDataProps,
+	TITLE_MENTION_HERE,
 	ThemeApp,
 	addMarkdownPrefix,
 	addMention,
@@ -336,7 +337,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 						data={handleSearchUserMention}
 						trigger="@"
 						displayTransform={(id: any, display: any) => {
-							return display === '@here' ? `${display}` : `@${display}`;
+							return display === TITLE_MENTION_HERE ? `${display}` : `@${display}`;
 						}}
 						renderSuggestion={(suggestion: MentionDataProps) => {
 							return (
@@ -344,12 +345,12 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 									valueHightLight={valueHighlight}
 									avatarUrl={suggestion.avatarUrl}
 									subText={
-										suggestion.display === '@here'
+										suggestion.display === TITLE_MENTION_HERE
 											? 'Notify everyone who has permission to see this channel'
 											: (suggestion.username ?? '')
 									}
-									subTextStyle={(suggestion.display === '@here' ? 'normal-case' : 'lowercase') + ' text-xs'}
-									showAvatar={suggestion.display !== '@here'}
+									subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
+									showAvatar={suggestion.display !== TITLE_MENTION_HERE}
 									emojiId=""
 									display={suggestion.display}
 								/>

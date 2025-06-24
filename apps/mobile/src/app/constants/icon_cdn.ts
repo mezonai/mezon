@@ -139,5 +139,6 @@ export enum IconCDN {
 	blockUser = require('./iconPNG/blockUser.png'),
 	unblockUser = require('./iconPNG/unblockUser.png'),
 	wallet = require('./iconPNG/wallet.png'),
-	removeFriend = require('./iconPNG/userMinusIcon.png')
+	removeFriend = require('./iconPNG/userMinusIcon.png'),
+	playCircleIcon = require('./iconPNG/playCircle.png')
 }

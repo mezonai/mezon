@@ -19,6 +19,7 @@ import clanNotificationsSetting from './clanNotificationsSetting.json';
 import clanOverviewSetting from './clanOverviewSetting.json';
 import clanRoles from './clanRoles.json';
 import clanSetting from './clanSetting.json';
+import clanSoundSetting from './clanSoundSetting.json';
 import clanStickerSetting from './clanStickerSetting.json';
 import common from './common.json';
 import createThread from './createThread.json';
@@ -98,5 +99,6 @@ export default {
 	recordChatMessage,
 	channelVoice,
 	token,
-	qrScanner
+	qrScanner,
+	clanSoundSetting
 };
