@@ -31,13 +31,4 @@ export type DisplayedEmoji = {
 
 export interface ReactionCallHandlerProps {
 	currentChannel?: ReactionChannelInfo;
-	emojiReactions?: string[];
-	onEmojiProcessed?: () => void;
-	soundReactions?: string[];
-	onSoundProcessed?: () => void;
-}
-
-export interface VoiceSoundSend {
-	channel_id: string;
-	sounds: string[];
 }
