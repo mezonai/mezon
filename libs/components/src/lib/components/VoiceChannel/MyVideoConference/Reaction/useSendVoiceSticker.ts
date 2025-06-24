@@ -29,11 +29,9 @@ export const useSendVoiceSticker = ({ currentChannel }: UseSendReactionParams) =
 
                 room.localParticipant.publishData(data, { reliable: true });
 
-                // Đặt người gửi sticker là chính mình
                 const localIdentity = room.localParticipant.identity;
                 setStickerSender(localIdentity, 3000);
 
-                // Phát âm thanh cho chính mình
                 try {
                     const success = await playSound(stickerId, stickerUrl);
                     if (!success) {
