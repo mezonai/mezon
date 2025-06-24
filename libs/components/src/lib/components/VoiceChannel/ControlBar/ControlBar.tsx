@@ -22,6 +22,7 @@ import { EmojiPlaces, requestMediaPermission, useMediaPermissions } from '@mezon
 import { ChannelStreamMode } from 'mezon-js';
 
 import { EmojiSuggestionProvider } from '@mezon/core';
+import { useMezon } from '@mezon/transport';
 import isElectron from 'is-electron';
 import { LocalTrackPublication, RoomEvent, ScreenSharePresets, Track, VideoPresets } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
@@ -33,11 +34,14 @@ import { GifStickerEmojiPopup } from '../../GifsStickersEmojis';
 import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
 import { ReactionChannelInfo } from '../MyVideoConference/Reaction/types';
 import { useSendReaction } from '../MyVideoConference/Reaction/useSendReaction';
+import { useSendVoiceSticker } from '../MyVideoConference/Reaction/useSendVoiceSticker';
+import { VoiceStickersPanel } from '../MyVideoConference/Reaction/VoiceStickersPanel';
 import VoicePopout from '../VoicePopout/VoicePopout';
 import { BackgroundEffectsMenu } from './BackgroundEffectsMenu';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
 import { ScreenShareToggleButton } from './TrackToggle/ScreenShareToggleButton';
 import { TrackToggle } from './TrackToggle/TrackToggle';
+
 interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 	onDeviceError?: (error: { source: Track.Source; error: Error }) => void;
 	variation?: 'minimal' | 'verbose' | 'textOnly';
@@ -70,6 +74,7 @@ export function ControlBar({
 	const isGroupCall = useSelector(selectGroupCallJoined);
 
 	const sendEmojiReaction = useSendReaction({ currentChannel: currentChannel });
+	const sendVoiceSticker = useSendVoiceSticker({ currentChannel });
 
 	const screenTrackRef = useRef<LocalTrackPublication | null>(null);
 	const isDesktop = isElectron();
@@ -103,6 +108,9 @@ export function ControlBar({
 	const { saveAudioInputDeviceId, saveVideoInputDeviceId } = usePersistentUserChoices({
 		preventSave: !saveUserChoices
 	});
+
+	const { socketRef } = useMezon();
+	const [showVoiceStickersPanel, setShowVoiceStickersPanel] = useState(false);
 
 	useEffect(() => {
 		if (!isOpenPopOut) {
@@ -321,36 +329,64 @@ export function ControlBar({
 		[sendEmojiReaction]
 	);
 
+	const handleVoiceStickerSelect = useCallback(
+		(stickerId: string, stickerUrl?: string) => {
+			sendVoiceSticker(stickerId, stickerUrl);
+
+		},
+		[sendVoiceSticker, currentChannel]
+	);
+
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-sbm:!hidden max-md:flex-col">
-			<div className="flex justify-start gap-4 max-md:hidden">
-				{!isGroupCall && (
+			<div className='flex justify-between items-start gap-4'>
+				<div className="flex justify-start gap-4 max-md:hidden">
+					{!isGroupCall && (
+						<Tooltip
+							placement="topLeft"
+							trigger={['click']}
+							overlayClassName="w-auto"
+							visible={showEmojiPanel}
+							onVisibleChange={setShowEmojiPanel}
+							overlay={
+								<EmojiSuggestionProvider>
+									<GifStickerEmojiPopup
+										showTabs={{ emojis: true }}
+										mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+										emojiAction={EmojiPlaces.EMOJI_REACTION}
+										onEmojiSelect={handleEmojiSelect}
+									/>
+								</EmojiSuggestionProvider>
+							}
+							destroyTooltipOnHide
+						>
+							<div>
+								<Icons.VoiceEmojiControlIcon
+									className={`cursor-pointer ${isShowMember ? 'hover:text-black dark:hover:text-white text-[#535353] dark:text-[#B5BAC1]' : 'text-white hover:text-gray-200'}`}
+								/>
+							</div>
+						</Tooltip>
+					)}
+				</div>
+				<div className="flex justify-start gap-4 max-md:hidden">
 					<Tooltip
 						placement="topLeft"
 						trigger={['click']}
 						overlayClassName="w-auto"
-						visible={showEmojiPanel}
-						onVisibleChange={setShowEmojiPanel}
-						overlay={
-							<EmojiSuggestionProvider>
-								<GifStickerEmojiPopup
-									showTabs={{ emojis: true }}
-									mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-									emojiAction={EmojiPlaces.EMOJI_REACTION}
-									onEmojiSelect={handleEmojiSelect}
-								/>
-							</EmojiSuggestionProvider>
-						}
+						visible={showVoiceStickersPanel}
+						onVisibleChange={setShowVoiceStickersPanel}
+						overlay={<VoiceStickersPanel onSelect={handleVoiceStickerSelect} />}
 						destroyTooltipOnHide
 					>
 						<div>
-							<Icons.VoiceEmojiControlIcon
+							<Icons.TrumPartyControl
 								className={`cursor-pointer ${isShowMember ? 'hover:text-black dark:hover:text-white text-[#535353] dark:text-[#B5BAC1]' : 'text-white hover:text-gray-200'}`}
 							/>
 						</div>
 					</Tooltip>
-				)}
+				</div>
 			</div>
+
 			<div className="flex justify-center gap-3 flex-1">
 				{visibleControls.microphone && (
 					<div className="relative rounded-full bg-gray-300 dark:bg-black">

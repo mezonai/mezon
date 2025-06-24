@@ -25,6 +25,7 @@ import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
 import React, { PropsWithChildren, forwardRef, useCallback, useMemo, useState } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
+import { useVoiceStickerContext } from '../Reaction/VoiceStickerContext';
 import { FocusToggle } from './FocusToggle';
 
 export function ParticipantContextIfNeeded(
@@ -40,11 +41,7 @@ export function ParticipantContextIfNeeded(
 	);
 }
 
-export function TrackRefContextIfNeeded(
-	props: PropsWithChildren<{
-		trackRef?: TrackReferenceOrPlaceholder;
-	}>
-) {
+export function TrackRefContextIfNeeded(props: PropsWithChildren<{ trackRef?: TrackReferenceOrPlaceholder }>) {
 	const hasContext = !!useMaybeTrackRefContext();
 	return props.trackRef && !hasContext ? (
 		<TrackRefContext.Provider value={props.trackRef}>{props.children}</TrackRefContext.Provider>
@@ -52,6 +49,7 @@ export function TrackRefContextIfNeeded(
 		<>{props.children}</>
 	);
 }
+
 
 export interface ParticipantTileProps extends React.HTMLAttributes<HTMLDivElement> {
 	trackRef?: TrackReferenceOrPlaceholder;
@@ -68,6 +66,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	ref
 ) {
 	const trackReference = useEnsureTrackRef(trackRef);
+	const { isPlayingSticker } = useVoiceStickerContext();
 
 	const { elementProps } = useParticipantTile<HTMLDivElement>({
 		htmlProps,
@@ -136,16 +135,26 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		)
 	);
 
+
+	const isUserPlayingSticker = isPlayingSticker(usernameRaw);
+
+
+
 	return (
 		<div ref={ref} style={{ position: 'relative' }} {...elementProps}>
+			{isUserPlayingSticker && (
+				<div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10 animate-pulse">
+					<Icons.Speaker defaultFill="text-blue-400" defaultSize="w-8 h-8" />
+				</div>
+			)}
 			<TrackRefContextIfNeeded trackRef={trackReference}>
 				<ParticipantContextIfNeeded participant={trackReference.participant}>
 					{children ?? (
 						<>
 							{isTrackReference(trackReference) &&
-							(trackReference.publication?.kind === 'video' ||
-								trackReference.source === Track.Source.Camera ||
-								trackReference.source === Track.Source.ScreenShare) ? (
+								(trackReference.publication?.kind === 'video' ||
+									trackReference.source === Track.Source.Camera ||
+									trackReference.source === Track.Source.ScreenShare) ? (
 								<VideoTrack
 									trackRef={trackReference}
 									onSubscriptionStatusChanged={handleSubscribe}

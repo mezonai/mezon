@@ -79,6 +79,27 @@ const GifStickerEmojiButtons = memo(
 			[subPanelActive, setSubPanelActive, dispatch, onToggleEmojiPopup]
 		);
 
+		const handleOpenSounds = useCallback(
+			(e: React.MouseEvent<HTMLDivElement>) => {
+				e.stopPropagation();
+
+				setShowCategories(true);
+				setValueInputSearch('');
+				setClickedTrendingGif(false);
+				setButtonArrowBack(false);
+				dispatch(reactionActions.setReactionRightState(false));
+				dispatch(referencesActions.setIdReferenceMessageReaction(''));
+
+				const newState = subPanelActive === SubPanelName.SOUNDS ? SubPanelName.NONE : SubPanelName.SOUNDS;
+				setSubPanelActive(newState);
+
+				if (onToggleEmojiPopup) {
+					onToggleEmojiPopup(newState !== SubPanelName.NONE, e);
+				}
+			},
+			[subPanelActive, setSubPanelActive, dispatch, onToggleEmojiPopup]
+		);
+
 		const cursorPointer = isTopic || hasPermissionEdit;
 
 		return (
@@ -104,6 +125,10 @@ const GifStickerEmojiButtons = memo(
 
 				<div onClick={handleOpenEmoji} className={`w-6 h-6 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
 					<Icons.Smile defaultSize="w-6 h-6" defaultFill={`${'#AEAEAE'}`} />
+				</div>
+
+				<div onClick={handleOpenSounds} className={`w-6 h-6 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+					<Icons.TrumPartyControl className="w-6 h-6 dark:text-[#AEAEAE] text-colorTextLightMode dark:hover:text-white hover:text-black" />
 				</div>
 			</div>
 		);
