@@ -617,6 +617,7 @@ export type IEmoji = {
 	logo?: string;
 	clan_name?: string;
 	clan_id?: string;
+	is_for_sale?: boolean;
 };
 
 export type IEmojiRecent = {

@@ -79,12 +79,17 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 
 	const categoryLogo = useMemo(() => {
 		const categorizedStickers = clanStickers
-			.map((sticker) => ({
-				id: sticker.clan_id,
-				type: sticker.clan_name,
-				url: sticker.logo
-			}))
-			.filter((sticker, index, self) => index === self.findIndex((s) => s.id === sticker.id) && sticker.type !== FOR_SALE_CATE);
+			.filter((sticker) => sticker.clan_name !== FOR_SALE_CATE)
+			.reduce((acc: { id?: string; type?: string; url?: string }[], sticker) => {
+				if (!acc.some((item) => item.id === sticker.clan_id)) {
+					acc.push({
+						id: sticker.clan_id,
+						type: sticker.clan_name,
+						url: sticker.logo
+					});
+				}
+				return acc;
+			}, []);
 		return [{ id: FOR_SALE_CATE, type: FOR_SALE_CATE, url: '' }, ...categorizedStickers];
 	}, [clanStickers]);
 	const stickers = useMemo(() => {
@@ -261,7 +266,7 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 						{stickerList.map((sticker: StickerPanel) => (
 							<div
 								className="group relative w-full h-full border border-bgHoverMember aspect-square overflow-hidden flex items-center rounded-lg cursor-pointer"
-								key={sticker.url}
+								key={sticker.id}
 							>
 								<img
 									src={sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/` + sticker.id + `.webp`}

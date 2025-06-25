@@ -184,7 +184,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 	const isForSaleRef = useRef<HTMLInputElement | null>(null);
 
-	function createBlurredImageFile(originalFile: File, blurAmount = 2) {
+	function createBlurredImageFile(originalFile: File, blurAmount = 7) {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
 			img.src = URL.createObjectURL(originalFile);
@@ -193,7 +193,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				const canvas = document.createElement('canvas');
 				const ctx = canvas.getContext('2d');
 				if (!ctx) {
-					reject(new Error('Không thể tạo canvas context.'));
+					reject(new Error('Cannot create canvas context.'));
 					return;
 				}
 				canvas.width = img.width;

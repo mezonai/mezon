@@ -9,13 +9,13 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 	const { socketRef } = useMezon();
 
 	const generatePosition = useCallback(() => {
-		const horizontalOffset = (Math.random() - 0.5) * 30;
+		const horizontalOffset = (Math.random() - 0.5) * 40;
 		const baseLeft = 50;
 
-		const animationVariant = Math.floor(Math.random() * 3) + 1;
+		const animationVariant = Math.floor(Math.random() * 6) + 1;
 		const animationName = `reactionFloatCurve${animationVariant}`;
 
-		const duration = 4.0 + Math.random() * 1.0;
+		const duration = 2.5 + Math.random() * 2.0;
 
 		return {
 			left: `${baseLeft + horizontalOffset}%`,
@@ -41,8 +41,6 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 							const position = generatePosition();
 							const delay = index * 300;
 
-							const baseScale = 1.0 - index * 0.15;
-
 							const newEmoji = {
 								id: `${Date.now()}-${firstEmojiId}-${index}-${Math.random()}`,
 								emoji: '',
@@ -50,7 +48,6 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 								timestamp: Date.now(),
 								position: {
 									...position,
-									baseScale,
 									delay: `${delay}ms`
 								}
 							};
@@ -92,15 +89,14 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 						position: 'absolute',
 						bottom: item.position?.bottom || '15%',
 						left: item.position?.left || '50%',
-						animation: `${item.position?.animationName || 'reactionFloatCurve1'} ${item.position?.duration || '4.5s'} linear forwards`,
+						animation: `${item.position?.animationName || 'reactionFloatCurve1'} ${item.position?.duration || '3.5s'} linear forwards`,
 						animationDelay: item.position?.delay || '0ms',
-						width: '36px',
-						height: '36px',
-						transform: `scale(${item.position?.baseScale || 1})`,
+						width: '40px',
+						height: '40px',
 						transformOrigin: 'center center',
 						willChange: 'transform, opacity',
 						backfaceVisibility: 'hidden',
-						perspective: '1000px'
+						contain: 'layout style paint'
 					}}
 				>
 					<img

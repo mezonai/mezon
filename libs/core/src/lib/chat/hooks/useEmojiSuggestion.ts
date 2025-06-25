@@ -17,11 +17,12 @@ interface EmojiSuggestionProps {
 }
 
 const filterEmojiData = (emojis: IEmoji[]) => {
-	return emojis.map(({ id, src, shortname, category }) => ({
+	return emojis.map(({ id, src, shortname, category, is_for_sale }) => ({
 		id,
 		src,
 		category,
-		shortname
+		shortname,
+		is_for_sale
 	}));
 };
 

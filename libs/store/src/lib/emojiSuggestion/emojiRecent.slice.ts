@@ -5,7 +5,7 @@ import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, crea
 import { ApiClanEmoji } from 'mezon-js/dist/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
-import { selectAllEmojiSuggestion } from './emojiSuggestion.slice';
+import { emojiSuggestionActions, selectAllEmojiSuggestion } from './emojiSuggestion.slice';
 
 export const EMOJI_RECENT_FEATURE_KEY = 'emojiRecent';
 
@@ -72,14 +72,25 @@ const buyItemForSale = createAsyncThunk('emoji/buyItemForSale', async ({ id, typ
 			item_type: type
 		});
 		if (response && response.source && id) {
-			thunkAPI.dispatch(
-				stickerSettingActions.update({
-					id: id,
-					changes: {
-						source: response.source
-					}
-				})
-			);
+			if (type) {
+				thunkAPI.dispatch(
+					stickerSettingActions.update({
+						id: id,
+						changes: {
+							source: response.source
+						}
+					})
+				);
+			} else {
+				thunkAPI.dispatch(
+					emojiSuggestionActions.update({
+						id: id,
+						changes: {
+							src: response.source
+						}
+					})
+				);
+			}
 		}
 
 		return response;
