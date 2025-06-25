@@ -256,3 +256,5 @@ export const selectEmojiByClanId = (clanId: string) =>
 	createSelector(selectAllEmojiSuggestion, (emojis) => {
 		return emojis.filter((emoji) => emoji.clan_id === clanId);
 	});
+
+export const selectEmojiOnSale = createSelector([selectAllEmojiSuggestion], (emojis) => emojis?.filter((emoji) => emoji?.is_for_sale === true));

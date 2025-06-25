@@ -62,6 +62,7 @@ export const size = {
 	s_90: verticalScale(90),
 	s_100: verticalScale(100),
 	s_110: verticalScale(110),
+	s_140: verticalScale(140),
 	s_150: verticalScale(150),
 	s_170: verticalScale(170),
 	s_200: verticalScale(200),

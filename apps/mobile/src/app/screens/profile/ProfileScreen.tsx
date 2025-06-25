@@ -103,6 +103,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 		navigation.navigate(APP_SCREEN.SETTINGS.STACK, { screen: APP_SCREEN.SETTINGS.HOME });
 	};
 
+	const navigateToShopScreen = () => {
+		navigation.navigate(APP_SCREEN.SHOP.STACK, { screen: APP_SCREEN.SHOP.HOME });
+	};
+
 	const navigateGoback = () => {
 		navigation.goBack();
 	};
@@ -199,9 +203,14 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 						</TouchableOpacity>
 					)}
-					<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToSettingScreen()}>
-						<MezonIconCDN icon={IconCDN.settingIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
-					</TouchableOpacity>
+					<View style={{ flexDirection: 'row', gap: size.s_10 }}>
+						<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToShopScreen()}>
+							<MezonIconCDN icon={IconCDN.shopSparkleIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToSettingScreen()}>
+							<MezonIconCDN icon={IconCDN.settingIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+						</TouchableOpacity>
+					</View>
 				</View>
 
 				<View style={styles.viewImageProfile}>

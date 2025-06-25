@@ -357,6 +357,10 @@ export const selectAudioByCurrentUser = (clanId: string, userId: string) => (sta
 export const settingStickerReducer = settingClanStickerSlice.reducer;
 export const settingClanStickerActions = { ...settingClanStickerSlice.actions, fetchStickerByUserId };
 
+export const selectStickerOnSale = createSelector([selectAllStickerSuggestion], (stickers) =>
+	stickers?.filter((sticker) => sticker?.is_for_sale === true)
+);
+
 export const soundEffectActions = {
 	createSound,
 	updateSound,

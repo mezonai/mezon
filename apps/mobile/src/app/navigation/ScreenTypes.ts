@@ -57,6 +57,11 @@ export const APP_SCREEN = {
 		HOME: 'ROUTES.PROFILE.HOME'
 	},
 
+	SHOP: {
+		STACK: 'ROUTES.SHOP.STACK',
+		HOME: 'ROUTES.SHOP.HOME'
+	},
+
 	MENU_THREAD: {
 		STACK: 'ROUTES.MENU_THREAD.STACK',
 		BOTTOM_SHEET: 'ROUTES.MENU_THREAD.BOTTOM_SHEET',
@@ -157,6 +162,10 @@ type FriendsStackParamList = {
 
 type ProfileStackParamList = {
 	[APP_SCREEN.PROFILE.HOME]: undefined;
+};
+
+type ShopStackParamList = {
+	[APP_SCREEN.SHOP.HOME]: undefined;
 };
 
 type MenuThreadStackParamList = {
@@ -309,6 +318,7 @@ export type AppStackParamList = {
 	[APP_SCREEN.MESSAGES.STACK]: NavigatorScreenParams<MessagesStackParamList>;
 	[APP_SCREEN.FRIENDS.STACK]: NavigatorScreenParams<FriendsStackParamList>;
 	[APP_SCREEN.PROFILE.STACK]: NavigatorScreenParams<ProfileStackParamList>;
+	[APP_SCREEN.SHOP.STACK]: NavigatorScreenParams<ShopStackParamList>;
 	[APP_SCREEN.MENU_THREAD.STACK]: NavigatorScreenParams<MenuThreadStackParamList>;
 	[APP_SCREEN.MENU_CHANNEL.STACK]: NavigatorScreenParams<MenuChannelStackParamList>;
 	[APP_SCREEN.MENU_CLAN.STACK]: NavigatorScreenParams<MenuClanStackParamList>;
