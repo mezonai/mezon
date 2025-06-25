@@ -5,6 +5,7 @@ import {
     selectCurrentClan,
     selectCurrentClanId,
     selectCurrentUserId,
+    selectMemberClanByUserId,
     soundEffectActions,
     useAppDispatch
 } from '@mezon/store';
@@ -130,12 +131,32 @@ const SettingSoundEffect = () => {
                                     </button>
                                 )}
                             </div>
-                            <audio controls src={sound.url} className="w-full rounded-full border dark:border-borderDivider border-gray-200" />
+                            <audio controls src={sound.url} className="w-full rounded-full border dark:border-borderDivider border-gray-200 mb-2" />
+                            {sound.creator_id && (
+                                <CreatorInfo creatorId={sound.creator_id} />
+                            )}
                         </div>
                     ))}
                 </div>
             </div>
             {showModal && <ModalUploadSound onSuccess={handleUploadSuccess} onClose={() => setShowModal(false)} />}
+        </div>
+    );
+};
+
+const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
+    const creator = useSelector(selectMemberClanByUserId(creatorId));
+
+    if (!creator) return null;
+
+    return (
+        <div className="flex items-center justify-center gap-1 mt-1">
+            <img
+                className="w-4 h-4 rounded-full select-none object-cover"
+                src={creator?.user?.avatar_url ?? process.env.NX_LOGO_MEZON}
+                alt=""
+            />
+            <p className="text-xs dark:text-white text-textPrimaryLight max-w-20 truncate">{creator?.user?.username}</p>
         </div>
     );
 };
