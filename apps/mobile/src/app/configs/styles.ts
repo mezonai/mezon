@@ -33,7 +33,7 @@ export const style = (colors: Attributes) =>
 			shadowOffset: { width: 0, height: 0 },
 			shadowOpacity: 0.9,
 			shadowRadius: 5,
-			elevation: 2
+			elevation: 8
 		},
 		notificationContent: {
 			alignItems: 'stretch',

@@ -1,7 +1,7 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
-import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
+import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	listChannelRenderAction,
@@ -102,7 +102,16 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				isFavorite ? removeFavoriteChannel() : markFavoriteChannel();
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
-			icon: <MezonIconCDN icon={IconCDN.favoriteFilledIcon} color={themeValue.textStrong} />
+			icon: (
+				<MezonIconCDN
+					icon={IconCDN.favoriteFilledIcon}
+					color={themeValue.textStrong}
+					width={30}
+					height={30}
+					customStyle={{ marginLeft: -size.s_2, marginBottom: size.s_2 }}
+				/>
+			),
+			textStyle: { marginLeft: -size.s_2 }
 		},
 		{
 			title: t('menu.inviteMenu.copyLink'),

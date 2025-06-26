@@ -1,4 +1,5 @@
 import { isEqual } from '@mezon/mobile-components';
+import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 
@@ -131,7 +132,7 @@ const SpriteAnimationComponent = ({
 	return (
 		<View style={{ overflow: 'hidden', width: frameWidth, height: frameHeight }}>
 			<Animated.Image
-				source={{ uri: spriteUrl }}
+				source={{ uri: createImgproxyUrl(spriteUrl ?? '', { width: 300, height: 300, resizeType: 'fit' }) }}
 				style={{
 					width: spriteWidth,
 					height: spriteHeight,

@@ -80,7 +80,7 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`draggable-area max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`draggable-area max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between flex-shrink dark:bg-bgPrimary bg-bgLightPrimary shadow-inner border-b-[1px] dark:border-bgTertiary border-bgLightTertiary ${closeMenu ? 'fixed top-0 w-screen' : ''} ${closeMenu && statusMenu ? 'max-sbm:left-0 max-sbm:z-30' : 'left-0'}`}
 		>
 			<TopBarChannelText />
 		</div>
@@ -97,7 +97,13 @@ const TopBarChannelText = memo(() => {
 	const { setStatusMenu } = useMenu();
 	const openMenu = useCallback(() => {
 		setStatusMenu(true);
-	}, []);
+	}, [setStatusMenu]);
+	const closeMenu = useCallback(() => {
+		const isMobile = window.innerWidth < 640;
+		if (isMobile) {
+			setStatusMenu(false);
+		}
+	}, [setStatusMenu]);
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 	const handleNavigateToParent = () => {
@@ -105,6 +111,7 @@ const TopBarChannelText = memo(() => {
 			return;
 		}
 		navigate(toChannelPage(channelParent.id, channelParent.clan_id));
+		closeMenu();
 	};
 	const currentDmGroup = useSelector(selectCurrentDM);
 	const channelDmGroupLabel = useMemo(() => {
@@ -153,20 +160,21 @@ const TopBarChannelText = memo(() => {
 
 	const handleCloseCanvas = () => {
 		dispatch(appActions.setIsShowCanvas(false));
+		closeMenu();
 	};
 	return (
 		<>
-			<div className="justify-start items-center gap-1 flex flex-1 max-w-[calc(100%_-_460px)]">
+			<div className="justify-start items-center gap-1 flex flex-1 max-w-[calc(100%_-_460px)] max-sbm:max-w-full">
 				<div className="flex sbm:hidden pl-3 px-2" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
 				{channel ? (
 					isMemberPath || isChannelPath ? (
-						<p className="text-base font-semibold">{isChannelPath ? 'Channels' : 'Members'}</p>
+						<p className="text-base font-semibold truncate max-sbm:max-w-[180px]">{isChannelPath ? 'Channels' : 'Members'}</p>
 					) : (
 						<>
 							{channelParent && (
-								<div className="flex gap-1 items-center" onClick={handleNavigateToParent}>
+									<div className="flex gap-1 items-center truncate max-sbm:hidden" onClick={handleNavigateToParent}>
 									<ChannelTopbarLabel
 										isPrivate={!!channelParent?.channel_private}
 										label={channelParent?.channel_label || ''}
@@ -184,7 +192,7 @@ const TopBarChannelText = memo(() => {
 						</>
 					)
 				) : (
-					<div className="flex items-center gap-3 flex-1">
+						<div className="flex items-center gap-3 flex-1 overflow-hidden">
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={currentDmGroup?.channel_avatar?.[0]}
@@ -202,7 +210,7 @@ const TopBarChannelText = memo(() => {
 						) : (
 							<div
 								key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
-								className={`overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent outline-none leading-10 text-colorTextLightMode dark:text-contentPrimary max-w-[250px] min-w-0`}
+										className={`overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent outline-none leading-10 text-colorTextLightMode dark:text-contentPrimary max-w-[250px] min-w-0 max-sbm:max-w-[180px]`}
 								onClick={handleStartEditing}
 								title={channelDmGroupLabel}
 							>
@@ -212,7 +220,7 @@ const TopBarChannelText = memo(() => {
 					</div>
 				)}
 			</div>
-			<div className="flex items-center gap-4">
+			<div className="flex items-center gap-4 flex-shrink-0">
 				{channel ? (
 					<ChannelTopbarTools
 						isPagePath={!!isMemberPath || !!isChannelPath}
@@ -232,6 +240,16 @@ const TopBarChannelText = memo(() => {
 
 const ChannelTopbarLabel = memo(
 	({ type, label, isPrivate, onClick }: { type: ChannelType; label: string; isPrivate: boolean; onClick?: () => void }) => {
+		const { setStatusMenu } = useMenu();
+
+		const handleClick = () => {
+			const isMobile = window.innerWidth < 640;
+			if (isMobile) {
+				setStatusMenu(false);
+			}
+			onClick?.();
+		};
+
 		const renderIcon = () => {
 			if (!isPrivate) {
 				switch (type) {
@@ -270,7 +288,7 @@ const ChannelTopbarLabel = memo(
 		};
 
 		return (
-			<div className="none-draggable-area flex items-center text-lg gap-1 dark:text-white text-black" onClick={onClick}>
+			<div className="none-draggable-area flex items-center text-lg gap-1 dark:text-white text-black w-full" onClick={onClick}>
 				<div className="w-6">{renderIcon()}</div>
 				<p className="text-base font-semibold leading-5 truncate">{label}</p>
 			</div>
@@ -295,10 +313,18 @@ const ChannelTopbarTools = memo(
 		const appearanceTheme = useSelector(selectTheme);
 		const dispatch = useAppDispatch();
 		const isShowChatStream = useSelector(selectIsShowChatStream);
+		const { setStatusMenu } = useMenu();
 
 		if (isPagePath) {
 			return null;
 		}
+
+		const closeMenuOnMobile = () => {
+			const isMobile = window.innerWidth < 640;
+			if (isMobile) {
+				setStatusMenu(false);
+			}
+		};
 
 		const setTurnOffThreadMessage = async () => {
 			const store = await getStoreAsync();
@@ -313,12 +339,14 @@ const ChannelTopbarTools = memo(
 				dispatch(topicsActions.setOpenTopicMessageState(false));
 				dispatch(topicsActions.setCurrentTopicInitMessage(null));
 			}
+			closeMenuOnMobile();
 		};
 
 		const fetchCanvasChannel = async () => {
 			const store = await getStoreAsync();
 			const currentChannel = selectCurrentChannel(store.getState());
 			dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: currentChannel?.channel_id || '', clan_id: currentChannel?.clan_id || '' }));
+			closeMenuOnMobile();
 		};
 		return (
 			<div className={`items-center h-full flex`}>
@@ -335,12 +363,12 @@ const ChannelTopbarTools = memo(
 							{!isApp && <ThreadButton isLightMode={appearanceTheme === 'light'} />}
 							<CanvasButton onClick={fetchCanvasChannel} />
 						</div>
-						<div className="sbm:hidden mr-5">
+						<div className="sbm:hidden mr-5" onClick={closeMenuOnMobile}>
 							<ChannelListButton />
 						</div>
 					</div>
 				) : (
-					<>{isShowChatStream && <ChatButton isLightMode={appearanceTheme === 'light'} />}</>
+						<>{isShowChatStream && <ChatButton isLightMode={appearanceTheme === 'light'} closeMenuOnMobile={closeMenuOnMobile} />}</>
 				)}
 			</div>
 		);
@@ -375,11 +403,18 @@ const DmTopbarTools = memo(() => {
 	const appearanceTheme = useSelector(selectTheme);
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
 	const userProfile = useSelector(selectSession);
+	const { setStatusMenu } = useMenu();
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode: mode });
 	const isInCall = useSelector(selectIsInCall);
 	const isGroupCallActive = useSelector((state: RootState) => state.groupCall?.isGroupCallActive || false);
 	const voiceInfo = useSelector((state: RootState) => state.voice?.voiceInfo || null);
+	const closeMenuOnMobile = useCallback(() => {
+		const isMobile = window.innerWidth < 640;
+		if (isMobile) {
+			setStatusMenu(false);
+		}
+	}, [setStatusMenu]);
 	const handleSend = useCallback(
 		(
 			content: IMessageSendPayload,
@@ -400,21 +435,8 @@ const DmTopbarTools = memo(() => {
 		[sendMessage]
 	);
 
-	const setIsUseProfileDM = useCallback(
-		async (status: boolean) => {
-			await dispatch(appActions.setIsUseProfileDM(status));
-		},
-		[dispatch]
-	);
-
-	const setIsShowMemberListDM = useCallback(
-		async (status: boolean) => {
-			await dispatch(appActions.setIsShowMemberListDM(status));
-		},
-		[dispatch]
-	);
-
 	const handleStartCall = (isVideoCall = false) => {
+		closeMenuOnMobile();
 		if (currentDmGroup.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			if (isGroupCallActive && (voiceInfo as any)?.channelId === currentDmGroup.channel_id) {
 				dispatch(voiceActions.setOpenPopOut(false));
@@ -538,6 +560,22 @@ const DmTopbarTools = memo(() => {
 	};
 
 	const isGroupCallDisabled = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && !currentDmGroup?.meeting_code;
+
+	const setIsUseProfileDM = useCallback(
+		async (status: boolean) => {
+			await dispatch(appActions.setIsUseProfileDM(status));
+			closeMenuOnMobile();
+		},
+		[dispatch, closeMenuOnMobile]
+	);
+
+	const setIsShowMemberListDM = useCallback(
+		async (status: boolean) => {
+			await dispatch(appActions.setIsShowMemberListDM(status));
+			closeMenuOnMobile();
+		},
+		[dispatch, closeMenuOnMobile]
+	);
 
 	return (
 		<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">
@@ -807,6 +845,7 @@ export function RedDot() {
 function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 	const dispatch = useDispatch();
 	const isActive = useSelector(selectIsShowMemberList);
+	const { setStatusMenu } = useMenu();
 
 	const handleClick = () => {
 		const store = getStore();
@@ -814,6 +853,11 @@ function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 		const currentChannelId = selectCurrentChannelId(state);
 		dispatch(appActions.setIsShowMemberList(!isActive));
 		dispatch(searchMessagesActions.setIsSearchMessage({ channelId: currentChannelId as string, isSearchMessage: false }));
+
+		const isMobile = window.innerWidth < 640;
+		if (isMobile) {
+			setStatusMenu(false);
+		}
 	};
 	return (
 		<div className="relative leading-5 h-5">
@@ -824,10 +868,11 @@ function ChannelListButton({ isLightMode }: { isLightMode?: boolean }) {
 	);
 }
 
-function ChatButton({ isLightMode }: { isLightMode?: boolean }) {
+function ChatButton({ isLightMode, closeMenuOnMobile }: { isLightMode?: boolean; closeMenuOnMobile?: () => void }) {
 	const dispatch = useDispatch();
 	const handleClick = () => {
 		dispatch(appActions.setIsShowChatStream(true));
+		closeMenuOnMobile?.();
 	};
 	return (
 		<div className="relative leading-5 h-5">

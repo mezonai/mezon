@@ -71,16 +71,14 @@ const PanelKeyboard = React.memo((props: IProps) => {
 			{heightKeyboardShow !== 0 && typeKeyboardBottomSheet !== 'text' && (
 				<BottomKeyboardPicker height={heightKeyboardShow} ref={bottomPickerRef}>
 					{typeKeyboardBottomSheet === 'emoji' ? (
-						<BottomSheetScrollView style={{ minHeight: heightKeyboardShow }}>
-							<View style={{ minHeight: heightKeyboardShow }}>
-								<EmojiPicker
-									onDone={onClose}
-									bottomSheetRef={bottomPickerRef}
-									directMessageId={props?.directMessageId || ''}
-									messageActionNeedToResolve={messageActionNeedToResolve}
-								/>
-							</View>
-						</BottomSheetScrollView>
+						<View style={{ minHeight: heightKeyboardShow }}>
+							<EmojiPicker
+								onDone={onClose}
+								bottomSheetRef={bottomPickerRef}
+								directMessageId={props?.directMessageId || ''}
+								messageActionNeedToResolve={messageActionNeedToResolve}
+							/>
+						</View>
 					) : typeKeyboardBottomSheet === 'attachment' ? (
 						<BottomSheetScrollView stickyHeaderIndices={[0]}>
 							<AttachmentPicker currentChannelId={props?.currentChannelId} currentClanId={props?.currentClanId} onCancel={onClose} />

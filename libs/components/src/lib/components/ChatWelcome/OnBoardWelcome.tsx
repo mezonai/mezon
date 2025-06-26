@@ -40,11 +40,11 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 	return (
 		<div className="w-full p-4 mb-0  flex-1 flex flex-col items-center gap-2">
 			{currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
-				<div className="w-[400px] p-4 bg-bgSecondary rounded-lg">
+				<div className="w-[400px] p-4 dark:bg-bgSecondary bg-[#f0f0f0] rounded-lg">
 					{currentClan?.banner ? (
 						<img src={currentClan?.banner} />
 					) : (
-						<div className="w-full h-28 font-bold text-2xl text-bgSecondary500  rounded-lg flex items-center justify-center">
+							<div className="w-full h-28 font-bold text-2xl text-[#929292] dark:text-[#b4b4b4]  rounded-lg flex items-center justify-center">
 							<p className="[text-shadow:_0_1px_2px_#ffffff]">Click Launch App To Start</p>
 						</div>
 					)}

@@ -1,14 +1,14 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectEmojiOnSale, selectStickerOnSale } from '@mezon/store-mobile';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import LogoMezonDark from '../../../assets/svg/logoMezonDark.svg';
 import LogoMezonLight from '../../../assets/svg/logoMezonLight.svg';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import ProductSection from '../../components/Shop/ProductSection';
+import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../constants/icon_cdn';
 import { style } from './styles';
-import StatusBarHeight from "../../components/StatusBarHeight/StatusBarHeight";
 
 const ShopScreen = ({ navigation }: { navigation: any }) => {
 	const { themeValue, themeBasic } = useTheme();
@@ -38,8 +38,8 @@ const ShopScreen = ({ navigation }: { navigation: any }) => {
 			</View>
 
 			<ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
-				<ProductSection title="Emoji" icon="😀" data={emojisRaw} type={'emoji'} />
-				<ProductSection title="Sticker" icon="🎨" data={stickersRaw} />
+				{!!emojisRaw?.length && <ProductSection title="Emoji" icon="😀" data={emojisRaw} type={'emoji'} />}{' '}
+				{!!stickersRaw?.length && <ProductSection title="Sticker" icon="🎨" data={stickersRaw} />}
 			</ScrollView>
 		</View>
 	);

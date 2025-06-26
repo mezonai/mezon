@@ -132,7 +132,6 @@ const NavigationMain = memo(
 					backgroundColor={themeValue.primary}
 					barStyle={themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content'}
 				/>
-				<NetInfoComp />
 				<RootListener />
 				<SafeAreaProvider>
 					<SafeAreaView
@@ -171,6 +170,7 @@ const RootNavigation = (props) => {
 								<EmojiSuggestionProvider isMobile={true}>
 									<KeyboardProvider statusBarTranslucent>
 										<NavigationMain {...props} />
+										<NetInfoComp />
 									</KeyboardProvider>
 								</EmojiSuggestionProvider>
 							</PermissionProvider>

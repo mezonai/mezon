@@ -4,13 +4,13 @@ import {
 	ActionEmitEvent,
 	BicycleIcon,
 	BowlIcon,
+	debounce,
 	HeartIcon,
 	LeafIcon,
 	ObjectIcon,
 	PenIcon,
 	RibbonIcon,
-	SmilingFaceIcon,
-	debounce
+	SmilingFaceIcon
 } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectDmGroupCurrentId } from '@mezon/store-mobile';
@@ -126,9 +126,18 @@ export default function EmojiSelectorContainer({
 		}, {})
 	);
 
+	const getEmojiIdFromSrc = (src) => {
+		try {
+			if (!src) return '';
+			return src?.split('/')?.pop().split('.')[0];
+		} catch (e) {
+			return '';
+		}
+	};
 	const handleEmojiSelect = useCallback(
 		async (emoji: IEmoji) => {
-			onSelected(emoji?.id, emoji?.shortname);
+			const emojiId = getEmojiIdFromSrc(emoji?.src) || emoji?.id;
+			onSelected(emojiId, emoji?.shortname);
 			handleBottomSheetCollapse?.();
 			Keyboard.dismiss();
 			if (!isReactMessage) {
@@ -138,7 +147,7 @@ export default function EmojiSelectorContainer({
 				dispatch(
 					emojiSuggestionActions.setSuggestionEmojiObjPicked({
 						shortName: emojiItemName,
-						id: emoji?.id
+						id: emojiId
 					})
 				);
 			}

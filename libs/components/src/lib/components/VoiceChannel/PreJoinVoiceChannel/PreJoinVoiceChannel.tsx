@@ -1,5 +1,6 @@
-import { ChannelsEntity, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store';
+import { ChannelsEntity, selectStatusMenu, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store';
 import { VoiceChannelUsers } from './VoiceChannelUsers/VoiceChannelUsers';
+
 interface PreJoinVoiceChannelProps {
 	channel?: ChannelsEntity;
 	roomName?: string;
@@ -10,8 +11,14 @@ interface PreJoinVoiceChannelProps {
 
 export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({ channel, roomName, loading, handleJoinRoom, isCurrentChannel }) => {
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel?.channel_id as string));
+	const statusMenu = useAppSelector(selectStatusMenu);
+
 	return (
-		<div className={`w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center ${isCurrentChannel ? 'hidden' : ''}`}>
+		<div
+			className={`w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center 
+				${isCurrentChannel ? 'hidden' : ''} 
+				${statusMenu ? 'max-sbm:hidden' : ''}`}
+		>
 			<div className="flex flex-col justify-center items-center gap-4 w-full text-white">
 				<div className="w-full flex gap-2 justify-center p-2">
 					{voiceChannelMembers.length > 0 && <VoiceChannelUsers memberJoin={voiceChannelMembers} memberMax={3}></VoiceChannelUsers>}

@@ -14,10 +14,11 @@ export const ToastSuccess = memo((props: ToastConfigParams<any>) => {
 	const { text1Style, text2Style, props: data } = props;
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const containerStyle = data?.customStyle ? [styles.container, data.customStyle] : styles.container;
 
 	return (
 		<BaseToast
-			style={styles.container}
+			style={containerStyle}
 			contentContainerStyle={{ paddingHorizontal: size.s_20 }}
 			text1Style={[
 				{

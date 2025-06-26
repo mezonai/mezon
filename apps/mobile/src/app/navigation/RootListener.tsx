@@ -53,6 +53,7 @@ import useTabletLandscape from '../hooks/useTabletLandscape';
 import NotificationPreferences from '../utils/NotificationPreferences';
 import { getVoIPToken, handleFCMToken, processNotification, setupCallKeep } from '../utils/pushNotificationHelpers';
 
+const MAX_RETRIES_SESSION = 5;
 const RootListener = () => {
 	const isLoggedIn = useSelector(selectIsLogin);
 	const isTabletLandscape = useTabletLandscape();
@@ -346,7 +347,7 @@ const RootListener = () => {
 	}, []);
 
 	const authLoader = useCallback(async () => {
-		let retries = 3;
+		let retries = MAX_RETRIES_SESSION;
 		while (retries > 0) {
 			try {
 				const response = await dispatch(authActions.refreshSession());
@@ -354,11 +355,9 @@ const RootListener = () => {
 					retries -= 1;
 					if (retries === 0) {
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED);
-						console.log('Session expired after 3 retries');
 						return;
 					}
-					console.log(`Session expired, retrying... (${3 - retries}/3)`);
-					await sleep(1000);
+					await sleep(1000 * (MAX_RETRIES_SESSION - retries));
 					continue;
 				}
 				handleReconnect('Auth Loader');
@@ -372,11 +371,9 @@ const RootListener = () => {
 					retries -= 1;
 					if (retries === 0) {
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED);
-						console.log('Session expired after 3 retries');
 						return;
 					}
-					console.log(`Session expired, retrying... (${3 - retries}/3)`);
-					await sleep(1000);
+					await sleep(1000 * (MAX_RETRIES_SESSION - retries));
 					continue;
 				}
 				break; // Exit the loop if no error
@@ -384,11 +381,9 @@ const RootListener = () => {
 				retries -= 1;
 				if (retries === 0) {
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED);
-					console.log('Session expired after 3 retries');
 					return;
 				}
-				console.log(`Error in authLoader, retrying... (${3 - retries}/3)`, error);
-				await sleep(1000);
+				await sleep(1000 * (MAX_RETRIES_SESSION - retries));
 			}
 		}
 	}, [dispatch]);

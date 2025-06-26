@@ -1,6 +1,6 @@
 import { useAuth, useFriends } from '@mezon/core';
 import { ActionEmitEvent, CheckIcon, CloseIcon, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
-import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	EStateFriend,
@@ -187,7 +187,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			},
 			title: t('menu.closeDm'),
 			isShow: !isGroup,
-			icon: <MezonIconCDN icon={IconCDN.userMinusIcon} color={baseColor.gray} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.closeDMIcon} color={themeValue.textStrong} customStyle={{ marginBottom: size.s_4 }} />,
+			textStyle: { marginLeft: -size.s_2 }
 		},
 		{
 			onPress: infoFriend?.state === EStateFriend.FRIEND ? handleDeleteFriend : handleAddFriend,
@@ -199,9 +200,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				infoFriend?.state !== EStateFriend.OTHER_PENDING,
 			icon:
 				infoFriend?.state === EStateFriend.FRIEND ? (
-					<MezonIconCDN icon={IconCDN.removeFriend} color={baseColor.gray} />
+					<MezonIconCDN icon={IconCDN.removeFriend} color={themeValue.textStrong} />
 				) : (
-					<MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.gray} />
+					<MezonIconCDN icon={IconCDN.userPlusIcon} color={themeValue.textStrong} />
 				)
 		},
 		{
@@ -239,7 +240,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
-			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={baseColor.gray} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
 		}
 	];
 
@@ -247,7 +248,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: () => reserve(),
 			title: t('menu.favorite'),
-			icon: <Icons.FavoriteFilledIcon color={baseColor.gray} />
+			icon: <Icons.FavoriteFilledIcon color={themeValue.textStrong} />
 		}
 	];
 
@@ -278,9 +279,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			onPress: handleEnableOrDisableE2EE,
 			title: messageInfo?.e2ee ? t('menu.disableE2EE') : t('menu.enableE2EE'),
 			icon: messageInfo?.e2ee ? (
-				<MezonIconCDN icon={IconCDN.lockUnlockIcon} color={themeValue.textStrong} />
+				<MezonIconCDN icon={IconCDN.lockUnlockIcon} color={themeValue.textStrong} customStyle={{ marginBottom: size.s_2 }} />
 			) : (
-				<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.textStrong} customStyle={{ marginBottom: size.s_2 }} />
 			)
 		},
 		{
@@ -299,7 +300,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			icon: isDmUnmute ? (
 				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />
 			) : (
-				<MezonIconCDN icon={IconCDN.bellSlashIcon} width={22} height={22} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 			)
 		}
 		// {

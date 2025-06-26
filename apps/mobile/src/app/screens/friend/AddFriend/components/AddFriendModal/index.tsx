@@ -43,7 +43,8 @@ export const AddFriendModal = React.memo((props: IAddFriendModal) => {
 					type: 'success',
 					props: {
 						text2: t('toast.sendAddFriendSuccess'),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />,
+						customStyle: { backgroundColor: themeValue.secondary }
 					}
 				});
 			} else {
@@ -51,7 +52,8 @@ export const AddFriendModal = React.memo((props: IAddFriendModal) => {
 					type: 'success',
 					props: {
 						text2: t('toast.sendAddFriendFail'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />,
+						customStyle: { backgroundColor: themeValue.secondary }
 					}
 				});
 			}
