@@ -15,7 +15,6 @@ import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MessageAudio } from '../MessageWithUser/MessageAudio/MessageAudio';
 
 type ChannelMessageBoxProps = {
 	channel: ApiChannelDescription | undefined;
@@ -214,7 +213,7 @@ function SoundSquare({ channel, mode, onClose, isTopic = false }: ChannelMessage
 }
 export default SoundSquare;
 
-interface ExtendedApiMessageAttachment extends ApiMessageAttachment, ClanSound {}
+interface ExtendedApiMessageAttachment extends ApiMessageAttachment, ClanSound { }
 
 interface ICategorizedSoundProps {
 	soundList: ExtendedApiMessageAttachment[];
@@ -257,24 +256,35 @@ interface ISoundPanelProps {
 export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, onClickSendSound }) => {
 	return (
 		<div className="w-full pb-3 px-3 pt-1">
-			<div className="grid grid-cols-2 gap-3">
-				{soundList.map((sound, index) => (
-					<div key={sound.id} className="relative flex flex-col overflow-hidden rounded-md dark:bg-[#2f3136] bg-[#f2f3f5] hover:shadow-md transition-all duration-200">
-						<MessageAudio audioUrl={sound.url || ''} posInPopUp={true} />
-						<div className="flex flex-col w-full">
-							<div className="flex items-center justify-between px-3 py-2 dark:border-t dark:border-[#42464D]">
-								<span title={sound.filename} className="text-xs font-medium w-5/6 truncate cursor-text dark:text-[#dcddde] text-[#2e3338]">
-									{sound.filename}
-								</span>
-								<button
-									onClick={() => onClickSendSound(sound)} 
-									title="Send sound"
-									className="p-1.5 rounded-full dark:bg-[#5865f2] bg-[#5865f2] hover:bg-[#4752c4] text-white transition-colors"
-								>
-									<Icons.ArrowRight defaultFill='white' className="w-4 h-4" />
-								</button>
-							</div>
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				{soundList.length === 0 && (
+					<div className="col-span-full flex flex-col items-center justify-center py-10 border-2 border-dashed dark:border-borderDivider border-gray-300 rounded-lg bg-gray-50 dark:bg-bgPrimary text-center">
+						<Icons.Speaker className="w-10 h-10 text-gray-400 dark:text-gray-500 mb-2" />
+						<p className="text-gray-500 dark:text-gray-400 text-sm">No sound effects found.</p>
+					</div>
+				)}
+				{soundList.map((sound) => (
+					<div key={sound.id} className="flex flex-col w-full p-2 border rounded-lg bg-white dark:bg-bgSecondary shadow-sm hover:shadow-md transition duration-200 dark:border-borderDivider border-gray-200 items-center">
+						<div className="flex items-center justify-between mb-3">
+							<p
+								title={sound.filename}
+								className="font-medium truncate w-full text-center dark:text-gray-300 text-gray-600 text-ellipsis whitespace-nowrap overflow-hidden max-w-20 px-2 rounded py-1 hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors cursor-pointer"
+							>
+								{sound.filename}
+							</p>
 						</div>
+						<audio
+							controls
+							src={sound.url}
+							className="w-full h-8 rounded-full border dark:border-borderDivider border-gray-200 mb-2"
+						/>
+						<button
+							onClick={() => onClickSendSound(sound)}
+							title="Send sound"
+							className="flex items-center gap-2 px-4 py-1.5 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 mt-2"
+						>
+							<Icons.ArrowRight defaultFill='white' className="w-4 h-4" />
+						</button>
 					</div>
 				))}
 			</div>
