@@ -11,9 +11,14 @@ import { useSelector } from 'react-redux';
 import { usePermissionContext } from '../../context/PermissionContext';
 
 function usePermissionChecker(permissions: EPermission[]): boolean[];
-function usePermissionChecker(permissions: Array<EPermission | EOverriddenPermission>, channelId: string, clanId?: string): boolean[];
+function usePermissionChecker(
+	permissions: Array<EPermission | EOverriddenPermission>,
+	channelId: string,
+	clanId?: string,
+	isPrivate?: boolean
+): boolean[];
 
-function usePermissionChecker(permissions: string[], channelId?: string, clanId?: string) {
+function usePermissionChecker(permissions: string[], channelId?: string, clanId?: string, isPrivate?: boolean) {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const effectiveClanId = clanId && clanId !== '0' ? clanId : currentClanId || '';
 	const dispatch = useAppDispatch();
@@ -22,7 +27,7 @@ function usePermissionChecker(permissions: string[], channelId?: string, clanId?
 	const { checkPermissions } = usePermissionContext();
 
 	// Get permissions check results from context
-	const results = checkPermissions(permissions, channelId, effectiveClanId);
+	const results = checkPermissions(permissions, channelId, effectiveClanId, isPrivate);
 
 	// Handle fetching overridden policies for channel-specific permissions
 	useEffect(() => {

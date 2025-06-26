@@ -3,6 +3,7 @@ import {
 	ChannelsEntity,
 	hasGrandchildModal,
 	searchMessagesActions,
+	selectChannelById,
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectSearchedThreadResult,
@@ -44,9 +45,15 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 		[currentChannel]
 	);
 
+	const parentChannel = useSelector((state) => selectChannelById(state, currentChannelId));
 	const { setOpenThreadMessageState } = useReference();
 	const hasChildModal = useSelector(hasGrandchildModal);
-	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannel?.id ?? '');
+	const [canManageThread] = usePermissionChecker(
+		[EOverriddenPermission.manageThread],
+		currentChannel?.id ?? '',
+		currentClanId ?? '',
+		!!parentChannel?.channel_private
+	);
 
 	const handleCreateThread = () => {
 		setOpenThreadMessageState(false);

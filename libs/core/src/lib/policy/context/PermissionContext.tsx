@@ -6,8 +6,8 @@ import { usePermissionsLevel } from '../hooks/permissions/usePermissionsLevels';
 import { useIsClanOwner } from '../hooks/useIsClanOwner';
 
 interface PermissionContextType {
-	checkPermission: (permission: string, channelId?: string, clanId?: string) => boolean;
-	checkPermissions: (permissions: string[], channelId?: string, clanId?: string) => boolean[];
+	checkPermission: (permission: string, channelId?: string, clanId?: string, isPrivate?: boolean) => boolean;
+	checkPermissions: (permissions: string[], channelId?: string, clanId?: string, isPrivate?: boolean) => boolean[];
 }
 
 const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
@@ -19,8 +19,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 	const isClanOwner = useIsClanOwner(currentClanId ?? '');
 
 	const checkPermission = useCallback(
-		(permission: string, channelId?: string, clanId?: string) => {
-			if (Object.values(EOverriddenPermission).includes(permission as EOverriddenPermission)) {
+		(permission: string, channelId?: string, clanId?: string, isPrivate?: boolean) => {
+			if (Object.values(EOverriddenPermission).includes(permission as EOverriddenPermission) && isPrivate) {
 				if (!channelId) {
 					return false;
 				}
@@ -48,8 +48,8 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 	);
 
 	const checkPermissions = useCallback(
-		(permissions: string[], channelId?: string, clanId?: string): boolean[] => {
-			return permissions.map((permission) => checkPermission(permission, channelId, clanId));
+		(permissions: string[], channelId?: string, clanId?: string, isPrivate?: boolean): boolean[] => {
+			return permissions.map((permission) => checkPermission(permission, channelId, clanId, isPrivate));
 		},
 		[checkPermission]
 	);
