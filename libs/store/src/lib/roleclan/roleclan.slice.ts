@@ -1,6 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import { EVERYONE_ROLE_ID, IRolesClan, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { ApiUpdateRoleRequest } from 'mezon-js';
 import { ApiRole, ApiUpdateRoleOrderRequest, RoleUserListRoleUser } from 'mezon-js/api.gen';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { memoizeAndTrack } from '../memoize';
@@ -212,7 +213,7 @@ export const updateRole = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body = {
+			const body: ApiUpdateRoleRequest = {
 				role_id: roleId,
 				title: title ?? '',
 				color: color ?? '',
@@ -231,7 +232,16 @@ export const updateRole = createAsyncThunk(
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
-			return response;
+
+			const store = thunkAPI.getState() as RootState;
+			const roles = store.rolesclan.entities;
+			const role = roles[roleId];
+
+			const updateRoleData = handleMapUpdateRole(role, body);
+			console.log('updateRoleData: ', updateRoleData);
+
+			console.log('role: ', role);
+			return body;
 		} catch (error) {
 			captureSentryError(error, 'UpdateRole/fetchUpdateRole');
 			return thunkAPI.rejectWithValue(error);
@@ -356,9 +366,23 @@ export const RolesClanSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
-		builder.addCase(fetchMembersRole.fulfilled, (state: RolesClanState, action: PayloadAction<FetchReturnMembersRole>) => {
-			state.roleMembers[action.payload.roleID] = action.payload.members;
-		});
+		builder
+			.addCase(fetchMembersRole.fulfilled, (state: RolesClanState, action: PayloadAction<FetchReturnMembersRole>) => {
+				state.roleMembers[action.payload.roleID] = action.payload.members;
+			})
+			.addCase(updateRole.fulfilled, (state: RolesClanState, action: PayloadAction<ApiUpdateRoleRequest>) => {
+				const { add_user_ids, remove_user_ids } = action.payload;
+				RolesClanAdapter.updateOne(state, {
+					id: action.payload.role_id,
+					changes: {
+						color: action.payload.color,
+						allow_mention: action.payload.allow_mention,
+						role_icon: action.payload.role_icon,
+						title: action.payload.title,
+						description: action.payload.description
+					}
+				});
+			});
 	}
 });
 
@@ -517,3 +541,17 @@ export const selectMembersByRoleID = (roleID: string) => {
 	});
 };
 export const selectAllRoleIds = createSelector(selectAllRolesClan, (roles) => roles.map((role) => role.id));
+
+const handleMapUpdateRole = (role: RolesClanEntity, body: ApiUpdateRoleRequest) => {
+	const changes: RolesClanEntity = {
+		...role,
+		title: body.title ? body.title : role.title,
+		color: body.color ? body.color : role.color,
+		role_icon: body.role_icon ? body.role_icon : role.role_icon,
+		description: body.description ? body.description : role.description,
+		display_online: body.display_online ? body.display_online : role.display_online,
+		allow_mention: body.allow_mention ? body.allow_mention : role.allow_mention
+	};
+
+	return changes;
+};
