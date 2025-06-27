@@ -17,7 +17,7 @@ import {
 import classNames from 'classnames';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
-import React, { ReactNode, useCallback, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
 import { EmbedMessageWrap } from '../EmbedMessage/EmbedMessageWrap';
@@ -196,6 +196,7 @@ function MessageWithUser({
 					)}
 					create_time={message.create_time}
 					showMessageHead={showMessageHead}
+					isEditing={isEditing}
 				>
 					{checkMessageHasReply && !isEphemeralMessage && (
 						<MessageReply
@@ -361,6 +362,7 @@ interface HoverStateWrapperProps {
 	className?: string;
 	create_time?: string;
 	showMessageHead?: boolean;
+	isEditing?: boolean;
 }
 const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	children,
@@ -370,12 +372,23 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	messageId,
 	className,
 	create_time,
-	showMessageHead
+	showMessageHead,
+	isEditing
 }) => {
 	const [isHover, setIsHover] = useState(false);
 	const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
+	useEffect(() => {
+		setIsHover(false);
+		if (hoverTimeout.current) {
+			clearTimeout(hoverTimeout.current);
+			hoverTimeout.current = null;
+		}
+	}, [isEditing]);
+
 	const handleMouseEnter = () => {
+		if (isEditing) return;
+
 		if (hoverTimeout.current) {
 			clearTimeout(hoverTimeout.current);
 		}
@@ -401,7 +414,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 			id={`msg-${messageId}`}
 		>
 			{children}
-			{isHover && (
+			{isHover && !isEditing && (
 				<>
 					{!showMessageHead && create_time && (
 						<span className="absolute left-[24px] top-[4px] dark:text-zinc-400 text-colorTextLightMode text-[10px]">
