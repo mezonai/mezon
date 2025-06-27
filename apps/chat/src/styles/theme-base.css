@@ -1,0 +1,253 @@
+.bg-theme-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-theme-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-theme-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.bg-theme-surface {
+  background-color: var(--bg-surface);
+}
+
+.bg-theme-hover {
+  background-color: var(--bg-hover);
+}
+
+.text-theme-primary {
+  color: var(--text-primary);
+}
+
+.text-theme-secondary {
+  color: var(--text-secondary);
+}
+
+.text-theme-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-theme-muted {
+  color: var(--text-muted);
+}
+
+.text-theme-disabled {
+  color: var(--text-disabled);
+}
+
+.border-theme-primary {
+  border-color: var(--border-primary);
+}
+
+.border-theme-secondary {
+  border-color: var(--border-secondary);
+}
+
+.border-theme-focus {
+  border-color: var(--border-focus);
+}
+
+.border-theme-hover {
+  border-color: var(--border-hover);
+}
+
+/* Button Variants */
+.btn-theme-primary {
+  background-color: var(--btn-primary);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-primary:hover:not(:disabled) {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-theme-primary:active:not(:disabled) {
+  background-color: var(--btn-primary-active);
+}
+
+.btn-theme-primary:disabled {
+  background-color: var(--btn-primary-disabled);
+  cursor: not-allowed;
+}
+
+.btn-theme-secondary {
+  background-color: var(--btn-secondary);
+  color: var(--text-primary);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-secondary:hover:not(:disabled) {
+  background-color: var(--btn-secondary-hover);
+}
+
+.btn-theme-secondary:active:not(:disabled) {
+  background-color: var(--btn-secondary-active);
+}
+
+.btn-theme-secondary:disabled {
+  background-color: var(--btn-secondary-disabled);
+  cursor: not-allowed;
+}
+
+.btn-theme-success {
+  background-color: var(--btn-success);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-success:hover:not(:disabled) {
+  background-color: var(--btn-success-hover);
+}
+
+.btn-theme-success:active:not(:disabled) {
+  background-color: var(--btn-success-active);
+}
+
+.btn-theme-success:disabled {
+  background-color: var(--btn-success-disabled);
+  cursor: not-allowed;
+}
+
+.btn-theme-danger {
+  background-color: var(--btn-danger);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-danger:hover:not(:disabled) {
+  background-color: var(--btn-danger-hover);
+}
+
+.btn-theme-danger:active:not(:disabled) {
+  background-color: var(--btn-danger-active);
+}
+
+.btn-theme-danger:disabled {
+  background-color: var(--btn-danger-disabled);
+  cursor: not-allowed;
+}
+
+.btn-theme-warning {
+  background-color: var(--btn-warning);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-warning:hover:not(:disabled) {
+  background-color: var(--btn-warning-hover);
+}
+
+.btn-theme-warning:active:not(:disabled) {
+  background-color: var(--btn-warning-active);
+}
+
+.btn-theme-warning:disabled {
+  background-color: var(--btn-warning-disabled);
+  cursor: not-allowed;
+}
+
+.btn-theme-ghost {
+  background-color: transparent;
+  color: var(--text-primary);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-ghost:hover:not(:disabled) {
+  background-color: var(--btn-ghost-hover);
+}
+
+.btn-theme-ghost:active:not(:disabled) {
+  background-color: var(--btn-ghost-active);
+}
+
+/* Input Variants */
+.input-theme {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+  transition: all 0.2s ease-in-out;
+}
+
+.input-theme:hover:not(:disabled) {
+  background-color: var(--input-bg-hover);
+  border-color: var(--input-border-hover);
+}
+
+.input-theme:focus:not(:disabled) {
+  background-color: var(--input-bg-focus);
+  border-color: var(--input-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.input-theme-error {
+  border-color: var(--input-border-error);
+}
+
+.input-theme-error:focus {
+  border-color: var(--input-border-error);
+  box-shadow: 0 0 0 2px var(--focus-ring-error);
+}
+
+/* Interactive States */
+.interactive-theme {
+  background-color: var(--interactive-normal);
+  transition: all 0.2s ease-in-out;
+}
+
+.interactive-theme:hover {
+  background-color: var(--interactive-hover);
+}
+
+.interactive-theme:active {
+  background-color: var(--interactive-active);
+}
+
+/* Status Colors */
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+.bg-success {
+  background-color: var(--color-success);
+}
+
+.bg-warning {
+  background-color: var(--color-warning);
+}
+
+.bg-error {
+  background-color: var(--color-error);
+}
+
+.bg-info {
+  background-color: var(--color-info);
+}
+
+/* Focus Ring Utilities */
+.focus-ring {
+  box-shadow: var(--shadow-focus);
+}
+
+.focus-ring-error {
+  box-shadow: 0 0 0 2px var(--focus-ring-error);
+}
+
+.focus-ring-success {
+  box-shadow: 0 0 0 2px var(--focus-ring-success);
+}

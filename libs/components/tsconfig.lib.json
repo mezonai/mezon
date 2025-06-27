@@ -38,6 +38,8 @@
     "../core/src/**/*.ts",
     "../core/src/**/*.tsx",
     "../ui/src/**/*.ts",
-    "../ui/src/**/*.tsx"
+    "../ui/src/**/*.tsx",
+    "../themes/src/**/*.ts",
+    "../themes/src/**/*.tsx"
   ]
 }

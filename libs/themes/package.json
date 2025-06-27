@@ -1,0 +1,16 @@
+{
+    "name": "@mezon/themes",
+    "version": "0.0.1",
+    "type": "commonjs",
+    "main": "./src/index.js",
+    "types": "./src/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./src/index.mjs",
+            "default": "./src/index.js"
+        }
+    },
+    "dependencies": {
+        "react": "^18.2.0"
+    }
+}

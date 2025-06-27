@@ -30,6 +30,7 @@
 			"@mezon/mobile-ui": ["libs/mobile-ui/src/index.ts"],
 			"@mezon/store": ["libs/store/src/index.ts"],
 			"@mezon/store-mobile": ["libs/store/src/index-mobile.ts"],
+			"@mezon/themes": ["libs/themes/src/index.ts"],
 			"@mezon/translations": ["libs/translations/src/i18n.config.ts"],
 			"@mezon/transport": ["libs/transport/src/index.ts"],
 			"@mezon/ui": ["libs/ui/src/index.ts"],

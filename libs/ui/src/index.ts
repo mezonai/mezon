@@ -1,4 +1,5 @@
 export { default as Button } from './lib/Button';
+export type { ButtonProps, ButtonSize, ButtonVariant } from './lib/Button';
 export { default as Checkbox } from './lib/Checkbox';
 export * from './lib/GetInforUserFromId';
 export { default as HighlightMatchBold } from './lib/HighlightBold';

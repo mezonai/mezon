@@ -14,6 +14,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { preloadedState } from './mock/state';
 import { Routes } from './routes';
 
+import { ThemeDemo, ThemeManager } from '@mezon/themes';
+
+ThemeManager.initializeTheme();
+
 const mezon = getMezonConfig();
 
 export const LoadingFallbackWrapper = () => <LoadingFallback />;
@@ -154,6 +158,7 @@ export function App() {
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
 				<PopupManagerProvider>
 					<PermissionProvider>
+						<ThemeDemo />
 						<AppInitializer />
 						<Routes />
 					</PermissionProvider>

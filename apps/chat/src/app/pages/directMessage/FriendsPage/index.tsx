@@ -168,13 +168,9 @@ const FriendsPage = () => {
 							</div>
 						))}
 					</div>
-					<button
-						className={`px-3 py-[6px] rounded-[4px] transition-all duration-300 font-medium ${openModalAddFriend ? 'text-[#248046] dark:text-[#2dc770]' : 'text-white bg-[#248046]'} `}
-						onClick={handleOpenRequestFriend}
-						style={{ whiteSpace: 'nowrap' }}
-					>
+					<Button variant={'primary'} size="sm" onClick={handleOpenRequestFriend} className="whitespace-nowrap">
 						Add Friend
-					</button>
+					</Button>
 				</div>
 			</div>
 			<div className={`contain-strict flex-1 flex w-full h-full`}>
@@ -225,7 +221,7 @@ const FriendsPage = () => {
 									<Button
 										label={'Send Friend Request'}
 										className="absolute top-3 right-2 text-[14px] py-[5px]"
-										disable={!requestAddFriend.usernames?.length}
+										disabled={!requestAddFriend.usernames?.length}
 										onClick={handleAddFriend}
 										noNeedOpacity={true}
 									/>

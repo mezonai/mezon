@@ -304,7 +304,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 					<Button
 						label="Save Changes"
 						className={`bg-blue-600 rounded-[4px] px-4 py-1.5 text-nowrap text-white`}
-						disable={validateSaveChange}
+						disabled={validateSaveChange}
 						onClick={onSaveChange}
 					/>
 				</div>

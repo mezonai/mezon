@@ -1,0 +1,103 @@
+/* Light Theme CSS Variables */
+:root {
+  /* Primary Colors */
+  --color-primary: #155EEF;
+  --color-primary-hover: #124FC9;
+  --color-primary-active: #0F3FA0;
+  --color-primary-disabled: #9DA5ED;
+
+  /* Background Colors */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F2F3F5;
+  --bg-tertiary: #E3E5E8;
+  --bg-surface: #F7F7F7;
+  --bg-hover: #DFE1E5;
+  --bg-modal: rgba(0, 0, 0, 0.54);
+
+  /* Text Colors */
+  --text-primary: #313338;
+  --text-secondary: #535353;
+  --text-tertiary: #6A6A6A;
+  --text-muted: #AEAEAE;
+  --text-disabled: #C5C7CA;
+
+  /* Border Colors */
+  --border-primary: #D9DBDD;
+  --border-secondary: #E1E1E1;
+  --border-focus: #AEAEAE;
+  --border-divider: #80848E;
+  --border-hover: #C4C9CE;
+
+  /* Status Colors */
+  --color-success: #16A34A;
+  --color-success-hover: #15803D;
+  --color-success-active: #14532D;
+  --color-warning: #EAB308;
+  --color-warning-hover: #D97706;
+  --color-warning-active: #B45309;
+  --color-error: #DA373C;
+  --color-error-hover: #B91C1C;
+  --color-error-active: #991B1B;
+  --color-info: #155EEF;
+  --color-info-hover: #124FC9;
+  --color-info-active: #0F3FA0;
+
+  /* Button Colors */
+  --btn-primary: #5865F2;
+  --btn-primary-hover: #4752C4;
+  --btn-primary-active: #3C4AB6;
+  --btn-primary-disabled: rgba(88, 101, 242, 0.5);
+
+  --btn-secondary: #CCCED3;
+  --btn-secondary-hover: #D3D5DA;
+  --btn-secondary-active: #DADCDF;
+  --btn-secondary-disabled: rgba(204, 206, 211, 0.5);
+
+  --btn-success: #16A34A;
+  --btn-success-hover: #15803D;
+  --btn-success-active: #14532D;
+  --btn-success-disabled: rgba(22, 163, 74, 0.5);
+
+  --btn-danger: #DA373C;
+  --btn-danger-hover: #B91C1C;
+  --btn-danger-active: #991B1B;
+  --btn-danger-disabled: rgba(218, 55, 60, 0.5);
+
+  --btn-warning: #EAB308;
+  --btn-warning-hover: #D97706;
+  --btn-warning-active: #B45309;
+  --btn-warning-disabled: rgba(234, 179, 8, 0.5);
+
+  --btn-ghost-hover: rgba(0, 0, 0, 0.05);
+  --btn-ghost-active: rgba(0, 0, 0, 0.1);
+
+  /* Input Colors */
+  --input-bg: #EBEBEB;
+  --input-bg-hover: #E1E1E1;
+  --input-bg-focus: #FFFFFF;
+  --input-border: #D9DBDD;
+  --input-border-hover: #C4C9CE;
+  --input-border-focus: #155EEF;
+  --input-border-error: #DA373C;
+
+  /* Focus Ring Colors */
+  --focus-ring: rgba(21, 94, 239, 0.3);
+  --focus-ring-error: rgba(218, 55, 60, 0.3);
+  --focus-ring-success: rgba(22, 163, 74, 0.3);
+
+  /* Interactive States */
+  --interactive-normal: rgba(116, 127, 141, 0.08);
+  --interactive-hover: rgba(116, 127, 141, 0.12);
+  --interactive-active: rgba(116, 127, 141, 0.16);
+
+  /* Scrollbar Colors */
+  --scrollbar-track: #EBEDEF;
+  --scrollbar-thumb: #C4C9CE;
+  --scrollbar-thumb-hover: #A3A8AD;
+
+  /* Shadow Colors */
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-heavy: rgba(0, 0, 0, 0.15);
+  --shadow-focus: 0 0 0 2px var(--focus-ring);
+}
