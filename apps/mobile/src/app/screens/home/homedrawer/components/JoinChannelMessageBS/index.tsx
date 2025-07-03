@@ -20,15 +20,15 @@ interface IJoinChannelMessageBSProps {
 	clanId: string;
 	channelId: string;
 	currentDirectId: string;
+    currentClanId: string;
 	store: any;
 }
 
-function JoinChannelMessageBS({ channel, icon, clanId, channelId, currentDirectId, store }: IJoinChannelMessageBSProps) {
+function JoinChannelMessageBS({ channel, icon, clanId, channelId, currentDirectId, currentClanId, store }: IJoinChannelMessageBSProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { dismiss } = useBottomSheetModal();
 	const { t } = useTranslation(['channelVoice']);
-	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 
 	const jumpToChannel = async (channelId: string, clanId: string) => {

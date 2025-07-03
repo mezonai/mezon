@@ -1,32 +1,26 @@
 import { useAuth } from '@mezon/core';
-import { ActionEmitEvent, changeClan, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import {
-	channelsActions,
 	ChannelsEntity,
-	directActions,
 	getStore,
-	getStoreAsync,
 	selectAllRolesClan,
 	selectAllUserClans,
 	selectCurrentClanId,
 	selectDmGroupCurrentId,
 	selectGrouplMembers,
-	selectSession,
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect } from 'react';
 import { DeviceEventEmitter, Linking, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useWebRTCStream } from '../../../components/StreamContext/StreamContext';
-import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { linkGoogleMeet } from '../../../utils/helpers';
 import JoinChannelVoiceBS from './components/ChannelVoice/JoinChannelVoiceBS';
+import JoinChannelMessageBS from './components/JoinChannelMessageBS';
 import JoinStreamingRoomBS from './components/StreamingRoom/JoinStreamingRoomBS';
 import UserProfile from './components/UserProfile';
-import JoinChannelMessageBS from './components/JoinChannelMessageBS';
-import { IconCDN } from '../../../constants/icon_cdn';
 
 const ChannelMessageListener = React.memo(() => {
 	const store = getStore();
@@ -100,7 +94,17 @@ const ChannelMessageListener = React.memo(() => {
 					}
 					const data = {
 						snapPoints: ['45%'],
-						children: <JoinChannelMessageBS channel={channel} icon={icon} channelId={channelId} clanId={clanId} currentDirectId={currentDirectId} store={store} />
+						children: (
+							<JoinChannelMessageBS
+								channel={channel}
+								icon={icon}
+								channelId={channelId}
+								clanId={clanId}
+								currentDirectId={currentDirectId}
+								currentClanId={currentClanId}
+								store={store}
+							/>
+						)
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 				}
@@ -120,7 +124,7 @@ const ChannelMessageListener = React.memo(() => {
 			eventOnChannelMention.remove();
 		};
 	}, [onChannelMention, onMention]);
-	
+
 	return <View />;
 });
 
