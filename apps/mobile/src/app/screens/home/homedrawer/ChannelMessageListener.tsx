@@ -68,6 +68,11 @@ const ChannelMessageListener = React.memo(() => {
 		async (channel: ChannelsEntity) => {
 			try {
 				const type = channel?.type;
+				const channelId = channel?.channel_id;
+				const clanId = channel?.clan_id;
+				const clanIdStore = selectCurrentClanId(store.getState());
+				const currentDirectId = selectDmGroupCurrentId(store.getState());
+				const currentClanId = currentDirectId ? '0' : clanIdStore;
 
 				if (type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel?.meeting_code) {
 					const urlVoice = `${linkGoogleMeet}${channel?.meeting_code}`;
@@ -95,7 +100,7 @@ const ChannelMessageListener = React.memo(() => {
 					}
 					const data = {
 						snapPoints: ['45%'],
-						children: <JoinChannelMessageBS channel={channel} icon={icon} />
+						children: <JoinChannelMessageBS channel={channel} icon={icon} channelId={channelId} clanId={clanId} currentDirectId={currentClanId} store={store} />
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 				}

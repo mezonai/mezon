@@ -1,27 +1,29 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent, changeClan, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import {
-	channelsActions,
-	directActions,
-	getStore,
-	getStoreAsync,
-	selectCurrentClanId,
-	selectDmGroupCurrentId,
-	useAppDispatch,
-} from '@mezon/store-mobile';
+import { channelsActions, directActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import MezonIconCDN from 'apps/mobile/src/app/componentUI/MezonIconCDN';
 import { IconCDN } from 'apps/mobile/src/app/constants/icon_cdn';
 import { APP_SCREEN } from 'apps/mobile/src/app/navigation/ScreenTypes';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import InviteToChannel from '../InviteToChannel';
 import { style } from './JoinChannelMessageBS.style';
-function JoinChannelMessageBS({ channel, icon }: { channel: IChannel, icon: IconCDN }) {
+
+interface IJoinChannelMessageBSProps {
+	channel: IChannel;
+	icon: IconCDN;
+	clanId: string;
+	channelId: string;
+	currentDirectId: string;
+	store: any;
+}
+
+function JoinChannelMessageBS({ channel, icon, clanId, channelId, currentDirectId, store }: IJoinChannelMessageBSProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { dismiss } = useBottomSheetModal();
@@ -30,7 +32,6 @@ function JoinChannelMessageBS({ channel, icon }: { channel: IChannel, icon: Icon
 	const dispatch = useAppDispatch();
 
 	const jumpToChannel = async (channelId: string, clanId: string) => {
-		const store = await getStoreAsync();
 		store.dispatch(
 			channelsActions.joinChannel({
 				clanId,
@@ -44,14 +45,6 @@ function JoinChannelMessageBS({ channel, icon }: { channel: IChannel, icon: Icon
 	const navigation = useNavigation<any>();
 
 	const handleJoinChannel = async () => {
-		const store = getStore();
-		const channelId = channel?.channel_id;
-		const clanId = channel?.clan_id;
-
-		const clanIdStore = selectCurrentClanId(store.getState());
-		const currentDirectId = selectDmGroupCurrentId(store.getState());
-		const currentClanId = currentDirectId ? '0' : clanIdStore;
-
 		const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 		await jumpToChannel(channelId, clanId);
