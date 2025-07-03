@@ -1,6 +1,6 @@
 {
     "joinChannelVoiceBS": {
-        "channelVoice": "kênh thoại",
+        "channelVoice": "Kênh Thoại",
         "noOne": "Chưa có ai ở đây!",
         "readyTalk": "Khi bạn sẵn sàng nói chuyện, chỉ cần tham gia vào.",
         "joinVoice": "Tham gia kênh thoại"
@@ -17,5 +17,10 @@
     },
     "noChannelVoice": "Không có kênh thoại",
     "chat": "Trò chuyện",
-    "noDisplay": "Không hiển thị kênh thoại"
+    "noDisplay": "Không hiển thị kênh thoại",
+    "joinChannelMessageBS":{
+        "channelMessage": "Kênh Trò Chuyện",
+        "title": "Bắt đầu trò chuyện với mọi người!",
+        "joinChannel": "Tham gia kênh thoại"
+    }
 }

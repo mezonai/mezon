@@ -25,6 +25,8 @@ import { linkGoogleMeet } from '../../../utils/helpers';
 import JoinChannelVoiceBS from './components/ChannelVoice/JoinChannelVoiceBS';
 import JoinStreamingRoomBS from './components/StreamingRoom/JoinStreamingRoomBS';
 import UserProfile from './components/UserProfile';
+import JoinChannelMessageBS from './components/JoinChannelMessageBS';
+import { IconCDN } from '../../../constants/icon_cdn';
 
 const ChannelMessageListener = React.memo(() => {
 	const store = getStore();
@@ -88,21 +90,19 @@ const ChannelMessageListener = React.memo(() => {
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 				} else if ([ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD, ChannelType.CHANNEL_TYPE_APP].includes(type)) {
-					const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
-					save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-					await jumpToChannel(channelId, clanId);
-
-					if (currentDirectId) {
-						dispatch(directActions.setDmGroupCurrentId(''));
-						navigation.navigate(APP_SCREEN.HOME_DEFAULT);
+					let icon: IconCDN;
+					if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+						icon = IconCDN.channelText;
+					} else if (type === ChannelType.CHANNEL_TYPE_THREAD) {
+						icon = IconCDN.threadIcon;
+					} else if (type === ChannelType.CHANNEL_TYPE_APP) {
+						icon = IconCDN.channelApp;
 					}
-
-					if (currentClanId !== clanId) {
-						changeClan(clanId);
-					}
-					DeviceEventEmitter.emit(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, {
-						isFetchMemberChannelDM: true
-					});
+					const data = {
+						snapPoints: ['45%'],
+						children: <JoinChannelMessageBS channel={channel} icon={icon} />
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 				}
 			} catch (error) {
 				/* empty */
@@ -120,18 +120,7 @@ const ChannelMessageListener = React.memo(() => {
 			eventOnChannelMention.remove();
 		};
 	}, [onChannelMention, onMention]);
-
-	const jumpToChannel = async (channelId: string, clanId: string) => {
-		const store = await getStoreAsync();
-		store.dispatch(
-			channelsActions.joinChannel({
-				clanId,
-				channelId,
-				noFetchMembers: false,
-				noCache: true
-			})
-		);
-	};
+	
 	return <View />;
 });
 

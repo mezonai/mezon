@@ -1,6 +1,6 @@
 {
     "joinChannelVoiceBS": {
-        "channelVoice": "channel voice",
+        "channelVoice": "Channel Voice",
         "noOne": "No one's here yet!",
         "readyTalk": "When you are ready to talk, just hop in.",
         "joinVoice": "Join Voice"
@@ -17,5 +17,10 @@
     },
     "noChannelVoice": "No channel voice available",
     "chat": "Chat",
-    "noDisplay": "No display channel voice"
+    "noDisplay": "No display channel voice",
+    "joinChannelMessageBS":{
+        "channelMessage": "Channel Message",
+        "title": "Let's start chatting with everyone!",
+        "joinChannel": "Join Channel"
+    }
 }
