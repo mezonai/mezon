@@ -100,7 +100,7 @@ const ChannelMessageListener = React.memo(() => {
 					}
 					const data = {
 						snapPoints: ['45%'],
-						children: <JoinChannelMessageBS channel={channel} icon={icon} channelId={channelId} clanId={clanId} currentDirectId={currentClanId} store={store} />
+						children: <JoinChannelMessageBS channel={channel} icon={icon} channelId={channelId} clanId={clanId} currentDirectId={currentDirectId} store={store} />
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 				}
