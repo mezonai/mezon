@@ -43,7 +43,7 @@ function JoinChannelMessageBS({ channel, icon }: { channel: IChannel, icon: Icon
 
 	const navigation = useNavigation<any>();
 
-	const handleJoinVoice = async () => {
+	const handleJoinChannel = async () => {
 		const store = getStore();
 		const channelId = channel?.channel_id;
 		const clanId = channel?.clan_id;
@@ -129,7 +129,7 @@ function JoinChannelMessageBS({ channel, icon }: { channel: IChannel, icon: Icon
 						paddingBottom: size.s_16
 					}}
 				>
-					<TouchableOpacity style={styles.btnJoinChannel} onPress={handleJoinVoice}>
+					<TouchableOpacity style={styles.btnJoinChannel} onPress={handleJoinChannel}>
 						<Text style={styles.textBtnJoinChannel}>{t('joinChannelMessageBS.joinChannel')}</Text>
 					</TouchableOpacity>
 				</View>
