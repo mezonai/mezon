@@ -32,21 +32,4 @@ export const style = (theme: any) =>
 		backButton: {
 			paddingRight: size.s_12
 		},
-		emptyBox: {
-			flex: 1,
-			justifyContent: 'center',
-			alignItems: 'center',
-			paddingHorizontal: size.s_20
-		},
-		emptyEmoji: {
-			fontSize: size.s_60,
-			marginBottom: size.s_12
-		},
-		emptyMessage: {
-			fontSize: size.s_18,
-			fontWeight: '600',
-			color: theme.textStrong,
-			marginBottom: size.s_8,
-			textAlign: 'center'
-		},
 	});
