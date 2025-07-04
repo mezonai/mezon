@@ -567,7 +567,9 @@ export const RenderTextMarkdownContent = ({
 
 						if (contentHasChannelLink) {
 							const pathSegments = contentInElement?.split('/') as string[];
+							const clanIdOnlink = pathSegments?.[pathSegments?.indexOf('clans') + 1];
 							const channelIdOnLink = pathSegments?.[pathSegments?.indexOf('channels') + 1];
+							const messageIdOnLink = pathSegments?.includes('messages') ? pathSegments?.[pathSegments?.indexOf('messages') + 1] : null;
 
 							const channelsEntities = selectChannelsEntities(store.getState() as any);
 							const hashtagDmEntities = selectHashtagDmEntities(store.getState() as any);
@@ -589,11 +591,12 @@ export const RenderTextMarkdownContent = ({
 								const payloadChannel = {
 									type: Number(dataChannel?.[0] || 1),
 									id: dataChannel?.[1],
-									channel_id: dataChannel?.[1],
-									clan_id: dataChannel?.[2],
+									channel_id: channelIdOnLink,
+									clan_id: clanIdOnlink,
 									status: Number(dataChannel?.[3] || 1),
 									meeting_code: dataChannel?.[4] || '',
-									category_id: dataChannel?.[5]
+									category_id: dataChannel?.[5],
+									message_id: messageIdOnLink
 								};
 
 								textParts.push(
@@ -613,6 +616,22 @@ export const RenderTextMarkdownContent = ({
 									>
 										{renderChannelIcon(payloadChannel?.type, payloadChannel?.channel_id, themeValue)}
 										{payloadChannel?.channel_id === 'undefined' ? 'private-channel' : text}
+										{payloadChannel?.channel_id !== 'undefined' && messageIdOnLink && (
+											<Text>
+												<Feather
+													name="chevron-right"
+													size={size.s_14}
+													color={Colors.textLink}
+													style={{ marginTop: size.s_10 }}
+												/>{' '}
+												<Feather
+													name="message-circle"
+													size={size.s_14}
+													color={Colors.textLink}
+													style={{ paddingTop: size.s_10 }}
+												/>
+											</Text>
+										)}
 									</Text>
 								);
 								break;
