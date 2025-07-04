@@ -5,6 +5,7 @@ import { FlatList, Text, View } from 'react-native';
 import { IProductDetail } from '../ProductDetailModal';
 import ProductItem from '../ProductSection/ProductItem';
 import SectionBadge from '../ProductSection/SectionBadge';
+import { style } from './styles';
 
 interface IProductSectionProps {
 	title: string;
@@ -16,31 +17,14 @@ interface IProductSectionProps {
 
 const ProductSection = ({ title, icon, type = 'sticker', data, onPress }: IProductSectionProps) => {
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const { t } = useTranslation(['token']);
 
 	const renderItem = ({ item }: { item: IProductDetail }) => <ProductItem product={item} type={type} />;
 	const renderEmptyComponent = () => (
-		<View
-			style={{
-				width: '100%',
-				alignItems: 'center',
-				justifyContent: 'center',
-				paddingVertical: size.s_20,
-				gap: size.s_8
-			}}
-		>
-			<Text style={{ fontSize: size.s_50, marginBottom: size.s_4 }}>🛍️</Text>
-			<Text
-				style={{
-					fontSize: size.s_15,
-					color: themeValue.textDisabled,
-					textAlign: 'center',
-					lineHeight: size.s_20,
-					maxWidth: 280
-				}}
-			>
-				{t('emptyTitle', { item: title })}
-			</Text>
+		<View style={styles.container}>
+			<Text style={styles.icon}>🛍️</Text>
+			<Text style={styles.title}>{t('emptyTitle', { item: title })}</Text>
 		</View>
 	);
 
