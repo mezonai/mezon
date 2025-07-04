@@ -10,6 +10,7 @@ import { IProductDetail } from '../../../components/Shop/ProductDetailModal';
 import ProductItem from '../../../components/Shop/ProductSection/ProductItem';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './ViewAll.styles';
+import { memo } from 'react';
 
 const ViewAllScreen = ({ navigation }) => {
 	const { themeValue, themeBasic } = useTheme();
@@ -46,4 +47,4 @@ const ViewAllScreen = ({ navigation }) => {
 	);
 };
 
-export default ViewAllScreen;
+export default memo(ViewAllScreen);
