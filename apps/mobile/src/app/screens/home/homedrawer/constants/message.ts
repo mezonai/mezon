@@ -84,5 +84,10 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			title: t('message:actions.markMessage'),
 			type: EMessageActionType.MarkMessage
 		},
+		{
+			id: 19,
+			title: t('message:actions.copyMessageLink'),
+			type: EMessageActionType.CopyMessageLink
+		}
 	];
 };

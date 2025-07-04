@@ -375,6 +375,25 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		}
 	};
 
+	const handleActionCopyMessageLink = () => {
+		try {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			let messageLinkCopy = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${message?.clan_id}/channels/${message?.channel_id}/messages/${message?.id}`;
+			if (message?.clan_id === '0' || !message?.clan_id)
+				messageLinkCopy = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/direct/message/${message?.channel_id}/${currentDmGroup?.type}/${message?.id}`;
+			Clipboard.setString(messageLinkCopy);
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('toast.copyMessageLink'),
+					leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={Colors.bgGrayLight} />
+				}
+			});
+		} catch (error) {
+			console.error('Error copying message link:', error);
+		}
+	};
+
 	const implementAction = (type: EMessageActionType) => {
 		switch (type) {
 			case EMessageActionType.GiveACoffee:
@@ -404,9 +423,9 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			case EMessageActionType.UnPinMessage:
 				handleActionUnPinMessage();
 				break;
-			// case EMessageActionType.CopyMessageLink:
-			// 	handleActionCopyMessageLink();
-			// 	break;
+			case EMessageActionType.CopyMessageLink:
+				handleActionCopyMessageLink();
+				break;
 			case EMessageActionType.CopyMediaLink:
 				handleActionCopyMediaLink();
 				break;
@@ -509,7 +528,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isHideDeleteMessage && EMessageActionType.DeleteMessage,
 			((!isMessageError && isMyMessage) || !isMyMessage) && EMessageActionType.ResendMessage,
 			(isMyMessage || isMessageSystem || isAnonymous) && EMessageActionType.GiveACoffee,
-			isHideTopicDiscussion && EMessageActionType.TopicDiscussion
+			isHideTopicDiscussion && EMessageActionType.TopicDiscussion,
+			isDM && EMessageActionType.CopyMessageLink
 		];
 
 		let availableMessageActions: IMessageAction[] = [];

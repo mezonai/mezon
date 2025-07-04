@@ -6,6 +6,7 @@ import {
 	directActions,
 	getStore,
 	getStoreAsync,
+	messagesActions,
 	selectAllRolesClan,
 	selectAllUserClans,
 	selectCurrentClanId,
@@ -70,22 +71,25 @@ const ChannelMessageListener = React.memo(() => {
 				const currentDirectId = selectDmGroupCurrentId(store.getState());
 				const currentClanId = currentDirectId ? '0' : clanIdStore;
 
-				if (type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel?.meeting_code) {
+				if (type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel?.meeting_code && !channel?.message_id) {
 					const urlVoice = `${linkGoogleMeet}${channel?.meeting_code}`;
 					await Linking.openURL(urlVoice);
-				} else if (type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+				} else if (type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && !channel?.message_id) {
 					const data = {
 						snapPoints: ['45%'],
 						children: <JoinChannelVoiceBS channel={channel} />
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-				} else if (type === ChannelType.CHANNEL_TYPE_STREAMING) {
+				} else if (type === ChannelType.CHANNEL_TYPE_STREAMING && !channel?.message_id) {
 					const data = {
 						snapPoints: ['45%'],
 						children: <JoinStreamingRoomBS channel={channel} />
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-				} else if ([ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD, ChannelType.CHANNEL_TYPE_APP].includes(type)) {
+				} else if (
+					[ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD, ChannelType.CHANNEL_TYPE_APP].includes(type) ||
+					(channel?.message_id && channel?.channel_id && channel?.clan_id)
+				) {
 					const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 					save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 					await jumpToChannel(channelId, clanId);
@@ -101,6 +105,15 @@ const ChannelMessageListener = React.memo(() => {
 					DeviceEventEmitter.emit(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, {
 						isFetchMemberChannelDM: true
 					});
+					if (channel?.message_id) {
+						dispatch(
+							messagesActions.jumpToMessage({
+								clanId: clanId,
+								channelId: channelId,
+								messageId: channel?.message_id
+							})
+						);
+					}
 				}
 			} catch (error) {
 				/* empty */
