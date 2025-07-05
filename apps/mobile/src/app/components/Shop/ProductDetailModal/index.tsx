@@ -5,7 +5,7 @@ import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
 import { getSrcEmoji } from '@mezon/utils';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Image, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { DeviceEventEmitter, Image, ImageStyle, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -89,10 +89,15 @@ const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) 
 										? product?.src || getSrcEmoji(product?.id || '')
 										: product?.source || `${process.env.NX_BASE_IMG_URL}/stickers/${product?.id}.webp`
 							}}
-							style={styles.image}
+							style={styles.image as ImageStyle}
 							resizeMode="contain"
 							alt={product?.shortname}
 						/>
+						{!isHaveUnlock && (
+							<View style={styles.lockOverlay}>
+								<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} width={size.s_40} height={size.s_40} />
+							</View>
+						)}
 					</View>
 
 					<View style={styles.infoContainer}>

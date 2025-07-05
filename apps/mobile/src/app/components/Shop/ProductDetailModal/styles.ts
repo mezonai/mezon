@@ -42,6 +42,8 @@ export const style = (themeValue: any) =>
 		imageContainer: {
 			marginVertical: size.s_18,
 			height: size.s_150,
+			justifyContent: 'center',
+			alignItems: 'center',
 		},
 		image: {
 			width: '100%',
@@ -106,5 +108,11 @@ export const style = (themeValue: any) =>
 			color: themeValue.textStrong,
 			fontSize: size.s_16,
 			fontWeight: 'bold'
-		}
+		},
+		lockOverlay: {
+			position: 'absolute',
+			top: '50%',
+			left: '50%',
+			transform: [{ translateX: -size.s_16 }, { translateY: -size.s_16 }],
+		},
 	});

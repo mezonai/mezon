@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (theme: any) =>
@@ -7,14 +6,17 @@ export const style = (theme: any) =>
 			flex: 1,
 			backgroundColor: theme.primary
 		},
-		header: {
+        header: {
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'flex-start',
 			padding: size.s_8,
 			backgroundColor: theme.primary
 		},
-		title: {
+        backButton: {
+			paddingRight: size.s_12
+		},
+        title: {
 			fontSize: size.s_20,
 			color: theme.textStrong,
 			marginLeft: size.s_10
@@ -25,11 +27,5 @@ export const style = (theme: any) =>
 		},
 		mezonBold: {
 			fontWeight: '900'
-		},
-		productContainer: {
-			flex: 1
-		},
-		backButton: {
-			paddingRight: size.s_12
 		},
 	});

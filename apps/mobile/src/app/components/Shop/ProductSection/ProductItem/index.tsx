@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { getSrcEmoji } from '@mezon/utils';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Image, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Image, ImageStyle, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import ProductDetailModal, { IProductDetail } from '../../ProductDetailModal';
@@ -46,10 +46,15 @@ const ProductItem = ({ product, type }: IProductItemProps) => {
 								? product?.src || getSrcEmoji(product?.id || '')
 								: product?.source || `${process.env.NX_BASE_IMG_URL}/stickers/${product?.id}.webp`
 					}}
-					style={styles.image}
+					style={styles.image as ImageStyle}
 					resizeMode="contain"
 					alt={product?.shortname}
 				/>
+				{!isHaveUnlock && (
+					<View style={styles.lockOverlay}>
+						<MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.text} width={size.s_40} height={size.s_40} />
+					</View>
+				)}
 			</View>
 			<View style={styles.content}>
 				<Text style={styles.name} numberOfLines={1}>
