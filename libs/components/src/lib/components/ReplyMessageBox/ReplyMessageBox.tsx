@@ -31,8 +31,8 @@ export function ReplyMessageBox({ channelId, dataReferences, className }: Messag
 	};
 
 	return (
-		<div className={classNames('flex flex-row items-center justify-between w-full  p-2 rounded-lg text-[14px]', className)}>
-			<div className="">
+		<div className={classNames('flex flex-row items-center justify-between w-full  border-theme-primary bg-theme-setting-nav p-2 rounded-lg text-[14px]', className)}>
+			<div className="text-theme-primary">
 				Replying to <span className=" text-theme-primary-active font-semibold">{nameShowed}</span>
 			</div>
 			<button className="relative" onClick={handleRemoveReply}>

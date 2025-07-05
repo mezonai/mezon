@@ -1,7 +1,7 @@
 /* Cyber Dark Theme */
 :root {
-	--bg-primary: #121212;
-	--bg-secondary: #1e1e1e;
+	--bg-primary: #26272B;
+	--bg-secondary: #313338;
 	
 	/* nền ngoài của phần footer */
 	--bg-outside-footer: #1a1a1a;
@@ -10,7 +10,7 @@
 	--bg-footer: #0f0f0f;
 
 	/* màu chat input */
-	--bg-surface: #202020;
+	--bg-surface: #383A40;
 
 	/* màu ping member */
 	--bg-ping-member: #2d2d30;
@@ -25,21 +25,21 @@
 	/* màu nền của clan */
 	--theme-base-color: rgba(255, 255, 255, 0.06);
 	--theme-text-color-dark: #e0e0e0;
-	--theme-setting-primary: #2a2a2a;
+	--theme-setting-primary: #313338;
 	/* màu nav seting */
-	--theme-setting-nav: #232323;
+	--theme-setting-nav: #2B2D31;
 	--private-theme: #2c4957;
 
 	--text-theme-primary: #e8e8e8;
 	--text-theme-primary-hover: #ffffff;
 
-	--bg-active-friend-list: #1a1a1a;
+	--bg-active-friend-list: #2B2D31;
 	--bg-active-button: rgba(85, 85, 85, 0.25);
 	--color-text-active-button: #7eb1ff;
 	--bg-button-add-friend: #3366cc;
 
 	--border-color-primary: #3d3d3d;
-	--bg-theme-direct-message: #171717;
+	--bg-theme-direct-message: #2B2D31;
 
 	--text-secondary: #cccccc;
 	/* màu click vào channel user */

@@ -9,77 +9,37 @@ export const AVAILABLE_THEMES: ThemeConfig[] = [
 	{
 		name: 'dark',
 		displayName: 'Dark Theme',
-		color: 'linear-gradient(135deg, #1e3c72, #1e3c72)',
+		color: '#26272B',
 		cssFile: 'assets/themes/dark.css'
 	},
 	{
 		name: 'light',
 		displayName: 'Light Theme',
-		color: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
+		color: '#FFFFFF',
 		cssFile: 'assets/themes/light.css'
 	},
 	{
-		name: 'cyber',
-		displayName: 'Cyber Theme',
-		color: 'linear-gradient(135deg, #1e3c72, #1e3c72)',
-		cssFile: 'assets/themes/cyber.css'
-	},
-
-	{
-		name: 'green_meadow',
-		displayName: 'Green Meadow',
-		color: `linear-gradient(
-		  hsl(0 calc(1*0%) 100% / 0.47843137254901963), 
-		  hsl(0 calc(1*0%) 100% / 0.47843137254901963)
-		),
-		linear-gradient(
-		  180deg,
-		  hsl(165.625 calc(1*39.669%) 52.549% / 1) 6.15%,
-		  hsl(118.681 calc(1*40.444%) 55.882% / 1) 48.7%,
-		  hsl(86.667 calc(1*48.293%) 59.804% / 1) 93.07%
-		)`,
-		cssFile: 'assets/themes/green_meadow.css'
-	},
-	{
-		name: 'soft_peach',
-		displayName: 'Soft Peach',
-		color: 'linear-gradient(135deg, #ffafbd, #ffc3a0)',
-		cssFile: 'assets/themes/soft_peach.css'
-	},
-	{
-		name: 'lavender_mist',
-		displayName: 'Lavender Mist',
-		color: 'linear-gradient(135deg, #c9d6ff, #e2e2e2)',
-		cssFile: 'assets/themes/lavender_mist.css'
-	},
-	{
-		name: 'cloud_white',
-		displayName: 'Cloud White',
-		color: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
-		cssFile: 'assets/themes/cloud_white.css'
-	},
-	{
-		name: 'pink_blossom',
-		displayName: 'Pink Blossom',
-		color: 'linear-gradient(135deg, #ffdde1, #ee9ca7)',
-		cssFile: 'assets/themes/pink_blossom.css'
+		name: 'sunrise',
+		displayName: 'Sunrise Theme',
+		color: 'linear-gradient(135deg, #e0c3fc, #fbc2eb, #fcd5ce, #fff1eb)',
+		cssFile: 'assets/themes/sunrise.css'
 	},
 	{
 		name: 'purple_haze',
 		displayName: 'Purple Haze',
-		color: 'linear-gradient(135deg, #e0c3fc, #8ec5fc)',
+		color: 'linear-gradient(135deg, #a78bfa, #f472b6, #60a5fa)',
 		cssFile: 'assets/themes/purple_haze.css'
 	},
 	{
 		name: 'redDark',
 		displayName: 'Red Dark',
-		color: 'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
+		color: 'linear-gradient(135deg, #3b0a0a, #7f1d1d, #e11d48)',
 		cssFile: 'assets/themes/redDark.css'
 	},
 	{
 		name: 'Abyss Dark',
 		displayName: 'Abyss Dark',
-		color: 'linear-gradient(135deg, #f6d365, #fda085)',
+		color: 'linear-gradient(135deg, #0f172a, #1e3a8a, #6d28d9)',
 		cssFile: 'assets/themes/abyss_dark_.css'
 	}
 ];

@@ -1,84 +1,84 @@
 /* Cyber Theme CSS Variables */
 :root {
 	/* background */
-	--bg-primary: #E3E5E8;
-	--bg-secondary: #f8f8f8;
+	--bg-primary: #F5F7FA;
+	--bg-secondary: #FFFFFF;
 	
 	/* nền ngoài của phần chat */
-	--bg-outside-footer: #f5f5f5;
+	--bg-outside-footer: #f0f2f5;
 	
 	/* nền trong của phần footer */
 	--bg-footer: #ffffff;
 
 	/* màu ping member */
-	--bg-ping-member: rgb(255, 252, 238);
-	--bg-tertiary: rgba(155, 155, 155, 0.16);
+	--bg-ping-member: #FFF8E1;
+	--bg-tertiary: rgba(155, 155, 155, 0.12);
 	--bg-surface: #fbfbfb;
 
 	--bg-accent: rgba(155, 155, 155, 0.16);
-	--bg-hover: #dfe1e5;
-	--bg-modal: rgba(0, 0, 0, 0.54);
+	--bg-hover: #EBEDF0;
+	--bg-modal: rgba(0, 0, 0, 0.5);
 
 	/* input */
-	--theme-input: rgba(155, 155, 155, 0.16);
-	--theme-border-input: rgba(155, 155, 155, 0.28);
+	--theme-input: rgba(155, 155, 155, 0.12);
+	--theme-border-input: rgba(155, 155, 155, 0.25);
 	--theme-base-color: linear-gradient(rgba(197, 194, 194, 0.5), rgba(197, 194, 194, 0.5));
-	--theme-setting-primary: #f9f7f0;
-	--theme-setting-nav: #f7f4e8;
+	--theme-setting-primary: #f9f9f9;
+	--theme-setting-nav: #E8EAED;
 	--private-theme: rgb(144, 224, 176);
-
-	--text-theme-primary: #505050;
-	--bg-active-friend-list: #f0f0f0;
-	--bg-active-button: rgba(155, 155, 155, 0.16);
+	--bg-button-primary: #4361EE;
+	--text-theme-primary: #2A2A2A;
+	--bg-active-friend-list: #EBEDF0;
+	--bg-active-button: rgba(67, 97, 238, 0.12);
 	--color-text-active-button: #4361ee;
 	--bg-button-add-friend: #4361ee;
-	--border-color-primary: #d1d1d1;
-	--bg-theme-direct-message: #e0e0e0;
+	--border-color-primary: #E0E0E0;
+	--bg-theme-direct-message: #F8F9FA;
 
-	--text-secondary: #555555;
+	--text-secondary: #606060;
 	--border-theme-primary: rgba(155, 155, 155, 0.2);
 	--border-t-theme-primary: rgba(155, 155, 155, 0.2);
 	--border-r-t-l-theme-primary: rgba(155, 155, 155, 0.2);
 	--border-r-b-l-theme-primary: rgba(155, 155, 155, 0.2);
-	--bg-button-secondary: rgba(155, 155, 155, 0.16);
+	--bg-button-secondary: #F0F2F5;
 	--bg-theme-input-primary: #ffffff;
-	--text-theme-primary-hover: #555555;
-	--bg-item-hover: rgba(155, 155, 155, 0.12);
+	--text-theme-primary-hover: #4361ee;
+	--bg-item-hover: rgba(67, 97, 238, 0.08);
 	
 	/* màu click vào member channel */
-	--bg-active-member-channel: rgba(155, 155, 155, 0.15);
-	--bg-hover-select-status: #E2C7D6;
+	--bg-active-member-channel: rgba(67, 97, 238, 0.12);
+	--bg-hover-select-status: #E2E6F3;
 
 	/* border */
-	--border-primary: rgba(155, 155, 155, 0.2);
-	--border-secondary: #00e085;
-	--border-focus: #00ffaa;
-	--border-divider: #003d1f;
-	--border-hover: #00cc76;
+	--border-primary: #DADCE0;
+	--border-secondary: #4361ee;
+	--border-focus: #4361ee;
+	--border-divider: #E8EAED;
+	--border-hover: #4361ee;
 
 	/* mention */
-	--mention-primary: rgba(67, 97, 238, 0.24);
-	--mention-color: #3298FF;
-	--bg-mention-hover: rgba(67, 98, 238, 0.39);
-	--color-mention-hover: #3298FF;
-	--bg-mention-evryone: #2eb08b63;
+	--mention-primary: rgba(67, 97, 238, 0.16);
+	--mention-color: #4361ee;
+	--bg-mention-hover: rgba(67, 97, 238, 0.24);
+	--color-mention-hover: #3051D8;
+	--bg-mention-evryone: rgba(46, 176, 140, 0.16);
 	--color-mention-evryone: #2EB08C;
-	--bg-mention-everyone-hover: #2eb08b8c;
-	--color-mention-everyone-hover: #32b993;
+	--bg-mention-everyone-hover: rgba(46, 176, 140, 0.24);
+	--color-mention-everyone-hover: #269D7C;
 	
 	/* highlight */
-	--bg-highlight: rgba(255, 213, 79, 0.08);
-	--bg-secondary-button-hover: rgba(155, 155, 155, 0.28);
+	--bg-highlight: rgba(255, 213, 79, 0.16);
+	--bg-secondary-button-hover: #E8EAED;
 
 	/* màu contexify */
-	--bg-theme-contexify: #E3E5E8;
+	--bg-theme-contexify: #FFFFFF;
 	
 	/* màu count page */
-	--bg-count-page: #e6f0ff;
-	--text-count-page: #1e3a8a;
-	--bg-count-page-hover: #d0e2ff;
-	--text-count-page-hover: #1e40af;
-	--bg-count-page-active: #235eef;
+	--bg-count-page: #EDF2FF;
+	--text-count-page: #3051D8;
+	--bg-count-page-hover: #DCE6FF;
+	--text-count-page-hover: #2344C0;
+	--bg-count-page-active: #4361ee;
 	--text-count-page-active: #ffffff;
-	--bg-item-theme-hover: rgba(155, 155, 155, 0.12);
+	--bg-item-theme-hover: rgba(67, 97, 238, 0.08);
 }
