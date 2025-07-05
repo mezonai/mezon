@@ -1,53 +1,15 @@
 {
-    "name": "themes",
-    "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "sourceRoot": "libs/themes/src",
-    "projectType": "library",
-    "targets": {
-        "build": {
-            "executor": "@nx/rollup:rollup",
-            "outputs": [
-                "{options.outputPath}"
-            ],
-            "options": {
-                "outputPath": "dist/libs/themes",
-                "tsConfig": "libs/themes/tsconfig.lib.json",
-                "project": "libs/themes/package.json",
-                "entryFile": "libs/themes/src/index.ts",
-                "external": [
-                    "react/jsx-runtime"
-                ],
-                "rollupConfig": "@nx/react/plugins/bundle-rollup",
-                "compiler": "swc",
-                "assets": [
-                    {
-                        "glob": "libs/themes/README.md",
-                        "input": ".",
-                        "output": "."
-                    }
-                ]
-            }
-        },
-        "lint": {
-            "executor": "@nx/eslint:lint",
-            "outputs": [
-                "{options.outputFile}"
-            ],
-            "options": {
-                "lintFilePatterns": [
-                    "libs/themes/**/*.{ts,tsx,js,jsx}"
-                ]
-            }
-        },
-        "test": {
-            "executor": "@nx/jest:jest",
-            "outputs": [
-                "{workspaceRoot}/coverage/{projectRoot}"
-            ],
-            "options": {
-                "jestConfig": "libs/themes/jest.config.ts"
-            }
-        }
-    },
-    "tags": []
+  "name": "themes",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/themes/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  },
+  "tags": []
 }
