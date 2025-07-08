@@ -58,7 +58,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const [radioBox, setRadioBox] = useState<IOptionsNotification[]>(optionNotifySetting);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const notifyReactMessage = useAppSelector((state) => selectNotifiReactMessageByChannelId(state, currentChannelId));
+	const notifyReactMessage = useAppSelector((state) => selectNotifiReactMessageByChannelId(state, currentChannelId || channel?.channel_id || ''));
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || currentChannelId || ''));
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.category_id as string));
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
@@ -123,6 +123,11 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 		if (!currentChannelId) {
 			return;
 		}
+
+		console.log("currentChannelId", currentChannelId);
+		console.log("channel?.channel_id", channel?.channel_id);
+		console.log("channel?.id", channel?.id);
+
 		try {
 			if (check) {
 				await dispatch(
