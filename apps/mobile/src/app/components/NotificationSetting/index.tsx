@@ -58,7 +58,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const [radioBox, setRadioBox] = useState<IOptionsNotification[]>(optionNotifySetting);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const notifyReactMessage = useAppSelector((state) => selectNotifiReactMessageByChannelId(state, currentChannelId || channel?.channel_id || ''));
+	const notifyReactMessage = useAppSelector((state) => selectNotifiReactMessageByChannelId(state, channel?.channel_id || currentChannelId || ''));
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || currentChannelId || ''));
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.category_id as string));
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
@@ -69,7 +69,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 		id: 4,
 		label: t('bottomSheet.labelOptions.reactionMessage'),
 		isChecked: isNotifyReactMessage || false,
-		value: ENotificationTypes.REACTION_MESSSAGE
+		value: ENotificationTypes.REACTION_MESSAGE
 	};
 
 	useEffect(() => {
@@ -90,7 +90,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 
 	useEffect(() => {
 		if (!currentChannelId) return;
-		dispatch(notifiReactMessageActions.getNotifiReactMessage({ channelId: currentChannelId }));
+		dispatch(notifiReactMessageActions.getNotifiReactMessage({ channelId: channel?.channel_id || currentChannelId }));
 	}, [currentChannelId, dispatch]);
 
 	const handleRadioBoxPress = (checked: boolean, id: number) => {
@@ -119,15 +119,10 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 			}
 		}
 	};
-	const handleCheckboxPress = async (check: boolean, id: number) => {
-		if (!currentChannelId) {
+	const handleCheckboxPress = async (check: boolean, id: string) => {
+		if (!id) {
 			return;
 		}
-
-		console.log("currentChannelId", currentChannelId);
-		console.log("channel?.channel_id", channel?.channel_id);
-		console.log("channel?.id", channel?.id);
-
 		try {
 			if (check) {
 				await dispatch(
@@ -152,7 +147,11 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 				))}
 			</View>
 			<View style={styles.optionsSetting}>
-				<FilterCheckbox type="checkbox" item={checkBox} onCheckboxPress={handleCheckboxPress} />
+				<FilterCheckbox
+					type="checkbox"
+					item={checkBox}
+					onCheckboxPress={(isChecked) => handleCheckboxPress(isChecked, channel?.channel_id)}
+				/>
 			</View>
 		</View>
 	);
