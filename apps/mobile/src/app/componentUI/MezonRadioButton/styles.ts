@@ -30,5 +30,28 @@ export const style = (colors: Attributes) =>
 
 		container: {
 			padding: Metrics.size.s
+		},
+
+		checkboxOuter: {
+			borderRadius: 4,
+			borderWidth: 2,
+			padding: 2,
+			height: 24,
+			width: 24,
+			borderColor: colors.borderRadio,
+			justifyContent: 'center',
+			alignItems: 'center'
+		},
+
+		checkboxOuterChecked: {
+			borderColor: baseColor.blurple,
+			backgroundColor: baseColor.blurple
+		},
+		
+		checkmark: {
+			color: baseColor.white,
+			fontSize: 14,
+			fontWeight: 'bold',
+			lineHeight: 18
 		}
 	});

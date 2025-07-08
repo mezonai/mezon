@@ -16,7 +16,8 @@ export const style = (colors: Attributes) =>
 		},
 		optionsSetting: {
 			backgroundColor: colors.secondary,
-			borderRadius: 8
+			borderRadius: 8,
+			marginBottom: size.s_10
 		},
 		option: {
 			flexDirection: 'row',

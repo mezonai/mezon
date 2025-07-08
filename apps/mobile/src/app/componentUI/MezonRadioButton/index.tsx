@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
 
 interface IMezonRadioButton {
@@ -8,9 +8,10 @@ interface IMezonRadioButton {
 	checked?: boolean;
 	noSwitchFalse?: boolean;
 	disabled?: boolean;
+	type?: 'radio' | 'checkbox';
 }
 
-export default function MezonRadioButton({ onChange, checked, noSwitchFalse, disabled = false }: IMezonRadioButton) {
+export default function MezonRadioButton({ onChange, checked, noSwitchFalse, disabled = false, type = 'radio' }: IMezonRadioButton) {
 	const styles = style(useTheme().themeValue);
 	const [isChecked, setChecked] = useState<boolean>(checked);
 
@@ -30,6 +31,16 @@ export default function MezonRadioButton({ onChange, checked, noSwitchFalse, dis
 		} catch (error) {
 			console.error('Error in handleToggle:', error);
 		}
+	}
+
+	if (type === 'checkbox') {
+		return (
+			<TouchableOpacity onPress={handleToggle} style={styles.container} disabled={disabled}>
+				<View style={[styles.checkboxOuter, isChecked && styles.checkboxOuterChecked]}>
+					{isChecked && <Text style={styles.checkmark}>✓</Text>}
+				</View>
+			</TouchableOpacity>
+		);
 	}
 
 	return (
