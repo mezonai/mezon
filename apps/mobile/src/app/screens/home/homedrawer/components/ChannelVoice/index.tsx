@@ -231,6 +231,7 @@ function ChannelVoice({
 	const [isSpeakerOn, setIsSpeakerOn] = useState<boolean>(false);
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const dispatch = useAppDispatch();
+	const [isEnablePip, setIsEnablePip] = useState<boolean>(false);
 
 	const { sendSignalingToParticipants } = useSendSignaling();
 
@@ -289,10 +290,14 @@ function ChannelVoice({
 
 	useEffect(() => {
 		const subscription = AppState.addEventListener('change', async (state) => {
+			if (!isEnablePip) {
+				setIsEnablePip(true);
+				return;
+			}
 			if (state === 'background') {
 				if (Platform.OS === 'android') {
 					const isPipSupported = await NativeModules.PipModule.isPipSupported();
-					if (isPipSupported) {
+					if (isPipSupported && isEnablePip) {
 						NativeModules.PipModule.enablePipMode();
 						dispatch(voiceActions.setPiPModeMobile(true));
 					}
@@ -309,7 +314,7 @@ function ChannelVoice({
 			}
 			subscription.remove();
 		};
-	}, [dispatch]);
+	}, [dispatch, isEnablePip]);
 
 	useEffect(() => {
 		if (Platform.OS === 'android') {
