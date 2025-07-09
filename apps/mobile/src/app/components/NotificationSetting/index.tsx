@@ -20,6 +20,8 @@ import { useSelector } from 'react-redux';
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox';
 import { style } from './NotificationSetting.styles';
 
+const REACT_MESSAGE = 4;
+
 export default function NotificationSetting({ channel }: { channel?: ChannelThreads }) {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['notificationSetting']);
@@ -69,7 +71,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 		id: 4,
 		label: t('bottomSheet.labelOptions.reactionMessage'),
 		isChecked: isNotifyReactMessage || false,
-		value: ENotificationTypes.REACTION_MESSAGE
+		value: REACT_MESSAGE
 	};
 
 	useEffect(() => {

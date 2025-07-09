@@ -1054,8 +1054,7 @@ export enum ENotificationTypes {
 	DEFAULT = 0,
 	ALL_MESSAGE = NotificationType.ALL_MESSAGE,
 	MENTION_MESSAGE = NotificationType.MENTION_MESSAGE,
-	NOTHING_MESSAGE = NotificationType.NOTHING_MESSAGE,
-	REACTION_MESSAGE = 4,
+	NOTHING_MESSAGE = NotificationType.NOTHING_MESSAGE
 }
 
 export type PreSendAttachment = {
