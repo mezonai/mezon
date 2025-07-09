@@ -91,9 +91,9 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan]);
 
 	useEffect(() => {
-		if (!currentChannelId) return;
+		if (!channel?.channel_id && !currentChannelId) return;
 		dispatch(notifiReactMessageActions.getNotifiReactMessage({ channelId: channel?.channel_id || currentChannelId }));
-	}, [currentChannelId, dispatch]);
+	}, [currentChannelId, channel?.channel_id, dispatch]);
 
 	const handleRadioBoxPress = (checked: boolean, id: number) => {
 		const notifyOptionSelected = radioBox.map((item) => item && { ...item, isChecked: item.id === id });
@@ -111,8 +111,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 					clan_id: currentClanId || ''
 				};
 				dispatch(notificationSettingActions.setNotificationSetting(body));
-			} else {
-				dispatch(
+			} else { dispatch(
 					notificationSettingActions.deleteNotiChannelSetting({
 						channel_id: channel?.channel_id || currentChannelId || '',
 						clan_id: currentClanId || ''
@@ -121,8 +120,8 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 			}
 		}
 	};
-	const handleCheckboxPress = async (check: boolean, id: string) => {
-		if (!id) {
+	const handleCheckboxPress = async (check: boolean) => {
+		if (!channel?.channel_id && !currentChannelId) {
 			return;
 		}
 		try {
@@ -149,11 +148,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 				))}
 			</View>
 			<View style={styles.optionsSetting}>
-				<FilterCheckbox
-					type="checkbox"
-					item={checkBox}
-					onCheckboxPress={(isChecked) => handleCheckboxPress(isChecked, channel?.channel_id)}
-				/>
+				<FilterCheckbox type="checkbox" item={checkBox} onCheckboxPress={(isChecked) => handleCheckboxPress(isChecked)} />
 			</View>
 		</View>
 	);
