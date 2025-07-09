@@ -1,7 +1,7 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
-import { selectAllPermissionsDefault, selectAllRolesClan, selectEveryoneRole, selectRoleByRoleId } from '@mezon/store-mobile';
+import { appActions, selectAllPermissionsDefault, selectAllRolesClan, selectEveryoneRole, selectRoleByRoleId, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 		EPermission.manageClan,
 		EPermission.clanOwner
 	]);
+	const dispatch = useAppDispatch();
 
 	const clanRole = useSelector(selectRoleByRoleId(roleId)); //Note: edit role
 	const defaultPermissionList = useSelector(selectAllPermissionsDefault);
@@ -76,29 +77,35 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 		return isEqualStringArrayUnordered(originSelectedPermissions, selectedPermissions);
 	}, [originSelectedPermissions, selectedPermissions]);
 
-	const handleEditPermissions = async () => {
-		const selectedMembers = clanRole?.role_user_list?.role_users?.map((it) => it?.id);
-		const removePermissionList = permissionList?.filter((permission) => !selectedPermissions.includes(permission?.id)).map((it) => it?.id);
-		const response = await updateRole(
-			clanRole?.clan_id,
-			clanRole?.id,
-			clanRole?.title,
-			clanRole?.color || '',
-			selectedMembers,
-			selectedPermissions,
-			[],
-			removePermissionList
-		);
-		if (response === true) {
-			Toast.show({
-				type: 'success',
-				props: {
-					text2: t('roleDetail.changesSaved'),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
-				}
-			});
-			navigation.goBack();
-		} else {
+	const handleEditPermissions = useCallback(async () => {
+		try {
+			dispatch(appActions.setLoadingMainMobile(true));
+			const removePermissionList = permissionList?.filter((permission) => !selectedPermissions.includes(permission?.id)).map((it) => it?.id);
+			console.log('selectedPermissions', selectedPermissions);
+			const response = await updateRole(
+				clanRole?.clan_id,
+				clanRole?.id,
+				clanRole?.title,
+				clanRole?.color || '',
+				[],
+				selectedPermissions,
+				[],
+				removePermissionList
+			);
+			if (response === true) {
+				Toast.show({
+					type: 'success',
+					props: {
+						text2: t('roleDetail.changesSaved'),
+						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					}
+				});
+				navigation.goBack();
+			} else {
+				throw new Error('failed');
+			}
+		} catch (error) {
+			console.error(error);
 			Toast.show({
 				type: 'success',
 				props: {
@@ -106,8 +113,10 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
+		} finally {
+			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	};
+	}, [clanRole, navigation, permissionList, selectedPermissions, t, updateRole]);
 
 	useEffect(() => {
 		navigation.setOptions({
@@ -157,18 +166,29 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				);
 			}
 		});
-	}, [clanRole?.title, isEditRoleMode, isNotChange, navigation, t, themeValue?.text, themeValue.textStrong, themeValue?.white]);
+	}, [
+		clanRole?.title,
+		isEditRoleMode,
+		isNotChange,
+		navigation,
+		t,
+		themeValue?.text,
+		themeValue.textStrong,
+		themeValue?.white,
+		selectedPermissions
+	]);
 
-	const onSelectPermissionChange = (value: boolean, permissionId: string) => {
-		const uniqueSelectedPermission = new Set(selectedPermissions);
-		if (value) {
-			uniqueSelectedPermission.add(permissionId);
-			setSelectedPermissions([...uniqueSelectedPermission]);
-			return;
-		}
-		uniqueSelectedPermission.delete(permissionId);
-		setSelectedPermissions([...uniqueSelectedPermission]);
-	};
+	const onSelectPermissionChange = useCallback((value: boolean, permissionId: string) => {
+		setSelectedPermissions((prevSelected) => {
+			const uniqueSelectedPermission = new Set(prevSelected);
+			if (value) {
+				uniqueSelectedPermission.add(permissionId);
+			} else {
+				uniqueSelectedPermission.delete(permissionId);
+			}
+			return Array.from(uniqueSelectedPermission);
+		});
+	}, []);
 
 	const handleNextStep = async () => {
 		const response = await updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
@@ -254,7 +274,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 
 												<MezonSwitch
 													value={selectedPermissions?.includes(item?.id)}
-													onValueChange={(isSelect) => onSelectPermissionChange(!isSelect, item?.id)}
+													onValueChange={(isSelect) => onSelectPermissionChange(isSelect, item?.id)}
 													disabled={item?.disabled}
 												/>
 											</View>
