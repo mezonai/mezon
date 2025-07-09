@@ -23,7 +23,7 @@ interface UseMenuHandlersParams {
 
 export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHandlersParams) {
 	const dispatch = useAppDispatch();
-	const { addFriend, deleteFriend, blockFriend, unBlockFriend } = useFriends();
+	const { addFriend, deleteFriend } = useFriends();
 	const { createDirectMessageWithUser } = useDirect();
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 	const { handleMarkAsReadDM } = useMarkAsRead();
@@ -122,8 +122,6 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 		handleLeaveDmGroup,
 		handleEnableE2ee,
 		addFriend,
-		deleteFriend,
-		blockFriend,
-		unBlockFriend
+		deleteFriend
 	};
 }

@@ -5,7 +5,6 @@ import { Icons } from '@mezon/ui';
 import { MemberProfileType, MetaDateStatusUser } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
-import { toast } from 'react-toastify';
 
 type FriendProps = {
 	friend: FriendsEntity;
@@ -22,10 +21,9 @@ type FriendMenuProps = {
 	coords: Coords;
 	onClose: () => void;
 	onDeleteFriend: (username: string, id: string) => void;
-	onBlockFriend: (username: string, id: string) => void;
 };
 
-const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: FriendMenuProps) => {
+const FriendMenu = ({ friend, coords, onClose, onDeleteFriend }: FriendMenuProps) => {
 	const menuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -76,15 +74,9 @@ const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: 
 				>
 					Remove Friend
 				</button>
-				<button
-					className="dark:hover:bg-colorDanger dark:hover:text-contentSecondary hover:bg-bgLightModeThird p-2 rounded-[5px] w-full text-colorDanger flex"
-					onClick={() => {
-						onBlockFriend(friend?.user?.username as string, friend?.user?.id as string);
-						onClose();
-					}}
-				>
+				{/* <button className="dark:hover:bg-colorDanger dark:hover:text-contentSecondary hover:bg-bgLightModeThird p-2 rounded-[5px] w-full text-colorDanger flex">
 					Block
-				</button>
+				</button> */}
 			</div>
 		</div>
 	);
@@ -93,7 +85,7 @@ const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: 
 const FriendsListItem = ({ friend }: FriendProps) => {
 	const { createDirectMessageWithUser } = useDirect();
 	const { toDmGroupPageFromFriendPage, navigate } = useAppNavigation();
-	const { acceptFriend, deleteFriend, blockFriend, unBlockFriend } = useFriends();
+	const { acceptFriend, deleteFriend } = useFriends();
 
 	const coords = useRef<Coords>({
 		mouseX: 0,
@@ -121,28 +113,6 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		deleteFriend(username, id);
 	};
 
-	const handleBlockFriend = async (username: string, id: string) => {
-		try {
-			const isBlocked = await blockFriend(username, id);
-			if (isBlocked) {
-				toast.success('User blocked successfully');
-			}
-		} catch (error) {
-			toast.error('Failed to block user');
-		}
-	};
-
-	const handleUnblockFriend = async (username: string, id: string) => {
-		try {
-			const isUnblocked = await unBlockFriend(username, id);
-			if (isUnblocked) {
-				toast.success('User unblocked successfully');
-			}
-		} catch (error) {
-			toast.error('Failed to unblock user');
-		}
-	};
-
 	const handleMenuClick = (event: React.MouseEvent) => {
 		const widthMenu = 150;
 		event.stopPropagation();
@@ -155,15 +125,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 	};
 
 	const [openFriendMenu, closeFriendMenu] = useModal(
-		() => (
-			<FriendMenu
-				friend={friend}
-				coords={coords.current}
-				onClose={closeFriendMenu}
-				onDeleteFriend={handleDeleteFriend}
-				onBlockFriend={handleBlockFriend}
-			/>
-		),
+		() => <FriendMenu friend={friend} coords={coords.current} onClose={closeFriendMenu} onDeleteFriend={handleDeleteFriend} />,
 		[friend]
 	);
 
@@ -236,16 +198,13 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 							</button>
 						</div>
 					)}
-					{friend?.state === 3 && (
+					{/* {friend?.state === 3 && (
 						<div className="flex gap-3 items-center">
-							<button
-								className="bg-bgTertiary text-contentSecondary rounded-[6px] text-[14px] p-2 flex items-center justify-center hover:bg-bgPrimary"
-								onClick={() => handleUnblockFriend(friend?.user?.username as string, friend?.user?.id as string)}
-							>
+							<button className="bg-bgTertiary text-contentSecondary rounded-[6px] text-[14px] p-2 flex items-center justify-center hover:bg-bgPrimary">
 								Unblock
 							</button>
 						</div>
-					)}
+					)} */}
 				</div>
 			</div>
 		</div>

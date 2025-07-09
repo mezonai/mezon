@@ -4,7 +4,6 @@ import {
 	channelsActions,
 	friendsActions,
 	requestAddFriendParam,
-	selectBlockedUsers,
 	selectCloseMenu,
 	selectCurrentTabStatus,
 	selectStatusMenu,
@@ -30,7 +29,6 @@ const FriendsPage = () => {
 	const [openModalAddFriend, setOpenModalAddFriend] = useState(false);
 	const [textSearch, setTextSearch] = useState('');
 	const currentTabStatus = useSelector(selectCurrentTabStatus);
-	const blockedUsers = useSelector(selectBlockedUsers);
 
 	const handleChangeTab = (valueTab: string) => {
 		dispatch(friendsActions.changeCurrentStatusTab(valueTab));
@@ -101,7 +99,7 @@ const FriendsPage = () => {
 			case 'pending':
 				return listFriends.filter((item) => item.state === 1 || item.state === 2);
 			case 'block':
-				return blockedUsers;
+				return listFriends.filter((item) => item.state === 3);
 			default:
 				return listFriends;
 		}

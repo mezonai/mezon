@@ -2,11 +2,8 @@ import { useAppParams, useFriends } from '@mezon/core';
 import {
 	ChannelsEntity,
 	EStateFriend,
-	RootState,
-	selectAllAccount,
 	selectCurrentChannel,
 	selectDirectById,
-	selectFriendById,
 	selectFriendStatus,
 	selectIsShowCreateThread,
 	selectMemberClanByUserId,
@@ -19,7 +16,6 @@ import { ChannelStatusEnum, createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 
 export type ChatWelComeProp = {
@@ -214,19 +210,7 @@ type StatusFriendProps = {
 
 const StatusFriend = memo((props: StatusFriendProps) => {
 	const { username = '', checkAddFriend, userID } = props;
-	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userID));
-	const userProfile = useSelector(selectAllAccount);
-
-	const isFriend = useMemo(() => {
-		return infoFriend?.state === EStateFriend.FRIEND;
-	}, [infoFriend]);
-	const isBlockedByUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userID && infoFriend?.user?.id === userProfile?.user?.id;
-	}, [userProfile?.user?.id, infoFriend, userID]);
-	const didIBlockUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id && infoFriend?.user?.id === userID;
-	}, [userProfile?.user?.id, infoFriend, userID]);
-	const { acceptFriend, deleteFriend, addFriend, blockFriend, unBlockFriend } = useFriends();
+	const { acceptFriend, deleteFriend, addFriend } = useFriends();
 
 	const title = useMemo(() => {
 		switch (checkAddFriend) {
@@ -266,32 +250,6 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 		}
 	};
 
-	const handleBlockFriend = async () => {
-		try {
-			const isBlocked = await blockFriend(username, userID);
-			if (isBlocked) {
-				toast.success('User blocked successfully');
-			}
-		} catch (error) {
-			toast.error('Failed to block user');
-		}
-	};
-
-	const handleUnblockFriend = async () => {
-		try {
-			const isUnblocked = await unBlockFriend(username, userID);
-			if (isUnblocked) {
-				toast.success('User unblocked successfully');
-			}
-		} catch (error) {
-			toast.error('Failed to unblock user');
-		}
-	};
-
-	if (isBlockedByUser) {
-		return null;
-	}
-
 	return (
 		<div className="flex gap-x-2 items-center text-sm">
 			{checkAddFriend === EStateFriend.MY_PENDING && (
@@ -307,14 +265,14 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 				</button>
 			))}
 
-			{(isFriend || didIBlockUser) && (
+			{/* {(isFriend || didIBlockUser) && (
 				<button
 					onClick={didIBlockUser ? handleUnblockFriend : handleBlockFriend}
 					className="rounded-lg text-theme-primary-hover border border-theme-primary bg-button-secondary px-4 py-0.5 font-medium text-theme-primary"
 				>
 					{didIBlockUser ? 'Unblock' : 'Block'}
 				</button>
-			)}
+			)} */}
 		</div>
 	);
 });

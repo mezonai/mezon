@@ -15,7 +15,6 @@ import {
 	DirectEntity,
 	directMetaActions,
 	e2eeActions,
-	EStateFriend,
 	gifsStickerEmojiActions,
 	selectAudioDialTone,
 	selectCloseMenu,
@@ -23,7 +22,6 @@ import {
 	selectCurrentDM,
 	selectDirectById,
 	selectDmGroupCurrent,
-	selectFriendById,
 	selectHasKeyE2ee,
 	selectIsSearchMessage,
 	selectIsShowCreateThread,
@@ -142,10 +140,6 @@ const DirectMessage = () => {
 	const isHaveCallInChannel = useMemo(() => {
 		return currentDmGroup?.user_id?.some((i) => i === signalingData?.[0]?.callerId);
 	}, [currentDmGroup?.user_id, signalingData]);
-	const infoFriend = useAppSelector((state) => selectFriendById(state, currentDirect?.user_id?.[0] || ''));
-	const isBlocked = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK;
-	}, [infoFriend?.state]);
 
 	const HEIGHT_EMOJI_PANEL = 457;
 	const WIDTH_EMOJI_PANEL = 500;
@@ -282,12 +276,13 @@ const DirectMessage = () => {
 						)}
 
 						<div className="flex-shrink-0 flex flex-col bg-theme-chat  h-auto relative">
-							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (currentDmGroup.user_id?.length === 0 || isBlocked) ? (
+							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup.user_id?.length === 0 ? (
 								<div
 									style={{ height: 44 }}
 									className="opacity-80 bg-theme-input  ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission text-theme-primary rounded one-line"
 								>
-									{isBlocked ? " You can't reply to this conversation" : ' You do not have permission to send message'}
+									{' '}
+									You do not have permission to send message
 								</div>
 							) : (
 								<>

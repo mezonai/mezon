@@ -1,9 +1,7 @@
 import {
-	EStateFriend,
 	friendsActions,
 	requestAddFriendParam,
 	selectAllFriends,
-	selectCurrentUserId,
 	selectDmGroupCurrentId,
 	selectGrouplMembers,
 	useAppDispatch,
@@ -18,7 +16,6 @@ export function useFriends() {
 	const currentDM = useSelector(selectDmGroupCurrentId);
 	const groupDmMember = useAppSelector((state) => selectGrouplMembers(state, currentDM as string));
 	const numberMemberInDmGroup = useMemo(() => groupDmMember.length, [groupDmMember]);
-	const currentUserId = useSelector(selectCurrentUserId);
 	const dispatch = useAppDispatch();
 
 	const quantityPendingRequest = useMemo(() => {
@@ -54,43 +51,6 @@ export function useFriends() {
 		[dispatch]
 	);
 
-	const blockFriend = useCallback(
-		async (username: string, id: string) => {
-			const body = {
-				usernames: [username],
-				ids: [id]
-			};
-			const response = await dispatch(friendsActions.sendRequestBlockFriend(body));
-
-			if (response?.meta?.requestStatus === 'fulfilled') {
-				dispatch(
-					friendsActions.updateFriendState({
-						userId: id,
-						friendState: EStateFriend.BLOCK,
-						sourceId: currentUserId
-					})
-				);
-				return true;
-			}
-			return false;
-		},
-		[dispatch, currentUserId]
-	);
-
-	const unBlockFriend = useCallback(
-		async (username: string, id: string) => {
-			const body = {
-				usernames: [username],
-				ids: [id]
-			};
-			const response = await dispatch(friendsActions.sendRequestDeleteFriend(body));
-			if (response?.meta?.requestStatus === 'fulfilled') {
-				return true;
-			}
-			return false;
-		},
-		[dispatch]
-	);
 
 	const filteredFriends = useCallback(
 		(searchTerm: string, isAddMember?: boolean) => {
@@ -117,21 +77,9 @@ export function useFriends() {
 			addFriend,
 			acceptFriend,
 			deleteFriend,
-			blockFriend,
-			unBlockFriend,
 			filteredFriends,
 			numberMemberInDmGroup
 		}),
-		[
-			friends,
-			quantityPendingRequest,
-			addFriend,
-			acceptFriend,
-			deleteFriend,
-			blockFriend,
-			unBlockFriend,
-			filteredFriends,
-			numberMemberInDmGroup
-		]
+		[friends, quantityPendingRequest, addFriend, acceptFriend, deleteFriend, filteredFriends, numberMemberInDmGroup]
 	);
 }
