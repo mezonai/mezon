@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { useAuth, useFriends } from '@mezon/core';
-import { CheckIcon, CloseIcon } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	EStateFriend,
 	friendsActions,
@@ -18,7 +16,6 @@ import { ChannelStatusEnum, IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -40,20 +37,10 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 	const styles = style(themeValue);
 	const { t } = useTranslation(['userProfile', 'dmMessage']);
 	const currenChannel = useCurrentChannel(channelId) as IChannel;
-	const { userProfile } = useAuth();
-	const currentUserId = userProfile?.user?.id;
 	const targetUserId = currenChannel?.user_id?.[0];
 	const [isCountBadge, setIsCountBadge] = useState(false);
 	const [remainingCount, setRemainingCount] = useState(null);
 	const infoFriend = useAppSelector((state) => selectFriendById(state, targetUserId || ''));
-
-	const { blockFriend, unBlockFriend } = useFriends();
-	const isBlockedByUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === targetUserId && infoFriend?.user?.id === currentUserId;
-	}, [infoFriend, targetUserId, currentUserId]);
-	const didIBlockUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === currentUserId && infoFriend?.user?.id === targetUserId;
-	}, [infoFriend, targetUserId, currentUserId]);
 
 	const userName: string = useMemo(() => {
 		return typeof currenChannel?.usernames === 'string' ? currenChannel?.usernames : currenChannel?.usernames?.[0] || '';
@@ -129,52 +116,6 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 		store.dispatch(friendsActions.sendRequestDeleteFriend(body));
 	};
 
-	const handleBlockFriend = async () => {
-		try {
-			const isBlocked = await blockFriend(userName, targetUserId);
-			if (isBlocked) {
-				Toast.show({
-					type: 'success',
-					props: {
-						text2: t('notification.blockUser.success', { ns: 'dmMessage' }),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
-					}
-				});
-			}
-		} catch (error) {
-			Toast.show({
-				type: 'error',
-				props: {
-					text2: t('notification.blockUser.error', { ns: 'dmMessage' }),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
-				}
-			});
-		}
-	};
-
-	const handleUnblockFriend = async () => {
-		try {
-			const isUnblocked = await unBlockFriend(userName, targetUserId);
-			if (isUnblocked) {
-				Toast.show({
-					type: 'success',
-					props: {
-						text2: t('notification.unblockUser.success', { ns: 'dmMessage' }),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
-					}
-				});
-			}
-		} catch (error) {
-			Toast.show({
-				type: 'error',
-				props: {
-					text2: t('notification.unblockUser.error', { ns: 'dmMessage' }),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
-				}
-			});
-		}
-	};
-
 	return (
 		<View style={[styles.wrapperWelcomeMessage, isDMGroup && styles.wrapperCenter]}>
 			{isDM ? (
@@ -222,7 +163,7 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 					)}
 
 					{/* TODO: Mutual server */}
-					{!isDMGroup && !isBlockedByUser && (
+					{!isDMGroup && (
 						<View style={styles.friendActions}>
 							{infoFriend?.state !== EStateFriend.BLOCK &&
 								(infoFriend?.state === EStateFriend.FRIEND ? (
@@ -248,11 +189,11 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 									</TouchableOpacity>
 								))}
 
-							{(infoFriend?.state === EStateFriend.FRIEND || didIBlockUser) && (
+							{/* {(infoFriend?.state === EStateFriend.FRIEND || didIBlockUser) && (
 								<TouchableOpacity style={styles.deleteFriendButton} onPress={didIBlockUser ? handleUnblockFriend : handleBlockFriend}>
 									<Text style={styles.buttonText}>{didIBlockUser ? t('pendingContent.unblock') : t('pendingContent.block')}</Text>
 								</TouchableOpacity>
-							)}
+							)} */}
 						</View>
 					)}
 				</View>

@@ -30,14 +30,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 			<ChannelSeen channelId={directMessageId || ''} streamMode={streamMode} />
 			<DirectMessageDetailListener directMessageId={directMessageId} dmType={dmType} />
 			<HeaderDirectMessage directMessageId={directMessageId} styles={styles} themeValue={themeValue} />
-			{directMessageId && (
-				<ChatMessageWrapper
-					directMessageId={directMessageId}
-					isModeDM={isModeDM}
-					currentClanId={'0'}
-					targetUserId={currentDmGroup?.user_id?.[0]}
-				/>
-			)}
+			{directMessageId && <ChatMessageWrapper directMessageId={directMessageId} isModeDM={isModeDM} currentClanId={'0'} />}
 		</View>
 	);
 };

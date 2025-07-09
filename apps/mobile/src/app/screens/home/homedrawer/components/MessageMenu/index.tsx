@@ -1,6 +1,6 @@
-import { useAuth, useFriends } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, CloseIcon, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { useFriends } from '@mezon/core';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	EStateFriend,
@@ -27,7 +27,6 @@ import React, { memo, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
@@ -48,16 +47,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const currentClan = useSelector(selectCurrentClan);
-	const { userProfile } = useAuth();
 	const infoFriend = useAppSelector((state) => selectFriendById(state, messageInfo?.user_id?.[0] || ''));
-	const didIBlockUser = useMemo(() => {
-		return (
-			infoFriend?.state === EStateFriend.BLOCK &&
-			infoFriend?.source_id === userProfile?.user?.id &&
-			infoFriend?.user?.id === messageInfo?.user_id?.[0]
-		);
-	}, [infoFriend, userProfile?.user?.id, messageInfo?.user_id?.[0]]);
-	const { blockFriend, unBlockFriend, deleteFriend, addFriend } = useFriends();
+	const { deleteFriend, addFriend } = useFriends();
 
 	const dismiss = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -129,56 +120,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		dismiss();
 	};
 
-	const handleBlockFriend = async () => {
-		try {
-			const isBlocked = await blockFriend(messageInfo?.usernames?.[0], messageInfo?.user_id?.[0]);
-			if (isBlocked) {
-				Toast.show({
-					type: 'success',
-					props: {
-						text2: t('notification.blockUser.success'),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
-					}
-				});
-			}
-		} catch (error) {
-			Toast.show({
-				type: 'error',
-				props: {
-					text2: t('notification.blockUser.error'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
-				}
-			});
-		} finally {
-			dismiss();
-		}
-	};
-
-	const handleUnblockFriend = async () => {
-		try {
-			const isUnblocked = await unBlockFriend(messageInfo?.usernames?.[0], messageInfo?.user_id?.[0]);
-			if (isUnblocked) {
-				Toast.show({
-					type: 'success',
-					props: {
-						text2: t('notification.unblockUser.success'),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
-					}
-				});
-			}
-		} catch (error) {
-			Toast.show({
-				type: 'error',
-				props: {
-					text2: t('notification.unblockUser.error'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
-				}
-			});
-		} finally {
-			dismiss();
-		}
-	};
-
 	const profileMenu: IMezonMenuItemProps[] = [
 		{
 			onPress: async () => {
@@ -204,17 +145,17 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				) : (
 					<MezonIconCDN icon={IconCDN.userPlusIcon} color={themeValue.textStrong} customStyle={{ marginBottom: size.s_2 }} />
 				)
-		},
-		{
-			onPress: didIBlockUser ? handleUnblockFriend : handleBlockFriend,
-			title: didIBlockUser ? t('menu.unblockUser') : t('menu.blockUser'),
-			isShow: !isGroup && (infoFriend?.state === EStateFriend.FRIEND || didIBlockUser),
-			icon: didIBlockUser ? (
-				<MezonIconCDN icon={IconCDN.unblockUser} color={themeValue.textStrong} />
-			) : (
-				<MezonIconCDN icon={IconCDN.blockUser} color={themeValue.textStrong} />
-			)
 		}
+		// {
+		// 	onPress: didIBlockUser ? handleUnblockFriend : handleBlockFriend,
+		// 	title: didIBlockUser ? t('menu.unblockUser') : t('menu.blockUser'),
+		// 	isShow: !isGroup && (infoFriend?.state === EStateFriend.FRIEND || didIBlockUser),
+		// 	icon: didIBlockUser ? (
+		// 		<MezonIconCDN icon={IconCDN.unblockUser} color={themeValue.textStrong} />
+		// 	) : (
+		// 		<MezonIconCDN icon={IconCDN.blockUser} color={themeValue.textStrong} />
+		// 	)
+		// }
 	];
 
 	const handleMarkAsRead = async (channel_id: string) => {
