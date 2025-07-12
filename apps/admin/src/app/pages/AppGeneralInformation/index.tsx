@@ -6,6 +6,7 @@ import { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.g
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import ToggleItem from '../../components/ToggleItem';
 import { APP_TYPES } from '../../constants/constants';
 import DeleteAppPopup from '../applications/DeleteAppPopup';
 
@@ -129,6 +130,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	const [changeName, setChangeName] = useState(appDetail.appname);
 	const [changeUrl, setChangeUrl] = useState(appDetail.app_url);
 	const [changeAboutApp, setChangeAboutApp] = useState(appDetail.about);
+	const [changeBotShadow, setChangeBotShadow] = useState<boolean>(false);
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState(false);
 	const [openSaveChange, setOpenSaveChange] = useState(false);
 	const [isUrlValid, setIsUrlValid] = useState(true);
@@ -136,6 +138,24 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	const [tokenCopied, setTokenCopied] = useState(false);
 	const [idCopied, setIdCopied] = useState(false);
 	const dispatch = useAppDispatch();
+
+	const [nameChanged, setNameChanged] = useState(false);
+	const [urlChanged, setUrlChanged] = useState(false);
+	const [aboutChanged, setAboutChanged] = useState(false);
+
+	const [shadowModified, setShadowModified] = useState(false);
+
+	const updateSaveChangeState = () => {
+		if (nameChanged || urlChanged || aboutChanged) {
+			setOpenSaveChange(true);
+		} else {
+			setOpenSaveChange(false);
+		}
+	};
+
+	useEffect(() => {
+		updateSaveChangeState();
+	}, [nameChanged, urlChanged, aboutChanged]);
 
 	useEffect(() => {
 		const savedToken = localStorage.getItem(`app_token_${appId}`);
@@ -149,7 +169,19 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		setChangeName(appDetail.appname);
 		setChangeUrl(appDetail.app_url);
 		setChangeAboutApp(appDetail.about);
-	}, [appDetail]);
+
+		if (!shadowModified) {
+			let isShadow = false;
+			if (appDetail.is_shadow === true) {
+				isShadow = true;
+			}
+			setChangeBotShadow(isShadow);
+		}
+
+		setNameChanged(false);
+		setUrlChanged(false);
+		setAboutChanged(false);
+	}, [appDetail, shadowModified]);
 
 	const toggleDeletePopup = () => {
 		setIsShowDeletePopup(!isShowDeletePopup);
@@ -157,9 +189,19 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 	const handleOpenSaveChangeForName = (e: ChangeEvent<HTMLInputElement>) => {
 		setChangeName(e.target.value);
-		if (e.target.value !== appDetail.appname) {
-			setOpenSaveChange(true);
-		}
+		const isChanged = e.target.value !== appDetail.appname;
+		setNameChanged(isChanged);
+	};
+
+	const handleOpenSaveChangeForBotShadow = (value: string) => {
+		console.log("Value type:", typeof value, "Value:", value);
+
+		const checked = value === "true";
+		setChangeBotShadow(checked);
+		setShadowModified(true);
+		setOpenSaveChange(true);
+
+		console.log("Toggle value:", value, "Checked:", checked);
 	};
 
 	const handleOpenSaveChangeForUrl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -173,22 +215,35 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			setIsUrlValid(false);
 		}
 
-		if (value !== appDetail.app_url) {
-			setOpenSaveChange(true);
-		}
+		const isChanged = value !== appDetail.app_url;
+		setUrlChanged(isChanged);
 	};
 
 	const handleOpenSaveChangeAboutApp = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const newAbout = e.target.value;
-		if (newAbout !== appDetail.about) {
-			setChangeAboutApp(newAbout);
-			setOpenSaveChange(true);
-		}
+		setChangeAboutApp(newAbout);
+
+		const isChanged = newAbout !== appDetail.about;
+		setAboutChanged(isChanged);
 	};
+
 	const handleResetChange = () => {
 		setChangeName(appDetail.appname);
 		setChangeUrl(appDetail.app_url);
 		setChangeAboutApp(appDetail.about);
+
+		let isShadow = false;
+		if (appDetail.is_shadow === true) {
+			isShadow = true;
+		}
+		setChangeBotShadow(isShadow);
+
+		setShadowModified(false);
+
+		setNameChanged(false);
+		setUrlChanged(false);
+		setAboutChanged(false);
+
 		setOpenSaveChange(false);
 	};
 
@@ -207,6 +262,8 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			updateRequest.about = changeAboutApp;
 		}
 
+		(updateRequest as any).is_shadow = changeBotShadow ? "true" : "false";
+
 		if (Object.keys(updateRequest).length === 0) return;
 
 		const response = await dispatch(editApplication({ request: updateRequest, appId })).unwrap();
@@ -216,8 +273,13 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		}
 
 		await dispatch(fetchApplications({ noCache: true }));
+
+		setNameChanged(false);
+		setUrlChanged(false);
+		setAboutChanged(false);
 		setOpenSaveChange(false);
 	};
+
 	const handleCopyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
 		if (url === visibleToken) {
@@ -225,6 +287,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			setTimeout(() => setTokenCopied(false), 1000);
 		}
 	};
+
 	const handleCopyID = (id: string) => {
 		navigator.clipboard.writeText(id);
 		setIdCopied(true);
@@ -245,6 +308,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	};
 
 	const setAppOrBot = appDetail.app_url ? APP_TYPES.APPLICATION : APP_TYPES.BOT;
+
 	return (
 		<div className="flex-1 flex flex-col gap-7">
 			<div className="w-full flex flex-col gap-2">
@@ -257,7 +321,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				/>
 			</div>
 
-			{appDetail.app_url && (
+			{appDetail.app_url ? (
 				<div className="w-full flex flex-col gap-2">
 					<div className="text-[12px] uppercase font-semibold">URL</div>
 					<input
@@ -268,6 +332,12 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 					/>
 					{!isUrlValid && <div className="text-red-500 text-sm">Please enter a valid URL (e.g., https://example.com).</div>}
 				</div>
+			) : (
+				<ToggleItem
+					label="Bot Shadow"
+					value={changeBotShadow ? "true" : "false"}
+					handleToggle={handleOpenSaveChangeForBotShadow}
+				/>
 			)}
 
 			{openSaveChange && isUrlValid && <ModalSaveChanges onReset={handleResetChange} onSave={handleEditAppOrBot} />}
@@ -288,8 +358,8 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				<div>{appId}</div>
 				<div
 					onClick={() => handleCopyID(appId)}
-					className={`py-[7px] px-[16px] ${idCopied ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-800'
-						} cursor-pointer w-[90px] text-[15px] text-white rounded-sm flex items-center justify-center`}
+					className={`py-[7px] px-[16px] rounded-xl ${idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
+						} cursor-pointer w-[90px] text-[15px] text-white rounded-xl flex items-center justify-center`}
 				>
 					{idCopied ? 'Copied!' : 'Copy'}
 				</div>
@@ -306,7 +376,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 					</div>
 				) : (
 					<div className=" mt-1">
-						<span className="text-sm text-gray-500 text-sm">
+							<span className="text-sm text-gray-500 ">
 							For security purposes, tokens can only be viewed once, when created. If you forgot or lost access to your token, please
 							regenerate a new one.
 						</span>
@@ -316,7 +386,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 					<div
 						onClick={() => handleCopyUrl(visibleToken)}
 						className={`mt-2 py-[7px] px-[16px] ${tokenCopied ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-800'
-							} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-sm ${openSaveChange ? 'pointer-events-none opacity-50' : ''
+							} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${openSaveChange ? 'pointer-events-none opacity-50' : ''
 							}`}
 					>
 						{tokenCopied ? 'Copied!' : 'Copy Token'}
@@ -324,7 +394,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				)}
 				<div
 					onClick={handleResetToken}
-					className={`py-[7px] px-[16px] bg-blue-600 flex items-center justify-center hover:bg-blue-800 cursor-pointer w-[130px] text-[15px] text-white rounded-sm ${openSaveChange ? 'pointer-events-none opacity-50' : ''
+					className={`py-[7px] px-[16px]  flex items-center justify-center bg-indigo-600 hover:bg-indigo-700  cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${openSaveChange ? 'pointer-events-none opacity-50' : ''
 						}`}
 				>
 					Reset Token
@@ -334,7 +404,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			<div className="flex justify-end">
 				<div
 					onClick={toggleDeletePopup}
-					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-sm w-fit ${openSaveChange ? 'pointer-events-none opacity-50' : ''
+					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-xl w-fit ${openSaveChange ? 'pointer-events-none opacity-50' : ''
 						}`}
 				>
 					Delete {setAppOrBot}

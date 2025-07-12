@@ -44,7 +44,7 @@ const Redirects = ({ currentApp, uriInputValuesRef, setInputArrLength, inputArrL
 
 					<div
 						onClick={handleAddDirectUri}
-						className="py-[7px] px-4 cursor-pointer bg-blue-600 hover:bg-blue-800 transition-colors rounded-sm w-fit select-none font-medium text-white"
+						className="py-[7px] px-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700 transition-colors rounded-lg w-fit select-none font-medium text-white"
 					>
 						Add Redirect
 					</div>

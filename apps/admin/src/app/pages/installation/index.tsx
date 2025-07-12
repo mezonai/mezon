@@ -9,6 +9,7 @@ const Installation = () => {
 	const { applicationId } = useParams();
 	const application = useSelector(selectAppDetail);
 	const [isLoading, setIsLoading] = useState(true);
+	const [idCopied, setIdCopied] = useState(false);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -39,6 +40,10 @@ const Installation = () => {
 
 	const handleCopyToClipboard = () => {
 		copy(linkInstall);
+		setIdCopied(true);
+		setTimeout(() => {
+			setIdCopied(false);
+		}, 2000);
 	};
 
 	return (
@@ -71,9 +76,10 @@ const Installation = () => {
 					/>
 					<button
 						onClick={handleCopyToClipboard}
-						className="absolute right-0 bottom-0 text-white text-sm font-light px-3 py-1.5 bg-primary hover:bg-opacity-80 rounded mr-1 mb-1"
+						className={`absolute right-0 bottom-0 ${idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
+							} text-white text-sm font-light px-3 py-1.5   rounded-lg mr-1 mb-1`}
 					>
-						Copy
+						{idCopied ? 'Copied!' : 'Copy'}
 					</button>
 				</div>
 			</div>

@@ -9,7 +9,7 @@ interface IClientInformationProps {
 const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 	const [isShowResetSecretPO, setIsShowSecretPO] = useState(false);
 	const dispatch = useAppDispatch();
-
+	const [idCopied, setIdCopied] = useState(false);
 	useEffect(() => {
 		if (currentApp?.id) {
 			dispatch(fetchMezonOauthClient({ appId: currentApp.id, appName: currentApp.appname }));
@@ -22,6 +22,10 @@ const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 
 	const handleCopyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
+		setIdCopied(true);
+		setTimeout(() => {
+			setIdCopied(false);
+		}, 2000);
 	};
 
 	return (
@@ -37,9 +41,10 @@ const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 						<div className="text-black dark:text-white font-bold text-xs">{currentApp?.oAuthClient?.client_id}</div>
 						<button
 							onClick={() => handleCopyUrl(currentApp?.oAuthClient?.client_id as string)}
-							className="py-[7px] px-4 cursor-pointer bg-blue-600 hover:bg-blue-800 transition-colors rounded-sm w-fit select-none font-medium text-white"
+							className={`py-[7px] px-4 cursor-pointer ${idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
+								} transition-colors rounded-lg w-fit select-none font-medium text-white`}
 						>
-							Copy
+							{idCopied ? 'Copied!' : 'Copy'}
 						</button>
 					</div>
 					<div className="flex flex-col gap-2 xl:w-1/3 max-xl:w-1/2">
@@ -47,7 +52,7 @@ const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 						<div className="text-xs">Hidden for security</div>
 						<div
 							onClick={toggleResetSecretePopup}
-							className="py-[7px] px-4 cursor-pointer transition-colors rounded-sm w-fit select-none font-medium dark:text-white text-black dark:hover:bg-[#35373c] dark:bg-[#3b3d44] hover:bg-[#dfe1e5] bg-[#d7d9dc]"
+							className="py-[7px] px-4 cursor-pointer transition-colors rounded-lg w-fit select-none font-medium dark:text-white text-black dark:hover:bg-[#35373c] dark:bg-[#3b3d44] hover:bg-[#dfe1e5] bg-[#d7d9dc]"
 						>
 							Reset secret
 						</div>

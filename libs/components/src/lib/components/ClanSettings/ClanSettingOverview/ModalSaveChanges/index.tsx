@@ -24,7 +24,7 @@ const ModalSaveChanges = ({ onSave, onReset, isLoading }: ModalSaveChangesProps)
 					<ButtonLoading
 						label="Save Changes"
 						onClick={handleSaveChanges}
-						className="ml-auto btn-primary btn-primary-hover rounded-lg px-4 py-1.5 text-nowrap  w-28"
+						className="ml-auto bg-indigo-600 dark:bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-700 text-white rounded-lg px-4 py-1.5 text-nowrap  w-28"
 					/>
 				</div>
 			</div>
