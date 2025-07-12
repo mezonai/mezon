@@ -1,27 +1,28 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useCallback, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import AudioOutputOptions from '../AudioOutputOptions';
+import { AudioOutput } from '../ChannelVoice';
 import { style } from './styles';
-
-// Audio output types
-type AudioOutput = {
-	id: string;
-	name: string;
-	type: 'speaker' | 'earpiece' | 'bluetooth' | 'headphones';
-};
 
 type IAudioOutputTooltipProps = {
 	onOpenTooltip?: () => void;
 	onSelectOutput?: (outputType: string) => void;
-	availableOutputs: AudioOutput[];
+	availableAudioOutputs: AudioOutput[];
 	currentOutput: string;
+	currentAudioOutput: string;
 };
 
-const AudioOutputTooltip = ({ onOpenTooltip, onSelectOutput, availableOutputs, currentOutput }: IAudioOutputTooltipProps) => {
+const AudioOutputTooltip = ({
+	onOpenTooltip,
+	onSelectOutput,
+	availableAudioOutputs,
+	currentOutput,
+	currentAudioOutput
+}: IAudioOutputTooltipProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [isShowTooltip, setIsShowTooltip] = useState(false);
@@ -63,29 +64,38 @@ const AudioOutputTooltip = ({ onOpenTooltip, onSelectOutput, availableOutputs, c
 	return (
 		<View style={styles.tooltipButton}>
 			<View style={styles.toolTipContainer}>
-				<Tooltip
-					isVisible={isShowTooltip}
-					content={
-						<AudioOutputOptions
-							onSelectOutput={onSelectOutputTooltip}
-							availableOutputs={availableOutputs}
-							currentOutput={currentOutput}
-						/>
-					}
-					contentStyle={styles.toolTip}
-					arrowSize={{ width: 0, height: 0 }}
-					placement="left"
-					onClose={() => setIsShowTooltip(false)}
-					closeOnBackgroundInteraction={true}
-					disableShadow={true}
-					closeOnContentInteraction={true}
-				>
-					{!isShowTooltip && (
-						<TouchableOpacity onPress={toggleTooltip} style={[styles.iconTooltip]}>
-							<MezonIconCDN icon={getAudioIcon()} {...getIconSize()} color={themeValue.white} />
-						</TouchableOpacity>
-					)}
-				</Tooltip>
+				{Platform.OS === 'ios' ? (
+					<TouchableOpacity
+						onPress={() => onSelectOutputTooltip(currentAudioOutput === 'speaker' ? 'earpiece' : 'speaker')}
+						style={[styles.iconTooltip]}
+					>
+						<MezonIconCDN icon={getAudioIcon()} {...getIconSize()} color={themeValue.white} />
+					</TouchableOpacity>
+				) : (
+					<Tooltip
+						isVisible={isShowTooltip}
+						content={
+							<AudioOutputOptions
+								onSelectOutput={onSelectOutputTooltip}
+								availableOutputs={availableAudioOutputs}
+								currentOutput={currentOutput}
+							/>
+						}
+						contentStyle={styles.toolTip}
+						arrowSize={{ width: 0, height: 0 }}
+						placement="left"
+						onClose={() => setIsShowTooltip(false)}
+						closeOnBackgroundInteraction={true}
+						disableShadow={true}
+						closeOnContentInteraction={true}
+					>
+						{!isShowTooltip && (
+							<TouchableOpacity onPress={toggleTooltip} style={[styles.iconTooltip]}>
+								<MezonIconCDN icon={getAudioIcon()} {...getIconSize()} color={themeValue.white} />
+							</TouchableOpacity>
+						)}
+					</Tooltip>
+				)}
 			</View>
 		</View>
 	);

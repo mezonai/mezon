@@ -6,15 +6,13 @@ import {
 	getStore,
 	selectAllChannelMembers,
 	selectAllRolesClan,
-	selectChannelById,
-	selectRolesByChannelId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
 import { EVERYONE_ROLE_ID, getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiRole } from 'mezon-js/api.gen';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 interface UserMentionListProps {
@@ -23,93 +21,140 @@ interface UserMentionListProps {
 	channelMode?: number;
 }
 
+const sortMentionList = (mentionList: MentionDataProps[]): MentionDataProps[] => {
+	if (!Array.isArray(mentionList) || mentionList?.length === 0) {
+		return [];
+	}
+
+	return [...mentionList].sort((a, b) => {
+		const displayA = a?.display?.toLowerCase() ?? '';
+		const displayB = b?.display?.toLowerCase() ?? '';
+
+		if (displayA < displayB) return -1;
+		if (displayA > displayB) return 1;
+		return 0;
+	});
+};
+
+const transformMemberToMention = (item: ChannelMembersEntity): MentionDataProps | null => {
+	if (!item?.id) {
+		return null;
+	}
+
+	return {
+		id: item.id,
+		display: getNameForPrioritize(item?.clan_nick ?? '', item?.user?.display_name ?? '', item?.user?.username ?? ''),
+		avatarUrl: item?.clan_avatar || item?.user?.avatar_url || '',
+		username: item?.user?.username || ''
+	};
+};
+
+// Memoized role transformation function
+const transformRoleToMention = (item: ApiRole): MentionDataProps | null => {
+	if (!item?.id || !item?.title) {
+		return null;
+	}
+
+	return {
+		id: item.id,
+		display: item.title,
+		avatarUrl: '',
+		clanNick: item.title,
+		isRoleUser: true,
+		color: item.color
+	};
+};
+
 function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionListProps): MentionDataProps[] {
-	const membersOfParent = useAppSelector((state) => selectAllChannelMembers(state, channelID));
-	const channelparent = useAppSelector((state) => selectChannelById(state, channelDetail?.parent_id || ''));
-	const rolesChannel = useSelector(selectRolesByChannelId(channelDetail?.parent_id));
+	const membersOfParent = useAppSelector((state) => selectAllChannelMembers(state, channelID || ''));
 	const rolesInClan = useSelector(selectAllRolesClan);
 	const dispatch = useAppDispatch();
 
-	const rolesToUse = useMemo(() => {
-		if (channelDetail?.parent_id !== '0' && channelparent?.channel_private === 1) {
-			return rolesChannel;
-		} else {
-			return rolesInClan;
-		}
-	}, [channelDetail?.parent_id, channelparent?.channel_private, rolesChannel, rolesInClan]);
+	const channelId = channelDetail?.id;
+	const parentId = channelDetail?.parent_id;
+	const clanId = channelDetail?.clan_id;
 
 	const filteredRoles = useMemo(() => {
-		return rolesToUse.filter((role) => role.id !== EVERYONE_ROLE_ID);
-	}, [rolesToUse]);
+		if (!Array.isArray(rolesInClan)) {
+			return [];
+		}
+		return rolesInClan.filter((role) => role?.id && role.id !== EVERYONE_ROLE_ID);
+	}, [rolesInClan]);
 
-	const getMembersChannel = () => {
-		if (membersOfParent) {
+	const getMembersChannel = useCallback((): ChannelMembersEntity[] => {
+		// Early return if we have members for parent
+		if (Array.isArray(membersOfParent) && membersOfParent.length > 0) {
 			return membersOfParent;
 		}
-		const store = getStore();
-		const membersCurrentChannel = selectAllChannelMembers(store.getState(), channelDetail?.id);
-		if (membersCurrentChannel) return membersCurrentChannel;
-		if (channelDetail?.parent_id) {
-			const membersCurrentChildChannel = selectAllChannelMembers(
-				store.getState(),
-				channelDetail?.parent_id !== '0' ? channelDetail?.parent_id : channelDetail?.id
-			);
-			if (membersCurrentChildChannel) return membersCurrentChildChannel;
+
+		// Safety check for required props
+		if (!channelId || !clanId) {
+			return [];
 		}
+
+		const store = getStore();
+		const state = store.getState();
+
+		const membersCurrentChannel = selectAllChannelMembers(state, channelId);
+		if (Array.isArray(membersCurrentChannel) && membersCurrentChannel.length > 0) {
+			return membersCurrentChannel;
+		}
+
+		if (parentId && parentId !== '0') {
+			const membersCurrentChildChannel = selectAllChannelMembers(state, parentId);
+			if (Array.isArray(membersCurrentChildChannel) && membersCurrentChildChannel.length > 0) {
+				return membersCurrentChildChannel;
+			}
+		}
+
+		const targetChannelId = parentId && parentId !== '0' ? parentId : channelId;
 		dispatch(
 			channelMembersActions.fetchChannelMembers({
-				clanId: channelDetail.clan_id as string,
-				channelId: channelDetail?.parent_id !== '0' ? channelDetail?.parent_id : (channelDetail?.id as string),
+				clanId,
+				channelId: targetChannelId,
 				channelType: ChannelType.CHANNEL_TYPE_CHANNEL,
 				noCache: true
 			})
 		);
-		return [];
-	};
 
-	const newUserMentionList = useMemo(() => {
-		const userMentionRaw = getMembersChannel() || [];
-		const mentionList =
-			userMentionRaw?.map((item: ChannelMembersEntity) => ({
-				id: item?.id ?? '',
-				display: getNameForPrioritize(item.clan_nick ?? '', item.user?.display_name ?? '', item.user?.username ?? ''),
-				avatarUrl: item.clan_avatar ? item.clan_avatar : (item?.user?.avatar_url ?? ''),
-				username: item.user?.username
-			})) ?? [];
+		return [];
+	}, [membersOfParent, channelId, clanId, parentId, dispatch]);
+
+	const processedMentionData = useMemo(() => {
+		const userMentionRaw = getMembersChannel();
+
+		const mentionList = userMentionRaw.map(transformMemberToMention).filter((item): item is MentionDataProps => item !== null);
+
+		const roleMentions = filteredRoles.map(transformRoleToMention).filter((item): item is MentionDataProps => item !== null);
+
+		const sortedMentionList = sortMentionList(mentionList);
+
+		return {
+			sortedMentionList,
+			roleMentions
+		};
+	}, [getMembersChannel, filteredRoles]);
+
+	return useMemo(() => {
+		const { sortedMentionList, roleMentions } = processedMentionData;
+
 		const hardcodedUser: MentionDataProps = {
 			id: ID_MENTION_HERE,
 			display: 'here',
 			avatarUrl: '',
 			username: 'here'
 		};
-		const sortedMentionList = [...mentionList].sort((a, b) => {
-			const displayA = a.display?.toLowerCase() || '';
-			const displayB = b.display?.toLowerCase() || '';
 
-			if (displayA < displayB) return -1;
-			if (displayA > displayB) return 1;
-			return 0;
-		});
-		const roleMentions =
-			filteredRoles?.map((item: ApiRole) => ({
-				id: item.id ?? '',
-				display: item?.title,
-				avatarUrl: '',
-				clanNick: item?.title,
-				isRoleUser: true,
-				color: item?.color
-			})) ?? [];
+		const mode = channelMode ?? ChannelStreamMode.STREAM_MODE_DM;
 
-		if (channelMode === ChannelStreamMode.STREAM_MODE_CHANNEL || channelMode === ChannelStreamMode.STREAM_MODE_THREAD) {
+		if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return [...sortedMentionList, ...roleMentions, hardcodedUser];
-		} else if (channelMode === ChannelStreamMode.STREAM_MODE_GROUP) {
+		} else if (mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 			return [...sortedMentionList, hardcodedUser];
 		} else {
-			return [...sortedMentionList];
+			return sortedMentionList;
 		}
-	}, [channelMode, filteredRoles, membersOfParent]);
-
-	return newUserMentionList;
+	}, [processedMentionData, channelMode]);
 }
 
 export default UseMentionList;

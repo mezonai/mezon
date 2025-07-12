@@ -147,8 +147,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup
 	});
 
-	const [isCanManageThread, isCanManageChannel, canSendMessage] = usePermissionChecker(
-		[EOverriddenPermission.manageThread, EPermission.manageChannel, EOverriddenPermission.sendMessage],
+	const [isClanOwner, isCanManageThread, isCanManageChannel, canSendMessage] = usePermissionChecker(
+		[EPermission.clanOwner, EOverriddenPermission.manageThread, EPermission.manageChannel, EOverriddenPermission.sendMessage],
 		currentChannelId ?? ''
 	);
 	const [isAllowDelMessage] = usePermissionChecker([EOverriddenPermission.deleteMessage], message?.channel_id ?? '');
@@ -485,7 +485,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		const isMyMessage = userId === message?.user?.id;
 		const isMessageError = message?.isError;
 		const isUnPinMessage = listPinMessages.some((pinMessage) => pinMessage?.message_id === message?.id);
-		const isHideCreateThread = isDM || !isCanManageThread || !isCanManageChannel || currentChannel?.parent_id !== '0';
+		const isHideCreateThread = isDM || ((!isCanManageThread || !isCanManageChannel) && !isClanOwner) || currentChannel?.parent_id !== '0';
 		const isHideThread = currentChannel?.parent_id !== '0';
 		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage);
 		const isHideTopicDiscussion =
@@ -556,6 +556,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		isCanManageThread,
 		isCanManageChannel,
 		currentChannel?.parent_id,
+		isClanOwner,
 		isAllowDelMessage,
 		canSendMessage,
 		currentChannelId,

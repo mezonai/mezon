@@ -8,6 +8,7 @@ import CallingModalWrapper from '../../components/CallingModalWrapper';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
 import ChannelAppScreen from '../../screens/home/homedrawer/ChannelApp';
 import HomeDefaultWrapper from '../../screens/home/homedrawer/HomeDefaultWrapper';
+import ChannelRouterListener from '../../screens/home/homedrawer/components/ChannelList/ChannelRouterListener';
 import { RenderVideoDetail } from '../../screens/home/homedrawer/components/RenderVideoDetail';
 import { DirectMessageDetailScreen } from '../../screens/messages/DirectMessageDetail';
 import { WalletScreen } from '../../screens/wallet';
@@ -115,6 +116,7 @@ export const RootAuthStack = memo(
 				<AuthenticationLoader />
 				<CallingModalWrapper />
 				<CallingModalGroupWrapper />
+				<ChannelRouterListener />
 				<ListenerLoader />
 			</View>
 		);

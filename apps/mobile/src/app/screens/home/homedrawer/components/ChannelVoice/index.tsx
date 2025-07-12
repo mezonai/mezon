@@ -36,7 +36,7 @@ import { style } from './styles';
 const { CustomAudioModule, KeepAwake, KeepAwakeIOS, AudioSessionModule } = NativeModules;
 
 // Audio output types
-type AudioOutput = {
+export type AudioOutput = {
 	id: string;
 	name: string;
 	type: 'speaker' | 'earpiece' | 'bluetooth' | 'headphones' | 'default' | 'force_speaker';
@@ -142,7 +142,7 @@ const HeaderRoomView = memo(
 						}
 						const newFacingMode = facingModeCurrent === 'user' ? 'environment' : 'user';
 						const devices = await Room.getLocalDevices('videoinput');
-						const targetCamera = devices.find((d) => d?.facing === (newFacingMode === 'user' ? 'front' : 'environment'));
+						const targetCamera = devices.find((d: any) => d?.facing === (newFacingMode === 'user' ? 'front' : 'environment'));
 						const newTrack = await createLocalVideoTrack({
 							deviceId: targetCamera.deviceId,
 							facingMode: newFacingMode
@@ -209,8 +209,9 @@ const HeaderRoomView = memo(
 					)}
 					<AudioOutputTooltip
 						onSelectOutput={switchAudioOutput}
-						availableOutputs={availableAudioOutputs}
+						availableAudioOutputs={availableAudioOutputs}
 						currentOutput={currentAudioOutput}
+						currentAudioOutput={currentAudioOutput}
 						onOpenTooltip={onOpenTooltip}
 					/>
 				</View>

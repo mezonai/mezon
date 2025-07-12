@@ -1,4 +1,4 @@
-import { Attributes, Metrics, baseColor } from '@mezon/mobile-ui';
+import { Attributes, Metrics, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -30,5 +30,25 @@ export const style = (colors: Attributes) =>
 
 		container: {
 			padding: Metrics.size.s
+		},
+		checkboxOuter: {
+			borderRadius: size.s_4,
+			borderWidth: size.s_2,
+			height: size.s_20,
+			width: size.s_20,
+			borderColor: colors.borderRadio,
+			justifyContent: 'center',
+			alignItems: 'center'
+		},
+
+		checkboxOuterChecked: {
+			borderColor: baseColor.blurple,
+			backgroundColor: baseColor.blurple
+		},
+
+		checkmark: {
+			color: baseColor.white,
+			fontSize: size.s_14,
+			fontWeight: 'bold'
 		}
 	});

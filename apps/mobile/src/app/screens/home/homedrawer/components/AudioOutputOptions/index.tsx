@@ -2,14 +2,8 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import { AudioOutput } from '../ChannelVoice';
 import { style } from './styles';
-
-// Audio output types
-type AudioOutput = {
-	id: string;
-	name: string;
-	type: 'speaker' | 'earpiece' | 'bluetooth' | 'headphones';
-};
 
 interface IAudioOutputOptionsProps {
 	onSelectOutput?: (outputType: string) => void;

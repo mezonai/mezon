@@ -1,4 +1,10 @@
-import { selectCategoryExpandStateByCategoryId, selectIsUnreadChannelById, selectIsUnreadThreadInChannel, useAppSelector } from '@mezon/store-mobile';
+import {
+	getStore,
+	selectCategoryExpandStateByCategoryId,
+	selectIsUnreadChannelById,
+	selectIsUnreadThreadInChannel,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import ChannelItem from '../ChannelItem';
@@ -39,7 +45,24 @@ export const ChannelListItem = React.memo(
 			hasUnread ||
 			props?.data?.count_mess_unread > 0;
 
-		if (!shouldDisplay) return null;
+		const isChildHaveUnRead = useMemo(() => {
+			try {
+				if (shouldDisplay) return true;
+
+				if (!props?.data?.threadIds?.length) {
+					return false;
+				}
+
+				const store = getStore();
+				const state = store.getState(); // Get state once instead of calling function repeatedly
+
+				return props?.data?.threadIds?.some?.((threadId: string) => selectIsUnreadChannelById(state, threadId));
+			} catch (e) {
+				return false;
+			}
+		}, [props?.data?.threadIds, shouldDisplay]);
+
+		if (!shouldDisplay && !isChildHaveUnRead) return null;
 		return (
 			<>
 				{!isChannelVoice && <ChannelItem data={props?.data} isUnRead={isUnRead} isActive={isChannelActive} />}
