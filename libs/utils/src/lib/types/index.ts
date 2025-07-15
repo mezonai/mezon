@@ -1397,7 +1397,8 @@ export type MentionReactInputProps = {
 		mentionEveryone?: boolean,
 		displayName?: string,
 		clanNick?: string,
-		ephemeralReceiverId?: string
+		ephemeralReceiverId?: string,
+
 	) => void;
 	readonly onTyping?: () => void;
 	readonly listMentions?: MentionDataProps[] | undefined;
@@ -1411,6 +1412,8 @@ export type MentionReactInputProps = {
 	hasPermissionEdit?: boolean;
 	voiceLongPress?: ILongPressType;
 	isRecording?: boolean;
+	hasAttachments?: boolean;
+	attachmentData?: ApiMessageAttachment[];
 };
 
 export type IOtherCall = {

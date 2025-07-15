@@ -42,10 +42,6 @@
 	background: var(--bg-active-button);
 }
 
-.bg-button-add-friend,
-button.bg-button-add-friend {
-	background: var(--bg-button-add-friend);
-}
 
 .bg-button-primary {
 	background: var(--bg-button-primary);

@@ -46,7 +46,7 @@ const TopicHeader = ({ topicCurrentChannel }: TopicHeaderProps) => {
 				<Icons.TopicIcon />
 				<span className="text-base font-semibold text-theme-primary-active">{'Topic'}</span>
 			</div>
-			<button onClick={(e) => handleCloseModal(e)} className="relative right-0">
+			<button onClick={(e) => handleCloseModal(e)} className="relative right-0 text-theme-primary text-theme-primary-hover">
 				<Icons.Close />
 			</button>
 		</div>

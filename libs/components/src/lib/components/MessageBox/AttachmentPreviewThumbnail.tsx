@@ -37,21 +37,21 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 				<div className=" flex flex-row w-21 top-[-1px] right-[-16px] bg-theme-contexify h-8 absolute rounded-lg shadow-shadowInbox">
 					<button
 						onClick={handleShowAttachment}
-						className="w-8 h-8 flex flex-row justify-center items-center bg-item-hover text-theme-primary-hover"
+						className="w-8 h-8 flex flex-row text-theme-primary justify-center items-center bg-item-hover"
 					>
 						{isHideAttachment ? <Icons.EyeClose className="w-5 h-5 " /> : <Icons.EyeOpen className="w-5 h-5 " />}
 					</button>
-					<button className="w-8 h-8 flex flex-row justify-center items-center bg-item-hover text-theme-primary-hover">
+					<button className="w-8 h-8 flex flex-row text-theme-primary justify-center items-center bg-item-hover">
 						<Icons.PenEdit className="w-5 h-5 " />
 					</button>
 					<button
 						onClick={handleRemove}
-						className="w-8 h-8 flex flex-row justify-center items-center bg-item-hover text-theme-primary-hover"
+						className="w-8 h-8 flex flex-row text-theme-primary justify-center items-center bg-item-hover"
 					>
 						<Icons.TrashIcon className="w-5 h-5 text-colorDanger hover:text-colorDangerHover" />
 					</button>
 				</div>
-				<div className=" absolute bottom-0 mt-2 left-1 text-sm ">
+				<div className=" absolute text-theme-primary bottom-0 mt-2 left-1 text-sm ">
 					<p className="">{displayedFilename}</p>
 				</div>
 			</div>

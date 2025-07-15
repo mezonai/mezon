@@ -463,7 +463,7 @@ const ScrollDownButton = memo(
 		return (
 			<button
 				onClick={handleScrollDownClick}
-				className={`bg-theme-primary ${
+				className={`bg-theme-primary text-theme-primary ${
 					isVisible ? 'opacity-100' : 'opacity-0'
 				} cursor-pointer absolute z-10 rounded-full bg-clip-padding border text-token-text-secondary border-token-border-light w-8 h-8 flex items-center justify-center bottom-5 right-[12px] transition-all duration-200 hover:scale-105 active:scale-95 active:shadow-inner`}
 			>

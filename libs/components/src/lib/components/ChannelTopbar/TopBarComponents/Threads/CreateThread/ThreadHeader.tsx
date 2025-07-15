@@ -50,7 +50,7 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 					{threadCurrentChannel ? threadCurrentChannel.channel_label : 'New Thread'}
 				</span>
 			</div>
-			<button onClick={handleCloseModal} className="relative right-0">
+			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary">
 				<Icons.Close />
 			</button>
 		</div>

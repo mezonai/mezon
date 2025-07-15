@@ -1,9 +1,10 @@
 import { AttachmentPreviewThumbnail, MentionReactInput, ReplyMessageBox, UserMentionList } from '@mezon/components';
-import { useChatSending, useDragAndDrop, useReference } from '@mezon/core';
+import { useChatSending, useDragAndDrop, usePermissionChecker, useReference } from '@mezon/core';
 import {
 	fetchMessages,
 	referencesActions,
 	selectAllChannelMemberIds,
+	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectCurrentClanId,
@@ -11,17 +12,19 @@ import {
 	selectDataReferences,
 	selectFirstMessageOfCurrentTopic,
 	selectSession,
+	selectStatusMenu,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { CREATING_TOPIC, IMessageSendPayload, MAX_FILE_ATTACHMENTS, UploadLimitReason, processFile } from '@mezon/utils';
+import { CREATING_TOPIC, EOverriddenPermission, IMessageSendPayload, MAX_FILE_ATTACHMENTS, UploadLimitReason, processFile } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import MemoizedChannelMessages from '../channel/ChannelMessages';
+import FileSelectionButtonTopicDiscussion from './FileSelectionButton';
 
 const TopicDiscussionBox = () => {
 	const dispatch = useAppDispatch();
@@ -36,6 +39,9 @@ const TopicDiscussionBox = () => {
 	const currentInputChannelId = currentTopicId || CREATING_TOPIC;
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(currentInputChannelId);
 	const { setOverUploadingState } = useDragAndDrop();
+	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], currentTopicId ?? '');
+	const closeMenu = useSelector(selectCloseMenu);
+	const statusMenu = useSelector(selectStatusMenu);
 
 	const mode =
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -62,6 +68,14 @@ const TopicDiscussionBox = () => {
 		}
 	}, [currentClanId, currentChannelId, currentTopicId, dispatch]);
 
+	const attachmentData = useMemo(() => {
+		if (attachmentFilteredByChannelId === null) {
+			return [];
+		} else {
+			return attachmentFilteredByChannelId.files;
+		}
+	}, [attachmentFilteredByChannelId?.files, currentInputChannelId, currentTopicId]);
+
 	const handleSend = useCallback(
 		async (
 			content: IMessageSendPayload,
@@ -70,10 +84,43 @@ const TopicDiscussionBox = () => {
 			references?: Array<ApiMessageRef>
 		) => {
 			if (!sessionUser) return;
-			await sendMessage(content, mentions, attachments, references, false, false, false, 0);
+
+			const filesToSend = attachments?.length ? attachments : attachmentData;
+
+			const hasFiles = filesToSend && filesToSend.length > 0;
+
+			const contentToSend = typeof content.t === 'string' ? content : { t: '' };
+
+			if (!hasFiles && (!contentToSend.t || contentToSend.t.trim() === '')) {
+				return;
+			}
+			try {
+				await sendMessage(
+					contentToSend,
+					mentions,
+					filesToSend,
+					references,
+					false,
+					false,
+					false,
+					0
+				);
+
+				if (attachmentData.length > 0) {
+					dispatch(
+						referencesActions.setAtachmentAfterUpload({
+							channelId: currentInputChannelId,
+							files: []
+						})
+					);
+				}
+			} catch (error) {
+				console.error("Failed to send message:", error);
+			}
 		},
-		[sendMessage, sessionUser]
+		[sendMessage, sessionUser, attachmentData, dispatch, currentInputChannelId, currentTopicId, currentChannelId, mode]
 	);
+
 
 	const handleTyping = useCallback(() => {
 		// sendMessageTyping();
@@ -111,6 +158,10 @@ const TopicDiscussionBox = () => {
 		[currentInputChannelId, attachmentFilteredByChannelId?.files?.length, dispatch, setOverUploadingState]
 	);
 
+	const handleChildContextMenu = (event: React.MouseEvent) => {
+		event.stopPropagation();
+	};
+
 	return (
 		<>
 			{(isFetchMessageDone || firstMessageOfThisTopic) && (
@@ -131,7 +182,7 @@ const TopicDiscussionBox = () => {
 				<div
 					className={`${
 						checkAttachment ? 'px-3 mx-4 pb-1 pt-5 rounded-t-lg border-b-[1px] dark:border-[#42444B] border-borderLightTabs' : ''
-					} dark:bg-channelTextarea bg-channelTextareaLight max-h-full`}
+						} max-h-full`}
 				>
 					<div className={`max-h-full flex gap-6 overflow-y-hidden overflow-x-auto thread-scroll `}>
 						{attachmentFilteredByChannelId?.files?.map((item: ApiMessageAttachment, index: number) => {
@@ -149,26 +200,46 @@ const TopicDiscussionBox = () => {
 					</div>
 				</div>
 			)}
-			{dataReferences.message_ref_id && (
-				<div className="relative z-1 pb-[4px] w-[450px] ml-3">
-					<ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />
-				</div>
-			)}
+
 			<div className="flex flex-col flex-1">
-				<div className="flex-shrink-0 flex flex-col pb-[26px] px-4 bg-theme-chat   h-auto relative">
-					<MentionReactInput
-						handlePaste={onPastedFiles}
-						onSend={handleSend}
-						onTyping={handleTypingDebounced}
-						listMentions={UserMentionList({
-							channelID: currentChannel?.channel_id as string,
-							channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
-						})}
-						isTopic
-						currentChannelId={currentInputChannelId}
-					/>
+				<div className="flex-shrink-0 flex flex-col pb-[26px] px-4 bg-theme-chat h-auto relative">
+					{dataReferences.message_ref_id && (
+						<div className="mb-1 px-[1px] w-full">
+							<ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />
+						</div>
+					)}
+					<div
+						className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
+						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}
+						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
+					>
+						<FileSelectionButtonTopicDiscussion
+							currentClanId={currentClanId || ''}
+							currentChannelId={currentInputChannelId}
+							hasPermissionEdit={canSendMessage}
+						/>
+
+						<div className={`w-[calc(100%_-_58px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
+							<div className={`w-full rounded-r-lg gap-3 relative whitespace-pre-wrap`} onContextMenu={handleChildContextMenu}>
+								<MentionReactInput
+									handlePaste={onPastedFiles}
+									onSend={handleSend}
+									onTyping={handleTypingDebounced}
+									listMentions={UserMentionList({
+										channelID: currentChannel?.channel_id as string,
+										channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL,
+									})}
+									isTopic
+									currentChannelId={currentInputChannelId}
+									hasAttachments={attachmentData.length > 0}
+									attachmentData={attachmentData}
+								/>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
+
 		</>
 	);
 };

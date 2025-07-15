@@ -176,6 +176,8 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 							hasPermissionEdit={canSendMessage}
 							voiceLongPress={voiceLongPressHandlers}
 							isRecording={isRecording}
+							hasAttachments={attachmentFilteredByChannelId?.files?.length > 0}
+							attachmentData={attachmentFilteredByChannelId?.files ?? []}
 						/>
 					</div>
 				</div>

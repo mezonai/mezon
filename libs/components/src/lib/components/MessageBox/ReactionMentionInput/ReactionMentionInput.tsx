@@ -65,7 +65,7 @@ import {
 	updateMentionPositions
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { ReactElement, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Mention as MentionComponent, MentionItem, MentionsInput as MentionsInputComponent } from 'react-mentions';
 import { useSelector } from 'react-redux';
@@ -125,12 +125,15 @@ export interface MentionReactBaseProps extends MentionReactInputProps {
 	dataReferences?: ApiMessageRef;
 	dataReferencesTopic?: ApiMessageRef;
 	currentDmGroupId?: string;
+	hasAttachments?: boolean;
+	attachmentData?: ApiMessageAttachment[];
 }
 
 type ChannelsMentionProps = {
 	id: string;
 	display: string;
 	subText: string;
+
 };
 
 export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElement => {
@@ -188,6 +191,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const [mentionUpdated, setMentionUpdated] = useState<IMentionOnMessage[]>([]);
 	const [isPasteMulti, setIsPasteMulti] = useState<boolean>(false);
 	const [isFocused, setIsFocused] = useState(false);
+
 
 	const { addToUndoHistory, handleUndoRedoShortcut } = useUndoRedoHistory({
 		updateDraft,
@@ -292,11 +296,18 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 				return;
 			}
+			const attachmentCount = props.attachmentData?.length ?? 0;
+			const trimmedText = payload.t?.trim() || '';
 
-			if ((!text && !checkAttachment) || ((draftRequest?.valueTextInput || '').trim() === '' && !checkAttachment)) {
+
+
+			if (!trimmedText && attachmentCount === 0) {
 				return;
 			}
 
+			if (!trimmedText && attachmentCount > 0) {
+				payload.t = '';
+			}
 			if (
 				draftRequest?.valueTextInput &&
 				typeof draftRequest?.valueTextInput === 'string' &&
@@ -794,6 +805,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setIsFocused(false);
 		}
 	};
+
+	const hasText = draftRequest?.valueTextInput && draftRequest.valueTextInput.trim().length > 0;
+	const hasAttachment = props.attachmentData && props.attachmentData.length > 0;
+
 
 	return (
 		<div className="contain-layout relative bg-theme-surface" ref={containerRef}>
