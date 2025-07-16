@@ -119,19 +119,19 @@ module.exports = composePlugins(
 
     config.devServer.allowedHosts = 'all';
 
-         const trustedDomains = [
-       '\'self\'',
-       '*.mezon.ai',
-       '*.nccsoft.vn',
-       'media.tenor.com',
-       '*.googletagmanager.com',
-       '*.google-analytics.com',
-       '*.googlesyndication.com',
-       '*.gstatic.com',
-       '*.googleapis.com',
-       'googleads.g.doubleclick.net'
-     ].join(' ');
-
+    const trustedDomains = [
+      '\'self\'',
+      '*.mezon.ai',
+      '*.nccsoft.vn',
+      'media.tenor.com',
+      '*.googletagmanager.com',
+      '*.google-analytics.com',
+      '*.googlesyndication.com',
+      '*.gstatic.com',
+      '*.googleapis.com',
+      'https://cdn.jsdelivr.net',
+      'googleads.g.doubleclick.net'
+    ].join(' ');
     const basePolicies = [
       `default-src 'self'`,
       `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${trustedDomains}`,

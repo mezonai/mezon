@@ -23,11 +23,11 @@ interface ISearchMessagePageProps {
 	currentChannel: IChannel | DirectEntity;
 	searchText: string;
 	userMention: IUerMention;
-	isSearchMessagePage: boolean;
 	typeSearch: ETypeSearch;
+	isSearchMessage?: boolean;
 }
 
-function SearchMessagePage({ searchText, currentChannel, userMention, isSearchMessagePage, typeSearch }: ISearchMessagePageProps) {
+function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch, isSearchMessage }: ISearchMessagePageProps) {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const [activeTab, setActiveTab] = useState<number>(ACTIVE_TAB.MEMBER);
 	const store = getStore();
@@ -87,11 +87,11 @@ function SearchMessagePage({ searchText, currentChannel, userMention, isSearchMe
 			{
 				title: t('Messages'),
 				quantitySearch: totalResult,
-				display: !!userMention || !!totalResult,
+				display: !!userMention || (!!totalResult && isSearchMessage),
 				index: ACTIVE_TAB.MESSAGES
 			}
 		].filter((tab) => tab?.display);
-	}, [channelsSearch?.length, membersSearch?.length, searchText, t, userMention, totalResult]);
+	}, [t, searchText, membersSearch?.length, userMention, channelsSearch?.length, totalResult, isSearchMessage]);
 
 	function handelHeaderTabChange(index: number) {
 		setActiveTab(index);

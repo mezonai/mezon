@@ -16,7 +16,7 @@ export const isValidUrl = (urlString: string) => {
 	} catch (e) {
 		return false;
 	}
-	return url.protocol === 'https:';
+	return url.protocol === 'https:' || url.protocol === 'http:';
 };
 
 export function uploadImageToMinIO(url: string, stream: Buffer, size: number) {

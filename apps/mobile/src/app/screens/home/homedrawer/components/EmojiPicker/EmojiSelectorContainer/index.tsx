@@ -12,7 +12,7 @@ import {
 	SmilingFaceIcon
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectDmGroupCurrentId } from '@mezon/store-mobile';
+import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectCurrentTopicId, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import { FOR_SALE_CATE, IEmoji, RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,8 +53,11 @@ export default function EmojiSelectorContainer({
 	const channelId = useMemo(() => {
 		const currentDirectId = selectDmGroupCurrentId(store.getState());
 		const currentChannelId = selectCurrentChannelId(store.getState() as any);
+		const currentTopicId = selectCurrentTopicId(store.getState() as any);
 
-		return currentDirectId ? currentDirectId : currentChannelId;
+		const channelId = currentTopicId ? currentTopicId : currentChannelId;
+
+		return currentDirectId ? currentDirectId : channelId;
 	}, []);
 
 	const getEmojisByCategories = useMemo(

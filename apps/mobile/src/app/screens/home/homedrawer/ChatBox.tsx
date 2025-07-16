@@ -14,6 +14,7 @@ interface IChatBoxProps {
 	};
 	directMessageId?: string;
 	isPublic: boolean;
+	topicChannelId?: string;
 }
 export const ChatBox = memo((props: IChatBoxProps) => {
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], props.channelId);

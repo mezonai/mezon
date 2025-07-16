@@ -127,7 +127,7 @@ const getConfigDisplayNotificationAndroid = async (data: Record<string, string |
 		visibility: AndroidVisibility.PUBLIC,
 		channelId: 'default',
 		smallIcon: 'ic_notification',
-		color: '#000000',
+		color: '#7029c1',
 		sound: 'default',
 		smallIconLevel: 10,
 		importance: AndroidImportance.HIGH,

@@ -1,17 +1,15 @@
 import { registerGlobals } from '@livekit/react-native';
-import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import { AppRegistry } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
+import { isNotificationProcessed } from './app/utils/notificationCache';
 import { createLocalNotification, setupIncomingCall } from './app/utils/pushNotificationHelpers';
 
 const isValidString = (value: unknown): value is string => {
 	return typeof value === 'string' && value.trim().length > 0;
 };
-
-notifee.onBackgroundEvent(async () => { });
 
 registerGlobals();
 enableScreens(true);
@@ -20,7 +18,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 	try {
 		const offer = remoteMessage?.data?.offer;
 
-		// Safe handling of offer data
+		// Safe handling of offer data (calls are always processed)
 		if (offer && isValidString(offer)) {
 			await setupIncomingCall(offer);
 			return;
@@ -31,7 +29,14 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 			const { title, body } = remoteMessage.data;
 
 			if (isValidString(title) && isValidString(body)) {
-				await createLocalNotification(title, body, remoteMessage.data);
+				// Check if this notification was already processed
+				const isProcessed = await isNotificationProcessed(title, body);
+
+				if (!isProcessed) {
+					// Only create notification if not a duplicate
+					await createLocalNotification(title, body, remoteMessage.data);
+				}
+				// If isProcessed is true, skip creating the notification (it's a duplicate)
 			}
 		}
 	} catch (error) {

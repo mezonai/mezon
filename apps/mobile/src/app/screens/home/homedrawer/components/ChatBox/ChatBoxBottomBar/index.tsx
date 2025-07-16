@@ -94,6 +94,7 @@ interface IChatInputProps {
 	messageAction?: EMessageActionType;
 	onDeleteMessageActionNeedToResolve?: () => void;
 	isPublic: boolean;
+	topicChannelId?: string;
 }
 
 interface IEphemeralTargetUserInfo {
@@ -109,7 +110,8 @@ export const ChatBoxBottomBar = memo(
 		messageActionNeedToResolve,
 		messageAction,
 		onDeleteMessageActionNeedToResolve,
-		isPublic = false
+		isPublic = false,
+		topicChannelId = ''
 	}: IChatInputProps) => {
 		const { themeValue } = useTheme();
 		const dispatch = useAppDispatch();
@@ -176,14 +178,14 @@ export const ChatBoxBottomBar = memo(
 			const allCachedMessage = load(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES) || {};
 			save(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES, {
 				...allCachedMessage,
-				[channelId]: text
+				[topicChannelId || channelId]: text
 			});
 		};
 
 		const setMessageFromCache = async () => {
 			const allCachedMessage = load(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES) || {};
-			handleTextInputChange(allCachedMessage?.[channelId] || '');
-			textValueInputRef.current = convertMentionsToText(allCachedMessage?.[channelId] || '');
+			handleTextInputChange(allCachedMessage?.[topicChannelId || channelId] || '');
+			textValueInputRef.current = convertMentionsToText(allCachedMessage?.[topicChannelId || channelId] || '');
 		};
 
 		const handleEventAfterEmojiPicked = useCallback(
@@ -261,8 +263,8 @@ export const ChatBoxBottomBar = memo(
 			mentionsOnMessage.current = [];
 			hashtagsOnMessage.current = [];
 			onDeleteMessageActionNeedToResolve();
-			resetCachedChatbox(channelId);
-			resetCachedMessageActionNeedToResolve(channelId);
+			resetCachedChatbox(topicChannelId || channelId);
+			resetCachedMessageActionNeedToResolve(topicChannelId || channelId);
 			dispatch(
 				emojiSuggestionActions.setSuggestionEmojiObjPicked({
 					shortName: '',
@@ -589,7 +591,7 @@ export const ChatBoxBottomBar = memo(
 				textValueInputRef.current = '';
 			});
 			const addEmojiPickedListener = DeviceEventEmitter.addListener(ActionEmitEvent.ADD_EMOJI_PICKED, (emoji) => {
-				if (emoji?.channelId === channelId) {
+				if (emoji?.channelId === channelId || emoji?.channelId === topicChannelId) {
 					handleEventAfterEmojiPicked(emoji.shortName);
 				}
 			});
@@ -629,7 +631,7 @@ export const ChatBoxBottomBar = memo(
 						/>
 					)}
 				</View>
-				<AttachmentPreview channelId={channelId} />
+				<AttachmentPreview channelId={topicChannelId || channelId} />
 				<ChatBoxListener mode={mode} />
 				<View style={styles.containerInput}>
 					<ChatMessageLeftArea
@@ -705,6 +707,7 @@ export const ChatBoxBottomBar = memo(
 							clearInputAfterSendMessage={onSendSuccess}
 							anonymousMode={anonymousMode}
 							ephemeralTargetUserId={ephemeralTargetUserInfo?.id}
+							currentTopicId={topicChannelId}
 						/>
 					</View>
 				</View>

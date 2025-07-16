@@ -57,7 +57,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 				topicId: currentTopicId || ''
 			} as IReactionMessageProps);
 		},
-		[message?.channel_id, message.topic_id, message?.id, mode, userId, currentTopicId]
+		[message?.channel_id, message?.id, mode, userId, currentTopicId]
 	);
 
 	const onReactItemLongPress = useCallback(

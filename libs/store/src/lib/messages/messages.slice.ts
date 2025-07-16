@@ -36,7 +36,8 @@ import { accountActions, selectAllAccount } from '../account/account.slice';
 import { resetChannelBadgeCount } from '../badge/badgeHelpers';
 import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelMetaActions } from '../channels/channelmeta.slice';
-import { selectShowScrollDownButton } from '../channels/channels.slice';
+import { selectLoadingStatus, selectShowScrollDownButton } from '../channels/channels.slice';
+import { selectClansLoadingStatus } from '../clans/clans.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
@@ -616,7 +617,27 @@ export const updateLastSeenMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
-			await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, message_time ?? now, badge_count);
+
+			const state = thunkAPI.getState() as RootState;
+			const channelsLoadingStatus = selectLoadingStatus(state);
+			const clansLoadingStatus = selectClansLoadingStatus(state);
+			if (channelsLoadingStatus !== 'loaded' || clansLoadingStatus !== 'loaded') {
+				return;
+			}
+
+			const response = await mezon.socketRef.current?.writeLastSeenMessage(
+				clanId,
+				channelId,
+				mode,
+				messageId,
+				message_time ?? now,
+				badge_count
+			);
+
+			if (response?.channel_id !== channelId) {
+				return;
+			}
+
 			resetChannelBadgeCount(thunkAPI.dispatch, {
 				clanId,
 				channelId,

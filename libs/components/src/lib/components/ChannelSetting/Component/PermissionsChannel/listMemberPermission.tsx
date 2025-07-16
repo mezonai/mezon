@@ -1,3 +1,4 @@
+import { useAppNavigation, useAuth, useCustomNavigate } from '@mezon/core';
 import { channelUsersActions, removeChannelUsersPayload, selectAllUserChannel, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IChannel, createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
@@ -15,7 +16,9 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 	const dispatch = useAppDispatch();
 	const rawMembers = useSelector(selectAllUserChannel(channel.channel_id || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
-
+	const navigate = useCustomNavigate();
+	const userProfile = useAuth();
+	const { toMembersPage } = useAppNavigation();
 	const deleteMember = async (userId: string) => {
 		const body: removeChannelUsersPayload = {
 			channelId: channel.id,
@@ -24,6 +27,9 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 			clanId: currentClanId as string
 		};
 		await dispatch(channelUsersActions.removeChannelUsers(body));
+		if (currentClanId && userId === userProfile.userId) {
+			navigate(toMembersPage(currentClanId));
+		}
 	};
 
 	const listMembersInChannel = useMemo(() => {

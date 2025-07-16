@@ -1,5 +1,5 @@
 import { ChannelMembersEntity, clansActions, getStore, selectCurrentClanId, useAppDispatch } from '@mezon/store';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { ModalUserProfile } from '../../components';
 import UserProfileModalInner from '../../components/UserProfileModalInner/index';
@@ -33,11 +33,40 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 	const [positionShortUser, setPositionShortUser] = useState<{ top: number; left: number } | null>(null);
 	const [openModalRemoveMember, setOpenModalRemoveMember] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
+	const [popupHeight, setPopupHeight] = useState<number>(500);
 
 	const modalState = useRef({
 		profileItem: false,
 		userProfile: false
 	});
+	const parentRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const updateHeight = () => {
+			if (parentRef.current) {
+				const height = parentRef.current.getBoundingClientRect().height;
+				if (height > 0) {
+					setPopupHeight(height);
+				}
+			}
+		};
+
+		const resizeObserver = new ResizeObserver(() => {
+			updateHeight();
+		});
+
+		if (parentRef.current) {
+			resizeObserver.observe(parentRef.current);
+		}
+
+		updateHeight();
+
+		return () => {
+			if (parentRef.current) {
+				resizeObserver.unobserve(parentRef.current);
+			}
+		};
+	}, [currentUser]);
 
 	const [showUserProfileModal, hideUserProfileModal] = useModal(() => {
 		if (!currentUser) return null;
@@ -68,6 +97,7 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 
 		return (
 			<div
+				ref={parentRef}
 				className="fixed z-50 max-[480px]:!left-16 max-[700px]:!left-9 bg-outside-footer w-[300px] max-w-[89vw] rounded-lg flex flex-col duration-300 ease-in-out animate-fly_in"
 				style={{
 					top: `${positionShortUser?.top}px`,
@@ -116,7 +146,7 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 			event.preventDefault();
 
 			const popupWidth = 300;
-			const popupHeight = 350;
+
 			const padding = 50;
 
 			const windowWidth = window.innerWidth;
@@ -136,8 +166,12 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 				left = Math.max(padding, (windowWidth - popupWidth) / 2);
 			}
 
-			if (top + popupHeight > windowHeight - padding) {
-				top = Math.max(padding, windowHeight - popupHeight - padding);
+			if (top + popupHeight + padding > windowHeight) {
+				top = windowHeight - popupHeight - padding;
+			}
+
+			if (top < padding) {
+				top = padding;
 			}
 
 			setPositionShortUser({

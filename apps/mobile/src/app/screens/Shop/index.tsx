@@ -38,7 +38,7 @@ const ShopScreen = ({ navigation }: { navigation: any }) => {
 			</View>
 
 			<ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
-				{!!emojisRaw?.length && <ProductSection title="Emoji" icon="😀" data={emojisRaw} type={'emoji'} />}{' '}
+				{!!emojisRaw?.length && <ProductSection title="Emoji" icon="😀" data={emojisRaw} type={'emoji'} />}
 				{!!stickersRaw?.length && <ProductSection title="Sticker" icon="🎨" data={stickersRaw} />}
 			</ScrollView>
 		</View>

@@ -20,6 +20,7 @@ interface IChatBoxProps {
 	directMessageId?: string;
 	canSendMessage?: boolean;
 	isPublic: boolean;
+	topicChannelId?: string;
 }
 
 export const ChatBoxMain = memo((props: IChatBoxProps) => {
@@ -121,6 +122,7 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 					hiddenIcon={props?.hiddenIcon}
 					messageAction={props?.messageAction}
 					isPublic={props?.isPublic}
+					topicChannelId={props?.topicChannelId}
 				/>
 			)}
 		</View>

@@ -12,7 +12,6 @@ import {
 	selectAllRolesClan,
 	selectAttachmentByChannelId,
 	selectChannelById,
-	selectCurrentTopicId,
 	selectCurrentTopicInitMessage,
 	selectDmGroupCurrent,
 	selectIsShowCreateTopic,
@@ -69,6 +68,7 @@ interface IChatMessageSendingProps {
 	voiceLinkRoomOnMessage?: MutableRefObject<ILinkVoiceRoomOnMessage[]>;
 	anonymousMode?: boolean;
 	ephemeralTargetUserId?: string;
+	currentTopicId?: string;
 }
 const isPayloadEmpty = (payload: IMessageSendPayload): boolean => {
 	return (
@@ -98,13 +98,14 @@ export const ChatMessageSending = memo(
 		markdownsOnMessage,
 		voiceLinkRoomOnMessage,
 		anonymousMode = false,
-		ephemeralTargetUserId
+		ephemeralTargetUserId,
+		currentTopicId = ''
 	}: IChatMessageSendingProps) => {
 		const { themeValue } = useTheme();
 		const dispatch = useAppDispatch();
 		const styles = style(themeValue);
 		const store = getStore();
-		const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, channelId));
+		const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, currentTopicId || channelId));
 		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 		const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
 		const { membersOfChild, membersOfParent, addMemberToThread, joinningToThread } = useChannelMembers({
@@ -115,7 +116,6 @@ export const ChatMessageSending = memo(
 		const userId = useMemo(() => {
 			return load(STORAGE_MY_USER_ID);
 		}, []);
-		const currentTopicId = useSelector(selectCurrentTopicId);
 		const valueTopic = useSelector(selectCurrentTopicInitMessage);
 		const isCreateTopic = useSelector(selectIsShowCreateTopic);
 		const channelOrDirect =
@@ -235,7 +235,7 @@ export const ChatMessageSending = memo(
 						: priorityDisplayName;
 				const payloadEphemeral = {
 					receiverId: ephemeralTargetUserId,
-					channelId: channelId,
+					channelId: currentTopicId || channelId,
 					clanId: currentChannel?.clan_id || '',
 					mode: mode,
 					isPublic: isPublic,
@@ -279,7 +279,7 @@ export const ChatMessageSending = memo(
 			dispatch(emojiSuggestionActions.setSuggestionEmojiPicked(''));
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
-					channelId,
+					channelId: currentTopicId || channelId,
 					files: []
 				})
 			);

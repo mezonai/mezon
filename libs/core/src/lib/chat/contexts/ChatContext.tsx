@@ -60,6 +60,7 @@ import {
 	selectChannelThreads,
 	selectChannelsByClanId,
 	selectClanView,
+	selectClansLoadingStatus,
 	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectCurrentChannelId,
@@ -70,6 +71,7 @@ import {
 	selectDmGroupCurrentId,
 	selectIsInCall,
 	selectLastMessageByChannelId,
+	selectLoadingStatus,
 	selectModeResponsive,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
@@ -590,7 +592,22 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		}
 
 		if (pin.operation === 1) {
-			dispatch(pinMessageActions.clearChannelCache(pin.channel_id));
+			dispatch(
+				pinMessageActions.addPinMessage({
+					channelId: pin.channel_id,
+					pinMessage: {
+						id: pin.message_id,
+						attachment: pin.message_attachment,
+						avatar: pin.message_sender_avatar,
+						channel_id: pin.channel_id,
+						content: pin.message_content,
+						create_time: pin.message_created_time,
+						message_id: pin.message_id,
+						username: pin.message_sender_username,
+						sender_id: pin.message_sender_id
+					}
+				})
+			);
 		}
 	}, []);
 
@@ -617,23 +634,35 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		[dispatch]
 	);
 
-	const onlastseenupdated = useCallback(async (lastSeenMess: LastSeenMessageEvent) => {
-		const { clan_id, channel_id, message_id } = lastSeenMess;
-		let badge_count = lastSeenMess.badge_count;
+	const onlastseenupdated = useCallback(
+		async (lastSeenMess: LastSeenMessageEvent) => {
+			const { clan_id, channel_id, message_id } = lastSeenMess;
+			let badge_count = lastSeenMess.badge_count;
 
-		if (clan_id && clan_id !== '0') {
 			const store = getStore();
-			const channel = selectChannelByIdAndClanId(store.getState(), clan_id, channel_id);
-			badge_count = channel?.count_mess_unread || 0;
-		}
 
-		resetChannelBadgeCount(dispatch, {
-			clanId: clan_id,
-			channelId: channel_id,
-			badgeCount: badge_count,
-			messageId: message_id
-		});
-	}, []);
+			const state = store.getState() as RootState;
+			const channelsLoadingStatus = selectLoadingStatus(state);
+			const clansLoadingStatus = selectClansLoadingStatus(state);
+
+			if (channelsLoadingStatus !== 'loaded' || clansLoadingStatus !== 'loaded') {
+				return;
+			}
+
+			if (clan_id && clan_id !== '0') {
+				const channel = selectChannelByIdAndClanId(state, clan_id, channel_id);
+				badge_count = channel?.count_mess_unread || 0;
+			}
+
+			resetChannelBadgeCount(dispatch, {
+				clanId: clan_id,
+				channelId: channel_id,
+				badgeCount: badge_count,
+				messageId: message_id
+			});
+		},
+		[dispatch]
+	);
 
 	const onuserchannelremoved = useCallback(
 		async (user: UserChannelRemovedEvent) => {

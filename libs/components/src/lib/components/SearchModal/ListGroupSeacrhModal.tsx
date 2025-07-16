@@ -1,8 +1,6 @@
-import { selectTheme } from '@mezon/store';
 import { SearchItemProps, toggleDisableHover } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { ListGroupSearchModalContext } from './ListGroupSearchModalContext';
 import ListSearchModal from './ListSearchModal';
 
@@ -47,7 +45,6 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 
 	const { mentionList, unreadList } = classificationList;
 
-	const appearanceTheme = useSelector(selectTheme);
 	const boxRef = useRef<HTMLDivElement | null>(null);
 	const itemRefs = useRef<Record<string, Element | null>>({});
 	const usingKeyboard = useRef<boolean>(true);

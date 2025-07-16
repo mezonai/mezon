@@ -128,7 +128,7 @@ export const setChannelPinMessage = createAsyncThunk(
 	async ({ clan_id, channel_id, message_id, message }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body = {
+			const body: ApiPinMessageRequest = {
 				clan_id: clan_id,
 				channel_id: channel_id,
 				message_id: message_id
@@ -169,37 +169,46 @@ export const deleteChannelPinMessage = createAsyncThunk(
 	}
 );
 
-type UpdatePinMessage = {
+export type UpdatePinMessage = {
 	clanId: string;
 	channelId: string;
 	messageId: string;
 	isPublic: boolean;
 	mode: number;
+	avatar: string;
+	senderId: string;
+	senderUsername: string;
+	content: string;
+	attachment: string;
+	createdTime: string;
 };
 
 export const joinPinMessage = createAsyncThunk(
 	'messages/joinPinMessage',
-	async ({ clanId, channelId, messageId, isPublic, mode }: UpdatePinMessage, thunkAPI) => {
+	async (
+		{ clanId, channelId, messageId, isPublic, mode, senderId, senderUsername, avatar, createdTime, content, attachment }: UpdatePinMessage,
+		thunkAPI
+	) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
-			await mezon.socketRef.current?.writeLastPinMessage(clanId, channelId, mode, isPublic, messageId, now, 1);
+			await mezon.socketRef.current?.writeLastPinMessage(
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				messageId,
+				now,
+				1,
+				avatar,
+				senderId,
+				senderUsername,
+				content,
+				attachment,
+				createdTime
+			);
 		} catch (error) {
 			captureSentryError(error, 'pinmessage/joinPinMessage');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
-
-export const updateLastPin = createAsyncThunk(
-	'messages/updateLastPinMessage',
-	async ({ clanId, channelId, messageId, isPublic }: UpdatePinMessage, thunkAPI) => {
-		try {
-			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const now = Math.floor(Date.now() / 1000);
-			await mezon.socketRef.current?.writeLastPinMessage(clanId, channelId, 0, isPublic, messageId, now, 0);
-		} catch (error) {
-			captureSentryError(error, 'pinmessage/updateLastPinMessage');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -305,7 +314,6 @@ export const pinMessageActions = {
 	fetchChannelPinMessages,
 	setChannelPinMessage,
 	deleteChannelPinMessage,
-	updateLastPin,
 	joinPinMessage
 };
 

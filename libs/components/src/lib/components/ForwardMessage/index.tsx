@@ -15,7 +15,6 @@ import {
 	selectDmGroupCurrentId,
 	selectLoadingStatus,
 	selectModeResponsive,
-	selectTheme,
 	toggleIsShowPopupForwardFalse,
 	useAppDispatch,
 	useAppSelector
@@ -46,7 +45,6 @@ type ObjectSend = {
 	isPublic: boolean;
 };
 const ForwardMessageModal = () => {
-	const appearanceTheme = useSelector(selectTheme);
 	const dispatch = useAppDispatch();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const listChannels = useSelector(selectAllChannelsByUser);

@@ -26,6 +26,7 @@ interface MyVideoConferenceProps {
 	channelLabel?: string;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
+	onJoinRoom?: () => void;
 	isExternalCalling?: boolean;
 	tracks?: TrackReferenceOrPlaceholder[];
 	isShowChatVoice?: boolean;
@@ -41,7 +42,8 @@ export function MyVideoConference({
 	tracks: propTracks,
 	isShowChatVoice,
 	onToggleChat,
-	currentChannel
+	currentChannel,
+	onJoinRoom
 }: MyVideoConferenceProps) {
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [isGridView, setIsGridView] = useState<boolean>(true);
@@ -106,9 +108,17 @@ export function MyVideoConference({
 				dispatch(voiceActions.setShowCamera(false));
 			}
 		};
-
+		const handleReconnectedRoom = async () => {
+			try {
+				onJoinRoom && onJoinRoom();
+			} catch (error) {
+				console.error('error: ', error);
+				onLeaveRoom();
+			}
+		};
 		room?.on('disconnected', handleDisconnected);
 		room?.on('localTrackUnpublished', handleTrackPublished);
+		room?.on('reconnected', handleReconnectedRoom);
 		return () => {
 			room?.off('disconnected', handleDisconnected);
 		};

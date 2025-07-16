@@ -12,8 +12,10 @@ import {
 	selectCurrentTopicId,
 	selectMessageByMessageId,
 	selectThreadCurrentChannel,
+	UpdatePinMessage,
 	useAppDispatch
 } from '@mezon/store';
+import { isValidUrl } from '@mezon/transport';
 import { SHOW_POSITION } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -156,23 +158,31 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 				message: message
 			})
 		);
-		dispatch(
-			pinMessageActions.joinPinMessage({
-				clanId: mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? '' : (currentClanId ?? ''),
-				channelId:
-					mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD
-						? currentDm?.id || ''
-						: (currentChannel?.channel_id ?? ''),
-				messageId: message?.id,
-				isPublic:
-					mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD
-						? false
-						: currentChannel
-							? !currentChannel.channel_private
-							: false,
-				mode: mode as number
-			})
-		);
+		const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
+		const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
+		const pinBody: UpdatePinMessage = {
+			clanId: mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? '' : (currentClanId ?? ''),
+			channelId:
+				mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD
+					? currentDm?.id || ''
+					: (currentChannel?.channel_id ?? ''),
+			messageId: message?.id,
+			isPublic:
+				mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD
+					? false
+					: currentChannel
+						? !currentChannel.channel_private
+						: false,
+			mode: mode as number,
+			senderId: message.sender_id,
+			senderUsername: message.display_name || message.username || message.user?.name || message.user?.name || '',
+			attachment: jsonAttachments,
+			avatar: message.avatar || message.clan_avatar || '',
+			content: JSON.stringify(message.content),
+			createdTime: message.create_time
+		};
+
+		dispatch(pinMessageActions.joinPinMessage(pinBody));
 	}, []);
 
 	const { show } = useContextMenu({

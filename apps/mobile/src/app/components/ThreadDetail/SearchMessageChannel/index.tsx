@@ -70,7 +70,7 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 		if (optionFilter && userMention) {
 			filter.push({
 				field_name: optionFilter?.value,
-				field_value: optionFilter?.value === 'mention' ? `"user_id":"${userMention.id}"` : userMention?.display
+				field_value: optionFilter?.value === 'mention' ? `"user_id":"${userMention?.id}"` : userMention?.display
 			});
 		}
 		if (searchText?.trim()) {
@@ -85,11 +85,13 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 			size: SIZE_PAGE_SEARCH
 		};
 		setFiltersSearch(filter);
-		if (((optionFilter && userMention) || isSearchMessagePage) && !!currentChannel?.id) {
+
+		if ((searchText?.trim() || (optionFilter && userMention)) && !!currentChannel?.id) {
 			dispatch(searchMessagesActions.setCurrentPage(1));
 			dispatch(searchMessagesActions.fetchListSearchMessage(payload));
 		}
 	};
+
 	const handleKeyPress = (e) => {
 		if (e.nativeEvent.key === Backspace && !searchText?.length) {
 			setUserMention(null);
@@ -113,11 +115,11 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 				/>
 				{isSearchMessagePage ? (
 					<SearchMessagePage
-						isSearchMessagePage={isSearchMessagePage}
 						userMention={userMention}
 						currentChannel={currentChannel}
 						searchText={searchText}
 						typeSearch={typeSearch}
+						isSearchMessage={Boolean(searchText?.trim())}
 					/>
 				) : (
 					<SearchOptionPage

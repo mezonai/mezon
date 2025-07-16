@@ -1,10 +1,11 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { messagesActions, selectCurrentChannel, selectCurrentClanId, selectCurrentTopicId, topicsActions, useAppDispatch } from '@mezon/store-mobile';
 import { checkIsThread, isPublicChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect } from 'react';
-import { Platform, StatusBar, View } from 'react-native';
+import { DeviceEventEmitter, Platform, StatusBar, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSelector } from 'react-redux';
@@ -59,9 +60,19 @@ export default function TopicDiscussion() {
 	}, []);
 
 	useEffect(() => {
+		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+			isShow: false,
+			mode: ''
+		});
 		return () => {
 			dispatch(topicsActions.setCurrentTopicId(''));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
+			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+				isShow: false,
+				mode: ''
+			});
 		};
 	}, [currentChannel?.channel_id, dispatch]);
 
@@ -107,11 +118,12 @@ export default function TopicDiscussion() {
 					channelId={currentChannel?.channel_id}
 					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 					hiddenIcon={{
-						threadIcon: currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD
+						threadIcon: true
 					}}
 					isPublic={isPublicChannel(currentChannel)}
+					topicChannelId={currentTopicId}
 				/>
-				<PanelKeyboard currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+				<PanelKeyboard currentChannelId={currentTopicId || currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 			</KeyboardAvoidingView>
 		</View>
 	);

@@ -93,9 +93,7 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 				};
 			});
 
-			thunkAPI.dispatch(voiceActions.addMany(members));
-			const voices = response.voice_channel_users;
-			return voices;
+			return members;
 		} catch (error) {
 			captureSentryError(error, 'voice/fetchVoiceChannelMembers');
 			return thunkAPI.rejectWithValue(error);
@@ -146,6 +144,7 @@ export const voiceSlice = createSlice({
 	name: VOICE_FEATURE_KEY,
 	initialState: initialVoiceState,
 	reducers: {
+		setAll: voiceAdapter.setAll,
 		add: voiceAdapter.upsertOne,
 		addMany: voiceAdapter.addMany,
 		remove: (state, action: PayloadAction<string>) => {
@@ -240,8 +239,9 @@ export const voiceSlice = createSlice({
 			.addCase(fetchVoiceChannelMembers.pending, (state: VoiceState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchVoiceChannelMembers.fulfilled, (state: VoiceState, action: PayloadAction<any>) => {
+			.addCase(fetchVoiceChannelMembers.fulfilled, (state: VoiceState, action: PayloadAction<VoiceEntity[]>) => {
 				state.loadingStatus = 'loaded';
+				voiceAdapter.setAll(state, action.payload);
 			})
 			.addCase(fetchVoiceChannelMembers.rejected, (state: VoiceState, action) => {
 				state.loadingStatus = 'error';

@@ -141,10 +141,22 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 			await setupCallKeep();
 		}
 	};
+	const deleteAllChannelGroupsNotifee = async () => {
+		try {
+			const channelGroups = await notifee.getChannelGroups(); // Fetch all channel groups
+			for (const group of channelGroups) {
+				await notifee.deleteChannel(group.id);
+				await notifee.deleteChannelGroup(group.id);
+			}
+		} catch (error) {
+			console.error('Error deleting channel groups:', error);
+		}
+	};
 
 	const onNotificationOpenedApp = async () => {
 		try {
 			if (Platform.OS === 'android') {
+				await deleteAllChannelGroupsNotifee();
 				const notificationDataPushed = await NotificationPreferences.getValue('notificationDataPushed');
 				const notificationDataPushedParse = safeJSONParse(notificationDataPushed || '[]');
 				mapMessageNotificationToSlice(notificationDataPushedParse ? notificationDataPushedParse.slice(0, 30) : []);
@@ -157,8 +169,11 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 				mapMessageNotificationToSlice(notificationDataPushedParse ? notificationDataPushedParse.slice(0, 30) : []);
 			}
 			await notifee.cancelAllNotifications();
+			await notifee.cancelDisplayedNotifications();
 		} catch (error) {
+			await deleteAllChannelGroupsNotifee();
 			await notifee.cancelAllNotifications();
+			await notifee.cancelDisplayedNotifications();
 			console.error('Error processing notifications:', error);
 		}
 	};

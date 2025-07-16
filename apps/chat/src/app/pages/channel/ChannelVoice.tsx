@@ -164,6 +164,7 @@ const ChannelVoice = memo(
 									channelLabel={currentChannel?.channel_label as string}
 									onLeaveRoom={handleLeaveRoom}
 									onFullScreen={handleFullScreen}
+									onJoinRoom={handleJoinRoom}
 									isShowChatVoice={isShowChatVoice}
 									onToggleChat={toggleChat}
 									currentChannel={currentChannel}
