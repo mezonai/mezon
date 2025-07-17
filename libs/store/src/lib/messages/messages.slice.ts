@@ -225,15 +225,28 @@ export const fetchMessagesCached = async (
 	// 	'channel_message_list'
 	// );
 
-	const response = await ensuredMezon.client.listChannelMessages(
-		ensuredMezon.session,
-		clanId,
-		channelId,
-		messageId,
-		direction,
-		LIMIT_MESSAGE,
-		topicId
-	);
+	async function listChannelMessagesWithRetry(retryCount = 5) {
+		try {
+			return await ensuredMezon.client.listChannelMessages(
+				ensuredMezon.session,
+				clanId,
+				channelId,
+				messageId,
+				direction,
+				LIMIT_MESSAGE,
+				topicId
+			);
+		} catch (error) {
+			if (retryCount > 1) {
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				return listChannelMessagesWithRetry(retryCount - 1);
+			} else {
+				throw error;
+			}
+		}
+	}
+
+	const response = await listChannelMessagesWithRetry();
 
 	markApiFirstCalled(apiKey);
 

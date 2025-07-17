@@ -46,11 +46,11 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 		<div className="flex flex-row items-center justify-between px-4 h-[48px] min-h-[50px] border-b-theme-primary  z-10 bg-theme-chat">
 			<div className="flex flex-row items-center gap-2 pointer-events-none">
 				{threadCurrentChannel?.channel_private ? <Icons.ThreadIconLocker /> : <Icons.ThreadIcon />}
-				<span className="text-base font-semibold text-theme-primary">
+				<span className="text-base font-semibold text-theme-primary-active">
 					{threadCurrentChannel ? threadCurrentChannel.channel_label : 'New Thread'}
 				</span>
 			</div>
-			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary">
+			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary-hover">
 				<Icons.Close />
 			</button>
 		</div>

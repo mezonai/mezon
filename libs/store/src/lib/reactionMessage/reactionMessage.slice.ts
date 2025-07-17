@@ -70,6 +70,7 @@ export type WriteMessageReactionArgs = {
 	userId: string;
 	topic_id?: string;
 	emoji_recent_id?: string;
+	sender_name?: string;
 };
 
 const reactionQueue: Array<() => Promise<void>> = [];
@@ -143,7 +144,8 @@ export const writeMessageReaction = createAsyncThunk(
 			isPublic,
 			userId,
 			topic_id,
-			emoji_recent_id
+			emoji_recent_id,
+			sender_name
 		}: WriteMessageReactionArgs,
 		thunkAPI
 	) => {
@@ -174,7 +176,8 @@ export const writeMessageReaction = createAsyncThunk(
 								messageSenderId,
 								actionDelete,
 								topic_id,
-								emoji_recent_id
+								emoji_recent_id,
+								sender_name
 							),
 							2000,
 							'Message reaction operation timed out'

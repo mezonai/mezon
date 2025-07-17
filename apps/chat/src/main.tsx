@@ -5,7 +5,7 @@ import App from './app/app';
 
 // import './styles.scss';
 
-// import './instrument/instrument';
+import './instrument/instrument';
 
 ThemeManager.initializeTheme();
 

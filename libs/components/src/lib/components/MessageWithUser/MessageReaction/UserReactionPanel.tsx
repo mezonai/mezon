@@ -156,7 +156,7 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 			<NameComponent id={sender.sender_id ?? ''} name={user?.clan_nick || user?.user?.display_name || user?.user?.username} />
 			<p className="text-xs absolute right-8 text-theme-primary-hover text-theme-primary ">{sender.count}</p>
 			{sender.sender_id === userId.userId && sender.count && sender.count > 0 && (
-				<div onClick={handleRemoveEmojiSender} className="right-1 absolute cursor-pointer">
+				<div onClick={handleRemoveEmojiSender} className="right-1 absolute cursor-pointer text-theme-primary hover:text-red-500">
 					<Icons.Close defaultSize="w-3 h-3" />
 				</div>
 			)}

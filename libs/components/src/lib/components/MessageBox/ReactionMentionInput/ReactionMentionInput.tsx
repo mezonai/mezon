@@ -811,7 +811,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 
 	return (
-		<div className="contain-layout relative bg-theme-surface" ref={containerRef}>
+		<div
+			className={`contain-layout relative bg-theme-surface rounded-lg ${props.isTopic ? 'border-theme-primary shadow-md' : ''}`}
+			ref={containerRef}
+		>
 			<div className="relative">
 				<span
 					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${
@@ -862,6 +865,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 							width: `${!closeMenu ? props.mentionWidth : '90vw'}`,
 							left: `${!closeMenu ? '-40px' : '-30px'}`
 						},
+						control: {
+							padding: props.isThread ? '1px 0' : '0'
+						},
 
 						'&multiLine': {
 							highlighter: {
@@ -872,15 +878,16 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 								scrollbarWidth: 'none'
 							},
 							input: {
-								padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
-								border: 'none',
+								padding: props.isThread && !threadCurrentChannel ? '8px' : '9px 120px 9px 9px',
+								border: props.isThread && !threadCurrentChannel ? '1px solid var(--border-primary)' : 'none',
 								outline: 'none',
 								maxHeight: '350px',
-								overflow: 'auto'
+								overflow: 'auto',
+								borderRadius: '8px'
 							}
 						}
 					}}
-					className={`mentions min-h-11 cursor-not-allowed text-theme-message`}
+					className={`mentions min-h-11 cursor-not-allowed text-theme-message rounded-lg`}
 					allowSpaceInQuery={true}
 					onKeyDown={onKeyDown}
 					forceSuggestionsAboveCursor={true}

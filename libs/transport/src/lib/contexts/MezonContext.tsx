@@ -374,15 +374,19 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						}
 
 						const socket = await createSocket();
-						const newSession = await clientRef.current.sessionRefresh(
-							new Session(
-								sessionRef.current.token,
-								sessionRef.current.refresh_token,
-								sessionRef.current.created,
-								sessionRef.current.api_url,
-								sessionRef.current.is_remember ?? false
-							)
-						);
+
+						let newSession = null;
+						if (sessionRef.current.refresh_token && sessionRef.current.isexpired(Date.now() / 1000)) {
+							newSession = await clientRef.current.sessionRefresh(
+								new Session(
+									sessionRef.current.token,
+									sessionRef.current.refresh_token,
+									sessionRef.current.created,
+									sessionRef.current.api_url,
+									sessionRef.current.is_remember ?? false
+								)
+							);
+						}
 
 						const connectedSession = await socket.connect(newSession || sessionRef.current, true, isFromMobile ? '1' : '0');
 						await socket.joinClanChat(clanId);

@@ -98,7 +98,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				}
 				return acc;
 			}, []);
-		return [{ id: FOR_SALE_CATE, type: FOR_SALE_CATE, url: '' }, ...categorizedStickers];
+		return [{ id: FOR_SALE_CATE, type: FOR_SALE_CATE, url: FOR_SALE_CATE }, ...categorizedStickers];
 	}, [clanStickers]);
 	const stickers = useMemo(() => {
 		return [
@@ -249,13 +249,16 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 				onClick={handleToggleButton}
 				className="w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky top-[-0.5rem]  z-10  max-h-full bg-theme-setting-primary"
 			>
-				{logo !== '' ? (
+				{logo === FOR_SALE_CATE ? (
+					<Icons.MarketIcons className="w-4 h4" />
+				) : logo !== '' ? (
 					<img src={logo} className="w-4 !h-4 flex items-center justify-center rounded-full object-cover" />
 				) : (
 					<div className="dark:text-textDarkTheme text-xs text-textLightTheme w-4 h-4 rounded-full bg-theme-primary">
-						{currentClan?.clan_name?.charAt(0).toUpperCase()}
+						{categoryName?.charAt(0).toUpperCase()}
 					</div>
 				)}
+
 				<p className={'ml-2 uppercase text-left truncate text-xs font-semibold'}>
 					{categoryName !== 'custom' ? categoryName : currentClan?.clan_name}
 				</p>

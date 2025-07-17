@@ -266,7 +266,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 	});
 
  document.getElementById('downloadBtn').addEventListener('click', () => {
-window.electron.handleActionShowImage('saveImage',currentImageUrl.url);
+window.electron.handleActionShowImage('saveImage',currentImageUrl.realUrl);
 });
 
   document.getElementById('toggleListBtn').addEventListener('click', () => {
@@ -396,13 +396,13 @@ export const scriptThumnails = (listImage, indexSelect) => {
 					timestamp.textContent = ${JSON.stringify(time)};
 				}
 
-				window.currentImageUrl = {
+				currentImageUrl = {
 					fileName: ${JSON.stringify(escapedFileName)},
 					url: ${JSON.stringify(sanitizedUrl)},
 					realUrl: ${JSON.stringify(sanitizedRealUrl)}
-				};
+          };
 
-				window.currentIndex = ${index};
+				currentIndex = ${index};
 			});`;
 		})
 		.join('');
@@ -571,11 +571,11 @@ menu.addEventListener('click', async (e) => {
 
 				switch (action) {
 					case 'copyImage': {
-						window.electron.handleActionShowImage(action, window.currentImageUrl.realUrl );
+						window.electron.handleActionShowImage(action, currentImageUrl.realUrl );
 						break;
 					}
           default :
-          window.electron.handleActionShowImage(action, selectedImage.src);
+          window.electron.handleActionShowImage(action, currentImageUrl.realUrl);
 						break;
 				}
 				menu.classList.remove('visible');

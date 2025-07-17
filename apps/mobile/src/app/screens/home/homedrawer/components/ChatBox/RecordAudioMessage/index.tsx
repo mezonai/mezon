@@ -1,5 +1,5 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { size, useAnimatedState, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { getMobileUploadedAttachments } from '@mezon/utils';
@@ -32,7 +32,7 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMes
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['recordChatMessage']);
-	const [isDisplay, setIsDisplay] = useAnimatedState(false);
+	const [isDisplay, setIsDisplay] = useState<boolean>(false);
 	const recordingRef = useRef(null);
 	const recordingWaveRef = useRef(null);
 	const { sessionRef, clientRef, socketRef } = useMezon();
@@ -42,7 +42,7 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode }: IRecordAudioMes
 	const [durationRecord, setDurationRecord] = useState(0);
 	const [isPreviewRecord, setIsPreviewRecord] = useState<boolean>(false);
 	const meterSoundRef = useRef(null);
-	const [isConfirmRecordModalVisible, setIsConfirmRecordModalVisible] = useAnimatedState(false);
+	const [isConfirmRecordModalVisible, setIsConfirmRecordModalVisible] = useState<boolean>(false);
 	const currentChannelDM = useMemo(
 		() => (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup),
 		[mode, currentChannel, currentDmGroup]

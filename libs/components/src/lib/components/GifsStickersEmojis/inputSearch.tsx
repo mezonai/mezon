@@ -56,7 +56,7 @@ export const InputSearch: React.FC = () => {
 	};
 
 	return (
-		<div className="flex flex-row items-center">
+		<div className="flex flex-row items-center pt-4">
 			{buttonArrowBackStatus && (
 				<div className="px-2 cursor-pointer" onClick={(e) => onclickBackArrow(e)} role="button">
 					<Icons.BackToCategoriesGif />

@@ -51,13 +51,13 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 				channelId: message?.channel_id ?? '',
 				emojiId: emojiId ?? '',
 				emoji: emoji?.trim() ?? '',
-				senderId: userId ?? '',
+				senderId: message?.sender_id ?? '',
 				countToRemove: countToRemove,
 				actionDelete: true,
 				topicId: currentTopicId || ''
 			} as IReactionMessageProps);
 		},
-		[message?.channel_id, message?.id, mode, userId, currentTopicId]
+		[mode, message?.id, message?.channel_id, message?.sender_id, currentTopicId, userId]
 	);
 
 	const onReactItemLongPress = useCallback(

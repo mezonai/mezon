@@ -20,13 +20,22 @@ import {
 	NotificationAndroid
 } from '@notifee/react-native/src/types/NotificationAndroid';
 import { NotificationIOS } from '@notifee/react-native/src/types/NotificationIOS';
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import {
+	AuthorizationStatus,
+	FirebaseMessagingTypes,
+	getMessaging,
+	getToken,
+	hasPermission,
+	requestPermission
+} from '@react-native-firebase/messaging';
 import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import { PERMISSIONS, requestMultiple, RESULTS } from 'react-native-permissions';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
+const messaging = getMessaging(getApp());
 
 // Type definitions and validation helpers
 interface VoIPManagerType {
@@ -76,9 +85,9 @@ export const checkNotificationPermission = async () => {
 		if (Platform.OS === 'android' && Platform.Version >= 33) {
 			await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 		} else {
-			const authorizationStatus = await messaging().hasPermission();
+			const authorizationStatus = await hasPermission(messaging);
 
-			if (authorizationStatus === messaging.AuthorizationStatus.NOT_DETERMINED) {
+			if (authorizationStatus === AuthorizationStatus.NOT_DETERMINED) {
 				await requestNotificationPermission();
 			}
 		}
@@ -89,7 +98,7 @@ export const checkNotificationPermission = async () => {
 
 const requestNotificationPermission = async () => {
 	try {
-		await messaging().requestPermission({
+		await requestPermission(messaging, {
 			alert: true,
 			sound: true,
 			badge: true
@@ -317,16 +326,16 @@ export const createLocalNotification = async (title: string, body: string, data:
 
 export const handleFCMToken = async (): Promise<string | undefined> => {
 	try {
-		const authStatus = await messaging().requestPermission({
+		const authStatus = await requestPermission(messaging, {
 			alert: true,
 			sound: true,
 			badge: true
 		});
 
-		const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+		const enabled = authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
 
 		if (enabled) {
-			const fcmtoken = await messaging().getToken();
+			const fcmtoken = await getToken(messaging);
 			if (isValidString(fcmtoken)) {
 				return fcmtoken;
 			}
@@ -379,7 +388,8 @@ export const isShowNotification = (
 export const navigateToNotification = async (store: any, notification: any, navigation: any, isTabletLandscape = false, time?: number) => {
 	const link = notification?.data?.link;
 	const topicId = notification?.data?.topic;
-	if (link) {
+	const isDirectDM = !!notification?.data?.channel && link?.includes('direct/friends');
+	if (link && !isDirectDM) {
 		const linkMatch = link.match(clanAndChannelIdLinkRegex);
 
 		// IF is notification to channel
@@ -448,6 +458,20 @@ export const navigateToNotification = async (store: any, notification: any, navi
 				}, 4000);
 			}
 		}
+	} else if (isDirectDM) {
+		const channelDMId = notification?.data?.channel;
+		if (navigation) {
+			await store.dispatch(directActions.setDmGroupCurrentId(channelDMId));
+			if (isTabletLandscape) {
+				navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+			} else {
+				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: channelDMId });
+			}
+		}
+		setTimeout(() => {
+			store.dispatch(appActions.setIsFromFCMMobile(false));
+			save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, false);
+		}, 4000);
 	} else {
 		setTimeout(() => {
 			store.dispatch(appActions.setIsFromFCMMobile(false));

@@ -1,11 +1,13 @@
 import { registerGlobals } from '@livekit/react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
 import { AppRegistry } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
 import { isNotificationProcessed } from './app/utils/notificationCache';
 import { createLocalNotification, setupIncomingCall } from './app/utils/pushNotificationHelpers';
+const messaging = getMessaging(getApp());
 
 const isValidString = (value: unknown): value is string => {
 	return typeof value === 'string' && value.trim().length > 0;
@@ -14,7 +16,7 @@ const isValidString = (value: unknown): value is string => {
 registerGlobals();
 enableScreens(true);
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+setBackgroundMessageHandler(messaging, async (remoteMessage) => {
 	try {
 		const offer = remoteMessage?.data?.offer;
 

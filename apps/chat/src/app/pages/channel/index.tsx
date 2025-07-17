@@ -476,7 +476,7 @@ const OnboardingGuide = ({
 						<div className="text-[10px] font-normal text-theme-primary">
 							{' '}
 							{titleMission[currentMission.task_type ? currentMission.task_type - 1 : 0]}{' '}
-							<strong className="text-theme-primary">#{channelMission.channel_label}</strong>{' '}
+							<strong className="text-theme-primary">#{channelMission?.channel_label}</strong>{' '}
 						</div>
 					</div>
 				</div>

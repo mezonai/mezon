@@ -29,12 +29,12 @@ export const ReactionItem = React.memo(
 				channelId: message?.channel_id ?? '',
 				emojiId: emojiItemData?.emojiId ?? '',
 				emoji: emojiItemData.emoji ?? '',
-				senderId: userId ?? '',
+				senderId: message?.sender_id ?? '',
 				countToRemove: 1,
 				actionDelete: false,
 				topicId: topicId || ''
 			} as IReactionMessageProps);
-		}, [emojiItemData, preventAction, message, mode, userId, topicId]);
+		}, [emojiItemData, preventAction, message, mode, topicId]);
 
 		const handleLongPress = useCallback(() => {
 			if (!preventAction) onReactItemLongPress(emojiItemData.emojiId);

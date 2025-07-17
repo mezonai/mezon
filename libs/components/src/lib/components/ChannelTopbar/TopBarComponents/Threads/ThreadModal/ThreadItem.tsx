@@ -158,7 +158,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 				<div className="flex flex-col gap-1">
 					<p className="text-base font-semibold leading-5 one-line">{thread?.channel_label}</p>
 					<div className="flex flex-row items-center h-6">
-						<AvatarRound src={user?.clan_avatar ?? avatarImg} className="mr-2 h-4" />
+						<AvatarRound src={user?.clan_avatar || avatarImg} className="mr-2 h-4" />
 						<span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[#17AC86] text-sm font-semibold leading-4">
 							{user?.clan_nick ?? user?.user?.display_name ?? username}:&nbsp;
 						</span>

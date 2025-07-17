@@ -150,9 +150,9 @@ export const ChatMessageSending = memo(
 			async (editMessage: IMessageSendPayload, messageId: string, mentions: ApiMessageMention[]) => {
 				if (editMessage?.t === messageActionNeedToResolve?.targetMessage?.content?.t) return;
 				const { attachments } = messageActionNeedToResolve.targetMessage;
-				await editSendMessage(editMessage, messageId, mentions, attachments, false);
+				await editSendMessage(editMessage, messageId, mentions, attachments, false, currentTopicId, !!currentTopicId);
 			},
-			[editSendMessage, messageActionNeedToResolve]
+			[currentTopicId, editSendMessage, messageActionNeedToResolve]
 		);
 
 		const doesIdRoleExist = (id: string, roles: IRoleMention[]): boolean => {

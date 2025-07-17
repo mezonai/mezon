@@ -77,5 +77,12 @@ export const style = (colors: Attributes) =>
 			color: colors.textStrong,
 			fontSize: size.s_16,
 			fontWeight: 'bold'
+		},
+		sessionHeader: {
+			flexDirection: 'row',
+			alignItems: 'center'
+		},
+		chevronIcon: {
+			marginTop: size.s_10
 		}
 	});

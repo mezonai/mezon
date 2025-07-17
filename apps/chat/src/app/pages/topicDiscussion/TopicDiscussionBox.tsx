@@ -18,13 +18,13 @@ import {
 } from '@mezon/store';
 import { CREATING_TOPIC, EOverriddenPermission, IMessageSendPayload, MAX_FILE_ATTACHMENTS, UploadLimitReason, processFile } from '@mezon/utils';
 import isElectron from 'is-electron';
+import FileSelectionButton from 'libs/components/src/lib/components/MessageBox/FileSelectionButton';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import MemoizedChannelMessages from '../channel/ChannelMessages';
-import FileSelectionButtonTopicDiscussion from './FileSelectionButton';
 
 const TopicDiscussionBox = () => {
 	const dispatch = useAppDispatch();
@@ -180,9 +180,7 @@ const TopicDiscussionBox = () => {
 			)}
 			{checkAttachment && (
 				<div
-					className={`${
-						checkAttachment ? 'px-3 mx-4 pb-1 pt-5 rounded-t-lg border-b-[1px] dark:border-[#42444B] border-borderLightTabs' : ''
-						} max-h-full`}
+					className={`${checkAttachment ? 'px-3 mx-4 pb-1 pt-5 rounded-t-lg border-b-[1px] border-color-primary' : ''} bg-theme-setting-primary max-h-full`}
 				>
 					<div className={`max-h-full flex gap-6 overflow-y-hidden overflow-x-auto thread-scroll `}>
 						{attachmentFilteredByChannelId?.files?.map((item: ApiMessageAttachment, index: number) => {
@@ -213,7 +211,7 @@ const TopicDiscussionBox = () => {
 						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}
 						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
 					>
-						<FileSelectionButtonTopicDiscussion
+						<FileSelectionButton
 							currentClanId={currentClanId || ''}
 							currentChannelId={currentInputChannelId}
 							hasPermissionEdit={canSendMessage}

@@ -259,7 +259,7 @@ const ChannelLinkComponent = ({
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link block  rounded-lg mt-2 text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'}`}
+					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'}`}
 					draggable="false"
 				>
 					<span

@@ -62,7 +62,7 @@ export const ListClanPopup = React.memo(() => {
 	);
 
 	const renderItem = ({ item, drag, isActive }: RenderItemParams<ClansEntity>) => {
-		return <ClanIcon data={item} onPress={handleChangeClan} drag={drag} isActive={isActive} />;
+		return <ClanIcon key={`clan-${item.clan_id}`} data={item} onPress={handleChangeClan} drag={drag} isActive={isActive} />;
 	};
 
 	return (
@@ -71,8 +71,8 @@ export const ListClanPopup = React.memo(() => {
 				initialNumToRender={10}
 				maxToRenderPerBatch={10}
 				windowSize={10}
-				scrollEnabled={true}
-				removeClippedSubviews={true}
+				scrollEnabled={false}
+				removeClippedSubviews={false}
 				data={clans?.map?.((clan) => ({ ...clan, key: clan?.id })) || []}
 				keyExtractor={(clan, index) => `${clan?.clan_id}_${index}_clan_item`}
 				onDragEnd={handleDragEnd}

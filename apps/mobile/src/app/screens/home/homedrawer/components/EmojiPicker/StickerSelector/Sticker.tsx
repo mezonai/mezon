@@ -2,7 +2,7 @@ import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_SALE_CATE } from '@mezon/utils';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -58,6 +58,7 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 	const styles = style(themeValue);
 	const { t } = useTranslation(['token']);
 	const dispatch = useAppDispatch();
+	const [isExpanded, setIsExpanded] = useState(!(categoryName === FOR_SALE_CATE && forSale));
 
 	const stickersListByCategoryName = useMemo(() => {
 		const data = stickerList?.filter((sticker) => {
@@ -127,6 +128,10 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 		[t, onBuySticker, onClickSticker]
 	);
 
+	const toggleExpand = () => {
+		setIsExpanded(!isExpanded);
+	};
+
 	const renderItem: ListRenderItem<any> = useCallback(
 		({ item }) => <StickerItem item={item} onPress={onPress} isAudio={isAudio} styles={styles} />,
 		[onPress, isAudio, styles]
@@ -145,21 +150,32 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 
 	return (
 		<View style={styles.session} key={`${categoryName}_stickers-parent`}>
-			<Text style={styles.sessionTitle}>{categoryName}</Text>
-			<FlatList
-				data={stickersListByCategoryName}
-				renderItem={renderItem}
-				keyExtractor={keyExtractor}
-				numColumns={NUM_COLUMNS}
-				scrollEnabled={false}
-				removeClippedSubviews={true}
-				maxToRenderPerBatch={5}
-				windowSize={5}
-				getItemLayout={getItemLayout}
-				initialNumToRender={5}
-				style={styles.sessionContent}
-				columnWrapperStyle={{ justifyContent: 'space-between' }}
-			/>
+			<TouchableOpacity onPress={toggleExpand} style={styles.sessionHeader}>
+				<Text style={styles.sessionTitle}>{categoryName}</Text>
+				<MezonIconCDN
+					icon={isExpanded ? IconCDN.chevronDownSmallIcon : IconCDN.chevronSmallRightIcon}
+					color={themeValue.text}
+					width={size.s_18}
+					height={size.s_18}
+					customStyle={styles.chevronIcon}
+				/>
+			</TouchableOpacity>
+			{isExpanded && (
+				<FlatList
+					data={stickersListByCategoryName}
+					renderItem={renderItem}
+					keyExtractor={keyExtractor}
+					numColumns={NUM_COLUMNS}
+					scrollEnabled={false}
+					removeClippedSubviews={true}
+					maxToRenderPerBatch={5}
+					windowSize={5}
+					getItemLayout={getItemLayout}
+					initialNumToRender={5}
+					style={styles.sessionContent}
+					columnWrapperStyle={{ justifyContent: 'space-between' }}
+				/>
+			)}
 		</View>
 	);
 });

@@ -7,7 +7,6 @@ import {
 	selectCurrentChannel,
 	selectMessageByMessageId,
 	selectModeResponsive,
-	selectTheme,
 	selectThreadCurrentChannel,
 	useAppDispatch,
 	useAppSelector
@@ -82,6 +81,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const categoryIcons = useMemo(
 		() => [
 			<Icons.Star defaultSize="w-7 h-7" />,
+			<Icons.MarketIcons />,
 			<Icons.ClockHistory defaultSize="w-7 h-7" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
@@ -107,7 +107,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			name: category,
 			icon: categoryIcons[index]
 		}));
-		categories.splice(1, 0, {
+		categories.splice(1, 1, {
 			name: FOR_SALE_CATE,
 			icon: <Icons.MarketIcons />
 		});
@@ -502,7 +502,6 @@ type EmojiHoverProps = {
 };
 
 const EmojiHover = React.memo(function EmojiHover({ emojiHoverShortCode, isReaction, emojiId }: EmojiHoverProps) {
-	const appearanceTheme = useSelector(selectTheme);
 	return (
 		<div className={`w-full max-h-12 flex-1 bg-item-theme flex flex-row items-center pl-1 gap-x-1 justify-start py-1`}>
 			{emojiId ? <img draggable="false" className="max-w-10 max-h-full" src={getSrcEmoji(emojiId)} /> : null}

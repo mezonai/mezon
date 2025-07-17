@@ -26,7 +26,8 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import messaging from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import { getMessaging, onMessage } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
 import { WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -44,6 +45,7 @@ import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from '../../uti
 import { isShowNotification, navigateToNotification } from '../../utils/pushNotificationHelpers';
 import { APP_SCREEN } from '../ScreenTypes';
 
+const messaging = getMessaging(getApp());
 export const AuthenticationLoader = () => {
 	const navigation = useNavigation<any>();
 	const { userProfile } = useAuth();
@@ -217,7 +219,7 @@ export const AuthenticationLoader = () => {
 	}, [dispatch, navigation, userProfile?.user?.id]);
 
 	useEffect(() => {
-		const unsubscribe = messaging().onMessage((remoteMessage) => {
+		const unsubscribe = onMessage(messaging, (remoteMessage) => {
 			if (isShowNotification(currentChannelRef.current?.id, currentDmGroupIdRef.current, remoteMessage)) {
 				// Case: FCM start call
 				const title = remoteMessage?.notification?.title || remoteMessage?.data?.title;

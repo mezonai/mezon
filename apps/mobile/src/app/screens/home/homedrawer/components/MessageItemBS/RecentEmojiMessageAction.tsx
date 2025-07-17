@@ -16,15 +16,13 @@ interface IRecentEmojiMessageAction {
 	messageId: string;
 	handleReact?: any;
 	mode?: ChannelStreamMode;
-	userId?: string;
-	type?: string;
 	setIsShowEmojiPicker?: any;
 }
 
 export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAction) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { messageId, mode, handleReact, userId, type, setIsShowEmojiPicker } = props;
+	const { messageId, mode, handleReact, setIsShowEmojiPicker } = props;
 	const selectRecentEmoji = useSelector(selectAllEmojiRecent);
 
 	const emojiRecentList = useMemo(() => {
@@ -51,7 +49,7 @@ export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAc
 					<Pressable
 						key={index}
 						style={styles.favouriteIconItem}
-						onPress={() => handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, messageId, item.id, item.shortname, userId)}
+						onPress={() => handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, messageId, item.id, item.shortname)}
 					>
 						<FastImage
 							source={{

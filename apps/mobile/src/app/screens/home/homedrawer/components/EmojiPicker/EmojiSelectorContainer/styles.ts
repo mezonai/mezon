@@ -80,5 +80,12 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			width: (isTabletLandscape ? Metrics.screenWidth * 0.7 - size.s_20 : Metrics.screenWidth - size.s_20) / 9 - size.s_6,
 			height: size.s_30,
 			zIndex: 1
+		},
+		categoryHeader: {
+			flexDirection: 'row',
+			alignItems: 'center'
+		},
+		chevronIcon: {
+			marginBottom: size.s_2
 		}
 	});

@@ -3,12 +3,13 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ColorRoleProvider } from '@mezon/mobile-ui';
 import notifee from '@notifee/react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import { getInitialNotification, getMessaging } from '@react-native-firebase/messaging';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from '../../utils/helpers';
 import { APP_SCREEN } from '../ScreenTypes';
 import { RootAuthStack } from './RootAuthStack';
-
+const messaging = getMessaging(getApp());
 export const Authentication = memo(() => {
 	const isTabletLandscape = useTabletLandscape();
 	const [initRouteName, setInitRouteName] = useState<string>('');
@@ -17,7 +18,7 @@ export const Authentication = memo(() => {
 	const getInitRouterName = async () => {
 		let routeName: string = APP_SCREEN.BOTTOM_BAR;
 		try {
-			const [remoteMessage, remoteMessageNotifee] = await Promise.all([messaging().getInitialNotification(), notifee.getInitialNotification()]);
+			const [remoteMessage, remoteMessageNotifee] = await Promise.all([getInitialNotification(messaging), notifee.getInitialNotification()]);
 			let notification;
 			if (remoteMessage) {
 				notification = { ...remoteMessage?.notification, data: remoteMessage?.data };

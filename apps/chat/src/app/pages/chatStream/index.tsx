@@ -28,7 +28,7 @@ const ChatHeader = ({ currentChannel }: ChatStreamProps) => {
 						: currentChannel?.channel_label}
 				</span>
 			</div>
-			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary">
+			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary-hover">
 				<Icons.Close />
 			</button>
 		</div>

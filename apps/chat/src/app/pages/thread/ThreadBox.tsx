@@ -56,6 +56,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useThrottledCallback } from 'use-debounce';
 import MemoizedChannelMessages from '../channel/ChannelMessages';
+import { CONSTANT } from './constant';
 
 const ThreadBox = () => {
 	const dispatch = useAppDispatch();
@@ -103,7 +104,7 @@ const ThreadBox = () => {
 
 	const createThread = useCallback(
 		async (value: ThreadValue, messageContent?: IMessageSendPayload) => {
-			if (value.nameValueThread.length <= 3) {
+			if (value.nameValueThread.length <= CONSTANT.MINIMUM_CHAT_NAME_LENGTH) {
 				toast('Thread name must be longer than 3 characters');
 				return;
 			}
@@ -180,6 +181,23 @@ const ThreadBox = () => {
 			}
 		},
 		[createThread, currentClanId, dispatch, sendMessageThread, threadCurrentChannel, sessionUser]
+	);
+	const handleSendWithLimitCheck = useCallback(
+		async (
+			content: IMessageSendPayload,
+			mentions?: Array<ApiMessageMention>,
+			attachments?: Array<ApiMessageAttachment>,
+			references?: Array<ApiMessageRef>,
+			value?: ThreadValue
+		): Promise<boolean> => {
+			if (content?.t && content.t.length > CONSTANT.LIMIT_CHARACTER_REACTION_INPUT_LENGTH) {
+				toast.error('Message exceeds the 4000-character limit');
+				return false;
+			}
+			await handleSend(content, mentions, attachments, references, value);
+			return true;
+		},
+		[handleSend]
 	);
 
 	const handleTyping = useCallback(() => {
@@ -286,7 +304,13 @@ const ThreadBox = () => {
 						mentionRaw: []
 					};
 					const checkedRequest = request ? request : emptyRequest;
+					if (checkedRequest.content.length > CONSTANT.LIMIT_CHARACTER_REACTION_INPUT_LENGTH) {
+						toast.error(`Message exceeds the ${CONSTANT.LIMIT_CHARACTER_REACTION_INPUT_LENGTH}-character limit`);
+						event.preventDefault();
+						return;
+					}
 					const { text, entities } = parseHtmlAsFormattedText(hasToken ? checkedRequest.content : checkedRequest.content.trim());
+
 					const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
 					const { adjustedHashtagPos, adjustedEmojiPos } = adjustPos(mk, mentionList, hashtagList, emojiList, text);
 					const payload = {
@@ -296,6 +320,7 @@ const ThreadBox = () => {
 						mk
 					};
 					event.preventDefault();
+
 					await handleSend(filterEmptyArrays(payload), request?.mentionRaw || [], attachmentData, valueThread?.references, {
 						nameValueThread: nameValueThread ?? valueThread?.content.t,
 						isPrivate
@@ -310,7 +335,7 @@ const ThreadBox = () => {
 	};
 
 	return (
-		<div className="flex flex-col flex-1 justify-end border-l border-color-primary pt-4">
+		<div className="flex flex-col flex-1 justify-end border-l border-color-primary bg-theme-chat pt-4">
 			{threadCurrentChannel && (
 				<div className={`overflow-y-auto  max-w-widthMessageViewChat overflow-x-hidden flex-1`}>
 					<MemoizedChannelMessages
@@ -327,10 +352,10 @@ const ThreadBox = () => {
 				</div>
 			)}
 			{!threadCurrentChannel && (
-				<div className={`flex flex-col overflow-y-auto } ww-full px-4`}>
+				<div className={`flex flex-col overflow-y-auto }  ww-full px-3`}>
 					<div className="flex flex-col justify-end flex-grow">
 						{!threadCurrentChannel && (
-							<div className="relative flex items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
+							<div className="relative flex text-theme-primary-active items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
 								<Icons.ThreadIcon defaultSize="w-7 h-7" />
 								{isPrivate === 1 && (
 									<div className="absolute right-4 bottom-4">
@@ -345,7 +370,7 @@ const ThreadBox = () => {
 							value={nameValueThread ?? ''}
 							label="Thread Name"
 							placeholder={openThreadMessageState && valueThread?.content.t !== '' ? valueThread?.content.t : 'Enter Thread Name'}
-							className="h-10 p-[10px] bg-item-theme text-theme-primary text-base outline-none rounded-md placeholder:text-sm"
+							className="h-10 p-[10px] bg-item-theme text-theme-message border-theme-primary text-base outline-none rounded-lg placeholder:text-sm"
 						/>
 						{!openThreadMessageState && <PrivateThread title="Private Thread" label="Only people you invite and moderators can see" />}
 						{valueThread && openThreadMessageState && <ChannelMessageThread user={currentClanUser} message={valueThread} />}
@@ -378,13 +403,15 @@ const ThreadBox = () => {
 				</div>
 			)}
 			<div
-				className={`flex-shrink-0 flex flex-col ${isElectron() ? 'pb-[46px]' : 'pb-[26px]'} px-4  h-auto relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
+				className={`flex-shrink-0 flex flex-col ${isElectron() ? 'pb-[46px]' : 'pb-4'} px-3  h-auto relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
 			>
-				<div className={`h-fit w-full bg-item-theme rounded-lg ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}>
+				<div
+					className={`h-fit w-full bg-transparent shadow-md rounded-lg min-h-[45px] ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
+				>
 					<MentionReactInput
 						currentChannelId={currentInputChannelId}
 						handlePaste={onPastedFiles}
-						onSend={handleSend}
+						onSend={handleSendWithLimitCheck}
 						onTyping={handleTypingDebounced}
 						listMentions={UserMentionList({
 							channelID: currentChannel?.channel_id as string,

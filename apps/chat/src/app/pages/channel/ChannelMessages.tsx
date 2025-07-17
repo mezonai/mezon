@@ -932,6 +932,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 		return (
 			<div className="w-full h-full relative messages-container select-text bg-theme-chat ">
+				<StickyLoadingIndicator messageCount={messageIds?.length} />
 				<div
 					onScroll={handleScroll}
 					onWheelCapture={() => {
@@ -1010,10 +1011,37 @@ export default MemoizedChannelMessages;
 
 (MemoizedChannelMessages as any).displayName = 'MemoizedChannelMessages';
 
+const StickyLoadingIndicator = memo(({ messageCount }: { messageCount: number }) => {
+	const isLoading = useAppSelector(selectMessageIsLoading);
+	const [showLoading, setShowLoading] = useState(false);
+
+	useEffect(() => {
+		let timeoutId: NodeJS.Timeout;
+		if (isLoading && !messageCount) {
+			timeoutId = setTimeout(() => {
+				setShowLoading(true);
+			}, 1000);
+		} else {
+			setShowLoading(false);
+		}
+
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		};
+	}, [isLoading, messageCount]);
+
+	if (!showLoading) return null;
+
+	return <MessageSkeleton className="mr-auto" randomKey={`StickyLoadingIndicator`} />;
+});
+
+StickyLoadingIndicator.displayName = 'StickyLoadingIndicator';
+
 interface MessageSkeletonProps {
 	count?: number;
 	className?: string;
-	imageFrequency?: number; // 0-1 probability of messages having images
 	randomKey?: string;
 }
 
@@ -1037,14 +1065,14 @@ const LoadingSkeletonMessages = memo(
 		if (!hasMoreTop || isTopic) return null;
 		return (
 			<div id="msg-loading-top" className="py-2">
-				<MessageSkeleton imageFrequency={imageFrequency} randomKey={`top-${messageId || ''}`} />
+				<MessageSkeleton randomKey={`top-${messageId || ''}`} />
 			</div>
 		);
 	}
 );
 
 export const MessageSkeleton = memo(
-	function MessageSkeleton({ className, imageFrequency = 0.4, randomKey }: MessageSkeletonProps) {
+	function MessageSkeleton({ className, randomKey }: MessageSkeletonProps) {
 		return (
 			<div style={{ width: '60%', height: '1000px', overflow: 'hidden' }} className={buildClassName('flex flex-col px-4 py-2', className)}>
 				{Array.from({ length: 5 }).map((_, index) => {

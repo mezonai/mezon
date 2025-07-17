@@ -39,7 +39,7 @@ const ThreadNameTextField = ({ label, error, placeholder, value, className, onCh
 
 	return (
 		<div className="flex flex-col mt-4 mb-4">
-			<span className="text-xs font-semibold uppercase mb-2 text-theme-primary">{label}</span>
+			<span className="text-xs font-semibold uppercase mb-2 text-theme-primary-active">{label}</span>
 			<input
 				value={value}
 				onChange={handleInputChange}

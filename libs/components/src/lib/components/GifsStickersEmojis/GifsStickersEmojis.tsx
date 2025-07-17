@@ -116,7 +116,7 @@ export const GifStickerEmojiPopup = ({
 
 	return (
 		<div onClick={(e) => e.stopPropagation()} className={containerClassName}>
-			<div className="w-full flex flex-col gap-3 border-b-theme-primary pb-4">
+			<div className="w-full flex flex-col border-b-theme-primary pb-4">
 				{!idMessageRefReaction && emojiAction !== EmojiPlaces.EMOJI_EDITOR_BUZZ && (
 					<TabBar subPanelActive={subPanelActive} onTabClick={handleTabClick} showTabs={showTabs} />
 				)}

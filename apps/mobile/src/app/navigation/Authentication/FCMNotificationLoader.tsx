@@ -2,7 +2,8 @@ import { ChatContext } from '@mezon/core';
 import { STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
 import { appActions, getStoreAsync } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
-import messaging from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelMessage, safeJSONParse } from 'mezon-js';
 import moment from 'moment/moment';
@@ -11,6 +12,8 @@ import { AppState, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import NotificationPreferences from '../../utils/NotificationPreferences';
 import { checkNotificationPermission, processNotification, setupCallKeep } from '../../utils/pushNotificationHelpers';
+
+const messaging = getMessaging(getApp());
 
 export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	const navigation = useNavigation<any>();
@@ -92,7 +95,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 				});
 			}
 
-			messaging().onNotificationOpenedApp(async (remoteMessage) => {
+			onNotificationOpenedApp(messaging, async (remoteMessage) => {
 				if (remoteMessage?.data && Platform.OS === 'ios') {
 					mapMessageNotificationToSlice([remoteMessage?.data]);
 				}
@@ -153,7 +156,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 		}
 	};
 
-	const onNotificationOpenedApp = async () => {
+	const handleNotificationOpenedApp = async () => {
 		try {
 			if (Platform.OS === 'android') {
 				await deleteAllChannelGroupsNotifee();
@@ -180,7 +183,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 
 	const handleAppStateChangeListener = useCallback((nextAppState: typeof AppState.currentState) => {
 		if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
-			onNotificationOpenedApp();
+			handleNotificationOpenedApp();
 		}
 
 		appStateRef.current = nextAppState;
@@ -192,7 +195,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 
 	useEffect(() => {
 		checkPermission();
-		onNotificationOpenedApp();
+		handleNotificationOpenedApp();
 		const appStateSubscription = AppState.addEventListener('change', handleAppStateChangeListener);
 		// To clear Intents
 		return () => {
