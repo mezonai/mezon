@@ -86,14 +86,15 @@ const TopicDiscussionBox = () => {
 			if (!sessionUser) return;
 
 			const filesToSend = attachments?.length ? attachments : attachmentData;
-
 			const hasFiles = filesToSend && filesToSend.length > 0;
-
 			const contentToSend = typeof content.t === 'string' ? content : { t: '' };
+
+			;
 
 			if (!hasFiles && (!contentToSend.t || contentToSend.t.trim() === '')) {
 				return;
 			}
+
 			try {
 				await sendMessage(
 					contentToSend,
@@ -105,21 +106,23 @@ const TopicDiscussionBox = () => {
 					false,
 					0
 				);
+				;
 
 				if (attachmentData.length > 0) {
 					dispatch(
 						referencesActions.setAtachmentAfterUpload({
 							channelId: currentInputChannelId,
-							files: []
+							files: [],
 						})
 					);
 				}
 			} catch (error) {
-				console.error("Failed to send message:", error);
+				console.error('error sending message', error);
 			}
 		},
 		[sendMessage, sessionUser, attachmentData, dispatch, currentInputChannelId, currentTopicId, currentChannelId, mode]
 	);
+
 
 
 	const handleTyping = useCallback(() => {
@@ -129,7 +132,34 @@ const TopicDiscussionBox = () => {
 	const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 
 	const firstMessageOfThisTopic = useSelector(selectFirstMessageOfCurrentTopic);
+	const onConvertToFiles = useCallback(
+		async (content: string, anonymousMessage?: boolean) => {
+			const fileContent = new Blob([content], { type: 'text/plain' });
+			const now = Date.now();
+			const filename = now + '.txt';
+			const file = new File([fileContent], filename, { type: 'text/plain' });
 
+			if (attachmentFilteredByChannelId?.files?.length + 1 > MAX_FILE_ATTACHMENTS) {
+				setOverUploadingState(true, UploadLimitReason.COUNT);
+				return;
+			}
+
+			dispatch(
+				referencesActions.setAtachmentAfterUpload({
+					channelId: currentInputChannelId,
+					files: [
+						{
+							filename: file.name,
+							filetype: file.type,
+							size: file.size,
+							url: URL.createObjectURL(file)
+						}
+					]
+				})
+			);
+		},
+		[attachmentFilteredByChannelId?.files?.length, currentChannelId]
+	);
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
 			const items = Array.from(event.clipboardData?.items || []);
@@ -228,6 +258,7 @@ const TopicDiscussionBox = () => {
 										channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL,
 									})}
 									isTopic
+									handleConvertToFile={onConvertToFiles}
 									currentChannelId={currentInputChannelId}
 									hasAttachments={attachmentData.length > 0}
 									attachmentData={attachmentData}
