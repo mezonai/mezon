@@ -637,14 +637,29 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 
 	const switchCamera = async () => {
 		try {
-			const track = callState?.localStream?.getVideoTracks()?.[0];
-			if (!track) return;
-			const currentFacing = track?.getSettings()?.facingMode;
+			const videoTracks = callState.localStream?.getVideoTracks() || [];
+			const audioTracks = callState.localStream?.getAudioTracks() || [];
+			if (!videoTracks?.length) return;
 
-			if (currentFacing) {
-				await track.applyConstraints({
-					facingMode: { exact: currentFacing === 'user' ? 'environment' : 'user' }
-				});
+			const currentFacing = videoTracks?.[0]?.getSettings()?.facingMode;
+			const newStream = await mediaDevices.getUserMedia({
+				video: { facingMode: { exact: currentFacing === 'user' ? 'environment' : 'user' } }
+			});
+
+			const newVideoTrack = newStream?.getVideoTracks()?.[0];
+			if (newVideoTrack) {
+				const sender = peerConnection?.current?.getSenders()?.find((s) => s?.track?.kind === 'video');
+				await sender?.replaceTrack(newVideoTrack);
+
+				videoTracks?.[0]?.stop();
+				callState?.localStream?.removeTrack(videoTracks?.[0]);
+				callState?.localStream?.addTrack(newVideoTrack);
+
+				setCallState((prev) => ({
+					...prev,
+					localStream: new MediaStream([...audioTracks, newVideoTrack])
+				}));
+
 				return true;
 			}
 		} catch (error) {
