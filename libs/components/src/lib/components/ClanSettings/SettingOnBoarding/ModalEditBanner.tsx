@@ -39,7 +39,6 @@ const ModalBanner = ({ graphic, handleCloseModal, onUpload, onUpdate }: ModalBan
             const height = img.height;
             const aspectRatio = width / height;
 
-            // ⚠️ Tùy chỉnh các điều kiện phù hợp banner
             if (width < 1280 || height < 720 || Math.abs(aspectRatio - 16 / 9) > 0.1) {
                 alert('Please upload a banner image with minimum size 1280x720 and 16:9 aspect ratio.');
                 URL.revokeObjectURL(objectUrl);
