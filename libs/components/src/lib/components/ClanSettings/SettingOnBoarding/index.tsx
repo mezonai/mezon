@@ -1,16 +1,19 @@
 import { MemberProvider } from '@mezon/core';
 import { onboardingActions, selectCurrentClan, selectCurrentClanId, selectFormOnboarding, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
-import { Icons, Image } from '@mezon/ui';
+import { Button, Icons, Image } from '@mezon/ui';
 import { Snowflake } from '@theinternetfolks/snowflake';
+import { ClanUpdatedEvent } from 'mezon-js';
 import { ApiOnboardingContent } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ModalLayout } from '../../../components';
 import EnableCommunity from '../../EnableComnunity';
 import ModalSaveChanges from '../ClanSettingOverview/ModalSaveChanges';
 import GuideItemLayout from './GuideItemLayout';
 import ClanGuideSetting from './Mission/ClanGuideSetting';
+import ModalBanner from './ModalEditBanner';
 import Questions from './Questions/Questions';
 
 export enum EOnboardingStep {
@@ -27,11 +30,14 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 	const [description, setDescription] = useState('');
 	const [about, setAbout] = useState('');
 	const [openModalSaveChanges, setOpenModalSaveChanges] = useState(false);
+
 	const [initialDescription, setInitialDescription] = useState('');
 	const [initialAbout, setInitialAbout] = useState('');
 	const [showOnboardingHighlight, setShowOnboardingHighlight] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-
+	const [showModalBanner, setShowModalBanner] = useState(false);
+	const [editBanner, setEditBanner] = useState<ClanUpdatedEvent | null>(null);
+	const [bannerPreview, setBannerPreview] = useState<string | null>(currentClan?.onboarding_banner ?? null);
 	const handleEnableCommunity = () => {
 		setIsModalOpen(true);
 	};
@@ -155,10 +161,29 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 		setOpenModalSaveChanges(true);
 		setAbout(e.target.value.slice(0, 300));
 	};
-
+	const handleOpenModalUpload = () => {
+		setShowModalBanner(true);
+	};
+	const handleUploadBanner = async (file: File) => {
+		const objectUrl = URL.createObjectURL(file);
+		setBannerPreview(objectUrl); 
+		setShowModalBanner(false); 
+		console.log('Banner file:', file);
+		setOpenModalSaveChanges(true);
+	};
+	const handleDeleteBanner = () => {
+		setBannerPreview(null); 
+		setOpenModalSaveChanges(true); 
+	};
+	const handleCloseModal = () => {
+		setShowModalBanner(false);
+	};
 	const isDescriptionOrAboutChanged = useMemo(() => {
 		return description !== initialDescription || about !== initialAbout;
 	}, [description, about, initialDescription, initialAbout]);
+	const isBannerChanged = useMemo(() => {
+		return bannerPreview !== (currentClan?.onboarding_banner ?? null);
+	}, [bannerPreview, currentClan?.onboarding_banner]);
 
 	const renderOnboardingContent = () => (
 		<div className="text-theme-primary text-sm">
@@ -183,6 +208,65 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 					</div>
 				</MemberProvider>
 			)}
+			{/* upload banner */}
+			{showModalBanner && (
+				<ModalLayout onClose={handleCloseModal}>
+					<ModalBanner
+						// graphic={
+						// 	bannerPreview
+						// 		? { id: currentClan?.clan_id ?? '', source: bannerPreview }
+						// 		: currentClan?.onboarding_banner
+						// 			? { id: currentClan.clan_id, source: currentClan.onboarding_banner }
+						// 			: undefined
+						// }
+						handleCloseModal={handleCloseModal}
+						onUpload={handleUploadBanner}
+					/>
+				</ModalLayout>
+			)}
+
+			<div className="bg-theme-setting-nav p-4 rounded-lg mt-6">
+				<h4 className="text-lg font-semibold text-theme-primary-active mb-2">Upload Banner</h4>
+				{bannerPreview ? (
+					<div className="flex flex-col gap-4">
+						<Image
+							src={bannerPreview}
+							className="w-full max-w-md rounded-lg object-cover"
+						/>
+						<div className="flex gap-2">
+							<Button
+								className="px-2 btn-primary btn-primary-hover rounded-lg"
+								onClick={handleOpenModalUpload}
+							>
+								Update Banner
+							</Button>
+							<Button
+								className="px-2 bg-red-500 hover:bg-red-600 text-white rounded-lg"
+								onClick={handleDeleteBanner}
+							>
+								Delete
+							</Button>
+						</div>
+					</div>
+				) : (
+					<div className="flex flex-col items-start gap-2">
+						<div
+							onClick={handleOpenModalUpload}
+							className="cursor-pointer group relative text-xs w-[116px] h-[140px] rounded-lg flex flex-col items-center p-3 border-[0.08px] border-dashed border-borderDivider justify-center"
+						>
+							<Icons.ImageUploadIcon className="w-7 h-7 group-hover:scale-110 ease-in-out duration-75" />
+						</div>
+						<Button
+							className="px-2 btn-primary btn-primary-hover rounded-lg"
+							onClick={handleOpenModalUpload}
+						>
+							Upload Banner
+						</Button>
+					</div>
+				)}
+			</div>
+
+
 
 			{/* Description Section */}
 			<div className="bg-theme-setting-nav p-4 rounded-lg mt-6 ">
@@ -308,7 +392,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 						</button>
 					</div>
 					{renderOnboardingContent()}
-					{!isModalOpen && openModalSaveChanges && (isDescriptionOrAboutChanged || checkCreateValidate) && (
+					{!isModalOpen && openModalSaveChanges && (isDescriptionOrAboutChanged || checkCreateValidate ) && (
 						<ModalSaveChanges onSave={handleCreateOnboarding} onReset={handleResetOnboarding} isLoading={isSaving} />
 					)}
 				</div>
