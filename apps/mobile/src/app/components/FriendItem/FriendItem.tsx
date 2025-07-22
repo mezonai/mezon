@@ -7,7 +7,6 @@ import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox/build/dist/BouncyCheckbox';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
-import useTabletLandscape from '../../hooks/useTabletLandscape';
 import ImageNative from '../ImageNative';
 import { UserStatus } from '../UserStatus';
 import { style } from './styles';
@@ -39,7 +38,6 @@ export const FriendItem = React.memo(
 		const isFriend = friend.state === 0;
 		const isSentRequestFriend = friend.state === 1;
 		const isPendingFriendRequest = [1, 2].includes(friend.state);
-		const isTabletLandscape = useTabletLandscape();
 
 		const onPressAction = (actionType: EFriendItemAction) => {
 			if (selectMode) {

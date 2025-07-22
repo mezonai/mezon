@@ -1,16 +1,16 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useFriends } from '@mezon/core';
-import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { EFriendState } from '../..';
-import { SeparatorWithLine } from '../../../../../../../components/Common';
 import MezonAvatar from '../../../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { SeparatorWithLine } from '../../../../../../../components/Common';
 import { IconCDN } from '../../../../../../../constants/icon_cdn';
 interface IPendingContentProps {
 	targetUser: FriendsEntity;
@@ -94,7 +94,18 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 				/>
 
 				<View style={{ flex: 1 }}>
-					<Text center color={themeValue.white} h4>
+					<Text
+						style={{
+							fontSize: verticalScale(16),
+							marginLeft: 0,
+							marginRight: 0,
+							textAlign: 'center',
+							alignItems: 'center',
+							alignContent: 'center',
+							justifyContent: 'center',
+							color: themeValue.white
+						}}
+					>
 						{targetUser?.user?.username}
 					</Text>
 				</View>
@@ -114,7 +125,13 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 						return (
 							<TouchableOpacity onPress={() => action()}>
 								<View style={{ padding: size.s_14 }}>
-									<Text color={isWarning ? Colors.textRed : themeValue.text}>{text}</Text>
+									<Text
+										style={{
+											color: isWarning ? Colors.textRed : themeValue.text
+										}}
+									>
+										{text}
+									</Text>
 								</View>
 							</TouchableOpacity>
 						);

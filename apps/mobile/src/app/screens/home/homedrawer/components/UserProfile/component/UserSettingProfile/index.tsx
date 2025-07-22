@@ -1,10 +1,10 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
-import { Colors, Text, baseColor, useTheme } from '@mezon/mobile-ui';
+import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan, selectCurrentClanId } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';

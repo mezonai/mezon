@@ -63,7 +63,7 @@ const NotificationTopicItem = React.memo(({ notify, onPressNotify }: NotifyProps
 		promises.push(store.dispatch(topicsActions.setCurrentTopicId(notify?.id || '')));
 		promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
 
-		await Promise.all(promises);
+		await Promise.allSettled(promises);
 
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION

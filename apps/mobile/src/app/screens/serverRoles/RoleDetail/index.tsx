@@ -1,11 +1,11 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { ActionEmitEvent, CheckIcon, isEqual } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { rolesClanActions, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, FlatList, Keyboard, Platform, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, DeviceEventEmitter, FlatList, Keyboard, Platform, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
@@ -67,10 +67,22 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
 				<View>
-					<Text center bold h3 color={themeValue?.white}>
+					<Text
+						style={{
+							fontSize: verticalScale(18),
+							textAlign: 'center',
+							fontWeight: 'bold',
+							color: themeValue.white
+						}}
+					>
 						{clanRole?.title}
 					</Text>
-					<Text center color={themeValue?.text}>
+					<Text
+						style={{
+							textAlign: 'center',
+							color: themeValue.white
+						}}
+					>
 						{t('roleDetail.role')}
 					</Text>
 				</View>
@@ -80,7 +92,13 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 				return (
 					<TouchableOpacity onPress={async () => handleSave()}>
 						<View style={{ marginRight: size.s_20 }}>
-							<Text h4 color={Colors.textViolet}>
+							<Text
+								style={{
+									fontSize: verticalScale(18),
+									textAlign: 'center',
+									color: Colors.textViolet
+								}}
+							>
 								{t('roleDetail.save')}
 							</Text>
 						</View>
@@ -250,7 +268,13 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 											}}
 										>
 											<View style={{ flex: 1, flexDirection: 'row', gap: size.s_6 }}>
-												<Text color={themeValue.white}>{item.actionTitle}</Text>
+												<Text
+													style={{
+														color: themeValue.white
+													}}
+												>
+													{item.actionTitle}
+												</Text>
 												{item?.isView && (
 													<MezonIconCDN
 														icon={IconCDN.lockIcon}
@@ -285,7 +309,13 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 									}}
 								>
 									<View style={{ flex: 1 }}>
-										<Text color={Colors.textRed}>{t('roleDetail.deleteRole')}</Text>
+										<Text
+											style={{
+												color: Colors.textRed
+											}}
+										>
+											{t('roleDetail.deleteRole')}
+										</Text>
 									</View>
 								</View>
 							</TouchableOpacity>

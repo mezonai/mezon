@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
 import { CheckIcon } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	MessagesEntity,
@@ -21,7 +21,7 @@ import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StatusBar, TouchableOpacity, View } from 'react-native';
+import { Platform, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -259,7 +259,12 @@ const ForwardMessageScreen = () => {
 						<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				</View>
-				<Text h3 color={themeValue.white}>
+				<Text
+					style={{
+						fontSize: verticalScale(20),
+						color: themeValue.white
+					}}
+				>
 					{t('forwardTo')}
 				</Text>
 				<View style={{ flex: 1 }} />

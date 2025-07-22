@@ -1,8 +1,8 @@
-import { Text, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../../../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';

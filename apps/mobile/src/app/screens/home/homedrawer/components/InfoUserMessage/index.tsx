@@ -1,8 +1,8 @@
-import { Text, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
+import { useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import ImageNative from '../../../../../components/ImageNative';
 import { styles } from './styles';
 

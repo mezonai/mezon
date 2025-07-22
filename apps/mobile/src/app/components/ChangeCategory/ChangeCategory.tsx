@@ -1,9 +1,9 @@
-import { size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { CategoriesEntity, channelsActions, getStore, selectAllCategories, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
@@ -77,7 +77,15 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
 				<View>
-					<Text bold h3 color={themeValue?.white}>
+					<Text
+						style={{
+							fontSize: verticalScale(18),
+							marginLeft: 0,
+							marginRight: 0,
+							fontWeight: 'bold',
+							color: themeValue.white
+						}}
+					>
 						{t('changeCategory.title')}
 					</Text>
 				</View>

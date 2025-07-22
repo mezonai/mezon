@@ -1,7 +1,7 @@
 import { useDirect, useFriends } from '@mezon/core';
 import { ChevronIcon, PaperPlaneIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { FriendsEntity, getStore, selectDirectsOpenlist } from '@mezon/store-mobile';
+import { FriendsEntity, directActions, getStore, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
 import { User } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ import { style } from './styles';
 export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const dispatch = useAppDispatch();
 	const [searchText, setSearchText] = useState<string>('');
 	const { t } = useTranslation(['common', 'friends']);
 	const { friends: allUser } = useFriends();
@@ -51,8 +52,9 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 				const userIds = dm?.user_id;
 				return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === user?.user?.id;
 			});
+			dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
+
 			if (directMessage?.id) {
-				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 				return;
 			}
 			const response = await createDirectMessageWithUser(
@@ -61,9 +63,7 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 				user?.user?.username,
 				user?.user?.avatar_url
 			);
-			if (response?.channel_id) {
-				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
-			}
+			dispatch(directActions.setDmGroupCurrentId(response?.channel_id));
 		},
 		[createDirectMessageWithUser, navigation]
 	);

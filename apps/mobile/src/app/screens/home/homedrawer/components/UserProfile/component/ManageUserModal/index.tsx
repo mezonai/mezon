@@ -1,6 +1,6 @@
-import { useMyRole, usePermissionChecker, useRoles } from '@mezon/core';
+import { useMyRole, usePermissionChecker } from '@mezon/core';
 import { CheckIcon } from '@mezon/mobile-components';
-import { Colors, Text, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { Colors, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	ChannelMembersEntity,
 	rolesClanActions,
@@ -15,7 +15,7 @@ import {
 import { EPermission, EVERYONE_ROLE_ID } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -299,17 +299,17 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 		[]
 	);
 
-	// Early return if user is not available
-	if (!user?.user) {
-		return null;
-	}
-
 	useEffect(() => {
 		if (user?.role_id) {
 			setIsLoading(false);
 			setSelectedRole(user.role_id);
 		}
 	}, [user?.role_id]);
+
+	// Early return if user is not available
+	if (!user?.user) {
+		return null;
+	}
 
 	return (
 		<Modal visible={visible} animationType={'slide'} statusBarTranslucent={true} supportedOrientations={['portrait', 'landscape']}>
@@ -323,7 +323,13 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 						)}
 					</View>
 					<View style={styles.headerTitle}>
-						<Text center color={themeValue.white} h3>
+						<Text
+							style={{
+								fontSize: verticalScale(20),
+								textAlign: 'center',
+								color: themeValue.white
+							}}
+						>
 							{t('manage.edit')} {user?.user?.username}
 						</Text>
 					</View>
@@ -334,14 +340,33 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 						<View style={styles.userInfo}>
 							<MezonAvatar avatarUrl={user?.user?.avatar_url || ''} username={user?.user?.username || ''} />
 							<View>
-								{user?.user?.display_name ? <Text color={themeValue.white}>{user?.user?.display_name}</Text> : null}
-								<Text color={themeValue.text}>{user?.user?.username}</Text>
+								{user?.user?.display_name ? (
+									<Text
+										style={{
+											color: themeValue.white
+										}}
+									>
+										{user?.user?.display_name}
+									</Text>
+								) : null}
+								<Text
+									style={{
+										color: themeValue.text
+									}}
+								>
+									{user?.user?.username}
+								</Text>
 							</View>
 						</View>
 					</View>
 
 					<View style={styles.rolesSection}>
-						<Text color={themeValue.text} h5>
+						<Text
+							style={{
+								fontSize: verticalScale(13),
+								color: themeValue.text
+							}}
+						>
 							{t('manage.roles')}
 						</Text>
 						<View style={styles.roleListContainer}>
@@ -372,10 +397,12 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 												<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6 }}>
 													<View style={[styles.roleCircle, role?.color && { backgroundColor: role?.color }]}></View>
 													<Text
+														style={{
+															maxWidth: '80%',
+															fontSize: verticalScale(16),
+															color: isDisable ? themeValue.textDisabled : themeValue.white
+														}}
 														numberOfLines={1}
-														color={isDisable ? themeValue.textDisabled : themeValue.white}
-														h4
-														style={{ maxWidth: '80%' }}
 													>
 														{role?.title}
 													</Text>
@@ -388,7 +415,13 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 
 								return (
 									<View key={role?.id} style={styles.roleDisplayContainer}>
-										<Text color={themeValue.white} h4>
+										<Text
+											style={{
+												maxWidth: '80%',
+												fontSize: verticalScale(16),
+												color: themeValue.white
+											}}
+										>
 											{role?.title}
 										</Text>
 									</View>
@@ -397,7 +430,12 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 
 							<TouchableOpacity onPress={handleToggleEditMode} disabled={isLoading}>
 								<View style={styles.editButtonContainer}>
-									<Text color={isLoading ? Colors.textGray : baseColor.blurple} h5={!editMode} h4={editMode}>
+									<Text
+										style={{
+											fontSize: editMode ? verticalScale(16) : verticalScale(13),
+											color: isLoading ? Colors.textGray : baseColor.blurple
+										}}
+									>
 										{editMode ? t('manage.cancel') : t('manage.editRoles')}
 									</Text>
 								</View>
@@ -407,7 +445,12 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 
 					{hasActionableSettings && (
 						<View style={styles.actionsSection}>
-							<Text color={themeValue.text} h5>
+							<Text
+								style={{
+									fontSize: verticalScale(13),
+									color: themeValue.text
+								}}
+							>
 								Actions
 							</Text>
 
@@ -419,7 +462,12 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 										style={styles.actionItemContainer}
 									>
 										{item.icon}
-										<Text color={baseColor.redStrong} style={styles.actionText}>
+										<Text
+											style={{
+												fontSize: verticalScale(14),
+												color: baseColor.redStrong
+											}}
+										>
 											{item.label} {user?.user?.username}
 										</Text>
 									</Pressable>

@@ -1,11 +1,11 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, Text } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectAllListAttachmentByChannel } from '@mezon/store-mobile';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, useWindowDimensions, View } from 'react-native';
+import { DeviceEventEmitter, Text, View, useWindowDimensions } from 'react-native';
 import GalleryAwesome, { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';

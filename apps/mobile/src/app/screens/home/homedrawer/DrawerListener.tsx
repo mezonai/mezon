@@ -29,8 +29,8 @@ const ChannelSeen = memo(
 				currentChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel.type === ChannelType.CHANNEL_TYPE_STREAMING
 					? ChannelStreamMode.STREAM_MODE_CHANNEL
 					: ChannelStreamMode.STREAM_MODE_THREAD;
-			markAsReadSeen(lastMessage, mode, 0);
-		}, [lastMessage?.id, currentChannel?.id, currentChannel?.type, markAsReadSeen]);
+			markAsReadSeen(lastMessage, mode, currentChannel.count_mess_unread || 0);
+		}, [lastMessage?.id, currentChannel?.count_mess_unread, currentChannel?.id, currentChannel?.type, markAsReadSeen]);
 
 		useEffect(() => {
 			if (!currentChannel) return;

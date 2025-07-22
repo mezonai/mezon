@@ -1,12 +1,12 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, Text, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
+import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, selectCurrentTopicInitMessage, selectFirstMessageOfCurrentTopic } from '@mezon/store-mobile';
-import { convertTimeString, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, ScrollView, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
@@ -64,9 +64,7 @@ const TopicHeader = React.memo(({ mode, handleBack }: TopicHeaderProps) => {
 				<View style={styles.userInfo}>
 					<MezonAvatar avatarUrl={priorityAvatar} username={namePriority} />
 					<View>
-						<Text style={styles.name} color={colorSenderName}>
-							{namePriority}
-						</Text>
+						<Text style={[styles.name, { color: colorSenderName }]}>{namePriority}</Text>
 						{valueTopic?.create_time && <Text style={styles.dateText}>{convertTimeString(valueTopic?.create_time)}</Text>}
 					</View>
 				</View>

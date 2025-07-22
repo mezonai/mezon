@@ -1,12 +1,12 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useRoles } from '@mezon/core';
 import { CheckIcon, debounce } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../../componentUI/MezonInput';
@@ -77,16 +77,33 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 	return (
 		<View style={{ flex: 1, paddingHorizontal: size.s_15 }}>
 			<View style={{ marginBottom: size.s_14 }}>
-				<Text center color={themeValue.white} h3>
+				<Text
+					style={{
+						fontSize: verticalScale(18),
+						textAlign: 'center',
+						color: themeValue.white
+					}}
+				>
 					{t('setupMember.addMember')}
 				</Text>
-				<Text center color={themeValue.text}>
+				<Text
+					style={{
+						textAlign: 'center',
+						color: themeValue.text
+					}}
+				>
 					{role?.title}
 				</Text>
 				{selectedMemberIdList?.length ? (
 					<View style={{ position: 'absolute', right: 0 }}>
 						<TouchableOpacity onPress={handleAddMemberToRole} style={{ padding: size.s_6 }}>
-							<Text color={Colors.textViolet} h5>
+							<Text
+								style={{
+									fontSize: verticalScale(13),
+									textAlign: 'center',
+									color: Colors.textViolet
+								}}
+							>
 								{t('setupMember.add')}
 							</Text>
 						</TouchableOpacity>
@@ -112,7 +129,12 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 				/>
 			) : (
 				<View>
-					<Text center color={themeValue.text}>
+					<Text
+						style={{
+							textAlign: 'center',
+							color: themeValue.text
+						}}
+					>
 						{t('setupMember.noMembersFound')}
 					</Text>
 				</View>

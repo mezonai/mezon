@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
-import { Text, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	MessagesEntity,
@@ -17,7 +17,7 @@ import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiMessageMention } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, View } from 'react-native';
+import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, Text, View } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -161,7 +161,11 @@ const MessageItem = React.memo(
 			? message?.display_name || message?.username || ''
 			: message?.clan_nick || message?.display_name || message?.user?.username || (checkAnonymous ? 'Anonymous' : message?.username);
 
-		const usernameMessage = isDM ? message?.display_name || message?.user?.username : checkAnonymous ? 'Anonymous' : message?.user?.username || message?.username;
+		const usernameMessage = isDM
+			? message?.display_name || message?.user?.username
+			: checkAnonymous
+				? 'Anonymous'
+				: message?.user?.username || message?.username;
 
 		const isSendTokenLog = message?.code === TypeMessage.SendToken;
 

@@ -1,11 +1,11 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
-import { Text, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity, channelsActions, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
-import { DeviceEventEmitter, View } from 'react-native';
+import { DeviceEventEmitter, Text, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';

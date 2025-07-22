@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	appActions,
 	channelsActions,
@@ -16,7 +16,7 @@ import { isPublicChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -127,7 +127,12 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 			if (!type && headerTitle && isShowHeader) {
 				return (
 					<View style={{ paddingTop: size.s_12, paddingLeft: size.s_12 }}>
-						<Text color={themeValue.white} h4>
+						<Text
+							style={{
+								fontSize: verticalScale(18),
+								color: themeValue.white
+							}}
+						>
 							{headerTitle}:
 						</Text>
 					</View>
@@ -165,7 +170,13 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 					}}
 				>
 					<View style={{ alignItems: 'center' }}>
-						<Text color={themeValue.text}>{t('channelPermission.privateChannel')}</Text>
+						<Text
+							style={{
+								color: themeValue.text
+							}}
+						>
+							{t('channelPermission.privateChannel')}
+						</Text>
 					</View>
 					<MezonSwitch value={!isChannelPublic} onValueChange={onPrivateChannelChange} />
 				</View>
@@ -173,7 +184,13 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 
 			{Boolean(channel?.channel_private) && (
 				<View>
-					<Text color={themeValue.textDisabled}>{t('channelPermission.basicViewDescription')}</Text>
+					<Text
+						style={{
+							color: themeValue.textDisabled
+						}}
+					>
+						{t('channelPermission.basicViewDescription')}
+					</Text>
 
 					<TouchableOpacity onPress={() => openBottomSheet()}>
 						<View
@@ -189,7 +206,13 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 						>
 							<View style={{ flexDirection: 'row', gap: size.s_14, alignItems: 'center' }}>
 								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} color={themeValue.text} />
-								<Text color={themeValue.text}>{t('channelPermission.addMemberAndRoles')}</Text>
+								<Text
+									style={{
+										color: themeValue.text
+									}}
+								>
+									{t('channelPermission.addMemberAndRoles')}
+								</Text>
 							</View>
 							<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 						</View>
@@ -198,7 +221,13 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 			)}
 
 			<View style={{ gap: size.s_10, marginBottom: size.s_10, flex: 1 }}>
-				<Text color={themeValue.textDisabled}>{t('channelPermission.whoCanAccess')}</Text>
+				<Text
+					style={{
+						color: themeValue.textDisabled
+					}}
+				>
+					{t('channelPermission.whoCanAccess')}
+				</Text>
 				<View style={{ backgroundColor: themeValue.secondary, borderRadius: size.s_14, flex: 1 }}>
 					<FlashList
 						data={combineWhoCanAccessList}

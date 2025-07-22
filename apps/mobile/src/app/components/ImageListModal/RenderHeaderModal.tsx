@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	AttachmentEntity,
 	getStore,
@@ -11,7 +11,7 @@ import {
 import { convertTimeString, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { DeviceEventEmitter, Platform, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonClanAvatar from '../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';

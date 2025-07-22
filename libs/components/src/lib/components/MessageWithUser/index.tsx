@@ -218,7 +218,7 @@ function MessageWithUser({
 						/>
 					)}
 					<div
-						className={`pl-[72px] justify-start inline-flex flex-wrap w-full relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
+						className={`pl-[72px] justify-start inline-flex flex-wrap w-full mb-1 relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
 					>
 						{showMessageHead && (
 							<>

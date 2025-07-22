@@ -160,6 +160,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 		);
 		const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
 		const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
+		const createTime = new Date(message.create_time).toISOString();
 		const pinBody: UpdatePinMessage = {
 			clanId: mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? '' : (currentClanId ?? ''),
 			channelId:
@@ -179,7 +180,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			attachment: jsonAttachments,
 			avatar: message.avatar || message.clan_avatar || '',
 			content: JSON.stringify(message.content),
-			createdTime: message.create_time
+			createdTime: createTime
 		};
 
 		dispatch(pinMessageActions.joinPinMessage(pinBody));

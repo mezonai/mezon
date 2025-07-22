@@ -59,6 +59,7 @@ import {
 	selectChannelByIdAndClanId,
 	selectChannelThreads,
 	selectChannelsByClanId,
+	selectClanMemberByClanId,
 	selectClanView,
 	selectClansLoadingStatus,
 	selectClickedOnTopicStatus,
@@ -72,7 +73,6 @@ import {
 	selectIsInCall,
 	selectLastMessageByChannelId,
 	selectLoadingStatus,
-	selectModeResponsive,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
 	selectVoiceInfo,
@@ -99,7 +99,6 @@ import {
 	IMessageSendPayload,
 	IMessageTypeCallLog,
 	LIMIT,
-	ModeResponsive,
 	NotificationCategory,
 	NotificationCode,
 	TOKEN_TO_AMOUNT,
@@ -873,14 +872,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onuserclanadded = useCallback(async (userJoinClan: AddClanUserEvent) => {
 		const store = await getStoreAsync();
-		const currentChannel = selectCurrentChannel(store.getState() as unknown as RootState);
-		const modeResponsive = selectModeResponsive(store.getState() as unknown as RootState);
 
-		if (modeResponsive === ModeResponsive.MODE_DM || currentChannel?.channel_private) {
-			return;
-		}
-
-		if (userJoinClan?.user) {
+		const clanMemberStore = selectClanMemberByClanId(store.getState() as unknown as RootState, userJoinClan.clan_id);
+		if (userJoinClan?.user && clanMemberStore) {
 			const createTime = new Date(userJoinClan.user.create_time_second * 1000).toISOString();
 			dispatch(
 				usersClanActions.add({

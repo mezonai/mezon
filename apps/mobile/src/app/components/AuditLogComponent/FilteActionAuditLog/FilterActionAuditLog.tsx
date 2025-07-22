@@ -1,10 +1,10 @@
-import { size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { auditLogFilterActions, selectActionAuditLog, useAppDispatch } from '@mezon/store-mobile';
 import { ActionLog } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
 import InputSearchAuditLog from '../InputSearchAuditLog/InputSearchAuditLog';
@@ -70,7 +70,15 @@ export default function FilterActionAuditLog() {
 					title: action,
 					value: action,
 					icon: (
-						<Text bold h4 color={themeValue.white}>
+						<Text
+							style={{
+								fontSize: verticalScale(16),
+								marginLeft: 0,
+								marginRight: 0,
+								fontWeight: 'bold',
+								color: themeValue.white
+							}}
+						>
 							{iconMap[action]}
 						</Text>
 					)

@@ -1,7 +1,7 @@
-import { size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 export default function EmptyAuditLog() {
 	const { themeValue } = useTheme();
@@ -9,10 +9,25 @@ export default function EmptyAuditLog() {
 
 	return (
 		<View style={{ width: '100%', height: '100%', gap: size.s_10, alignItems: 'center', paddingTop: size.s_50 }}>
-			<Text h4 bold color={themeValue.white}>
+			<Text
+				style={{
+					fontSize: verticalScale(16),
+					marginLeft: 0,
+					marginRight: 0,
+					fontWeight: 'bold',
+					color: themeValue.white
+				}}
+			>
 				{t('emptyAuditLog.noLogsYet')}
 			</Text>
-			<Text h4 color={themeValue.text}>
+			<Text
+				style={{
+					fontSize: verticalScale(16),
+					marginLeft: 0,
+					marginRight: 0,
+					color: themeValue.white
+				}}
+			>
 				{t('emptyAuditLog.description')}
 			</Text>
 		</View>

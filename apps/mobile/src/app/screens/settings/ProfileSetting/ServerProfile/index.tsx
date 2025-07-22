@@ -1,6 +1,6 @@
 import { useClanProfileSetting } from '@mezon/core';
 import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
-import { Text, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ClansEntity,
 	appActions,
@@ -13,7 +13,7 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { forwardRef, memo, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Dimensions, FlatList, KeyboardAvoidingView, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Dimensions, FlatList, KeyboardAvoidingView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { IClanProfileValue, IUserProfileValue } from '..';
