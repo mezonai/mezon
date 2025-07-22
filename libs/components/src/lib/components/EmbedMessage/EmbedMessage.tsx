@@ -19,7 +19,7 @@ interface EmbedMessageProps {
 export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, observeIntersectionForLoading }: EmbedMessageProps) {
 	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
 	return (
-		<div className="max-w-[520px] shadow-sm rounded-lg text-left relative mt-2  bg-theme-setting-primary border-theme-primary text-theme-message">
+		<div className="max-w-[520px] shadow-sm rounded-lg text-left relative mt-2  bg-theme-setting-primary border-theme-primary text-theme-message w-fit">
 			<div className="flex flex-col px-5 pt-2 pb-4">
 				<div className={`absolute left-0 top-0 h-full w-1 `} style={{ backgroundColor: color }} />
 				<div className={'flex flex-row justify-between'}>

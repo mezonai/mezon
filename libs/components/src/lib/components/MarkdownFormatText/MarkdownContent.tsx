@@ -261,6 +261,73 @@ type BacktickOpt = {
 
 const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, isInPinMsg, posInNotification }) => {
 	const posInPinOrNotification = isInPinMsg || posInNotification;
+
+	const urlRegex = /(https?:\/\/[^\s]+)/g;
+	const hasUrl = contentBacktick && urlRegex.test(contentBacktick);
+
+	if (hasUrl) {
+		let tokenizedContent = contentBacktick;
+		const urls: string[] = [];
+
+		contentBacktick.replace(urlRegex, (match: string) => {
+			urls.push(match);
+			return `__URL_TOKEN_${urls.length - 1}__`;
+		});
+
+		const renderContent = () => {
+			let result = contentBacktick;
+			const elements: React.ReactNode[] = [];
+
+			urls.forEach((url, index) => {
+				const parts = result.split(url);
+				if (parts.length > 1) {
+					if (parts[0]) elements.push(<span key={`text-${index}`}>{parts[0]}</span>);
+
+					elements.push(
+						<a
+							key={`link-${index}`}
+							href={url}
+							className="text-blue-500 underline"
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={(e) => {
+								e.stopPropagation();
+								window.open(url, '_blank');
+							}}
+						>
+							{url}
+						</a>
+					);
+
+					result = parts.slice(1).join(url);
+				}
+			});
+
+			if (result) elements.push(<span key="text-last">{result}</span>);
+			return elements;
+		};
+
+		return (
+			<span
+				className={!posInPinOrNotification ? 'text-theme-primary-active rounded-md bg-markdown-code p-2' : 'w-full'}
+				style={{ display: posInPinOrNotification ? '' : 'inline', padding: 2, margin: 0 }}
+			>
+				<code
+					className={`w-full text-sm font-sans px-2 ${posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
+						} ${posInPinOrNotification && isLightMode ? 'pin-msg-modeLight' : posInPinOrNotification && !isLightMode ? 'pin-msg' : null}`}
+					style={{
+						fontFamily: 'sans-serif',
+						wordWrap: 'break-word',
+						overflowWrap: 'break-word',
+						whiteSpace: posInPinOrNotification ? 'normal' : 'break-spaces'
+					}}
+				>
+					{renderContent()}
+				</code>
+			</span>
+		);
+	}
+
 	return (
 		<span
 			className={!posInPinOrNotification ? 'text-theme-primary-active rounded-md bg-markdown-code p-2' : 'w-full'}
@@ -294,12 +361,59 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 		return () => clearTimeout(timer);
 	}, [copied]);
 
-	// TODO: continue test
+	const urlRegex = /(https?:\/\/[^\s]+)/g;
+	const hasUrl = contentBacktick && urlRegex.test(contentBacktick);
+
 	const handleCopyClick = () => {
 		navigator.clipboard
 			.writeText(contentBacktick)
 			.then(() => setCopied(true))
 			.catch((err) => console.error('Failed to copy text: ', err));
+	};
+
+	const renderContent = () => {
+		if (hasUrl) {
+			let tokenizedContent = contentBacktick;
+			const urls: string[] = [];
+
+			contentBacktick.replace(urlRegex, (match: string) => {
+				urls.push(match);
+				return `__URL_TOKEN_${urls.length - 1}__`;
+			});
+
+			const elements: React.ReactNode[] = [];
+			let result = contentBacktick;
+
+			urls.forEach((url, index) => {
+				const parts = result.split(url);
+				if (parts.length > 1) {
+					if (parts[0]) elements.push(<span key={`text-${index}`}>{parts[0]}</span>);
+
+					elements.push(
+						<a
+							key={`link-${index}`}
+							href={url}
+							className="text-blue-500 underline"
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={(e) => {
+								e.stopPropagation();
+								window.open(url, '_blank');
+							}}
+						>
+							{url}
+						</a>
+					);
+
+					result = parts.slice(1).join(url);
+				}
+			});
+
+			if (result) elements.push(<span key="text-last">{result}</span>);
+			return elements;
+		}
+
+		return contentBacktick;
 	};
 
 	return (
@@ -310,9 +424,9 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 				</button>
 				<code
 					style={{ fontFamily: 'sans-serif' }}
-					className={`text-sm w-full   whitespace-pre-wrap text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}
+					className={`text-sm w-full whitespace-pre-wrap text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}
 				>
-					{contentBacktick}
+					{renderContent()}
 				</code>
 			</pre>
 		</div>

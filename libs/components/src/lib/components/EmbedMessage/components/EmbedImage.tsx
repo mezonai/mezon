@@ -13,7 +13,7 @@ export function EmbedImage({ url, width, height }: EmbedImageProps) {
 	});
 
 	return (
-		<div className="mt-2 rounded overflow-hidden">
+		<div className="mt-2 rounded-lg overflow-hidden">
 			<img
 				src={url}
 				style={{ width: width || 'auto', height: height || 'auto' }}
