@@ -78,10 +78,14 @@ const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 	const links: ILinkOnMessage[] = [];
 	const voiceRooms: ILinkVoiceRoomOnMessage[] = [];
 
-	const isOutsideMarkdown = (start: number, end: number): boolean => {
-		return !markdowns.some((markdown) => {
+
+	const isInsideTripleBacktick = (start: number, end: number): boolean => {
+		return markdowns.some((markdown) => {
 			if (markdown.s !== undefined && markdown.e !== undefined) {
-				return start >= markdown.s && end <= markdown.e;
+				return (
+					(markdown.type === EBacktickType.TRIPLE) &&
+					start >= markdown.s && end <= markdown.e
+				);
 			}
 			return false;
 		});
@@ -100,7 +104,8 @@ const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 
 			const endindex = i;
 			const link = inputString.substring(startindex, endindex);
-			if (isOutsideMarkdown(startindex, endindex)) {
+		
+			if (!isInsideTripleBacktick(startindex, endindex)) {
 				if (link.startsWith('https://meet.google.com/')) {
 					voiceRooms.push({
 						s: startindex,

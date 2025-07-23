@@ -33,9 +33,11 @@ import {
 	CHANNEL_INPUT_ID,
 	CREATING_TOPIC,
 	ChannelMembersEntity,
+	EBacktickType,
 	GENERAL_INPUT_ID,
 	IEmojiOnMessage,
 	IHashtagOnMessage,
+	ILinkOnMessage,
 	ILongPressType,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
@@ -257,6 +259,20 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			const { text, entities } = parseHtmlAsFormattedText(hasToken ? checkedRequest.content : checkedRequest.content.trim());
 			const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
 
+			const LINK_TEMPLATE = /(ftp|http|https):\/\/(((www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][-a-zA-Z0-9]{1,62})|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?([-a-zA-Z0-9()@:%_+.,~#?&\/=!*';$\[\]{}^\\|`<>]*)/gi;
+			const links: ILinkOnMessage[] = [];
+			let match;
+			while ((match = LINK_TEMPLATE.exec(text)) !== null) {
+				const start = match.index;
+				const end = start + match[0].length;
+				const isInTripleBacktick = mk.some(
+					(md) => md.type === EBacktickType.TRIPLE && typeof md.s === 'number' && typeof md.e === 'number' && start >= md.s && end <= md.e
+				);
+				if (!isInTripleBacktick) {
+					links.push({ s: start, e: end });
+				}
+			}
+
 			const boldMarkdownArr = processBoldEntities(checkedRequest.mentionRaw, mk);
 
 			const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(mk, mentionList, hashtagList, emojiList, text);
@@ -265,12 +281,14 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				hg: IHashtagOnMessage[];
 				ej: IEmojiOnMessage[];
 				mk: IMarkdownOnMessage[];
+				lk?: ILinkOnMessage[];
 				cvtt?: Record<string, string>;
 			} = {
 				t: text,
 				hg: adjustedHashtagPos as IHashtagOnMessage[],
 				ej: adjustedEmojiPos as IEmojiOnMessage[],
-				mk: [...mk, ...boldMarkdownArr]
+				mk: [...mk, ...boldMarkdownArr],
+				lk: links
 			};
 
 			const canvasLinks = extractCanvasIdsFromText(text || '');

@@ -180,21 +180,27 @@ const LINK_TEMPLATE =
 
 function parseMarkdownLinks(html: string) {
 	const parts = html.split(/(`{1,3})/);
-	let isInCode = false;
+	let backtickStack: string[] = [];
 	let result = '';
 
 	for (let i = 0; i < parts.length; i++) {
 		const part = parts[i];
 		if (part.match(/^`{1,3}$/)) {
-			isInCode = !isInCode;
+
+			if (backtickStack.length > 0 && backtickStack[backtickStack.length - 1] === part) {
+				backtickStack.pop();
+			} else {
+				backtickStack.push(part);
+			}
 			result += part;
 			continue;
 		}
 
-		if (isInCode) {
-			result += part;
-		} else {
+
+		if (!(backtickStack.length > 0 && backtickStack[backtickStack.length - 1] === '```')) {
 			result += part.replace(LINK_TEMPLATE, '<a href="$&" target="_blank">$&</a>');
+		} else {
+			result += part;
 		}
 	}
 
