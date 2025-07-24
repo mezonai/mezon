@@ -179,31 +179,16 @@ const LINK_TEMPLATE =
 	/(ftp|http|https):\/\/(((www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][-a-zA-Z0-9]{1,62})|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?([-a-zA-Z0-9()@:%_+.,~#?&\/=!*';$\[\]{}^\\|`<>]*)/gi;
 
 function parseMarkdownLinks(html: string) {
-	const parts = html.split(/(`{1,3})/);
-	let backtickStack: string[] = [];
 	let result = '';
-
-	for (let i = 0; i < parts.length; i++) {
-		const part = parts[i];
-		if (part.match(/^`{1,3}$/)) {
-
-			if (backtickStack.length > 0 && backtickStack[backtickStack.length - 1] === part) {
-				backtickStack.pop();
-			} else {
-				backtickStack.push(part);
-			}
-			result += part;
-			continue;
-		}
-
-
-		if (!(backtickStack.length > 0 && backtickStack[backtickStack.length - 1] === '```')) {
-			result += part.replace(LINK_TEMPLATE, '<a href="$&" target="_blank">$&</a>');
-		} else {
-			result += part;
-		}
+	const regex = /```([\s\S]*?)```/g;
+	let lastIndex = 0;
+	let match;
+	while ((match = regex.exec(html)) !== null) {
+		result += html.slice(lastIndex, match.index).replace(LINK_TEMPLATE, '<a href="$&" target="_blank">$&</a>');
+		result += match[0];
+		lastIndex = regex.lastIndex;
 	}
-
+	result += html.slice(lastIndex).replace(LINK_TEMPLATE, '<a href="$&" target="_blank">$&</a>');
 	return result;
 }
 

@@ -33,11 +33,9 @@ import {
 	CHANNEL_INPUT_ID,
 	CREATING_TOPIC,
 	ChannelMembersEntity,
-	EBacktickType,
 	GENERAL_INPUT_ID,
 	IEmojiOnMessage,
 	IHashtagOnMessage,
-	ILinkOnMessage,
 	ILongPressType,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
@@ -172,13 +170,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, props.currentChannelId ?? ''));
 	const dataReferencesTopic = useAppSelector((state) => selectDataReferences(state, currTopicId ?? ''));
 
-	const scopeId = props.isTopic
-		? (currTopicId || CREATING_TOPIC)
-		: props.currentChannelId!;
+	const scopeId = props.isTopic ? currTopicId || CREATING_TOPIC : props.currentChannelId!;
 
-	const attachmentFiltered = useAppSelector((state) =>
-		selectAttachmentByChannelId(state, scopeId || '')
-	);
+	const attachmentFiltered = useAppSelector((state) => selectAttachmentByChannelId(state, scopeId || ''));
 
 	const isDm = props.mode === ChannelStreamMode.STREAM_MODE_DM;
 
@@ -258,21 +252,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			const checkedRequest = draftRequest ? draftRequest : emptyRequest;
 			const { text, entities } = parseHtmlAsFormattedText(hasToken ? checkedRequest.content : checkedRequest.content.trim());
 			const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
-
-			const LINK_TEMPLATE = /(ftp|http|https):\/\/(((www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][-a-zA-Z0-9]{1,62})|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?([-a-zA-Z0-9()@:%_+.,~#?&\/=!*';$\[\]{}^\\|`<>]*)/gi;
-			const links: ILinkOnMessage[] = [];
-			let match;
-			while ((match = LINK_TEMPLATE.exec(text)) !== null) {
-				const start = match.index;
-				const end = start + match[0].length;
-				const isInTripleBacktick = mk.some(
-					(md) => md.type === EBacktickType.TRIPLE && typeof md.s === 'number' && typeof md.e === 'number' && start >= md.s && end <= md.e
-				);
-				if (!isInTripleBacktick) {
-					links.push({ s: start, e: end });
-				}
-			}
-
 			const boldMarkdownArr = processBoldEntities(checkedRequest.mentionRaw, mk);
 
 			const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(mk, mentionList, hashtagList, emojiList, text);
@@ -281,14 +260,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				hg: IHashtagOnMessage[];
 				ej: IEmojiOnMessage[];
 				mk: IMarkdownOnMessage[];
-				lk?: ILinkOnMessage[];
 				cvtt?: Record<string, string>;
 			} = {
 				t: text,
 				hg: adjustedHashtagPos as IHashtagOnMessage[],
 				ej: adjustedEmojiPos as IEmojiOnMessage[],
-				mk: [...mk, ...boldMarkdownArr],
-				lk: links
+				mk: [...mk, ...boldMarkdownArr]
 			};
 
 			const canvasLinks = extractCanvasIdsFromText(text || '');
@@ -511,7 +488,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			return attachmentFiltered.files;
 		}
 	}, [attachmentFiltered?.files]);
-
 
 	const isReplyOnChannel = dataReferences.message_ref_id && !props.isTopic ? true : false;
 	const isReplyOnTopic = dataReferencesTopic.message_ref_id && props.isTopic ? true : false;
@@ -821,10 +797,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	};
 
 	return (
-		<div
-			className={`contain-layout relative bg-theme-surface rounded-lg `}
-			ref={containerRef}
-		>
+		<div className={`contain-layout relative bg-theme-surface rounded-lg `} ref={containerRef}>
 			<div className="relative">
 				<span
 					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${
