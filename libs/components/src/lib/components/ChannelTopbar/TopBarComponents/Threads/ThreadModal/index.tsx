@@ -90,8 +90,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 			const body = {
 				channelId: currentChannelId,
 				clanId: currentClanId ?? '',
-				page: pageNumber,
-				noCache: true
+				page: pageNumber
 			};
 
 			const payload = await dispatch(threadsActions.fetchThreads(body)).unwrap();

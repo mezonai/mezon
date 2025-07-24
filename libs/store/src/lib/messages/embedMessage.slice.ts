@@ -9,7 +9,7 @@ export interface FormDataEmbed {
 }
 export interface EmbedState {
 	loadingStatus: LoadingStatus;
-	formDataEmbed: Record<string, { [key: string]: string | string[] }>;
+	formDataEmbed: Record<string, { [key: string]: string[] }>;
 	optionsForm: Record<string, FormDataEmbed[]>;
 }
 
@@ -25,11 +25,19 @@ export const embedSlice = createSlice({
 	reducers: {
 		addEmbedValue: (state, action: PayloadAction<{ message_id: string; data: FormDataEmbed; multiple?: boolean; onlyChooseOne?: boolean }>) => {
 			const { message_id, data, multiple, onlyChooseOne } = action.payload;
-			if (!multiple) {
-				state.formDataEmbed[message_id] = {
-					...state.formDataEmbed[message_id],
-					[data.id]: data.value
-				};
+			if (multiple) {
+				if (!state.formDataEmbed[message_id]) {
+					state.formDataEmbed[message_id] = {
+						[data.id]: [data.value]
+					};
+				} else {
+					const dataCurrent = state.formDataEmbed[message_id][data.id];
+					if (dataCurrent.includes(data.value)) {
+						state.formDataEmbed[message_id][data.id] = dataCurrent.filter((item) => item !== data.value);
+						return;
+					}
+					state.formDataEmbed[message_id][data.id] = dataCurrent ? [...dataCurrent, data.value] : [data.value];
+				}
 				return;
 			}
 			if (!state.formDataEmbed[message_id]) {

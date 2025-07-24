@@ -91,6 +91,7 @@ import { useMezon } from '@mezon/transport';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
 	AMOUNT_TOKEN,
+	ChannelStatusEnum,
 	EEventAction,
 	EEventStatus,
 	EMuteState,
@@ -98,7 +99,6 @@ import {
 	ERepeatType,
 	IMessageSendPayload,
 	IMessageTypeCallLog,
-	LIMIT,
 	NotificationCategory,
 	NotificationCode,
 	TOKEN_TO_AMOUNT,
@@ -733,7 +733,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			const store = await getStoreAsync();
 			const clanId = selectCurrentClanId(store.getState());
-			const channelId = selectCurrentChannelId(store.getState() as unknown as RootState);
 			const currentClanId = selectCurrentClanId(store.getState());
 
 			const userIds = users.map((u) => u.user_id);
@@ -776,8 +775,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 								clanId: channel_desc.clan_id as string
 							})
 						);
-
-						if (channel.parent_id === channelId) {
+						if (channel_desc.channel_private === ChannelStatusEnum.isPrivate) {
 							const thread: ThreadsEntity = {
 								id: channel.id,
 								channel_id: channel_desc.channel_id,
@@ -791,17 +789,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 								type: channel_desc.type
 							};
 
-							const store = await getStoreAsync();
-							const allThreads = selectAllThreads(store.getState());
-							const defaultThreadList: ApiChannelDescription[] = [
-								thread as ApiChannelDescription,
-								...((allThreads || []) as ApiChannelDescription[])
-							];
 							dispatch(
-								threadsActions.updateCacheOnThreadCreation({
-									clanId: channel.clan_id || '',
+								threadsActions.addThreadToCached({
 									channelId: channel.parent_id || '',
-									defaultThreadList: defaultThreadList.length > LIMIT ? defaultThreadList.slice(0, -1) : defaultThreadList
+									thread: thread
 								})
 							);
 						}
@@ -1080,26 +1071,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onchannelcreated = useCallback(async (channelCreated: ChannelCreatedEvent) => {
 		if (channelCreated.parent_id) {
-			const store = await getStoreAsync();
-			const allThreads = selectAllThreads(store.getState());
-
-			const now = Date.now() / 1000;
-			const newThread = {
+			const newThread: ThreadsEntity = {
 				...channelCreated,
+				id: channelCreated.channel_id,
 				type: channelCreated.channel_type,
 				last_sent_message: {
 					sender_id: channelCreated.creator_id,
-					timestamp_seconds: now
+					timestamp_seconds: Date.now() / 1000
 				},
 				active: channelCreated.creator_id === userId ? ThreadStatus.joined : ThreadStatus.activePublic
 			};
-			const defaultThreadList: ApiChannelDescription[] = [newThread, ...((allThreads || []) as ApiChannelDescription[])];
-
 			dispatch(
-				threadsActions.updateCacheOnThreadCreation({
-					clanId: channelCreated.clan_id,
+				threadsActions.addThreadToCached({
 					channelId: channelCreated.parent_id,
-					defaultThreadList: defaultThreadList.length > LIMIT ? defaultThreadList.slice(0, -1) : defaultThreadList
+					thread: newThread
 				})
 			);
 		}

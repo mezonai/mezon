@@ -18,13 +18,7 @@ export interface ThreadsEntity extends IThread {
 }
 
 export interface ThreadsState extends EntityState<ThreadsEntity, string> {
-	byChannels: Record<
-		string,
-		{
-			threads?: ThreadsEntity[];
-			cache?: CacheMetadata;
-		}
-	>;
+	byChannels: Record<string, EntityState<ThreadsEntity, string> & { cache?: CacheMetadata }>;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	isShowCreateThread?: Record<string, boolean>;
@@ -91,13 +85,13 @@ export const fetchThreadsCached = async (
 	const threadsState = currentState[THREADS_FEATURE_KEY];
 	const channelData = threadsState.byChannels?.[channelId] || getInitialChannelState();
 
-	const apiKey = createApiKey('fetchThreads', channelId, clanId, mezon.session.username || '', threadId || '', page || 0);
+	const apiKey = createApiKey('fetchThreads', channelId, clanId, mezon.session.username || '', threadId || '', page || 1);
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 
-	if (!shouldForceCall && channelData?.threads) {
+	if (!shouldForceCall && channelData) {
 		return {
-			channeldesc: channelData?.threads || [],
+			channeldesc: channelData || [],
 			fromCache: true,
 			time: channelData.cache?.lastFetched || Date.now()
 		};
@@ -120,7 +114,7 @@ const updateCacheOnThreadCreation = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const threads = await fetchThreadsCached(thunkAPI.getState as () => RootState, mezon, channelId, clanId, undefined, undefined, true);
+			const threads = await fetchThreadsCached(thunkAPI.getState as () => RootState, mezon, channelId, clanId, undefined, undefined);
 
 			return mapToThreadEntity((threads.channeldesc as ApiChannelDescription[]) || []);
 		} catch (e) {
@@ -141,7 +135,7 @@ export const fetchThreads = createAsyncThunk('threads/fetchThreads', async ({ ch
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchThreadsCached(thunkAPI.getState as () => RootState, mezon, channelId, clanId, undefined, page, Boolean(noCache));
 
-		if (!response.channeldesc) {
+		if (!response.channeldesc || response.fromCache) {
 			return {
 				channelId,
 				threads: [],
@@ -201,6 +195,7 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 			undefined,
 			Boolean(noCache)
 		);
+
 		if (!response.channeldesc) {
 			return {
 				channelId,
@@ -221,9 +216,11 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 	}
 });
 
-const getInitialChannelState = () => ({
-	threads: []
-});
+const getInitialChannelState = () => {
+	return {
+		threads: threadsAdapter.getInitialState()
+	};
+};
 
 export const initialThreadsState: ThreadsState = threadsAdapter.getInitialState({
 	byChannels: {},
@@ -374,9 +371,17 @@ export const threadsSlice = createSlice({
 			const { channelId, threadId } = action.payload;
 			const channelData = state.byChannels?.[channelId];
 
-			if (channelData && channelData.threads) {
-				channelData.threads = channelData.threads.filter((thread) => thread.id !== threadId);
+			if (channelData && channelData) {
+				threadsAdapter.removeOne(channelData, threadId);
 			}
+		},
+		addThreadToCached: (state, action: PayloadAction<{ channelId: string; thread: ThreadsEntity }>) => {
+			const { channelId, thread } = action.payload;
+			if (!state.byChannels[channelId]) {
+				return;
+			}
+
+			threadsAdapter.upsertOne(state.byChannels[channelId], thread);
 		}
 	},
 	extraReducers: (builder) => {
@@ -394,12 +399,11 @@ export const threadsSlice = createSlice({
 					}
 
 					if (!state.byChannels?.[channelId]) {
-						state.byChannels[channelId] = getInitialChannelState();
+						state.byChannels[channelId] = threadsAdapter.getInitialState();
 					}
 
 					if (!fromCache) {
-						threadsAdapter.setMany(state, threads);
-						state.byChannels[channelId].threads = threads;
+						state.byChannels[channelId] = threadsAdapter.setMany(state.byChannels[channelId], threads);
 						state.byChannels[channelId].cache = createCacheMetadata();
 					}
 
@@ -540,6 +544,12 @@ export const selectThreadInputSearchByChannelId = createSelector(
 );
 
 export const selectThreadsByParentChannelId = createSelector(
-	[selectAllThreads, (_: any, parentChannelId: string) => parentChannelId],
-	(allThreads, parentChannelId) => allThreads.filter((thread) => thread?.parent_id === parentChannelId)
+	[getThreadsState, (_, parentChannelId: string) => parentChannelId],
+	(state, parentChannelId) => {
+		const channelState = state.byChannels[parentChannelId] ?? threadsAdapter.getInitialState();
+		if (!channelState) {
+			return [];
+		}
+		return selectAll(channelState);
+	}
 );

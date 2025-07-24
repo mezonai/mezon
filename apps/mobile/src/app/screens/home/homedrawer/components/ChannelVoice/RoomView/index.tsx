@@ -121,8 +121,8 @@ const RoomView = ({
 								trackRef={focusedScreenShare}
 								objectFit={'contain'}
 								style={{
-									height: isPiPMode ? size.s_100 : '100%',
-									width: isPiPMode ? size.s_200 + size.s_10 : '100%',
+									height: isPiPMode ? size.s_100 * 1.2 : '100%',
+									width: isPiPMode ? '50%' : '100%',
 									alignSelf: 'center'
 								}}
 								iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}

@@ -43,7 +43,11 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 						styles.userView,
 						!isGridLayout ? { width: '100%', height: size.s_150 + size.s_100 } : { width: '48%', height: size.s_150 },
 						isTabletLandscape && { height: size.s_150 + size.s_100 },
-						isPiPMode && { height: size.s_90, width: size.s_200 + size.s_10 }
+						isPiPMode && {
+							width: '100%',
+							height: size.s_100 * 1.2,
+							marginBottom: size.s_100
+						}
 					]}
 				>
 					<VideoTrack
@@ -74,7 +78,7 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 						styles.userView,
 						isGridLayout && { width: '48%', height: size.s_150 },
 						isTabletLandscape && { height: size.s_150 + size.s_100 },
-						isPiPMode && { height: size.s_60 * 2, width: size.s_100 },
+						isPiPMode && { height: size.s_60 * 2, width: '45%', marginHorizontal: size.s_4 },
 						{
 							flexDirection: 'column'
 						}
@@ -102,7 +106,7 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 						styles.userView,
 						isGridLayout && { width: '48%', height: size.s_150 },
 						isTabletLandscape && { height: size.s_150 + size.s_100 },
-						isPiPMode && { height: size.s_60 * 2, width: size.s_100 },
+						isPiPMode && { height: size.s_60 * 2, width: '45%', marginHorizontal: size.s_4 },
 						{
 							flexDirection: 'column'
 						}
@@ -157,8 +161,8 @@ const ParticipantScreen = ({ sortedParticipants, setFocusedScreenShare }) => {
 						? {
 								flexDirection: 'row',
 								flexWrap: 'wrap',
-								justifyContent: isPiPMode ? 'flex-start' : 'center',
-								gap: size.s_10,
+								justifyContent: isPiPMode ? 'space-between' : 'center',
+								gap: isPiPMode ? size.s_2 : size.s_10,
 								alignItems: isPiPMode ? 'flex-start' : 'center'
 							}
 						: { gap: size.s_10 }

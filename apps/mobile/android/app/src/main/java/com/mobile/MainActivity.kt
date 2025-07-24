@@ -14,6 +14,8 @@ import com.zoontek.rnbootsplash.RNBootSplash;
 import android.app.NotificationManager
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.content.res.Resources
 
 class MainActivity : ReactActivity() {
 
@@ -61,4 +63,34 @@ class MainActivity : ReactActivity() {
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+  private fun getStatusBarHeight(): Int {
+    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+    return if (resourceId > 0) {
+        resources.getDimensionPixelSize(resourceId)
+    } else {
+        0
+    }
+  }
+
+  override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
+    super.onPictureInPictureModeChanged(isInPictureInPictureMode)
+
+    val rootView = findViewById<View>(android.R.id.content)
+
+    if (isInPictureInPictureMode) {
+        rootView.setPadding(0, 0, 0, 0)
+
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        )
+    } else {
+        val statusBarHeight = getStatusBarHeight()
+        rootView.setPadding(0, statusBarHeight, 0, 0)
+
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+    }
+  }
 }

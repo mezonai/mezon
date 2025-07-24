@@ -219,7 +219,8 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 					position: 'absolute',
 					width: isAnimationComplete ? '100%' : size.s_100 * 2,
 					height: isAnimationComplete ? '100%' : size.s_150
-				}
+				},
+				isPiPMode && { top: 0, left: 0, right: 0, bottom: 0 }
 			]}
 		>
 			<ChannelVoice
