@@ -1,6 +1,6 @@
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { Colors, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
 	categoriesActions,
@@ -150,7 +150,7 @@ export default function ClanMenu() {
 			},
 			isShow: !isClanOwner,
 			title: t('menu.optionsMenu.leaveServer'),
-			textStyle: { color: 'red' }
+			textStyle: { color: Colors.textRed }
 		},
 		{
 			onPress: async () => {
@@ -163,7 +163,7 @@ export default function ClanMenu() {
 			},
 			isShow: isClanOwner,
 			title: t('menu.optionsMenu.deleteClan'),
-			textStyle: { color: 'red' }
+			textStyle: { color: Colors.textRed }
 		}
 	];
 

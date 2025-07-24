@@ -1,8 +1,8 @@
 import { captureSentryError } from '@mezon/logger';
-import { LoadingStatus } from '@mezon/utils';
+import { LoadingStatus, QUICK_MENU_TYPE } from '@mezon/utils';
 import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import { ApiQuickMenuAccess, ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
+import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiQuickMenuAccess, ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { RootState } from '../store';
 
@@ -22,6 +22,86 @@ export const initialQuickMenuState: QuickMenuState = {
 	error: null
 };
 
+export const writeQuickMenuEvent = createAsyncThunk(
+	'quickMenu/writeQuickMenuEvent',
+	async (
+		{
+			channelId,
+			clanId,
+			menuName,
+			mode,
+			isPublic,
+			content,
+			mentions,
+			attachments,
+			references,
+			anonymousMessage,
+			mentionEveryone,
+			avatar,
+			code,
+			topicId
+		}: {
+			channelId: string;
+			clanId: string;
+			menuName: string;
+			mode: number;
+			isPublic: boolean;
+			content?: any;
+			mentions?: Array<ApiMessageMention>;
+			attachments?: Array<ApiMessageAttachment>;
+			references?: Array<ApiMessageRef>;
+			anonymousMessage?: boolean;
+			mentionEveryone?: boolean;
+			avatar?: string;
+			code?: number;
+			topicId?: string;
+		},
+		thunkAPI
+	) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const socket = mezon.socketRef?.current;
+
+			if (!socket || !socket.isOpen()) {
+				throw new Error('Socket is not connected');
+			}
+
+			await socket.writeQuickMenuEvent(
+				menuName,
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				content,
+				mentions,
+				attachments,
+				references,
+				anonymousMessage || false,
+				mentionEveryone || false,
+				avatar,
+				code || 0,
+				topicId
+			);
+
+			return {
+				success: true,
+				eventData: {
+					menu_name: menuName,
+					clan_id: clanId,
+					channel_id: channelId,
+					mode,
+					is_public: isPublic,
+					timestamp: Date.now()
+				}
+			};
+		} catch (error) {
+			console.error('Error sending quick menu event:', error);
+			captureSentryError(error, 'quickMenu/writeQuickMenuEvent');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const addQuickMenuAccess = createAsyncThunk(
 	'quickMenu/addQuickMenuAccess',
 	async (body: ApiQuickMenuAccessRequest & { channelId: string; clanId: string }, thunkAPI) => {
@@ -33,7 +113,8 @@ export const addQuickMenuAccess = createAsyncThunk(
 				channel_id: body.channelId,
 				clan_id: body.clanId,
 				menu_name: body.menu_name,
-				action_msg: body.action_msg || ''
+				action_msg: body.action_msg || '',
+				menu_type: body.menu_type || QUICK_MENU_TYPE.QUICK_MESSAGE
 			};
 			const response = await mezon.client.addQuickMenuAccess(mezon.session, data);
 			if (response) {
@@ -58,7 +139,8 @@ export const updateQuickMenuAccess = createAsyncThunk(
 				channel_id: body.channelId,
 				clan_id: body.clanId,
 				menu_name: body.menu_name,
-				action_msg: body.action_msg || ''
+				action_msg: body.action_msg || '',
+				menu_type: body.menu_type || QUICK_MENU_TYPE.QUICK_MESSAGE
 			};
 			const response = await mezon.client.updateQuickMenuAccess(mezon.session, data);
 			if (response) {
@@ -195,7 +277,8 @@ export const quickMenuActions = {
 	addQuickMenuAccess,
 	updateQuickMenuAccess,
 	deleteQuickMenuAccess,
-	listQuickMenuAccess
+	listQuickMenuAccess,
+	writeQuickMenuEvent
 };
 
 export const getQuickMenuState = (rootState: { [QUICK_MENU_FEATURE_KEY]: QuickMenuState }): QuickMenuState => rootState[QUICK_MENU_FEATURE_KEY];

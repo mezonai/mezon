@@ -1,6 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useAppParams, useAuth, useChatReaction, useDirect, usePermissionChecker, useReference, useSendInviteMessage } from '@mezon/core';
+import {
+	useAppParams,
+	useAuth,
+	useChatReaction,
+	useChatSending,
+	useDirect,
+	usePermissionChecker,
+	useReference,
+	useSendInviteMessage
+} from '@mezon/core';
 import {
 	channelMetaActions,
 	createEditCanvas,
@@ -62,6 +71,7 @@ import {
 	isPublicChannel
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import { ApiChannelDescription, ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import DynamicContextMenu from './DynamicContextMenu';
@@ -116,9 +126,15 @@ function MessageContextMenu({
 	const currentTopicId = useSelector(selectCurrentTopicId);
 	const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
 	const currentThread = useAppSelector(selectThreadCurrentChannel);
+	const currentDmGroup = useSelector(selectDmGroupCurrent(currentDmId || ''));
 
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
+
+	const { sendMessage: sendChatMessage } = useChatSending({
+		channelOrDirect: (isClanView ? currentChannel : currentDmGroup) as ApiChannelDescription,
+		mode: activeMode || ChannelStreamMode.STREAM_MODE_CHANNEL
+	});
 
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(
@@ -426,6 +442,32 @@ function MessageContextMenu({
 			toast.error('Failed to note this message');
 		}
 	}, [dispatch, message]);
+
+	const handleSlashCommands = useCallback(async () => {
+		// ignore
+	}, []);
+
+	const handleSlashCommandSelect = useCallback(
+		(command: ApiQuickMenuAccessRequest) => {
+			if (command.action_msg) {
+				const payload = {
+					t: command.action_msg.trim(),
+					hg: [],
+					ej: [],
+					mk: []
+				};
+
+				try {
+					sendChatMessage(payload, [], [], undefined, false, false);
+				} catch (error) {
+					console.error('Error sending slash command message:', error);
+					toast.error(`Failed to execute command "${command.menu_name}"`);
+				}
+			}
+		},
+		[sendChatMessage]
+	);
+
 	const checkPos = useMemo(() => {
 		if (posShowMenu === SHOW_POSITION.NONE || posShowMenu === SHOW_POSITION.IN_STICKER || posShowMenu === SHOW_POSITION.IN_EMOJI) {
 			return true;
@@ -666,6 +708,23 @@ function MessageContextMenu({
 			);
 		});
 
+		builder.when(checkPos, (builder) => {
+			builder.addMenuItem(
+				'slashCommands',
+				'Slash Commands',
+				handleSlashCommands,
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path
+						d="M7 12l3-3 3 3m0 6l3-3 3 3M7 6l3-3 3 3"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					/>
+				</svg>
+			);
+		});
+
 		// builder.when(checkPos, (builder) => {
 		// 	builder.addMenuItem('apps', 'Apps', () => console.log('apps'), <Icons.RightArrowRightClick defaultSize="w-4 h-4" />);
 		// });
@@ -800,11 +859,23 @@ function MessageContextMenu({
 		urlImage,
 		handleItemClick,
 		handleCreateTopic,
+		handleSlashCommands,
 		isTopic
 	]);
 	/* eslint-disable no-console */
 
-	return <DynamicContextMenu key={messageId} menuId={id} items={items} messageId={messageId} message={message} isTopic={isTopic} />;
+	return (
+		<DynamicContextMenu
+			key={messageId}
+			menuId={id}
+			items={items}
+			messageId={messageId}
+			message={message}
+			isTopic={isTopic}
+			onSlashCommandExecute={handleSlashCommandSelect}
+			currentChannelId={currentChannel?.id}
+		/>
+	);
 }
 
 export default MessageContextMenu;

@@ -13,6 +13,7 @@ export { default as Link } from './lib/Link';
 export * from './lib/MezonUiProvider';
 export { default as Modal } from './lib/Modal';
 export { default as Select } from './lib/Select';
+export { default as ReactSelect } from './lib/Select/ReactSelect';
 export { default as TextArea } from './lib/TextArea';
 export { default as TimePicker } from './lib/TimePicker';
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { Colors, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	MessagesEntity,
@@ -430,7 +430,7 @@ const MessageItem = React.memo(
 									)}
 								</View>
 							</View>
-							{message.isError && <Text style={{ color: 'red' }}>{t('unableSendMessage')}</Text>}
+							{message.isError && <Text style={{ color: Colors.textRed }}>{t('unableSendMessage')}</Text>}
 							{!preventAction && !!message?.reactions?.length ? (
 								<MessageAction
 									userId={userId}

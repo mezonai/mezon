@@ -179,7 +179,7 @@ const ParticipantScreen = ({ sortedParticipants, setFocusedScreenShare }) => {
 						/>
 					))}
 			</View>
-			<View style={{ height: Platform.OS === 'ios' ? size.s_300 : size.s_200 }} />
+			<View style={{ height: size.s_300 }} />
 		</ScrollView>
 	);
 };

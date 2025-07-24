@@ -1,5 +1,5 @@
 import { useInvite } from '@mezon/core';
-import { channelsActions, clansActions, inviteActions, selectInviteById, useAppDispatch } from '@mezon/store';
+import { channelsActions, clansActions, getStore, inviteActions, selectAllClans, selectInviteById, useAppDispatch } from '@mezon/store';
 import { Modal } from '@mezon/ui';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -21,7 +21,6 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	const [error, setError] = useState<string | null>(null);
 
 	const clanId = selectInvite?.clan_id || '';
-
 	const channelId = selectInvite?.channel_id || '';
 
 	const userJoined = selectInvite?.user_joined;
@@ -61,8 +60,13 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	};
 
 	useEffect(() => {
-		if (userJoined) {
+		const store = getStore();
+		const clans = selectAllClans(store.getState());
+		const isClanMember = clans.some((item) => item.id === clanId);
+		if (userJoined || isClanMember) {
+			// update later condition to && when backend update success
 			toast.info('You are already a member!');
+			navigate(`/chat/clans/${clanId}/channels/${channelId}`);
 			onClose();
 		}
 	}, [userJoined, navigate, clanId, channelId, onClose]);

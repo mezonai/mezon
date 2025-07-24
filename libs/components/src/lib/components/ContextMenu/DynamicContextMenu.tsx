@@ -1,30 +1,57 @@
 import { useAppParams, useAuth, useChatReaction, useEmojiConverted } from '@mezon/core';
 import {
+	getActiveMode,
+	getStore,
+	quickMenuActions,
+	selectAllAccount,
 	selectClanView,
 	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectCurrentTopicId,
+	selectMemberClanByUserId2,
 	selectMessageByMessageId,
+	selectQuickMenuByChannelId,
+	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { ContextMenuItem, IEmoji, IMessageWithUser, SHOW_POSITION, isPublicChannel } from '@mezon/utils';
+import { ContextMenuItem, IEmoji, IMessageWithUser, QUICK_MENU_TYPE, SHOW_POSITION, isPublicChannel } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Item, Menu, Separator, Submenu } from 'react-contexify';
 import { useSelector } from 'react-redux';
 import { useMessageContextMenu } from './MessageContextMenuContext';
 import ReactionItem from './ReactionItem';
 import ReactionPart from './ReactionPart';
+import { SearchableCommandList } from './SearchableCommandList';
+
+interface SlashCommand {
+	id: string;
+	display: string;
+	action_msg?: string;
+	description?: string;
+	menu_id?: string;
+	menu_type?: number;
+	menu_name?: string;
+	isBuiltIn?: boolean;
+}
+
+interface CommandOption {
+	value: string;
+	label: string;
+	command: SlashCommand;
+}
 
 type Props = {
 	menuId: string;
 	items: ContextMenuItem[];
 	messageId: string;
 	message: IMessageWithUser;
-	isTopic: boolean;
+	isTopic?: boolean;
+	onSlashCommandExecute?: (command: SlashCommand) => void;
+	currentChannelId?: string;
 };
 
-export default function DynamicContextMenu({ menuId, items, messageId, message, isTopic }: Props) {
+export default function DynamicContextMenu({ menuId, items, messageId, message, isTopic, onSlashCommandExecute, currentChannelId }: Props) {
 	const emojiConverted = useEmojiConverted();
 
 	const { directId } = useAppParams();
@@ -39,6 +66,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 	const currentMessage = useAppSelector((state) =>
 		selectMessageByMessageId(state, isFocusTopicBox ? currenTopicId : currentChannel?.channel_id, messageId || '')
 	);
+
 	const handleClickEmoji = useCallback(
 		async (emojiId: string, emojiShortCode: string) => {
 			await reactionMessageDispatch({
@@ -64,6 +92,8 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 	}, [emojiConverted]) as IEmoji[];
 
 	const [warningStatus, setWarningStatus] = useState<string>('var(--bg-item-hover)');
+	const [isLoadingCommands, setIsLoadingCommands] = useState(false);
+	const dispatch = useAppDispatch();
 
 	const className = {
 		'--contexify-menu-bgColor': 'var(--bg-theme-contexify)',
@@ -84,6 +114,99 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		return false;
 	}, [posShowMenu]);
 
+	const handleSlashCommandClick = useCallback(
+		async (command: SlashCommand) => {
+			const store = getStore();
+			const userProfile = selectAllAccount(store.getState());
+			const profileInClan = selectMemberClanByUserId2(store.getState(), userProfile?.user?.id ?? '');
+
+			if (command.menu_type === QUICK_MENU_TYPE.BOT_EVENT) {
+				try {
+					const channelId = currentChannelId || currentChannel?.channel_id || '';
+					const clanId = currentChannel?.clan_id || '';
+					const mode = getActiveMode(channelId);
+					const isPublic = isPublicChannel(currentChannel);
+
+					const content = {
+						t: command.action_msg || command.description || '',
+						bot_menu: {
+							menu_name: command.display || command.menu_name || '',
+							menu_id: command.menu_id || command.id?.replace('quick_menu_', ''),
+							triggered_by_message: messageId
+						}
+					};
+
+					await dispatch(
+						quickMenuActions.writeQuickMenuEvent({
+							channelId,
+							clanId,
+							menuName: command.display || command.menu_name || '',
+							mode,
+							isPublic,
+							content,
+							mentions: message?.mentions || [],
+							attachments: message?.attachments || [],
+							references: message?.references || [],
+							anonymousMessage: false,
+							mentionEveryone: false,
+							avatar: profileInClan?.clan_avatar || userProfile?.user?.avatar_url,
+							code: 0,
+							topicId: isFocusTopicBox ? currenTopicId : undefined
+						})
+					);
+				} catch (error) {
+					console.error('Error sending quick menu event:', error);
+				}
+			} else if (command.action_msg && onSlashCommandExecute) {
+				onSlashCommandExecute(command);
+			}
+		},
+		[onSlashCommandExecute, dispatch, currentChannelId, currentChannel, messageId, message, isFocusTopicBox, currenTopicId]
+	);
+
+	const handleSlashCommandHover = useCallback(async () => {
+		if (currentChannelId && !isLoadingCommands) {
+			setIsLoadingCommands(true);
+			try {
+				await dispatch(quickMenuActions.listQuickMenuAccess({ channelId: currentChannelId }));
+			} catch (error) {
+				console.error('Error fetching quick menu commands:', error);
+			} finally {
+				setIsLoadingCommands(false);
+			}
+		}
+	}, [dispatch, currentChannelId, isLoadingCommands]);
+
+	const quickMenuItems = useAppSelector((state) => selectQuickMenuByChannelId(state, currentChannelId || ''));
+
+	const slashCommandOptions = useMemo(() => {
+		if (isLoadingCommands) {
+			return [];
+		}
+
+		return quickMenuItems.map((item) => ({
+			value: `quick_menu_${item.id}`,
+			label: `/${item.menu_name || ''}`,
+			command: {
+				id: `quick_menu_${item.id}`,
+				display: item.menu_name || '',
+				action_msg: item.action_msg || '',
+				menu_id: item.id,
+				menu_type: item.menu_type || 1,
+				isBuiltIn: false
+			}
+		}));
+	}, [quickMenuItems, isLoadingCommands]);
+
+	const handleCommandSelect = useCallback(
+		(selectedOption: CommandOption | null) => {
+			if (selectedOption && selectedOption.command) {
+				handleSlashCommandClick(selectedOption.command);
+			}
+		},
+		[handleSlashCommandClick]
+	);
+
 	const children = useMemo(() => {
 		const elements: React.ReactNode[] = [];
 		for (let index = 0; index < items.length; index++) {
@@ -96,8 +219,55 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			if (item.label === 'Copy Link' && checkPos) elements.push(<Separator key={`separator-${index}`} />);
 			if (item.label === 'Copy Image') elements.push(<Separator key={`separator-${index}`} />);
 			const lableAddReaction = item.label === 'Add Reaction';
+			const lableSlashCommands = item.label === 'Slash Commands';
 
-			if (lableAddReaction) {
+			if (lableSlashCommands) {
+				elements.push(
+					<Submenu
+						key={item.label}
+						label={
+							<span onMouseEnter={handleSlashCommandHover} className="text-sm font-medium pl-[4px]">
+								Quick Menu
+							</span>
+						}
+						className="border-none bg-theme-contexify p-0"
+					>
+						{isLoadingCommands ? (
+							<div className="w-[320px] p-4 text-center text-gray-500">
+								<div className="flex items-center justify-center gap-2 mb-2">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
+										<circle
+											cx="12"
+											cy="12"
+											r="10"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeDasharray="30"
+											strokeDashoffset="30"
+										/>
+									</svg>
+									<span>Loading commands...</span>
+								</div>
+							</div>
+						) : slashCommandOptions.length === 0 ? (
+							<div className="w-[320px] p-4 text-center text-gray-500">
+								<span>No commands available</span>
+							</div>
+						) : (
+							<Item onKeyDown={(e) => e.stopPropagation()} onKeyUp={(e) => e.stopPropagation()} onKeyPress={(e) => e.stopPropagation()}>
+								<SearchableCommandList
+									options={slashCommandOptions}
+									onChange={handleCommandSelect}
+									placeholder="Type to search slash commands..."
+									isLoading={isLoadingCommands}
+									className="w-[320px]"
+									autoFocus={true}
+								/>
+							</Item>
+						)}
+					</Submenu>
+				);
+			} else if (lableAddReaction) {
 				elements.push(
 					<Dropdown
 						key={item.label}
@@ -107,16 +277,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 							<div>
 								<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 									<div
-										style={{
-											display: 'flex',
-											justifyContent: 'space-between',
-											alignItems: 'center',
-											width: '100%',
-											fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
-											fontSize: '14px',
-											fontWeight: 500
-										}}
-										className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}  p-1`}
+										className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}`}
 									>
 										<span>Add Reaction</span>
 									</div>
@@ -135,7 +296,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 									onClick={() => handleClickEmoji(item.id || '', item.shortname || '')}
 								>
 									<div
-										className={`flex truncate justify-between items-center w-full font-sans text-sm font-medium ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}  p-1`}
+										className={`flex truncate justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}  p-1`}
 									>
 										{item.shortname}
 									</div>
@@ -147,7 +308,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 											isOption={false}
 											isAddReactionPanel
 											message={message}
-											isTopic={isTopic}
+											isTopic={!!isTopic}
 										/>
 									</div>
 								</Item>
@@ -156,7 +317,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 						<hr className="border-b-theme-primary" />
 						<Item className="w-full px-2 py-1" key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 							<div
-								className={`class="flex justify-between items-center w-full font-sans text-sm font-medium ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}  p-1`}
+								className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}  p-1`}
 							>
 								<span>View More</span>
 							</div>
@@ -181,16 +342,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 						}}
 					>
 						<div
-							style={{
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-								width: '100%',
-								fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
-								fontSize: '14px',
-								fontWeight: 500
-							}}
-							className={`${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}  p-1`}
+							className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}`}
 						>
 							<span>{item.label}</span>
 							<span> {item.icon}</span>
@@ -211,17 +363,43 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				);
 		}
 		return elements;
-	}, [items, checkPos, firstFourElements, messageId, handleClickEmoji]);
+	}, [
+		items,
+		checkPos,
+		firstFourElements,
+		messageId,
+		handleClickEmoji,
+		slashCommandOptions,
+		handleSlashCommandHover,
+		isLoadingCommands,
+		handleCommandSelect,
+		isTopic,
+		message
+	]);
 
 	return (
-		<Menu
-			onVisibilityChange={onVisibilityChange}
-			id={menuId}
-			style={className}
-			className="z-50 rounded-lg  text-theme-primary text-theme-primary-hover border-theme-primary "
-		>
-			{checkPos && <ReactionPart emojiList={firstFourElements} messageId={messageId} isOption={false} message={message} isTopic={isTopic} />}
-			{children}
-		</Menu>
+		<>
+			<style>
+				{`
+					.contexify_submenu {
+						padding: 0 !important;
+					}
+					.contexify_submenu .contexify_itemContent {
+						padding: 0 !important;
+					}
+				`}
+			</style>
+			<Menu
+				onVisibilityChange={onVisibilityChange}
+				id={menuId}
+				style={className}
+				className="z-50 rounded-lg  text-theme-primary text-theme-primary-hover border-theme-primary "
+			>
+				{checkPos && (
+					<ReactionPart emojiList={firstFourElements} messageId={messageId} isOption={false} message={message} isTopic={!!isTopic} />
+				)}
+				{children}
+			</Menu>
+		</>
 	);
 }

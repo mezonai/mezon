@@ -239,24 +239,23 @@ export default function EmojiSelectorContainer({
 			if (targetIndex !== -1) {
 				handleBottomSheetExpand?.();
 
-				try {
-					if (flatListRef.current) {
-						if (timeoutRef?.current) {
-							clearTimeout(timeoutRef.current);
-						}
-
-						timeoutRef.current = setTimeout(() => {
+				if (timeoutRef?.current) {
+					clearTimeout(timeoutRef.current);
+				}
+				timeoutRef.current = setTimeout(() => {
+					try {
+						if (flatListRef.current) {
 							flatListRef.current.scrollToIndex({
 								index: targetIndex,
 								animated: true,
 								viewPosition: 0,
 								viewOffset: 120
 							});
-						}, 300);
+						}
+					} catch (error) {
+						console.warn('Scroll error:', error);
 					}
-				} catch (error) {
-					console.warn('Scroll error:', error);
-				}
+				}, 300);
 			}
 		},
 		[data]

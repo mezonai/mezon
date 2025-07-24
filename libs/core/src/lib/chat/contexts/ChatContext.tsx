@@ -1276,7 +1276,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			}
 			if (channelDeleted) {
 				if (channelDeleted.channel_id === currentChannelId) {
-					navigate(`/chat/clans/${clanId}`);
+					navigate(`/chat/clans/${clanId}/member-safety`);
 				}
 				dispatch(channelsActions.deleteChannelSocket(channelDeleted));
 				dispatch(listChannelsByUserActions.remove(channelDeleted.channel_id));
@@ -1284,10 +1284,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: channelDeleted.channel_id, clanId: channelDeleted.clan_id }));
 
 				dispatch(
-					threadsActions.updateCacheOnThreadCreation({
-						clanId: channelDeleted.clan_id,
+					threadsActions.removeThreadFromCache({
 						channelId: channelDeleted?.parent_id || '',
-						defaultThreadList: newAllThreads as ApiChannelDescription[]
+						threadId: channelDeleted.channel_id
 					})
 				);
 			}

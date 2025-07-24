@@ -1,4 +1,4 @@
-import { size } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import { memo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextStyle, View, useWindowDimensions } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
@@ -26,7 +26,7 @@ const RenderYoutubeVideo = ({ key, videoId, contentInElement, onPress, onLongPre
 			<View style={styles.borderLeftView}>
 				{!isVideoReady && (
 					<View style={styles.loadingVideoSpinner}>
-						<ActivityIndicator size="large" color={'red'} />
+						<ActivityIndicator size="large" color={Colors.textRed} />
 					</View>
 				)}
 				<YoutubePlayer
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
 	borderLeftView: {
 		marginTop: size.s_6,
 		borderLeftWidth: size.s_2,
-		borderLeftColor: 'red',
+		borderLeftColor: Colors.textRed,
 		borderRadius: size.s_4
 	}
 });

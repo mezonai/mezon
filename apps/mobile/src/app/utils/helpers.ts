@@ -92,6 +92,8 @@ export const getUserStatusByMetadata = (metadata: string | { status: string; use
 export function combineMessageReactions(reactions: any[], message_id: string): any[] {
 	const dataCombined: Record<string, EmojiDataOptionals> = {};
 
+	if (!reactions) return [];
+
 	for (const reaction of reactions) {
 		const emojiId = reaction?.emoji_id || ('' as string);
 		const emoji = reaction?.emoji || ('' as string);

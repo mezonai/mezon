@@ -17,7 +17,7 @@ interface EmbedOptionRatioProps {
 export function EmbedOptionRatio({ options, message_id, idRadio, max_options }: EmbedOptionRatioProps) {
 	const [checked, setChecked] = useState<string[]>([]);
 	const handleCheckedOption = (value: string) => {
-		if (!max_options || checked.length < max_options || !checkMultiple) {
+		if (!max_options || checked.length < max_options || !checkMultiple || checked.includes(value)) {
 			handleAddEmbedRadioValue(value);
 		}
 	};

@@ -546,7 +546,7 @@ export const selectThreadInputSearchByChannelId = createSelector(
 export const selectThreadsByParentChannelId = createSelector(
 	[getThreadsState, (_, parentChannelId: string) => parentChannelId],
 	(state, parentChannelId) => {
-		const channelState = state.byChannels[parentChannelId] ?? threadsAdapter.getInitialState();
+		const channelState = state.byChannels?.[parentChannelId] ? state.byChannels?.[parentChannelId] : threadsAdapter.getInitialState();
 		if (!channelState) {
 			return [];
 		}

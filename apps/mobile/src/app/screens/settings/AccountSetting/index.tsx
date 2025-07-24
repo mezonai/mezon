@@ -124,6 +124,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			},
 			{
 				title: t('displayName'),
+				description: userProfile?.user?.display_name || '',
 				type: EAccountSettingType.DisplayName
 			}
 		];
@@ -155,7 +156,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			usersOptions,
 			accountManagementOptions
 		};
-	}, [t, userProfile?.user?.username, blockedUsersCount]);
+	}, [t, userProfile?.user?.username, userProfile?.user?.display_name, blockedUsersCount]);
 
 	return (
 		<View style={styles.container}>
