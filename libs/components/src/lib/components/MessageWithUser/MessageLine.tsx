@@ -1,7 +1,7 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { getTagByIdOnStored } from '@mezon/core';
 import { ChannelsEntity, getStore, selectCanvasIdsByChannelId, selectGmeetVoice } from '@mezon/store';
-import { EBacktickType, ETokenMessage, IExtendedMessage, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, IExtendedMessage, RE_LINK_TEMPLATE, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useRef } from 'react';
 import { CanvasHashtag, ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText } from '../../components';
@@ -211,6 +211,29 @@ export const MessageLine = ({
 	let lastindex = 0;
 	const content2 = (() => {
 		const formattedContent: React.ReactNode[] = [];
+		const renderedLinkRanges: { s: number; e: number }[] = [];
+
+
+		elements.forEach((element) => {
+			if (element.kindOf === ETokenMessage.MARKDOWNS && element.type === EBacktickType.BOLD) {
+				const s = element.s ?? 0;
+				const e = element.e ?? 0;
+				const contentInElement = t?.substring(s, e);
+
+				if (typeof contentInElement === 'string') {
+					const linkMatch = contentInElement.match(RE_LINK_TEMPLATE);
+					if (linkMatch && linkMatch[0]) {
+
+						const link = linkMatch[0];
+						const linkIndex = contentInElement.indexOf(link);
+						const linkStart = s + linkIndex;
+						const linkEnd = linkStart + link.length;
+
+						renderedLinkRanges.push({ s: linkStart, e: linkEnd });
+					}
+				}
+			}
+		});
 
 		elements.forEach((element, index) => {
 			const s = element.s ?? 0;
@@ -280,6 +303,27 @@ export const MessageLine = ({
 						emojiId={element.emojiid ?? ''}
 					/>
 				);
+			} else if (element.kindOf === ETokenMessage.LINKS) {
+
+				const isAlreadyRenderedInBold = renderedLinkRanges.some(
+					range => (s >= range.s && s < range.e) ||
+						(e > range.s && e <= range.e) ||
+						(s <= range.s && e >= range.e)
+				);
+
+				if (!isAlreadyRenderedInBold) {
+					formattedContent.push(
+						<MarkdownContent
+							key={`linkToken-${s}-${messageId}`}
+							isLink={true}
+							isTokenClickAble={isTokenClickAble}
+							isJumMessageEnabled={isJumMessageEnabled}
+							content={contentInElement}
+							isReply={isReply}
+							isSearchMessage={isSearchMessage}
+						/>
+					);
+				}
 			} else if (element.kindOf === ETokenMessage.VOICE_LINKS) {
 				const meetingCode = getMeetCode(contentInElement as string) as string;
 				formattedContent.push(
@@ -295,83 +339,134 @@ export const MessageLine = ({
 				);
 			} else if (element.kindOf === ETokenMessage.MARKDOWNS) {
 				if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
-					const basePath = '/chat/clans/';
-					const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
-					let componentToRender: React.ReactNode = null;
+					const isAlreadyRenderedInBold = renderedLinkRanges.some(
+						range => (s >= range.s && s < range.e) ||
+							(e > range.s && e <= range.e) ||
+							(s <= range.s && e >= range.e)
+					);
 
-					const ids = extractIdsFromUrl(contentInElement as string);
+					if (!isAlreadyRenderedInBold) {
+						const basePath = '/chat/clans/';
+						const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
+						let componentToRender: React.ReactNode = null;
 
-					if (ids) {
-						const { clanId, channelId, canvasId } = ids;
+						const ids = extractIdsFromUrl(contentInElement as string);
 
-						const isCanvas = contentHasChannelLink && contentInElement?.includes('canvas');
+						if (ids) {
+							const { clanId, channelId, canvasId } = ids;
 
-						const canvasTitleFromPayload = content.cvtt?.[canvasId];
-						let canvasTitle = canvasTitleFromPayload;
+							const isCanvas = contentHasChannelLink && contentInElement?.includes('canvas');
 
-						if (!canvasTitle) {
-							const state = getStore().getState();
-							const canvases = selectCanvasIdsByChannelId(state, channelId);
-							const foundCanvas = canvases.find((item) => item.id === canvasId);
-							canvasTitle = foundCanvas?.title;
-						}
+							const canvasTitleFromPayload = content.cvtt?.[canvasId];
+							let canvasTitle = canvasTitleFromPayload;
 
-						if (isCanvas && channelId && canvasTitle) {
-							componentToRender = (
-								<CanvasHashtag
-									key={`canvas-${s}-${messageId}`}
-									clanId={clanId}
-									channelId={channelId}
-									canvasId={canvasId}
-									title={canvasTitle}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-								/>
-							);
-						} else if (!isCanvas && contentHasChannelLink) {
-							const channelFound = getTagByIdOnStored(channelId);
-							if (channelId && channelFound?.id) {
+							if (!canvasTitle) {
+								const state = getStore().getState();
+								const canvases = selectCanvasIdsByChannelId(state, channelId);
+								const foundCanvas = canvases.find((item) => item.id === canvasId);
+								canvasTitle = foundCanvas?.title;
+							}
+
+							if (isCanvas && channelId && canvasTitle) {
 								componentToRender = (
-									<ChannelHashtag
-										channelOnLinkFound={channelFound}
-										key={`linkChannel${s}-${messageId}`}
+									<CanvasHashtag
+										key={`canvas-${s}-${messageId}`}
+										clanId={clanId}
+										channelId={channelId}
+										canvasId={canvasId}
+										title={canvasTitle}
 										isTokenClickAble={isTokenClickAble}
 										isJumMessageEnabled={isJumMessageEnabled}
-										channelHastagId={`<#${channelId}>`}
 									/>
 								);
+							} else if (!isCanvas && contentHasChannelLink) {
+								const channelFound = getTagByIdOnStored(channelId);
+								if (channelId && channelFound?.id) {
+									componentToRender = (
+										<ChannelHashtag
+											channelOnLinkFound={channelFound}
+											key={`linkChannel${s}-${messageId}`}
+											isTokenClickAble={isTokenClickAble}
+											isJumMessageEnabled={isJumMessageEnabled}
+											channelHastagId={`<#${channelId}>`}
+										/>
+									);
+								}
 							}
+							formattedContent.push(
+								componentToRender ?? (
+									<MarkdownContent
+										key={`link${s}-${messageId}`}
+										isLink={true}
+										isTokenClickAble={isTokenClickAble}
+										isJumMessageEnabled={isJumMessageEnabled}
+										content={contentInElement}
+										isReply={isReply}
+										isSearchMessage={isSearchMessage}
+									/>
+								)
+							);
+						} else {
+							formattedContent.push(
+								componentToRender ?? (
+									<MarkdownContent
+										key={`link${s}-${messageId}`}
+										isLink={true}
+										isTokenClickAble={isTokenClickAble}
+										isJumMessageEnabled={isJumMessageEnabled}
+										content={contentInElement}
+										isReply={isReply}
+										isSearchMessage={isSearchMessage}
+									/>
+								)
+							);
 						}
-						formattedContent.push(
-							componentToRender ?? (
-								<MarkdownContent
-									key={`link${s}-${messageId}`}
-									isLink={true}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-									content={contentInElement}
-									isReply={isReply}
-									isSearchMessage={isSearchMessage}
-								/>
-							)
-						);
-					} else {
-						formattedContent.push(
-							componentToRender ?? (
-								<MarkdownContent
-									key={`link${s}-${messageId}`}
-									isLink={true}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-									content={contentInElement}
-									isReply={isReply}
-									isSearchMessage={isSearchMessage}
-								/>
-							)
-						);
 					}
 				} else if (element.type === EBacktickType.BOLD) {
-					formattedContent.push(<b key={`markdown-${s}-${messageId}`}> {contentInElement} </b>);
+					if (typeof contentInElement === 'string') {
+						const linkMatch = contentInElement.match(RE_LINK_TEMPLATE);
+						if (linkMatch && linkMatch[0]) {
+
+							const link = linkMatch[0];
+							const linkIndex = contentInElement.indexOf(link);
+							const linkStart = s + linkIndex;
+							const linkEnd = linkStart + link.length;
+
+							renderedLinkRanges.push({ s: linkStart, e: linkEnd });
+
+							const beforeLink = contentInElement.substring(0, linkIndex);
+							const afterLink = contentInElement.substring(linkIndex + link.length);
+
+
+							if (beforeLink) {
+								formattedContent.push(<b key={`markdown-before-${s}-${messageId}`}>{beforeLink}</b>);
+							}
+
+
+							formattedContent.push(
+								<a
+									key={`markdown-link-${s}-${messageId}`}
+									onClick={() => window.open(link, '_blank')}
+									className="text-blue-500 cursor-pointer break-words underline tagLink font-bold"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{link}
+								</a>
+							);
+
+
+							if (afterLink) {
+								formattedContent.push(<b key={`markdown-after-${s}-${messageId}`}>{afterLink}</b>);
+							}
+						} else {
+
+							formattedContent.push(<b key={`markdown-${s}-${messageId}`}>{contentInElement}</b>);
+						}
+					} else {
+
+						formattedContent.push(<b key={`markdown-${s}-${messageId}`}></b>);
+					}
 				} else if (element.type === EBacktickType.VOICE_LINK) {
 					const meetingCode = getMeetCode(contentInElement as string) as string;
 					formattedContent.push(
