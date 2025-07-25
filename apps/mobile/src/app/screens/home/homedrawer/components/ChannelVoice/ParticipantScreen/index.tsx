@@ -4,7 +4,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { selectIsPiPMode, selectMemberClanByUserName, useAppSelector } from '@mezon/store-mobile';
 import { Track } from 'livekit-client';
 import React, { useMemo } from 'react';
-import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
@@ -81,7 +81,8 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 						isPiPMode && { height: size.s_60 * 2, width: '45%', marginHorizontal: size.s_4 },
 						{
 							flexDirection: 'column'
-						}
+						},
+						participant?.isSpeaking && { borderWidth: 1, borderColor: themeValue.textLink }
 					]}
 				>
 					<VideoTrack
@@ -109,7 +110,8 @@ const ParticipantItem = ({ participant, tracks, setFocusedScreenShare, isGridLay
 						isPiPMode && { height: size.s_60 * 2, width: '45%', marginHorizontal: size.s_4 },
 						{
 							flexDirection: 'column'
-						}
+						},
+						participant?.isSpeaking && { borderWidth: 1, borderColor: themeValue.textLink }
 					]}
 				>
 					<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: size.s_10 }}>

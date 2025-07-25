@@ -10,6 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
+import { Participant } from 'livekit-client';
 import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -25,6 +26,8 @@ import ControlBottomBar from '../ControlBottomBar';
 import FocusedScreenPopup from '../FocusedScreenPopup';
 import ParticipantScreen from '../ParticipantScreen';
 import { style } from '../styles';
+
+const PARTICIPANT_COUNT_THRESHOLD = 8;
 
 const RoomView = ({
 	isAnimationComplete,
@@ -54,6 +57,7 @@ const RoomView = ({
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const screenCaptureRef = React.useRef(null);
 	const isShowPreCallInterface = useSelector(selectIsShowPreCallInterface);
+	const [sortedParticipants, setSortedParticipants] = useState<Participant[]>([]);
 
 	useEffect(() => {
 		const subscription = focusedScreenShare
@@ -71,7 +75,24 @@ const RoomView = ({
 		}
 	}, [dispatch, isShowPreCallInterface, participants?.length]);
 
-	const sortedParticipants = [...participants].sort((a, b) => (b.isScreenShareEnabled ? 1 : 0) - (a.isScreenShareEnabled ? 1 : 0));
+	useEffect(() => {
+		setSortedParticipants((prev) => {
+			const sortBySpeaking = participants?.length > PARTICIPANT_COUNT_THRESHOLD;
+			const currentSids = new Set(participants?.map((p) => p?.sid));
+			const remaining = prev?.filter((p) => currentSids?.has(p?.sid));
+
+			const remainingSet = new Set(remaining.map((p) => p.sid));
+			const newOnes = participants?.filter((p) => !remainingSet?.has(p?.sid));
+
+			const combined = [...(remaining ?? []), ...(newOnes ?? [])];
+			const sorted = combined?.sort((a, b) => {
+				const score = (p: Participant) => (p?.isScreenShareEnabled ? 2 : 0) + (sortBySpeaking && p?.isSpeaking ? 1 : 0);
+				return score(b) - score(a);
+			});
+
+			return sorted;
+		});
+	}, [participants]);
 
 	useEffect(() => {
 		if (focusedScreenShare) {
