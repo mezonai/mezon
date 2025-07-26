@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { LoadingStatus } from '@mezon/utils';
+import { IMessageWithUser, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
@@ -21,6 +21,8 @@ export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	showModalSendToken: boolean;
+	showGiveCoffeeModal: boolean;
+	giveCoffeeMessage: IMessageWithUser | null;
 	tokenSocket: Record<string, ApiGiveCoffeeEvent>;
 	tokenUpdate: Record<string, number>;
 	infoSendToken: ISendTokenDetailType | null;
@@ -37,7 +39,6 @@ export const updateGiveCoffee = createAsyncThunk(
 	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id, token_count }: ApiGiveCoffeeEvent, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
 			const response = await mezon.client.givecoffee(mezon.session, {
 				channel_id,
 				clan_id,
@@ -62,6 +63,8 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 	clans: [],
 	error: null,
 	showModalSendToken: false,
+	showGiveCoffeeModal: false,
+	giveCoffeeMessage: null,
 	tokenSocket: {},
 	tokenUpdate: {},
 	infoSendToken: null,
@@ -99,6 +102,12 @@ export const giveCoffeeSlice = createSlice({
 		remove: giveCoffeeAdapter.removeOne,
 		setShowModalSendToken: (state, action: PayloadAction<boolean>) => {
 			state.showModalSendToken = action.payload;
+		},
+		setShowGiveCoffeeModal: (state, action: PayloadAction<boolean>) => {
+			state.showGiveCoffeeModal = action.payload;
+		},
+		setGiveCoffeeMessage: (state, action: PayloadAction<IMessageWithUser | null>) => {
+			state.giveCoffeeMessage = action.payload;
 		},
 		setInfoSendToken: (state, action: PayloadAction<ISendTokenDetailType | null>) => {
 			state.infoSendToken = action.payload;
@@ -178,6 +187,10 @@ export const giveCoffeeActions = {
 export const getCoffeeState = (rootState: { [GIVE_COFEE]: GiveCoffeeState }): GiveCoffeeState => rootState[GIVE_COFEE];
 
 export const selectShowModalSendToken = createSelector(getCoffeeState, (state) => state.showModalSendToken);
+
+export const selectShowGiveCoffeeModal = createSelector(getCoffeeState, (state) => state.showGiveCoffeeModal);
+
+export const selectGiveCoffeeMessage = createSelector(getCoffeeState, (state) => state.giveCoffeeMessage);
 
 export const selectInfoSendToken = createSelector(getCoffeeState, (state) => state.infoSendToken);
 
