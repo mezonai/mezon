@@ -1,15 +1,12 @@
-import { useAuth, useChatReaction, useDirect, useEmojiConverted, useGifs, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
+import { useAuth, useEmojiConverted, useGifs, usePermissionChecker } from '@mezon/core';
 import {
 	CanvasAPIEntity,
 	ChannelsEntity,
 	createEditCanvas,
-	getStore,
 	gifsStickerEmojiActions,
-	giveCoffeeActions,
 	messagesActions,
 	reactionActions,
 	referencesActions,
-	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectDefaultCanvasByChannelId,
@@ -22,20 +19,15 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
-	AMOUNT_TOKEN,
 	EEventAction,
-	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	IMessageWithUser,
 	MenuBuilder,
 	SYSTEM_NAME,
 	SYSTEM_SENDER_ID,
 	SubPanelName,
-	TOKEN_TO_AMOUNT,
 	TypeMessage,
 	findParentByClass,
-	formatMoney,
-	isPublicChannel,
 	useMenuBuilder,
 	useMenuBuilderPlugin
 } from '@mezon/utils';
@@ -45,6 +37,7 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ReactionPart from '../ContextMenu/ReactionPart';
+import { useGiveCoffeeModal } from '../GiveCoffeeModal/GiveCoffeeModalContext';
 
 type ChannelMessageOptProps = {
 	message: IMessageWithUser;
@@ -211,71 +204,12 @@ const RecentEmoji: React.FC<RecentEmojiProps> = ({ message, isTopic }) => {
 
 function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) {
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
-	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
-	const { reactionMessageDispatch } = useChatReaction();
-	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
-	const channel = useSelector(selectCurrentChannel);
-	const { createDirectMessageWithUser } = useDirect();
-	const { sendInviteMessage } = useSendInviteMessage();
-
-	const sendNotificationMessage = useCallback(
-		async (userId: string, username?: string, avatar?: string, display_names?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_names, username, avatar);
-			if (response.channel_id) {
-				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(
-					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
-					response.channel_id,
-					channelMode,
-					TypeMessage.SendToken
-				);
-			}
-		},
-		[createDirectMessageWithUser, sendInviteMessage]
-	);
+	const { openGiveCoffeeModal } = useGiveCoffeeModal();
 
 	const handleItemClick = useCallback(async () => {
-		const store = getStore();
-		const currentChannel = selectCurrentChannel(store.getState());
-		try {
-			const checkSendCoffee = await dispatch(
-				giveCoffeeActions.updateGiveCoffee({
-					channel_id: message.channel_id,
-					clan_id: message.clan_id ?? '',
-					message_ref_id: message.id,
-					receiver_id: message.sender_id,
-					sender_id: userId,
-					token_count: AMOUNT_TOKEN.TEN_TOKENS
-				})
-			).unwrap();
-			if (checkSendCoffee === true) {
-				await reactionMessageDispatch({
-					id: EMOJI_GIVE_COFFEE.emoji_id,
-					messageId: message.id ?? '',
-					emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
-					emoji: EMOJI_GIVE_COFFEE.emoji,
-					count: 1,
-					message_sender_id: message?.sender_id ?? '',
-					action_delete: false,
-					is_public: isPublicChannel(channel),
-					clanId: message.clan_id ?? '',
-					channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
-					isFocusTopicBox,
-					channelIdOnMessage: message?.channel_id
-				});
-
-				await sendNotificationMessage(
-					message.sender_id || '',
-					message.user?.username,
-					message.avatar,
-					message.user?.name || message.user?.username
-				);
-			}
-		} catch (error) {
-			console.error('Failed to give cofffee message', error);
-		}
-	}, [isFocusTopicBox, channel]);
+		openGiveCoffeeModal(message, isTopic);
+	}, [openGiveCoffeeModal, message, isTopic]);
 
 	return useMenuBuilderPlugin((builder) => {
 		builder.when(

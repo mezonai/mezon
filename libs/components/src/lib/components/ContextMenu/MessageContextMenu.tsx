@@ -1,21 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
-
-import {
-	useAppParams,
-	useAuth,
-	useChatReaction,
-	useChatSending,
-	useDirect,
-	usePermissionChecker,
-	useReference,
-	useSendInviteMessage
-} from '@mezon/core';
+import { useAppParams, useAuth, useChatSending, usePermissionChecker, useReference } from '@mezon/core';
 import {
 	channelMetaActions,
 	createEditCanvas,
 	directActions,
 	gifsStickerEmojiActions,
-	giveCoffeeActions,
 	messagesActions,
 	notificationActions,
 	pinMessageActions,
@@ -24,7 +12,6 @@ import {
 	selectAllDirectMessages,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
-	selectClickedOnTopicStatus,
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectCurrentTopicId,
@@ -49,30 +36,24 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
-	AMOUNT_TOKEN,
 	ContextMenuItem,
 	EEventAction,
-	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	FOR_10_MINUTES,
 	IMessageWithUser,
 	MenuBuilder,
 	ModeResponsive,
 	SHOW_POSITION,
-	SYSTEM_NAME,
-	SYSTEM_SENDER_ID,
 	SubPanelName,
-	TOKEN_TO_AMOUNT,
 	TypeMessage,
-	formatMoney,
 	handleCopyImage,
 	handleCopyLink,
 	handleOpenLink,
-	handleSaveImage,
-	isPublicChannel
+	handleSaveImage
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { ApiChannelDescription, ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import DynamicContextMenu from './DynamicContextMenu';
@@ -86,6 +67,7 @@ type MessageContextMenuProps = {
 	isTopic: boolean;
 	openDeleteMessageModal: () => void;
 	openPinMessageModal: () => void;
+	openGiveCoffeeModal: () => void;
 };
 
 type JsonObject = {
@@ -114,9 +96,10 @@ function MessageContextMenu({
 	activeMode,
 	isTopic,
 	openPinMessageModal,
-	openDeleteMessageModal
+	openDeleteMessageModal,
+	openGiveCoffeeModal
 }: MessageContextMenuProps) {
-	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
+	// const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -128,9 +111,6 @@ function MessageContextMenu({
 	const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);
 	const currentThread = useAppSelector(selectThreadCurrentChannel);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(currentDmId || ''));
-
-	const { createDirectMessageWithUser } = useDirect();
-	const { sendInviteMessage } = useSendInviteMessage();
 
 	const { sendMessage: sendChatMessage } = useChatSending({
 		channelOrDirect: (isClanView ? currentChannel : currentDmGroup) as ApiChannelDescription,
@@ -156,14 +136,12 @@ function MessageContextMenu({
 	const handleItemClick = useCallback(() => {
 		dispatch(referencesActions.setIdReferenceMessageReaction(message.id));
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.EMOJI_REACTION_RIGHT));
-	}, [dispatch]);
+	}, [dispatch, message.id]);
 	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
 	const messagePosition = allMessageIds.findIndex((id: string) => id === messageId);
 	const { userId } = useAuth();
 	const { posShowMenu, imageSrc } = useMessageContextMenu();
 	const isOwnerGroupDM = useIsOwnerGroupDM();
-	const { reactionMessageDispatch } = useChatReaction();
-	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 
 	const isMyMessage = useMemo(() => {
 		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
@@ -523,7 +501,16 @@ function MessageContextMenu({
 		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return canDeleteMessage;
 		}
-	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM]);
+		return false;
+	}, [checkPos, isMyMessage, type, isOwnerGroupDM, activeMode, canDeleteMessage]);
+
+	const enableGiveCoffeeItem = useMemo(() => {
+		if (!checkPos) return false;
+		// Don't show give coffee for own messages
+		if (isMyMessage) return false;
+		// Only show in channels where we can send messages
+		return canSendMessage;
+	}, [checkPos, isMyMessage, canSendMessage]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
 
@@ -561,23 +548,6 @@ function MessageContextMenu({
 			setEnableSaveImageItem(false);
 		}
 	}, [checkElementIsImage, isClickedEmoji, isClickedSticker]);
-
-	const sendTransactionMessage = useCallback(
-		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
-				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(
-					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
-					response.channel_id,
-					channelMode,
-					TypeMessage.SendToken
-				);
-			}
-		},
-		[createDirectMessageWithUser, sendInviteMessage]
-	);
-
 	const quickMenuItems = useAppSelector((state) => selectQuickMenuByChannelId(state, currentChannel?.id || ''));
 
 	const items = useMemo<ContextMenuItem[]>(() => {
@@ -592,59 +562,9 @@ function MessageContextMenu({
 			);
 		});
 
-		builder.when(
-			checkPos &&
-				message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
-				message?.sender_id !== SYSTEM_SENDER_ID &&
-				message?.username !== SYSTEM_NAME,
-			(builder) => {
-				builder.addMenuItem(
-					'giveAcoffee', // id
-					'Give A Coffee', // label
-
-					async () => {
-						try {
-							if (userId !== message.sender_id) {
-								await dispatch(
-									giveCoffeeActions.updateGiveCoffee({
-										channel_id: message.channel_id,
-										clan_id: message.clan_id,
-										message_ref_id: message.id,
-										receiver_id: message.sender_id,
-										sender_id: userId,
-										token_count: AMOUNT_TOKEN.TEN_TOKENS
-									})
-								).unwrap();
-								await reactionMessageDispatch({
-									id: EMOJI_GIVE_COFFEE.emoji_id,
-									messageId: message.id ?? '',
-									emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
-									emoji: EMOJI_GIVE_COFFEE.emoji,
-									count: 1,
-									message_sender_id: message?.sender_id ?? '',
-									action_delete: false,
-									is_public: isPublicChannel(currentChannel),
-									clanId: message.clan_id ?? '',
-									channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
-									isFocusTopicBox,
-									channelIdOnMessage: message?.channel_id
-								});
-
-								await sendTransactionMessage(
-									message.sender_id || '',
-									message.user?.name,
-									message.user?.name || message.user?.username,
-									message.avatar
-								);
-							}
-						} catch (error) {
-							console.error('Failed to give cofffee message', error);
-						}
-					},
-					<Icons.DollarIconRightClick defaultSize="w-4 h-4" />
-				);
-			}
-		);
+		builder.when(enableGiveCoffeeItem, (builder) => {
+			builder.addMenuItem('giveCoffee', 'Give Coffee', openGiveCoffeeModal, <Icons.DollarIconRightClick defaultSize="w-4 h-4" />);
+		});
 
 		builder.when(enableEditMessageItem, (builder) => {
 			builder.addMenuItem(
@@ -844,6 +764,7 @@ function MessageContextMenu({
 		isShowForwardAll,
 		enableSpeakMessageItem,
 		enableDelMessageItem,
+		enableGiveCoffeeItem,
 		enableReportMessageItem,
 		enableCopyLinkItem,
 		enableOpenLinkItem,
