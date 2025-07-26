@@ -11,7 +11,7 @@ import {
 	formatMoney,
 	isPublicChannel
 } from '@mezon/utils';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { ChannelStreamMode } from 'mezon-js';
 import { useSelector } from 'react-redux';
@@ -33,9 +33,26 @@ const GiveCoffeeModal = ({ onClose, message, isTopic }: GiveCoffeeModalProps) =>
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const modalRef = useRef<HTMLDivElement>(null);
+	const [quantity, setQuantity] = useState(1);
 
-	const receiverName = message?.display_name || message?.username || message?.clan_nick || 'Unknown User';
+	const receiverName = message?.username || message?.clan_nick || 'Unknown User';
 	const receiverAvatar = message?.clan_avatar || message?.avatar || '';
+
+	const sendTransactionMessage = useCallback(
+		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
+			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
+			if (response.channel_id) {
+				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				sendInviteMessage(
+					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.TEN_THOUSAND * quantity)}₫ | Give coffee action`,
+					response.channel_id,
+					channelMode,
+					TypeMessage.SendToken
+				);
+			}
+		},
+		[sendInviteMessage, createDirectMessageWithUser, quantity]
+	);
 
 	const handleConfirm = useCallback(async () => {
 		if (!message || !userId) return;
@@ -47,7 +64,7 @@ const GiveCoffeeModal = ({ onClose, message, isTopic }: GiveCoffeeModalProps) =>
 					message_ref_id: message.id,
 					receiver_id: message.sender_id,
 					sender_id: userId,
-					token_count: AMOUNT_TOKEN.TEN_TOKENS
+					token_count: AMOUNT_TOKEN.TEN_TOKENS * quantity
 				})
 			).unwrap();
 
@@ -70,42 +87,25 @@ const GiveCoffeeModal = ({ onClose, message, isTopic }: GiveCoffeeModalProps) =>
 		} catch (error) {
 			console.error('Failed to give coffee:', error);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [dispatch, message, userId, quantity, reactionMessageDispatch, currentChannel, isTopic, isFocusTopicBox, sendTransactionMessage, onClose]);
 
 	const handleCancel = useCallback(() => {
 		onClose();
 	}, [onClose]);
-
-	const sendTransactionMessage = useCallback(
-		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
-				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(
-					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.TEN_THOUSAND)}₫ | Give coffee action`,
-					response.channel_id,
-					channelMode,
-					TypeMessage.SendToken
-				);
-			}
-		},
-		[sendInviteMessage, createDirectMessageWithUser]
-	);
 
 	return (
 		<Modal onClose={handleCancel}>
 			<div ref={modalRef} className="bg-theme-surface rounded-lg shadow-lg p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
 				{/* Header */}
 				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-xl font-semibold text-theme-primary">Give a Coffee</h2>
+					<h2 className="text-xl font-semibold text-theme-primary">Give Coffees</h2>
 					<button onClick={handleCancel} className="text-theme-primary hover:text-theme-secondary transition-colors">
 						<Icons.CloseIcon className=" w-6 h-6" />
 					</button>
 				</div>
 
 				{/* Content */}
-				<div className="space-y-4">
+				<div className="space-y-2">
 					<div className="flex items-center space-x-3 p-3 bg-theme-surface-secondary rounded-lg">
 						<AvatarImage
 							alt={receiverName}
@@ -116,16 +116,36 @@ const GiveCoffeeModal = ({ onClose, message, isTopic }: GiveCoffeeModalProps) =>
 						/>
 						<div>
 							<p className="font-medium text-theme-primary">{receiverName}</p>
-							<p className="text-sm text-theme-secondary">Will receive a coffee</p>
+							<p className="text-sm text-theme-secondary">Will receive coffee</p>
+						</div>
+					</div>
+
+					{/* Quantity Selector */}
+					<div className="space-y-2">
+						<div className="flex items-center justify-center space-x-4 p-3 bg-theme-surface-secondary rounded-lg">
+							<button
+								onClick={() => setQuantity(Math.max(1, quantity - 1))}
+								disabled={quantity <= 1}
+								className="w-8 h-8 rounded-full bg-theme-surface border border-theme-border flex items-center justify-center text-theme-primary hover:bg-theme-surface-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								<span className="text-lg font-bold">−</span>
+							</button>
+							<span className="text-xl font-semibold text-theme-primary min-w-[2rem] text-center">{quantity}</span>
+							<button
+								onClick={() => setQuantity(Math.min(10, quantity + 1))}
+								disabled={quantity >= 10}
+								className="w-8 h-8 rounded-full bg-theme-surface border border-theme-border flex items-center justify-center text-theme-primary hover:bg-theme-surface-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								<Icons.PlusOutline className="w-4 h-4" />
+							</button>
 						</div>
 					</div>
 
 					<div className="flex items-center justify-center space-x-2 p-4 bg-theme-surface-secondary rounded-lg">
 						<Icons.DollarIcon className="w-8 h-8 text-yellow-500" />
-						<span className="text-2xl font-bold text-theme-primary">{formatMoney(TOKEN_TO_AMOUNT.TEN_THOUSAND)}</span>
+						<span className="text-2xl font-bold text-theme-primary">{formatMoney(TOKEN_TO_AMOUNT.TEN_THOUSAND * quantity)}</span>
 					</div>
-
-					<p className="text-center text-theme-secondary">Are you sure to give a coffee to {receiverName}?</p>
+					<p className="text-center text-theme-secondary">Are you sure to give coffee to {receiverName}?</p>
 				</div>
 
 				{/* Actions */}

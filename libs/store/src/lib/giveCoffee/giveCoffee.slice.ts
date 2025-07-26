@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import { AMOUNT_TOKEN, IMessageWithUser, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
@@ -39,14 +39,21 @@ export const updateGiveCoffee = createAsyncThunk(
 	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id, token_count }: ApiGiveCoffeeEvent, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.givecoffee(mezon.session, {
-				channel_id,
-				clan_id,
-				message_ref_id,
-				receiver_id,
-				sender_id,
-				token_count
-			});
+			const response =
+				token_count === AMOUNT_TOKEN.TEN_TOKENS
+					? await mezon.client.givecoffee(mezon.session, {
+							channel_id,
+							clan_id,
+							message_ref_id,
+							receiver_id,
+							sender_id,
+							token_count
+						})
+					: await mezon.client.sendToken(mezon.session, {
+							receiver_id,
+							amount: (token_count ?? AMOUNT_TOKEN.TEN_TOKENS) * 1000,
+							note: `Give coffee action`
+						});
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}

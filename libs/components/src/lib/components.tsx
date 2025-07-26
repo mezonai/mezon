@@ -138,6 +138,5 @@ export * from './components/ButtonSwich';
 export { default as ButtonCopy } from './components/ButtonSwich/CopyButtonComponent';
 export * from './components/DmCall';
 export { DmCallManager } from './components/DmCall/DmCallManager';
-export { GiveCoffeeModalProvider, useGiveCoffeeModal } from './components/GiveCoffeeModal/GiveCoffeeModalContext';
 export { default as InternetStatusPopover } from './components/InternetStatusPopover';
 export { default as ModalLayout } from './components/Modal';
