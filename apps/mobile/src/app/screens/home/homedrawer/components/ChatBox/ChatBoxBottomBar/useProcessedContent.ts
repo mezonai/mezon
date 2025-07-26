@@ -86,11 +86,18 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 			handler: (idx) => {
 				const startindex = idx;
 				let i2 = idx + (inputString.startsWith('https://', idx) ? 'https://'.length : 'http://'.length);
-				while (i2 < inputString.length && ![' ', '\n', '\r', '\t', ','].includes(inputString[i2])) {
+				const stopChars = [' ', '\n', '\r', '\t'];
+				while (i2 < inputString.length && !stopChars.includes(inputString[i2])) {
 					i2++;
 				}
-				const endindex = i2;
-				const link = inputString.substring(startindex, endindex);
+				let endindex = i2;
+				let link = inputString.substring(startindex, endindex);
+				// Remove any trailing punctuation if present
+				const trailingPunctuations = [',', '.', '!', '?', ';', ':'];
+				while (link.length > 0 && trailingPunctuations.includes(link[link.length - 1])) {
+					link = link.slice(0, -1);
+					endindex--;
+				}
 				if (link.startsWith(googleMeetPrefix)) {
 					voiceRooms.push({
 						type: EBacktickType.VOICE_LINK,
@@ -98,14 +105,14 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 						e: endindex
 					} as ILinkVoiceRoomOnMessage);
 				} else {
-					const isYouTube = isYouTubeLink(inputString);
+					const isYouTube = isYouTubeLink(link);
 					links.push({
 						type: isYouTube ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,
 						s: startindex,
 						e: endindex
 					} as ILinkOnMessage);
 				}
-				return endindex;
+				return i2;
 			}
 		},
 		// Bold handler
