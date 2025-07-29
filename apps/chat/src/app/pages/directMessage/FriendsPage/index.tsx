@@ -7,6 +7,7 @@ import {
 	selectBlockedUsers,
 	selectCloseMenu,
 	selectCurrentTabStatus,
+	selectIsShowModalHistory,
 	selectStatusMenu,
 	selectTheme,
 	useAppDispatch
@@ -134,10 +135,12 @@ const FriendsPage = () => {
 		}
 		return 'add-fr-img-dark.svg';
 	}, [appearanceTheme]);
+	const isShowModalHistory = useSelector(selectIsShowModalHistory);
 
 	return (
 		<div className="flex flex-col flex-1 shrink min-w-0  h-[100%]">
-			<div className={`draggable-area flex min-w-0 items-center bg-theme-chat  px-6 py-3 justify-start h-heightHeader border-b-theme-primary`}>
+			<div className={`${!isShowModalHistory ? 'draggable-area' : ''
+				} flex min-w-0 items-center bg-theme-chat  px-6 py-3 justify-start h-heightHeader border-b-theme-primary`}>
 				{closeMenuMobile && (
 					<div className="text-theme-primary" onClick={() => setStatusMenu(true)}>
 						<Icons.OpenMenu defaultSize="w-6 h-6" />

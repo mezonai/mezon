@@ -2,6 +2,7 @@ import { useAuth, useMemberCustomStatus } from '@mezon/core';
 import {
 	ChannelMembersEntity,
 	accountActions,
+	appActions,
 	authActions,
 	clanMembersMetaActions,
 	clansActions,
@@ -68,9 +69,11 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	};
 	const handleOpenHistoryModal = () => {
 		setIsShowModalHistory(true);
+		dispatch(appActions.setIsShowModalHistory(true));
 	};
 	const handleCloseHistoryModal = () => {
 		setIsShowModalHistory(false);
+		dispatch(appActions.setIsShowModalHistory(false));
 	};
 
 	const handleWalletManagement = () => {

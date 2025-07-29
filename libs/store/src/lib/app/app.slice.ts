@@ -46,6 +46,7 @@ export interface AppState {
 	isShowSettingFooter: showSettingFooterProps;
 	isShowPopupQuickMess: boolean;
 	categoryChannelOffsets: { [key: number]: number };
+	isShowModalHistory?: boolean; 
 }
 
 export const initialAppState: AppState = {
@@ -70,7 +71,8 @@ export const initialAppState: AppState = {
 	isFromFcmMobile: false,
 	isShowSettingFooter: { status: false, initTab: 'Account', isUserProfile: true, profileInitTab: 'USER_SETTING', clanId: '' },
 	isShowPopupQuickMess: false,
-	categoryChannelOffsets: {}
+	categoryChannelOffsets: {},
+	isShowModalHistory: false 
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async ({ id }: { id: string }, thunkAPI) => {
@@ -233,6 +235,9 @@ export const appSlice = createSlice({
 				...state.categoryChannelOffsets,
 				...action.payload
 			};
+		},
+		setIsShowModalHistory: (state, action) => {
+			state.isShowModalHistory = action.payload;
 		}
 	}
 });
@@ -288,3 +293,8 @@ export const selectIsShowSettingFooter = createSelector(getAppState, (state: App
 export const selectIsShowPopupQuickMess = createSelector(getAppState, (state: AppState) => state.isShowPopupQuickMess);
 
 export const selectCategoryChannelOffsets = createSelector(getAppState, (state: AppState) => state.categoryChannelOffsets);
+
+export const selectIsShowModalHistory = createSelector(
+	getAppState,
+	(state: AppState) => state.isShowModalHistory
+);

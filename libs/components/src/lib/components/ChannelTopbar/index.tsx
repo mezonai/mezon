@@ -27,6 +27,7 @@ import {
 	selectIsShowCreateTopic,
 	selectIsShowMemberList,
 	selectIsShowMemberListDM,
+	selectIsShowModalHistory,
 	selectIsShowPinBadgeByChannelId,
 	selectIsThreadModalVisible,
 	selectIsUseProfileDM,
@@ -65,6 +66,8 @@ export type ChannelTopbarProps = {
 const ChannelTopbar = memo(() => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
+	const isShowModalHistory = useSelector(selectIsShowModalHistory);
+
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
 	const dispatch = useDispatch();
@@ -76,7 +79,8 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`draggable-area max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink   ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`${!isShowModalHistory ? 'draggable-area' : ''
+				} max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
 		</div>
