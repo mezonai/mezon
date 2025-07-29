@@ -1,7 +1,7 @@
 import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity, channelsActions, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
+import { ETokenMessage, SYSTEM_SENDER_ID, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -79,6 +79,10 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 
 	const dispatch = useAppDispatch();
 	const allUserIdsInChannel = getMemberIds;
+	const isShowWaveButton = useMemo(
+		() => message?.code === TypeMessage.Welcome && message?.sender_id === SYSTEM_SENDER_ID && message?.content?.t?.endsWith('Say hi!'),
+		[message?.code, message?.sender_id, message?.content?.t]
+	);
 	const handleJumpToPinMessage = useCallback(
 		(e) => {
 			if (message?.references && message?.references[0]?.message_ref_id) {
@@ -207,7 +211,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 					</Text>
 				</View>
 
-				{message?.code === TypeMessage.Welcome && <WaveButton message={message} />}
+				{isShowWaveButton && <WaveButton message={message} />}
 			</View>
 		</View>
 	);

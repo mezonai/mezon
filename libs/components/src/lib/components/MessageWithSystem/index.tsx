@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { MessagesEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { TypeMessage, addMention, convertDateString } from '@mezon/utils';
-import React, { ReactNode, useRef, useState } from 'react';
+import { SYSTEM_SENDER_ID, TypeMessage, addMention, convertDateString } from '@mezon/utils';
+import React, { ReactNode, useMemo, useRef, useState } from 'react';
 import { MessageReaction } from '../../components';
 import { MessageLineSystem } from '../MessageWithUser/MessageLineSystem';
 import WaveButton from './WaveButton';
@@ -25,6 +25,11 @@ export type MessageWithSystemProps = {
 function MessageWithSystem({ message, onContextMenu, popup, isSearchMessage, showDivider, isTopic }: Readonly<MessageWithSystemProps>) {
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
+
+	const isShowWaveButton = useMemo(
+		() => message?.code === TypeMessage.Welcome && message?.sender_id === SYSTEM_SENDER_ID && message?.content?.t?.endsWith('Say hi!'),
+		[message?.code, message?.sender_id, message?.content?.t]
+	);
 
 	return (
 		<>
@@ -52,7 +57,7 @@ function MessageWithSystem({ message, onContextMenu, popup, isSearchMessage, sho
 					</div>
 
 					<MessageReaction message={message} isTopic={isTopic} />
-					{message?.code === TypeMessage.Welcome && <WaveButton message={message} />}
+					{isShowWaveButton && <WaveButton message={message} />}
 				</HoverStateWrapper>
 			)}
 		</>
