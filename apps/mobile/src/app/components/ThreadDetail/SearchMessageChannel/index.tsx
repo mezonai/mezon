@@ -1,8 +1,9 @@
 import { ETypeSearch, IOption, IUerMention } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, searchMessagesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
-import { IChannel, SIZE_PAGE_SEARCH, SearchFilter } from '@mezon/utils';
+import { DEBOUNCE_TYPING_TIME, IChannel, SIZE_PAGE_SEARCH, SearchFilter } from '@mezon/utils';
 import { RouteProp } from '@react-navigation/native';
+import debounce from 'lodash.debounce';
 import { createContext, memo, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -41,12 +42,12 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 	const [optionFilter, setOptionFilter] = useState<IOption>();
 
 	const [searchText, setSearchText] = useState<string>('');
-	const handleSearchText = useCallback((text) => {
+	const handleSearchText = useCallback(debounce((text) => {
 		if (!text.length) {
 			setSearchMessagePage(true);
 		}
 		setSearchText(text);
-	}, []);
+	}, DEBOUNCE_TYPING_TIME), []);
 
 	const handleOptionFilter = useCallback((option) => {
 		setOptionFilter(option);
@@ -88,7 +89,7 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 		setFiltersSearch(filter);
 
 		if ((searchText?.trim() || (optionFilter && userMention)) && !!currentChannel?.id) {
-			dispatch(searchMessagesActions.setCurrentPage(1));
+			dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.id, page: 1 }));
 			dispatch(searchMessagesActions.fetchListSearchMessage(payload));
 		}
 	};
