@@ -8,7 +8,7 @@ import EmptyPinMessage from './EmptyPinMessage';
 import { style } from './PinMessage';
 import PinMessageItem from './PinMessageItem';
 
-const PinMessage = memo(({ currentChannelId }: { currentChannelId: string }) => {
+const PinMessage = memo(({ currentChannelId, currentClanId }: { currentChannelId: string; currentClanId: string }) => {
 	const { themeValue } = useTheme();
 	const styles = style();
 	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannelId as string));
@@ -18,20 +18,20 @@ const PinMessage = memo(({ currentChannelId }: { currentChannelId: string }) => 
 	const fetchPinMessages = useCallback(async () => {
 		try {
 			setIsLoading(true);
-			await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId }));
+			await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId, clanId: currentClanId }));
 		} catch (error) {
 			console.error('Failed to fetch pin messages:', error);
 		} finally {
 			setIsLoading(false);
 		}
-	}, [currentChannelId]);
+	}, [currentChannelId, currentClanId]);
 
 	useEffect(() => {
 		fetchPinMessages();
 	}, [fetchPinMessages]);
 
 	const handleUnpinMessage = (message: PinMessageEntity) => {
-		dispatch(pinMessageActions.deleteChannelPinMessage({ channel_id: currentChannelId, message_id: message?.id }));
+		dispatch(pinMessageActions.deleteChannelPinMessage({ channel_id: currentChannelId, message_id: message?.id, clan_id: currentClanId }));
 	};
 
 	const renderItem = useCallback(({ item }: { item: PinMessageEntity }) => {

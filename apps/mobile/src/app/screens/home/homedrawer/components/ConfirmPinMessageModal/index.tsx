@@ -1,6 +1,14 @@
 import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Colors } from '@mezon/mobile-ui';
-import { AppDispatch, UpdatePinMessage, getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId } from '@mezon/store-mobile';
+import {
+	AppDispatch,
+	UpdatePinMessage,
+	getActiveMode,
+	pinMessageActions,
+	selectCurrentChannel,
+	selectCurrentClanId,
+	selectCurrentDM
+} from '@mezon/store-mobile';
 import { isValidUrl } from '@mezon/transport';
 import { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
@@ -30,7 +38,8 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 	const dispatch = useDispatch<AppDispatch>();
 	const { t } = useTranslation('message');
 	const currentClanId = useSelector(selectCurrentClanId);
-	const { currentChannel, currentDm } = useSelector(getCurrentChannelAndDm);
+	const currentChannel = useSelector(selectCurrentChannel);
+	const currentDm = useSelector(selectCurrentDM);
 
 	const handleConfirmPinMessage = async () => {
 		try {
@@ -76,14 +85,18 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 
 	const onConfirm = async () => {
 		switch (type) {
-			case EMessageActionType.UnPinMessage:
+			case EMessageActionType.UnPinMessage: {
+				const mode = getActiveMode();
+				const isDMMode = mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
 				dispatch(
 					pinMessageActions.deleteChannelPinMessage({
 						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '',
-						message_id: message.id
+						message_id: message.id,
+						clan_id: isDMMode ? '0' : currentClanId
 					})
 				);
 				break;
+			}
 			case EMessageActionType.PinMessage:
 				await handleConfirmPinMessage();
 				break;
