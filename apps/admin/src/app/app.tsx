@@ -7,7 +7,6 @@ import './app.module.scss';
 import AppLayout from './layouts/AppLayout';
 import RootLayout from './layouts/RootLayout';
 import ApplicationsPage from './pages/applications';
-import DocsPage from './pages/docs';
 import EmbedsPage from './pages/embeds';
 import TeamsPage from './pages/teams';
 import { Routes } from './routes';
@@ -44,10 +43,6 @@ export function App() {
 						{
 							path: 'embeds',
 							element: <EmbedsPage />
-						},
-						{
-							path: 'docs',
-							element: <DocsPage />
 						}
 					]
 				}
