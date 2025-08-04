@@ -2,6 +2,7 @@ import { useCustomNavigate } from '@mezon/core';
 import { channelsActions, getStore, selectAppChannelById } from '@mezon/store';
 import { IEmbedProps, ObserveFn } from '@mezon/utils';
 import { useDispatch } from 'react-redux';
+import { SummarySection } from '../SummarySection';
 import { EmbedMessage } from './EmbedMessage';
 
 interface EmbedMessageWrapProps {
@@ -10,9 +11,10 @@ interface EmbedMessageWrapProps {
 	messageId?: string;
 	channelId: string;
 	observeIntersectionForLoading?: ObserveFn;
+	summary?: string;
 }
 
-export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading }: EmbedMessageWrapProps) {
+export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading, summary }: EmbedMessageWrapProps) {
 	const navigate = useCustomNavigate();
 	const dispatch = useDispatch();
 
@@ -69,6 +71,7 @@ export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, obser
 					observeIntersectionForLoading={observeIntersectionForLoading}
 				/>
 			))}
+			<div className="max-w-[520px]">{summary && <SummarySection summary={summary} audio={true} />}</div>
 		</div>
 	);
 }

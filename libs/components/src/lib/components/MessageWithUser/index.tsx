@@ -23,6 +23,7 @@ import CallLogMessage from '../CallLogMessage/CallLogMessage';
 import { EmbedMessageWrap } from '../EmbedMessage/EmbedMessageWrap';
 import { MessageActionsPanel } from '../MessageActionsPanel';
 import ModalUserProfile from '../ModalUserProfile';
+import { SummarySection } from '../SummarySection';
 import TokenTransactionMessage from '../TokenTransactionMsg/TokenTransactionMsg';
 import MessageAttachment from './MessageAttachment';
 import MessageAvatar from './MessageAvatar';
@@ -209,7 +210,7 @@ function MessageWithUser({
 						{ 'pointer-events-none': message.isSending },
 						{ 'is-error pointer-events-none': message.isError },
 						{
-							'max-w-[37rem] bg-[#2f3136] border border-[#40444b] rounded-lg mx-2 my-1 p-3': message.content?.isCard
+							'max-w-[37rem] border border-[var(--border-primary)] rounded-lg mx-2 my-1 p-3': message.content?.isCard
 						}
 					)}
 					create_time={message.create_time}
@@ -324,8 +325,12 @@ function MessageWithUser({
 								senderId={message?.sender_id}
 								messageId={message?.id}
 								channelId={message.channel_id}
+								summary={message?.content?.summary}
 							/>
 						)}
+
+						{!message?.content?.embed && message?.content?.summary && <SummarySection summary={message?.content?.summary} />}
+
 						{!isTopic && message?.code === TypeMessage.Topic && <TopicViewButton message={message} />}
 
 						{!!message?.content?.callLog?.callLogType && (
@@ -358,14 +363,14 @@ function MessageWithUser({
 
 					{!isTopic && message?.content?.isCard && !isEphemeralMessage && message?.code !== TypeMessage.Topic && (
 						<div
-							className="border-t border-[#40444b] mt-3 pt-3 flex items-center justify-between cursor-pointer hover:bg-[#36393f] transition-colors duration-150 rounded-b-lg -mx-3 -mb-3 px-3 py-2"
+							className="border-t border-theme-primary mt-3 pt-3 flex items-center justify-between cursor-pointer bg-item-theme-hover transition-colors duration-150 rounded-b-lg -mx-3 -mb-3 px-3 py-2"
 							onClick={handleLeaveComment}
 						>
-							<div className="flex items-center gap-2 text-sm text-[#b9bbbe]">
+							<div className="flex items-center gap-2 text-sm text-theme-primary">
 								<Icons.MessageSquareIcon className="w-5 h-5" />
 								<span>Go to Topic</span>
 							</div>
-							<Icons.ArrowRight className="w-4 h-4 text-[#72767d]" />
+							<Icons.ArrowRight className="w-4 h-4 text-theme-primary" />
 						</div>
 					)}
 				</HoverStateWrapper>
