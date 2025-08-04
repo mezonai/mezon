@@ -12,11 +12,14 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			backgroundColor: colors.primary
 		},
+		header: {
+			paddingBottom: size.s_8,
+			marginHorizontal: size.s_20
+		},
 		scrollContainer: {
 			backgroundColor: colors.primary
 		},
 		addEmojiButton: {
-			marginHorizontal: size.s_20,
 			height: size.s_30,
 			backgroundColor: baseColor.blurple,
 			alignItems: 'center',
@@ -30,21 +33,18 @@ export const style = (colors: Attributes) =>
 			fontWeight: '500'
 		},
 		title: {
-			marginHorizontal: size.s_20,
 			color: colors.borderRadio,
 			fontSize: size.s_14,
 			lineHeight: size.s_18
 		},
 		requireTitle: {
-			marginHorizontal: size.s_20,
 			color: colors.borderRadio,
 			fontSize: size.s_12,
-			lineHeight: size.s_18,
-			marginLeft: size.s_28
+			lineHeight: size.s_16,
+			marginLeft: size.s_10
 		},
 		lightTitle: {
 			fontWeight: 'bold',
-			marginHorizontal: size.s_20,
 			marginVertical: size.s_10,
 			color: colors.borderRadio,
 			fontSize: size.s_14

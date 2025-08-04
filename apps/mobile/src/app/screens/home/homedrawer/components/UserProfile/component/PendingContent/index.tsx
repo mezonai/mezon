@@ -1,16 +1,16 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useFriends } from '@mezon/core';
-import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { EFriendState } from '../..';
-import { SeparatorWithLine } from '../../../../../../../components/Common';
 import MezonAvatar from '../../../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { SeparatorWithLine } from '../../../../../../../components/Common';
 import { IconCDN } from '../../../../../../../constants/icon_cdn';
 interface IPendingContentProps {
 	targetUser: FriendsEntity;
@@ -23,29 +23,14 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 	const { t } = useTranslation(['userProfile']);
 	const { acceptFriend, deleteFriend } = useFriends();
 
+	const handleRemoveFriend = () => {
+		deleteFriend(targetUser?.user?.username, targetUser?.user?.id);
+		onClose();
+	};
+
 	const actionList = [
 		{
 			id: 1,
-			text: t('pendingContent.block'),
-			action: () => {
-				//TODO
-				Toast.show({ type: 'info', text1: 'Updating...' });
-			},
-			isWarning: true,
-			isShow: true
-		},
-		{
-			id: 2,
-			text: t('pendingContent.reportUserProfile'),
-			action: () => {
-				//TODO
-				Toast.show({ type: 'info', text1: 'Updating...' });
-			},
-			isWarning: true,
-			isShow: true
-		},
-		{
-			id: 3,
 			text: t('pendingContent.acceptFriend'),
 			action: () => {
 				acceptFriend(targetUser?.user?.username, targetUser?.user?.id);
@@ -55,17 +40,22 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 			isShow: [EFriendState.ReceivedRequestFriend].includes(targetUser?.state)
 		},
 		{
-			id: 4,
-			text: t('pendingContent.cancelFriendRequest'),
-			action: () => {
-				deleteFriend(targetUser?.user?.username, targetUser?.user?.id);
-				onClose();
-			},
+			id: 2,
+			text:
+				targetUser?.state === EFriendState.ReceivedRequestFriend ? t('pendingContent.rejectFriend') : t('pendingContent.cancelFriendRequest'),
+			action: handleRemoveFriend,
 			isWarning: false,
 			isShow: [EFriendState.ReceivedRequestFriend, EFriendState.SentRequestFriend].includes(targetUser?.state)
 		},
 		{
-			id: 5,
+			id: 3,
+			text: t('pendingContent.removeFriend'),
+			action: handleRemoveFriend,
+			isWarning: false,
+			isShow: [EFriendState.Friend].includes(targetUser?.state)
+		},
+		{
+			id: 4,
 			text: t('pendingContent.copyUsername'),
 			action: () => {
 				Clipboard.setString(targetUser?.user?.username || '');
@@ -94,13 +84,24 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 				/>
 
 				<View style={{ flex: 1 }}>
-					<Text center color={themeValue.white} h4>
+					<Text
+						style={{
+							fontSize: verticalScale(16),
+							marginLeft: 0,
+							marginRight: 0,
+							textAlign: 'center',
+							alignItems: 'center',
+							alignContent: 'center',
+							justifyContent: 'center',
+							color: themeValue.white
+						}}
+					>
 						{targetUser?.user?.username}
 					</Text>
 				</View>
 
 				<TouchableOpacity onPress={() => onClose()}>
-					<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_32} width={size.s_32} />
+					<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_32} width={size.s_32} color={themeValue.text} />
 				</TouchableOpacity>
 			</View>
 			<View style={{ marginHorizontal: size.s_10, backgroundColor: themeValue.secondary, borderRadius: size.s_10 }}>
@@ -112,9 +113,15 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 						const { text, isWarning, action, isShow } = item;
 						if (!isShow) return null;
 						return (
-							<TouchableOpacity onPress={() => action()}>
+							<TouchableOpacity onPress={action}>
 								<View style={{ padding: size.s_14 }}>
-									<Text color={isWarning ? Colors.textRed : themeValue.text}>{text}</Text>
+									<Text
+										style={{
+											color: isWarning ? Colors.textRed : themeValue.text
+										}}
+									>
+										{text}
+									</Text>
 								</View>
 							</TouchableOpacity>
 						);

@@ -45,6 +45,29 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 		};
 
 		if (type === 'quit') {
+			if (room?.numParticipants === 1) {
+				dispatch(
+					messagesActions.sendMessage({
+						channelId: currentDmGroup?.channel_id,
+						clanId: '0',
+						mode: ChannelStreamMode.STREAM_MODE_GROUP,
+						isPublic: true,
+						content: {
+							t: 'Group call ended',
+							callLog: {
+								isVideo: false,
+								callLogType: IMessageTypeCallLog.FINISHCALL,
+								showCallBack: false
+							}
+						},
+						anonymous: false,
+						senderId: userProfile?.user?.id || '',
+						avatar: userProfile?.user?.avatar_url || '',
+						isMobile: true,
+						username: currentDmGroup?.channel_label || ''
+					})
+				);
+			}
 			sendSignalingToParticipants(
 				currentDmGroup?.user_id || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT,
@@ -90,6 +113,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 				})
 			);
 		}
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId: '', channelId: currentDmGroup?.channel_id });
 	};
 
 	const handleEndCall = () => {
@@ -97,7 +121,9 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 			handleGroupCallEnd(isShowPreCallInterface ? 'cancel' : 'quit');
 		}
 		room.disconnect();
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId: clanId, channelId: channelId });
+		if (!isGroupCall) {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId: clanId, channelId: channelId });
+		}
 	};
 
 	return (

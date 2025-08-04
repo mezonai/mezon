@@ -1,4 +1,4 @@
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import React, { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { ErrorInput } from '../../components/ErrorInput';
@@ -24,7 +24,7 @@ export default function MezonInput({ label, placeHolder, value, onTextChange, er
 		<View>
 			<Text style={styles.label}>{label}</Text>
 			<TextInput
-				placeholderTextColor={Colors.textGray}
+				placeholderTextColor={themeValue.textDisabled}
 				placeholder={placeHolder}
 				style={styles.input}
 				value={value}

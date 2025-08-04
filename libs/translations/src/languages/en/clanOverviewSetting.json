@@ -11,7 +11,7 @@
         "serverName": {
             "title": "Clan Name",
             "errorMessage": "Please enter a valid clan name (max 64 characters, only words, numbers, _ or -).",
-            "duplicateNameMessage" : "The clan name already exists. Please enter another name.",
+            "duplicateNameMessage": "The clan name already exists. Please enter another name.",
             "permissionDenied": "You do not have permission to edit Clan banner"
         },
         "inactive": {
@@ -48,7 +48,25 @@
     "permissions": {
         "toast": {
             "kickMemberSuccess": "Member kicked successfully",
-            "kickMemberFailed": "Failed to kick member"
+            "kickMemberFailed": "Failed to kick member",
+            "removeMemberThreadSuccess": "Member removed successfully",
+            "removeMemberThreadFailed": "Failed to remove member"
+        }
+    },
+    "action": {
+        "kick": "Kick",
+        "removeFromThread": "Remove from Thread",
+        "manage": "Manage"
+    },
+    "threadRemoveModal": {
+        "title": "Remove from Thread?",
+        "description": "Are you sure you want to remove {{username}} from this Thread?",
+        "remove": "Remove",
+        "cancel": "Never mind"
+    },
+    "modal": {
+        "kickUserClan": {
+            "title": "Are you sure?"
         }
     }
 }

@@ -51,6 +51,12 @@
 			</array>
 		</dict>
 	</array>
+	<key>hermes_enabled</key>
+	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	<string>itms-apps</string>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>GIDClientID</key>

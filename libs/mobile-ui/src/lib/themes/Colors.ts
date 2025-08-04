@@ -146,6 +146,7 @@ const colors = {
 	bgCharcoal: '#313338',
 	bgMention: '#3b426e',
 	red: 'red',
+	danger: '#dc3545',
 	orange: '#e77132',
 	goldenrodYellow: '#f2b13a',
 	green: 'green',

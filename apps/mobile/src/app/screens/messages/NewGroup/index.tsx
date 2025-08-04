@@ -166,14 +166,16 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 							/>
 						</View>
 
-						<FriendListByAlphabet
-							isSearching={Boolean(searchText?.trim()?.length)}
-							friendList={filteredFriendList}
-							handleFriendAction={handleFriendAction}
-							selectMode={true}
-							onSelectedChange={onSelectedChange}
-							selectedFriendDefault={selectedFriendDefault}
-						/>
+						<View style={styles.friendListWrapper}>
+							<FriendListByAlphabet
+								isSearching={Boolean(searchText?.trim()?.length)}
+								friendList={filteredFriendList}
+								handleFriendAction={handleFriendAction}
+								selectMode={true}
+								onSelectedChange={onSelectedChange}
+								selectedFriendDefault={selectedFriendDefault}
+							/>
+						</View>
 					</View>
 
 					<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} />

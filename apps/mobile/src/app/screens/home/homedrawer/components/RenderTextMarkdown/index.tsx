@@ -1,3 +1,4 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Attributes, Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -11,11 +12,13 @@ import {
 import { EBacktickType, ETokenMessage, IExtendedMessage, getSrcEmoji, isYouTubeLink } from '@mezon/utils';
 import { TFunction } from 'i18next';
 import { ChannelType } from 'mezon-js';
-import { Dimensions, Linking, StyleSheet, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { DeviceEventEmitter, Linking, StyleSheet, Text, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomIcon from '../../../../../../../src/assets/CustomIcon';
 import ImageNative from '../../../../../components/ImageNative';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
+import LinkOptionModal from '../LinkOptions/LinkOptionModal';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
@@ -49,8 +52,6 @@ export const TYPE_MENTION = {
  * custom style for markdown
  * react-native-markdown-display/src/lib/styles.js to see more
  */
-const screenWidth = Dimensions.get('window').width;
-const codeBlockMaxWidth = screenWidth - size.s_70;
 
 export const markdownStyles = (
 	colors: Attributes,
@@ -117,7 +118,7 @@ export const markdownStyles = (
 		},
 		fence: {
 			color: colors.text,
-			width: isTabletLandscape ? codeBlockMaxWidth * 0.6 : codeBlockMaxWidth,
+			width: isTabletLandscape ? '70%' : '100%',
 			backgroundColor: colors.secondaryLight,
 			borderColor: colors.black,
 			borderRadius: size.s_4,
@@ -196,29 +197,11 @@ export const markdownStyles = (
 			color: colors.text
 		},
 		blockSpacing: {
-			paddingVertical: size.s_4
+			paddingVertical: size.s_4,
+			width: '99.9%'
 		}
 	});
 };
-
-const styleMessageReply = (colors: Attributes) =>
-	StyleSheet.create({
-		body: {
-			color: colors.text,
-			fontSize: size.small
-		},
-		textVoiceChannel: {
-			fontSize: size.small,
-			color: colors.textDisabled,
-			lineHeight: size.s_20
-		},
-		mention: {
-			fontSize: size.small,
-			color: colors.textLink,
-			backgroundColor: colors.midnightBlue,
-			lineHeight: size.s_20
-		}
-	});
 
 export type IMarkdownProps = {
 	content: IExtendedMessage;
@@ -374,7 +357,8 @@ export const RenderTextMarkdownContent = ({
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
 
-	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [] } = content || {};
+	const { t, embed, mentions = [], hg = [], ej = [], mk = [], lk = [] } = content || {};
+	const embedNotificationMessage = embed?.[0]?.title;
 	let lastIndex = 0;
 	const textParts: React.ReactNode[] = [];
 	const markdownBlackParts: React.ReactNode[] = [];
@@ -383,11 +367,18 @@ export const RenderTextMarkdownContent = ({
 		...hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })),
 		...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
 		...ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })),
-		...(mk?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) || []),
-		...(lk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS, type: EBacktickType.LINK })) || [])
+		...(mk?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) || [])
 	].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
 	const store = elements?.length > 0 ? getStore() : null;
+
+	const handleLongPressLink = useCallback((link: string) => {
+		const data = {
+			heightFitContent: true,
+			children: <LinkOptionModal visible={true} link={link} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, []);
 
 	elements.forEach((element, index) => {
 		const s = element.s ?? 0;
@@ -522,7 +513,7 @@ export const RenderTextMarkdownContent = ({
 									style={
 										themeValue
 											? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape)
-													.blockSpacing
+												.blockSpacing
 											: {}
 									}
 								>
@@ -542,7 +533,6 @@ export const RenderTextMarkdownContent = ({
 										</Text>
 									</View>
 								</View>
-								{s !== 0 && e !== t?.length && '\n'}
 							</Text>
 						);
 						break;
@@ -634,7 +624,7 @@ export const RenderTextMarkdownContent = ({
 									key={`link-${index}`}
 									style={themeValue ? markdownStyles(themeValue).link : {}}
 									onPress={() => openUrl(contentInElement, null)}
-									onLongPress={onLongPress}
+									onLongPress={() => handleLongPressLink?.(contentInElement)}
 								>
 									{contentInElement}
 								</Text>
@@ -649,11 +639,11 @@ export const RenderTextMarkdownContent = ({
 
 							markdownBlackParts.push(
 								<RenderYoutubeVideo
-									key={`youtube-${index}`}
+									videoKey={`youtube-${index}`}
 									videoId={videoId}
 									contentInElement={contentInElement}
 									onPress={() => openUrl(contentInElement, null)}
-									onLongPress={onLongPress}
+									onLongPress={() => handleLongPressLink?.(contentInElement)}
 									linkStyle={themeValue ? markdownStyles(themeValue).link : {}}
 								/>
 							);
@@ -663,7 +653,7 @@ export const RenderTextMarkdownContent = ({
 									key={`link-${index}`}
 									style={themeValue ? markdownStyles(themeValue).link : {}}
 									onPress={() => openUrl(contentInElement, null)}
-									onLongPress={onLongPress}
+									onLongPress={() => handleLongPressLink?.(contentInElement)}
 								>
 									{contentInElement}
 								</Text>
@@ -686,6 +676,18 @@ export const RenderTextMarkdownContent = ({
 			renderTextPalainContain(
 				themeValue,
 				t?.slice(lastIndex).replace(/^\n|\n$/, ''),
+				lastIndex,
+				isUnReadChannel,
+				isLastMessage,
+				isBuzzMessage,
+				true
+			)
+		);
+	} else {
+		textParts.push(
+			renderTextPalainContain(
+				themeValue,
+				embedNotificationMessage,
 				lastIndex,
 				isUnReadChannel,
 				isLastMessage,

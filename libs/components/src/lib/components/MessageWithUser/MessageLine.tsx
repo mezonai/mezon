@@ -65,42 +65,42 @@ const formatMarkdownHeadings = (text: string, isReply: boolean): React.ReactNode
 			switch (headingLevel) {
 				case 1:
 					formattedLines.push(
-						<h1 key={`h1-${index}`} className={`${isReply ? 'text-sm' : 'text-4xl'} my-1 font-bold text-theme-message`}>
+						<h1 key={`h1-${index}`} className={`${isReply ? 'text-sm' : 'text-4xl my-1'} font-bold text-theme-message`}>
 							{headingText}
 						</h1>
 					);
 					break;
 				case 2:
 					formattedLines.push(
-						<h2 key={`h2-${index}`} className="text-3xl my-1 font-bold text-theme-message">
+						<h2 key={`h2-${index}`} className={` ${isReply ? 'text-sm' : 'text-3xl my-1'} font-bold text-theme-message`}>
 							{headingText}
 						</h2>
 					);
 					break;
 				case 3:
 					formattedLines.push(
-						<h3 key={`h3-${index}`} className="text-2xl my-1 font-bold text-theme-message">
+						<h3 key={`h3-${index}`} className={` ${isReply ? 'text-sm' : 'text-2xl my-1'} font-bold text-theme-message`}>
 							{headingText}
 						</h3>
 					);
 					break;
 				case 4:
 					formattedLines.push(
-						<h4 key={`h4-${index}`} className="text-xl my-1 font-bold text-theme-message">
+						<h4 key={`h4-${index}`} className={` ${isReply ? 'text-sm' : 'text-xl my-1'}  font-bold text-theme-message`}>
 							{headingText}
 						</h4>
 					);
 					break;
 				case 5:
 					formattedLines.push(
-						<h5 key={`h5-${index}`} className="text-lg my-1 font-bold text-theme-message">
+						<h5 key={`h5-${index}`} className={`${isReply ? 'text-sm' : 'text-lg my-1'}  font-bold text-theme-message`}>
 							{headingText}
 						</h5>
 					);
 					break;
 				case 6:
 					formattedLines.push(
-						<h6 key={`h6-${index}`} className="text-base my-1 font-bold text-theme-message">
+						<h6 key={`h6-${index}`} className={`${isReply ? 'text-sm' : 'text-base my-1'}  font-bold text-theme-message`}>
 							{headingText}
 						</h6>
 					);

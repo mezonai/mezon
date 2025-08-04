@@ -114,20 +114,24 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 				<View style={styles.flexRow}>
 					<FastImage
 						source={{ uri: sticker.source ? sticker.source : `${process.env.NX_BASE_IMG_URL}/stickers/` + sticker.id + `.webp` }}
-						style={{ height: size.s_40, width: size.s_40 }}
+						style={{ height: size.s_36, width: size.s_36 }}
 					/>
 
-					<TextInput
-						value={stickerName}
-						style={{ color: themeValue.text }}
-						onChangeText={setStickerName}
-						onBlur={handleUpdateSticker}
-						editable={hasDeleteOrEditPermission}
-					/>
+					<View style={styles.stickerName}>
+						<TextInput
+							value={stickerName}
+							style={styles.lightTitle}
+							onChangeText={setStickerName}
+							onBlur={handleUpdateSticker}
+							editable={hasDeleteOrEditPermission}
+						/>
+					</View>
 				</View>
 
-				<View style={styles.flexRow}>
-					<Text style={styles.text}>{user?.user?.username}</Text>
+				<View style={[styles.flexRow, { justifyContent: 'flex-end' }]}>
+					<Text style={styles.text} numberOfLines={1}>
+						{user?.user?.username}
+					</Text>
 					<MezonAvatar height={size.s_30} width={size.s_30} avatarUrl={user?.user?.avatar_url} username={user?.user?.username} />
 				</View>
 			</View>

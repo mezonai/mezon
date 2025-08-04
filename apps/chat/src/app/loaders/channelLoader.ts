@@ -1,5 +1,5 @@
-import { channelsActions, threadsActions, topicsActions } from '@mezon/store';
-import { notificationService } from '@mezon/utils';
+import { channelsActions, quickMenuActions, threadsActions, topicsActions } from '@mezon/store';
+import { QUICK_MENU_TYPE, notificationService } from '@mezon/utils';
 import { ShouldRevalidateFunction } from 'react-router-dom';
 import { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
@@ -13,6 +13,7 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 
 	await dispatch(waitForSocketConnection());
 
+	dispatch(quickMenuActions.listQuickMenuAccess({ channelId: channelId, menuType: QUICK_MENU_TYPE.QUICK_MENU }));
 	dispatch(channelsActions.addThreadToChannels({ channelId, clanId }));
 	dispatch(channelsActions.joinChannel({ clanId, channelId, noFetchMembers: false, messageId: messageId || '' }));
 	dispatch(channelsActions.setPreviousChannels({ clanId, channelId }));

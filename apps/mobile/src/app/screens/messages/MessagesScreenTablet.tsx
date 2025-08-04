@@ -2,8 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { DirectEntity, RootState, directActions, getStoreAsync, selectDirectsOpenlistOrder, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import React, { useCallback, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AppState, DeviceEventEmitter, FlatList, Pressable, Text, View } from 'react-native';
+import { AppState, DeviceEventEmitter, FlatList, Pressable, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -16,7 +15,7 @@ import UserEmptyMessage from '../home/homedrawer/UserEmptyClan/UserEmptyMessage'
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DirectMessageDetailTablet } from './DirectMessageDetailTablet';
 import { DmListItem } from './DmListItem';
-import SearchDmList from './SearchDmList';
+import MessageHeader from './MessageHeader';
 import { style } from './styles';
 
 const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
@@ -24,7 +23,6 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 	const isTabletLandscape = useTabletLandscape();
 	const styles = style(themeValue, isTabletLandscape);
 	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
-	const { t } = useTranslation(['dmMessage', 'common']);
 	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
 	const currentDmGroupId = useSelector(selectDmGroupCurrentId);
 
@@ -72,16 +70,7 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 					</View>
 
 					<View style={styles.container}>
-						<View style={styles.headerWrapper}>
-							<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
-							<Pressable style={styles.addFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
-								<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_16} width={size.s_16} color={themeValue.textStrong} />
-								<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
-							</Pressable>
-						</View>
-
-						<SearchDmList />
-
+						<MessageHeader />
 						{clansLoadingStatus === 'loaded' && !dmGroupChatList?.length ? (
 							<UserEmptyMessage
 								onPress={() => {

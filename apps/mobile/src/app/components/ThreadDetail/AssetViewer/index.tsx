@@ -91,6 +91,9 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 								? currentChannel?.channel_id
 								: channelId
 						}
+						currentClanId={
+							[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type) ? '0' : currentClanId
+						}
 					/>
 				)}
 			</View>

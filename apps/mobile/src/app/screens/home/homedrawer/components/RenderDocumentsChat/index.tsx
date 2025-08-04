@@ -1,8 +1,8 @@
 import { FileIcon } from '@mezon/mobile-components';
-import { Colors, Text, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { Colors, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { EMimeTypes, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import React from 'react';
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { openUrl } from 'react-native-markdown-display';
 import { checkFileTypeImage, isAudio, isVideo } from '../../../../../utils/helpers';
 import RenderAudioChat from '../RenderAudioChat/RenderAudioChat';

@@ -15,7 +15,7 @@ export const AvatarRound = ({ className, src }: { className?: string; src: strin
 export const AvatarCount = ({ number }: { number: number }) => {
 	return (
 		<div className="h-6 w-6 rounded-full aspect-square text-xs font-medium border-2 border-bgModifierHover flex items-center justify-center dark:text-bgLightPrimary text-bgPrimary ring-transparent dark:bg-bgTertiary bg-bgLightTertiary dark:hover:bg-bgTertiary hover:bg-bgLightTertiary">
-			{number}
+			+{number}
 		</div>
 	);
 };

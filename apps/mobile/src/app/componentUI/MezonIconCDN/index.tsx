@@ -7,11 +7,18 @@ type IconComponentProps = {
 	height?: number;
 	width?: number;
 	color?: string;
+	useOriginalColor?: boolean;
 	customStyle?: ImageStyle | ImageStyle[];
 };
 
-const MezonIconCDN = ({ icon, height = size.s_24, width = size.s_24, color = 'white', customStyle }: IconComponentProps) => {
-	return <Image source={icon} style={[{ height: height, width: width, tintColor: color }, customStyle]} resizeMode="contain" />;
+const MezonIconCDN = ({ icon, height = size.s_24, width = size.s_24, color = 'white', useOriginalColor = false, customStyle }: IconComponentProps) => {
+	const imageStyle = [
+		{ height: height, width: width },
+		!useOriginalColor && { tintColor: color },
+		customStyle
+	].filter(Boolean);
+
+	return <Image source={icon} style={imageStyle} resizeMode="contain" />;
 };
 
 export default MezonIconCDN;

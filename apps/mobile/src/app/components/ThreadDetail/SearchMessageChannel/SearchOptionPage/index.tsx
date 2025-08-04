@@ -22,6 +22,7 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 	const currentChannel = useSelector(selectCurrentChannel);
 
 	const userListData = UseMentionList({
+		channelDetail: currentChannel,
 		channelID: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parent_id : currentChannel?.channel_id) || '',
 		channelMode: currentChannel?.type
 	});

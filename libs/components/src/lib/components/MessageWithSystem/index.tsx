@@ -5,6 +5,7 @@ import { TypeMessage, addMention, convertDateString } from '@mezon/utils';
 import React, { ReactNode, useRef, useState } from 'react';
 import { MessageReaction } from '../../components';
 import { MessageLineSystem } from '../MessageWithUser/MessageLineSystem';
+import WaveButton from './WaveButton';
 
 export type ReactedOutsideOptional = {
 	id: string;
@@ -31,13 +32,14 @@ function MessageWithSystem({ message, onContextMenu, popup, isSearchMessage, sho
 			{message && (
 				<HoverStateWrapper
 					isSearchMessage={isSearchMessage}
-					popup={popup}
-					onContextMenu={onContextMenu}
+					popup={undefined}
+					onContextMenu={undefined}
 					messageId={message?.id}
 					className={'fullBoxText relative group'}
 				>
 					<div className={`flex items-start min-h-8 relative w-full px-3 text-theme-primary pt-2 pl-5 ${isCustom ? 'pb-2' : ''}`}>
 						{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8 flex-shrink-0" />}
+						{message?.code === TypeMessage.UpcomingEvent && <Icons.UpcomingEventIcon defaultSize="size-8 flex-shrink-0" />}
 						{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon defaultSize="size-6 flex-shrink-0" />}
 						{message?.code === TypeMessage.CreatePin && <Icons.PinRight defaultSize="size-6 flex-shrink-0" />}
 						{message?.code === TypeMessage.AuditLog && <Icons.AuditLogIcon defaultSize="size-8 flex-shrink-0" />}
@@ -49,7 +51,9 @@ function MessageWithSystem({ message, onContextMenu, popup, isSearchMessage, sho
 							content={contentUpdatedMention}
 						/>
 					</div>
+
 					<MessageReaction message={message} isTopic={isTopic} />
+					{message?.code === TypeMessage.Welcome && <WaveButton message={message} />}
 				</HoverStateWrapper>
 			)}
 		</>

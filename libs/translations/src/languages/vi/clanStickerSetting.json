@@ -6,9 +6,9 @@
     "content": {
         "description": "Thêm tối đa 250 nhãn dán tùy chỉnh mà bất kỳ ai cũng có thể sử dụng trong clan này.",
         "requirements": "Yêu cầu tải lên",
-        "reqType": "- Có thể là ảnh tĩnh (PNG) hoặc ảnh động (GIF).",
-        "reqDim": "- Phải chính xác 320 x 320 pixel.",
-        "reqSize": "- Không lớn hơn 512KB.",
+        "reqType": "•  Có thể là ảnh tĩnh (PNG) hoặc ảnh động (GIF).",
+        "reqDim": "•  Phải chính xác 320 x 320 pixel.",
+        "reqSize": "•  Không lớn hơn 512KB.",
         "available": "Có {{left}} KHOẢNG TRỐNG NHÃN DÁN CÓ SẴN"
     },
     "toast": {

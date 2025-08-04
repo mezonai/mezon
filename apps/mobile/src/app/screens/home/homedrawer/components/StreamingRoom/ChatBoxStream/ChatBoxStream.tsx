@@ -50,6 +50,7 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 				channelId={currentChannel?.channel_id}
 				mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 				isPublic={isPublicChannel(currentChannel)}
+				topicChannelId={''}
 			/>
 			<PanelKeyboard currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 		</KeyboardAvoidingView>

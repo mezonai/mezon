@@ -1,4 +1,3 @@
-//TODO: recheck
 import { ToastController } from '@mezon/components';
 import { useCustomNavigate } from '@mezon/core';
 import { fcmActions, handleTopicNotification, selectAllAccount, selectAllSession, selectIsLogin, useAppDispatch } from '@mezon/store';
@@ -20,7 +19,6 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
 import { IAppLoaderData } from '../loaders/appLoader';
-const theme = 'dark';
 
 type TitleBarProps = {
 	eventName: string;
@@ -149,7 +147,7 @@ const AppLayout = () => {
 	}, [navigate]);
 
 	return (
-		<MezonUiProvider themeName={theme}>
+		<MezonUiProvider>
 			<ViewModeHandler />
 			<ToastController />
 			<Outlet />

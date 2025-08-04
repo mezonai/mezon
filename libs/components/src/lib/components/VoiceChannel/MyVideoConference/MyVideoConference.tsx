@@ -99,12 +99,15 @@ export function MyVideoConference({
 		const handleDisconnected = () => {
 			onLeaveRoom();
 		};
-		const handleTrackPublished = (publication: LocalTrackPublication, participant: LocalParticipant) => {
+		const handleLocalTrackUnpublished = (publication: LocalTrackPublication, participant: LocalParticipant) => {
 			if (publication.source === Track.Source.ScreenShare) {
 				dispatch(voiceActions.setShowScreen(false));
 			}
 			if (publication.source === Track.Source.Camera) {
 				dispatch(voiceActions.setShowCamera(false));
+			}
+			if (focusTrack && focusTrack?.participant.sid === participant.sid) {
+				layoutContext.pin.dispatch?.({ msg: 'clear_pin' });
 			}
 		};
 		const handleReconnectedRoom = async () => {
@@ -122,15 +125,15 @@ export function MyVideoConference({
 			}
 		};
 		room?.on('disconnected', handleDisconnected);
-		room?.on('localTrackUnpublished', handleTrackPublished);
+		room?.on('localTrackUnpublished', handleLocalTrackUnpublished);
 		room?.on('reconnected', handleReconnectedRoom);
 		room?.on('participantDisconnected', handleTrackUnpublish);
+
 		return () => {
 			room?.off('disconnected', handleDisconnected);
-			room?.off('localTrackUnpublished', handleTrackPublished);
+			room?.off('localTrackUnpublished', handleLocalTrackUnpublished);
 			room?.off('reconnected', handleReconnectedRoom);
 			room?.off('participantDisconnected', handleTrackUnpublish);
-			room?.off('disconnected', handleDisconnected);
 		};
 	}, [room, focusTrack?.participant.sid]);
 

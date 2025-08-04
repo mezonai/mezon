@@ -1,8 +1,7 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import { Dimensions, Platform, View } from 'react-native';
-import BootSplash from 'react-native-bootsplash';
 import CallingModalGroupWrapper from '../../components/CallingModalGroupWrapper';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -30,12 +29,6 @@ const RootStack = createStackNavigator();
 
 export const RootAuthStack = memo(
 	({ isTabletLandscape, notifyInit, initRouteName }: { isTabletLandscape: boolean; notifyInit: any; initRouteName: string }) => {
-		useEffect(() => {
-			requestAnimationFrame(async () => {
-				await BootSplash.hide({ fade: false });
-			});
-		}, []);
-
 		return (
 			<View style={{ flex: 1 }}>
 				<RootStack.Navigator
@@ -59,7 +52,22 @@ export const RootAuthStack = memo(
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
 							gestureResponseDistance: Dimensions.get('window').width,
-							cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+							cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+							transitionSpec: {
+								open: {
+									animation: 'timing',
+									config: {
+										duration: 200
+									}
+								},
+								close: {
+									animation: 'timing',
+									config: {
+										duration: 200
+									}
+								}
+							},
+							keyboardHandlingEnabled: false
 						}}
 					/>
 					<RootStack.Screen
@@ -72,7 +80,22 @@ export const RootAuthStack = memo(
 							gestureEnabled: true,
 							gestureDirection: 'horizontal',
 							gestureResponseDistance: Dimensions.get('window').width,
-							cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+							cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+							keyboardHandlingEnabled: false,
+							transitionSpec: {
+								open: {
+									animation: 'timing',
+									config: {
+										duration: 200
+									}
+								},
+								close: {
+									animation: 'timing',
+									config: {
+										duration: 200
+									}
+								}
+							}
 						}}
 					/>
 					<RootStack.Screen name={APP_SCREEN.SERVERS.STACK} children={(props) => <ServersStacks {...props} />} />

@@ -142,14 +142,29 @@
         },
         "roleAndMemberEmpty": "There are no roles and members to override permissions"
     },
-    "quickAction":{
+    "quickAction": {
         "title": "Quick Action Config",
         "keyTitle": "Key (Example: hello)",
         "valueTitle": "Content (Example: Good morning, Have a good day !)",
         "save": "Save",
         "cancel": "Cancel",
+        "create": "Create",
         "deleteModal": "DELETE ACTION",
-        "deleteTitle": "Are you sure you want to delete /{{key}} ? This cannot be undone !"
+        "deleteTitle": "Are you sure you want to delete /{{key}} ? This cannot be undone !",
+        "flashMessage": "Flash Message",
+        "quickMenu": "Quick Menu",
+        "menuName": "Menu Name",
+        "menuNameHelper": "The name for this quick menu item",
+        "botEventTrigger": "Bot Event Trigger",
+        "botEventDescription": "This quick menu will automatically trigger a bot event when selected.",
+        "createQuickMenu": "Create Quick Menu",
+        "createFlashMessage": "Create Flash Message",
+        "editQuickMenu": "Edit Quick Menu",
+        "editFlashMessage": "Edit Flash Message",
+        "emptyFlashMessage": "No flash messages yet",
+        "emptyFlashMessageDescription": "Get started by creating your first flash message command",
+        "emptyQuickMenu": "No quick menus yet",
+        "emptyQuickMenuDescription": "Get started by creating your first quick menu"
     },
     "changeCategory": {
         "title": "Change Category",

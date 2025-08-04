@@ -1,12 +1,12 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { CheckIcon } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectAllUserClans } from '@mezon/store-mobile';
 import { EPermission, UsersClanEntity } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Platform, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, Platform, Pressable, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -63,10 +63,22 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				: () => {
 						return (
 							<View>
-								<Text center bold h3 color={themeValue?.white}>
+								<Text
+									style={{
+										textAlign: 'center',
+										fontWeight: 'bold',
+										fontSize: verticalScale(18),
+										color: themeValue.white
+									}}
+								>
 									{clanRole?.title}
 								</Text>
-								<Text center color={themeValue?.text}>
+								<Text
+									style={{
+										textAlign: 'center',
+										color: themeValue.text
+									}}
+								>
 									{t('roleDetail.role')}
 								</Text>
 							</View>
@@ -177,10 +189,22 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 								marginBottom: size.s_20
 							}}
 						>
-							<Text color={themeValue.white} h2 center bold>
+							<Text
+								style={{
+									color: themeValue.white,
+									textAlign: 'center',
+									fontWeight: 'bold',
+									fontSize: verticalScale(24)
+								}}
+							>
 								{t('setupMember.addMember')}
 							</Text>
-							<Text center color={themeValue.text}>
+							<Text
+								style={{
+									color: themeValue.text,
+									textAlign: 'center'
+								}}
+							>
 								{t('setupMember.description')}
 							</Text>
 						</View>
@@ -202,7 +226,13 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 							>
 								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} />
 								<View style={{ flex: 1 }}>
-									<Text color={themeValue.text}>{t('setupMember.addMember')}</Text>
+									<Text
+										style={{
+											color: themeValue.text
+										}}
+									>
+										{t('setupMember.addMember')}
+									</Text>
 								</View>
 								<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} />
 							</View>
@@ -234,7 +264,12 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 							</View>
 						) : (
 							<View>
-								<Text center color={themeValue.text}>
+								<Text
+									style={{
+										color: themeValue.text,
+										textAlign: 'center'
+									}}
+								>
 									{t('setupMember.noMembersFound')}
 								</Text>
 							</View>
@@ -246,7 +281,12 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 					<View style={{ marginBottom: size.s_16, gap: size.s_10 }}>
 						<TouchableOpacity onPress={() => updateMemberToRole()}>
 							<View style={{ backgroundColor: Colors.bgViolet, paddingVertical: size.s_14, borderRadius: size.s_8 }}>
-								<Text center color={Colors.white}>
+								<Text
+									style={{
+										color: 'white',
+										textAlign: 'center'
+									}}
+								>
 									{t('setupMember.finish')}
 								</Text>
 							</View>
@@ -254,7 +294,12 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 
 						<TouchableOpacity onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
 							<View style={{ paddingVertical: size.s_14, borderRadius: size.s_8 }}>
-								<Text center color={themeValue.text}>
+								<Text
+									style={{
+										color: themeValue.text,
+										textAlign: 'center'
+									}}
+								>
 									{t('skipStep')}
 								</Text>
 							</View>

@@ -13,7 +13,9 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'space-between',
 			gap: size.s_10,
 			height: size.s_50,
-			flex: 1
+			flex: 1,
+			borderBottomWidth: 1,
+			borderBottomColor: colors.border
 		},
 		rightItem: {
 			backgroundColor: baseColor.flamingo,

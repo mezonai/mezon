@@ -1,4 +1,4 @@
-import { Attributes, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTabletLandscape: boolean) =>
@@ -24,7 +24,8 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		title: {
 			color: colors.textStrong,
 			fontSize: size.h4,
-			fontWeight: 'bold'
+			fontWeight: 'bold',
+			textAlign: 'center'
 		},
 
 		header: {
@@ -46,8 +47,11 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			padding: size.s_10,
 			backgroundColor: colors.primary
 		},
-		btnDanger: {
+		btnDefault: {
 			backgroundColor: Colors.bgViolet
+		},
+		btnDanger: {
+			backgroundColor: baseColor.buzzRed
 		},
 		btnText: {
 			color: colors.textStrong,

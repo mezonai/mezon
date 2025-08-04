@@ -10,10 +10,11 @@ interface IMezonConfirmProps {
 	children?: ReactNode;
 	confirmText: string;
 	content?: string;
+	isDanger?: boolean;
 	onConfirm?: () => void;
 	onCancel?: () => void;
 }
-export default function MezonConfirm({ children, title, confirmText, content, onConfirm, onCancel }: IMezonConfirmProps) {
+export default function MezonConfirm({ children, title, confirmText, content, isDanger, onConfirm, onCancel }: IMezonConfirmProps) {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, isTabletLandscape);
@@ -37,7 +38,10 @@ export default function MezonConfirm({ children, title, confirmText, content, on
 				{children ? children : <Text style={styles.contentText}>{content || ''}</Text>}
 
 				<View style={styles.btnWrapper}>
-					<TouchableOpacity style={[styles.btn, styles.btnDanger]} onPress={() => handleConfirm()}>
+					<TouchableOpacity
+						style={[styles.btn, styles.btnDefault, isDanger && styles.btnDanger]}
+						onPress={() => handleConfirm()}
+					>
 						<Text style={[styles.btnText, { color: baseColor.white }]}>{confirmText}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.btn} onPress={() => handleClose()}>

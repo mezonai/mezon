@@ -1,4 +1,4 @@
-import { size } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (themeValue: any) =>
@@ -52,7 +52,7 @@ export const style = (themeValue: any) =>
 			color: themeValue.text
 		},
 		unblockButton: {
-			backgroundColor: 'red',
+			backgroundColor: Colors.textRed,
 			borderRadius: size.s_20,
 			paddingHorizontal: size.s_12,
 			paddingVertical: size.s_8

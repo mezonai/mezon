@@ -32,6 +32,7 @@ export const pinMessageAdapter = createEntityAdapter<PinMessageEntity>();
 
 type fetchChannelPinMessagesPayload = {
 	channelId: string;
+	clanId: string;
 	noCache?: boolean;
 };
 
@@ -41,7 +42,13 @@ const getInitialChannelState = () => ({
 	pinMessages: []
 });
 
-export const fetchChannelPinMessagesCached = async (getState: () => RootState, mezon: MezonValueContext, channelId: string, noCache = false) => {
+export const fetchChannelPinMessagesCached = async (
+	getState: () => RootState,
+	mezon: MezonValueContext,
+	channelId: string,
+	clanId: string,
+	noCache = false
+) => {
 	const currentState = getState();
 	const channelData = currentState[PIN_MESSAGE_FEATURE_KEY].byChannels[channelId];
 	const apiKey = createApiKey('fetchChannelPinMessages', channelId);
@@ -56,7 +63,7 @@ export const fetchChannelPinMessagesCached = async (getState: () => RootState, m
 		};
 	}
 
-	const response = await mezon.client.pinMessagesList(mezon.session, '', channelId, '');
+	const response = await mezon.client.pinMessagesList(mezon.session, '', channelId, clanId);
 
 	markApiFirstCalled(apiKey);
 
@@ -73,11 +80,11 @@ export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessageReques
 
 export const fetchChannelPinMessages = createAsyncThunk(
 	'pinmessage/fetchChannelPinMessages',
-	async ({ channelId, noCache }: fetchChannelPinMessagesPayload, thunkAPI) => {
+	async ({ channelId, noCache, clanId }: fetchChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await fetchChannelPinMessagesCached(thunkAPI.getState as () => RootState, mezon, channelId, Boolean(noCache));
+			const response = await fetchChannelPinMessagesCached(thunkAPI.getState as () => RootState, mezon, channelId, clanId, Boolean(noCache));
 
 			if (!response) {
 				return {
@@ -117,7 +124,8 @@ export const fetchChannelPinMessages = createAsyncThunk(
 );
 
 type SetChannelPinMessagesPayload = {
-	clan_id?: string;
+	clan_id: string;
+	pin_id?: string;
 	channel_id: string;
 	message_id: string;
 	message?: IMessageWithUser;
@@ -148,10 +156,10 @@ export const setChannelPinMessage = createAsyncThunk(
 
 export const deleteChannelPinMessage = createAsyncThunk(
 	'pinmessage/deleteChannelPinMessage',
-	async ({ channel_id, message_id }: SetChannelPinMessagesPayload, thunkAPI) => {
+	async ({ channel_id, message_id, pin_id, clan_id }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deletePinMessage(mezon.session, message_id);
+			const response = await mezon.client.deletePinMessage(mezon.session, pin_id, message_id, channel_id, clan_id);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}

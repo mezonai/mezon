@@ -6,7 +6,6 @@ import { User } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
 import { useThrottledCallback } from 'use-debounce';
 import { EFriendItemAction } from '../../components/FriendItem';
@@ -76,11 +75,52 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 		[createDirectMessageWithUser, navigation]
 	);
 
+	const handleCallUser = useCallback(
+		async (user: FriendsEntity) => {
+			const listDM = selectDirectsOpenlist(store.getState() as any);
+			const directMessage = listDM?.find?.((dm) => {
+				const userIds = dm?.user_id;
+				if (!Array.isArray(userIds) || userIds.length !== 1) {
+					return false;
+				}
+				return userIds[0] === user?.user?.id;
+			});
+			if (directMessage?.id) {
+				navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+					screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
+					params: {
+						receiverId: user?.user?.id,
+						receiverAvatar: user?.user?.avatar_url,
+						directMessageId: directMessage?.id
+					}
+				});
+				return;
+			}
+			const response = await createDirectMessageWithUser(
+				user?.user?.id,
+				user?.user?.display_name,
+				user?.user?.username,
+				user?.user?.avatar_url
+			);
+			if (response?.channel_id) {
+				navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+					screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
+					params: {
+						receiverId: user?.user?.id,
+						receiverAvatar: user?.user?.avatar_url,
+						directMessageId: response?.channel_id
+					}
+				});
+			}
+		},
+		[createDirectMessageWithUser, navigation, store]
+	);
+
 	const handleFriendAction = useCallback(
 		(friend: FriendsEntity, action: EFriendItemAction) => {
 			switch (action) {
 				case EFriendItemAction.Call:
-					Toast.show({ type: 'info', text1: 'Updating...' });
+					handleCallUser(friend);
 					break;
 				case EFriendItemAction.MessageDetail:
 					directMessageWithUser(friend);

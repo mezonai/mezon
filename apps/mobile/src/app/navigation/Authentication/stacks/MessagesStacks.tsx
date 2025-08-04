@@ -74,7 +74,7 @@ export const MessagesStacks = ({}: any) => {
 				options={{
 					title: t('headerTitle.chat'),
 					headerStyle: {
-						backgroundColor: themeValue.secondaryWeight
+						backgroundColor: themeValue.primary
 					}
 				}}
 			/>

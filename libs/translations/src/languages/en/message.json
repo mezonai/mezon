@@ -7,7 +7,7 @@
         "deleteMessage": "Delete Message",
         "pinMessage": "Pin Message",
         "unPinMessage": "Unpin Message",
-        "markUnRead": "Mark UnRead",
+        "markUnRead": "Mark Unread",
         "mention": "Mention",
         "copyMessageLink": "Copy Message Link",
         "report": "Report",
@@ -22,7 +22,13 @@
         "resend": "Resend",
         "buzz": "Buzz!!",
         "markMessage": "Mark Message",
-        "allAlbums": "All Albums"
+        "quickMenu": "Quick Menu",
+        "allAlbums": "All Albums",
+        "linkOptions": "Link Options",
+        "openLink": "Open Link",
+        "copyLink": "Copy Link",
+        "shareLink": "Share Link",
+        "copyLinkSuccess": "Copied link to clipboard"
     },
     "chatBox": {
         "replyingTo": "Replying to",
@@ -39,7 +45,9 @@
         "copyText": "Copied Message Text",
         "attachmentIsLoading": "Attachment is loading, please wait a moment",
         "pinMessage": "Message has been pinned",
-        "markMessage": "Message has been marked"
+        "markMessage": "Message has been marked",
+        "markMessageUnread": "Message has been unread",
+        "markMessageUnreadFailed": "Failed to unread message"
     },
     "directMessage": {
         "you": "You"
@@ -87,7 +95,7 @@
     "unpinSuccess": "Unpin Message Successfully",
     "Yes": "Yes",
     "No": "No",
-    "unableSendMessage": "Unable to send message. Please try again.",
+    "unableSendMessage": "Failed to send message. Hold for options.",
     "manage": {
         "edit": "Edit",
         "roles": "Roles",
@@ -99,10 +107,10 @@
     "blockedUserMessage": "You can't reply to this conversation",
     "messageInputPlaceHolder": "Write message...",
     "shareLocationModal": {
-      "sendThisLocation": "Send this location to",
-      "send": "Send",
-      "cancel": "Cancel",
-      "coordinate": "Coordinate"
+        "sendThisLocation": "Send this location to",
+        "send": "Send",
+        "cancel": "Cancel",
+        "coordinate": "Coordinate"
     },
     "callLog": {
         "cancel": "You canceled",

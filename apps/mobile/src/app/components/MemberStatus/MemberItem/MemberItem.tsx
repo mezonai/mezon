@@ -32,7 +32,7 @@ export const MemoizedMemberItem = memo((props: MemberItemProps) => {
 	return <MemberItem {...rest} user={user} listProfile={true} isOffline={!user?.user?.online} isMobile={user?.user?.is_mobile} />;
 });
 
-export function MemberItem({ user, isOffline, onPress, currentChannel, isDMThread, isMobile, isHiddenStatus = false }: IProps) {
+export const MemberItem = memo(({ user, isOffline, onPress, currentChannel, isDMThread, isMobile, isHiddenStatus = false }: IProps) => {
 	const userStatus = useMemberStatus(user?.id || '');
 
 	const currentClan = useSelector(selectCurrentClan);
@@ -61,4 +61,4 @@ export function MemberItem({ user, isOffline, onPress, currentChannel, isDMThrea
 			/>
 		</Pressable>
 	);
-}
+});

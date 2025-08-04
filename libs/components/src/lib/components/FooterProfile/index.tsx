@@ -20,8 +20,8 @@ import {
 	userClanProfileActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ESummaryInfo, EUserStatus, ONE_MINUTE, TypeMessage, createImgproxyUrl, formatMoney } from '@mezon/utils';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import { ESummaryInfo, EUserStatus, ONE_MINUTE, TypeMessage, createImgproxyUrl, formatMoney, saveParseUserStatus } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -55,19 +55,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 
 	const userCustomStatus: { status: string; user_status: EUserStatus } = useMemo(() => {
 		const metadata = myProfile.userProfile?.user?.metadata;
-		try {
-			return safeJSONParse(metadata || '{}') || '';
-		} catch (e) {
-			const unescapedJSON = metadata?.replace(/\\./g, (match) => {
-				switch (match) {
-					case '\\"':
-						return '"';
-					default:
-						return match[1];
-				}
-			});
-			return safeJSONParse(unescapedJSON || '{}')?.status;
-		}
+		return saveParseUserStatus(metadata || '');
 	}, [myProfile, myProfile.userProfile?.user?.metadata]);
 	const [token, setToken] = useState<number>(0);
 	const [selectedUserId, setSelectedUserId] = useState<string>('');

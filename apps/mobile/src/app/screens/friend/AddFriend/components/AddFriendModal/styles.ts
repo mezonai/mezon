@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		addFriendModalContainer: {
-			paddingHorizontal: size.s_18,
+			paddingHorizontal: size.s_4,
 			gap: size.s_18,
 			flex: 1
 		},

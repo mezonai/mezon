@@ -16,11 +16,10 @@ export const ItemSetting = {
 	VOIDE_STICKERS: 'upload-sound',
 	DELETE_SERVER: 'delete_server',
 	INTEGRATIONS: 'integrations',
-	NOTIFICATION_SOUND: 'notification-sound',
+	// NOTIFICATION_SOUND: 'notification-sound',
 	CATEGORY_ORDER: 'category-order',
 	AUDIT_LOG: 'audit-log',
 	ON_BOARDING: 'on-boarding'
-
 };
 
 export const listItemSetting: ItemObjProps[] = [
@@ -29,9 +28,8 @@ export const listItemSetting: ItemObjProps[] = [
 	{ id: ItemSetting.EMOJI, name: 'Emoji' },
 	{ id: ItemSetting.IMAGE_STICKERS, name: 'Image Stickers' },
 	{ id: ItemSetting.VOIDE_STICKERS, name: 'Voice Stickers' },
-	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' },
-	{ id: ItemSetting.NOTIFICATION_SOUND, name: 'Notification Sound' },
-
+	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' }
+	// { id: ItemSetting.NOTIFICATION_SOUND, name: 'Notification Sound' }
 ];
 
 export const listItemSettingApp: ItemObjProps[] = [{ id: ItemSetting.INTEGRATIONS, name: 'Integrations' }];
@@ -62,8 +60,8 @@ export const listItemSettingClanPermission: ItemObjProps[] = [
 	{ id: ItemSetting.OVERVIEW, name: 'Overview' },
 	{ id: ItemSetting.EMOJI, name: 'Emoji' },
 	{ id: ItemSetting.IMAGE_STICKERS, name: 'Image Stickers' },
-	{ id: ItemSetting.VOIDE_STICKERS, name: 'Voice Sticker' },
-	{ id: ItemSetting.NOTIFICATION_SOUND, name: 'Notification Sound' }
+	{ id: ItemSetting.VOIDE_STICKERS, name: 'Voice Sticker' }
+	// { id: ItemSetting.NOTIFICATION_SOUND, name: 'Notification Sound' }
 ];
 
 export const sideBarListItemClanPermission: ListSideBarProps[] = [

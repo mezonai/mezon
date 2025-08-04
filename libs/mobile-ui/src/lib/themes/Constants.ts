@@ -38,6 +38,11 @@ export type Attributes = {
 	textWarning: HexColor;
 	borderWarning: HexColor;
 	darkJade: HexColor;
+	bgInfor: HexColor;
+	borderInfor: HexColor;
+	headerInfor: HexColor;
+	descInfor: HexColor;
+	textSuccess: HexColor;
 };
 
 type ThemeColor = Record<ThemeModeBase, Attributes>;
@@ -101,7 +106,12 @@ export const themeColors: ThemeColor = {
 		bgBrown: '#713F1233',
 		textWarning: '#FEF08A',
 		borderWarning: '#EAB308',
-		darkJade: '#174033'
+		darkJade: '#174033',
+		bgInfor: '#3b82f61a',
+		borderInfor: '#3b82f680',
+		headerInfor: '#60a5fa',
+		descInfor: '#93c5fdcc',
+		textSuccess: '#00d4aa'
 	},
 	light: {
 		primary: '#f2f3f5',
@@ -138,6 +148,11 @@ export const themeColors: ThemeColor = {
 		bgBrown: '#876E4B',
 		textWarning: '#FEF08A',
 		borderWarning: '#EAB308',
-		darkJade: '#50f5c0'
+		darkJade: '#50f5c0',
+		bgInfor: '#3b82f61a',
+		borderInfor: '#3b82f680',
+		headerInfor: '#60a5fa',
+		descInfor: '#93c5fdcc',
+		textSuccess: '#00d4aa'
 	}
 };

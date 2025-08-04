@@ -1,13 +1,15 @@
 import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
 import { Colors } from '@mezon/mobile-ui';
-import { AppDispatch, pinMessageActions } from '@mezon/store-mobile';
+import { AppDispatch, UpdatePinMessage, getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId } from '@mezon/store-mobile';
+import { isValidUrl } from '@mezon/transport';
 import { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
+import { ChannelStreamMode } from 'mezon-js';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { EMessageActionType } from '../../enums';
@@ -27,6 +29,50 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 	const { params } = route;
 	const dispatch = useDispatch<AppDispatch>();
 	const { t } = useTranslation('message');
+	const currentClanId = useSelector(selectCurrentClanId);
+	const { currentChannel, currentDm } = useSelector(getCurrentChannelAndDm);
+
+	const handleConfirmPinMessage = async () => {
+		try {
+			const mode = getActiveMode();
+			const isDMMode = mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
+
+			await dispatch(
+				pinMessageActions.setChannelPinMessage({
+					clan_id: message?.clan_id ?? '0',
+					channel_id: message?.channel_id,
+					message_id: message?.id,
+					message: message
+				})
+			);
+
+			const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
+			const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
+			const pinBody: UpdatePinMessage = {
+				clanId: isDMMode ? '' : (currentClanId ?? ''),
+				channelId: isDMMode ? currentDm?.id || '' : (currentChannel?.channel_id ?? ''),
+				messageId: message?.id,
+				isPublic: isDMMode ? false : currentChannel ? !currentChannel.channel_private : false,
+				mode: mode as number,
+				senderId: message.sender_id,
+				senderUsername: message.display_name || message.username || message.user?.name || '',
+				attachment: jsonAttachments,
+				avatar: message.avatar || message.clan_avatar || '',
+				content: JSON.stringify(message.content),
+				createdTime: message.create_time
+			};
+
+			dispatch(pinMessageActions.joinPinMessage(pinBody));
+		} catch (error) {
+			console.error('Error pinning message:', error);
+			Toast.show({
+				type: 'error',
+				props: {
+					text2: t('pinError') || 'Failed to pin message'
+				}
+			});
+		}
+	};
 
 	const onConfirm = async () => {
 		switch (type) {
@@ -34,20 +80,13 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 				dispatch(
 					pinMessageActions.deleteChannelPinMessage({
 						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '',
-						message_id: message.id
+						message_id: message.id,
+						clan_id: message?.clan_id
 					})
 				);
 				break;
 			case EMessageActionType.PinMessage:
-				await dispatch(
-					pinMessageActions.setChannelPinMessage({
-						clan_id: message?.clan_id ?? '0',
-						channel_id: message?.channel_id,
-						message_id: message?.id,
-						message: message
-					})
-				);
-				dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id }));
+				await handleConfirmPinMessage();
 				break;
 			default:
 				break;

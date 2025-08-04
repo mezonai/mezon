@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { IMezonFakeBoxProps } from '../../../../../../../componentUI/MezonFakeBox';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
@@ -30,6 +30,10 @@ export default function MessageSelect({ data, placeholder, defaultValue, onChang
 		setCurrentContent(item?.title || placeholder);
 		onChange && onChange(item);
 	}
+
+	useEffect(() => {
+		setCurrentContent(defaultValue?.title || placeholder);
+	}, [defaultValue, placeholder]);
 
 	const menuOptions: IMezonMenuItemProps[] = data?.length
 		? data.map((item) => {

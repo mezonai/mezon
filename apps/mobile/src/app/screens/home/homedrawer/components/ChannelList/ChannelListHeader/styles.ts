@@ -1,4 +1,3 @@
-import { IS_TABLET } from '@mezon/mobile-components';
 import { Attributes, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
@@ -10,7 +9,7 @@ export const style = (colors: Attributes) =>
 		titleNameWrapper: {
 			display: 'flex',
 			flexDirection: 'row',
-			gap: IS_TABLET ? Metrics.size.m : Metrics.size.s,
+			gap: Metrics.size.s,
 			alignItems: 'center',
 			paddingBottom: size.s_4
 		},

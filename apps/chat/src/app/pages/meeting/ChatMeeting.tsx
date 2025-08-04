@@ -41,7 +41,7 @@ const ChatStreamExternal = () => {
 };
 
 const MessageItem = ({ message }: { message: ReceivedChatMessage }) => {
-	const nameSender = safeJSONParse(message.from?.identity || `{ extName: '' }`).extName || '';
+	const nameSender = safeJSONParse(message.from?.identity || `{ extName: 'Guest' }`).extName || '';
 	const time = useMemo(() => {
 		const timestamp = message.timestamp; // Example timestamp in milliseconds
 		const date = new Date(timestamp);

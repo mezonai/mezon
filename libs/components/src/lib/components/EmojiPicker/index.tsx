@@ -82,7 +82,6 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 		() => [
 			<Icons.Star defaultSize="w-7 h-7" />,
 			<Icons.MarketIcons />,
-			<Icons.ClockHistory defaultSize="w-7 h-7" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
 					<img src={emoji.clan_logo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />

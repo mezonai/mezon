@@ -66,12 +66,12 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 			};
 			const response = await dispatch(threadsActions.fetchThreads(body)).unwrap();
 
-			if (response?.length < LIMIT) {
+			if (response?.threads?.length < LIMIT) {
 				setIsNextDisabled(true);
 			} else {
 				setIsNextDisabled(false);
 			}
-			if (currentPage === 1 && response?.length < LIMIT) {
+			if (currentPage === 1 && response?.threads?.length < LIMIT) {
 				setIsPaginationVisible(false);
 			} else {
 				setIsPaginationVisible(true);

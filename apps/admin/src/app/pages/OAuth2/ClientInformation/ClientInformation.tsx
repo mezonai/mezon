@@ -136,22 +136,22 @@ const ResetSecretPopup = ({ handleClosePopup, currentApp, handleCopyKey }: IRese
 							Your app will stop working until you update the secret key in your app code.
 						</div>
 						<div className="relative">
-							<div className="bg-bgLightModeThird dark:bg-[#1e1f22] border border-primary p-[10px] rounded-sm">{newSecretKey}</div>
+							<div className="bg-bgLightModeThird dark:bg-[#1e1f22] border border-bgSelectItemHover p-[10px] mb-2 rounded-lg">{newSecretKey}</div>
 							<button
 								onClick={() => handleCopyKey(newSecretKey)}
-								className="absolute right-2 top-2 text-sm py-[5px] px-[6px] cursor-pointer bg-blue-600 hover:bg-blue-800 transition-colors rounded-sm w-fit select-none font-medium text-white"
+								className="absolute right-2 top-2 text-sm py-[5px] px-[6px] cursor-pointer bg-indigo-600  hover:bg-indigo-700  transition-colors rounded-lg w-fit select-none font-medium text-white"
 							>
 								Copy
 							</button>
 						</div>
 					</div>
 				</div>
-				<div className="bg-theme-setting-nav rounded-b-md dark:text-textDarkTheme text-textLightTheme flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium">
+				<div className="dark:bg-slate-800 bg-slate-400  rounded-b-md dark:text-textDarkTheme text-textLightTheme flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium">
 					<div onClick={handleClosePopup} className="hover:underline cursor-pointer">
 						Nevermind
 					</div>
 					<div
-						className="bg-red-600 hover:bg-red-700 text-white rounded-sm px-[25px] py-[8px] cursor-pointer"
+						className="bg-red-600 hover:bg-red-700 text-white rounded-lg px-[25px] py-[8px] cursor-pointer"
 						onClick={handleSaveSecretKey}
 					>
 						Yes, do it!

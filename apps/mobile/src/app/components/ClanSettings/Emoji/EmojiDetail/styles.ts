@@ -8,12 +8,13 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'row',
 			paddingHorizontal: size.s_20,
 			backgroundColor: colors.primary,
-			paddingVertical: size.s_6,
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			gap: size.s_10,
 			height: size.s_50,
-			flex: 1
+			flex: 1,
+			borderBottomColor: colors.border,
+			borderBottomWidth: 1
 		},
 		rightItem: {
 			backgroundColor: baseColor.flamingo,

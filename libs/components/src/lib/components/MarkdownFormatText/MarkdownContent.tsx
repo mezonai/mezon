@@ -2,8 +2,10 @@ import { channelsActions, getStore, inviteActions, selectAppChannelById, selectT
 import { Icons } from '@mezon/ui';
 import { EBacktickType, getYouTubeEmbedSize, getYouTubeEmbedUrl, isYouTubeLink } from '@mezon/utils';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import InviteAcceptModal from '../InviteAcceptModal';
 
 type MarkdownContentOpt = {
 	content?: string;
@@ -59,10 +61,101 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const origin = process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/';
 	const originClan = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/clans/';
 	const originDirect = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/direct/message/';
-	const onClickLink = useCallback(
+
+	const [isLoadingInvite, setIsLoadingInvite] = useState(false);
+	const [inviteError, setInviteError] = useState<string | null>(null);
+
+	const extractInviteId = useCallback(
 		(url: string) => {
+			if (url.startsWith(origin)) {
+				return url.replace(origin, '');
+			}
+			return null;
+		},
+		[origin]
+	);
+
+	const [openInviteModal, closeInviteModal] = useModal(() => {
+		const inviteId = extractInviteId(content || '');
+		if (!inviteId) return null;
+
+		return (
+			<InviteAcceptModal
+				inviteId={inviteId}
+				onClose={() => {
+					closeInviteModal();
+					setInviteError(null);
+					setIsLoadingInvite(false);
+				}}
+				showModal={true}
+			/>
+		);
+	}, [content]);
+
+	const [openLoadingModal, closeLoadingModal] = useModal(() => {
+		if (!isLoadingInvite && !inviteError) return null;
+
+		return (
+			<div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80">
+				<div className="bg-theme-setting-primary text-theme-primary rounded-md p-6 w-full max-w-[400px] flex flex-col items-center">
+					{isLoadingInvite && (
+						<>
+							<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+							<p>Loading invite...</p>
+						</>
+					)}
+					{inviteError && (
+						<>
+							<div className="text-red-500 text-center mb-4">
+								<p className="font-semibold mb-2">Error</p>
+								<p className="text-sm">{inviteError}</p>
+							</div>
+							<button
+								onClick={() => {
+									setInviteError(null);
+									closeLoadingModal();
+								}}
+								className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+							>
+								Close
+							</button>
+						</>
+					)}
+				</div>
+			</div>
+		);
+	}, [isLoadingInvite, inviteError]);
+
+	const onClickLink = useCallback(
+		async (url: string) => {
 			if (!isJumMessageEnabled || isTokenClickAble) {
-				if (url.startsWith(origin) || url.startsWith(originClan) || url.startsWith(originDirect)) {
+				if (url.startsWith(origin)) {
+					const inviteId = url.replace(origin, '');
+					if (inviteId) {
+						try {
+							setIsLoadingInvite(true);
+							setInviteError(null);
+							openLoadingModal();
+
+							dispatch(inviteActions.setIsClickInvite(true));
+							const result = await dispatch(inviteActions.getLinkInvite({ inviteId })).unwrap();
+							if (result) {
+								closeLoadingModal();
+								setIsLoadingInvite(false);
+								openInviteModal();
+							} else {
+								setIsLoadingInvite(false);
+								setInviteError('Failed to load invite. Please check the link and try again.');
+							}
+						} catch (error) {
+							setIsLoadingInvite(false);
+							setInviteError('Failed to load invite. Please check the link and try again.');
+						}
+					}
+					return;
+				}
+
+				if (url.startsWith(originClan) || url.startsWith(originDirect)) {
 					const urlInvite = new URL(url);
 					dispatch(inviteActions.setIsClickInvite(true));
 
@@ -93,7 +186,18 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				}
 			}
 		},
-		[isJumMessageEnabled, isTokenClickAble]
+		[
+			isJumMessageEnabled,
+			isTokenClickAble,
+			origin,
+			originClan,
+			originDirect,
+			dispatch,
+			navigate,
+			openInviteModal,
+			openLoadingModal,
+			closeLoadingModal
+		]
 	);
 
 	const isLightMode = appearanceTheme === 'light';
@@ -200,13 +304,16 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 
 	return (
 		<div className={`py-[4px] relative`}>
-			<pre className={`pre whitespace-pre-wrap p-3 bg-markdown-code border-theme-primary rounded-lg ${isInPinMsg ? `flex items-start ` : ''}`}>
+			<pre
+				className={`pre whitespace-pre-wrap break-words break-all w-full p-3 bg-markdown-code border-theme-primary rounded-lg ${isInPinMsg ? `flex items-start` : ''}`}
+				style={{ wordBreak: 'break-all', overflowWrap: 'break-word' }}
+			>
 				<button className={`absolute right-2 top-3`} onClick={handleCopyClick}>
 					{copied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}
 				</button>
 				<code
-					style={{ fontFamily: 'sans-serif' }}
-					className={`text-sm w-full   whitespace-pre-wrap text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}
+					style={{ fontFamily: 'sans-serif', wordBreak: 'break-all', overflowWrap: 'break-word' }}
+					className={`text-sm w-full whitespace-pre-wrap break-words break-all text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}
 				>
 					{contentBacktick}
 				</code>

@@ -103,14 +103,16 @@ export const style = (colors: Attributes) =>
 		},
 		userView: {
 			display: 'flex',
-			flexDirection: 'row',
+			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
-			width: '100%',
-			height: size.s_150 + size.s_100,
 			backgroundColor: colors.border,
 			gap: size.s_10,
-			borderRadius: size.s_10
+			borderRadius: size.s_10,
+			width: '48%',
+			height: size.s_150,
+			borderWidth: 1,
+			borderColor: colors.borderDim
 		},
 		userName: {
 			position: 'absolute',

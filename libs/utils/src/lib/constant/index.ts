@@ -157,6 +157,14 @@ export const DEFAULT_POSITION = { x: 100, y: 100 };
 export const ASPECT_RATIO = 4 / 3;
 
 export enum EMuteState {
-	UN_MUTE = 0,
-	MUTED = 1
+	UN_MUTE = 1,
+	MUTED = 0
 }
+
+export const STICKER_WAVE = {
+	URL: 'https://cdn.mezon.ai/stickers/7355823700546488291.webp',
+	NAME: '7355823700546488291'
+};
+
+export const MEZON_AVATAR_URL = 'https://cdn.mezon.ai/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
+export const WAVE_SENDER_NAME = 'Mezon';

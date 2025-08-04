@@ -1,8 +1,8 @@
-import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
@@ -44,7 +44,15 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
 				<View>
-					<Text bold h3 color={themeValue?.white}>
+					<Text
+						style={{
+							fontSize: verticalScale(18),
+							marginLeft: 0,
+							marginRight: 0,
+							fontWeight: 'bold',
+							color: themeValue.white
+						}}
+					>
 						{t('channelPermission.title')}
 					</Text>
 				</View>
@@ -60,7 +68,14 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 									marginRight: size.s_20
 								}}
 							>
-								<Text h4 color={themeValue.white}>
+								<Text
+									style={{
+										fontSize: verticalScale(18),
+										marginLeft: 0,
+										marginRight: 0,
+										color: themeValue.white
+									}}
+								>
 									{t('channelPermission.done')}
 								</Text>
 							</View>
@@ -119,7 +134,15 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 								backgroundColor: isActive ? themeValue.bgViolet : themeValue.tertiary
 							}}
 						>
-							<Text center color={isActive ? Colors.white : themeValue.text} h5>
+							<Text
+								style={{
+									fontSize: verticalScale(14),
+									marginLeft: 0,
+									marginRight: 0,
+									textAlign: 'center',
+									color: isActive ? Colors.white : themeValue.text
+								}}
+							>
 								{tab.title}
 							</Text>
 						</Pressable>

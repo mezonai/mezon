@@ -43,7 +43,7 @@ export const useGroupCallChat = ({ currentGroup }: GroupCallChatHookParams): Gro
 			const minutes = Math.floor(duration / 60000);
 			const seconds = Math.floor((duration % 60000) / 1000);
 
-			const durationText = duration > 0 ? `Call duration: ${minutes}m ${seconds}s` : `${isVideo ? 'Video' : 'Voice'} call ended`;
+			const durationText = duration > 0 ? `Call duration: ${minutes}m ${seconds}s` : `Group call ended`;
 
 			const endCallLogContent: IMessageSendPayload = {
 				t: durationText,

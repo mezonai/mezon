@@ -1,10 +1,10 @@
 import { useRoles } from '@mezon/core';
 import { CheckIcon } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectCurrentClanId } from '@mezon/store-mobile';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Platform, Pressable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, Platform, Pressable, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -63,10 +63,22 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 			<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14, justifyContent: 'space-between' }}>
 				<View>
 					<View style={{ paddingVertical: size.s_10, borderBottomWidth: 1, borderBottomColor: themeValue.borderDim }}>
-						<Text color={themeValue.white} h2 center bold>
+						<Text
+							style={{
+								fontSize: verticalScale(24),
+								textAlign: 'center',
+								fontWeight: 'bold',
+								color: themeValue.text
+							}}
+						>
 							{t('createNewRole.createANewRole')}
 						</Text>
-						<Text color={themeValue.text} center>
+						<Text
+							style={{
+								textAlign: 'center',
+								color: themeValue.text
+							}}
+						>
 							{t('createNewRole.description')}
 						</Text>
 					</View>
@@ -93,7 +105,11 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 								borderRadius: size.s_8
 							}}
 						>
-							<Text center color={Colors.white}>
+							<Text
+								style={{
+									color: 'white'
+								}}
+							>
 								{t('createNewRole.create')}
 							</Text>
 						</View>

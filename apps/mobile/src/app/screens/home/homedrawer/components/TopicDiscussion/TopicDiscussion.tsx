@@ -57,7 +57,7 @@ export default function TopicDiscussion() {
 		if (currentTopicId !== '') {
 			fetchMsgResult();
 		}
-	}, []);
+	}, [currentChannel?.channel_id, currentClanId, currentTopicId]);
 
 	useEffect(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);

@@ -11,10 +11,9 @@ import {
 	voiceActions
 } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
-import { useFocusEffect } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, InteractionManager, Platform, RefreshControl, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, Platform, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import ChannelListBackground from '../components/ChannelList/ChannelListBackground';
@@ -34,7 +33,11 @@ const ChannelList = () => {
 	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClan?.clan_id));
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useAppDispatch();
-	const [headerVersion, setHeaderVersion] = useState(0);
+	useEffect(() => {
+		if (currentClan?.clan_id) {
+			flashListRef?.current?.scrollToOffset?.({ animated: true, offset: 0 });
+		}
+	}, [currentClan?.clan_id]);
 	const handleRefresh = async () => {
 		setRefreshing(true);
 
@@ -74,21 +77,12 @@ const ChannelList = () => {
 
 	const flashListRef = useRef(null);
 
-	useFocusEffect(
-		useCallback(() => {
-			const task = InteractionManager.runAfterInteractions(() => {
-				setHeaderVersion((prev) => prev + 1);
-			});
-			return () => task.cancel();
-		}, [])
-	);
-
 	const renderItem = useCallback(
 		({ item, index }) => {
 			if (index === 0) {
 				return <ChannelListBackground />;
 			} else if (index === 1) {
-				return <ChannelListHeader key={`header-${headerVersion}`} />;
+				return <ChannelListHeader key={`header-${index}`} />;
 			} else if (item.channels) {
 				return <ChannelListSection data={item} />;
 			} else {
@@ -104,10 +98,10 @@ const ChannelList = () => {
 				);
 			}
 		},
-		[currentChannelId, headerVersion, themeValue.secondary]
+		[currentChannelId, themeValue.secondary]
 	);
 
-	const keyExtractor = useCallback((item, index) => item.id + item.isFavor?.toString() + index, []);
+	const keyExtractor = useCallback((item, index) => item?.id + item?.isFavor?.toString() + index, []);
 	return (
 		<View style={styles.mainList}>
 			<ChannelListScroll data={data} flashListRef={flashListRef} />

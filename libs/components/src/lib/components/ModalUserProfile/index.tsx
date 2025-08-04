@@ -13,9 +13,9 @@ import {
 	useUserMetaById
 } from '@mezon/core';
 import { EStateFriend, selectAccountCustomStatus, selectAllAccount, selectCurrentUserId, selectFriendStatus } from '@mezon/store';
-import { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import { RefObject, memo, useEffect, useMemo, useRef, useState } from 'react';
+import { ChannelMembersEntity, IMessageWithUser, saveParseUserStatus } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
+import { RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import AvatarProfile from './AvatarProfile';
@@ -87,9 +87,10 @@ const ModalUserProfile = ({
 	const userStatus = useMemberStatus(userID || '');
 	const userMetaById = useUserMetaById(userID);
 	const modalRef = useRef<boolean>(false);
+	const onLoading = useRef<boolean>(false);
 	const statusOnline = useMemo(() => {
 		if (userProfile?.user?.metadata && userId === userID) {
-			const metadata = safeJSONParse(userProfile?.user?.metadata);
+			const metadata = saveParseUserStatus(userProfile?.user?.metadata);
 			return metadata?.user_status;
 		}
 		if (userMetaById) {
@@ -123,6 +124,7 @@ const ModalUserProfile = ({
 			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
 			navigate(directChat);
 		}
+		onLoading.current = false;
 	};
 	const handleContent = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setContent(e.target.value);
@@ -190,6 +192,25 @@ const ModalUserProfile = ({
 		return message?.references?.[0].message_sender_username;
 	}, [userById, userID]);
 
+	const handleOnKeyPress = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && content && onLoading.current === false) {
+				if (userById) {
+					sendMessage(
+						userById?.user?.id || '',
+						userById?.user?.display_name || userById?.user?.username,
+						userById?.user?.username,
+						userById.user?.avatar_url
+					);
+					onLoading.current = true;
+					return;
+				}
+				sendMessage((userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || '');
+				onLoading.current = true;
+			}
+		},
+		[userById, content]
+	);
 	return (
 		<div tabIndex={-1} ref={profileRef} className={'outline-none ' + classWrapper} onClick={() => setOpenModal(initOpenModal)}>
 			<div
@@ -252,22 +273,7 @@ const ModalUserProfile = ({
 								className={`w-full border-theme-primary text-theme-primary color-text-secondary rounded-[5px] bg-theme-contexify p-[5px] `}
 								placeholder={`Message @${placeholderUserName}`}
 								value={content}
-								onKeyPress={(e) => {
-									if (e.key === 'Enter' && content) {
-										if (userById) {
-											sendMessage(
-												userById?.user?.id || '',
-												userById?.user?.display_name || userById?.user?.username,
-												userById?.user?.username,
-												userById.user?.avatar_url
-											);
-											return;
-										}
-										sendMessage(
-											(userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || ''
-										);
-									}
-								}}
+								onKeyPress={handleOnKeyPress}
 								onChange={handleContent}
 							/>
 						</div>

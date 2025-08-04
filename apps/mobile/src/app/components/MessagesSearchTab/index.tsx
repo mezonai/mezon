@@ -16,11 +16,9 @@ import {
 } from '@mezon/store-mobile';
 import { SIZE_PAGE_SEARCH, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useContext, useMemo, useState } from 'react';
-import { ActivityIndicator, Keyboard, Text, View } from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import { ActivityIndicator, FlatList, Keyboard, Pressable, Text, View } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageItem from '../../screens/home/homedrawer/MessageItem';
@@ -157,27 +155,23 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 	);
 
 	return (
-		<View style={styles.container}>
-			{searchMessagesData?.length ? (
-				<View style={{ height: '100%', width: '100%', paddingBottom: size.s_20 }}>
-					<FlashList
-						showsVerticalScrollIndicator={false}
-						data={searchMessagesData}
-						keyboardShouldPersistTaps={'handled'}
-						onScrollBeginDrag={Keyboard.dismiss}
-						renderItem={renderGroupItem}
-						estimatedItemSize={100}
-						removeClippedSubviews={true}
-						onEndReached={loadMoreMessages}
-						contentContainerStyle={{ paddingBottom: size.s_20 }}
-						onEndReachedThreshold={0.5}
-						ListFooterComponent={isLoadingMore && <ViewLoadMore />}
-					/>
-				</View>
-			) : (
-				<EmptySearchPage />
-			)}
-		</View>
+		<FlatList
+			style={styles.container}
+			showsVerticalScrollIndicator={false}
+			data={searchMessagesData}
+			keyboardShouldPersistTaps={'handled'}
+			onScrollBeginDrag={Keyboard.dismiss}
+			renderItem={renderGroupItem}
+			onEndReached={loadMoreMessages}
+			contentContainerStyle={{ paddingBottom: size.s_20 }}
+			removeClippedSubviews={true}
+			initialNumToRender={5}
+			maxToRenderPerBatch={10}
+			windowSize={10}
+			onEndReachedThreshold={0.7}
+			ListFooterComponent={isLoadingMore && <ViewLoadMore />}
+			ListEmptyComponent={() => <EmptySearchPage />}
+		/>
 	);
 });
 

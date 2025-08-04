@@ -2,7 +2,15 @@
     "friendRequest": {
         "title": "Yêu cầu kết bạn",
         "received": "Đã nhận",
-        "sent": "Đã gửi"
+        "sent": "Đã gửi",
+        "emptyReceived": {
+            "title": "Không có yêu cầu kết bạn đến",
+            "description": "Tại đây bạn sẽ thấy tất cả các yêu cầu kết bạn mà mọi người gửi cho bạn."
+        },
+        "emptySent": {
+            "title": "Không có yêu cầu kết bạn đi",
+            "description": "Tại đây bạn sẽ thấy tất cả các yêu cầu kết bạn mà bạn đã gửi cho người khác."
+        }
     },
     "addFriend": {
         "incomingFriendRequest": "Yêu cầu kết bạn được nhận",

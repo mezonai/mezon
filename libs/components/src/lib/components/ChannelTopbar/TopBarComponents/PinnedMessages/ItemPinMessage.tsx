@@ -84,15 +84,17 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 						<div className=" text-[10px]">{messageTime}</div>
 					</div>
 					<div className="leading-6">
-						<MessageLine
-							isInPinMsg={true}
-							isEditted={false}
-							content={messageContentObject}
-							isJumMessageEnabled={false}
-							isTokenClickAble={false}
-							messageId={message?.id}
-							isSearchMessage={true} // to correct size youtube emmbed
-						/>
+						{contentString && (
+							<MessageLine
+								isInPinMsg={true}
+								isEditted={false}
+								content={messageContentObject}
+								isJumMessageEnabled={false}
+								isTokenClickAble={false}
+								messageId={message?.id}
+								isSearchMessage={true} // to correct size youtube emmbed
+							/>
+						)}
 					</div>
 					{!!pinMessageAttachments.length && (
 						<MessageAttachment

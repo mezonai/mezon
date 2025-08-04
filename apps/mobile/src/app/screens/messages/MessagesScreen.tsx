@@ -1,4 +1,4 @@
-import { directActions, selectDirectsOpenlistOrder, useAppDispatch } from '@mezon/store-mobile';
+import { acitvitiesActions, directActions, selectDirectsOpenlistOrder, useAppDispatch } from '@mezon/store-mobile';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ const MessagesScreen = () => {
 	useFocusEffect(
 		useCallback(() => {
 			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+			dispatch(acitvitiesActions.listActivities({ noCache: true }));
 		}, [dispatch])
 	);
 	return <MessagesScreenRender chatList={JSON.stringify(dmGroupChatList)} />;

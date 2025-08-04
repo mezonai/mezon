@@ -143,7 +143,8 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		message?.code !== TypeMessage.CreatePin &&
 		message?.code !== TypeMessage.MessageBuzz &&
 		message?.code !== TypeMessage.AuditLog &&
-		message?.code !== TypeMessage.Welcome;
+		message?.code !== TypeMessage.Welcome &&
+		message?.code !== TypeMessage.UpcomingEvent;
 
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean, channelId?: string) => {

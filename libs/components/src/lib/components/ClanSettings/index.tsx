@@ -10,7 +10,6 @@ import AuditLog from './AuditLog';
 import ClanSettingOverview from './ClanSettingOverview';
 import Integrations from './Integrations';
 import { ItemObjProps, ItemSetting, listItemSetting } from './ItemObj';
-import NotificationSoundSetting from './NotificationSoundSetting';
 import CategoryOrderSetting from './OrderCategorySetting';
 import SettingEmoji from './SettingEmoji';
 import ServerSettingMainRoles from './SettingMainRoles';
@@ -58,8 +57,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 				return <Integrations isClanSetting currentChannel={currentChannel} />;
 			case ItemSetting.EMOJI:
 				return <SettingEmoji parentRef={modalRef} />;
-			case ItemSetting.NOTIFICATION_SOUND:
-				return <NotificationSoundSetting />;
+			// case ItemSetting.NOTIFICATION_SOUND:
+			// 	return <NotificationSoundSetting />;
 			case ItemSetting.IMAGE_STICKERS:
 				return <SettingSticker parentRef={modalRef} />;
 			case ItemSetting.VOIDE_STICKERS:

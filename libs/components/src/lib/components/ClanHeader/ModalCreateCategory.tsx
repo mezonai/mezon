@@ -120,8 +120,8 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 						category will automatically match to this setting
 					</p>
 				</div>
-				<div className=" font-semibold text-sm flex  justify-end flex-row items-center gap-4 py-4 px-6 rounded-bl-[5px] rounded-br-[5px]">
-					<button onClick={onClose} className="">
+				<div className=" font-semibold text-sm flex   justify-end flex-row items-center gap-4 py-4 px-6 rounded-bl-[5px] rounded-br-[5px]">
+					<button onClick={onClose} className=" hover:underline text-theme-primary">
 						Cancel
 					</button>
 					<button

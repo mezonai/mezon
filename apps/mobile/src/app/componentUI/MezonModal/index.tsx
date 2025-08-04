@@ -91,7 +91,7 @@ export const MezonModal = (props: IMezonModalProps) => {
 								) : (
 									<View style={titleStyle}>{title}</View>
 								)}
-								<View style={{ width: size.s_60 }}>
+								<View style={{ width: rightBtnText ? size.s_60 : size.s_30 }}>
 									{rightBtnText ? (
 										<Pressable onPress={() => onClickRightBtn()}>
 											<Text style={styles.confirm}>{rightBtnText}</Text>

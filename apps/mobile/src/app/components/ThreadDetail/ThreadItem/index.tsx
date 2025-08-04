@@ -1,5 +1,5 @@
 import { AngleRightIcon, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	ChannelsEntity,
@@ -106,7 +106,9 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 					</View>
 				</View>
 			</View>
-			<AngleRightIcon width={25} height={25} color={themeValue.textDisabled} />
+			<View style={{ marginLeft: size.s_30, marginRight: -size.s_4 }}>
+				<AngleRightIcon width={25} height={25} color={themeValue.textDisabled} />
+			</View>
 		</Pressable>
 	);
 };

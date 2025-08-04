@@ -20,7 +20,8 @@ export const fetchListWalletLedger = createAsyncThunk(
 		const response = await mezon.client.listWalletLedger(mezon.session, 8, filter, '', page);
 		return {
 			ledgers: response.wallet_ledger || [],
-			count: response.count || 0
+			count: response.count || 0,
+			page: page || 1
 		};
 	}
 );
@@ -44,15 +45,21 @@ export const initialWalletLedgerState: WalletLedgerState = {
 export const walletLedgerSlice = createSlice({
 	name: WALLET_LEDGER_FEATURE_KEY,
 	initialState: initialWalletLedgerState,
-	reducers: {},
+	reducers: {
+		resetWalletLedger: (state) => {
+			state.walletLedger = null;
+			state.count = 0;
+		}
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchListWalletLedger.pending, (state: WalletLedgerState) => {
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchListWalletLedger.fulfilled, (state: WalletLedgerState, action) => {
-				state.walletLedger = action.payload.ledgers;
-				state.count = action.payload.count;
+				const { ledgers, count, page } = action.payload;
+				state.walletLedger = state.walletLedger && page !== 1 ? [...state.walletLedger, ...ledgers] : ledgers;
+				state.count = count;
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchListWalletLedger.rejected, (state: WalletLedgerState, action) => {
@@ -76,6 +83,11 @@ export const walletLedgerSlice = createSlice({
 export const getWalletLedgerState = (rootState: { [WALLET_LEDGER_FEATURE_KEY]: WalletLedgerState }): WalletLedgerState =>
 	rootState[WALLET_LEDGER_FEATURE_KEY];
 export const walletLedgerReducer = walletLedgerSlice.reducer;
+export const walletLedgerActions = {
+	...walletLedgerSlice.actions,
+	fetchListWalletLedger,
+	fetchDetailTransaction
+};
 export const selectWalletLedger = createSelector(getWalletLedgerState, (state) => state.walletLedger);
 export const selectCountWalletLedger = createSelector(getWalletLedgerState, (state) => state.count);
 export const selectDetailedger = createSelector(getWalletLedgerState, (state) => state.detailLedger);

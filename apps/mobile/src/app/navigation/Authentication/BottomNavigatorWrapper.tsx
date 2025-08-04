@@ -14,7 +14,9 @@ const BottomNavigatorWrapper = memo(({ initRouteName = '' }: { initRouteName: st
 		if (isReadyToRender) return;
 
 		if (initRouteName === APP_SCREEN.BOTTOM_BAR) {
-			setIsReadyToRender(() => true);
+			requestAnimationFrame(() => {
+				setIsReadyToRender(() => true);
+			});
 		} else {
 			// Check if navigation is ready by accessing its state
 			const checkNavigationReady = () => {

@@ -1,8 +1,8 @@
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { channelUsersActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -60,11 +60,28 @@ export const RoleItem = memo(
 					)}
 					<View style={{ flex: 1 }}>
 						<View style={{ flexDirection: 'row', gap: size.s_4, alignItems: 'center' }}>
-							<Text h4 color={themeValue.white}>
+							<Text
+								style={{
+									fontSize: verticalScale(18),
+									marginLeft: 0,
+									marginRight: 0,
+									color: themeValue.white
+								}}
+							>
 								{role?.title}
 							</Text>
 						</View>
-						{!isCheckbox && !isAdvancedSetting && <Text color={themeValue.textDisabled}>{'Role'}</Text>}
+						{!isCheckbox && !isAdvancedSetting && (
+							<Text
+								style={{
+									marginLeft: 0,
+									marginRight: 0,
+									color: themeValue.textDisabled
+								}}
+							>
+								{'Role'}
+							</Text>
+						)}
 					</View>
 					{isAdvancedSetting ? (
 						<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.white} />

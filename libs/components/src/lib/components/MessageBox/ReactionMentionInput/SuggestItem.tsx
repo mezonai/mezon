@@ -4,7 +4,6 @@ import {
 	selectAllHashtagDm,
 	selectChannelById,
 	selectNumberMemberVoiceChannel,
-	selectTheme,
 	useAppSelector
 } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
@@ -58,7 +57,6 @@ const SuggestItem = ({
 
 	const { directId } = useParams();
 	const commonChannels = useSelector(selectAllHashtagDm);
-	const theme = useSelector(selectTheme);
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
 	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string));
 	const checkVoiceStatus = useMemo(() => {
@@ -113,11 +111,11 @@ const SuggestItem = ({
 		}
 
 		if (type === ChannelType.CHANNEL_TYPE_APP) {
-			return <Icons.AppChannelIcon className={'w-5 h-5'} fill={theme} />;
+			return <Icons.AppChannelIcon className={'w-5 h-5'}  />;
 		}
 
 		return null;
-	}, [specificChannel, theme]);
+	}, [specificChannel]);
 
 	useEffect(() => {
 		if (channel) {

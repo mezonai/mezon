@@ -34,14 +34,20 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 				'group relative text-xs w-[116px] h-[140px] rounded-lg flex flex-col items-center p-3 bg-item-theme bg-item-hover justify-between'
 			}
 		>
-			<div className="aspect-square h-[72px] overflow-hidden flex justify-center">
+			<div className="aspect-square h-[72px]  flex justify-center">
 				<img
 					className={' w-auto h-full object-cover select-none'}
 					src={`${!sticker.source ? `${process.env.NX_BASE_IMG_URL}/stickers/` + sticker.id + `.webp` : sticker.source}`}
 					alt=""
 				/>
 			</div>
-			<p className="font-semibold ">{sticker.shortname}</p>
+			<p
+				title={sticker.shortname}
+				className="font-semibold truncate w-full text-center text-theme-primary-active text-ellipsis whitespace-nowrap max-w-[85px]"
+			>
+				{sticker.shortname}
+			</p>
+
 			<div className="flex items-end justify-center gap-1">
 				<img
 					className="w-4 h-4 rounded-full select-none object-cover"

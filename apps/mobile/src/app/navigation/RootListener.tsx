@@ -27,7 +27,7 @@ import {
 	userStatusActions,
 	voiceActions
 } from '@mezon/store-mobile';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContext } from '@mezon/core';
@@ -47,7 +47,7 @@ import { useMezon } from '@mezon/transport';
 import { getAnalytics, logEvent, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
 import { getApp } from '@react-native-firebase/app';
 import { ChannelType, Session } from 'mezon-js';
-import { AppState, DeviceEventEmitter, Platform, View } from 'react-native';
+import { AppState, DeviceEventEmitter, Platform } from 'react-native';
 import { getVoIPToken, handleFCMToken } from '../utils/pushNotificationHelpers';
 const analytics = getAnalytics(getApp());
 const MAX_RETRIES_SESSION = 10;
@@ -331,7 +331,7 @@ const RootListener = () => {
 		[dispatch]
 	);
 
-	return <View />;
+	return null;
 };
 
 export default RootListener;

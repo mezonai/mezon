@@ -218,7 +218,7 @@ function MessageWithUser({
 						/>
 					)}
 					<div
-						className={`pl-[72px] justify-start inline-flex flex-wrap w-full relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
+						className={`pl-[72px] justify-start inline-flex flex-wrap w-full mb-1 relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
 					>
 						{showMessageHead && (
 							<>
@@ -253,7 +253,7 @@ function MessageWithUser({
 						{!!message?.content?.fwd && (
 							<div
 								style={{ height: `${!isCombine ? 'calc(100% - 50px)' : '100%'}` }}
-								className="border-l-4  rounded absolute left-[45px] bottom-0"
+								className="border-l-4  rounded absolute left-[58px] bottom-0"
 							></div>
 						)}
 						{!!message?.content?.fwd && (
@@ -401,7 +401,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	return (
 		<div
 			className={classNames(
-				'message-list-item relative message-container',
+				'message-list-item relative message-container bg-item-hover transition-colors duration-150',
 				{
 					'w-full': isSearchMessage
 				},

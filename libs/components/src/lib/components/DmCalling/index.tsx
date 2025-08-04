@@ -33,7 +33,6 @@ import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } f
 import { useSelector } from 'react-redux';
 import { SimpleMemberProfile } from '../MemberProfile';
 import DeviceSelector from './DeviceSelector';
-import LabelDm from './labelDm';
 
 type DmCallingProps = {
 	readonly dmGroupId?: Readonly<string>;
@@ -209,9 +208,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 						isHideStatus={true}
 						isHideIconStatus={Boolean(currentDmGroup?.user_id && currentDmGroup.user_id.length >= 2)}
 						key={currentDmGroup?.channel_id}
-						isHiddenAvatarPanel={true}
+						isHiddenAvatarPanel={false}
 					/>
-					<LabelDm dmGroupId={dmGroupId || ''} currentDmGroup={currentDmGroup} />
 				</div>
 			</div>
 
@@ -404,7 +402,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 								onClick={handleCloseCall}
 							>
-								<Icons.StopCall />
+								<Icons.StopCall className="size-6 text-white-600" />
 							</div>
 						</div>
 					)}

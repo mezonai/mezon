@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, directActions, useAppDispatch } from '@mezon/store-mobile';
+import {DirectEntity, directActions, useAppDispatch, acitvitiesActions} from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo, useState } from 'react';
@@ -10,9 +10,9 @@ import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
 import { DmListItem } from './DmListItem';
+import MessageActivity from './MessageActivity';
 import MessageHeader from './MessageHeader';
 import MessagesScreenEmpty from './MessagesScreenEmpty';
-import SearchDmList from './SearchDmList';
 import { style } from './styles';
 
 const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
@@ -49,6 +49,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	const handleRefresh = async () => {
 		setRefreshing(true);
 		dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		dispatch(acitvitiesActions.listActivities({ noCache: true }));
 		await sleep(500);
 		setRefreshing(false);
 	};
@@ -63,7 +64,6 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	return (
 		<View style={styles.container}>
 			<MessageHeader />
-			<SearchDmList />
 			{!dmGroupChatList?.length ? (
 				<MessagesScreenEmpty />
 			) : (
@@ -81,6 +81,9 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 					windowSize={10}
 					onEndReachedThreshold={0.7}
 					onMomentumScrollBegin={() => Keyboard.dismiss()}
+					ListHeaderComponent={() => {
+						return <MessageActivity />;
+					}}
 					keyboardShouldPersistTaps={'handled'}
 					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
 					disableVirtualization

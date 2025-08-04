@@ -1,6 +1,7 @@
 import { BottomSheetModalProps, BottomSheetScrollView, BottomSheetModal as OriginalBottomSheet } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
+import { sleep } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler, DeviceEventEmitter, Keyboard, NativeEventSubscription, StyleProp, Text, View, ViewStyle } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
@@ -102,11 +103,13 @@ const BottomSheetRootListener = () => {
 		setBackdropStyle
 	} = useBottomSheetState();
 
-	const ref = useRef<OriginalBottomSheet>();
+	const ref = useRef<OriginalBottomSheet>(null);
 	const { handleSheetPositionChange } = useBottomSheetBackHandler(ref);
 
-	const onCloseBottomSheet = () => {
+	const onCloseBottomSheet = async () => {
 		ref?.current?.close();
+		await sleep(500);
+		ref?.current?.forceClose();
 	};
 
 	const onTriggerBottomSheet = (data) => {
@@ -126,7 +129,7 @@ const BottomSheetRootListener = () => {
 	useEffect(() => {
 		const bottomSheetListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, ({ isDismiss, data }) => {
 			clearDataBottomSheet();
-			if (isDismiss) {
+			if (isDismiss || !data) {
 				onCloseBottomSheet();
 			} else {
 				Keyboard.dismiss();
@@ -167,6 +170,9 @@ const BottomSheetRootListener = () => {
 			handleIndicatorStyle={styles.handleIndicator}
 			style={styles.container}
 			containerStyle={containerStyle}
+			animationConfigs={{
+				duration: 200
+			}}
 			onChange={handleSheetPositionChange}
 			handleComponent={
 				hiddenHeaderIndicator

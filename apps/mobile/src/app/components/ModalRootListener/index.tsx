@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import React, { memo, useEffect, useState } from 'react';
-import { BackHandler, DeviceEventEmitter, Keyboard, StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, BackHandler, DeviceEventEmitter, Keyboard, StyleSheet, View } from 'react-native';
 
 const useModalState = () => {
 	const [children, setChildren] = useState<any>(null);
@@ -20,16 +20,41 @@ const ModalRootListener = () => {
 	const [visible, setVisible] = useState<boolean>(false);
 	const { children, clearDataModal, setChildren } = useModalState();
 
-	const onTriggerModal = (data) => {
-		setVisible(true);
+	const fadeAnim = useRef(new Animated.Value(0)).current;
+	const scaleAnim = useRef(new Animated.Value(0.6)).current;
+
+	const onTriggerModal = useCallback((data) => {
 		if (data?.children) setChildren(data.children);
-	};
+
+		fadeAnim.setValue(0);
+		scaleAnim.setValue(0.6);
+
+		setVisible(true);
+
+		Animated.parallel([
+			Animated.timing(fadeAnim, {
+				toValue: 1,
+				duration: 300,
+				useNativeDriver: true,
+			}),
+			Animated.spring(scaleAnim, {
+				toValue: 1,
+				tension: 100,
+				friction: 8,
+				useNativeDriver: true,
+			}),
+		]).start();
+	}, [fadeAnim, scaleAnim, setChildren]);
+
+	const closeModal = useCallback(() => {
+		setVisible(false);
+		clearDataModal();
+	}, [clearDataModal]);
 
 	useEffect(() => {
 		const modalListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_TRIGGER_MODAL, ({ isDismiss, data }) => {
-			clearDataModal();
 			if (isDismiss) {
-				setVisible(false);
+				closeModal();
 			} else {
 				Keyboard.dismiss();
 				onTriggerModal(data);
@@ -38,7 +63,7 @@ const ModalRootListener = () => {
 
 		const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
 			if (visible) {
-				setVisible(false);
+				closeModal();
 				return true;
 			}
 			return false;
@@ -48,12 +73,24 @@ const ModalRootListener = () => {
 			modalListener.remove();
 			backHandler.remove();
 		};
-	}, [visible]);
+	}, [visible, closeModal, onTriggerModal]);
+
+	if (!visible) return null;
 
 	return (
 		visible && (
 			<View style={styles.overlay}>
-				<View style={styles.modalContent}>{children && children}</View>
+				<Animated.View
+					style={[
+						styles.modalContent,
+						{
+							opacity: fadeAnim,
+							transform: [{ scale: scaleAnim }]
+						}
+					]}
+				>
+					{children}
+				</Animated.View>
 			</View>
 		)
 	);
@@ -69,7 +106,7 @@ const styles = StyleSheet.create({
 		right: 0,
 		bottom: 0,
 		zIndex: 1002,
-		backgroundColor: 'rgba(0, 0, 0, 0.3)',
+		backgroundColor: 'rgba(0, 0, 0, 0.6)',
 		justifyContent: 'center',
 		alignItems: 'center'
 	},

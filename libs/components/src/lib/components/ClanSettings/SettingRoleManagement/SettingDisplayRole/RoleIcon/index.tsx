@@ -66,8 +66,8 @@ const RoleIcon = () => {
 				{currentRoleIcon ? (
 					<img src={currentRoleIcon} alt="" className={'w-20 h-20'} />
 				) : (
-					<div className={'dark:bg-bgSecondary600 bg-bgIconDark rounded flex justify-center items-center w-20 h-20'}>
-						<Icons.ImageUploadIcon className="w-6 h-6" />
+						<div className={'bg-theme-setting-nav flex justify-center items-center w-20 h-20'}>
+							<Icons.ImageUploadIcon className="w-6 h-6 text-theme-primary" />
 					</div>
 				)}
 				<input type="file" className={'hidden'} ref={fileInputRef} />

@@ -12,13 +12,14 @@ export const style = (colors: Attributes) =>
 		},
 		option: {
 			flexDirection: 'row',
+			alignItems: 'center',
 			paddingHorizontal: size.s_6,
 			paddingVertical: size.s_14,
-			gap: size.s_20
+			gap: size.s_14
 		},
 		textOption: {
 			color: colors.text,
-			fontSize: size.label,
-			fontWeight: '700'
+			fontSize: size.medium,
+			fontWeight: '500'
 		}
 	});

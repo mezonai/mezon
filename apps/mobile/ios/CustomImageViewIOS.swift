@@ -55,7 +55,9 @@ class CustomImageViewIOS: UIView {
   }
 
   private func loadImage() {
-    guard let source = source, let uri = source["uri"] as? String else {
+    guard let source = source, 
+          let uri = source["uri"] as? String,
+          !uri.isEmpty else {
       imageView.image = nil
       return
     }
@@ -90,7 +92,9 @@ class CustomImageViewIOS: UIView {
     if retryCount < maxRetryCount {
       retryCount += 1
       print("Retrying to load image, attempt \(retryCount)")
-      loadImage()
+      DispatchQueue.main.async { [weak self] in
+        self?.loadImage()
+      }
     } else {
       print("Max retry attempts reached")
     }

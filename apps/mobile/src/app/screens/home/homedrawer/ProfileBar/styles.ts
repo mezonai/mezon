@@ -15,7 +15,8 @@ export const style = (colors: Attributes) =>
 			height: size.s_40,
 			width: size.s_40,
 			borderRadius: size.s_40,
-			overlayColor: colors.secondary
+			overlayColor: colors.secondary,
+			overflow: 'hidden'
 		},
 		userInfo: {
 			justifyContent: 'center'

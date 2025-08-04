@@ -287,7 +287,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 							}
 						})
 					);
-					handleEndCall(true);
+					handleEndCall();
 				}, 30000);
 				if (localVideoRef.current) {
 					localVideoRef.current.srcObject = stream;

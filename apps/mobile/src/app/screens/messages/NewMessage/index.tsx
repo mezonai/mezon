@@ -90,9 +90,6 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 	const handleFriendAction = useCallback(
 		(friend: FriendsEntity, action: EFriendItemAction) => {
 			switch (action) {
-				case EFriendItemAction.Call:
-					Toast.show({ type: 'info', text1: 'Updating...' });
-					break;
 				case EFriendItemAction.MessageDetail:
 					directMessageWithUser(friend);
 					break;

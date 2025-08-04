@@ -58,9 +58,9 @@ export const LogoutModal: React.FC<ModalProps> = ({ handleLogOut, onClose }) => 
 		<div className="fixed  inset-0 flex items-center justify-center z-50">
 			<div className="fixed inset-0 bg-black opacity-80"></div>
 			<div className="relative z-10 bg-theme-setting-primary p-6 rounded-[5px] text-center">
-				<h2 className="text-[30px] font-semibold mb-4 ">Log Out</h2>
+				<h2 className="text-[30px] font-semibold mb-4  text-theme-primary">Log Out</h2>
 				<p
-					className="dark:text-white-600 
+					className="text-theme-primary 
 				 mb-6 text-[16px]"
 				>
 					Are you sure you want to log out?
@@ -87,10 +87,10 @@ export const DeleteAccountModal: React.FC<ModalProps> = ({ handleLogOut, onClose
 	return (
 		<div className="fixed  inset-0 flex items-center justify-center z-50">
 			<div className="fixed inset-0 bg-black opacity-80"></div>
-			<div className="relative z-10 theme-base-color p-6 rounded-lg text-center">
-				<h2 className="text-[30px] font-semibold mb-4 ">Delete Account</h2>
+			<div className="relative z-10 bg-theme-setting-primary p-6 rounded-lg text-center">
+				<h2 className="text-[30px] font-semibold mb-4 text-theme-primary ">Delete Account</h2>
 				<p
-					className="dark:text-white-600 
+					className="text-theme-primary
 				 mb-6 text-[16px]"
 				>
 					Are you sure that you want to delete your account? This will immediately log you out of your account and you will not be able to
@@ -103,7 +103,7 @@ export const DeleteAccountModal: React.FC<ModalProps> = ({ handleLogOut, onClose
 					>
 						Cancel
 					</Button>
-					<ButtonLoading onClick={handleLogOut} disabled={isDeleting} className={`px-4 py-2 rounded `} label="Delete" />
+					<ButtonLoading onClick={handleLogOut} disabled={isDeleting} className={`px-4 py-2 rounded text-white bg-red-500 hover:opacity-80 `} label="Delete" />
 				</div>
 			</div>
 		</div>

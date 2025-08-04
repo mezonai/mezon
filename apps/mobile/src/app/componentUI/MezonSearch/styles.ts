@@ -1,4 +1,4 @@
-import { Attributes, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -21,7 +21,7 @@ export const style = (colors: Attributes) =>
 
 		input: {
 			color: colors.textStrong,
-			fontSize: Fonts.size.small,
+			fontSize: size.s_14,
 			height: size.s_40,
 			flexBasis: 10,
 			flexGrow: 1,

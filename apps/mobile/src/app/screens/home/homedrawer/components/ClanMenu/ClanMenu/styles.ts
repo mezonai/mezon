@@ -6,7 +6,6 @@ export const style = (colors: Attributes) =>
 		avatarWrapper: {
 			width: size.s_60,
 			height: size.s_60,
-			backgroundColor: baseColor.blurple,
 			borderRadius: size.s_10,
 			overflow: 'hidden'
 		},

@@ -36,6 +36,13 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 		});
 	}, [userID, rolesClan]);
 
+	const displayName = useMemo(() => {
+		if (user?.clan_nick) {
+			return user?.clan_nick;
+		}
+		return user?.user?.display_name ? user?.user?.display_name : user?.user?.username || '';
+	}, [user?.clan_nick, user?.user?.display_name, user?.user?.username]);
+
 	const onPressMemberItem = useCallback(() => {
 		if (canEditRoles && onMemberSelect && user) {
 			onMemberSelect(user);
@@ -53,7 +60,7 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 				<MezonAvatar avatarUrl={user?.user?.avatar_url || ''} username={user?.user?.username || ''} />
 				<View style={[styles.rightContent]}>
 					<View style={styles.content}>
-						<Text style={styles.displayName}>{user?.clan_nick || user?.user?.display_name || ''}</Text>
+						<Text style={styles.displayName}>{displayName}</Text>
 						<Text style={styles.username}>{user?.user?.username || ''}</Text>
 
 						{clanUserRole?.length > 0 && (

@@ -2,7 +2,15 @@
     "friendRequest": {
         "title": "Friend Requests",
         "received": "Received",
-        "sent": "Sent"
+        "sent": "Sent",
+        "emptyReceived": {
+            "title": "No incoming friend requests",
+            "description": "Here you'll see all the friend requests people send to you."
+        },
+        "emptySent": {
+            "title": "No outgoing friend requests", 
+            "description": "Here you'll see all the friend requests you've sent to others."
+        }
     },
     "addFriend": {
         "incomingFriendRequest": "Incoming Friend Request",

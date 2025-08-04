@@ -80,7 +80,21 @@
 .scrollbar-hide::-webkit-scrollbar {
 	display: none;
 }
-
+.react-datepicker {
+	background-color: var(--bg-option-theme) !important	;
+}
+.react-datepicker__header {
+	background: var(--bg-option-theme) !important;
+	color:var(--text-theme-primary) !important;
+	border-top-left-radius: 8px !important;
+	border-top-right-radius: 8px !important;
+}
+.react-datepicker__current-month{
+	color: var(--text-theme-primary) !important;
+}
+.react-datepicker__day-name{
+	color: var(--text-theme-primary) !important;
+}
 /* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-hide {
 	-ms-overflow-style: none;

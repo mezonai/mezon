@@ -52,5 +52,9 @@ export const style = (colors: Attributes) =>
 			color: colors.textStrong,
 			paddingVertical: size.s_6,
 			marginLeft: 5
+		},
+		friendListWrapper: {
+			flex: 1,
+			paddingTop: size.s_10
 		}
 	});

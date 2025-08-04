@@ -25,7 +25,7 @@ export function useApp() {
 
 	useEffect(() => {
 		if (!appearanceTheme) {
-			setAppearanceTheme('dark');
+			setAppearanceTheme(ThemeManager.getCurrentTheme());
 		}
 	}, [appearanceTheme]);
 
@@ -68,3 +68,4 @@ export function useApp() {
 		[isShowMemberList, setIsShowMemberList, setAppearanceTheme, systemIsDark]
 	);
 }
+

@@ -318,6 +318,7 @@ export interface IMessageInput {
 	textarea?: boolean;
 	style?: EButtonMessageStyle;
 	defaultValue?: string;
+	disabled?: boolean;
 }
 
 export interface IMessageDatePicker {
@@ -1167,7 +1168,8 @@ export enum TypeMessage {
 	Topic = 9,
 	AuditLog = 10,
 	SendToken = 11,
-	Ephemeral = 12
+	Ephemeral = 12,
+	UpcomingEvent = 13
 }
 
 export enum ServerSettingsMenuValue {

@@ -17,7 +17,7 @@ import {
 import { DEFAULT_ROLE_COLOR, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -30,7 +30,6 @@ import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
 import { style } from './UserProfile.styles';
-import ActivityAppComponent from './component/ActivityAppComponent';
 import EditUserProfileBtn from './component/EditUserProfileBtn';
 import { PendingContent } from './component/PendingContent';
 import UserInfoDm from './component/UserInfoDm';
@@ -99,15 +98,52 @@ const UserProfile = React.memo(
 			return infoFriend?.state === EStateFriend.BLOCK;
 		}, [infoFriend?.state]);
 
-		const status = getUserStatusByMetadata(user?.user?.metadata);
+		const status = getUserStatusByMetadata(user?.user?.metadata) || user?.metadata?.user_status;
+
+		useEffect(() => {
+			if (isShowPendingContent) {
+				setIsShowPendingContent(false);
+			}
+		}, [infoFriend?.state]);
 
 		const isKicked = useMemo(() => {
 			return !userById;
 		}, [userById]);
 
-		const targetUser = useMemo(() => {
-			return allUser?.find?.((targetUser) => [user?.id, userId].includes(targetUser?.user?.id));
-		}, [user?.id, userId, allUser]);
+		const handleAddFriend = () => {
+			const userIdToAddFriend = userId || user?.id;
+			if (userIdToAddFriend) {
+				addFriend({
+					usernames: [],
+					ids: [userIdToAddFriend]
+				});
+			}
+		};
+
+		const iconFriend = useMemo(() => {
+			switch (infoFriend?.state) {
+				case EFriendState.Friend:
+					return {
+						icon: IconCDN.userFriendIcon,
+						action: () => setIsShowPendingContent(true)
+					};
+				case EFriendState.ReceivedRequestFriend:
+					return {
+						icon: IconCDN.userPendingIcon,
+						action: () => setIsShowPendingContent(true)
+					};
+				case EFriendState.SentRequestFriend:
+					return {
+						icon: IconCDN.userPendingIcon,
+						action: () => setIsShowPendingContent(true)
+					};
+				default:
+					return {
+						icon: IconCDN.userPlusIcon,
+						action: handleAddFriend
+					};
+			}
+		}, [infoFriend?.state]);
 
 		const userRolesClan = useMemo(() => {
 			return userById?.role_id ? rolesClan?.filter?.((role) => userById?.role_id?.includes(role.id)) : [];
@@ -185,6 +221,63 @@ const UserProfile = React.memo(
 			directMessageWithUser(userId || user?.id);
 		};
 
+		const handleCallUser = useCallback(
+			async (userId: string) => {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+					isShow: false
+				});
+				const directMessage = listDM?.find?.((dm) => {
+					const userIds = dm?.user_id;
+					return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === userId;
+				});
+				if (directMessage?.id) {
+					navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+						screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
+						params: {
+							receiverId: userId,
+							receiverAvatar: message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url,
+							directMessageId: directMessage?.id
+						}
+					});
+					return;
+				}
+				const response = await createDirectMessageWithUser(
+					userId,
+					message?.display_name || user?.user?.display_name || user?.display_name || userById?.user?.display_name,
+					message?.user?.username || user?.user?.username || user?.username || userById?.user?.username,
+					message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
+				);
+				if (response?.channel_id) {
+					navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+						screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
+						params: {
+							receiverId: userId,
+							receiverAvatar: message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url,
+							directMessageId: response?.channel_id
+						}
+					});
+				}
+			},
+			[
+				createDirectMessageWithUser,
+				listDM,
+				message?.avatar,
+				message?.display_name,
+				message?.user?.username,
+				navigation,
+				user?.avatar_url,
+				user?.display_name,
+				user?.user?.avatar_url,
+				user?.user?.display_name,
+				user?.user?.username,
+				user?.username,
+				userById?.user?.avatar_url,
+				userById?.user?.display_name,
+				userById?.user?.username
+			]
+		);
+
 		const actionList = [
 			{
 				id: 1,
@@ -193,21 +286,13 @@ const UserProfile = React.memo(
 				action: navigateToMessageDetail,
 				isShow: true
 			},
-			// {
-			// 	id: 2,
-			// 	text: t('userAction.voiceCall'),
-			// 	icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
-			// 	action: () => {
-			// 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
-			// 			screen: APP_SCREEN.MENU_CHANNEL.CALL_DIRECT,
-			// 			params: {
-			// 				receiverId: userById?.user?.id,
-			// 				receiverAvatar: userById?.user?.avatar_url
-			// 			}
-			// 		});
-			// 	},
-			// 	isShow: !!targetUser && ![EFriendState.ReceivedRequestFriend, EFriendState.SentRequestFriend].includes(targetUser?.state)
-			// },
+			{
+				id: 2,
+				text: t('userAction.voiceCall'),
+				icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
+				action: () => handleCallUser(userId || user?.id),
+				isShow: true
+			},
 			// {
 			// 	id: 3,
 			// 	text: t('userAction.videoCall'),
@@ -228,16 +313,8 @@ const UserProfile = React.memo(
 				id: 4,
 				text: t('userAction.addFriend'),
 				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={Colors.green} />,
-				action: () => {
-					const userIdToAddFriend = userId || user?.id;
-					if (userIdToAddFriend) {
-						addFriend({
-							usernames: [],
-							ids: [userIdToAddFriend]
-						});
-					}
-				},
-				isShow: !targetUser && !isBlocked,
+				action: handleAddFriend,
+				isShow: !infoFriend && !isBlocked,
 				textStyles: {
 					color: Colors.green
 				}
@@ -250,9 +327,9 @@ const UserProfile = React.memo(
 					setIsShowPendingContent(true);
 				},
 				isShow:
-					!!targetUser &&
-					targetUser.state !== undefined &&
-					[EFriendState.ReceivedRequestFriend, EFriendState.SentRequestFriend].includes(targetUser.state),
+					!!infoFriend &&
+					infoFriend?.state !== undefined &&
+					[EFriendState.ReceivedRequestFriend, EFriendState.SentRequestFriend].includes(infoFriend?.state),
 				textStyles: {
 					color: Colors.goldenrodYellow
 				}
@@ -260,11 +337,11 @@ const UserProfile = React.memo(
 		];
 
 		const handleAcceptFriend = () => {
-			acceptFriend(targetUser?.user?.username || '', targetUser?.user?.id || '');
+			acceptFriend(infoFriend?.user?.username || '', infoFriend?.user?.id || '');
 		};
 
 		const handleIgnoreFriend = () => {
-			deleteFriend(targetUser?.user?.username || '', targetUser?.user?.id || '');
+			deleteFriend(infoFriend?.user?.username || '', infoFriend?.user?.id || '');
 		};
 		const isChannelOwner = useMemo(() => {
 			if (dmChannel?.creator_id) {
@@ -301,7 +378,7 @@ const UserProfile = React.memo(
 		if (isShowPendingContent) {
 			return (
 				<View style={[styles.wrapper]}>
-					<PendingContent targetUser={targetUser!} onClose={() => setIsShowPendingContent(false)} />
+					<PendingContent targetUser={infoFriend} onClose={() => setIsShowPendingContent(false)} />
 				</View>
 			);
 		}
@@ -310,19 +387,34 @@ const UserProfile = React.memo(
 			<View style={[styles.wrapper]}>
 				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : Colors.titleReset }]}>
 					{!isCheckOwner && (
-						<TouchableOpacity
-							onPress={() => handleTransferFunds()}
-							style={{
-								position: 'absolute',
-								right: size.s_10,
-								top: size.s_10,
-								padding: size.s_6,
-								borderRadius: size.s_20,
-								backgroundColor: themeValue.primary
-							}}
-						>
-							<MezonIconCDN icon={IconCDN.transactionIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
-						</TouchableOpacity>
+						<View style={{ flexDirection: 'row' }}>
+							<TouchableOpacity
+								onPress={iconFriend?.action}
+								style={{
+									position: 'absolute',
+									right: size.s_10,
+									top: size.s_10,
+									padding: size.s_6,
+									borderRadius: size.s_20,
+									backgroundColor: themeValue.primary
+								}}
+							>
+								<MezonIconCDN icon={iconFriend?.icon} color={themeValue.text} width={size.s_20} height={size.s_20} />
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => handleTransferFunds()}
+								style={{
+									position: 'absolute',
+									right: size.s_50,
+									top: size.s_10,
+									padding: size.s_6,
+									borderRadius: size.s_20,
+									backgroundColor: themeValue.primary
+								}}
+							>
+								<MezonIconCDN icon={IconCDN.transactionIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
+							</TouchableOpacity>
+						</View>
 					)}
 					<View style={[styles.userAvatar]}>
 						<MezonAvatar
@@ -337,7 +429,7 @@ const UserProfile = React.memo(
 										user?.avatar_url)
 									: (userById?.user?.avatar_url ?? user?.user?.avatar_url ?? user?.avatar_url ?? messageAvatar)
 							}
-							username={user?.user?.username}
+							username={user?.user?.username || user?.username}
 							userStatus={userStatus}
 							customStatus={status}
 							isBorderBoxImage={true}
@@ -363,16 +455,16 @@ const UserProfile = React.memo(
 							{userById
 								? !isDM
 									? userById?.clan_nick ||
-										userById?.user?.display_name ||
-										userById?.user?.username ||
-										user?.clan_nick ||
-										user?.user?.display_name ||
-										user?.user?.username
+									userById?.user?.display_name ||
+									userById?.user?.username ||
+									user?.clan_nick ||
+									user?.user?.display_name ||
+									user?.user?.username
 									: userById?.user?.display_name || userById?.user?.username
 								: user?.display_name ||
-									user?.username ||
-									user?.user?.display_name ||
-									(checkAnonymous ? 'Anonymous' : message?.username)}
+								user?.username ||
+								user?.user?.display_name ||
+								(checkAnonymous ? 'Anonymous' : message?.username)}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
@@ -386,7 +478,7 @@ const UserProfile = React.memo(
 									const { action, icon, id, isShow, text, textStyles } = actionItem;
 									if (!isShow) return null;
 									return (
-										<TouchableOpacity key={id} onPress={() => action()} style={[styles.actionItem]}>
+										<TouchableOpacity key={id} onPress={() => action?.()} style={[styles.actionItem]}>
 											{icon}
 											<Text style={[styles.actionText, textStyles && textStyles]}>{text}</Text>
 										</TouchableOpacity>
@@ -394,7 +486,7 @@ const UserProfile = React.memo(
 								})}
 							</View>
 						)}
-						{EFriendState.ReceivedRequestFriend === targetUser?.state && (
+						{EFriendState.ReceivedRequestFriend === infoFriend?.state && (
 							<View style={{ marginTop: size.s_16 }}>
 								<Text style={styles.receivedFriendRequestTitle}>{t('incomingFriendRequest')}</Text>
 								<View style={{ flexDirection: 'row', gap: size.s_10, marginTop: size.s_10 }}>
@@ -428,7 +520,6 @@ const UserProfile = React.memo(
 									<Text style={[styles.aboutMeText]}>{userById?.user?.about_me}</Text>
 								</View>
 							)}
-							<ActivityAppComponent userId={userId || user?.id || ''} />
 							{userRolesClan?.length && showRole && !isDM ? (
 								<View>
 									<Text style={[styles.title]}>{t('aboutMe.roles.headerTitle')}</Text>

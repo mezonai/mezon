@@ -29,7 +29,6 @@ import {
 	selectProcessingByClan,
 	selectSearchMessagesLoadingStatus,
 	selectStatusMenu,
-	selectTheme,
 	selectToCheckAppIsOpening,
 	selectTopicByChannelId,
 	threadsActions,
@@ -250,8 +249,6 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, channelId as string));
 
-	const appearanceTheme = useSelector(selectTheme);
-
 	const [openUploadFileModal, closeUploadFileModal] = useModal(() => {
 		return <FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />;
 	}, [currentChannel]);
@@ -336,14 +333,14 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
 						<div
-							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big ${isElectron() ? 'h-[calc(100%_-_23px)]' : ''} ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
+							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big ${isElectron() ? 'h-[calc(100%_-_23px)]' : ''}`}
 						>
 							<Canvas />
 						</div>
 					)}
 
 					{!isShowCanvas && isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
-						<div className={`flex flex-1 justify-center overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}>
+						<div className={`flex flex-1 justify-center overflow-x-hidden`}>
 							<AgeRestricted closeAgeRestricted={closeAgeRestricted} />
 						</div>
 					)}

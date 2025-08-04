@@ -10,7 +10,7 @@ const NetInfoComp = () => {
 	const dispatch = useDispatch();
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-	const fetchWithTimeout = async (url, timeout = 5000) => {
+	const fetchWithTimeout = async (url, timeout = 8000) => {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -33,7 +33,7 @@ const NetInfoComp = () => {
 	const checkConnectionQuality = async () => {
 		try {
 			const startTime = Date.now();
-			const response = await fetchWithTimeout(`${process.env.NX_CHAT_APP_REDIRECT_URI}/favicon.ico`, 5000);
+			const response = await fetchWithTimeout(`${process.env.NX_CHAT_APP_REDIRECT_URI}/favicon.ico`, 8000);
 
 			if (!response.ok) {
 				dispatch(appActions.setHasInternetMobile(false));
@@ -45,7 +45,7 @@ const NetInfoComp = () => {
 			const responseTime = endTime - startTime;
 
 			// If response time is too high (e.g., > 3 seconds), consider it a poor connection
-			if (responseTime > 5000) {
+			if (responseTime > 8000) {
 				dispatch(appActions.setHasInternetMobile(false));
 				return false;
 			}
@@ -64,7 +64,7 @@ const NetInfoComp = () => {
 		if (!isCheckConnect) {
 			timeoutRef.current = setInterval(async () => {
 				await checkConnectionQuality();
-			}, 5000);
+			}, 8000);
 		}
 	};
 

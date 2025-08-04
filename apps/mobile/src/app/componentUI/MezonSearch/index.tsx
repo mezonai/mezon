@@ -1,7 +1,7 @@
-import { size, Text, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { IconCDN } from '../../constants/icon_cdn';
 import MezonIconCDN from '../MezonIconCDN';
 import { style } from './styles';

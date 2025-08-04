@@ -55,7 +55,7 @@ export const NotificationTooltip = memo(({ isGridView, isShowMember }: Notificat
 				title="Inbox"
 				className={`focus-visible:outline-none relative ${
 					(isGridView && !isShowMember) || (isGridView && isShowMember) || (isShowMember && !isGridView)
-						? 'text-theme-primary-active text-theme-primary-hover'
+					? 'text-theme-primary text-theme-primary-hover'
 						: 'text-theme-primary text-theme-primary-hover'
 				}`}
 				onContextMenu={(e) => e.preventDefault()}

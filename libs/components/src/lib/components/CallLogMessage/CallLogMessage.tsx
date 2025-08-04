@@ -1,6 +1,7 @@
 import { useChatSending } from '@mezon/core';
 import {
 	audioCallActions,
+	selectAllAccount,
 	selectAudioBusyTone,
 	selectAudioDialTone,
 	selectAudioRingTone,
@@ -14,7 +15,7 @@ import { Icons } from '@mezon/ui';
 import { CallLog, IMessageCallLog, IMessageSendPayload, IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 type CallLogMessageProps = {
@@ -31,7 +32,7 @@ const iconMap: { [key: string]: { icon: JSX.Element; text: string; colorClass: s
 	[`${IMessageTypeCallLog.TIMEOUTCALL}_SENDER`]: {
 		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
 		text: CallLog.OUTGOING_CALL,
-		colorClass: '',
+		colorClass: 'text-red-500',
 		bgClass: 'from-blue-500 to-indigo-600'
 	},
 	[`${IMessageTypeCallLog.TIMEOUTCALL}_RECEIVER`]: {
@@ -55,7 +56,7 @@ const iconMap: { [key: string]: { icon: JSX.Element; text: string; colorClass: s
 	[`${IMessageTypeCallLog.REJECTCALL}_SENDER`]: {
 		icon: <Icons.CancelCall defaultSize="w-6 h-6" />,
 		text: CallLog.RECIPIENT_DECLINED,
-		colorClass: '',
+		colorClass: 'text-red-500',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.REJECTCALL}_RECEIVER`]: {
@@ -67,7 +68,7 @@ const iconMap: { [key: string]: { icon: JSX.Element; text: string; colorClass: s
 	[`${IMessageTypeCallLog.CANCELCALL}_SENDER`]: {
 		icon: <Icons.CancelCall defaultSize="w-6 h-6" />,
 		text: CallLog.YOU_CANCELED,
-		colorClass: '',
+		colorClass: 'text-red-500',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.CANCELCALL}_RECEIVER`]: {
@@ -88,20 +89,22 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const isPlayRingTone = useSelector(selectAudioRingTone);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
-	const key = `${callLog.callLogType}_${senderId === userId ? 'SENDER' : 'RECEIVER'}`;
+	const userProfile = useSelector(selectAllAccount);
+	const isMe = useMemo(() => userProfile?.user?.id === senderId, [userProfile?.user?.id, senderId]);
+	const key = `${callLog.callLogType}_${isMe ? 'SENDER' : 'RECEIVER'}`;
 
 	const shouldShowCallBack = callLog.showCallBack !== false;
 
 	const { icon, text, colorClass, bgClass } = iconMap[key] || {
 		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
-		text: `${username} started a ${callLog.isVideo ? 'video' : 'audio'} call`,
+		text: `${username} started ${callLog.isVideo ? 'a video' : 'an audio'} call`,
 		colorClass: '',
 		bgClass: ''
 	};
 	const callLogMessage =
 		callLog.callLogType === IMessageTypeCallLog.FINISHCALL
 			? contentMsg
-			: callLog.callLogType === IMessageTypeCallLog.TIMEOUTCALL && senderId === userId
+			: callLog.callLogType === IMessageTypeCallLog.TIMEOUTCALL && isMe
 				? CallLog.TIME_DEFAULT
 				: `${callLog.isVideo ? CallLog.VIDEO_CALL : CallLog.VOICE_CALL}`;
 

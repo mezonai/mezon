@@ -1,7 +1,7 @@
 import { Attributes, baseColor, Colors, Fonts, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (colors: Attributes, isMsgReply = false) =>
 	StyleSheet.create({
 		image: {
 			height: '100%',
@@ -36,7 +36,7 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		textAvatarMessageBoxDefault: {
-			fontSize: size.h4,
+			fontSize: isMsgReply ? size.h8 : size.h4,
 			color: Colors.white
 		}
 	});

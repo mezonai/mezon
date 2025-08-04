@@ -2,5 +2,6 @@
   "title": "MỜi THAM GIA CLAN",
   "offline": "ngoại tuyến",
   "online": "trực tuyến",
-  "join": "THAM GIA"
+  "join": "Tham gia",
+  "inviteTo": "MỜI THAM GIA {{clanName}}"
 }

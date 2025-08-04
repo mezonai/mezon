@@ -13,7 +13,7 @@ const GroupThreads = ({ title, threads, measureRef, preventClosePannel }: GroupT
 	if (threads.length === 0) return null;
 
 	return (
-		<div>
+		<>
 			<div className="mt-2 mb-2 h-6 text-xs font-semibold leading-6 uppercase text-theme-primary-active">
 				{title} ({threads.length})
 			</div>
@@ -33,7 +33,7 @@ const GroupThreads = ({ title, threads, measureRef, preventClosePannel }: GroupT
 					);
 				})}
 			</ul>
-		</div>
+		</>
 	);
 };
 

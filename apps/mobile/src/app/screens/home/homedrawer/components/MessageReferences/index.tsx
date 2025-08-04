@@ -1,11 +1,11 @@
 import { ReplyIcon } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, getStore, messagesActions, selectMemberClanByUserId2, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
 import { ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -61,7 +61,13 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 				<ReplyIcon width={size.s_34} height={size.s_30} />
 			</View>
 			<View style={styles.repliedMessageWrapper}>
-				<MezonAvatar avatarUrl={avatarSender} username={messageReferences?.message_sender_username} height={size.s_20} width={size.s_20} />
+				<MezonAvatar
+					avatarUrl={avatarSender}
+					username={messageReferences?.message_sender_username}
+					height={size.s_20}
+					width={size.s_20}
+					isMsgReply={true}
+				/>
 				<View style={styles.replyContentWrapper}>
 					<Text style={styles.replyDisplayName}>
 						{messageReferences?.message_sender_clan_nick ||

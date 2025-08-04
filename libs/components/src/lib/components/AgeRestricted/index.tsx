@@ -76,7 +76,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 	}, []);
 
 	useEffect(() => {
-		if (userProfile?.user?.dob === '0001-01-01T00:00:00Z') {
+		if (!userProfile?.user?.dob || userProfile?.user?.dob === '0001-01-01T00:00:00Z') {
 			openModalConfirmAge();
 		} else {
 			closeModalConfirmAge();

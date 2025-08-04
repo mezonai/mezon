@@ -1,11 +1,11 @@
 import { useMyRole } from '@mezon/core';
 import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { permissionRoleChannelActions, selectAllPermissionRoleChannel, selectPermissionChannel, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
@@ -99,7 +99,15 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
 				<View>
-					<Text bold h3 color={themeValue?.white}>
+					<Text
+						style={{
+							fontSize: verticalScale(20),
+							marginLeft: 0,
+							marginRight: 0,
+							fontWeight: 'bold',
+							color: themeValue.white
+						}}
+					>
 						{t('channelPermission.permissionOverrides')}
 					</Text>
 				</View>
@@ -109,7 +117,14 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 				return (
 					<TouchableOpacity onPress={saveChannelPermission}>
 						<View style={{ marginRight: size.s_20, paddingVertical: size.s_10 }}>
-							<Text h4 color={Colors.textViolet}>
+							<Text
+								style={{
+									fontSize: verticalScale(18),
+									marginLeft: 0,
+									marginRight: 0,
+									color: Colors.textViolet
+								}}
+							>
 								{t('channelPermission.save')}
 							</Text>
 						</View>
@@ -181,7 +196,13 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 
 	return (
 		<View style={{ flex: 1, backgroundColor: themeValue.primary, paddingHorizontal: size.s_18, gap: size.s_18 }}>
-			<Text color={themeValue.textDisabled}>{t('channelPermission.generalChannelPermission')}</Text>
+			<Text
+				style={{
+					color: themeValue.textDisabled
+				}}
+			>
+				{t('channelPermission.generalChannelPermission')}
+			</Text>
 
 			<ScrollView>
 				<View style={{ gap: size.s_28 }}>

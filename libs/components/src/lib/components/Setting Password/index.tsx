@@ -1,8 +1,9 @@
 'use client';
-import { ButtonLoading, FormError, Input, PasswordInput } from '@mezon/ui';
+import { authActions, useAppDispatch } from '@mezon/store';
+import { Button, FormError, Input, PasswordInput } from '@mezon/ui';
 import { LoadingStatus, validateEmail, validatePassword } from '@mezon/utils';
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface SetPasswordProps {
 	onSubmit?: (data: { email: string; password: string }) => void;
@@ -23,6 +24,7 @@ export default function SetPassword({
 	isLoading,
 	onClose
 }: SetPasswordProps) {
+	const dispatch = useAppDispatch();
 	const [email, setEmail] = useState(initialEmail);
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,6 +33,10 @@ export default function SetPassword({
 		password?: string;
 		confirmPassword?: string;
 	}>({});
+
+	useEffect(() => {
+		dispatch(authActions.refreshStatus());
+	}, []);
 
 	const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -69,24 +75,28 @@ export default function SetPassword({
 		[password]
 	);
 
-	const handleSubmit = useCallback(() => {
-		const emailError = validateEmail(email);
-		const passwordError = validatePassword(password);
-		const confirmError = password !== confirmPassword ? "Confirmation password doesn't match" : '';
+	const handleSubmit = useCallback(
+		(event: React.FormEvent<HTMLFormElement>) => {
+			event.preventDefault();
+			const emailError = validateEmail(email);
+			const passwordError = validatePassword(password);
+			const confirmError = password !== confirmPassword ? "Confirmation password doesn't match" : '';
 
-		if (emailError || passwordError || confirmError) {
-			setErrors({
-				email: emailError,
-				password: passwordError,
-				confirmPassword: confirmError
-			});
-			return;
-		}
+			if (emailError || passwordError || confirmError) {
+				setErrors({
+					email: emailError,
+					password: passwordError,
+					confirmPassword: confirmError
+				});
+				return;
+			}
 
-		if (onSubmit) {
-			onSubmit({ email, password });
-		}
-	}, [email, password, confirmPassword, onSubmit]);
+			if (onSubmit) {
+				onSubmit({ email, password });
+			}
+		},
+		[email, password, confirmPassword, onSubmit]
+	);
 
 	const disabled =
 		!!errors.email || !!errors.password || !!errors.confirmPassword || !email || !password || !confirmPassword || isLoading === 'loading';
@@ -143,7 +153,18 @@ export default function SetPassword({
 						/>
 					</div>
 					<div className="p-6">
-						<ButtonLoading disabled={disabled} label={submitButtonText} onClick={handleSubmit} />
+						<Button
+							type="submit"
+							disabled={disabled}
+							className={`w-full px-4 py-2 rounded-md font-medium focus:outline-none
+								${
+									disabled
+										? 'bg-gray-400 text-white cursor-not-allowed dark:bg-gray-600 dark:text-gray-300'
+										: 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer dark:bg-indigo-500 dark:hover:bg-indigo-600'
+								}`}
+						>
+							{isLoading === 'loading' ? 'Loading...' : submitButtonText}
+						</Button>
 					</div>
 				</form>
 			</div>

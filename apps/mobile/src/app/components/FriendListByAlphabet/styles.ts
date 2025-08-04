@@ -19,8 +19,7 @@ export const style = (colors: Attributes) =>
 			paddingVertical: size.s_6
 		},
 		groupWrapper: {
-			borderRadius: size.s_12,
-			overflow: 'hidden'
+			borderRadius: size.s_12
 		},
 		friendText: {
 			color: Colors.textGray,

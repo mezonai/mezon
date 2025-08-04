@@ -78,7 +78,9 @@ export const style = (colors: Attributes) =>
 			gap: size.s_8,
 			alignItems: 'center',
 			padding: size.s_10,
-			marginVertical: size.s_2
+			marginVertical: size.s_2,
+			borderBottomWidth: 1,
+			borderColor: colors.border
 		},
 		username: {
 			color: colors.text,

@@ -1,12 +1,14 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { fetchDetailTransaction, selectDetailedger, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { formatNumber } from '@mezon/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { safeJSONParse } from 'mezon-js';
 import { ApiWalletLedger } from 'mezon-js/api.gen';
 import moment from 'moment';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Pressable, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { TRANSACTION_ITEM } from '../../../../constants/transaction';
@@ -42,7 +44,7 @@ export const TransactionItem = ({ item, isExpand, onPress }: { item: ApiWalletLe
 	const onPressItem = async () => {
 		if (!isExpand) {
 			onPress(item.transaction_id);
-            setDetailHeight(size.s_80);
+			setDetailHeight(size.s_80);
 			setLoadingDetail(true);
 			await dispatch(fetchDetailTransaction({ transId: item.transaction_id }));
 			setLoadingDetail(false);
@@ -59,23 +61,33 @@ export const TransactionItem = ({ item, isExpand, onPress }: { item: ApiWalletLe
 	const note = useMemo(() => {
 		if (!isExpand) return '';
 		if (typeof detailLedger?.metadata === 'string') return detailLedger.metadata;
-		const m = safeJSONParse(detailLedger?.metadata);
+		const m = safeJSONParse(detailLedger?.metadata || '{}');
 		return m?.note || detailLedger?.metadata || '';
 	}, [detailLedger?.metadata, isExpand]);
 
-    const onContainerLayout = (e) => {
-        const h = e.nativeEvent.layout.height;
-        if (h && h !== detailHeight) {
-            setDetailHeight(h);
-            if (isExpand) animation.setValue(h);
-        }
-    }
+	const onContainerLayout = (e) => {
+		const h = e.nativeEvent.layout.height;
+		if (h && h !== detailHeight) {
+			setDetailHeight(h);
+			if (isExpand) animation.setValue(h);
+		}
+	};
 
-	const detailView = (
-		!loadingDetail ? <View
-			style={styles.detail}
-			onLayout={onContainerLayout}
-		>
+	const copyTransactionId = () => {
+		if (detailLedger?.trans_id) {
+			Clipboard.setString(detailLedger.trans_id);
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('historyTransaction.copied'),
+					leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} color={themeValue.text} />
+				}
+			});
+		}
+	};
+
+	const detailView = !loadingDetail ? (
+		<View style={styles.detail} onLayout={onContainerLayout}>
 			{[
 				{
 					label: t('historyTransaction.detail.transactionId'),
@@ -104,15 +116,25 @@ export const TransactionItem = ({ item, isExpand, onPress }: { item: ApiWalletLe
 			].map((field, idx) => (
 				<View key={`${item.transaction_id}_${idx}`} style={styles.row}>
 					<View style={styles.field}>
-						<Text style={styles.title}>{field.label}</Text>
+						<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+							<Text style={styles.title}>{field.label}</Text>
+							{field.label === t('historyTransaction.detail.transactionId') && detailLedger?.trans_id && (
+								<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+									<Pressable onPress={copyTransactionId} style={{ padding: 4 }}>
+										<MezonIconCDN icon={IconCDN.copyIcon} color={themeValue.text} width={size.s_16} height={size.s_16} />
+									</Pressable>
+								</View>
+							)}
+						</View>
 						<Text style={styles.description}>{field.value ?? ''}</Text>
 					</View>
 				</View>
 			))}
 		</View>
-        : <View style={styles.loading}>
-            <ActivityIndicator size="small" color={themeValue.text} />
-        </View>
+	) : (
+		<View style={styles.loading}>
+			<ActivityIndicator size="small" color={themeValue.text} />
+		</View>
 	);
 
 	return (

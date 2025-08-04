@@ -20,7 +20,7 @@
             "permission": "Quyền hạn kênh",
             "description": "Thay đổi cài đặt quyền riêng tư và tùy chỉnh cách thành viên có thể tương tác với kênh này."
         },
-        "quickAction":{
+        "quickAction": {
             "title": "Tác vụ"
         },
         "privateChannelInvite": {
@@ -140,15 +140,29 @@
         },
         "roleAndMemberEmpty": "Chưa có vai trò và thành viên để thiết lập quyền riêng"
     },
-    "quickAction":{
+    "quickAction": {
         "title": "Cài đặt tác vụ",
         "keyTitle": "Nhập từ khóa (VD: xinchao): ",
         "valueTitle": "Nhập nội dung (VD: Chào buổi sáng, chúc bạn có một ngày mới tốt lành !)",
         "save": "LƯU",
         "cancel": "HỦY",
+        "create": "Tạo",
         "deleteModal": "XÓA TÁC VỤ",
-        "deleteTitle": "Bạn có chắc chắn muốn xóa /{{key}} không ? Hành động này sẽ không thể hoàn tác được !"
-
+        "deleteTitle": "Bạn có chắc chắn muốn xóa /{{key}} không ? Hành động này sẽ không thể hoàn tác được !",
+        "flashMessage": "Tin nhắn nhanh",
+        "quickMenu": "Menu nhanh",
+        "menuName": "Tên menu",
+        "menuNameHelper": "Tên cho mục menu nhanh này",
+        "botEventTrigger": "Kích hoạt sự kiện Bot",
+        "botEventDescription": "Menu nhanh này sẽ tự động kích hoạt một sự kiện bot khi được chọn.",
+        "createQuickMenu": "Tạo Menu Nhanh",
+        "createFlashMessage": "Tạo Tin Nhắn Nhanh",
+        "editQuickMenu": "Chỉnh Sửa Menu Nhanh",
+        "editFlashMessage": "Chỉnh Sửa Tin Nhắn Nhanh",
+        "emptyFlashMessage": "Chưa có tin nhắn nhanh nào",
+        "emptyFlashMessageDescription": "Bắt đầu bằng cách tạo lệnh tin nhắn nhanh đầu tiên của bạn",
+        "emptyQuickMenu": "Chưa có menu nhanh nào",
+        "emptyQuickMenuDescription": "Bắt đầu bằng cách tạo menu nhanh đầu tiên của bạn"
     },
     "changeCategory": {
         "title": "Thay đổi danh mục",

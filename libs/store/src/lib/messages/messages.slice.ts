@@ -41,6 +41,7 @@ import { selectClansLoadingStatus } from '../clans/clans.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { pinMessageActions, selectPinMessageByChannelId } from '../pinMessages/pinMessage.slice';
 import { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import { RootState } from '../store';
 import { referencesActions, selectDataReferences } from './references.slice';
@@ -636,7 +637,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const channelsLoadingStatus = selectLoadingStatus(state);
 			const clansLoadingStatus = selectClansLoadingStatus(state);
-			if (channelsLoadingStatus !== 'loaded' || clansLoadingStatus !== 'loaded') {
+			if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
 				return;
 			}
 
@@ -921,8 +922,21 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 
 	if (message.code === TypeMessage.ChatRemove) {
 		const replyData = selectDataReferences(state, channelId);
+		const pinList = selectPinMessageByChannelId(state, channelId);
 		if (replyData && replyData.message_ref_id === message.id) {
 			thunkAPI.dispatch(referencesActions.resetAfterReply(message.channel_id));
+		}
+
+		if (pinList) {
+			const pinData = pinList.find((item) => item.message_id === message.id);
+			if (pinData) {
+				thunkAPI.dispatch(
+					pinMessageActions.removePinMessage({
+						channelId: message.channel_id,
+						pinId: pinData.id
+					})
+				);
+			}
 		}
 	}
 
@@ -1116,6 +1130,7 @@ export const messagesSlice = createSlice({
 
 			switch (code) {
 				case TypeMessage.Welcome:
+				case TypeMessage.UpcomingEvent:
 				case TypeMessage.CreateThread:
 				case TypeMessage.CreatePin:
 				case TypeMessage.MessageBuzz:
@@ -1125,24 +1140,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({ state, channelId: topic_id, adapterPayload: action.payload });
-
 						state.lastMessageByChannel[channelId] = action.payload;
-						if (!isSending && (isMe || isAnonymous)) {
-							const newContent = content;
-
-							const sendingMessages = state.channelMessages[topic_id]?.ids.filter(
-								(id) => state.channelMessages[topic_id].entities[id].isSending
-							);
-							// if (sendingMessages && sendingMessages.length) {
-							// 	for (const mid of sendingMessages) {
-							// 		const message = state.channelMessages[topic_id].entities[mid];
-							// 		if (message?.content?.t === newContent?.t && message?.channel_id === channelId) {
-							// 			state.channelMessages[topic_id] = handleRemoveOneMessage({ state, channelId: topic_id, messageId: mid });
-							// 			break;
-							// 		}
-							// 	}
-							// }
-						}
 					} else {
 						handleAddOneMessage({ state, channelId, adapterPayload: action.payload });
 						// update last message

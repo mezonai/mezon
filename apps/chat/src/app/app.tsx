@@ -1,7 +1,7 @@
 import { MezonStoreProvider, initStore, selectIsLogin, setIsElectronDownloading, setIsElectronUpdateAvailable } from '@mezon/store';
 import { MezonContextProvider, clearSessionFromStorage, getMezonConfig, useMezon } from '@mezon/transport';
 
-import { PopupManagerProvider } from '@mezon/components';
+import { CustomCookieConsent, PopupManagerProvider } from '@mezon/components';
 import { PermissionProvider, useActivities, useSettingFooter } from '@mezon/core';
 import { captureSentryError } from '@mezon/logger';
 import { ACTIVE_WINDOW, DOWNLOAD_PROGRESS, TRIGGER_SHORTCUT, UPDATE_AVAILABLE, UPDATE_ERROR, electronBridge } from '@mezon/utils';
@@ -176,9 +176,11 @@ function AppWrapper() {
 	}, []);
 
 	return (
-		<MezonContextProvider mezon={mezon} connect={true}>
-			<App />
-		</MezonContextProvider>
+		<>
+			<MezonContextProvider mezon={mezon} connect={true}>
+				<App />
+			</MezonContextProvider>
+		</>
 	);
 }
 

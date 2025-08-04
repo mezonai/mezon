@@ -130,7 +130,7 @@ const Layout = memo((props: LayoutProps) => {
 									<HeaderFeature
 										content={
 											<>
-												Decentralized <br></br> Token-Based Economy
+												Mezon Mainnet <br></br>The Zero-Fee, High-Speed Layer 1 Blockchain
 											</>
 										}
 									/>

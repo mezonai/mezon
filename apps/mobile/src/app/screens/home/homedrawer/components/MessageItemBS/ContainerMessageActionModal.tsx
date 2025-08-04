@@ -1,12 +1,12 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 /* eslint-disable no-console */
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, CheckIcon, CloseIcon, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
 	appActions,
+	channelMetaActions,
 	clansActions,
 	directActions,
 	getStore,
@@ -41,11 +41,12 @@ import {
 	sleep
 } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
+import { Alert, DeviceEventEmitter, Text, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
@@ -58,6 +59,7 @@ import { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IRe
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
 import { IReactionMessageProps } from '../MessageReaction';
+import { QuickMenuModal } from '../QuickMenuModal';
 import { ReportMessageModal } from '../ReportMessageModal';
 import { RecentEmojiMessageAction } from './RecentEmojiMessageAction';
 import { style } from './styles';
@@ -73,6 +75,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const { t } = useTranslation(['message']);
 	const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
 	const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
+	const [isShowQuickMenuModal, setIsShowQuickMenuModal] = useState(false);
 
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
@@ -84,6 +87,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const { sendInviteMessage } = useSendInviteMessage();
 	const isMessageSystem =
 		message?.code === TypeMessage.Welcome ||
+		message?.code === TypeMessage.UpcomingEvent ||
 		message?.code === TypeMessage.CreateThread ||
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;
@@ -94,6 +98,10 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const onCloseModalConfirm = useCallback(() => {
 		setCurrentMessageActionType(null);
+	}, []);
+
+	const onCloseQuickMenuModal = useCallback(() => {
+		setIsShowQuickMenuModal(false);
 	}, []);
 
 	const onDeleteMessage = useCallback(
@@ -366,6 +374,10 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		onClose();
 	};
 
+	const handleActionQuickMenu = () => {
+		setIsShowQuickMenuModal(true);
+	};
+
 	const handleActionMarkMessage = async () => {
 		try {
 			await dispatch(notificationActions.markMessageNotify(message));
@@ -379,6 +391,45 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			onClose();
 		} catch (error) {
 			console.error('Error marking message:', error);
+		}
+	};
+
+	const handleMarkUnread = async () => {
+		try {
+			await dispatch(
+				messagesActions.updateLastSeenMessage({
+					clanId: message?.clan_id || '',
+					channelId: message?.channel_id,
+					messageId: message?.id,
+					mode: message?.mode || 0,
+					badge_count: 0,
+					message_time: message.create_time_seconds
+				})
+			);
+			dispatch(
+				channelMetaActions.setChannelLastSeenTimestamp({
+					channelId: message?.channel_id as string,
+					timestamp: message.create_time_seconds || Date.now()
+				})
+			);
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('toast.markMessage'),
+					leadingIcon: <CheckIcon color={Colors.green} />
+				}
+			});
+		} catch (error) {
+			Toast.show({
+				type: 'error',
+				props: {
+					text2: t('toast.markMessageUnreadFailed'),
+					leadingIcon: <CloseIcon color={Colors.red} />
+				}
+			});
+			console.error('Error marking message as unread:', error);
+		} finally {
+			onClose();
 		}
 	};
 
@@ -432,8 +483,14 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			case EMessageActionType.ResendMessage:
 				handleResendMessage();
 				break;
+			case EMessageActionType.MarkUnRead:
+				handleMarkUnread();
+				break;
 			case EMessageActionType.TopicDiscussion:
 				handleActionTopicDiscussion();
+				break;
+			case EMessageActionType.QuickMenu:
+				handleActionQuickMenu();
 				break;
 			default:
 				break;
@@ -474,10 +531,14 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				return <MezonIconCDN icon={IconCDN.giftIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />;
 			case EMessageActionType.ResendMessage:
 				return <MezonIconCDN icon={IconCDN.markUnreadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+			case EMessageActionType.MarkUnRead:
+				return <MezonIconCDN icon={IconCDN.markUnreadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case EMessageActionType.TopicDiscussion:
 				return <MezonIconCDN icon={IconCDN.discussionIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case EMessageActionType.MarkMessage:
 				return <MezonIconCDN icon={IconCDN.starIcon} width={size.s_20} height={size.s_18} color={themeValue.text} />;
+			case EMessageActionType.QuickMenu:
+				return <MezonIconCDN icon={IconCDN.quickAction} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			default:
 				return <View />;
 		}
@@ -518,7 +579,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isHideDeleteMessage && EMessageActionType.DeleteMessage,
 			((!isMessageError && isMyMessage) || !isMyMessage) && EMessageActionType.ResendMessage,
 			(isMyMessage || isMessageSystem || isAnonymous) && EMessageActionType.GiveACoffee,
-			isHideTopicDiscussion && EMessageActionType.TopicDiscussion
+			isHideTopicDiscussion && EMessageActionType.TopicDiscussion,
+			isDM && EMessageActionType.QuickMenu
 		];
 
 		let availableMessageActions: IMessageAction[] = [];
@@ -650,7 +712,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	);
 
 	return (
-		<BottomSheetView focusHook={useFocusEffect} style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>
+		<View style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>
 			{isShowEmojiPicker || isOnlyEmojiPicker ? (
 				<View style={{ padding: size.s_10, minHeight: '100%' }}>
 					<EmojiSelector onSelected={onSelectEmoji} isReactMessage />
@@ -669,6 +731,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					type={currentMessageActionType}
 				/>
 			)}
-		</BottomSheetView>
+
+			{isShowQuickMenuModal && <QuickMenuModal channelId={currentChannelId} isVisible={isShowQuickMenuModal} onClose={onCloseQuickMenuModal} />}
+		</View>
 	);
 });

@@ -1,3 +1,4 @@
+import { ETypeSearch } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllFriends } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -25,6 +26,15 @@ function MessageHeader() {
 		return friends?.filter((friend) => friend?.state === FriendState.PENDING)?.length || 0;
 	}, [friends]);
 
+	const navigateToSearchPage = async () => {
+		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+			screen: APP_SCREEN.MENU_CHANNEL.SEARCH_MESSAGE_CHANNEL,
+			params: {
+				typeSearch: ETypeSearch.SearchAll,
+				currentChannel: {}
+			}
+		});
+	};
 	const navigateToAddFriendScreen = () => {
 		navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND });
 	};
@@ -32,28 +42,40 @@ function MessageHeader() {
 	return (
 		<View style={styles.headerWrapper}>
 			<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
-			<View style={styles.addFriendWrapper}>
-				<TouchableOpacity style={styles.btnAddFriend} onPress={() => navigateToAddFriendScreen()}>
-					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
-					<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
-				</TouchableOpacity>
-				{!!quantityPendingRequest && (
-					<View
-						style={{
-							backgroundColor: baseColor.redStrong,
-							width: size.s_20,
-							height: size.s_20,
-							alignItems: 'center',
-							justifyContent: 'center',
-							borderRadius: size.s_20,
-							position: 'absolute',
-							right: -size.s_8,
-							top: -size.s_8
-						}}
-					>
-						<Text style={styles.textQuantityPending}>{quantityPendingRequest}</Text>
+
+			<View style={styles.headerOptionWrapper}>
+				<TouchableOpacity style={styles.btnSearchWrapper} onPress={() => navigateToSearchPage()}>
+					<View style={styles.btnSearch}>
+						<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					</View>
-				)}
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.btnAddFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
+					<View style={styles.addFriend}>
+						<View style={styles.btnAddFriend}>
+							<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
+						</View>
+						{!!quantityPendingRequest && (
+							<View
+								style={{
+									backgroundColor: baseColor.redStrong,
+									minWidth: size.s_20,
+									paddingHorizontal: size.s_2,
+									height: size.s_20,
+									alignItems: 'center',
+									justifyContent: 'center',
+									borderRadius: size.s_20,
+									position: 'absolute',
+									right: -size.s_8,
+									top: -size.s_8,
+									zIndex: 10
+								}}
+							>
+								<Text style={styles.textQuantityPending}>{quantityPendingRequest}</Text>
+							</View>
+						)}
+					</View>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);

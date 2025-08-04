@@ -103,6 +103,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 
 	const isMessageSystem =
 		mess?.code === TypeMessage.Welcome ||
+		mess?.code === TypeMessage.UpcomingEvent ||
 		mess?.code === TypeMessage.CreateThread ||
 		mess?.code === TypeMessage.CreatePin ||
 		mess?.code === TypeMessage.AuditLog;
@@ -114,17 +115,19 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 			onKeyUp={handleEnter as any}
 			tabIndex={0}
 		>
-			<div className="w-fit h-fit rounded-lg flex-col justify-start items-start gap-3 inline-flex overflow-hidden">
-				<div className="">
-					<div className="p-4 pb-0">
-						<h3 className="font-bold pb-4">{isRemoveAttachmentNoContent ? 'Remove Attachment' : 'Delete Message'}</h3>
-						<p>
+			<div className="w-fit h-fit bg-theme-primary rounded-lg flex flex-col justify-start items-start overflow-hidden">
+				<div className="w-full">
+					<div className="p-4 pb-0 bg-theme-primary text-center">
+						<h3 className="font-bold pb-2 text-xl text-theme-primary">
+							{isRemoveAttachmentNoContent ? 'Remove Attachment' : 'Delete Message'}
+						</h3>
+						<p className="text-theme-primary">
 							{isRemoveAttachmentNoContent
 								? 'Do you want to remove the attachment on this message?'
 								: 'Do you want to delete this message?'}
 						</p>
 					</div>
-					<div className="p-4 max-w-[720px] max-h-[50vh] overflow-y-auto hide-scrollbar truncate bg-theme-setting-primary">
+					<div className="p-4 max-w-[720px] max-h-[50vh] overflow-y-auto hide-scrollbar bg-theme-secondary pointer-events-none [&_.attachment-actions]:!hidden [&_button]:!hidden">
 						<ColorRoleProvider>
 							{isMessageSystem ? (
 								<MessageWithSystem message={mess as IMessageWithUser} isTopic={!!isTopic} />
@@ -140,11 +143,12 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 									isMention={true}
 									isShowFull={true}
 									user={currentClanUser}
+									isSearchMessage={true}
 								/>
 							)}
 						</ColorRoleProvider>
 					</div>
-					<div className="w-full p-4 flex justify-end gap-x-4 border-t border-theme-primary bg-theme-setting-nav">
+					<div className="w-full p-4 flex justify-end gap-x-4 border-t border-theme-border bg-theme-primary">
 						<button
 							onClick={closeModal}
 							className="px-4 py-2 hover:underline rounded disabled:cursor-not-allowed disabled:hover:no-underline disabled:opacity-85 text-theme-primary"
@@ -154,10 +158,10 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 						</button>
 						<button
 							onClick={handleAction}
-							className="px-4 py-2 bg-[#DA363C] rounded hover:bg-opacity-85 text-white disabled:cursor-not-allowed disabled:opacity-85 disabled:hover:opacity-85 flex"
+							className="px-4 py-2 bg-[#DA363C] rounded hover:bg-opacity-85 text-white disabled:cursor-not-allowed disabled:opacity-85 disabled:hover:opacity-85 flex items-center gap-1"
 							disabled={isLoading}
 						>
-							{isRemoveAttachmentNoContent ? 'Remove ' : 'Delete '}
+							{isRemoveAttachmentNoContent ? 'Remove' : 'Delete'}
 							{isLoading && <Icons.IconLoadingTyping />}
 						</button>
 					</div>

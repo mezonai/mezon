@@ -15,7 +15,7 @@ export const style = (colors: Attributes) =>
 		searchBox: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondary,
 			borderRadius: verticalScale(50),
 			flex: 1,
 			height: size.s_40,
@@ -31,7 +31,7 @@ export const style = (colors: Attributes) =>
 			paddingVertical: 0
 		},
 		listSearchIcon: {
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondary,
 			opacity: 0.7,
 			padding: size.s_10,
 			borderRadius: verticalScale(50)

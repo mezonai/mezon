@@ -171,8 +171,8 @@ const ModalSendToken = ({
 			<div className="bg-theme-chat rounded-xl overflow-hidden w-[480px]">
 				<div className="flex items-center justify-between p-6 border-b dark:border-gray-700 border-gray-200">
 					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 rounded-full bg-button-add-friend text-theme-primary-hover flex items-center justify-center">
-							<Icons.DollarIcon className="w-5 h-5" defaultFill="text-theme-primary" />
+						<div className="w-10 h-10 rounded-full btn-primary text-theme-primary-hover flex items-center justify-center">
+							<Icons.DollarIcon className="w-5 h-5" defaultFill="text-white" />
 						</div>
 						<div>
 							<h1 className="text-theme-primary text-lg font-semibold">Send Tokens</h1>
@@ -286,7 +286,7 @@ const ModalSendToken = ({
 
 				<div className="p-6 border-t-theme-primary flex gap-3">
 					<button
-						className="flex-1 h-12 px-4 rounded-xl text-theme-primary border-theme-primary font-medium  transition-all"
+						className="flex-1 h-12 px-4 rounded-xl text-theme-primary bg-item-theme-hover border-theme-primary font-medium  transition-all"
 						type="button"
 						onClick={onClose}
 					>

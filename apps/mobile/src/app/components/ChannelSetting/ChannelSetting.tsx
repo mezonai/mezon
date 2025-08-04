@@ -207,14 +207,14 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			[
 				{
 					title: isChannel ? t('fields.channelDelete.delete') : t('fields.threadDelete.delete'),
-					textStyle: { color: 'red' },
+					textStyle: { color: Colors.textRed },
 					onPress: () => handlePressDeleteChannel(),
 					icon: <MezonIconCDN icon={IconCDN.trashIcon} color={Colors.textRed} />,
 					isShow: isChannel ? isCanManageChannel : isCanManageThread || channel?.creator_id === currentUserId
 				},
 				{
 					title: isChannel ? t('fields.channelDelete.leave') : t('fields.threadLeave.leave'),
-					textStyle: { color: 'red' },
+					textStyle: { color: Colors.textRed },
 					onPress: () => handlePressLeaveChannel(),
 					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
 					isShow:

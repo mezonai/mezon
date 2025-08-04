@@ -22,7 +22,12 @@
       "resend": "Gửi lại",
       "buzz": "Buzz!!",
       "markMessage": "Đánh dấu tin nhắn",
-      "allAlbums": "Tất cả album"
+      "allAlbums": "Tất cả album",
+      "linkOptions": "Tùy chọn liên kết",
+      "openLink": "Mở liên kết",
+      "copyLink": "Sao chép liên kết",
+      "shareLink": "Chia sẻ liên kết",
+      "copyLinkSuccess": "Đã sao chép liên kết vào clipboard"
   },
   "chatBox": {
       "replyingTo": "Đang trả lời",
@@ -39,7 +44,9 @@
       "copyText": "Đã sao chép văn bản tin nhắn",
       "attachmentIsLoading": "Tệp đính kèm đang tải, vui lòng đợi một chút",
       "pinMessage": "Tin nhắn đã được ghim",
-      "markMessage": "Đã đánh dấu tin nhắn"
+      "markMessage": "Đã đánh dấu tin nhắn",
+      "markMessageUnread": "Đã đánh dấu chưa đọc",
+      "markMessageUnreadFailed": "Không thể bỏ đọc"
   },
   "directMessage": {
       "you": "Bạn"
@@ -87,7 +94,7 @@
   "unpinSuccess": "Bỏ ghim tin nhắn thành công",
   "Yes": "Có",
   "No": "Không",
-  "unableSendMessage": "Không thể gửi tin nhắn. Vui lòng thử lại.",
+  "unableSendMessage": "Không thể gửi tin nhắn. Ấn giữ để xem các tùy chọn.",
   "manage": {
       "edit": "Chỉnh sửa",
       "roles": "Vai trò",

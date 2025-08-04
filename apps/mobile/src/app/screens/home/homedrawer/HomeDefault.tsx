@@ -70,7 +70,7 @@ const HomeDefault = React.memo(
 			<KeyboardAvoidingView
 				style={styles.channelView}
 				behavior={'padding'}
-				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
+				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
 			>
 				{Platform.OS === 'ios' && <LicenseAgreement />}
 				<DrawerListener channelId={channelId} />
@@ -91,6 +91,7 @@ const HomeDefault = React.memo(
 						threadIcon: channelType === ChannelType.CHANNEL_TYPE_THREAD
 					}}
 					isPublic={isPublicChannel}
+					topicChannelId={''}
 				/>
 				<PanelKeyboard currentChannelId={channelId} currentClanId={clanId} />
 

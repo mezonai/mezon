@@ -7,7 +7,7 @@ interface IHeaderTabSearchProps {
 	tabList: ITabList[];
 	activeTab: number;
 }
-function HeaderTabSearch({ onPress, tabList, activeTab }: IHeaderTabSearchProps) {
+const HeaderTabSearch = ({ onPress, tabList, activeTab }: IHeaderTabSearchProps) => {
 	const { themeValue } = useTheme();
 	return (
 		<View
@@ -20,7 +20,7 @@ function HeaderTabSearch({ onPress, tabList, activeTab }: IHeaderTabSearchProps)
 			}}
 		>
 			{tabList?.map((tab: ITabList, index: number) => (
-				<Pressable key={index.toString()} onPress={() => onPress(tab?.index)} style={{ width: '33.33%' }}>
+				<Pressable key={`tab_search_${index.toString()}`} onPress={() => onPress(tab?.index)} style={{ width: '33.33%' }}>
 					<View
 						style={{
 							paddingBottom: size.s_10,
@@ -42,6 +42,6 @@ function HeaderTabSearch({ onPress, tabList, activeTab }: IHeaderTabSearchProps)
 			))}
 		</View>
 	);
-}
+};
 
 export default React.memo(HeaderTabSearch);

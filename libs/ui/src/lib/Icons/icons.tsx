@@ -6244,7 +6244,7 @@ export function LoadingSpinner({ className }: { className?: string }) {
 
 export function StopCall(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg width="28px" height="28px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" {...props}>
+		<svg width="28px" height="28px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
 			<g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
 			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
@@ -6253,7 +6253,7 @@ export function StopCall(props: React.HTMLAttributes<SVGElement>) {
 				{' '}
 				<path
 					d="m 14.234375 11.714844 c -0.382813 0.382812 -1 0.382812 -1.386719 0 l -1.039062 -1.039063 l -1.039063 -1.042969 c -0.386719 -0.382812 -0.386719 -1 0 -1.386718 l 0.492188 -0.492188 c -2.035157 -1.109375 -4.5 -1.109375 -6.535157 0 l 0.492188 0.492188 c 0.386719 0.386718 0.386719 1.003906 0 1.386718 l -1.039062 1.042969 l -1.039063 1.039063 c -0.386719 0.382812 -1.003906 0.382812 -1.386719 0 l -1.042968 -1.039063 c -0.957032 -0.957031 -0.957032 -2.511719 0 -3.46875 l 0.347656 -0.347656 c 3.816406 -3.816406 10.054687 -3.816406 13.871094 0 l 0.347656 0.347656 c 0.957031 0.957031 0.957031 2.511719 0 3.46875 z m 0 0"
-					fill="#ff0000"
+					fill="currentColor"
 				/>{' '}
 			</g>
 		</svg>
@@ -6399,6 +6399,23 @@ export const WelcomeIcon: React.FC<IconProps> = ({ defaultSize = 'w-12 h-12 min-
 					clipRule="evenodd"
 					d="M10.0893 3.41075C10.4148 3.08531 10.9424 3.08531 11.2679 3.41075L16.2679 8.41075C16.5933 8.73619 16.5933 9.26382 16.2679 9.58926L11.2679 14.5893C10.9424 14.9147 10.4148 14.9147 10.0893 14.5893C9.7639 14.2638 9.7639 13.7362 10.0893 13.4107L14.5 9L10.0893 4.58926C9.7639 4.26382 9.7639 3.73619 10.0893 3.41075Z"
 					fill="#16A34A"
+				/>
+			</g>
+		</svg>
+	);
+};
+
+export const UpcomingEventIcon: React.FC<IconProps> = ({ defaultSize = 'w-12 h-12 min-w-8' }) => {
+	return (
+		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={defaultSize}>
+			<g id="Live area">
+				<line x1="2" y1="9" x2="10" y2="9" stroke="rgba(163, 22, 22, 1)" strokeWidth="2" strokeLinecap="round" />
+				<path
+					id="Vector"
+					fillRule="evenodd"
+					clipRule="evenodd"
+					d="M10.0893 3.41075C10.4148 3.08531 10.9424 3.08531 11.2679 3.41075L16.2679 8.41075C16.5933 8.73619 16.5933 9.26382 16.2679 9.58926L11.2679 14.5893C10.9424 14.9147 10.4148 14.9147 10.0893 14.5893C9.7639 14.2638 9.7639 13.7362 10.0893 13.4107L14.5 9L10.0893 4.58926C9.7639 4.26382 9.7639 3.73619 10.0893 3.41075Z"
+					fill="rgba(163, 22, 22, 1)"
 				/>
 			</g>
 		</svg>

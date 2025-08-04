@@ -19,7 +19,7 @@ import { ParticipantTile } from './ParticipantTile/ParticipantTile';
 
 interface GroupVideoConferenceProps {
 	channelLabel?: string;
-	onLeaveRoom: () => void;
+	onLeaveRoom: (userTracks: number) => void;
 	onFullScreen: () => void;
 	isExternalCalling?: boolean;
 	tracks?: TrackReferenceOrPlaceholder[];
@@ -106,6 +106,8 @@ export function GroupVideoConference({
 	};
 
 	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
+
+	const handleLeaveRoom = useCallback(() => onLeaveRoom(userTracks?.length), [userTracks?.length]);
 
 	return (
 		<div className="lk-video-conference flex-1">
@@ -226,7 +228,7 @@ export function GroupVideoConference({
 					>
 						<ControlBar
 							isExternalCalling={isExternalCalling}
-							onLeaveRoom={onLeaveRoom}
+							onLeaveRoom={handleLeaveRoom}
 							onFullScreen={onFullScreen}
 							isShowMember={isShowMember}
 						/>

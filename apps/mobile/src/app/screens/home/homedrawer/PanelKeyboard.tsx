@@ -28,6 +28,7 @@ const PanelKeyboard = React.memo((props: IProps) => {
 			setTypeKeyboardBottomSheet(type);
 			Keyboard.dismiss();
 		} else {
+			bottomPickerRef?.current?.dismiss();
 			bottomPickerRef?.current?.close();
 			setHeightKeyboardShow(0);
 			setTypeKeyboardBottomSheet('text');
@@ -62,8 +63,9 @@ const PanelKeyboard = React.memo((props: IProps) => {
 	}, []);
 
 	const handleSheetChange = (index: number) => {
-		if (index === 0) {
-			Keyboard.dismiss();
+		if (index === -1) {
+			setHeightKeyboardShow(0);
+			setTypeKeyboardBottomSheet('text');
 		}
 	};
 
@@ -80,12 +82,15 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				snapPoints={[heightKeyboardShow ? heightKeyboardShow : 1, '100%']}
 				index={0}
 				animateOnMount
+				animationConfigs={{
+					duration: 200
+				}}
 				backgroundStyle={{
 					backgroundColor: themeBasic === 'light' ? themeValue.tertiary : themeValue.primary
 				}}
 				backdropComponent={null}
 				enableDynamicSizing={false}
-				enablePanDownToClose={false}
+				enablePanDownToClose={true}
 				handleIndicatorStyle={{
 					backgroundColor: themeValue.tertiary,
 					height: size.s_6,

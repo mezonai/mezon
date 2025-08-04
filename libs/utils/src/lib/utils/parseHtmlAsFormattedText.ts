@@ -175,27 +175,120 @@ function parseMarkdown(html: string) {
 	return parsedHtml;
 }
 
-const LINK_TEMPLATE =
-	/(ftp|http|https):\/\/(((www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][-a-zA-Z0-9]{1,62})|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?([-a-zA-Z0-9()@:%_+.,~#?&\/=!*';$\[\]{}^\\|`<>]*)/gi;
+const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
+const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
+const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
+
+function isUrl(string: string): boolean {
+	if (typeof string !== 'string') {
+		return false;
+	}
+
+	const match = string.match(protocolAndDomainRE);
+	if (!match) {
+		return false;
+	}
+
+	const everythingAfterProtocol = match[1];
+	if (!everythingAfterProtocol) {
+		return false;
+	}
+
+	if (localhostDomainRE.test(everythingAfterProtocol) || nonLocalhostDomainRE.test(everythingAfterProtocol)) {
+		return true;
+	}
+
+	return false;
+}
+
+function getCleanUrlAndTrailing(match: string, fullText: string, matchIndex: number): { cleanMatch: string; trailingPunctuation: string } {
+	const beforeMatch = fullText.substring(0, matchIndex);
+
+	const wrappingPairs = [
+		{ open: '(', close: ')' },
+		{ open: '[', close: ']' },
+		{ open: '{', close: '}' },
+		{ open: '<', close: '>' }
+	];
+
+	let cleanMatch = match;
+	let trailingPunctuation = '';
+
+	let isWrapped = false;
+	for (const pair of wrappingPairs) {
+		if (beforeMatch.endsWith(pair.open) && match.endsWith(pair.close)) {
+			cleanMatch = match.slice(0, -1);
+			trailingPunctuation = pair.close;
+			isWrapped = true;
+			break;
+		}
+	}
+
+	if (!isWrapped) {
+		const commonTrailingPunctuation = /[.,;:!?'"]+$/;
+		const trailingMatch = match.match(commonTrailingPunctuation);
+		if (trailingMatch) {
+			cleanMatch = match.slice(0, -trailingMatch[0].length);
+			trailingPunctuation = trailingMatch[0];
+		}
+	}
+
+	return { cleanMatch, trailingPunctuation };
+}
+
+const LINK_TEMPLATE = /(?:\w+:)?\/\/\S+/gi;
 
 function parseMarkdownLinks(html: string) {
-	const parts = html.split(/(`{1,3})/);
-	let isInCode = false;
-	let result = '';
+	if (!html || html.length === 0) return html;
+
+	const codeSections: string[] = [];
+	let result = html;
+
+	result = result.replace(/```[\s\S]*?```/g, (match) => {
+		const index = codeSections.length;
+		codeSections.push(match);
+		return `__CODE_BLOCK_${index}__`;
+	});
+
+	result = result.replace(/`[^`\n]+`/g, (match) => {
+		if (match.includes('__CODE_BLOCK_')) {
+			return match;
+		}
+
+		const index = codeSections.length;
+		codeSections.push(match);
+		return `__INLINE_CODE_${index}__`;
+	});
+
+	const placeholderRegex = /__(?:CODE_BLOCK|INLINE_CODE)_\d+__/g;
+	const parts = result.split(placeholderRegex);
+	const placeholders = result.match(placeholderRegex) || [];
 
 	for (let i = 0; i < parts.length; i++) {
-		const part = parts[i];
-		if (part.match(/^`{1,3}$/)) {
-			isInCode = !isInCode;
-			result += part;
-			continue;
+		if (parts[i]) {
+			const partText = parts[i];
+			parts[i] = partText.replace(LINK_TEMPLATE, (match, offset) => {
+				const { cleanMatch, trailingPunctuation } = getCleanUrlAndTrailing(match, partText, offset);
+				if (isUrl(cleanMatch)) {
+					return `<a href="${cleanMatch}" target="_blank">${cleanMatch}</a>${trailingPunctuation}`;
+				}
+				return match;
+			});
 		}
+	}
 
-		if (isInCode) {
-			result += part;
-		} else {
-			result += part.replace(LINK_TEMPLATE, '<a href="$&" target="_blank">$&</a>');
+	result = '';
+	for (let i = 0; i < parts.length; i++) {
+		result += parts[i];
+		if (i < placeholders.length) {
+			result += placeholders[i];
 		}
+	}
+
+	if (codeSections.length > 0) {
+		result = result.replace(/__(?:CODE_BLOCK|INLINE_CODE)_(\d+)__/g, (match, index) => {
+			return codeSections[parseInt(index, 10)] || match;
+		});
 	}
 
 	return result;

@@ -3,13 +3,12 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	defaultNotificationCategoryActions,
 	notificationSettingActions,
-	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -17,12 +16,12 @@ import MezonOption from '../../../componentUI/MezonOption';
 import { MuteClanNotificationBS } from '../MuteClanNotificationBS';
 import { style } from './NotificationSettingDetail.styles';
 
-const NotificationSettingDetail = ({ route }: { route: any }) => {
+const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 	const { notifyChannelCategorySetting } = route.params || {};
-	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelId = notifyChannelCategorySetting?.id;
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { t } = useTranslation(['clanNotificationsSetting']);
-	const [selectedOption, setSelectedOption] = useState(null);
+	const [selectedOption, setSelectedOption] = useState(notifyChannelCategorySetting?.notification_setting_type);
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const styles = style(themeValue);
@@ -44,48 +43,45 @@ const NotificationSettingDetail = ({ route }: { route: any }) => {
 		return optionNotification(t)?.map((option) => ({ ...option, disabled: !isUnmute }));
 	}, [isUnmute, t]);
 
-	useEffect(() => {
-		setSelectedOption(notifyChannelCategorySetting?.notification_setting_type);
-	}, [notifyChannelCategorySetting?.notification_setting_type]);
+	const handleNotificationChange = useCallback(
+		(value) => {
+			setSelectedOption(value);
+			if (title === 'category') {
+				dispatch(
+					defaultNotificationCategoryActions.setDefaultNotificationCategory({
+						category_id: currentChannelId,
+						notification_type: value,
+						clan_id: currentClanId || ''
+					})
+				);
+			}
+			if (title === 'channel') {
+				dispatch(
+					notificationSettingActions.setNotificationSetting({
+						channel_id: currentChannelId,
+						notification_type: value,
+						clan_id: currentClanId || ''
+					})
+				);
+			}
+		},
+		[title, currentChannelId, currentClanId, dispatch]
+	);
 
-	const handleNotificationChange = (value) => {
-		setSelectedOption(value);
-		if (title === 'category') {
-			dispatch(
-				defaultNotificationCategoryActions.setDefaultNotificationCategory({
-					category_id: notifyChannelCategorySetting?.id,
-					notification_type: value,
-					clan_id: currentClanId || ''
-				})
-			);
-		}
-		if (title === 'channel') {
-			dispatch(
-				notificationSettingActions.setNotificationSetting({
-					channel_id: notifyChannelCategorySetting?.id,
-					notification_type: value,
-					clan_id: currentClanId || ''
-				})
-			);
-		}
-	};
-
-	const handleRemoveOverride = () => {
+	const handleRemoveOverride = useCallback(() => {
 		setSelectedOption(0);
 		if (title === 'category') {
 			dispatch(
 				defaultNotificationCategoryActions.deleteDefaultNotificationCategory({
-					category_id: notifyChannelCategorySetting?.id,
+					category_id: currentChannelId,
 					clan_id: currentClanId
 				})
 			);
 		}
 		if (title === 'channel') {
-			dispatch(
-				notificationSettingActions.deleteNotiChannelSetting({ channel_id: notifyChannelCategorySetting?.id, clan_id: currentClanId || '' })
-			);
+			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channel_id: currentChannelId, clan_id: currentClanId || '' }));
 		}
-	};
+	}, [title, currentChannelId, currentClanId, dispatch]);
 
 	return (
 		<View style={{ backgroundColor: themeValue.primary, flex: 1, padding: size.s_10 }}>
@@ -106,17 +102,12 @@ const NotificationSettingDetail = ({ route }: { route: any }) => {
 				data={optionsNotificationSetting}
 			/>
 			{!!selectedOption && (
-				<TouchableOpacity
-					onPress={() => {
-						handleRemoveOverride();
-					}}
-					style={styles.resetOverridesBtn}
-				>
+				<TouchableOpacity onPress={handleRemoveOverride} style={styles.resetOverridesBtn}>
 					<Text style={styles.textBtn}>{t('resetOverrides')}</Text>
 				</TouchableOpacity>
 			)}
 		</View>
 	);
-};
+});
 
 export default NotificationSettingDetail;

@@ -216,7 +216,7 @@ const DraggableModalTabItem: React.FC<DraggableModalTabItemProps> = ({ app, hand
 									{isJoinVoice ? (
 										<Icons.StopCall className="size-4 text-red-600" />
 									) : (
-											<Icons.StartCall className="size-3 dark:hover:text-white hover:text-black text-theme-primary" />
+										<Icons.StartCall className="size-3 dark:hover:text-white hover:text-black text-theme-primary" />
 									)}
 								</button>
 								{isJoinVoice && (

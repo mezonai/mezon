@@ -1,4 +1,4 @@
-import { size } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ClansEntity, getStore, selectChannelById } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
@@ -6,7 +6,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Images from '../../../../../assets/Images';
 import MezonAvatar from '../../../../componentUI/MezonAvatar';
-import { styles } from './styles';
+import { style } from './styles';
 
 type SharingSuggestItemProps = {
 	item: any;
@@ -14,6 +14,8 @@ type SharingSuggestItemProps = {
 	onChooseItem: (item: any) => void;
 };
 const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestItemProps) => {
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const parentLabel = useMemo(() => {
 		const store = getStore();
 		const state = store.getState();

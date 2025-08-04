@@ -43,24 +43,27 @@ interface HeaderProps {
 export const ChannelSeen = memo(({ channelId, streamMode }: { channelId: string; streamMode: number }) => {
 	const dispatch = useAppDispatch();
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
+	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
 	const lastMessageState = useSelector((state) => selectLastSeenMessageStateByChannelId(state, channelId as string));
+
 	const { markAsReadSeen } = useSeenMessagePool();
+
 	const isMounted = useRef(false);
 
 	const markMessageAsRead = useCallback(() => {
 		if (!lastMessage) return;
-		if (!lastMessageState) {
-			markAsReadSeen(lastMessage, streamMode, 0);
-			return;
-		}
+
 		if (
 			lastMessage?.create_time_seconds &&
 			lastMessageState?.timestamp_seconds &&
 			lastMessage?.create_time_seconds >= lastMessageState?.timestamp_seconds
 		) {
-			markAsReadSeen(lastMessage, streamMode, 0);
+			const mode =
+				currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+
+			markAsReadSeen(lastMessage, mode, 0);
 		}
-	}, [lastMessage?.id, lastMessageState, markAsReadSeen, streamMode]);
+	}, [lastMessage, markAsReadSeen, currentDmGroup, lastMessageState]);
 
 	const updateChannelSeenState = useCallback(
 		(channelId: string) => {
@@ -74,14 +77,13 @@ export const ChannelSeen = memo(({ channelId, streamMode }: { channelId: string;
 			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
 			markMessageAsRead();
 		}
-	}, [lastMessage?.id, markMessageAsRead, dispatch, channelId]);
+	}, [lastMessage, markMessageAsRead, dispatch, channelId]);
 
 	useEffect(() => {
 		if (isMounted.current || !lastMessage) return;
 		isMounted.current = true;
 		updateChannelSeenState(channelId);
-	}, [channelId, lastMessage?.id, updateChannelSeenState]);
-
+	}, [channelId, lastMessage, updateChannelSeenState]);
 	return null;
 });
 
@@ -278,7 +280,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 					{dmLabel}
 				</Text>
 				<View style={styles.iconWrapper}>
-					<TouchableOpacity style={styles.iconHeader} onPress={navigateToSearch}>
+					<TouchableOpacity style={[styles.iconHeader, { marginRight: size.s_6 }]} onPress={navigateToSearch}>
 						<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 					</TouchableOpacity>
 					{((!isTypeDMGroup && !!currentDmGroup?.user_id?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (

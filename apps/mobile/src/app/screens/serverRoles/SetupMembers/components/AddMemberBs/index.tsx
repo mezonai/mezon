@@ -20,6 +20,7 @@ export const AddMemberBS = memo((props: IAddMemberBSProps) => {
 		<BottomSheetModal
 			ref={bottomSheetRef}
 			snapPoints={['90%']}
+			enableDynamicSizing={false}
 			style={{
 				borderTopLeftRadius: size.s_14,
 				borderTopRightRadius: size.s_14,

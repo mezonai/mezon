@@ -2,6 +2,7 @@ import { useLocalParticipant, useLocalParticipantPermissions, usePersistentUserC
 import {
 	selectGroupCallJoined,
 	selectShowCamera,
+	selectShowMicrophone,
 	selectShowScreen,
 	selectShowSelectScreenModal,
 	selectStreamScreen,
@@ -69,6 +70,7 @@ const ControlBar = ({
 
 	const showScreen = useSelector(selectShowScreen);
 	const showCamera = useSelector(selectShowCamera);
+	const showMicrophone = useSelector(selectShowMicrophone);
 
 	const isFullScreen = useSelector(selectVoiceFullScreen);
 	const isShowSelectScreenModal = useSelector(selectShowSelectScreenModal);
@@ -114,7 +116,7 @@ const ControlBar = ({
 
 	const microphoneOnChange = useCallback(
 		(enabled: boolean, isUserInitiated: boolean) => {
-			if (isUserInitiated) {
+			if (enabled !== showMicrophone) {
 				if (!hasMicrophoneAccess && enabled) {
 					handleRequestMicrophonePermission();
 				} else {
@@ -122,12 +124,12 @@ const ControlBar = ({
 				}
 			}
 		},
-		[hasMicrophoneAccess, dispatch, handleRequestMicrophonePermission]
+		[hasMicrophoneAccess, showMicrophone, handleRequestMicrophonePermission]
 	);
 
 	const cameraOnChange = useCallback(
 		(enabled: boolean, isUserInitiated: boolean) => {
-			if (isUserInitiated) {
+			if (enabled !== showCamera) {
 				if (!hasCameraAccess && enabled) {
 					handleRequestCameraPermission();
 				} else {
@@ -135,7 +137,7 @@ const ControlBar = ({
 				}
 			}
 		},
-		[hasCameraAccess, dispatch, handleRequestCameraPermission]
+		[showCamera, hasCameraAccess, handleRequestCameraPermission]
 	);
 
 	useEffect(() => {

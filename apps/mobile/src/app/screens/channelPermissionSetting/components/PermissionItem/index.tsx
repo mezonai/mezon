@@ -1,8 +1,8 @@
-import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { EPermissionStatus } from '../../types/channelPermission.enum';
@@ -40,12 +40,6 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 				return t('channelPermission.description.viewChannel');
 			case EPermission.manageChannel:
 				return t('channelPermission.description.manageChannel');
-			case EPermission.manageThread:
-				return t('channelPermission.description.manageThread');
-			case EPermission.sendMessage:
-				return t('channelPermission.description.sendMessage');
-			case EPermission.deleteMessage:
-				return t('channelPermission.description.deleteMessage');
 			default:
 				return '';
 		}
@@ -54,7 +48,12 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 	return (
 		<View style={{ gap: size.s_6 }}>
 			<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-				<Text color={themeValue.textStrong} h4>
+				<Text
+					style={{
+						fontSize: verticalScale(18),
+						color: themeValue.textStrong
+					}}
+				>
 					{title}
 				</Text>
 				<View style={{ flexDirection: 'row', borderRadius: size.s_4, overflow: 'hidden' }}>
@@ -79,7 +78,12 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 					})}
 				</View>
 			</View>
-			<Text color={themeValue.textDisabled} h6>
+			<Text
+				style={{
+					fontSize: verticalScale(10),
+					color: themeValue.textDisabled
+				}}
+			>
 				{getPermissionDescription()}
 			</Text>
 		</View>

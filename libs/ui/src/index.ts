@@ -13,6 +13,7 @@ export { default as Link } from './lib/Link';
 export * from './lib/MezonUiProvider';
 export { default as Modal } from './lib/Modal';
 export { default as Select } from './lib/Select';
+export { default as ReactSelect } from './lib/Select/ReactSelect';
 export { default as TextArea } from './lib/TextArea';
 export { default as TimePicker } from './lib/TimePicker';
 
@@ -23,6 +24,7 @@ export * from './lib/Pagination';
 export * from './lib/useMezonUi';
 
 export { default as ButtonLoading } from './lib/Button/ButtonLoading';
+export { default as Menu } from './lib/DropDown/index';
 export { default as FormError } from './lib/Login/FormError';
 export { default as Input } from './lib/Login/Input';
 export { default as PasswordInput } from './lib/Login/PasswordInput';

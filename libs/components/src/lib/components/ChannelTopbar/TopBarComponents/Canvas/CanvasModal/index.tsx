@@ -93,7 +93,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 						<button onClick={handleCreateCanvas} className="px-3 h-6 rounded-lg btn-primary btn-primary-hover text-sm">
 							Create
 						</button>
-						<button onClick={onClose}>
+						<button onClick={onClose} className="text-theme-primary text-theme-primary-hover">
 							<Icons.Close defaultSize="w-4 h-4 " />
 						</button>
 					</div>

@@ -60,8 +60,8 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 	}, []);
 
 	useEffect(() => {
-		handleSearchMessage();
-	}, [searchText, userMention]);
+		if (nameChannel) handleSearchMessage();
+	}, [searchText, userMention, nameChannel]);
 
 	const handleSearchMessage = () => {
 		const filter: SearchFilter[] = [];
@@ -88,21 +88,24 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 		setFiltersSearch(filter);
 
 		if ((searchText?.trim() || (optionFilter && userMention)) && !!currentChannel?.id) {
-			dispatch(searchMessagesActions.setCurrentPage(1));
+			dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.id, page: 1 }));
 			dispatch(searchMessagesActions.fetchListSearchMessage(payload));
 		}
 	};
 
-	const handleKeyPress = (e) => {
-		if (e.nativeEvent.key === Backspace && !searchText?.length) {
-			setUserMention(null);
-			setOptionFilter(null);
-		}
-	};
+	const handleKeyPress = useCallback(
+		(e) => {
+			if (e.nativeEvent.key === Backspace && !searchText?.length) {
+				setUserMention(null);
+				setOptionFilter(null);
+			}
+		},
+		[searchText?.length]
+	);
 
 	return (
 		<SearchMessageChannelContext.Provider value={filtersSearch}>
-			<View style={{ flex: 1, backgroundColor: themeValue.secondary }}>
+			<View style={{ flex: 1, backgroundColor: themeValue.primary }}>
 				<StatusBarHeight />
 				<InputSearchMessageChannel
 					onKeyPress={handleKeyPress}
@@ -118,6 +121,7 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 					<SearchMessagePage
 						userMention={userMention}
 						currentChannel={currentChannel}
+						nameChannel={nameChannel}
 						searchText={searchText}
 						typeSearch={typeSearch}
 						isSearchMessage={Boolean(searchText?.trim())}

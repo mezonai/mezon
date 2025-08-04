@@ -45,6 +45,11 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			type: EMessageActionType.CopyText
 		},
 		{
+			id: 19,
+			title: t('message:actions.markUnRead'),
+			type: EMessageActionType.MarkUnRead
+		},
+		{
 			id: 18,
 			title: t('message:actions.topicDiscussion'),
 			type: EMessageActionType.TopicDiscussion
@@ -84,5 +89,10 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			title: t('message:actions.markMessage'),
 			type: EMessageActionType.MarkMessage
 		},
+		{
+			id: 20,
+			title: t('message:actions.quickMenu'),
+			type: EMessageActionType.QuickMenu
+		}
 	];
 };

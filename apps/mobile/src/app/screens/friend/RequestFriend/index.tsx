@@ -8,9 +8,10 @@ import { FlatList, Pressable, Text, View } from 'react-native';
 import { SeparatorWithLine } from '../../../components/Common';
 import { EFriendItemAction, FriendItem } from '../../../components/FriendItem';
 import { UserInformationBottomSheet } from '../../../components/UserInformationBottomSheet';
+import { EmptyFriendRequest } from './EmptyFriendRequest';
 import { style } from './styles';
 
-enum EFriendRequest {
+export enum EFriendRequest {
 	Received,
 	Sent
 }
@@ -64,6 +65,10 @@ export const RequestFriendScreen = () => {
 		setSelectedUser(null);
 	}, []);
 
+	const renderEmptyComponent = useCallback(() => {
+		return <EmptyFriendRequest type={selectedTab} />;
+	}, [selectedTab]);
+
 	return (
 		<View style={styles.requestFriendContainer}>
 			<View style={styles.toggleWrapper}>
@@ -80,18 +85,17 @@ export const RequestFriendScreen = () => {
 				})}
 			</View>
 
-			<View>
-				<View style={styles.groupWrapper}>
-					<FlatList
-						data={selectedTab === EFriendRequest.Received ? receivedFriendRequestList : sentFriendRequestList}
-						ItemSeparatorComponent={SeparatorWithLine}
-						keyExtractor={(friend) => friend.id.toString()}
-						renderItem={({ item }) => <FriendItem friend={item} handleFriendAction={handleFriendAction} />}
-						initialNumToRender={1}
-						maxToRenderPerBatch={1}
-						windowSize={2}
-					/>
-				</View>
+			<View style={styles.groupWrapper}>
+				<FlatList
+					data={selectedTab === EFriendRequest.Received ? receivedFriendRequestList : sentFriendRequestList}
+					ItemSeparatorComponent={SeparatorWithLine}
+					keyExtractor={(friend) => friend.id.toString()}
+					renderItem={({ item }) => <FriendItem friend={item} handleFriendAction={handleFriendAction} />}
+					ListEmptyComponent={renderEmptyComponent}
+					initialNumToRender={1}
+					maxToRenderPerBatch={1}
+					windowSize={2}
+				/>
 			</View>
 
 			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} />

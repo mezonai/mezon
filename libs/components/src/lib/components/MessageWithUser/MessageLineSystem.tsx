@@ -121,7 +121,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	};
 
 	const handleShowPinMessage = async () => {
-		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id }));
+		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '' }));
 		dispatch(pinMessageActions.togglePinModal());
 	};
 

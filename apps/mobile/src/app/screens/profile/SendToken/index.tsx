@@ -251,6 +251,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 
 	const handleOpenBottomSheet = () => {
 		Keyboard.dismiss();
+		setSearchText('');
 		BottomSheetRef?.current?.present();
 	};
 
@@ -534,24 +535,28 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 					ref={BottomSheetRef}
 					snapPoints={snapPoints}
 					backdropComponent={Backdrop}
+					style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10, flex: 1, gap: size.s_10 }}
 					backgroundStyle={{ backgroundColor: themeValue.primary }}
 				>
-					<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10, flex: 1, gap: size.s_10 }}>
-						<MezonInput
-							inputWrapperStyle={styles.searchText}
-							placeHolder={t('selectUser')}
-							onTextChange={handleSearchText}
-							prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
-						/>
-						<View style={{ flex: 1, backgroundColor: themeValue.secondary, borderRadius: size.s_8 }}>
-							<BottomSheetFlatList
-								keyboardShouldPersistTaps={'handled'}
-								data={filteredUsers}
-								contentContainerStyle={{ flexGrow: 1 }}
-								renderItem={renderItem}
-							/>
-						</View>
-					</View>
+					<MezonInput
+						inputWrapperStyle={styles.searchText}
+						placeHolder={t('selectUser')}
+						onTextChange={handleSearchText}
+						prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
+					/>
+
+					<BottomSheetFlatList
+						keyExtractor={(item) => `user_receiver_${item?.id}`}
+						keyboardShouldPersistTaps={'handled'}
+						data={filteredUsers}
+						style={{
+							backgroundColor: themeValue.secondary,
+							borderRadius: size.s_8,
+							marginTop: size.s_10
+						}}
+						contentContainerStyle={{ paddingBottom: size.s_20, minHeight: '100%' }}
+						renderItem={renderItem}
+					/>
 				</BottomSheetModal>
 			</View>
 		</KeyboardAvoidingView>

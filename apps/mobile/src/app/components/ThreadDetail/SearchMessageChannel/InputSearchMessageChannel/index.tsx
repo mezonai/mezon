@@ -60,7 +60,7 @@ const InputSearchMessageChannel = ({
 		if (optionFilter?.title || userMention?.display) {
 			return `${optionFilter?.title || ''} ${userMention?.display || ''}`;
 		}
-		return `in: ${nameChannel || ''}`;
+		return `in:${nameChannel || ''}`;
 	}, [optionFilter?.title, userMention?.display, nameChannel]);
 
 	const debouncedOnChangeText = useCallback(

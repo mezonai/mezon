@@ -6,9 +6,9 @@
     "content": {
         "description": "Add upto 250 custom stickers that anyone can use in this server.",
         "requirements": "Upload Requirements",
-        "reqType": "- Can be static (PNG) or animated (APNG, GIF).",
-        "reqDim": "- Must be exactly 320 x 320 pixels.",
-        "reqSize": "- No larger than 512KB.",
+        "reqType": "•  Can be static (PNG) or animated (APNG, GIF).",
+        "reqDim": "•  Must be exactly 320 x 320 pixels.",
+        "reqSize": "•  No larger than 512KB.",
         "available": "Sticker {{left}} SLOTS AVAILABLE"
     },
     "toast": {

@@ -1,6 +1,6 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { Platform, StyleSheet } from 'react-native';
-export const style = (colors: Attributes, isTabletLandscape: boolean) =>
+export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		totalTime: {
 			color: colors.text,
@@ -16,7 +16,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			height: Platform.OS === 'ios' ? size.s_14 : size.s_4
 		},
 		container: {
-			backgroundColor: baseColor.bgDeepLavender,
+			backgroundColor: 'rgba(78,80,87,0.6)',
 			padding: size.s_6,
 			borderRadius: size.s_30,
 			marginVertical: size.s_2,

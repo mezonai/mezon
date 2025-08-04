@@ -26,6 +26,7 @@ import {
 	ChannelMembersEntity,
 	EBacktickType,
 	ETokenMessage,
+	EUserStatus,
 	IAttachmentEntity,
 	IChannel,
 	IEmojiOnMessage,
@@ -73,6 +74,9 @@ export * from './windowEnvironment';
 export * from './windowSize';
 
 export const convertTimeString = (dateString: string) => {
+	if (!dateString) {
+		return '';
+	}
 	const codeTime = new Date(dateString);
 	const today = startOfDay(new Date());
 	const yesterday = startOfDay(subDays(new Date(), 1));
@@ -1273,4 +1277,24 @@ export const getIdSaleItemFromSource = (src: string) => {
 	const fileName = src.split('/').pop() || '';
 	const idFromSource = fileName.split('.').slice(0, -1).join('.') || '';
 	return idFromSource;
+};
+
+export const saveParseUserStatus = (metadata: string): { status: string; user_status: EUserStatus } => {
+	try {
+		const statusParse = safeJSONParse(metadata || '{}') || '';
+		return {
+			status: typeof statusParse.status === 'string' ? statusParse.status : JSON.stringify(statusParse.status) || '',
+			user_status: statusParse.user_status || EUserStatus.ONLINE
+		};
+	} catch (e) {
+		const unescapedJSON = metadata?.replace(/\\./g, (match) => {
+			switch (match) {
+				case '\\"':
+					return '"';
+				default:
+					return match[1];
+			}
+		});
+		return safeJSONParse(unescapedJSON || '{}')?.status;
+	}
 };

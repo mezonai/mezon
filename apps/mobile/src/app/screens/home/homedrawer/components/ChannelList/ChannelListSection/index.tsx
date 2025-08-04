@@ -1,11 +1,12 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCategoryExpandStateByCategoryId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ICategoryChannel } from '@mezon/utils';
 import React, { memo, useCallback } from 'react';
-import { DeviceEventEmitter, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import CategoryMenu from '../../CategoryMenu';
-import ChannelListSectionHeader from '../ChannelListSectionHeader';
 import { style } from './styles';
 
 interface IChannelListSectionProps {
@@ -13,7 +14,8 @@ interface IChannelListSectionProps {
 }
 
 const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
-	const styles = style(useTheme().themeValue);
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const categoryExpandState = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, data?.category_id));
 
@@ -43,27 +45,23 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 
 	return (
 		<View style={styles.channelListSection}>
-			<ChannelListSectionHeader
-				title={data.category_name}
-				onPress={toggleCollapse}
+			<TouchableOpacity
+				activeOpacity={0.8}
+				onPress={() => toggleCollapse(data)}
 				onLongPress={onLongPressHeader}
-				isCollapsed={categoryExpandState}
-				category={data}
-			/>
-
-			{/* {(data?.channels as IChannel[])?.map((item: IChannel, index: number) => {
-				return (
-					<View key={`${item.id}_channel_item` + index} onLayout={(event) => handlePositionChannel(item, event)}>
-						<ChannelListItem
-							data={item}
-							isFirstThread={
-								item?.type === ChannelType.CHANNEL_TYPE_THREAD &&
-								(data?.channels?.[index - 1] as IChannel)?.type !== ChannelType.CHANNEL_TYPE_THREAD
-							}
-						/>
-					</View>
-				);
-			})} */}
+				style={styles.channelListHeader}
+			>
+				<View style={styles.channelListHeaderItem}>
+					<MezonIconCDN
+						icon={IconCDN.chevronDownSmallIcon}
+						height={size.s_18}
+						width={size.s_18}
+						color={themeValue.text}
+						customStyle={[!categoryExpandState && { transform: [{ rotate: '-90deg' }] }]}
+					/>
+					<Text style={styles.channelListHeaderItemTitle}>{data?.category_name}</Text>
+				</View>
+			</TouchableOpacity>
 		</View>
 	);
 });

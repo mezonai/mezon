@@ -1,10 +1,10 @@
 import { load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
-import { Text, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { selectTypingUsersById } from '@mezon/store-mobile';
 import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { TYPING_DARK_MODE, TYPING_LIGHT_MODE } from '../../../../../../assets/lottie';
 import { style } from './styles';

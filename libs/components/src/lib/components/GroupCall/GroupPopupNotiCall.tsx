@@ -1,5 +1,4 @@
-import { useUserByUserId } from '@mezon/core';
-import { selectIsGroupCallActive, selectJoinedCall } from '@mezon/store';
+import { selectIsGroupCallActive, selectJoinedCall, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { WebrtcSignalingFwd } from 'mezon-js';
@@ -17,7 +16,7 @@ interface ModalCallProps {
 }
 
 const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
-	const user = useUserByUserId(dataCall?.caller_id);
+	const user = useAppSelector((state) => selectMemberDMByUserId(state, dataCall?.caller_id));
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const isGroupCallActive = useSelector(selectIsGroupCallActive);
 
@@ -98,13 +97,13 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 						<AvatarImage
 							className="w-16 h-16 rounded-full border-2 border-green-500"
 							alt="caller avatar"
-							username={user?.clan_nick || user?.user?.display_name || user?.user?.username}
-							srcImgProxy={createImgproxyUrl((user?.clan_avatar || user?.user?.avatar_url) ?? '', {
+							username={user?.user?.display_name || user?.user?.username}
+							srcImgProxy={createImgproxyUrl(user?.user?.avatar_url ?? '', {
 								width: 300,
 								height: 300,
 								resizeType: 'fit'
 							})}
-							src={user?.clan_avatar || user?.user?.avatar_url}
+							src={user?.user?.avatar_url}
 						/>
 						<div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
 							{isVideoCall ? <Icons.IconMeetDM className="w-4 h-4" /> : <Icons.IconPhoneDM defaultSize="size-5" />}

@@ -875,5 +875,15 @@ export const style = (colors: Attributes) =>
 			color: colors.textDisabled,
 			fontStyle: 'italic',
 			marginLeft: size.s_4
+		},
+		replyMessage: {
+			borderRadius: size.s_40,
+			width: size.s_40,
+			marginHorizontal: size.s_20,
+			paddingVertical: size.s_2,
+			alignSelf: 'center',
+			justifyContent: 'center',
+			alignItems: 'center',
+			backgroundColor: Colors.textViolet
 		}
 	});

@@ -23,7 +23,7 @@ export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, 
 			<div className="flex flex-col px-5 pt-2 pb-4">
 				<div className={`absolute left-0 top-0 h-full w-1 `} style={{ backgroundColor: color }} />
 				<div className={'flex flex-row justify-between'}>
-					<div className={`flex flex-col ${thumbnail && 'pr-2'}`}>
+					<div className={`flex flex-col break-words break-all ${thumbnail && 'pr-2'}`}>
 						{author && <EmbedAuthor {...author} />}
 						{title && <EmbedTitle title={title} url={url} onClick={onClick} />}
 						{description && <EmbedDescription description={description} />}

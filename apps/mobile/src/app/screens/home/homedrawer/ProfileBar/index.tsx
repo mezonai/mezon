@@ -5,8 +5,9 @@ import { selectAccountCustomStatus } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { memo } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import ImageNative from '../../../../components/ImageNative';
 import { UserStatus } from '../../../../components/UserStatus';
 import { APP_SCREEN } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -26,10 +27,12 @@ const ProfileBar = () => {
 	return (
 		<Pressable style={styles.wrapperProfile} onPress={handleOpenProfileSettings}>
 			<View>
-				<Image
-					source={{ uri: createImgproxyUrl(user?.userProfile?.user?.avatar_url ?? '', { width: 150, height: 150, resizeType: 'fit' }) }}
-					style={styles.imageWrapper}
-				/>
+				<View style={styles.imageWrapper}>
+					<ImageNative
+						url={createImgproxyUrl(user?.userProfile?.user?.avatar_url ?? '', { width: 150, height: 150, resizeType: 'fit' })}
+						style={styles.imageWrapper}
+					/>
+				</View>
 				<UserStatus status={userStatus} iconSize={size.s_10} />
 			</View>
 			<View style={styles.userInfo}>

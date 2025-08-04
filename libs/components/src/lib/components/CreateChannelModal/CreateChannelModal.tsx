@@ -47,7 +47,6 @@ export const CreateNewChannelModal = () => {
 	const { toChannelPage } = useAppNavigation();
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
 	const channelWelcome = useAppSelector((state) => selectChannelById(state, currentClan?.welcome_channel_id as string)) || {};
-	const appearanceTheme = useSelector(selectTheme);
 	const allApps = useAppSelector(selectAllApps);
 
 	useEffect(() => {
@@ -192,13 +191,11 @@ export const CreateNewChannelModal = () => {
 
 							<div className=" text-sm">Kindly set up a channel of your choice.</div>
 						</div>
-						<div
-							className={`flex flex-col gap-3 w-full max-h-[430px] pr-2 overflow-y-scroll ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
-						>
+						<div className={`flex flex-col gap-3 w-full max-h-[450px] pr-2 overflow-y-scroll app-scroll`}>
 							<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
 								<ChannelLableModal labelProp="Choose channel's type:" />
 								<div
-									className={`Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+									className={`Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto app-scroll`}
 								>
 									<ChannelTypeComponent
 										type={ChannelType.CHANNEL_TYPE_CHANNEL}
@@ -280,11 +277,9 @@ export const CreateNewChannelModal = () => {
 									/>
 								</div>
 							)} */}
-							{channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
-								channelType !== ChannelType.CHANNEL_TYPE_STREAMING &&
-								channelType !== ChannelType.CHANNEL_TYPE_APP && (
-									<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps="Is private channel?" />
-								)}
+							{channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
+								<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps="Is private channel?" />
+							)}
 						</div>
 					</div>
 				</div>

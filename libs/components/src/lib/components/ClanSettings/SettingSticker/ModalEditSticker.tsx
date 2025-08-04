@@ -78,7 +78,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 	const handleChangeShortName = (e: ChangeEvent<HTMLInputElement>) => {
 		setEditingGraphic({
 			...editingGraphic,
-			shortname: e.target.value
+			shortname: e.target.value.replace(/[^a-zA-Z0-9_-]/g, '')
 		});
 	};
 

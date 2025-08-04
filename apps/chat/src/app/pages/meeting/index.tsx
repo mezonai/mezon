@@ -132,7 +132,7 @@ export default function PreJoinCalling() {
 	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
 
 	const account = useSelector(selectAllAccount);
-	const getDisplayName = account?.user?.display_name;
+	const getDisplayName = account?.user?.display_name || account?.user?.username;
 	const getAvatar = account?.user?.avatar_url;
 
 	const closePermissionsPopup = useCallback(() => {

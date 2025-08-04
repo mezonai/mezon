@@ -6,7 +6,7 @@ export const style = (colors: Attributes) =>
 		container: {
 			height: size.s_50,
 			width: '80%',
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondaryLight,
 			borderRadius: size.s_40,
 			flexDirection: 'row',
 			alignItems: 'center',

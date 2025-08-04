@@ -37,7 +37,9 @@ function TimePicker(props: TimePickerProps) {
 		<select
 			name={name}
 			onChange={handleChangeTime}
-			className={`block w-full bg-theme-input border-theme-primary rounded p-2 font-normal text-sm tracking-wide outline-none border-none ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+			className={`block w-full bg-theme-input border-theme-primary rounded p-2 font-normal text-sm tracking-wide outline-none bg-option-theme  ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+
+
 			value={formattedValue}
 		>
 			{renderOptions}

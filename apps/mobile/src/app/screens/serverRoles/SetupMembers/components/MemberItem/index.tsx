@@ -1,11 +1,11 @@
 import { useRoles } from '@mezon/core';
 import { CheckIcon } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
@@ -79,8 +79,22 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 				<View style={{ flex: 1, flexDirection: 'row', gap: size.s_10, alignItems: 'center' }}>
 					<MezonAvatar avatarUrl={member?.user?.avatar_url} username={member?.user?.username} />
 					<View style={{ width: '80%' }}>
-						{memberName ? <Text color={themeValue.white}>{memberName}</Text> : null}
-						<Text color={themeValue.text}>{member?.user?.username}</Text>
+						{memberName ? (
+							<Text
+								style={{
+									color: themeValue.white
+								}}
+							>
+								{memberName}
+							</Text>
+						) : null}
+						<Text
+							style={{
+								color: themeValue.text
+							}}
+						>
+							{member?.user?.username}
+						</Text>
 					</View>
 				</View>
 

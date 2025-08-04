@@ -66,13 +66,13 @@ const AppTokenModal = ({ open, onClose, title, onSave }: AppTokenModalProps) => 
 	};
 
 	return (
-		<Modal title={title} showModal={open} onClose={onClose}>
+		<Modal classNameBox='bg-slate-200 dark:bg-slate-500 rounded-lg' classNameHeader='bg-slate-300 dark:bg-slate-600 rounded-t-lg' title={title} showModal={open} onClose={onClose} >
 			<div className="p-4 hidden-submit-field">
 				<AutoForm onSubmit={handleSubmitForm} ref={submitBtnRef} schema={bridge}></AutoForm>
 				<div className="flex justify-end mt-4">
 					<button
 						type="button"
-						className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg "
 						onClick={() => submitBtnRef.current?.submit()}
 					>
 						Save

@@ -8,6 +8,7 @@ import { Text, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
 import { threadDetailContext } from '../../ThreadDetail/MenuThreadDetail';
+import { AddedByUser } from '../MemberItem/AddedByUser';
 import { style } from './style';
 interface IProps {
 	user: ChannelMembersEntity;
@@ -98,6 +99,7 @@ export function MemberProfile({
 					<OwnerIcon width={16} height={16} />
 				)}
 			</View>
+			{isDMThread && currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP && <AddedByUser groupId={currentChannel?.id} userId={user?.id} />}
 		</View>
 	);
 }

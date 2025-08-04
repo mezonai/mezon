@@ -4,7 +4,6 @@ import {
 	categoriesActions,
 	selectClanView,
 	selectCurrentChannel,
-	selectTheme,
 	selectThreadById,
 	useAppDispatch,
 	useAppSelector
@@ -66,7 +65,6 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 
 	const existHashtagAndChannelView = channelHastagId && !isClanView;
 	const isValidChannel = (isTextChannel || isStreamingChannel || isThreadChannel || existHashtagAndChannelView || isAppChannel) && channel;
-	const theme = useSelector(selectTheme);
 
 	return channel ? (
 		isValidChannel ? (
@@ -82,7 +80,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 				) : channel.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
 					<Icons.Stream defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
 				) : channel.type === ChannelType.CHANNEL_TYPE_APP ? (
-					<Icons.AppChannelIcon fill={theme} className={`inline mt-[-0.2rem] w-4 h-4`} />
+					<Icons.AppChannelIcon className={`inline mt-[-0.2rem] w-4 h-4`} />
 				) : channel.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
 					!channel.channel_private || channel.channel_private === 0 ? (
 						<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />

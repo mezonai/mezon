@@ -13,11 +13,10 @@ import { loginLoader } from '../loaders/loginLoader';
 import { mainLoader, shouldRevalidateMain } from '../loaders/mainLoader';
 
 import { MemberProvider } from '@mezon/core';
-import { appActions, selectSession, useAppDispatch } from '@mezon/store';
+import { appActions, useAppDispatch } from '@mezon/store';
 import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
 import { inviteLoader, shouldRevalidateInvite } from '../loaders/inviteLoader';
 
-import { useSelector } from 'react-redux';
 import { useLoading } from '../app';
 import CanvasRoutes from './CanvasRoutes';
 import ClansRoutes from './ClanRoutes';
@@ -90,7 +89,6 @@ const RouterMonitor = () => {
 
 export const Routes = memo(() => {
 	const dispatch = useAppDispatch();
-	const session = useSelector(selectSession);
 	const loaderWithStore = useCallback(
 		(loaderFunction: CustomLoaderFunction) => {
 			return async (props: LoaderFunctionArgs) =>

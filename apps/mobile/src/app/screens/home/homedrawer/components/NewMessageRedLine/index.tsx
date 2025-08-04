@@ -1,8 +1,8 @@
-import { Colors, size, Text, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { selectUnreadMessageIdByChannelId, useAppSelector } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 interface INewMessageRedLineProps {
 	messageId: string;
@@ -27,9 +27,7 @@ export const NewMessageRedLine = memo((props: INewMessageRedLineProps) => {
 				<View style={{ height: 1, width: '95%', backgroundColor: Colors.red, margin: size.s_10 }}>
 					<View style={{ position: 'absolute', left: 0, alignItems: 'center', width: '100%' }}>
 						<View style={{ paddingHorizontal: size.s_10, marginTop: -size.s_10, backgroundColor: themeValue.primary }}>
-							<Text color={Colors.red} style={{ top: Platform.OS === 'ios' ? size.s_4 : 0 }}>
-								{t('newMessages')}
-							</Text>
+							<Text style={{ top: Platform.OS === 'ios' ? size.s_4 : 0, color: Colors.red }}>{t('newMessages')}</Text>
 						</View>
 					</View>
 				</View>

@@ -19,7 +19,7 @@ import { EUserStatus, formatNumber } from '@mezon/utils';
 import { Dropdown } from 'flowbite-react';
 import isElectron from 'is-electron';
 import { Session } from 'mezon-js';
-import { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -124,7 +124,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	};
 
 	const [openModalAddAccount, closeModalAddAccount] = useModal(() => {
-		return <AddAccountModal handleSetAccount={handleSetAccount} />;
+		return <AddAccountModal handleSetAccount={handleSetAccount} handleCloseModalAddAccount={handleCloseModalAddAccount} />;
 	});
 
 	const handleSwitchAccount = async () => {
@@ -153,6 +153,11 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 			modalRef.current = true;
 		}
 	}, []);
+
+	const handleCloseModalAddAccount = () => {
+		closeModalAddAccount();
+		modalRef.current = false;
+	};
 
 	return (
 		<>
@@ -249,12 +254,16 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	);
 };
 
-const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: string, password: string) => void }) => {
-	const inputEmail = useRef<HTMLInputElement>(null);
-	const inputPassword = useRef<HTMLInputElement>(null);
+const AddAccountModal = ({ handleSetAccount, handleCloseModalAddAccount }: { handleCloseModalAddAccount: () => void, handleSetAccount: (email: string, password: string) => void }) => {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 
-	const handleAddAccount = () => {
-		handleSetAccount(inputEmail.current?.value || '', inputPassword.current?.value || '');
+	const isFormValid = email.trim() !== '' && password.trim() !== '';
+
+	const handleAddAccount = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!isFormValid) return;
+		handleSetAccount(email, password);
 	};
 
 	return (
@@ -270,7 +279,8 @@ const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: strin
 				</label>
 				<div className="space-y-2">
 					<input
-						ref={inputEmail}
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
 						id="email"
 						className="w-full px-3 py-2 rounded-md border-theme-primary focus:outline-none focus:ring-2 focus:ring-blue-500 bg-input-secondary text-theme-message"
 						type="email"
@@ -284,7 +294,8 @@ const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: strin
 					</label>
 					<div className="relative">
 						<input
-							ref={inputPassword}
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
 							id="password"
 							type="password"
 							className="w-full px-3 py-2 rounded-md pr-10 text-theme-message bg-input-secondary border-theme-primary
@@ -321,14 +332,28 @@ const AddAccountModal = ({ handleSetAccount }: { handleSetAccount: (email: strin
 					</div>
 				</div>
 				<div className="min-h-[20px]"></div>
-				<button
-					type="submit"
-					className="w-full px-4 py-2 font-medium focus:outline-none  cursor-pointer  rounded-lg  text-[16px] leading-[24px] btn-primary  whitespace-nowrap
- btn-primary-hover"
-					onClick={handleAddAccount}
-				>
-					Log In
-				</button>
+				<div className="flex gap-2">
+					<button className="w-full px-4 py-2 font-medium focus:outline-none  cursor-pointer  rounded-lg  text-[16px] leading-[24px] hover:underline text-theme-primary   whitespace-nowrap" onClick={handleCloseModalAddAccount}>
+						Cancel
+					</button>
+					<button
+						onClick={handleAddAccount}
+						type="submit"
+						disabled={!isFormValid}
+						className={`
+              w-full rounded-lg px-4 py-2 font-medium leading-[24px] focus:outline-none
+              ${isFormValid
+								? 'bg-[#5265ec] text-white hover:bg-[#4654c0]'
+								: 'bg-gray-500 text-white'}
+              disabled:opacity-50 disabled:cursor-not-allowed
+            `}
+					>
+						Log In
+					</button>
+
+
+				</div>
+
 			</form>
 		</div>
 	);

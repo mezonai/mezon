@@ -127,13 +127,13 @@ export default function MezonInput({
 
 					{!textarea && value?.length > 0 && !disabled && (
 						<TouchableOpacity onPress={handleClearBtn} style={styles.clearBtn}>
-							<MezonIconCDN icon={IconCDN.circleXIcon} color={themeValue.white} />
+							<MezonIconCDN icon={IconCDN.circleXIcon} height={size.s_18} width={size.s_18} color={themeValue.white} />
 						</TouchableOpacity>
 					)}
 				</View>
 
-				{showCount && textarea && (
-					<View style={styles.lineCountWrapper}>
+				{textarea && (
+					<View style={[styles.lineCountWrapper, { opacity: showCount ? 1 : 0 }]}>
 						<Text style={styles.count}>{`${value?.length || '0'}/${maxCharacter}`}</Text>
 					</View>
 				)}

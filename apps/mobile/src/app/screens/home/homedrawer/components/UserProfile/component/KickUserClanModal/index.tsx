@@ -1,8 +1,8 @@
-import { Text, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, selectCurrentClan } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonSize, EMezonButtonTheme } from '../../../../../../../componentUI/MezonButton2';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
@@ -21,21 +21,21 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 		<View style={{ height: '100%', overflow: 'hidden' }}>
 			<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'position'} style={{ flex: 1 }}>
 				<View style={styles.container}>
-					<View style={styles.userMinusIcon}>
-						<MezonIconCDN icon={IconCDN.userMinusIcon} width={60} height={60} />
+					<View style={styles.headerContent}>
+						<MezonIconCDN icon={IconCDN.userKickIcon} width={100} height={100} useOriginalColor />
+						<Text style={styles.textError}>
+							{t('kickUserClanModal.kickFromServer', { username: user?.user?.username || user?.['username'] })}
+						</Text>
+						<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
 					</View>
-					<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
-					<Text style={styles.textError}>
-						{t('kickUserClanModal.kickFromServer', { username: user?.user?.username || user?.['username'] })}
-					</Text>
 					<Text style={styles.description}>
 						{t('kickUserClanModal.description', { username: user?.user?.username || user?.['username'] })}
 					</Text>
 					<View style={styles.textAreaBox}>
 						<MezonInput
 							label={t('kickUserClanModal.reasonKick', { username: user?.user?.username || user?.['username'] })}
-							titleUppercase
 							textarea
+							inputStyle={{ height: size.s_70 }}
 							onTextChange={setReason}
 							value={reason}
 							showBorderOnFocus
@@ -48,6 +48,7 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 					title={t('kickUserClanModal.buttonName', { username: user?.user?.username || user?.['username'] })}
 					type={EMezonButtonTheme.THEME}
 					size={EMezonButtonSize.LG}
+					containerStyle={styles.button}
 					titleStyle={styles.textButton}
 				/>
 			</KeyboardAvoidingView>

@@ -11,7 +11,7 @@ import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
-function RoleImagePicker({ roleId }: { roleId: string }) {
+function RoleImagePicker({ roleId, disable = false }: { roleId: string; disable?: boolean }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const rolesClan = useSelector(selectAllRolesClan);
@@ -56,12 +56,19 @@ function RoleImagePicker({ roleId }: { roleId: string }) {
 			<View style={styles.roleButton}>
 				<Text style={styles.textBtn}>{t('roleImagePicker')}</Text>
 				<View style={styles.tailButton}>
-					{!!activeRole?.role_icon && (
+					{!!activeRole?.role_icon && !disable && (
 						<TouchableOpacity style={styles.deleteButton} onPress={handleRemoveIcon}>
 							<Text style={styles.deleteText}>remove</Text>
 						</TouchableOpacity>
 					)}
-					<MezonImagePicker defaultValue={activeRole?.role_icon} height={size.s_50} width={size.s_50} onLoad={handleOnLoad} autoUpload />
+					<MezonImagePicker
+						defaultValue={activeRole?.role_icon}
+						height={size.s_50}
+						width={size.s_50}
+						onLoad={handleOnLoad}
+						autoUpload
+						disabled={disable}
+					/>
 				</View>
 			</View>
 		</View>

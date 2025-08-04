@@ -21,7 +21,7 @@ export const ChatMessageWrapper = memo(({ directMessageId, isModeDM, currentClan
 		<KeyboardAvoidingView
 			style={styles.content}
 			behavior={'padding'}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
+			keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
 		>
 			<View style={{ flex: 1 }}>
 				<ChannelMessages
@@ -39,6 +39,7 @@ export const ChatMessageWrapper = memo(({ directMessageId, isModeDM, currentClan
 					threadIcon: true
 				}}
 				isPublic={false}
+				topicChannelId={''}
 			/>
 			<PanelKeyboard directMessageId={directMessageId || ''} currentChannelId={directMessageId} currentClanId={currentClanId} />
 		</KeyboardAvoidingView>

@@ -90,5 +90,9 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.secondaryLight,
 			alignItems: 'center',
 			justifyContent: 'center'
+		},
+		iconWrapper: {
+			flexDirection: 'row',
+			gap: size.s_2
 		}
 	});

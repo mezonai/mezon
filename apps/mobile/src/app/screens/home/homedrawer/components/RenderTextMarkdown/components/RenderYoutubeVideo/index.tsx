@@ -1,10 +1,10 @@
-import { size } from '@mezon/mobile-ui';
+import { Colors, size } from '@mezon/mobile-ui';
 import { memo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextStyle, View, useWindowDimensions } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
 
 type RenderYoutubeVideoProps = {
-	key: string;
+	videoKey: string;
 	videoId: string;
 	contentInElement: string;
 	onPress?: () => void;
@@ -12,13 +12,15 @@ type RenderYoutubeVideoProps = {
 	linkStyle?: TextStyle;
 };
 
-const RenderYoutubeVideo = ({ key, videoId, contentInElement, onPress, onLongPress, linkStyle }: RenderYoutubeVideoProps) => {
+const RenderYoutubeVideo = ({ videoKey, videoId, contentInElement, onPress, onLongPress, linkStyle }: RenderYoutubeVideoProps) => {
 	const [isVideoReady, setIsVideoReady] = useState<boolean>(false);
 	const { width, height } = useWindowDimensions();
 	const isLandscape = width > height;
+	const playerWidth = isLandscape ? width * 0.4 : width * 0.8;
+	const playerHeight = (playerWidth * 9) / 16;
 
 	return (
-		<View key={key}>
+		<View key={videoKey}>
 			<Text style={linkStyle} onPress={onPress} onLongPress={onLongPress}>
 				{contentInElement}
 			</Text>
@@ -26,12 +28,12 @@ const RenderYoutubeVideo = ({ key, videoId, contentInElement, onPress, onLongPre
 			<View style={styles.borderLeftView}>
 				{!isVideoReady && (
 					<View style={styles.loadingVideoSpinner}>
-						<ActivityIndicator size="large" color={'red'} />
+						<ActivityIndicator size="large" color={Colors.textRed} />
 					</View>
 				)}
 				<YoutubePlayer
-					height={size.s_165}
-					width={isLandscape ? width * 0.4 : width * 0.8}
+					height={playerHeight}
+					width={playerWidth}
 					videoId={videoId}
 					play={false}
 					onReady={() => setIsVideoReady(true)}
@@ -62,7 +64,7 @@ const styles = StyleSheet.create({
 	borderLeftView: {
 		marginTop: size.s_6,
 		borderLeftWidth: size.s_2,
-		borderLeftColor: 'red',
+		borderLeftColor: Colors.textRed,
 		borderRadius: size.s_4
 	}
 });

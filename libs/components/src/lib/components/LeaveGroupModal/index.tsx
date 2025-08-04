@@ -73,7 +73,7 @@ function LeaveGroupModal({ groupWillBeLeave, onClose, navigateToFriends }: Leave
 					</div>
 				</div>
 				<div className="bottom-block flex justify-end p-[16px]  items-center gap-[20px] font-semibold rounded-[5px]">
-					<div onClick={onClose} className=" cursor-pointer hover:underline">
+					<div onClick={onClose} className=" cursor-pointer hover:underline text-theme-primary">
 						Cancel
 					</div>
 					<div onClick={handleLeaveAndClose} className="bg-[#da373c] text-white hover:bg-[#a12828] rounded-md px-4 py-2 cursor-pointer">

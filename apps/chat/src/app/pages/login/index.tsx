@@ -163,7 +163,7 @@ function Login() {
 						<div className="min-h-[20px]">{errors.email && <FormError message={errors.email} />}</div>
 						<PasswordInput onFocus={handleFocus} id="password" label="Password" value={password} onChange={handlePasswordChange} />
 						<div className="min-h-[20px]">{errors.password && <FormError message={errors.password} />}</div>
-						<ButtonLoading className="w-full h-10" disabled={disabled} label="Log In" onClick={handleSubmit} />
+						<ButtonLoading className="w-full h-10 btn-primary btn-primary-hover" disabled={disabled} label="Log In" onClick={handleSubmit} />
 					</form>
 					<div className="mt-4 flex items-center text-gray-400">
 						<input

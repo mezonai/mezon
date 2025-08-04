@@ -8,9 +8,9 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { Icons, Menu } from '@mezon/ui';
 import { IChannel } from '@mezon/utils';
-import { Dropdown } from 'flowbite-react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 export type CategoryChannelProps = {
@@ -38,6 +38,10 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 		});
 	};
 
+	const listCateUpdate = useMemo(() => {
+		return listCategory.filter((cate) => cate.id !== realTimeChannel.category_id);
+	}, [listCategory, channel.category_id]);
+
 	return (
 		<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] pb-7 pr-[10px] pl-[40px] overflow-x-hidden min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
 			<div className="text-theme-primary text-[15px] flex flex-col gap-4">
@@ -48,37 +52,28 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 					{realTimeChannel.channel_label}
 				</div>
 				<p className="text-xs font-bold text-theme-primary mt-4">Category</p>
-				<Dropdown
-					trigger="click"
-					dismissOnClick={false}
-					renderTrigger={() => (
-						<div className="w-full  h-12 rounded-md border-theme-primary text-theme-message bg-input-secondary  flex flex-row px-3 justify-between items-center uppercase">
+
+				<Menu className="bg-input-secondary text-theme-primary">
+					<Menu.Trigger>
+						<div className="w-full h-12 rounded-md border-theme-primary text-theme-message bg-input-secondary  flex flex-row px-3 justify-between items-center uppercase">
 							<p>{realTimeChannel.category_name}</p>
-							<div>
-								<Icons.ArrowDownFill />
-							</div>
+							<Icons.ArrowDownFill />
 						</div>
-					)}
-					label=""
-					placement="bottom-start"
-					className="bg-theme-contexify text-theme-primary border-none py-[6px] px-[8px] w-[200px]"
-				>
-					{listCategory.map((category) => {
-						if (category.id !== realTimeChannel.category_id) {
+					</Menu.Trigger>
+					<Menu.Content className="bg-input-secondary text-theme-primary">
+						{listCateUpdate.map((category) => {
 							return (
-								<div
+								<Menu.Item
 									key={category.id}
-									className={
-										'bg-theme-setting-nav bg-item-theme-hover text-theme-primary-hover  rounded-sm  uppercase font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none  m-0 truncate text-theme-primary'
-									}
+									className={'bg-item-theme-hover text-theme-primary-hover uppercase font-medium text-left cursor-pointer truncate'}
 									onClick={() => handleMoveChannelToNewCategory(category)}
 								>
 									{category.category_name ?? ''}
-								</div>
+								</Menu.Item>
 							);
-						}
-					})}
-				</Dropdown>
+						})}
+					</Menu.Content>
+				</Menu>
 			</div>
 		</div>
 	);

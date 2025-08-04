@@ -1,10 +1,10 @@
-import { selectTheme } from '@mezon/store';
+import { selectCurrentUserId, selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { DOWNLOAD_FILE, EFailAttachment, electronBridge, IMessageWithUser } from '@mezon/utils';
+import { DOWNLOAD_FILE, EFailAttachment, IMessageWithUser, electronBridge } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { lazy, Suspense, useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { ModalDeleteMess, RenderAttachmentThumbnail } from '../../components';
@@ -27,7 +27,7 @@ function formatFileSize(bytes: number) {
 	}
 }
 
-export const AttachmentLoader = ({ appearanceTheme }: { appearanceTheme: 'light' | 'dark' | 'system' }) => {
+export const AttachmentLoader = ({ appearanceTheme }: { appearanceTheme: 'light' | 'dark' | 'sunrise' | 'purple_haze' | 'redDark' | 'abyss_dark' }) => {
 	return (
 		<div className="w-[30px] h-[30px] flex justify-center items-center">
 			<div className={appearanceTheme === 'light' ? 'light-attachment-loader' : 'dark-attachment-loader'} />
@@ -95,6 +95,8 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 	};
 
 	const appearanceTheme = useSelector(selectTheme);
+	const currentUserId = useSelector(selectCurrentUserId);
+	const isOwner = message?.sender_id === currentUserId;
 
 	const createPDFHeader = (closePopup: () => void, maximizeToggle: () => void) => {
 		return isPDF ? <PDFHeader filename={attachmentData.filename || 'Document'} onClose={closePopup} onMaximize={maximizeToggle} /> : undefined;
@@ -176,19 +178,21 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 								>
 									<Icons.Download defaultSize="w-4 h-4" />
 								</button>
-								<button
-									onClick={handleOpenRemoveAttachementModal}
-									className="rounded-md w-8 h-8 flex justify-center items-center cursor-pointer   bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary"
-									title="Remove"
-								>
-									<Icons.TrashIcon className="w-4 h-4 " />
-								</button>
+								{isOwner && (
+									<button
+										onClick={handleOpenRemoveAttachementModal}
+										className="rounded-md w-8 h-8 flex justify-center items-center cursor-pointer   bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary"
+										title="Remove"
+									>
+										<Icons.TrashIcon className="w-4 h-4 " />
+									</button>
+								)}
 							</div>
 						)}
 						{isPDF && (
 							<button
 								onClick={openPDFViewer}
-									className="px-3 py-1 text-sm rounded transition-all duration-200  btn-primary btn-primary-hover"
+								className="px-3 py-1 text-sm rounded transition-all duration-200  btn-primary btn-primary-hover"
 								title="View PDF"
 							>
 								View

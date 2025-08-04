@@ -21,6 +21,7 @@ export const AddMemberOrRoleBS = memo(({ bottomSheetRef, channel }: IAddMemberOr
 		<BottomSheetModal
 			ref={bottomSheetRef}
 			snapPoints={['85%']}
+			enableDynamicSizing={false}
 			style={{
 				borderTopLeftRadius: size.s_14,
 				borderTopRightRadius: size.s_14,

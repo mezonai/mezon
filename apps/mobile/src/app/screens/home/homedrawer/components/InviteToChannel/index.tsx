@@ -1,17 +1,13 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { ExpireLinkValue } from '../../constants';
 import { FriendList } from './FriendList';
 
 interface IInviteToChannelProp {
 	isUnknownChannel: boolean;
-	isDMThread?: boolean;
 	channelId?: string;
 }
 
-const InviteToChannel = ({ isUnknownChannel, isDMThread = false, channelId = '' }: IInviteToChannelProp) => {
-	const refRBSheet = useRef<BottomSheetModal>(null);
+const InviteToChannel = ({ isUnknownChannel, channelId = '' }: IInviteToChannelProp) => {
 	const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
 	useEffect(() => {
@@ -28,20 +24,7 @@ const InviteToChannel = ({ isUnknownChannel, isDMThread = false, channelId = '' 
 		};
 	}, []);
 
-	const openEditLinkModal = useCallback(() => {
-		refRBSheet?.current?.close();
-	}, []);
-
-	return (
-		<FriendList
-			isUnknownChannel={isUnknownChannel}
-			expiredTimeSelected={ExpireLinkValue.SevenDays}
-			isDMThread={isDMThread}
-			isKeyboardVisible={isKeyboardVisible}
-			openEditLinkModal={openEditLinkModal}
-			channelId={channelId}
-		/>
-	);
+	return <FriendList isUnknownChannel={isUnknownChannel} isKeyboardVisible={isKeyboardVisible} channelId={channelId} />;
 };
 
 export default React.memo(InviteToChannel);

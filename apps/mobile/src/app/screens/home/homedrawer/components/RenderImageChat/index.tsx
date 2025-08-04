@@ -21,8 +21,8 @@ type ImageProps = {
 
 type RenderImageProps = {
 	image: ImageProps;
-	imageOriginal: ImageProps;
-	index: number;
+	imageOriginal?: ImageProps;
+	index?: number;
 	disable?: boolean;
 	onPress: (image: ImageProps) => void;
 	onLongPress?: () => void;

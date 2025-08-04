@@ -33,9 +33,10 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	const [hasPermission, setHasPermission] = useState(false);
 	const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
 	const [pageInfo, setPageInfo] = useState(null);
-	const [isLoadingMore, setIsLoadingMore] = useState(false);
+	const [isPermissionLimitIOS, setIsPermissionLimitIOS] = useState(false);
 	const dispatch = useAppDispatch();
 	const timerRef = useRef<any>(null);
+	const isLoadingMoreRef = useRef<boolean>(false);
 	const { removeAttachmentByIndex, attachmentFilteredByChannelId } = useReference(currentChannelId);
 
 	const isDisableSelectAttachment = useMemo(() => {
@@ -44,34 +45,32 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 		return files?.length >= 10;
 	}, [attachmentFilteredByChannelId]);
 
-	const loadPhotos = useCallback(
-		async (after = null) => {
-			if (isLoadingMore) return;
-			setIsLoadingMore(true);
-			try {
-				const res = await CameraRoll.getPhotos({
-					first: 32,
-					assetType: 'All',
-					...(!!pageInfo && !!after && { after: after }),
-					include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
-					groupTypes: 'All',
-					groupName: null
-				});
+	const loadPhotos = useCallback(async (after = null) => {
+		if (isLoadingMoreRef?.current) return;
+		isLoadingMoreRef.current = true;
+		try {
+			const res = await CameraRoll.getPhotos({
+				first: 32,
+				assetType: 'All',
+				...(!!after && { after: after }),
+				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation'],
+				groupTypes: 'All'
+			});
 
-				setPhotos(after ? [...photos, ...res.edges] : res.edges);
-				setPageInfo(res.page_info);
-			} catch (error) {
-				console.error('Error loading photos', error);
-			} finally {
-				setIsLoadingMore(false);
-			}
-		},
-		[isLoadingMore, pageInfo, photos]
-	);
+			setPhotos((prev) => [...(prev || []), ...(res?.edges || [])]);
+			setPageInfo(res.page_info);
+		} catch (error) {
+			console.error('Error loading photos', error);
+		} finally {
+			isLoadingMoreRef.current = false;
+		}
+	}, []);
 
 	useEffect(() => {
 		const subscription: EmitterSubscription = cameraRollEventEmitter.addListener('onLibrarySelectionChange', (_event) => {
-			loadPhotos();
+			if (isPermissionLimitIOS) {
+				loadPhotos();
+			}
 		});
 		checkAndRequestPermissions();
 
@@ -81,7 +80,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				subscription.remove();
 			}
 		};
-	}, []);
+	}, [isPermissionLimitIOS]);
 
 	const checkAndRequestPermissions = async () => {
 		const hasPermission = await requestPermission();
@@ -188,6 +187,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				const requestResult = await iosRequestReadWriteGalleryPermission();
 				return requestResult === 'granted' || requestResult === 'limited';
 			} else if (result === 'limited') {
+				setIsPermissionLimitIOS(true);
 				await iosRefreshGallerySelection();
 			}
 
@@ -332,7 +332,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	}, [hasPermission, onPickGallery]);
 
 	const handleLoadMore = async () => {
-		if (pageInfo?.has_next_page) {
+		if (pageInfo?.has_next_page && pageInfo?.end_cursor) {
 			await loadPhotos(pageInfo.end_cursor);
 		}
 	};
@@ -369,7 +369,7 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				}}
 				onEndReached={handleLoadMore}
 				onEndReachedThreshold={0.5}
-				ListFooterComponent={() => isLoadingMore && <ActivityIndicator size="small" color={themeValue.text} />}
+				ListFooterComponent={() => isLoadingMoreRef?.current && <ActivityIndicator size="small" color={themeValue.text} />}
 			/>
 		</View>
 	);

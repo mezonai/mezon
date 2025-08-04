@@ -14,7 +14,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 
 		container: {
-			backgroundColor: isTablet ? colors.primary : colors.secondary,
+			backgroundColor: colors.primary,
 			flex: 1
 		},
 
@@ -27,11 +27,12 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 
 		headerWrapper: {
+			paddingTop: size.s_10
+		},
+
+		headerOptionWrapper: {
 			flexDirection: 'row',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-			paddingVertical: size.s_20,
-			paddingHorizontal: size.s_18
+			alignItems: 'center'
 		},
 
 		friendsWrapper: {
@@ -46,15 +47,24 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 
 		headerTitle: {
+			paddingLeft: size.s_18,
 			fontSize: isTablet ? size.s_16 : size.s_18,
-			color: colors.textStrong
+			color: colors.textStrong,
+			fontWeight: 'bold'
 		},
 
-		addFriendWrapper: {
+		btnAddFriendWrapper: {
+			flex: 1,
+			paddingVertical: size.s_16,
+			paddingRight: size.s_18
+		},
+		addFriend: {
 			flexDirection: 'row',
 			gap: size.s_8,
+			height: size.s_36,
 			alignItems: 'center',
-			backgroundColor: isTablet ? colors.secondary : colors.primary,
+			justifyContent: 'center',
+			backgroundColor: colors.secondaryLight,
 			borderRadius: size.s_20,
 			borderWidth: 1,
 			borderColor: colors.border,
@@ -243,5 +253,46 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			backgroundColor: colors.primary,
 			width: size.s_36,
 			height: size.s_36
+		},
+		btnSearchWrapper: {
+			paddingLeft: size.s_18,
+			paddingRight: size.s_10,
+			paddingVertical: size.s_16
+		},
+		btnSearch: {
+			backgroundColor: colors.secondaryLight,
+			width: size.s_36,
+			height: size.s_36,
+			borderRadius: size.s_36,
+			alignItems: 'center',
+			justifyContent: 'center'
+		},
+		wrapperItemActivity: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_6,
+			padding: size.s_6,
+			borderRadius: size.s_12,
+			backgroundColor: colors.secondary,
+			borderColor: colors.secondaryLight,
+			borderWidth: 1,
+			maxWidth: size.s_220,
+			marginRight: size.s_10
+		},
+		avatarActivity: {
+			width: size.s_48,
+			height: size.s_48,
+			borderRadius: size.s_10,
+			overflow: 'hidden'
+		},
+		userNameActivity: {
+			fontSize: size.s_12,
+			paddingBottom: size.s_4,
+			fontWeight: '600',
+			color: colors.text
+		},
+		desActivity: {
+			fontSize: size.s_10,
+			color: colors.textDisabled,
 		}
 	});

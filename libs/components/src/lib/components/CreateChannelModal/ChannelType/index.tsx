@@ -1,8 +1,6 @@
-import { selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
-import { useSelector } from 'react-redux';
 interface ChannelTypeProps {
 	type: ChannelType;
 	onChange: (value: number) => void;
@@ -37,7 +35,6 @@ const descriptionMap: Partial<Record<ChannelType, string>> = {
 };
 
 export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChange, error, disable }) => {
-	const theme = useSelector(selectTheme);
 	const iconMap: Partial<Record<ChannelType, JSX.Element>> = {
 		[ChannelType.CHANNEL_TYPE_CHANNEL]: <Icons.Hashtag defaultSize="w-6 h-6" />,
 		[ChannelType.CHANNEL_TYPE_GMEET_VOICE]: <Icons.Speaker defaultSize="w-6 h-6" />,
@@ -48,7 +45,7 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChang
 		// 2 lines below only get index
 		[ChannelType.CHANNEL_TYPE_DM]: <Icons.Hashtag defaultSize="w-6 h-6" />,
 		[ChannelType.CHANNEL_TYPE_GROUP]: <Icons.Hashtag defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_APP]: <Icons.AppChannelIcon className="w-6 h-6" fill={theme} />
+		[ChannelType.CHANNEL_TYPE_APP]: <Icons.AppChannelIcon className="w-6 h-6" />
 	};
 
 	const onValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {

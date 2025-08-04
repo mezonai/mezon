@@ -34,5 +34,6 @@
             "success": "User unblocked successfully",
             "error": "Failed to unblock user"
         }
-    }
+    },
+    "waveWelcome": "Wave to say hi!"
 }

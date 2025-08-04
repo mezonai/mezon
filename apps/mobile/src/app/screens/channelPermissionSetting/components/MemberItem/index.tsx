@@ -1,19 +1,18 @@
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { OwnerIcon } from '@mezon/mobile-components';
-import { Colors, Text, size, useTheme } from '@mezon/mobile-ui';
+import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { channelUsersActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
+import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { EOverridePermissionType, ERequestStatus } from '../../types/channelPermission.enum';
 import { IMemberItemProps } from '../../types/channelPermission.type';
-import MezonAvatar from "../../../../componentUI/MezonAvatar";
 
 export const MemberItem = memo(
 	({ member, channel, isCheckbox = false, isChecked = false, onSelectMemberChange, isAdvancedSetting = false, onPress }: IMemberItemProps) => {
@@ -103,12 +102,29 @@ export const MemberItem = memo(
 					/>
 					<View style={{ flex: 1 }}>
 						<View style={{ flexDirection: 'row', gap: size.s_4, alignItems: 'center' }}>
-							<Text h4 color={themeValue.white}>
+							<Text
+								style={{
+									fontSize: verticalScale(18),
+									marginLeft: 0,
+									marginRight: 0,
+									color: themeValue.white
+								}}
+							>
 								{member?.user?.display_name || member?.user?.username}
 							</Text>
 							{isClanOwner && <OwnerIcon width={16} height={16} />}
 						</View>
-						{!isAdvancedSetting && <Text color={themeValue.textDisabled}>{member?.user?.username}</Text>}
+						{!isAdvancedSetting && (
+							<Text
+								style={{
+									marginLeft: 0,
+									marginRight: 0,
+									color: themeValue.textDisabled
+								}}
+							>
+								{member?.user?.username}
+							</Text>
+						)}
 					</View>
 					{getSuffixIcon()}
 				</View>

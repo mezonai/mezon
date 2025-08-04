@@ -8,6 +8,8 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SeparatorWithLine } from '../../../components/Common';
 import { EFriendItemAction, FriendItem } from '../../../components/FriendItem';
 import { UserInformationBottomSheet } from '../../../components/UserInformationBottomSheet';
+import { EFriendRequest } from '../RequestFriend';
+import { EmptyFriendRequest } from '../RequestFriend/EmptyFriendRequest';
 import { EAddFriendWays } from '../enum';
 import { AddFriendModal } from './components/AddFriendModal';
 import { style } from './styles';
@@ -59,6 +61,10 @@ export const AddFriendScreen = () => {
 		setSelectedUser(null);
 	}, []);
 
+	const renderEmptyFriendRequest = useCallback(() => {
+		return <EmptyFriendRequest type={EFriendRequest.Received} />;
+	}, []);
+
 	return (
 		<View style={styles.addFriendContainer}>
 			<View style={styles.groupWrapper}>
@@ -76,7 +82,7 @@ export const AddFriendScreen = () => {
 					windowSize={2}
 				/>
 			</View>
-			<Text style={styles.whiteText}>{t('addFriend.incomingFriendRequest')}</Text>
+			{receivedFriendRequestList?.length > 0 && <Text style={styles.whiteText}>{t('addFriend.incomingFriendRequest')}</Text>}
 			<FlatList
 				style={{ flex: 1 }}
 				data={receivedFriendRequestList}
@@ -86,6 +92,7 @@ export const AddFriendScreen = () => {
 				initialNumToRender={1}
 				maxToRenderPerBatch={1}
 				windowSize={2}
+				ListEmptyComponent={renderEmptyFriendRequest}
 			/>
 
 			<AddFriendModal type={currentAddFriendType} onClose={() => setCurrentAddFriendType(null)} />

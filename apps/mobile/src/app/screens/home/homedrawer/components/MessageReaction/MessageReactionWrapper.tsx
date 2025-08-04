@@ -32,6 +32,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 	const { message, openEmojiPicker, mode, preventAction = false, messageReactions } = props || {};
 	const isMessageSystem =
 		message?.code === TypeMessage.Welcome ||
+		message?.code === TypeMessage.UpcomingEvent ||
 		message?.code === TypeMessage.CreateThread ||
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;

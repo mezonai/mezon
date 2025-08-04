@@ -146,7 +146,6 @@ export const setNotificationSetting = createAsyncThunk(
 			}
 			if (!is_direct) {
 				thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
-				thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: clan_id || '', noCache: true }));
 			}
 			thunkAPI.dispatch(getNotificationSetting({ channelId: channel_id || '', noCache: true }));
 			return response;
@@ -338,5 +337,5 @@ export const selectNotifiSettingEntities = createSelector(getNotificationSetting
 
 export const selectNotifiSettingsEntitiesById = createSelector(
 	[getNotificationSettingState, (state: RootState, channelId: string) => channelId],
-	(state, channelId) => state?.byChannels[channelId]?.notificationSetting
+	(state, channelId) => state?.byChannels?.[channelId]?.notificationSetting
 );

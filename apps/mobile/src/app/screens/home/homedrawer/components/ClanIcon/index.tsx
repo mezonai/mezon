@@ -14,6 +14,7 @@ interface IClanIconProps {
 	drag: () => void;
 	isActive?: boolean;
 }
+
 export const ClanIcon = memo(
 	(props: IClanIconProps) => {
 		const { themeValue } = useTheme();

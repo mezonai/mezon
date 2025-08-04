@@ -25,30 +25,6 @@ export default function SearchMessageDm({ navigation, route }: any) {
 	const totalResult = useAppSelector((state) => selectTotalResultSearchMessage(state, currentChannel?.channel_id));
 	const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		setFiltersSearch([]);
-		handleSearchMessageDm('');
-	}, []);
-
-	const TabList = useMemo(
-		() =>
-			[
-				{
-					title: 'Messages',
-					quantitySearch: totalResult && totalResult,
-					display: !!totalResult,
-					index: ACTIVE_TAB?.MESSAGES
-				}
-			].filter((tab) => tab?.display),
-		[totalResult]
-	);
-	const handleTextChange = useCallback(
-		debounce((searchText) => {
-			handleSearchMessageDm(searchText);
-		}, 200),
-		[]
-	);
-
 	const handleSearchMessageDm = async (searchText: string) => {
 		const filter = [
 			{
@@ -65,8 +41,41 @@ export default function SearchMessageDm({ navigation, route }: any) {
 			size: SIZE_PAGE_SEARCH
 		};
 		await dispatch(searchMessagesActions.fetchListSearchMessage(payload));
-		await dispatch(searchMessagesActions.setCurrentPage(1));
+		dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.channel_id, page: 1 }));
 	};
+
+	const TabList = useMemo(
+		() =>
+			[
+				{
+					title: 'Messages',
+					quantitySearch: totalResult && totalResult,
+					display: !!totalResult,
+					index: ACTIVE_TAB?.MESSAGES
+				}
+			].filter((tab) => tab?.display),
+		[totalResult]
+	);
+
+	useEffect(() => {
+		setActiveTab(TabList?.[0]?.index);
+	}, [TabList]);
+
+	useEffect(() => {
+		return () => {
+			if (currentChannel?.channel_id) {
+				dispatch(searchMessagesActions.setTotalResults({ channelId: currentChannel.channel_id, total: 0 }));
+			}
+			setFiltersSearch([]);
+		};
+	}, []);
+
+	const handleTextChange = useCallback(
+		debounce((searchText) => {
+			handleSearchMessageDm(searchText);
+		}, 300),
+		[]
+	);
 
 	const renderSearchPage = () => {
 		switch (activeTab) {
@@ -76,10 +85,6 @@ export default function SearchMessageDm({ navigation, route }: any) {
 				return <EmptySearchPage />;
 		}
 	};
-
-	useEffect(() => {
-		setActiveTab(TabList[0]?.index);
-	}, [TabList]);
 
 	return (
 		<SearchMessageChannelContext.Provider value={filtersSearch}>

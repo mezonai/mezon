@@ -187,7 +187,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 							Back
 						</Button>
 						<ButtonLoading
-							className={`font-semibold text-sm px-4 py-2 shadow hover:shadow-lg rounded-lg ${checkvalidate !== EValidateListMessage.VALIDATED ? 'opacity-50 cursor-not-allowed' : ''}`}
+							className={`font-semibold btn-primary btn-primary-hover text-sm px-4 py-2 shadow hover:shadow-lg rounded-lg ${checkvalidate !== EValidateListMessage.VALIDATED ? 'opacity-50 cursor-not-allowed' : ''}`}
 							onClick={handleCreateClan}
 							label="Create"
 							disabled={checkvalidate !== EValidateListMessage.VALIDATED}

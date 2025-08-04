@@ -24,6 +24,7 @@ import com.mezon.mobile.NotificationPreferencesPackage;
 import com.mezon.mobile.CallStatePackage;
 import com.mezon.mobile.AudioSessionPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import com.swmansion.rnscreens.RNScreensPackage;
 
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 
@@ -45,6 +46,7 @@ class MainApplication : Application(), ReactApplication {
               add(ReactNativeFirebaseAnalyticsPackage())
               add(AudioSessionPackage())
               add(CallStatePackage())
+              add(RNScreensPackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"

@@ -24,7 +24,7 @@ export interface showSettingFooterProps {
 }
 
 export interface AppState {
-	themeApp: 'light' | 'dark' | 'system';
+	themeApp: 'light' | 'dark' | 'sunrise' | 'purple_haze' | 'redDark' | 'abyss_dark';
 	currentLanguage: 'en' | 'vi';
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -50,7 +50,8 @@ export interface AppState {
 
 export const initialAppState: AppState = {
 	loadingStatus: 'not loaded',
-	themeApp: 'dark',
+
+	themeApp: 'sunrise',
 	currentLanguage: 'en',
 	isShowMemberList: true,
 	isShowChatStream: false,
@@ -247,7 +248,7 @@ export const getAppState = (rootState: { [APP_FEATURE_KEY]: AppState }): AppStat
 
 export const selectAllApp = createSelector(getAppState, (state: AppState) => state);
 
-export const selectTheme = createSelector(getAppState, (state: AppState) => state.themeApp || 'dark');
+export const selectTheme = createSelector(getAppState, (state: AppState) => state.themeApp);
 
 export const selectCurrentLanguage = createSelector(getAppState, (state: AppState) => state.currentLanguage || 'en');
 

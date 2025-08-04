@@ -8,60 +8,49 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IChannel } from '@mezon/utils';
 import { useFocusEffect } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { View } from 'react-native';
 
 const ChannelSeen = memo(
-	({ currentChannel }: { currentChannel: IChannel }) => {
+	({ channelId }: { channelId: string }) => {
 		const dispatch = useAppDispatch();
-		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, currentChannel?.id));
-
+		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId as string));
+		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 		const { markAsReadSeen } = useSeenMessagePool();
-
 		const handleReadMessage = useCallback(() => {
-			if (!lastMessage || !currentChannel) {
+			if (!lastMessage) {
 				return;
 			}
 			const mode =
-				currentChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel.type === ChannelType.CHANNEL_TYPE_STREAMING
+				currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
 					? ChannelStreamMode.STREAM_MODE_CHANNEL
 					: ChannelStreamMode.STREAM_MODE_THREAD;
-			markAsReadSeen(lastMessage, mode, 0);
-		}, [lastMessage?.id, currentChannel?.id, currentChannel?.type, markAsReadSeen]);
+			markAsReadSeen(lastMessage, mode, currentChannel?.count_mess_unread || 0);
+		}, [lastMessage, currentChannel, markAsReadSeen]);
 
 		useEffect(() => {
-			if (!currentChannel) return;
-
 			if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 				const channelWithActive = { ...currentChannel, active: 1 };
 				dispatch(
 					channelsActions.upsertOne({
-						clanId: currentChannel.clan_id || '',
+						clanId: currentChannel?.clan_id || '',
 						channel: channelWithActive as ChannelsEntity
 					})
 				);
 			}
-		}, [currentChannel?.id, currentChannel?.type, currentChannel?.clan_id, dispatch]);
+		}, [currentChannel?.id]);
 
 		useEffect(() => {
 			if (lastMessage) {
 				handleReadMessage();
 			}
-		}, [currentChannel?.id, handleReadMessage, lastMessage?.id]);
+		}, [lastMessage, handleReadMessage]);
 
 		return null;
 	},
 	(prevProps, nextProps) => {
-		const prev = prevProps?.currentChannel;
-		const next = nextProps?.currentChannel;
-
-		if (!prev && !next) return true;
-		if (!prev || !next) return false;
-
-		return prev?.id === next?.id && prev?.type === next?.type && prev?.clan_id === next?.clan_id;
+		return prevProps?.channelId === nextProps?.channelId;
 	}
 );
 
@@ -96,11 +85,7 @@ function DrawerListener({ channelId }: { channelId: string }) {
 		return null;
 	}
 
-	return (
-		<View>
-			<ChannelSeen currentChannel={currentChannel} />
-		</View>
-	);
+	return <ChannelSeen channelId={channelId} />;
 }
 
 export default React.memo(DrawerListener);

@@ -34,5 +34,6 @@
             "success": "Bỏ chặn người dùng thành công",
             "error": "Không thể bỏ chặn người dùng"
         }
-    }
+    },
+    "waveWelcome": "Vẫy tay để chào!"
 }

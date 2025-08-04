@@ -102,10 +102,10 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 			const shortname = `:${emojiName}:`;
 			const { id, url } = await handleUploadImage({
 				fileData: croppedFile?.data,
-				name: croppedFile.filename,
-				uri: croppedFile.path,
-				size: croppedFile.size,
-				type: croppedFile.mime
+				name: croppedFile?.filename,
+				uri: croppedFile?.path,
+				size: croppedFile?.size,
+				type: croppedFile?.mime
 			});
 			const request: ApiClanEmojiCreateRequest = {
 				id: id,
@@ -127,10 +127,10 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 				const fileData = await RNFS.readFile(pathCompressed?.replace?.('%20', ' ') || '', 'base64');
 				const { id } = await handleUploadImage({
 					fileData: fileData,
-					name: croppedFile.filename,
-					uri: croppedFile.path,
-					size: croppedFile.size,
-					type: croppedFile.mime
+					name: croppedFile?.filename,
+					uri: croppedFile?.path,
+					size: croppedFile?.size,
+					type: croppedFile?.mime
 				});
 				request.id = id;
 			}
@@ -146,7 +146,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 
 	const ListHeaderComponent = () => {
 		return (
-			<View>
+			<View style={styles.header}>
 				<Pressable style={styles.addEmojiButton} onPress={handleAddEmoji}>
 					<Text style={styles.buttonText}>{t('button.upload')}</Text>
 				</Pressable>

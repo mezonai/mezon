@@ -6,17 +6,17 @@
     "saveSuccess": "Lưu thành công",
     "notBlank": "Không được để trống",
     "saveError": "Lỗi xảy ra khi lưu"
-},
+  },
   "menu": {
     "serverName": {
       "title": "Tên clan",
       "errorMessage": "Vui lòng nhập tên clan hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
-      "duplicateNameMessage" : "Tên clan đã tồn tại. Vui lòng chọn tên khác.",
+      "duplicateNameMessage": "Tên clan đã tồn tại. Vui lòng chọn tên khác.",
       "permissionDenied": "Bạn không có quyền để chỉnh sửa hình nền clan"
     },
     "inactive": {
       "title": "Cài đặt không hoạt động",
-        "description": "Tự động chuyển thành viên đến kênh này và tắt mic của họ khi họ không hoạt động quá thời gian quy định. Tính năng này không áp dụng cho phiên bản web.",
+      "description": "Tự động chuyển thành viên đến kênh này và tắt mic của họ khi họ không hoạt động quá thời gian quy định. Tính năng này không áp dụng cho phiên bản web.",
       "inactiveChannel": "Kênh không hoạt động",
       "inactiveTimeout": "Thời gian chờ không hoạt động"
     },
@@ -47,8 +47,26 @@
   },
   "permissions": {
     "toast": {
-      "kickMemberSuccess": "Đã đuổi thành viên thành công",
-      "kickMemberFailed": "Không thể đuổi thành viên"
+      "kickMemberSuccess": "Đã khai trừ thành viên thành công",
+      "kickMemberFailed": "Không thể khai trừ thành viên",
+      "removeMemberThreadSuccess": "Đã xóa thành viên thành công",
+      "removeMemberThreadFailed": "Không thể xóa thành viên"
+    }
+  },
+  "action": {
+    "kick": "Khai trừ",
+    "removeFromThread": "Xóa khỏi chủ đề",
+    "manage": "Quản lý"
+  },
+  "threadRemoveModal": {
+    "title": "Xóa khỏi chủ đề?",
+    "description": "Bạn có chắc chắn muốn xóa {{username}} khỏi chủ đề này?",
+    "remove": "Xóa",
+    "cancel": "Không sao"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Bạn có chắc chắn?"
     }
   }
 }

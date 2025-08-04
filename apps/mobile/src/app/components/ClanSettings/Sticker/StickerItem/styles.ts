@@ -1,4 +1,5 @@
 import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { width } from 'libs/mobile-ui/src/lib/themes/Metrics';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -9,21 +10,33 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			backgroundColor: colors.primary,
 			paddingBottom: size.s_2,
-			marginBottom: size.s_10,
+			marginBottom: size.s_12,
 			borderBottomColor: colors.border,
 			borderBottomWidth: 1,
-			paddingHorizontal: size.s_16
+			paddingHorizontal: size.s_20,
+			gap: size.s_10,
+			height: size.s_50
 		},
 		flexRow: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_14
+			gap: size.s_10
 		},
-
+		stickerName: {
+			maxWidth: width * 0.3,
+			flexDirection: 'row',
+			alignItems: 'center',
+			width: 'auto'
+		},
 		text: {
-			color: colors.textStrong
+			color: colors.borderRadio,
+			fontSize: size.s_12,
+			maxWidth: '75%'
 		},
-
+		lightTitle: {
+			color: colors.white,
+			fontSize: size.s_14
+		},
 		close: {
 			height: '100%',
 			padding: size.s_10,

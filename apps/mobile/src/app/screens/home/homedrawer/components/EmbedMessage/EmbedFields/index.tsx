@@ -1,12 +1,11 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { embedActions, useAppDispatch } from '@mezon/store-mobile';
-import { EMessageComponentType, IFieldEmbed, IMessageRatioOption } from '@mezon/utils';
-import { memo, useMemo, useState } from 'react';
+import { EMessageComponentType, IFieldEmbed } from '@mezon/utils';
+import { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { EmbedAnimation } from './EmbedAnimation';
 import { EmbedDatePicker } from './EmbedDatePicker';
 import { EmbedInput } from './EmbedInput';
-import { EmbedRadioButton } from './EmbedRadioItem';
+import { EmbedRadioGroup } from './EmbedRadioGroup';
 import { EmbedSelect } from './EmbedSelect';
 import { style } from './styles';
 
@@ -18,8 +17,6 @@ interface EmbedFieldsProps {
 export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [checked, setChecked] = useState<string[]>([]);
-	const dispatch = useAppDispatch();
 	const groupedFields = useMemo(() => {
 		return fields.reduce<IFieldEmbed[][]>((acc, field) => {
 			if (!field?.inline) {
@@ -35,42 +32,6 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 			return acc;
 		}, []);
 	}, [fields]);
-
-	const handleCheckRadioButton = (option: IMessageRatioOption, radioId: string) => {
-		if (!option?.name) {
-			setChecked([option?.value]);
-			handleRadioValue(option?.value, radioId);
-			return;
-		}
-		if (checked.includes(option?.value)) {
-			setChecked(checked.filter((check) => check !== option?.value));
-			return;
-		}
-		setChecked([...checked, option?.value]);
-		handleRadioValue(option?.value, radioId);
-	};
-
-	const checkMultiple = useMemo(() => {
-		const options = fields[0]?.inputs?.component as IMessageRatioOption[];
-		if (options?.length > 1 && options[0]?.name) {
-			return options[0].name === options[1]?.name;
-		}
-		return true;
-	}, [fields]);
-
-	const handleRadioValue = (value: string, id: string) => {
-		dispatch(
-			embedActions.addEmbedValue({
-				message_id: message_id,
-				data: {
-					id: id,
-					value: value
-				},
-				multiple: true,
-				onlyChooseOne: checkMultiple
-			})
-		);
-	};
 
 	return (
 		<View style={styles.container}>
@@ -106,16 +67,14 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 													buttonId={fieldItem?.inputs?.id}
 												/>
 											)}
-											{fieldItem?.inputs?.type === EMessageComponentType.RADIO &&
-												fieldItem?.inputs?.component?.length &&
-												fieldItem?.inputs?.component?.map((optionItem, optionIndex) => (
-													<EmbedRadioButton
-														key={`Embed_field_option_${optionItem}_${optionIndex}`}
-														option={optionItem}
-														checked={checked?.includes(optionItem?.value)}
-														onCheck={() => handleCheckRadioButton(optionItem, fieldItem?.inputs?.id)}
-													/>
-												))}
+											{fieldItem?.inputs?.type === EMessageComponentType.RADIO && fieldItem?.inputs?.component?.length && (
+												<EmbedRadioGroup
+													options={fieldItem?.inputs?.component}
+													message_id={message_id}
+													idRadio={fieldItem?.inputs?.id}
+													max_options={fieldItem?.inputs?.max_options}
+												/>
+											)}
 											{fieldItem?.inputs?.type === EMessageComponentType.ANIMATION && fieldItem?.inputs?.component && (
 												<EmbedAnimation
 													key={`embed_animation_${message_id}`}

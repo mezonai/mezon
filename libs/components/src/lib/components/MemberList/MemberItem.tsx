@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { DataMemberCreate } from '../DmList/MemberListGroupChat';
 import { MemberProfile } from '../MemberProfile';
+import AddedByUser from './AddedByUser';
 export type MemberItemProps = {
 	user: ChannelMembersEntity;
 	listProfile?: boolean;
@@ -38,25 +39,28 @@ function MemberItem({ user, listProfile, isOffline, positionType, dataMemberCrea
 	const isMe = user?.user?.id === userProfile?.user?.id;
 
 	return (
-		<MemberProfile
-			numberCharacterCollapse={30}
-			avatar={user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '')}
-			name={name || ''}
-			usernameAva={user?.user?.username}
-			status={{ status: isMe ? true : !isOffline, isMobile }}
-			customStatus={displayCustomStatus}
-			isHideStatus={true}
-			isHideIconStatus={false}
-			textColor="[#AEAEAE]"
-			user={user}
-			listProfile={listProfile}
-			isOffline={isMe ? false : isOffline}
-			positionType={positionType}
-			dataMemberCreate={dataMemberCreate}
-			hideLongName={true}
-			isDM={isDM}
-			statusOnline={statusOnline}
-		/>
+		<div>
+			<MemberProfile
+				numberCharacterCollapse={30}
+				avatar={user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '')}
+				name={name || ''}
+				usernameAva={user?.user?.username}
+				status={{ status: isMe ? true : !isOffline, isMobile }}
+				customStatus={displayCustomStatus}
+				isHideStatus={true}
+				isHideIconStatus={false}
+				textColor="[#AEAEAE]"
+				user={user}
+				listProfile={listProfile}
+				isOffline={isMe ? false : isOffline}
+				positionType={positionType}
+				dataMemberCreate={dataMemberCreate}
+				hideLongName={true}
+				isDM={isDM}
+				statusOnline={statusOnline}
+			/>
+			<AddedByUser groupId={directMessageId || ''} userId={user?.id} />
+		</div>
 	);
 }
 

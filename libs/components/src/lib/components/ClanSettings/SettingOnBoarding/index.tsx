@@ -309,7 +309,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 						<div className="bg-theme-setting-primary p-6 rounded-lg w-[800px] max-h-[80vh] overflow-y-auto scrollbar-thin  [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-thumb]:bg-[#5865F2] [&::-webkit-scrollbar-thumb]:rounded-lg [&::-webkit-scrollbar-track]:bg-gray-200">
 							<div className="flex justify-between items-center mb-6">
 								<h3 className="text-xl font-semibold text-theme-primary-active">Community Settings</h3>
-								<button onClick={() => setIsModalOpen(false)} className=" hover:text-white ">
+								<button onClick={() => setIsModalOpen(false)} className=" text-theme-primary text-theme-primary-hover ">
 									<Icons.CloseIcon className="w-6 h-6" />
 								</button>
 							</div>

@@ -6,7 +6,6 @@ import { Platform, Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
 import { WAY_AUDIO } from '../../../../../../assets/lottie';
-import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
 const formatTime = (millis: number) => {
@@ -17,9 +16,8 @@ const formatTime = (millis: number) => {
 
 const RenderAudioChat = React.memo(
 	({ audioURL, stylesContainerCustom, styleLottie }: { audioURL: string; stylesContainerCustom?: ViewStyle; styleLottie?: ViewStyle }) => {
-		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
-		const styles = style(themeValue, isTabletLandscape);
+		const styles = style(themeValue);
 		const recordingWaveRef = useRef(null);
 		const [isPlaying, setIsPlaying] = useState(false);
 		const [sound, setSound] = useState<Sound | null>(null);
@@ -112,7 +110,7 @@ const RenderAudioChat = React.memo(
 					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 						<View
 							style={{
-								backgroundColor: baseColor.white,
+								backgroundColor: baseColor.bgDeepLavender,
 								borderRadius: size.s_30,
 								padding: size.s_8,
 								alignItems: 'center',
@@ -121,9 +119,9 @@ const RenderAudioChat = React.memo(
 							}}
 						>
 							{isPlaying ? (
-								<PauseIcon width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />
+								<PauseIcon width={size.s_16} height={size.s_16} color={'white'} />
 							) : (
-								<PlayIcon width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />
+								<PlayIcon width={size.s_16} height={size.s_16} color={'white'} />
 							)}
 						</View>
 						<LottieView source={WAY_AUDIO} ref={recordingWaveRef} resizeMode="cover" style={{ ...styles.soundLottie, ...styleLottie }} />

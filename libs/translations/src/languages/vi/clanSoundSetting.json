@@ -4,8 +4,8 @@
         "delete": "Xoá"
     },
     "content": {
-        "description": "Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
-        "requirements": "Yêu cầu tải lên",
+        "description": "•  Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. \n•  Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. \n•  Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
+        "requirements": "YÊU CẦU TẢI LÊN",
         "reqSize": "- Không lớn hơn 1024KB.",
         "audioFile": "Tệp âm thanh",
         "audioName": "Tên âm thanh",

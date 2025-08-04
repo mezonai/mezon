@@ -2,15 +2,13 @@ import { ChatContext } from '@mezon/core';
 import {
 	getAttachmentUnique,
 	getUpdateOrAddClanChannelCache,
-	PenIcon,
 	PlayIcon,
 	save,
-	SearchIcon,
 	SendIcon,
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
-import { Colors, size } from '@mezon/mobile-ui';
+import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { selectDirectsOpenlist } from '@mezon/store';
 import {
 	channelMetaActions,
@@ -30,12 +28,25 @@ import { checkIsThread, createImgproxyUrl, EBacktickType, ILinkOnMessage, isPubl
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image as ImageRN, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+	ActivityIndicator,
+	FlatList,
+	Image as ImageRN,
+	Platform,
+	ScrollView,
+	StatusBar,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import { Image, Video } from 'react-native-compressor';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSelector } from 'react-redux';
+import Images from '../../../../assets/Images';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -43,7 +54,7 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import { isImage, isVideo } from '../../../utils/helpers';
 import AttachmentFilePreview from '../../home/homedrawer/components/AttachmentFilePreview';
 import SharingSuggestItem from './SharingSuggestItem';
-import { styles } from './styles';
+import { style } from './styles';
 interface ISharing {
 	data: any;
 	onClose?: (isSend?: boolean) => void;
@@ -52,6 +63,8 @@ interface ISharing {
 export const Sharing = ({ data, onClose }: ISharing) => {
 	const store = getStore();
 	const dispatch = useAppDispatch();
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 
 	const listDM = useSelector(selectDirectsOpenlist);
 
@@ -459,30 +472,120 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 
 	return (
 		<View style={styles.wrapper}>
-			<StatusBarHeight />
-			<View style={styles.header}>
-				<TouchableOpacity onPress={() => onClose()}>
-					<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_28} height={size.s_28} />
-				</TouchableOpacity>
-				<Text style={styles.titleHeader}>Share</Text>
-				{channelSelected && isAttachmentUploaded ? (
-					isLoading ? (
-						<Flow size={size.s_28} color={Colors.white} />
-					) : (
-						<TouchableOpacity onPress={onSend}>
-							<SendIcon width={size.s_28} height={size.s_20} color={Colors.white} />
-						</TouchableOpacity>
-					)
-				) : (
-					<View style={{ width: size.s_28 }} />
-				)}
-			</View>
-			<View style={styles.container}>
-				<View style={[styles.rowItem, inputFocus && { display: 'none' }]}>
-					<Text style={styles.title}>Message preview</Text>
+			<KeyboardAvoidingView
+				style={{ flex: 1, width: '100%' }}
+				behavior={'padding'}
+				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
+			>
+				<StatusBarHeight />
+				<View style={styles.header}>
+					<TouchableOpacity onPress={() => onClose()}>
+						<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_28} height={size.s_28} color={themeValue.white} />
+					</TouchableOpacity>
+					<Text style={styles.titleHeader}>Share</Text>
+				</View>
+				<View style={styles.searchInput}>
+					<View style={styles.inputWrapper}>
+						{channelSelected ? (
+							<View style={styles.iconLeftInput}>
+								{channelSelected?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
+									<FastImage
+										source={Images.AVATAR_GROUP}
+										style={{
+											width: size.s_18,
+											height: size.s_18,
+											borderRadius: size.s_18
+										}}
+									/>
+								) : (
+									<MezonAvatar
+										avatarUrl={channelSelected?.channel_avatar?.[0] || clans?.[channelSelected?.clan_id]?.logo}
+										username={clans?.[channelSelected?.clan_id]?.clan_name || channelSelected?.channel_label}
+										width={size.s_18}
+										height={size.s_18}
+									/>
+								)}
+							</View>
+						) : (
+							<View style={styles.iconLeftInput}>
+								<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+							</View>
+						)}
+						{channelSelected ? (
+							<Text style={styles.textChannelSelected}>{channelSelected?.channel_label}</Text>
+						) : (
+							<TextInput
+								ref={inputSearchRef}
+								style={styles.textInput}
+								onChangeText={(value) => {
+									setSearchText(value);
+									debouncedSearch(value);
+								}}
+								onFocus={() => setInputFocus(true)}
+								onBlur={() => setInputFocus(false)}
+								placeholder={'Select a channel or category...'}
+								placeholderTextColor={themeValue.textDisabled}
+							/>
+						)}
+						{channelSelected ? (
+							<TouchableOpacity
+								activeOpacity={0.8}
+								onPress={() => {
+									setChannelSelected(undefined);
+									inputSearchRef?.current?.focus?.();
+								}}
+								style={styles.iconRightInput}
+							>
+								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} color={themeValue.text} />
+							</TouchableOpacity>
+						) : (
+							!!searchText?.length && (
+								<TouchableOpacity
+									activeOpacity={0.8}
+									onPress={() => {
+										setSearchText('');
+										inputSearchRef?.current?.clear?.();
+										debouncedSearch('');
+									}}
+									style={styles.iconRightInput}
+								>
+									<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} color={themeValue.text} />
+								</TouchableOpacity>
+							)
+						)}
+					</View>
+				</View>
+
+				<View style={styles.container}>
+					{!!dataShareTo?.length && (
+						<View>
+							<Text style={styles.title}>Suggestions</Text>
+							<FlatList
+								data={dataShareTo}
+								keyExtractor={(item, index) => `${item?.id}_${index}_suggestion`}
+								renderItem={renderItemSuggest}
+								keyboardShouldPersistTaps={'handled'}
+								onEndReachedThreshold={0.1}
+								initialNumToRender={1}
+								maxToRenderPerBatch={5}
+								windowSize={15}
+								updateCellsBatchingPeriod={10}
+								decelerationRate={'fast'}
+								disableVirtualization={true}
+								removeClippedSubviews={true}
+								getItemLayout={(_, index) => ({
+									length: size.s_42,
+									offset: size.s_42 * index,
+									index
+								})}
+							/>
+						</View>
+					)}
+				</View>
+				<View style={styles.chatArea}>
 					{!!getAttachmentUnique(attachmentUpload)?.length && (
-						<View style={[styles.inputWrapper, { marginBottom: size.s_16 }]}>
-							<ScrollView horizontal style={styles.wrapperMedia}>
+						<View style={[styles.attachmentRow]}>
+							<ScrollView horizontal keyboardShouldPersistTaps={'always'}>
 								{getAttachmentUnique(attachmentUpload)?.map((media: any, index) => {
 									const isFile =
 										Platform.OS === 'android'
@@ -531,112 +634,36 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 						</View>
 					)}
 
-					<View style={styles.inputWrapper}>
-						<View style={styles.iconLeftInput}>
-							<PenIcon width={size.s_18} />
-						</View>
-						<TextInput
-							style={styles.textInput}
-							value={dataText}
-							onChangeText={(text) => setDataText(text)}
-							placeholder={'Add a Comment (Optional)'}
-							placeholderTextColor={Colors.tertiary}
-						/>
-						{!!dataText?.length && (
-							<TouchableOpacity activeOpacity={0.8} onPress={() => setDataText('')} style={styles.iconRightInput}>
-								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
-							</TouchableOpacity>
-						)}
-					</View>
-				</View>
-
-				<View style={styles.rowItem}>
-					<Text style={styles.title}>Share to</Text>
-					<View style={styles.inputWrapper}>
-						{channelSelected ? (
-							<View style={styles.iconLeftInput}>
-								<MezonAvatar
-									avatarUrl={channelSelected?.channel_avatar?.[0] || clans?.[channelSelected?.clan_id]?.logo}
-									username={clans?.[channelSelected?.clan_id]?.clan_name || channelSelected?.channel_label}
-									width={size.s_18}
-									height={size.s_18}
-								/>
-							</View>
-						) : (
-							<View style={styles.iconLeftInput}>
-								<SearchIcon width={size.s_18} height={size.s_18} />
-							</View>
-						)}
-						{channelSelected ? (
-							<Text style={styles.textChannelSelected}>{channelSelected?.channel_label}</Text>
-						) : (
+					<View style={styles.inputRow}>
+						<View style={styles.chatInput}>
 							<TextInput
-								ref={inputSearchRef}
-								style={styles.textInput}
-								onChangeText={(value) => {
-									setSearchText(value);
-									debouncedSearch(value);
-								}}
-								onFocus={() => setInputFocus(true)}
-								onBlur={() => setInputFocus(false)}
-								placeholder={'Select a channel or category...'}
-								placeholderTextColor={Colors.tertiary}
+								style={[styles.textInput, { height: size.s_40 }]}
+								value={dataText}
+								onChangeText={(text) => setDataText(text)}
+								placeholder={'Add a Comment (Optional)'}
+								placeholderTextColor={themeValue.textDisabled}
 							/>
-						)}
-						{channelSelected ? (
-							<TouchableOpacity
-								activeOpacity={0.8}
-								onPress={() => {
-									setChannelSelected(undefined);
-									inputSearchRef?.current?.focus?.();
-								}}
-								style={styles.iconRightInput}
-							>
-								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
-							</TouchableOpacity>
-						) : (
-							!!searchText?.length && (
-								<TouchableOpacity
-									activeOpacity={0.8}
-									onPress={() => {
-										setSearchText('');
-										inputSearchRef?.current?.clear?.();
-										debouncedSearch('');
-									}}
-									style={styles.iconRightInput}
-								>
+							{!!dataText?.length && (
+								<TouchableOpacity activeOpacity={0.8} onPress={() => setDataText('')} style={styles.iconRightInput}>
 									<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} />
 								</TouchableOpacity>
-							)
-						)}
+							)}
+						</View>
+
+						<TouchableOpacity
+							onPress={onSend}
+							disabled={!channelSelected || !isAttachmentUploaded}
+							style={[styles.sendButton, { opacity: channelSelected && isAttachmentUploaded ? 1 : 0.5 }]}
+						>
+							{isLoading ? (
+								<Flow size={size.s_28} color={Colors.white} />
+							) : (
+								<SendIcon width={size.s_28} height={size.s_20} color={Colors.white} />
+							)}
+						</TouchableOpacity>
 					</View>
 				</View>
-
-				{!!dataShareTo?.length && (
-					<View style={styles.rowItem}>
-						<Text style={styles.title}>Suggestions</Text>
-						<FlatList
-							data={dataShareTo}
-							keyExtractor={(item, index) => `${item?.id}_${index}_suggestion`}
-							renderItem={renderItemSuggest}
-							keyboardShouldPersistTaps={'handled'}
-							onEndReachedThreshold={0.1}
-							initialNumToRender={1}
-							maxToRenderPerBatch={5}
-							windowSize={15}
-							updateCellsBatchingPeriod={10}
-							decelerationRate={'fast'}
-							disableVirtualization={true}
-							removeClippedSubviews={true}
-							getItemLayout={(_, index) => ({
-								length: size.s_42,
-								offset: size.s_42 * index,
-								index
-							})}
-						/>
-					</View>
-				)}
-			</View>
+			</KeyboardAvoidingView>
 		</View>
 	);
 };

@@ -12,7 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { DeviceEventEmitter, Dimensions, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { ResumableZoom } from 'react-native-zoom-toolkit';
 import { useSelector } from 'react-redux';
@@ -25,6 +25,38 @@ import ControlBottomBar from '../ControlBottomBar';
 import FocusedScreenPopup from '../FocusedScreenPopup';
 import ParticipantScreen from '../ParticipantScreen';
 import { style } from '../styles';
+
+const RoomViewListener = memo(
+	({
+		isShowPreCallInterface,
+		focusedScreenShare,
+		setFocusedScreenShare
+	}: {
+		isShowPreCallInterface: boolean;
+		focusedScreenShare: TrackReference;
+		setFocusedScreenShare: any;
+	}) => {
+		const participants = useParticipants();
+		const dispatch = useAppDispatch();
+
+		useEffect(() => {
+			if (participants?.length > 1 && isShowPreCallInterface) {
+				dispatch(groupCallActions?.hidePreCallInterface());
+			}
+		}, [dispatch, isShowPreCallInterface, participants?.length]);
+
+		useEffect(() => {
+			if (focusedScreenShare) {
+				const focusedParticipant = participants.find((p) => p.identity === focusedScreenShare?.participant?.identity);
+
+				if (!focusedParticipant?.isScreenShareEnabled) {
+					setFocusedScreenShare(null);
+				}
+			}
+		}, [participants, focusedScreenShare]);
+		return null;
+	}
+);
 
 const RoomView = ({
 	isAnimationComplete,
@@ -44,10 +76,8 @@ const RoomView = ({
 	participantsCount?: number;
 }) => {
 	const marginWidth = Dimensions.get('screen').width;
-	const dispatch = useAppDispatch();
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
-	const participants = useParticipants();
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [focusedScreenShare, setFocusedScreenShare] = useState<TrackReference | null>(null);
 	const [isHiddenControl, setIsHiddenControl] = useState<boolean>(false);
@@ -64,24 +94,6 @@ const RoomView = ({
 
 		return () => subscription?.remove();
 	}, [focusedScreenShare]);
-
-	useEffect(() => {
-		if (participants?.length > 1 && isShowPreCallInterface) {
-			dispatch(groupCallActions?.hidePreCallInterface());
-		}
-	}, [dispatch, isShowPreCallInterface, participants?.length]);
-
-	const sortedParticipants = [...participants].sort((a, b) => (b.isScreenShareEnabled ? 1 : 0) - (a.isScreenShareEnabled ? 1 : 0));
-
-	useEffect(() => {
-		if (focusedScreenShare) {
-			const focusedParticipant = sortedParticipants.find((p) => p.identity === focusedScreenShare?.participant?.identity);
-
-			if (!focusedParticipant?.isScreenShareEnabled) {
-				setFocusedScreenShare(null);
-			}
-		}
-	}, [sortedParticipants, focusedScreenShare]);
 
 	const handleOpenEmojiPicker = () => {
 		const data = {
@@ -121,8 +133,8 @@ const RoomView = ({
 								trackRef={focusedScreenShare}
 								objectFit={'contain'}
 								style={{
-									height: isPiPMode ? size.s_100 : '100%',
-									width: isPiPMode ? size.s_200 + size.s_10 : '100%',
+									height: isPiPMode ? size.s_100 * 1.2 : '100%',
+									width: isPiPMode ? '50%' : '100%',
 									alignSelf: 'center'
 								}}
 								iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
@@ -154,12 +166,8 @@ const RoomView = ({
 
 	return (
 		<View style={[styles.roomViewContainer, isPiPMode && styles.roomViewContainerPiP]}>
-			{!isAnimationComplete ? (
-				<FocusedScreenPopup sortedParticipants={sortedParticipants} />
-			) : (
-				<ParticipantScreen sortedParticipants={sortedParticipants} setFocusedScreenShare={setFocusedScreenShareProp} />
-			)}
-			{isAnimationComplete && isGroupCall && participants.length <= 1 && isShowPreCallInterface && (
+			{!isAnimationComplete ? <FocusedScreenPopup /> : <ParticipantScreen setFocusedScreenShare={setFocusedScreenShareProp} />}
+			{isAnimationComplete && isGroupCall && isShowPreCallInterface && (
 				<View style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: size.s_100 * 2 }}>
 					<LottieView
 						source={themeBasic === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE}
@@ -179,6 +187,11 @@ const RoomView = ({
 				isGroupCall={isGroupCall}
 			/>
 			{Platform.OS === 'ios' && <ScreenCapturePickerView ref={screenCaptureRef} />}
+			<RoomViewListener
+				isShowPreCallInterface={isShowPreCallInterface}
+				focusedScreenShare={focusedScreenShare}
+				setFocusedScreenShare={setFocusedScreenShareProp}
+			/>
 		</View>
 	);
 };

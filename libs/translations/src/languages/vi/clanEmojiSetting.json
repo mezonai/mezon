@@ -10,12 +10,12 @@
         "upload": "Tải lên Emoji"
     },
     "description": {
-        "descriptions": "Thêm tối đa 250 emoji tùy chỉnh mà tất cả người dùng trong clan này đều có thể sử dụng. Các thành viên đăng kí Mezon Nitro có thể sử dụng được các emoji GIF động.",
-        "requirements": "TẢI LÊN YÊU CẦU",
-        "requireList": "Loại tệp: JPEG, PNG, GIF\nKích thước đề xuất: 256 KB\nKích cỡ ảnh để nghị: 128x128\nĐặt tên: Tên của emoji phải có ít nhất 2 kí tự và chỉ được chứa ký tự chữ, ký tự số và dấu gạch dưới"
+        "descriptions": "Thêm emoji tùy chỉnh mà tất cả người dùng trong clan này đều có thể sử dụng. Các thành viên đăng kí Mezon Nitro có thể sử dụng được các emoji GIF động.",
+        "requirements": "YÊU CẦU TẢI LÊN",
+        "requireList": "•  Loại tệp: JPEG, PNG, GIF.\n•  Kích thước đề xuất: 256 KB.\n•  Kích cỡ ảnh đề nghị: 128x128.\n•  Đặt tên: Tên của emoji phải có ít nhất 2 kí tự và chỉ được chứa ký tự chữ, ký tự số và dấu gạch dưới."
     },
     "emojiList": {
-        "slotsDetails": "EMOJI - {{slots}} CHỖ TRỐNG SẴN CÓ",
+        "slotsDetails": "DANH SÁCH EMOJI",
         "delete": "XÓA"
     }
 }

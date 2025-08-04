@@ -9,13 +9,13 @@ export const style = (colors: Attributes) =>
 		container: {
 			flex: 1,
 			backgroundColor: colors.primary,
-			paddingHorizontal: size.s_20,
 			paddingTop: Platform.OS === 'ios' ? size.s_40 : 0
 		},
 		bgDefault: {
 			backgroundColor: colors.primary
 		},
 		fill: {
+			paddingHorizontal: size.s_20,
 			flex: 1
 		},
 		headerWrapper: {
@@ -26,18 +26,20 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.secondary
 		},
 		buttonHeader: {
-			flex: 1
+			width: size.s_30,
+			alignItems: 'center',
 		},
 		headerContent: {
-			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			flexBasis: 10,
-			flexGrow: 1
+			flexGrow: 1,
+			flexDirection: 'row',
 		},
 		textTitle: {
 			color: colors.textStrong,
-			fontSize: size.s_20
+			fontSize: size.s_16,
+			fontWeight: '600'
 		},
 		confirm: {
 			color: colors.textStrong,

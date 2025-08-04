@@ -13,7 +13,7 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import RoleColorPicker from '../RoleColorPicker/RoleColorPicker';
 import { style } from './styles';
 
-function RoleCoLourComponent({ roleId }: { roleId: string }) {
+function RoleCoLourComponent({ roleId, disable = false }: { roleId: string; disable?: boolean }) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const rolesClan = useSelector(selectAllRolesClan);
@@ -58,12 +58,15 @@ function RoleCoLourComponent({ roleId }: { roleId: string }) {
 
 	return (
 		<View>
-			<TouchableOpacity onPress={onPresentBS} style={styles.roleButton}>
-				<Text style={styles.textBtn}>{t('roleColorPicker.textBtnRole')}</Text>
+			<TouchableOpacity onPress={onPresentBS} style={styles.roleButton} disabled={disable}>
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_6 }}>
+					<Text style={styles.textBtn}>{t('roleColorPicker.textBtnRole')}</Text>
+					{disable && <MezonIconCDN icon={IconCDN.lockIcon} color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />}
+				</View>
 				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 					<View style={{ width: size.s_40, height: size.s_40, backgroundColor: roleColorSelected, borderRadius: size.s_6 }}></View>
 					<Text style={styles.colorText}>{activeRole?.color ?? ''}</Text>
-					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
+					{!disable && <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />}
 				</View>
 			</TouchableOpacity>
 		</View>

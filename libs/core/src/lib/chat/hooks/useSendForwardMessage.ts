@@ -44,8 +44,7 @@ export function useSendForwardMessage() {
 					isPublic,
 					validatedContent,
 					message.channel_id === channel_id ? message.mentions : [],
-					message.attachments,
-					message.references
+					message.attachments
 				);
 
 				dispatch(

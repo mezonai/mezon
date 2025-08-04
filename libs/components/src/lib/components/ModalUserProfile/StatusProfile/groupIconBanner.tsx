@@ -127,7 +127,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 		);
 		dispatch(giveCoffeeActions.setShowModalSendToken(true));
 	};
-	if (isMe) return null;
+	if (isMe || !user) return null;
 	return (
 		<>
 			<div

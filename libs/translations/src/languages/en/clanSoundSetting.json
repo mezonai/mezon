@@ -4,8 +4,8 @@
         "delete": "Delete"
     },
     "content": {
-        "description": "Only accepts .mp3, .wav files, maximum 1MB. Use memorable names for sound effects. Sound effects will be used in clan notifications or events.",
-        "requirements": "Upload Requirements",
+        "description": "•  Only accepts .mp3, .wav files, maximum 1MB. \n•  Use memorable names for sound effects. \n•  Sound effects will be used in clan notifications or events.",
+        "requirements": "UPLOAD REQUIREMENTS",
         "reqSize": "- No larger than 1024KB.",
         "audioFile": "Audio file",
         "audioName": "Sound Name",

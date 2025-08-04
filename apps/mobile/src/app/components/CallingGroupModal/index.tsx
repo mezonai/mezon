@@ -198,7 +198,8 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			const data = {
 				channelId: dataCall.channel_id || '',
 				roomName: callData?.meeting_code,
-				clanId: ''
+				clanId: '',
+				isGroupCall: true
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 			const joinAction = {

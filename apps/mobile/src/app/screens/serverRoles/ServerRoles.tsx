@@ -1,10 +1,10 @@
 import { usePermissionChecker } from '@mezon/core';
-import { Text, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity, selectAllRolesClan } from '@mezon/store-mobile';
 import { EPermission, EVERYONE_ROLE_ID } from '@mezon/utils';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Platform, Pressable, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../components/Common';
@@ -48,7 +48,12 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	return (
 		<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14 }}>
 			<View style={{ paddingVertical: size.s_14 }}>
-				<Text center color={themeValue.text}>
+				<Text
+					style={{
+						textAlign: 'center',
+						color: themeValue.text
+					}}
+				>
 					{t('roleDescription')}
 				</Text>
 			</View>
@@ -69,8 +74,19 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 							<MezonIconCDN icon={IconCDN.groupIcon} color={themeValue.text} />
 						</View>
 						<View style={{ flex: 1 }}>
-							<Text color={themeValue.white}>@everyone</Text>
-							<Text color={themeValue.text} numberOfLines={1}>
+							<Text
+								style={{
+									color: themeValue.white
+								}}
+							>
+								@everyone
+							</Text>
+							<Text
+								style={{
+									color: themeValue.text
+								}}
+								numberOfLines={1}
+							>
 								{t('defaultRole')}
 							</Text>
 						</View>
@@ -80,7 +96,11 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			</TouchableOpacity>
 
 			<View style={{ marginTop: size.s_10, flex: 1 }}>
-				<Text color={themeValue.text}>
+				<Text
+					style={{
+						color: themeValue.text
+					}}
+				>
 					{t('roles')} - {allClanRoles?.length - 1 || '0'}
 				</Text>
 				{allClanRoles.length ? (
@@ -114,7 +134,13 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 												)}
 												<View style={{ flex: 1 }}>
 													<View style={{ flexDirection: 'row', gap: size.s_6 }}>
-														<Text color={themeValue.white}>{item.title}</Text>
+														<Text
+															style={{
+																color: themeValue.white
+															}}
+														>
+															{item.title}
+														</Text>
 														{item?.isView && (
 															<MezonIconCDN
 																icon={IconCDN.lockIcon}
@@ -124,7 +150,11 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 															/>
 														)}
 													</View>
-													<Text color={themeValue.text}>
+													<Text
+														style={{
+															color: themeValue.text
+														}}
+													>
 														{item?.role_user_list?.role_users?.length || '0'} - {t('members')}
 													</Text>
 												</View>
@@ -141,7 +171,12 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 					</View>
 				) : (
 					<View style={{ marginTop: size.s_20 }}>
-						<Text color={themeValue.text} center>
+						<Text
+							style={{
+								textAlign: 'center',
+								color: themeValue.text
+							}}
+						>
 							{t('noRole')}
 						</Text>
 					</View>

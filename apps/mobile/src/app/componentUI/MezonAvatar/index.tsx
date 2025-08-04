@@ -22,6 +22,7 @@ interface IMezonAvatarProps {
 	countBadge?: number;
 	isShow?: boolean;
 	statusUserStyles?: ViewStyle;
+	isMsgReply?: boolean;
 }
 const MezonAvatar = React.memo((props: IMezonAvatarProps) => {
 	const { themeValue } = useTheme();
@@ -37,7 +38,8 @@ const MezonAvatar = React.memo((props: IMezonAvatarProps) => {
 		isShow = true,
 		isCountBadge,
 		countBadge,
-		statusUserStyles
+		statusUserStyles,
+		isMsgReply = false
 	} = props;
 	const styles = style(themeValue, height, width, stacks?.length);
 
@@ -68,7 +70,7 @@ const MezonAvatar = React.memo((props: IMezonAvatarProps) => {
 	return (
 		<View style={[styles.containerItem, { height, width }]}>
 			<View style={[styles.boxImage, { height, width }, isBorderBoxImage && styles.borderBoxImage]}>
-				<MezonClanAvatar alt={username} image={avatarUrl} lightMode />
+				<MezonClanAvatar alt={username} image={avatarUrl} isMsgReply={isMsgReply} lightMode />
 			</View>
 
 			{!!userStatus && <UserStatus status={userStatus} customStyles={statusUserStyles} customStatus={customStatus} />}

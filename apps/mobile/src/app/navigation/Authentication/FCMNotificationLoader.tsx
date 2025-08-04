@@ -26,55 +26,59 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	};
 
 	const mapMessageNotificationToSlice = (notificationDataPushedParse: any) => {
-		if (notificationDataPushedParse.length > 0) {
-			for (const data of notificationDataPushedParse) {
-				const extraMessage = data?.message;
-				if (extraMessage) {
-					const message = safeJSONParse(extraMessage);
-					if (message && typeof message === 'object' && message?.channel_id) {
-						const createTimeSeconds = message?.create_time_seconds;
-						const updateTimeSeconds = message?.update_time_seconds;
+		try {
+			if (notificationDataPushedParse?.length > 0) {
+				for (const data of notificationDataPushedParse) {
+					const extraMessage = data?.message;
+					if (extraMessage) {
+						const message = safeJSONParse(extraMessage);
+						if (message && typeof message === 'object' && message?.channel_id) {
+							const createTimeSeconds = message?.create_time_seconds;
+							const updateTimeSeconds = message?.update_time_seconds;
 
-						const createTime = createTimeSeconds
-							? moment.unix(createTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-							: new Date().toISOString();
-						const updateTime = updateTimeSeconds
-							? moment.unix(updateTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-							: new Date().toISOString();
+							const createTime = createTimeSeconds
+								? moment.unix(createTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+								: new Date().toISOString();
+							const updateTime = updateTimeSeconds
+								? moment.unix(updateTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+								: new Date().toISOString();
 
-						let codeValue = 0;
-						if (message?.code) {
-							if (typeof message.code === 'number') {
-								codeValue = message.code;
-							} else if (typeof message.code === 'object' && message.code?.value !== undefined) {
-								codeValue = message.code.value;
+							let codeValue = 0;
+							if (message?.code) {
+								if (typeof message.code === 'number') {
+									codeValue = message.code;
+								} else if (typeof message.code === 'object' && message.code?.value !== undefined) {
+									codeValue = message.code.value;
+								}
 							}
-						}
 
-						const messageId = message?.message_id || message?.id;
-						if (!messageId) {
-							console.warn('onNotificationOpenedApp: Message missing id');
-							continue;
-						}
+							const messageId = message?.message_id || message?.id;
+							if (!messageId) {
+								console.warn('onNotificationOpenedApp: Message missing id');
+								continue;
+							}
 
-						const messageData = {
-							...message,
-							code: codeValue,
-							id: messageId,
-							content: safeJSONParse(message?.content || '{}'),
-							attachments: safeJSONParse(message?.attachments || '[]'),
-							mentions: safeJSONParse(message?.mentions || '[]'),
-							references: safeJSONParse(message?.references || '[]'),
-							reactions: safeJSONParse(message?.reactions || '[]'),
-							create_time: createTime,
-							update_time: updateTime
-						};
-						onchannelmessage(messageData as ChannelMessage);
-					} else {
-						console.warn('onNotificationOpenedApp: Invalid message structure or missing channel_id');
+							const messageData = {
+								...message,
+								code: codeValue,
+								id: messageId,
+								content: safeJSONParse(message?.content || '{}'),
+								attachments: safeJSONParse(message?.attachments || '[]'),
+								mentions: safeJSONParse(message?.mentions || '[]'),
+								references: safeJSONParse(message?.references || '[]'),
+								reactions: safeJSONParse(message?.reactions || '[]'),
+								create_time: createTime,
+								update_time: updateTime
+							};
+							onchannelmessage(messageData as ChannelMessage);
+						} else {
+							console.warn('onNotificationOpenedApp: Invalid message structure or missing channel_id');
+						}
 					}
 				}
 			}
+		} catch (e) {
+			console.error('log  => error mapMessageNotificationToSlice', e);
 		}
 	};
 
@@ -162,14 +166,14 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 				await deleteAllChannelGroupsNotifee();
 				const notificationDataPushed = await NotificationPreferences.getValue('notificationDataPushed');
 				const notificationDataPushedParse = safeJSONParse(notificationDataPushed || '[]');
-				mapMessageNotificationToSlice(notificationDataPushedParse ? notificationDataPushedParse.slice(0, 30) : []);
+				mapMessageNotificationToSlice(notificationDataPushedParse?.length ? notificationDataPushedParse.slice(0, 10) : []);
 				await NotificationPreferences.clearValue('notificationDataPushed');
 			} else {
 				const notificationsDisplay = await notifee.getDisplayedNotifications();
 				const notificationDataPushedParse = notificationsDisplay?.map?.((item) => {
 					return item?.notification?.data;
 				});
-				mapMessageNotificationToSlice(notificationDataPushedParse ? notificationDataPushedParse.slice(0, 30) : []);
+				mapMessageNotificationToSlice(notificationDataPushedParse?.length ? notificationDataPushedParse.slice(0, 10) : []);
 			}
 			await notifee.cancelAllNotifications();
 			await notifee.cancelDisplayedNotifications();

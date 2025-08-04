@@ -355,7 +355,7 @@ const ForwardMessageModal = () => {
 							Shared content
 						</label>
 					</div>
-					<div className={`h-20 overflow-y-auto  p-[5px] rounded-lg border-theme-primary bg-item-theme`}>
+					<div className={`h-20 overflow-y-auto  p-[5px] thread-scroll rounded-lg border-theme-primary bg-item-theme`}>
 						<MessageContent message={selectedMessage} />
 					</div>
 					<FooterButtonsModal onClose={handleCloseModal} sentToMessage={handleForward} />

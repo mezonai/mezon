@@ -40,7 +40,7 @@ class PipModule(private val reactContext: ReactApplicationContext) : ReactContex
                         }
 
                         val params = PictureInPictureParams.Builder()
-                            .setAspectRatio(Rational(16, 9))
+                            .setAspectRatio(Rational(3, 2))
                             .build()
 
                         val result = activity.enterPictureInPictureMode(params)

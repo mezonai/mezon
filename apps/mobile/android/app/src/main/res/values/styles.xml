@@ -21,4 +21,9 @@
         <item name="android:textColorHighlight">@color/primary_light</item>
         <item name="android:textColorPrimaryInverse">@color/primary_light</item>
     </style>
+    <style name="Ecift.CropTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorAccent">#FF4081</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
 </resources>

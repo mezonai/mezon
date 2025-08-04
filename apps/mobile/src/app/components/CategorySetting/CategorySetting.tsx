@@ -78,7 +78,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 			[
 				{
 					title: t('fields.categoryDelete.delete'),
-					textStyle: { color: 'red' },
+					textStyle: { color: Colors.textRed },
 					onPress: () => handlePressDeleteCategory()
 				}
 			] satisfies IMezonMenuItemProps[],

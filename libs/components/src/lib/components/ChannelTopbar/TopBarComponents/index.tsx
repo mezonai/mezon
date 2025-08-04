@@ -9,7 +9,6 @@ import {
 	selectIdCanvas,
 	selectIsShowCanvas,
 	selectStatusMenu,
-	selectTheme,
 	selectTitle,
 	useAppDispatch,
 	useAppSelector
@@ -38,7 +37,6 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 
 	const isPrivate = channelParent?.id ? channelParent?.channel_private : channel?.channel_private;
 	const isActive = currentChannel?.channel_id === channel?.channel_id && !channelParent;
-	const theme = useSelector(selectTheme);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentCanvasId = useSelector(selectIdCanvas);
 	const canvasById = useSelector((state) => selectCanvasEntityById(state, currentChannel?.channel_id, currentCanvasId));
@@ -98,8 +96,8 @@ export const ChannelLabel = ({ channel }: { channel: IChannel | null | undefined
 				{isPrivate === undefined && isChannelVoice && <Icons.Speaker defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />}
 				{isPrivate === undefined && isChannelStream && <Icons.Stream defaultSize="w-6 h-6" defaultFill="text-contentTertiary" />}
 				{!isAgeRestrictedChannel && isPrivate !== 1 && isChannelText && <Icons.Hashtag defaultSize="w-6 h-6" />}
-				{!isPrivate && isAppChannel && <Icons.AppChannelIcon className={'w-6 h-6'} fill={theme} />}
-				{isPrivate && isAppChannel ? <Icons.PrivateAppChannelIcon className={'w-6 h-6'} fill={theme} /> : null}
+				{!isPrivate && isAppChannel && <Icons.AppChannelIcon className={'w-6 h-6'} />}
+				{isPrivate && isAppChannel ? <Icons.PrivateAppChannelIcon className={'w-6 h-6'} /> : null}
 			</div>
 
 			<ChannelLabelContent

@@ -1,4 +1,4 @@
-import { AvatarImage, Coords, ModalRemoveMemberClan, PanelMember, UserProfileModalInner } from '@mezon/components';
+import { AvatarImage, Coords, ModalRemoveMemberClan, PanelMemberTable, UserProfileModalInner } from '@mezon/components';
 import { useChannelMembersActions, useMemberContext, useOnClickOutside, usePermissionChecker, useRoles } from '@mezon/core';
 import {
 	RolesClanEntity,
@@ -114,16 +114,16 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 			}
 		};
 		return (
-			<PanelMember
+			<PanelMemberTable
 				coords={coords}
 				onClose={closePanelMember}
-				onRemoveMember={handleClickRemoveMember}
-				isMemberChannel={true}
 				member={member}
 				onOpenProfile={openUserProfile}
+				kichMember={hasClanPermission}
+				handleRemoveMember={handleClickRemoveMember}
 			/>
 		);
-	}, [coords, openUserProfile]);
+	}, [coords, openUserProfile, hasClanPermission]);
 
 	const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
 		setCoords({

@@ -22,7 +22,7 @@ const HomeDefaultHeader = React.memo(
 	({ navigation, openBottomSheet, onOpenDrawer }: { navigation: any; openBottomSheet: () => void; onOpenDrawer: () => void }) => {
 		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
-		const styles = style(themeValue, isTabletLandscape);
+		const styles = style(themeValue);
 		const { t } = useTranslation('message');
 		const currentChannel = useSelector(selectCurrentChannel);
 		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parent_id || ''));

@@ -2,7 +2,7 @@ import { ELoadMoreDirection } from '@mezon/chat-scroll';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity } from '@mezon/store-mobile';
 import React, { useCallback, useMemo } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import { FlatList } from 'react-native-gesture-handler';
 import { style } from './styles';
@@ -69,6 +69,9 @@ const ChannelListMessage = React.memo(({ flatListRef, messages, handleScroll, re
 			onEndReached={handleEndReached}
 			// scrollEventThrottle={16}
 			// estimatedItemSize={220}
+			onScrollBeginDrag={() => {
+				Keyboard.dismiss();
+			}}
 			viewabilityConfig={{
 				minimumViewTime: 0,
 				viewAreaCoveragePercentThreshold: 0,

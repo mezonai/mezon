@@ -11,5 +11,6 @@ export enum EMimeTypes {
 	webp = 'image/webp',
 	tenor = 'tenor.com',
 	cdnmezon = 'cdn.mezon.ai/stickers',
-	audio = 'audio'
+	audio = 'audio',
+	heic = 'image/heic' // NOT SUPPORT BROWSER
 }

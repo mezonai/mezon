@@ -1,11 +1,10 @@
 import { ActionEmitEvent, ETypeSearch, VerifyIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { getStoreAsync, selectCurrentChannel, selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
+import { selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, View } from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import { DeviceEventEmitter, Text, View, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import { EventViewer } from '../../../../../../components/Event';
@@ -30,13 +29,10 @@ const ChannelListHeader = () => {
 	const clanName = !currentClan?.id || currentClan?.id === '0' ? previousClanName.current : currentClan?.clan_name;
 
 	const navigateToSearchPage = async () => {
-		const store = await getStoreAsync();
-		const currentChannel = selectCurrentChannel(store.getState() as any);
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			screen: APP_SCREEN.MENU_CHANNEL.SEARCH_MESSAGE_CHANNEL,
 			params: {
-				typeSearch: ETypeSearch.SearchAll,
-				currentChannel
+				typeSearch: ETypeSearch.SearchAll
 			}
 		});
 	};
@@ -76,7 +72,7 @@ const ChannelListHeader = () => {
 
 	return (
 		<View style={[styles.container]}>
-			<Pressable onPress={handlePress} style={styles.listHeader}>
+			<TouchableOpacity onPressIn={handlePress} style={styles.listHeader}>
 				<View style={styles.titleNameWrapper}>
 					<Text numberOfLines={1} style={styles.titleServer}>
 						{clanName}
@@ -84,7 +80,7 @@ const ChannelListHeader = () => {
 					<VerifyIcon width={size.s_18} height={size.s_18} color={baseColor.blurple} />
 				</View>
 				<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-					<Text numberOfLines={1} style={[styles.subTitle, {color: themeValue.textStrong}]}>
+					<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
 						{`${members} ${t('info.members')}`}
 					</Text>
 					<View
@@ -96,22 +92,22 @@ const ChannelListHeader = () => {
 							marginHorizontal: size.s_8
 						}}
 					/>
-					<Text numberOfLines={1} style={[styles.subTitle, {color: themeValue.textStrong}]}>
+					<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
 						{t('common.community')}
 					</Text>
 				</View>
-			</Pressable>
+			</TouchableOpacity>
 			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
-				<Pressable onPress={navigateToSearchPage} style={styles.wrapperSearch}>
+				<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
 					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
-				</Pressable>
-				<Pressable onPress={onOpenScanQR} style={styles.iconWrapper}>
+				</TouchableOpacity>
+				<TouchableOpacity onPressIn={onOpenScanQR} style={styles.iconWrapper}>
 					<MezonIconCDN icon={IconCDN.scanQR} height={size.s_18} width={size.s_18} color={themeValue.text} />
-				</Pressable>
-				<Pressable onPress={onOpenEvent} style={styles.iconWrapper}>
+				</TouchableOpacity>
+				<TouchableOpacity onPressIn={onOpenEvent} style={styles.iconWrapper}>
 					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
-				</Pressable>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);

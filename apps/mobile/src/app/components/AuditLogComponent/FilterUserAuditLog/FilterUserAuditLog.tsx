@@ -26,8 +26,15 @@ export default function FilterUserAuditLog() {
 			[
 				{ title: t('filterUserAuditLog.allUsers'), icon: <Icons.IconPeople height={size.s_30} width={size.s_30} />, value: '' },
 				...(usersClan || []).map((item: UsersClanEntity) => ({
-					title: item?.user?.display_name || '',
-					icon: <MezonAvatar height={size.s_30} width={size.s_30} avatarUrl={item?.user?.avatar_url} username={item?.user?.display_name} />,
+					title: item?.user?.display_name ? item?.user?.display_name : item?.user?.username,
+					icon: (
+						<MezonAvatar
+							height={size.s_30}
+							width={size.s_30}
+							avatarUrl={item?.user?.avatar_url}
+							username={item?.user?.display_name ? item?.user?.display_name : item?.user?.username}
+						/>
+					),
 					value: item?.user?.id || ''
 				}))
 			]?.filter((user) => user?.title?.toLowerCase()?.includes(searchText?.toLowerCase())),

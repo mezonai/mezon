@@ -105,7 +105,9 @@ export default function InvitePage() {
 					<div className="flex justify-center gap-5 text-sm">
 						<div className="flex items-center">
 							<div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-							<span className="">{Number(selectInvite?.member_count || 1).toLocaleString()} Members</span>
+							<span className="">
+								{Number(selectInvite?.member_count || 1).toLocaleString()} Member{selectInvite?.member_count > 1 ? 's' : ''}
+							</span>
 						</div>
 						{/* <div className="flex items-center">
 							<div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>

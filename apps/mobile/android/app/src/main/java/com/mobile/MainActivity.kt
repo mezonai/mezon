@@ -14,6 +14,8 @@ import com.zoontek.rnbootsplash.RNBootSplash;
 import android.app.NotificationManager
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import com.swmansion.rnscreens.RNScreensPackage;
 
 class MainActivity : ReactActivity() {
 
@@ -32,7 +34,7 @@ class MainActivity : ReactActivity() {
             (widthInches.toDouble() * widthInches.toDouble()) +
                 (heightInches.toDouble() * heightInches.toDouble())
         )
-    return screenSize >= 7.0
+    return screenSize >= 7.5
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,5 +1,5 @@
 import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
-import { PinMessageEntity, pinMessageActions, selectCurrentChannelId, selectTheme, useAppDispatch } from '@mezon/store';
+import { PinMessageEntity, pinMessageActions, selectCurrentChannel, useAppDispatch } from '@mezon/store';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { RefObject, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -20,16 +20,22 @@ export type UnpinMessageObject = {
 };
 
 const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
-	const appearanceTheme = useSelector(selectTheme);
 	const modalRef = useRef<HTMLDivElement>(null);
 	const dispatch = useAppDispatch();
 
 	const { directId } = useAppParams();
-	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannel = useSelector(selectCurrentChannel);
 
 	const handleUnPinMessage = (messageId: string) => {
-		const channelId = directId || currentChannelId || '';
-		dispatch(pinMessageActions.deleteChannelPinMessage({ channel_id: channelId || '', message_id: messageId }));
+		const channelId = directId || currentChannel?.id || '';
+		dispatch(
+			pinMessageActions.deleteChannelPinMessage({
+				channel_id: channelId || '',
+				message_id: messageId,
+				clan_id: currentChannel?.clan_id || '',
+				pin_id: unpinMess?.pinMessage.id
+			})
+		);
 	};
 	const [unpinMess, setUnpinMess] = useState<UnpinMessageObject | null>(null);
 	const modalDeleteRef = useRef(null);

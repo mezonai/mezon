@@ -73,7 +73,7 @@ const SaveFlowModal = ({ open, onClose, title, changeFlowData, flowData }: SaveF
 		onClose();
 	};
 	return (
-		<Modal confirmButton={confirmSave} title={title} showModal={open} onClose={onClose}>
+		<Modal classNameBox='bg-slate-200 dark:bg-slate-500 rounded-lg' classNameHeader='bg-slate-300 dark:bg-slate-600 rounded-t-lg' confirmButton={confirmSave} title={title} showModal={open} onClose={onClose}>
 			<div className="p-4 hidden-submit-field">
 				<AutoForm onSubmit={handleSubmitForm} model={flowData} ref={submitBtnRef} schema={bridge}></AutoForm>
 			</div>

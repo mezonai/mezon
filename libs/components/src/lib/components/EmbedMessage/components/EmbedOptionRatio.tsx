@@ -1,7 +1,7 @@
-import { embedActions } from '@mezon/store';
+import { embedActions, selectDataFormEmbedByMessageId } from '@mezon/store';
 import { IMessageRatioOption } from '@mezon/utils';
 import { useCallback, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { MessageRatioButton } from '../../MessageActionsPanel/components/MessageRatio';
 import { EmbedDescription } from './EmbedDescription';
 import { EmbedTitle } from './EmbedTitle';
@@ -14,23 +14,13 @@ interface EmbedOptionRatioProps {
 	disabled?: boolean;
 }
 
-export function EmbedOptionRatio({ options, message_id, idRadio, max_options }: EmbedOptionRatioProps) {
-	const [checked, setChecked] = useState<number[]>([]);
-	const handleCheckedOption = (index: number) => {
-		if (!options[index].name) {
-			setChecked([index]);
-			handleAddEmbedRadioValue(index);
-			return;
-		}
-		if (checked.includes(index)) {
-			setChecked(checked.filter((check) => check !== index));
-			handleAddEmbedRadioValue(index);
-			return;
-		}
-
-		if (!max_options || checked.length < max_options) {
-			setChecked([...checked, index]);
-			handleAddEmbedRadioValue(index);
+export function EmbedOptionRatio({ options, message_id, idRadio, max_options, disabled = false }: EmbedOptionRatioProps) {
+	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, message_id))?.[idRadio];
+	const [checked, setChecked] = useState<string[]>(embedData ? (Array.isArray(embedData) ? embedData : [embedData]) : []);
+	const handleCheckedOption = (value: string) => {
+		if (disabled) return;
+		if (!max_options || checked.length < max_options || !checkMultiple || checked.includes(value)) {
+			handleAddEmbedRadioValue(value);
 		}
 	};
 
@@ -38,45 +28,90 @@ export function EmbedOptionRatio({ options, message_id, idRadio, max_options }: 
 
 	const checkMultiple = useMemo(() => {
 		if (options.length > 1 && options[0].name) {
-			return options[0].name === options[1].name;
+			return options[0].name !== options[1].name;
 		}
-		return true;
+		return false;
 	}, [options]);
 
 	const handleAddEmbedRadioValue = useCallback(
-		(index: number) => {
+		(value: string) => {
 			dispatch(
 				embedActions.addEmbedValue({
 					message_id: message_id,
 					data: {
 						id: idRadio,
-						value: options[index].value
+						value: value
 					},
-					multiple: true,
-					onlyChooseOne: checkMultiple
+					multiple: checkMultiple,
+					onlyChooseOne: !checkMultiple
 				})
 			);
 		},
 		[checkMultiple]
 	);
+	if (!options) return null;
 	return (
 		<>
-			{options &&
-				options.map((option, index) => (
-					<div className="flex justify-between items-center gap-4" key={option.value + message_id}>
-						<div className="flex flex-col">
-							<EmbedTitle title={option.label} />
-							<EmbedDescription description={option.description || ''} />
-						</div>
-						<MessageRatioButton
-							name={option.name ? option.name + message_id : 'ratio_button' + message_id}
-							onCheckRatio={() => handleCheckedOption(index)}
-							checked={checked.includes(index)}
-							color={option.style}
-							disabled={option.disabled}
-						/>
-					</div>
-				))}
+			{options.map((option, index) => (
+				<EmbedOptionRatioItem
+					key={option.value + message_id}
+					setChecked={setChecked}
+					message_id={message_id}
+					option={option}
+					checkMultiple={checkMultiple}
+					checked={checked.includes(option.value)}
+					handleCheckedOption={() => handleCheckedOption(option.value)}
+					disabled={disabled}
+				/>
+			))}
 		</>
 	);
 }
+
+const EmbedOptionRatioItem = ({
+	option,
+	message_id,
+	setChecked,
+	checkMultiple,
+	handleCheckedOption,
+	checked,
+	disabled
+}: {
+	setChecked: React.Dispatch<React.SetStateAction<string[]>>;
+	option: IMessageRatioOption;
+	message_id: string;
+	handleCheckedOption: () => void;
+	checkMultiple: boolean;
+	checked: boolean;
+	disabled?: boolean;
+}) => {
+	const handleCheckedOptionItem = () => {
+		if (disabled) return;
+		handleCheckedOption();
+		if (!checkMultiple) {
+			setChecked([option.value]);
+			return;
+		}
+		setChecked((prev) => {
+			if (prev.includes(option.value)) {
+				return prev.filter((item) => item !== option.value);
+			}
+			return [...prev, option.value];
+		});
+	};
+	return (
+		<div className="flex justify-between items-center gap-4">
+			<div className="flex flex-col">
+				<EmbedTitle title={option.label} />
+				<EmbedDescription description={option.description || ''} />
+			</div>
+			<MessageRatioButton
+				name={option.name ? option.name + message_id : 'ratio_button' + message_id}
+				onCheckRatio={handleCheckedOptionItem}
+				checked={checked}
+				color={option.style}
+				disabled={option.disabled}
+			/>
+		</div>
+	);
+};

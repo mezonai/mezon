@@ -55,7 +55,7 @@ export const ListClanPopup = React.memo(() => {
 				const promises = [];
 				promises.push(store.dispatch(clansActions.joinClan({ clanId: clanId })));
 				promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId: clanId })));
-				await Promise.all(promises);
+				await Promise.allSettled(promises);
 			});
 		},
 		[isTabletLandscape, navigation]

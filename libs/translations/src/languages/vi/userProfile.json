@@ -17,7 +17,7 @@
   "kickUserClanModal": {
     "kickFromServer": "Đuổi {{username}} khỏi clan",
     "description": "Bạn có chắc chắn muốn đuổi {{username}} khỏi clan? Họ có thể tham gia lại bằng lời mời mới.",
-    "reasonKick": "LÝ DO ĐUỔI",
+    "reasonKick": "Lí do khai trừ",
     "buttonName": "Đuổi"
   },
   "pendingContent": {
@@ -25,9 +25,11 @@
     "unblock": "Bỏ chặn",
     "reportUserProfile": "Báo cáo hồ sơ người dùng",
     "acceptFriend": "Chấp nhận kết bạn",
+    "rejectFriend": "Từ chối yêu cầu kết bạn",
     "cancelFriendRequest": "Hủy yêu cầu kết bạn",
     "copyUsername": "Sao chép tên người dùng",
-    "copiedUserName": "Đã sao chép {{username}}"
+    "copiedUserName": "Đã sao chép {{username}}",
+    "removeFriend": "Hủy kết bạn"
   },
   "userInfoDM": {
     "menu": {
@@ -38,15 +40,15 @@
     "mezonMemberSince": "THÀNH VIÊN MEZON TỪ"
   },
   "notification": {
-        "blockUser": {
-            "success": "Chặn người dùng thành công",
-            "error": "Không thể chặn người dùng"
-        },
-        "unblockUser": {
-            "success": "Bỏ chặn người dùng thành công",
-            "error": "Không thể bỏ chặn người dùng"
-        }
+    "blockUser": {
+      "success": "Chặn người dùng thành công",
+      "error": "Không thể chặn người dùng"
     },
+    "unblockUser": {
+      "success": "Bỏ chặn người dùng thành công",
+      "error": "Không thể bỏ chặn người dùng"
+    }
+  },
   "incomingFriendRequest": "YÊU CẦU KẾT BẠN ĐANG ĐẾN",
   "sendAddFriendSuccess": "Đã gửi yêu cầu kết bạn",
   "accept": "Chấp nhận",

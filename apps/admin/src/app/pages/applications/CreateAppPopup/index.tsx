@@ -2,7 +2,7 @@ import { useAuth } from '@mezon/core';
 import { createApplication, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ApiAddAppRequest } from 'mezon-js/api.gen';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { APP_TYPES, AppType } from '../../../constants/constants';
@@ -127,6 +127,18 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 			setIsUrlValid(true);
 		}
 	};
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				togglePopup();
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [togglePopup]);
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000c9]">
@@ -195,8 +207,8 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 						</div>
 					</div>
 				</div>
-				<div className="bg-theme-setting-nav  flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium border-t dark:border-[#1e1f22] rounded-b-md">
-					<div className="hover:underline cursor-pointer" onClick={togglePopup}>
+				<div className="bg-white dark:bg-[#313338]   flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium border-t dark:border-[#1e1f22]  rounded-b-md">
+					<div className="hover:underline cursor-pointer text-zinc-800 dark:text-zinc-200" onClick={togglePopup}>
 						Cancel
 					</div>
 					<button

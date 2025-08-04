@@ -85,7 +85,7 @@ export const style = (colors: Attributes) =>
 		},
 		iconWrapper: {
 			flexDirection: 'row',
-			gap: size.s_12
+			gap: size.s_2
 		},
 		iconHeader: {
 			width: size.s_34,

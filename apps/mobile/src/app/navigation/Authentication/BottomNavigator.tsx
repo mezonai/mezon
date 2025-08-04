@@ -1,8 +1,10 @@
 import { HomeTab, MessageTab, NotiTab, ProfileTab } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
+import { selectHiddenBottomTabMobile, useAppSelector } from '@mezon/store-mobile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Notifications from '../../screens/Notifications';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -15,6 +17,7 @@ const TabStack = createBottomTabNavigator();
 
 const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm: boolean }) => {
 	const isTabletLandscape = useTabletLandscape();
+	const isHiddenTab = useAppSelector(selectHiddenBottomTabMobile);
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['screen']);
 
@@ -25,9 +28,9 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				tabBarStyle: {
 					position: 'absolute',
 					zIndex: isTabletLandscape ? -1 : 100,
-					height: isTabletLandscape ? 0 : size.s_80,
+					height: isTabletLandscape ? 0 : size.s_80 - (isHiddenTab && Platform.OS === 'android' ? size.s_20 : size.s_2),
 					paddingHorizontal: 0,
-					paddingBottom: size.s_20,
+					paddingBottom: isHiddenTab && Platform.OS === 'android' ? size.s_2 : size.s_20,
 					borderTopWidth: 1,
 					elevation: 0,
 					backgroundColor: themeValue.secondary,

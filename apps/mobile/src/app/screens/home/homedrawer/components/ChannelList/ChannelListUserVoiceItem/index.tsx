@@ -31,7 +31,8 @@ const UserVoiceItem = React.memo(({ userVoice, isCategoryExpanded, index, totalM
 				<View
 					style={{
 						left: -size.s_4 * index,
-						width: size.s_20,
+						paddingHorizontal: size.s_2,
+						minWidth: size.s_20,
 						height: size.s_20,
 						borderRadius: size.s_20,
 						backgroundColor: themeValue.primary,

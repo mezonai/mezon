@@ -1,3 +1,4 @@
+import { CustomCookieConsent } from '@mezon/components';
 import mezonPackage from '@mezon/package-js';
 import { Icons, Image } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
@@ -6,6 +7,7 @@ import Footer from './footer';
 import HeaderMezon from './header';
 import Layout, { useIntersectionObserver } from './layouts';
 import { SideBarMezon } from './sidebar';
+import isElectron from 'is-electron';
 
 function MezonPage() {
 	const platform = getPlatform();
@@ -222,7 +224,8 @@ function MezonPage() {
 			</div>
 
 			<Layout sideBarIsOpen={sideBarIsOpen} />
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl}></Footer>
+			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			{!isElectron() && <CustomCookieConsent />}
 		</div>
 	);
 }

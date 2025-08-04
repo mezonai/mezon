@@ -17,6 +17,12 @@ export const CHANNEL_MEMBERS_FEATURE_KEY = 'channelMembers';
 /*
  * Update these interfaces according to your requirements.
  */
+
+type IMemberAddedByUserId = {
+	id?: string;
+	addedBy?: string;
+};
+
 export interface ChannelMembersEntity extends IChannelMember {
 	id: string; // Primary ID
 	name?: string;
@@ -41,6 +47,7 @@ export interface ChannelMembersState extends EntityState<ChannelMembersEntity, s
 		EntityState<ChannelMembersEntity, string> & {
 			id: string;
 			cache?: CacheMetadata;
+			memberAddedByUserId?: IMemberAddedByUserId[];
 		}
 	>;
 	dmGroupUsers?: ChannelUserListChannelUser[];
@@ -319,25 +326,43 @@ export const channelMembers = createSlice({
 				};
 			}
 			const memberIds = members.map((member) => member.user_id as string);
+			const memberAddedByUserId: IMemberAddedByUserId[] = members.map((member) => {
+				return {
+					id: member?.user_id as string,
+					addedBy: member?.added_by as string
+				} as IMemberAddedByUserId;
+			});
 			state.memberChannels[channelId] = {
 				...state.memberChannels[channelId],
-				ids: [...new Set(memberIds)]
+				ids: [...new Set(memberIds)],
+				memberAddedByUserId
 			};
 		},
-		addNewMember: (state, action: PayloadAction<{ channel_id: string; user_ids: string[] }>) => {
+		addNewMember: (state, action: PayloadAction<{ channel_id: string; user_ids: string[]; addedByUserId?: string }>) => {
 			const payload = action.payload;
 			const userIds = payload.user_ids;
 			const channelId = payload.channel_id;
+			const addedByUserId = payload?.addedByUserId;
 
 			if (!state?.memberChannels?.[channelId]) {
 				state.memberChannels[channelId] = {
 					...channelMembersAdapter.getInitialState(),
-					id: channelId
+					id: channelId,
+					memberAddedByUserId: state.memberChannels[channelId]?.memberAddedByUserId || []
 				};
 			}
 			userIds.forEach((userId) => {
 				if (!state.memberChannels[channelId]?.ids.includes(userId) && userId !== process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
 					state.memberChannels[channelId].ids.push(userId);
+					if (addedByUserId && state?.memberChannels?.[channelId]?.memberAddedByUserId) {
+						const isExist = state.memberChannels[channelId].memberAddedByUserId?.some((i) => i.id === userId);
+						if (!isExist) {
+							state.memberChannels[channelId].memberAddedByUserId?.push({
+								id: userId,
+								addedBy: addedByUserId
+							});
+						}
+					}
 				}
 			});
 		},
@@ -748,3 +773,35 @@ export const selectChannelMemberByUserIds = createSelector(
 export const selectAllMembersInClan = createSelector([selectAllUserClans], (allUserClans) => {
 	return allUserClans;
 });
+
+export const selectUserAddedByUserId = createSelector(
+	[getChannelMembersState, selectAllChannelMembers, (state: RootState, channelId: string, userId: string) => ({ channelId, userId })],
+	(channelMembersState, channelMembers, { channelId, userId }) => {
+		const memberChannelsData = channelMembersState.memberChannels[channelId];
+		const addedByInfo = memberChannelsData?.memberAddedByUserId?.find((item) => item.id === userId);
+
+		if (!addedByInfo?.addedBy) {
+			return null;
+		}
+
+		const channelMembersMap = channelMembers.reduce(
+			(acc, member) => {
+				acc[member.id] = member;
+				return acc;
+			},
+			{} as Record<string, (typeof channelMembers)[0]>
+		);
+
+		const addedByUser = channelMembersMap[addedByInfo.addedBy];
+
+		if (!addedByUser) {
+			return null;
+		}
+
+		return {
+			id: addedByInfo.addedBy,
+			username: addedByUser.user?.username,
+			display_name: addedByUser.user?.display_name
+		};
+	}
+);

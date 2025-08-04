@@ -3,52 +3,90 @@ import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
-		statusCircle: {
-			width: size.s_12,
-			height: size.s_12,
-			borderRadius: size.s_50,
-			borderWidth: 2,
-			borderColor: colors.secondary
+		clanName: {
+			color: colors.text,
+			fontSize: size.s_14,
+			fontWeight: '700'
 		},
-		online: {
-			backgroundColor: baseColor.green
-		},
-		offline: {
-			backgroundColor: baseColor.gray
-		},
-		textLink: { color: Colors.textLink, marginBottom: size.s_6, fontSize: size.medium },
-		boxLink: {
-			backgroundColor: Colors?.bgCharcoal,
-			maxWidth: '100%',
+
+		inviteContainer: {
+			backgroundColor: colors.secondary,
+			borderRadius: size.s_12,
+			padding: size.s_12,
+			marginVertical: size.s_12,
 			alignSelf: 'flex-start',
-			marginTop: size.s_10,
-			padding: size.s_10,
-			paddingHorizontal: size.s_16,
-			borderRadius: size.s_10
+			flex: 1,
+			gap: size.s_16,
+			width: size.s_220 + size.s_40
 		},
-		title: {
-			color: Colors?.textGray,
-			fontSize: size.h7,
+
+		inviteTitle: {
+			color: colors.textDisabled,
+			fontSize: size.h8,
 			fontWeight: '600',
-			marginBottom: size.s_10,
-			alignSelf: 'flex-start'
+			letterSpacing: 0.5,
+			marginVertical: -size.s_2,
+			marginBottom: -size.s_6
 		},
-		container: { flexDirection: 'row', gap: size.s_10, marginBottom: size.s_16, alignItems: 'center' },
-		clanName: { color: Colors?.white, fontSize: size.label, fontWeight: '600' },
-		boxStatus: { flexDirection: 'row', gap: size.s_10, marginTop: size.s_6, alignItems: 'center' },
-		memberStatus: { flexDirection: 'row', alignItems: 'center', gap: size.s_4 },
-		textStatus: { color: Colors?.textGray, fontSize: size.small, fontWeight: '600' },
-		textContent: { color: colors.text, fontSize: size.label, fontWeight: '400' },
-		inviteClanBtn: {
-			padding: size.s_10,
-			maxWidth: '100%',
-			backgroundColor: Colors.bgButton,
-			borderRadius: size.s_10
+
+		clanInfoRow: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_10
 		},
-		inviteClanBtnText: {
-			color: Colors?.white,
+
+		clanAvatar: {
+			width: size.s_48,
+			height: size.s_48,
+			borderRadius: size.s_14,
+			backgroundColor: colors.secondary
+		},
+
+		defaultAvatar: {
+			width: size.s_48,
+			height: size.s_48,
+			borderRadius: size.s_8,
+			backgroundColor: baseColor.blurple,
+			alignItems: 'center',
+			justifyContent: 'center'
+		},
+
+		defaultAvatarText: {
+			color: Colors.white,
+			fontSize: size.s_26,
+			fontWeight: '600'
+		},
+
+		clanTextInfo: {
+			flex: 1,
+			gap: size.s_2
+		},
+
+		channelName: {
+			color: colors.textDisabled,
 			fontSize: size.small,
+			fontWeight: '500',
+			letterSpacing: 0.5
+		},
+
+		joinButton: {
+			backgroundColor: baseColor.blurple,
+			borderRadius: size.s_4,
+			paddingVertical: size.s_6,
+			paddingHorizontal: size.s_12,
+			alignItems: 'center'
+		},
+
+		joinButtonText: {
+			color: Colors.white,
+			fontSize: size.s_14,
 			fontWeight: '600',
-			textAlign: 'center'
+			letterSpacing: 0.5
+		},
+
+		clanNameRow: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_2
 		}
 	});

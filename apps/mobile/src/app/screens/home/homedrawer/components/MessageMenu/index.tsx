@@ -112,7 +112,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			},
 			isShow: isGroup,
 			title: lastOne ? t('delete.leaveGroup') : t('menu.leaveGroup'),
-			textStyle: { color: 'red' }
+			textStyle: { color: Colors.textRed }
 		}
 	];
 

@@ -45,14 +45,23 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
     @objc
     func registerForVoIPPushes(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
-            self.pushRegistry?.desiredPushTypes = [.voIP]
+            guard let pushRegistry = self.pushRegistry else {
+                reject("NO_REGISTRY", "Push registry not initialized", nil)
+                return
+            }
+            pushRegistry.desiredPushTypes = [.voIP]
             resolve("VoIP registration initiated")
         }
     }
 
     @objc
     func getVoIPToken(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        guard let token = pushRegistry?.pushToken(for: .voIP) else {
+        guard let pushRegistry = self.pushRegistry else {
+            reject("NO_REGISTRY", "Push registry not initialized", nil)
+            return
+        }
+        
+        guard let token = pushRegistry.pushToken(for: .voIP) else {
             reject("NO_TOKEN", "VoIP token not available", nil)
             return
         }

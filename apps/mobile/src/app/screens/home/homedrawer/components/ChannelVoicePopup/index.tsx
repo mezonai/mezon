@@ -85,7 +85,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 	};
 
 	const handleLeaveRoom = async (clanId: string, channelId: string) => {
-		if (clanId && channelId) {
+		if (channelId) {
 			await participantMeetState(ParticipantMeetState.LEAVE, clanId, channelId);
 			dispatch(voiceActions.resetVoiceSettings());
 		}
@@ -133,7 +133,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 			Animated.timing(pan, {
 				toValue: { x: 0, y: 0 },
 				duration: 300,
-				useNativeDriver: false
+				useNativeDriver: true
 			}).start(() => {
 				setIsAnimationComplete(true);
 			});
@@ -142,7 +142,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 			Animated.timing(pan, {
 				toValue: { x: 0, y: 0 },
 				duration: 300,
-				useNativeDriver: false
+				useNativeDriver: true
 			}).start(() => {
 				setIsAnimationComplete(false);
 			});
@@ -186,6 +186,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 
 				if (data?.isEndCall) {
 					await handleLeaveRoom(data?.clanId, data?.channelId);
+					setIsGroupCall(false);
 					setVoicePlay(false);
 					if (isFromNativeCall) {
 						BackHandler.exitApp();
@@ -212,13 +213,16 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 		<Animated.View
 			{...(!isAnimationComplete && !isPiPMode ? panResponder.panHandlers : {})}
 			style={[
-				pan?.getLayout(),
+				{
+					transform: [{ translateX: pan?.x }, { translateY: pan?.y }]
+				},
 				{
 					zIndex: 99,
 					position: 'absolute',
 					width: isAnimationComplete ? '100%' : size.s_100 * 2,
 					height: isAnimationComplete ? '100%' : size.s_150
-				}
+				},
+				isPiPMode && { top: 0, left: 0, right: 0, bottom: 0 }
 			]}
 		>
 			<ChannelVoice

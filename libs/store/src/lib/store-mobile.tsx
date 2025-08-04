@@ -23,7 +23,6 @@ import { notificationReducer } from './notification/notify.slice';
 import { POLICIES_FEATURE_KEY, policiesDefaultReducer, policiesReducer } from './policies/policies.slice';
 import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
-import { QUICK_MENU_FEATURE_KEY, quickMenuReducer } from '@mezon/store';
 import { activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
@@ -65,6 +64,7 @@ import { ONBOARDING_FEATURE_KEY, onboardingReducer } from './onboarding/onboardi
 import { permissionRoleChannelReducer } from './permissionChannel/permissionRoleChannel.slice';
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
+import { QUICK_MENU_FEATURE_KEY, quickMenuReducer } from './quickMenu/quickMenu.slice';
 import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/roleclan.slice';
 import { SEARCH_MESSAGES_FEATURE_KEY, searchMessageReducer } from './searchmessages/searchmessage.slice';
 import { settingStickerReducer } from './settingSticker/settingSticker.slice';

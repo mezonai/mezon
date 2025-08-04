@@ -106,10 +106,11 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 										}
 									}}
 									className={`peer relative h-4 w-8 cursor-pointer appearance-none rounded-lg
-									bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
-									after:bg-slate-500 after:transition-all checked:bg-blue-200 checked:after:left-4 checked:after:bg-blue-500
-									${clickRole !== EVERYONE_ROLE_ID ? 'hover:bg-slate-400 after:hover:bg-slate-600 checked:hover:bg-blue-300 checked:after:hover:bg-blue-600' : ''}
-									focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed
+										bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
+										after:bg-slate-500 after:transition-all
+										checked:bg-[#5265EC] checked:after:left-4 checked:after:bg-white
+										${clickRole !== EVERYONE_ROLE_ID ? 'hover:bg-slate-400 after:hover:bg-slate-600 checked:hover:bg-[#4654C0] checked:after:hover:bg-white' : ''}
+										focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed
 									`}
 									disabled={hiddenPermissionAdmin(permission.slug) || !hasPermissionEdit || clickRole === EVERYONE_ROLE_ID}
 								/>

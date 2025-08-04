@@ -254,12 +254,12 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				<h3 className="uppercase text-[11px] font-semibold">Event Frequency</h3>
 				<select
 					name="frequency"
-					className={`block w-full bg-theme-input border-theme-primary rounded p-2 font-normal text-sm tracking-wide outline-none border-none ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+					className={`block w-full bg-theme-input   bg-option-theme rounded p-2 font-normal text-sm tracking-wide outline-none border-none ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 					value={selectedFrequency}
 					onChange={handleFrequencyChange}
 				>
 					{frequencies.map((frequency) => (
-						<option key={frequency.value} value={frequency.value}>
+						<option className="text-sm bg-option-theme text-theme-primary" key={frequency.value} value={frequency.value}>
 							{frequency.label}
 						</option>
 					))}

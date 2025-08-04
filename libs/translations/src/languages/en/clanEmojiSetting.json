@@ -10,12 +10,12 @@
         "upload": "Upload Emoji"
     },
     "description": {
-        "descriptions": "Add up to 250 custom emoji that anyone can use in this server. Animated GIF emoji may be used by members with Mezon Nitro",
+        "descriptions": "Add custom emoji that anyone can use in this server. Animated GIF emoji may be used by members with Mezon Nitro",
         "requirements": "UPLOAD REQUIREMENTS",
         "requireList": "•  File type: JPEG, PNG, GIF\n•  Recommended file size: 256 KB (We'll compress for you)\n•  Recommended dimensions: 128x128\n•  Naming: Emoji names must be at least 2 characters long and can only contain alphanumeric characters and underscores"
     },
     "emojiList": {
-        "slotsDetails": "EMOJI - {{slots}} SLOTS AVAILABLE",
+        "slotsDetails": "LIST EMOJIS",
         "delete": "DELETE"
     }
 }

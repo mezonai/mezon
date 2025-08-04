@@ -148,14 +148,14 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'row',
 			alignItems: 'center',
 			backgroundColor: Colors.red,
-			paddingVertical: size.s_8,
-			paddingHorizontal: size.s_14,
+			paddingVertical: size.s_6,
+			paddingHorizontal: size.s_12,
 			gap: size.s_6,
 			borderRadius: 50
 		},
 		confirmText: {
 			color: Colors.white,
-			fontSize: size.label
+			fontSize: size.h6
 		},
 		emojiText: {
 			color: colors.text,

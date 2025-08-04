@@ -194,44 +194,49 @@ const GroupCallComponent = memo(
 			}
 		}, [groupCall.state.shouldAutoJoinRoom, directId, groupCall.state.currentGroupId, groupCall.state.isVideoCall]);
 
-		const handleLeaveRoom = useCallback(async () => {
-			if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
+		const handleLeaveRoom = useCallback(
+			async (trackLength?: number) => {
+				if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
 
-			groupCall.chat.sendEndCallMessage(showCamera);
+				if (trackLength && trackLength === 1) {
+					groupCall.chat.sendEndCallMessage(showCamera);
+				}
 
-			const leftData = createParticipantLeftData({
-				participantId: userProfile?.user?.id || '',
-				participantName: userProfile?.user?.display_name || userProfile?.user?.username || ''
-			});
+				const leftData = createParticipantLeftData({
+					participantId: userProfile?.user?.id || '',
+					participantName: userProfile?.user?.display_name || userProfile?.user?.username || ''
+				});
 
-			groupCall.signaling.sendParticipantLeft(
-				currentDmGroup?.user_id || [],
-				leftData,
-				currentDmGroup?.channel_id as string,
-				userProfile?.user?.id as string
-			);
+				groupCall.signaling.sendParticipantLeft(
+					currentDmGroup?.user_id || [],
+					leftData,
+					currentDmGroup?.channel_id as string,
+					userProfile?.user?.id as string
+				);
 
-			const quitData = createQuitData({
-				isVideo: showCamera,
-				groupId: currentDmGroup?.channel_id || '',
-				callerId: userProfile?.user?.id || '',
-				callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
-				action: 'leave'
-			}) as CallSignalingData;
+				const quitData = createQuitData({
+					isVideo: showCamera,
+					groupId: currentDmGroup?.channel_id || '',
+					callerId: userProfile?.user?.id || '',
+					callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
+					action: 'leave'
+				}) as CallSignalingData;
 
-			groupCall.signaling.sendGroupCallQuit(
-				currentDmGroup?.user_id || [],
-				quitData,
-				currentDmGroup?.channel_id as string,
-				userProfile?.user?.id as string
-			);
+				groupCall.signaling.sendGroupCallQuit(
+					currentDmGroup?.user_id || [],
+					quitData,
+					currentDmGroup?.channel_id as string,
+					userProfile?.user?.id as string
+				);
 
-			groupCall.state.endGroupCall();
-			dispatch(voiceActions.resetVoiceSettings());
-			groupCall.audio.stopAllAudio();
+				groupCall.state.endGroupCall();
+				dispatch(voiceActions.resetVoiceSettings());
+				groupCall.audio.stopAllAudio();
 
-			// await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
-		}, [dispatch, voiceInfo, currentDmGroup, showCamera, userProfile, groupCall]);
+				// await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
+			},
+			[dispatch, voiceInfo, currentDmGroup, showCamera, userProfile, groupCall]
+		);
 
 		const handleFullScreen = useCallback(() => {
 			if (!containerRef.current) return;
@@ -263,10 +268,7 @@ const GroupCallComponent = memo(
 		};
 
 		const handleCancelPreCall = () => {
-			if (isJoined && token) {
-				handleLeaveRoom();
-				return;
-			}
+			handleLeaveRoom();
 
 			const cancelData = createCancelData({
 				isVideo: groupCall.state.isVideoCall,

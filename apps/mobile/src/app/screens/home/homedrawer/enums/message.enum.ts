@@ -22,5 +22,6 @@ export enum EMessageActionType {
 	CopyMediaLink,
 	ResendMessage,
 	TopicDiscussion,
-	MarkMessage
+	MarkMessage,
+	QuickMenu
 }

@@ -1,29 +1,55 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelMembersEntity, getStore, selectClanMemberMetaUserId } from '@mezon/store-mobile';
-import { FlashList } from '@shopify/flash-list';
-import { User } from 'mezon-js';
-import { useCallback, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { ChannelMembersEntity, getStore, selectClanMemberMetaUserId, selectCurrentDM } from '@mezon/store-mobile';
+import React, { memo, useCallback } from 'react';
+import { DeviceEventEmitter, FlatList, Keyboard, View } from 'react-native';
+import UserProfile from '../../screens/home/homedrawer/components/UserProfile';
 import { EmptySearchPage } from '../EmptySearchPage';
 import { MemberItem } from '../MemberStatus/MemberItem';
-import { UserInformationBottomSheet } from '../UserInformationBottomSheet';
 import style from './MembersSearchTab.styles';
 
 type MembersSearchTabProps = {
 	listMemberSearch: any;
 };
 const MembersSearchTab = ({ listMemberSearch }: MembersSearchTabProps) => {
-	const [selectedUser, setSelectedUser] = useState<ChannelMembersEntity | null>(null);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const handleCloseUserInfoBS = () => {
-		setSelectedUser(null);
-	};
+
 	const store = getStore();
 
-	const onDetailMember = useCallback((user: ChannelMembersEntity) => {
-		setSelectedUser(user);
-	}, []);
+	const onDetailMember = useCallback(
+		(user: ChannelMembersEntity) => {
+			const currentDirect = selectCurrentDM(store.getState());
+			const directId = currentDirect?.id;
+			const data = {
+				snapPoints: ['60%'],
+				heightFitContent: true,
+				hiddenHeaderIndicator: true,
+				children: (
+					<View
+						style={{
+							borderTopLeftRadius: size.s_14,
+							borderTopRightRadius: size.s_14,
+							overflow: 'hidden'
+						}}
+					>
+						<UserProfile
+							userId={user?.user?.id || user?.id}
+							user={user?.user || user}
+							onClose={() => {
+								DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+							}}
+							showAction={!directId}
+							showRole={!directId}
+							directId={directId}
+						/>
+					</View>
+				)
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		},
+		[store]
+	);
 
 	const renderItem = useCallback(
 		({ item, index }) => {
@@ -44,32 +70,29 @@ const MembersSearchTab = ({ listMemberSearch }: MembersSearchTabProps) => {
 				/>
 			);
 		},
-		[store]
+		[onDetailMember, store]
 	);
 	return (
 		<View style={[styles.container, { backgroundColor: listMemberSearch?.length > 0 ? themeValue.primary : themeValue.secondary }]}>
-			{listMemberSearch?.length > 0 ? (
-				<View style={styles.boxMembers}>
-					<FlashList
-						showsVerticalScrollIndicator={false}
-						data={listMemberSearch}
-						keyboardShouldPersistTaps={'handled'}
-						onScrollBeginDrag={Keyboard.dismiss}
-						renderItem={renderItem}
-						estimatedItemSize={size.s_60}
-						removeClippedSubviews={true}
-					/>
-				</View>
-			) : (
-				<EmptySearchPage />
-			)}
-			<UserInformationBottomSheet
-				user={(selectedUser?.user || selectedUser) as User}
-				userId={selectedUser?.user?.id || selectedUser?.id}
-				onClose={handleCloseUserInfoBS}
+			<FlatList
+				data={listMemberSearch?.length > 0 ? listMemberSearch : []}
+				renderItem={renderItem}
+				onScrollBeginDrag={() => Keyboard.dismiss()}
+				initialNumToRender={15}
+				maxToRenderPerBatch={5}
+				windowSize={5}
+				removeClippedSubviews={true}
+				keyboardShouldPersistTaps={'handled'}
+				disableVirtualization={false}
+				contentContainerStyle={{
+					backgroundColor: themeValue.secondary,
+					paddingBottom: size.s_6
+				}}
+				style={styles.boxMembers}
+				ListEmptyComponent={() => <EmptySearchPage />}
 			/>
 		</View>
 	);
 };
 
-export default MembersSearchTab;
+export default memo(MembersSearchTab);

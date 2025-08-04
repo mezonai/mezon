@@ -61,21 +61,22 @@ public class NavigationBarModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setNavigationBarTransparent(Promise promise) {
+    public void setNavigationBarColor(String colorHex, Promise promise) {
         try {
+            if (getCurrentActivity() == null) {
+                promise.reject("ERROR", "Activity is null");
+                return;
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getCurrentActivity().getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
-                getCurrentActivity().getWindow().getDecorView().setSystemUiVisibility(
-                    getCurrentActivity().getWindow().getDecorView().getSystemUiVisibility() |
-                    android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                    android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                );
+                int color = android.graphics.Color.parseColor(colorHex);
+                getCurrentActivity().getWindow().setNavigationBarColor(color);
                 promise.resolve(true);
             } else {
-                promise.reject("ERROR", "Navigation bar transparency is not supported on this Android version.");
+                promise.reject("ERROR", "Navigation bar color setting is not supported on this Android version.");
             }
         } catch (Exception e) {
-            promise.reject("ERROR", e.getMessage());
+                promise.reject("ERROR", e.getMessage());
         }
     }
 }

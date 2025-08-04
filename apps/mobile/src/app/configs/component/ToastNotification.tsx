@@ -1,7 +1,7 @@
-import { Text, useTheme } from '@mezon/mobile-ui';
+import { useTheme, verticalScale } from '@mezon/mobile-ui';
 import LottieView from 'lottie-react-native';
 import { memo, useEffect, useMemo, useRef } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ToastConfigParams } from 'react-native-toast-message';
 import { NOTIFICATION_PROGRESS_BAR } from '../../../assets/lottie';
@@ -36,10 +36,26 @@ export const ToastNotification = memo((props: ToastConfigParams<any>) => {
 							flex: 1
 						}}
 					>
-						<Text color={themeValue.white} h4 bold>
+						<Text
+							style={{
+								fontSize: verticalScale(16),
+								marginLeft: 0,
+								marginRight: 0,
+								fontWeight: 'bold',
+								color: themeValue.white
+							}}
+						>
 							{title}
 						</Text>
-						<Text color={themeValue.textStrong} numberOfLines={3}>
+						<Text
+							style={{
+								fontSize: verticalScale(14),
+								marginLeft: 0,
+								marginRight: 0,
+								color: themeValue.textStrong
+							}}
+							numberOfLines={3}
+						>
 							{body}
 						</Text>
 					</View>

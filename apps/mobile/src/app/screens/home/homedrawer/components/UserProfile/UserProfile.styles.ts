@@ -45,7 +45,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 		userAction: {
 			marginTop: size.s_20,
-			gap: size.s_20,
+			gap: size.s_14,
 			flexDirection: 'row',
 			alignItems: 'center'
 			// justifyContent: 'space-between',
@@ -54,6 +54,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			flexDirection: 'column',
 			alignItems: 'center',
 			padding: size.s_10,
+			minWidth: size.s_80,
 			gap: size.s_6,
 			backgroundColor: colors.primary,
 			borderRadius: 8

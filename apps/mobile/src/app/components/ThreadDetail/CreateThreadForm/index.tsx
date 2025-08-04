@@ -268,6 +268,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 						threadIcon: true
 					}}
 					isPublic={isPublicChannel(currentChannel)}
+					topicChannelId={''}
 				/>
 				<PanelKeyboard currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
 			</View>
