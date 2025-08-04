@@ -57,7 +57,6 @@ import { popupForwardReducer } from './forwardMessage/forwardMessage.slice';
 import { giveCoffeeReducer } from './giveCoffee/giveCoffee.slice';
 import { walletLedgerReducer } from './giveCoffee/historyTransaction.slice';
 import { EMBED_MESSAGE, embedReducer } from './messages/embedMessage.slice';
-import { notifiReactMessageReducer } from './notificationSetting/notificationReactMessage.slice';
 import { channelCategorySettingReducer, defaultNotificationCategoryReducer } from './notificationSetting/notificationSettingCategory.slice';
 import { notificationSettingReducer } from './notificationSetting/notificationSettingChannel.slice';
 import { defaultNotificationClanReducer } from './notificationSetting/notificationSettingClan.slice';
@@ -258,14 +257,6 @@ const persistedHashTagDmReducer = persistReducer(
 	hashtagDmReducer
 );
 
-const persistedNotiReactMsgReducer = persistReducer(
-	{
-		key: 'notifireactmessage',
-		storage
-	},
-	notifiReactMessageReducer
-);
-
 const persistedGifsStickerEmojiReducer = persistReducer(
 	{
 		key: 'gifsstickersemojis',
@@ -362,7 +353,6 @@ const reducer = {
 	defaultnotificationcategory: persistedDefaultNotiCatReducer,
 	notichannelcategorysetting: persistedChannelCatSettingReducer,
 	hashtagdm: persistedHashTagDmReducer,
-	notifireactmessage: persistedNotiReactMsgReducer,
 	invite: inviteReducer,
 	isshow: IsShowReducer,
 	forwardmessage: popupForwardReducer,

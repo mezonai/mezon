@@ -1,13 +1,11 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import {
-	notifiReactMessageActions,
 	notificationSettingActions,
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectDefaultNotificationCategory,
 	selectDefaultNotificationClan,
-	selectNotifiReactMessageByChannelId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
@@ -31,14 +29,6 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannel?.category_id as string));
 
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
-	const notifiReactMessage = useAppSelector((state) => selectNotifiReactMessageByChannelId(state, currentChannelId as string));
-
-	const [isNotifyReactMessage, setisNotifyReactMessage] = useState(notifiReactMessage?.id !== '0');
-
-	useEffect(() => {
-		if (!currentChannelId) return;
-		dispatch(notifiReactMessageActions.getNotifiReactMessage({ channelId: currentChannelId }));
-	}, [currentChannelId]);
 
 	useEffect(() => {
 		if (getNotificationChannelSelected?.active === 1 || getNotificationChannelSelected?.id === '0') {
@@ -115,14 +105,6 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 		}
 	};
 
-	const setNotiReactMess = () => {
-		if (!isNotifyReactMessage) {
-			dispatch(notifiReactMessageActions.setNotifiReactMessage({ channel_id: currentChannelId || '' }));
-		} else {
-			dispatch(notifiReactMessageActions.deleteNotifiReactMessage({ channel_id: currentChannelId || '' }));
-		}
-		setisNotifyReactMessage(!isNotifyReactMessage);
-	};
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	useOnClickOutside(modalRef, onClose, rootRef);

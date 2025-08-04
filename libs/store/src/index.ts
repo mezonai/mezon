@@ -55,7 +55,6 @@ export * from './lib/messages/embedMessage.slice';
 export * from './lib/messages/messages.slice';
 export * from './lib/messages/references.slice';
 export * from './lib/notification/notify.slice';
-export * from './lib/notificationSetting/notificationReactMessage.slice';
 export * from './lib/notificationSetting/notificationSettingCategory.slice';
 export * from './lib/notificationSetting/notificationSettingChannel.slice';
 export * from './lib/notificationSetting/notificationSettingClan.slice';
