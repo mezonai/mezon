@@ -1859,7 +1859,7 @@ const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: M
 };
 
 const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: MessagesState; channelId: string; adapterPayload: MessagesEntity }) => {
-	if (state.channelMessages[channelId]?.ids?.length) {
+	if (state.channelMessages[channelId]) {
 		state.channelMessages[channelId] = channelMessagesAdapter.addOne(state.channelMessages[channelId], adapterPayload);
 	}
 };

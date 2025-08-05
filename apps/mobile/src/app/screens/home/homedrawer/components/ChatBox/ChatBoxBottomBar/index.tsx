@@ -601,7 +601,7 @@ export const ChatBoxBottomBar = memo(
 				clearTextInputListener.remove();
 				addEmojiPickedListener.remove();
 			};
-		}, [channelId, handleEventAfterEmojiPicked]);
+		}, [channelId, handleEventAfterEmojiPicked, topicChannelId]);
 
 		return (
 			<View style={styles.container}>

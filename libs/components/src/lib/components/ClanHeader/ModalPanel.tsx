@@ -84,13 +84,13 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 				/>
 				<button
 					onClick={toggleShowEmptyCategory}
-					className="flex items-center w-full justify-between rounded-sm  text-theme-primary-hover bg-item-hover"
+					className="flex items-center w-full justify-between rounded-sm  text-theme-primary-hover bg-item-hover pr-2"
 				>
-					<li className="text-[14px]  font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none ">Show Empty Categories</li>
+					<li className="text-[14px] font-medium flex-1 py-[6px] px-[8px] text-left cursor-pointer list-none">Show Empty Categories</li>
 					<input
-						className="peer relative h-4 w-8 cursor-pointer appearance-none rounded-lg
-                            bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
-                            after:bg-slate-500 after:transition-all checked:bg-blue-200 checked:after:left-4 checked:after:bg-blue-500
+						className="peer relative h-3 w-6 cursor-pointer appearance-none rounded-lg
+                            bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-3 after:w-3 after:rounded-full
+                            after:bg-slate-500 after:transition-all checked:bg-blue-200 checked:after:left-3 checked:after:bg-blue-500
                             hover:bg-slate-400 after:hover:bg-slate-600 checked:hover:bg-blue-300 checked:after:hover:bg-blue-600
                             focus:outline-none checked:focus:bg-blue-400 checked:after:focus:bg-blue-700 focus-visible:outline-none disabled:cursor-not-allowed
                             disabled:bg-slate-200 disabled:after:bg-slate-300"
