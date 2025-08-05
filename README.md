@@ -119,43 +119,9 @@ Mezon combines the best aspects of team communication and community platforms in
   </table>
 </div>
 
-### 🔐 Advanced Security Features
-
-- **Perfect Forward Secrecy** - Rotating encryption keys
-- **TLS 1.3** - Latest security protocols  
-- **CSRF Protection** - Secure token validation
-- **Content Security Policy** - XSS prevention headers
-- **Two-Factor Authentication** - TOTP and SMS support
-- **GDPR/CCPA Compliant** - Privacy-first data handling
 
 ---
 
-## Getting Started
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="33%">
-        <h3>1. Download Mezon</h3>
-        <p>Available on all platforms</p>
-      </td>
-      <td align="center" width="33%">
-        <h3>2. Create Your Space</h3>
-        <p>Set up in seconds</p>
-      </td>
-      <td align="center" width="33%">
-        <h3>3. Invite Everyone</h3>
-        <p>Share and grow together</p>
-      </td>
-    </tr>
-  </table>
-</div>
-
-<div align="center">
-  <a href="https://github.com/mezonai/mezon" style="text-decoration: none;">
-    <img src="https://img.shields.io/badge/🚀%20Start%20Now-5865F2?style=for-the-badge&logo=github&logoColor=white" alt="Start Now">
-  </a>
-</div>
 
 ---
 
@@ -202,51 +168,6 @@ Mezon combines the best aspects of team communication and community platforms in
 
 
 ---
-
-## 📚 Resources & Links
-
-<div align="center">
-  <table>
-    <tr>
-      <td width="50%">
-        <h3>🚀 Get Started</h3>
-        <ul align="left">
-          <li><a href="https://mezon.ai/chat"><strong>Try Mezon Chat</strong></a> - Jump right in</li>
-          <li><a href="https://mezon.ai/clans/"><strong>Explore Communities</strong></a> - Find your clan</li>
-          <li><a href="https://mezon.ai/"><strong>Homepage</strong></a> - Learn more about Mezon</li>
-        </ul>
-      </td>
-      <td width="50%">
-        <h3>🛠️ For Developers</h3>
-        <ul align="left">
-          <li><a href="https://mezon.ai/docs/mezon-sdk-docs/"><strong>SDK Documentation</strong></a> - API reference</li>
-          <li><a href="https://mezon.ai/developers/applications"><strong>Developer Portal</strong></a> - Build applications</li>
-          <li><a href="https://github.com/mezonai/mezon/issues"><strong>Issues & Support</strong></a> - Report bugs & request features</li>
-          <li><a href="https://top.mezon.ai/"><strong>Bot Directory</strong></a> - Discover & create bots</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td width="50%">
-        <h3>🌐 Connect With Us</h3>
-        <ul align="left">
-          <li><a href="https://github.com/mezonai"><strong>GitHub</strong></a> - Contribute to the project</li>
-          <li><a href="https://www.facebook.com/mezonworld"><strong>Facebook</strong></a> - Follow for updates</li>
-          <li><a href="https://mezon.ai/invite/1840696977034055680"><strong>Community Server</strong></a> - Join our Discord</li>
-        </ul>
-      </td>
-      <td width="50%">
-        <h3>📖 Documentation & SDKs</h3>
-        <ul align="left">
-          <li><a href="DEVELOPER_GUIDE.md"><strong>Developer Guide</strong></a> - Setup & architecture</li>
-          <li><a href="https://github.com/mezonai/mezon-go-sdk"><strong>Go SDK</strong></a> - Mezon Go SDK</li>
-          <li><a href="https://github.com/mezonai/mezon-js"><strong>JavaScript SDK</strong></a> - Mezon JS SDK</li>
-          <li><a href="https://github.com/mezonai/mezon-mcp"><strong>Mezon MCP</strong></a> - AI ready integration</li>
-        </ul>
-      </td>
-    </tr>
-  </table>
-</div>
 
 ---
 
@@ -333,27 +254,22 @@ mezon/
 3. **Browse [open issues](https://github.com/mezonai/mezon/issues)** for contribution opportunities
 4. **Join our [developer community](https://mezon.ai/invite/1840696977034055680)** for support
 
-### 🏠 **Self-Hosting**
+### 🏠 **Customization & Extensions**
 
-Mezon can be deployed on your own infrastructure for complete control and privacy:
+While we don't currently provide self-hosting options, Mezon is highly customizable and extensible:
 
-```bash
-# Using Docker Compose
-git clone https://github.com/mezonai/mezon.git
-cd mezon
-docker-compose up -d
+**Frontend Customization:**
+- Custom themes and UI modifications
+- Personalized user interfaces
+- Brand customization for communities
 
-# Or using Kubernetes
-kubectl apply -f k8s/
-```
+**Bot Extensions:**
+- Build powerful bots using our SDKs
+- Automate workflows and tasks
+- Create custom integrations
+- Extend functionality with community plugins
 
-**Requirements:**
-- Docker & Docker Compose (recommended)
-- Node.js 18+ (for manual deployment)
-- PostgreSQL 14+
-- Redis 6+
-
-See [Self-Hosting Guide](docs/SELF_HOSTING.md) for detailed instructions.
+See our [Bot Development Guide](https://github.com/mezonai/mezon-bot-example) and [SDKs](#-sdks--libraries) to get started.
 
 ### 🤝 **Contributing**
 
@@ -365,27 +281,33 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ---
 
-## 🎯 Perfect For Everyone
 
-### 👥 For Friends & Families
-- Private spaces to stay connected
-- Share photos, videos, and memories
-- Voice and video calls that just work
 
-### 🎮 For Gamers
-- Low-latency voice chat
-- Game integration and activity status
-- Tournament and event organization tools
+## 📚 Resources & Links
 
-### 💼 For Teams & Businesses
-- Professional workspaces
-- Task management and productivity tools
-- Secure and compliant communication
+### 🚀 Get Started
+- [**Try Mezon Chat**](https://mezon.ai/chat) - Jump right in
+- [**Explore Communities**](https://mezon.ai/clans/) - Find your clan
+- [**Homepage**](https://mezon.ai/) - Learn more about Mezon
 
-### 🌍 For Communities
-- Powerful moderation tools
-- Event scheduling and announcements
-- Growth and engagement analytics
+### 🛠️ For Developers
+- [**SDK Documentation**](https://mezon.ai/docs/mezon-sdk-docs/) - API reference
+- [**Developer Portal**](https://mezon.ai/developers/applications) - Build applications
+- [**Developer Guide**](DEVELOPER_GUIDE.md) - Setup & architecture
+- [**Bot Directory**](https://top.mezon.ai/) - Discover & create bots
+- [**Bot Example**](https://github.com/mezonai/mezon-bot-example) - Simple bot template
+
+### 📦 SDKs & Libraries
+- [**Go SDK**](https://github.com/mezonai/mezon-go-sdk) - Official Go SDK
+- [**JavaScript SDK**](https://github.com/mezonai/mezon-js) - Official JS SDK
+- [**Mezon MCP**](https://github.com/mezonai/mezon-mcp) - AI ready integration
+
+### 🌐 Connect & Contribute
+- [**Community Server**](https://mezon.ai/chat) - Join our Mezon
+- [**GitHub**](https://github.com/mezonai) - Contribute to the project
+- [**Issues & Support**](https://github.com/mezonai/mezon/issues) - Report bugs & request features
+- [**Contributing Guide**](CONTRIBUTING.md) - How to contribute
+- [**Facebook**](https://www.facebook.com/mezonworld) - Follow for updates
 
 ---
 
@@ -413,49 +335,6 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ---
 
-## 🚀 Join the Mezon Community
-
-<div align="center">
-  <h3>Ready to get started?</h3>
-  
-  <a href="https://mezon.ai">
-    <img src="https://img.shields.io/badge/Try%20Mezon%20Now-Free-success?style=for-the-badge&logo=rocket&logoColor=white" alt="Try Mezon">
-  </a>
-  
-  <p>
-    <a href="https://mezon.ai/invite/1840696977034055680">Join our Community</a> •
-    <a href="https://github.com/mezonai/mezon">Star on GitHub</a> •
-    <a href="https://mezon.ai/clans/">Explore Communities</a>
-  </p>
-</div>
-
----
-
-## 👨‍💻 Additional Resources
-
-Building something amazing? Check out our resources:
-
-### 📚 **Documentation & Guides**
-- 📖 [Developer Guide](DEVELOPER_GUIDE.md) - Complete development documentation
-- 🛠️ [API Documentation](docs/developer/API.md) - REST API reference
-- 🎨 [Contributing](CONTRIBUTING.md) - How to contribute
-- 🐛 [Issues & Support](https://github.com/mezonai/mezon/issues) - Report bugs & request features
-
-### 🤖 **Bot Development**
-- 🎯 [Bot Example](https://github.com/mezonai/mezon-bot-example) - Simple bot template
-- 🏢 [Komu Bot](https://github.com/mezonai/mezon-komu) - Full-featured workplace bot
-  - ✅ Check-in/check-out tracking
-  - 📊 Timesheet logging  
-  - 📚 Audiobook integration
-  - 🏖️ Absence day requests
-  - 📈 Daily reports & meetings
-
-### 📦 **SDKs & Libraries**
-- 🐹 [Go SDK](https://github.com/mezonai/mezon-go-sdk) - Official Go SDK
-- 🟨 [JavaScript SDK](https://github.com/mezonai/mezon-js) - Official JS SDK  
-- 🤖 [Mezon MCP](https://github.com/mezonai/mezon-mcp) - AI-ready integration
-
----
 
 <div align="center">
   <p>
