@@ -6242,6 +6242,14 @@ export function LoadingSpinner({ className }: { className?: string }) {
 	);
 }
 
+export function PlusOutline(props: React.HTMLAttributes<SVGElement>) {
+	return (
+		<svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="" {...props}>
+			<path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v14m-7-7h14" />
+		</svg>
+	);
+}
+
 export function StopCall(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg width="28px" height="28px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
