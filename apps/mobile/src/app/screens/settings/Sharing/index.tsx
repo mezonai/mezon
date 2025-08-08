@@ -2,9 +2,7 @@ import { ChatContext } from '@mezon/core';
 import {
 	getAttachmentUnique,
 	getUpdateOrAddClanChannelCache,
-	PlayIcon,
 	save,
-	SendIcon,
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
@@ -600,7 +598,7 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 										>
 											{isVideo(media?.filename?.toLowerCase()) && isVideo(media?.url?.toLowerCase()) && (
 												<View style={styles.videoOverlay}>
-													<PlayIcon width={size.s_20} height={size.s_20} />
+													<MezonIconCDN icon={IconCDN.playIcon} width={size.s_20} height={size.s_20} />
 												</View>
 											)}
 											{isFile ? (
@@ -658,7 +656,7 @@ export const Sharing = ({ data, onClose }: ISharing) => {
 							{isLoading ? (
 								<Flow size={size.s_28} color={Colors.white} />
 							) : (
-								<SendIcon width={size.s_28} height={size.s_20} color={Colors.white} />
+								<MezonIconCDN icon={IconCDN.sendMessageIcon} width={size.s_28} height={size.s_20} color={Colors.white} />
 							)}
 						</TouchableOpacity>
 					</View>

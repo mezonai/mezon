@@ -40,7 +40,7 @@ const CustomDrawer = ({ onClose, onChangeActiveScreen, navigation, activeScreen 
 						}}
 						style={[styles.menuItem, activeScreen === 'transfer' && { backgroundColor: themeValue?.secondaryLight }]}
 					>
-						<Icons.SendMoney height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						<MezonIconCDN icon={IconCDN.sendMoneyIcon} height={size.s_20} width={size.s_20} color={baseColor.bgSuccess} />
 						<Text style={styles.menuText}>{tStack('settingStack.sendToken')}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
@@ -50,7 +50,7 @@ const CustomDrawer = ({ onClose, onChangeActiveScreen, navigation, activeScreen 
 						style={[styles.menuItem, activeScreen === 'manage' && { backgroundColor: themeValue?.secondaryLight }]}
 					>
 						<View style={{ transform: [{ rotate: '180deg' }] }}>
-							<Icons.SendMoney height={size.s_20} width={size.s_20} color={baseColor.gray} />
+							<MezonIconCDN icon={IconCDN.sendMoneyIcon} height={size.s_20} width={size.s_20} color={baseColor.bgSuccess} />
 						</View>
 						<Text style={styles.menuText}>{tStack('settingStack.walletManagement')}</Text>
 					</TouchableOpacity>
@@ -60,7 +60,7 @@ const CustomDrawer = ({ onClose, onChangeActiveScreen, navigation, activeScreen 
 							onChangeActiveScreen('history');
 						}}
 					>
-						<Icons.History height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						<MezonIconCDN icon={IconCDN.historyIcon} height={size.s_22} width={size.s_22} color={baseColor.bgSuccess} />
 						<Text style={styles.menuText}>{tStack('settingStack.historyTransaction')}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity

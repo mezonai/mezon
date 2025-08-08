@@ -1,5 +1,4 @@
 import { useMyRole, usePermissionChecker } from '@mezon/core';
-import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	ChannelMembersEntity,
@@ -166,7 +165,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 				type: 'success',
 				props: {
 					text2: 'Changes Saved',
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 		} else {

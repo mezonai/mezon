@@ -56,13 +56,6 @@ export function EventLocation({ event }: IEventLocation) {
 					<Text style={styles.smallText}>{event?.address}</Text>
 				</View>
 			)}
-
-			{/* {option === '' && !event && !channelVoice && (
-                <>
-                    <Icons.Location />
-                    <p className="hover:underline text-slate-400">{channelFirst.channel_label}</p>
-                </>
-            )} */}
 		</View>
 	);
 }

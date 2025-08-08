@@ -1,10 +1,11 @@
-import { PauseIcon, PlayIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import useTabletLandscape from 'apps/mobile/src/app/hooks/useTabletLandscape';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 const formatTime = (millis: number) => {
@@ -71,9 +72,9 @@ const RenderAudioItem = React.memo(({ audioURL }: { audioURL: string }) => {
 			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
 				<View style={styles.playButton}>
 					{isPlaying ? (
-						<PauseIcon width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />
+						<MezonIconCDN icon={IconCDN.pauseIcon} width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />
 					) : (
-						<PlayIcon width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />
+						<MezonIconCDN icon={IconCDN.playIcon} width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />
 					)}
 				</View>
 				<Text style={styles.currentTime}>{`${formatTime(totalTime)}`}</Text>

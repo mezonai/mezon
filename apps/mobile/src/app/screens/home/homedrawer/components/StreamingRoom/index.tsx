@@ -84,11 +84,6 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
 							</TouchableOpacity>
 						</View>
-						{/*<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>*/}
-						{/*	<TouchableOpacity onPress={handleAddPeopleToVoice} style={styles.buttonCircle}>*/}
-						{/*		<Icons.UserPlusIcon />*/}
-						{/*	</TouchableOpacity>*/}
-						{/*</View>*/}
 					</View>
 				)}
 

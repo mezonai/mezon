@@ -1,7 +1,6 @@
 import { useCategorizedAllChannels } from '@mezon/core';
 import {
 	ActionEmitEvent,
-	CheckIcon,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	getUpdateOrAddClanChannelCache,
@@ -121,7 +120,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 			type: 'success',
 			props: {
 				text2: t('toast.updated'),
-				leadingIcon: <CheckIcon color={Colors.green} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
 			}
 		});
 	};

@@ -1,5 +1,5 @@
 import { useChatSending } from '@mezon/core';
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
 import { EBacktickType, IMessageSendPayload, filterEmptyArrays, processText } from '@mezon/utils';
@@ -8,6 +8,8 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { style } from './styles';
 
 type IGeoLocation = {
@@ -46,11 +48,13 @@ const ShareLocationConfirmModal = ({ mode, channelId, geoLocation }: { mode: Cha
 			hg: [],
 			ej: [],
 			lk: links || [],
-			mk: [{
-				s: 0,
-				e: googleMapsLink.length,
-				type: EBacktickType.LINK
-			}],
+			mk: [
+				{
+					s: 0,
+					e: googleMapsLink.length,
+					type: EBacktickType.LINK
+				}
+			],
 			vk: []
 		};
 		await sendMessage(filterEmptyArrays(payloadSendMessage), [], [], [], false, false, true);
@@ -74,7 +78,7 @@ const ShareLocationConfirmModal = ({ mode, channelId, geoLocation }: { mode: Cha
 				</View>
 				<View style={styles.modalContent}>
 					<View style={styles.circleIcon}>
-						<Icons.LocationIcon />
+						<MezonIconCDN icon={IconCDN.locationIcon} height={16} width={16} color={themeValue.textStrong} />
 					</View>
 					<Text
 						style={styles.textContent}

@@ -1,12 +1,13 @@
-import { CheckIcon, ChevronIcon, DotIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { IMessageWithUser } from '@mezon/utils';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { MezonModal } from '../../../../../componentUI/MezonModal';
 import { SeparatorWithSpace } from '../../../../../components/Common';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IReportMessageModalProps {
@@ -76,7 +77,7 @@ export const ReportMessageModal = memo((props: IReportMessageModalProps) => {
 				type: 'success',
 				props: {
 					text2: t('reportMessage.reportSubmitted'),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 		});
@@ -102,7 +103,7 @@ export const ReportMessageModal = memo((props: IReportMessageModalProps) => {
 								<Text style={styles.reportCategory}>{t('reportMessage.reportCategory')}</Text>
 
 								<View style={styles.reportCategoryWrapper}>
-									<DotIcon color={Colors.bgViolet} height={5} width={5} />
+									<MezonIconCDN icon={IconCDN.circleIcon} color={Colors.bgViolet} height={5} width={5} />
 									<Text style={styles.reportCategoryTitle}>{reportSelected?.title}</Text>
 								</View>
 							</View>
@@ -128,7 +129,7 @@ export const ReportMessageModal = memo((props: IReportMessageModalProps) => {
 									return (
 										<TouchableOpacity onPress={() => setReportSelected(item)} style={styles.reportItem}>
 											<Text style={styles.reportTitle}>{item.title}</Text>
-											<ChevronIcon height={15} width={15} />
+											<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} />
 										</TouchableOpacity>
 									);
 								}}

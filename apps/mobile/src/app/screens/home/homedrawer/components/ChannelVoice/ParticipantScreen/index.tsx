@@ -54,7 +54,7 @@ const ParticipantItem = memo(
 						/>
 						{!isPiPMode && (
 							<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '90%' }]}>
-								<Icons.ShareScreenIcon height={size.s_14} />
+								<MezonIconCDN icon={IconCDN.shareScreenIcon} height={size.s_14} />
 								<Text numberOfLines={1} ellipsizeMode="tail" style={[styles.subTitle, { width: '100%' }]}>
 									{voiceUsername} Share Screen
 								</Text>
@@ -62,7 +62,7 @@ const ParticipantItem = memo(
 						)}
 						{!isPiPMode && (
 							<View style={[styles.focusIcon, styles.focusIconAbsolute]}>
-								<Icons.ArrowSaltIcon height={size.s_14} color={themeValue.white} />
+								<MezonIconCDN icon={IconCDN.expandIcon} height={size.s_14} color={themeValue.white} />
 							</View>
 						)}
 					</TouchableOpacity>
@@ -104,7 +104,7 @@ const ParticipantItem = memo(
 					>
 						<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: size.s_10 }}>
 							{!voiceUsername ? (
-								<Icons.LoadingIcon width={24} height={24} />
+								<MezonIconCDN icon={IconCDN.loadingIcon} width={24} height={24} />
 							) : (
 								<MezonAvatar width={size.s_50} height={size.s_50} username={voiceUsername} avatarUrl={avatar} />
 							)}
@@ -117,7 +117,7 @@ const ParticipantItem = memo(
 									<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.white} />
 								)}
 								{!voiceUsername ? (
-									<Icons.LoadingIcon width={24} height={24} />
+									<MezonIconCDN icon={IconCDN.loadingIcon} width={24} height={24} />
 								) : (
 									<Text numberOfLines={1} style={styles.subTitle}>
 										{voiceUsername || 'Unknown'}

@@ -145,7 +145,7 @@ const RoomView = ({
 							<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_16} width={size.s_24} color={themeValue.white} />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
-							<Icons.ArrowShrinkIcon height={size.s_16} color={themeValue.white} />
+							<MezonIconCDN icon={IconCDN.minimizeIcon} height={size.s_16} color={themeValue.white} />
 						</TouchableOpacity>
 					</View>
 				)}

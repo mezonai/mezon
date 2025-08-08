@@ -1,4 +1,4 @@
-import { ActionEmitEvent, SpeakerIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
@@ -135,7 +135,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const channels = voicesChannel?.map((item) => ({
 		title: item.channel_label,
 		value: item.channel_id,
-		icon: <SpeakerIcon height={20} width={20} color={themeValue.text} />
+		icon: <MezonIconCDN icon={IconCDN.channelVoice} height={20} width={20} color={themeValue.text} />
 	}));
 
 	const [eventType, setEventType] = useState<OptionEvent>();

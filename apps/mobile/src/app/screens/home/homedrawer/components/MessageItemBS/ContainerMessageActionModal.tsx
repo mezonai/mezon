@@ -1,7 +1,7 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, CloseIcon, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
@@ -387,7 +387,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				type: 'success',
 				props: {
 					text2: t('toast.markMessage'),
-					leadingIcon: <CheckIcon color={Colors.green} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
 				}
 			});
 			onClose();
@@ -418,7 +418,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				type: 'success',
 				props: {
 					text2: t('toast.markMessage'),
-					leadingIcon: <CheckIcon color={Colors.green} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
 				}
 			});
 		} catch (error) {
@@ -426,7 +426,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				type: 'error',
 				props: {
 					text2: t('toast.markMessageUnreadFailed'),
-					leadingIcon: <CloseIcon color={Colors.red} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
 				}
 			});
 			console.error('Error marking message as unread:', error);
@@ -519,8 +519,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				return <MezonIconCDN icon={IconCDN.pinIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case EMessageActionType.UnPinMessage:
 				return <MezonIconCDN icon={IconCDN.pinIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
-			// case EMessageActionType.Mention:
-			// 	return <Icons.AtIcon color={themeValue.text} width={size.s_24} height={size.s_24} />;
 			case EMessageActionType.SaveImage:
 				return <MezonIconCDN icon={IconCDN.downloadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case EMessageActionType.CopyMediaLink:

@@ -1,4 +1,4 @@
-import { Icons, load, save, STORAGE_AGE_RESTRICTED_CHANNEL_IDS } from '@mezon/mobile-components';
+import { load, save, STORAGE_AGE_RESTRICTED_CHANNEL_IDS } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannelId } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -6,6 +6,8 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import { style } from './styles';
 
 const AgeRestricted = ({ onClose }: { onClose: () => void }) => {
@@ -34,7 +36,7 @@ const AgeRestricted = ({ onClose }: { onClose: () => void }) => {
 	return (
 		<View style={{ backgroundColor: themeValue.secondary, borderRadius: size.s_10, padding: size.s_20 }}>
 			<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-				<Icons.AgeRestrictedWarningIcon width={size.s_100} height={size.s_100} />
+				<MezonIconCDN icon={IconCDN.ageRestrictedIcon} width={size.s_100} height={size.s_100} useOriginalColor={true} />
 			</View>
 			<View>
 				<Text style={styles.title}>{t('title')}</Text>

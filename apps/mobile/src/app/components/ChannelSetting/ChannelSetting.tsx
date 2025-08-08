@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, isEqual } from '@mezon/mobile-components';
+import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -130,7 +130,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			type: 'success',
 			props: {
 				text2: t('toast.updated'),
-				leadingIcon: <CheckIcon color={Colors.green} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
 			}
 		});
 	};
@@ -194,7 +194,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 							screen: APP_SCREEN.MENU_CLAN.INTEGRATIONS,
 							params: {
 								channelId: channel?.channel_id,
-								isClanSetting: false,
+								isClanSetting: false
 							}
 						});
 					}

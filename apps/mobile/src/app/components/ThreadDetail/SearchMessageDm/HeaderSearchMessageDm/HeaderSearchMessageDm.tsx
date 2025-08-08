@@ -1,4 +1,3 @@
-import { ArrowLeftIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
@@ -41,7 +40,7 @@ export default function HeaderSearchMessageDm({ initialSearchText, onClearStoreI
 	return (
 		<View style={{ paddingHorizontal: size.s_10, paddingVertical: size.s_20, flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
 			<TouchableOpacity onPress={onGoBack}>
-				<ArrowLeftIcon width={20} height={20} color={themeValue.text} />
+				<MezonIconCDN icon={IconCDN.backArrowLarge} width={20} height={20} color={themeValue.text} />
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
 				<View style={{ marginRight: size.s_6 }}>

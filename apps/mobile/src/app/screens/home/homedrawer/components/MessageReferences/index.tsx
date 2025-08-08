@@ -1,4 +1,3 @@
-import { ReplyIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, getStore, messagesActions, selectMemberClanByUserId2, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
@@ -67,7 +66,7 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 	return (
 		<Pressable onLongPress={preventAction ? undefined : onLongPress} onPress={onPressAvatar} style={styles.aboveMessage}>
 			<View style={styles.iconReply}>
-				<ReplyIcon width={size.s_34} height={size.s_30} />
+				<MezonIconCDN icon={IconCDN.reply} width={size.s_34} height={size.s_30} useOriginalColor={true} />
 			</View>
 			<View style={styles.repliedMessageWrapper}>
 				<MezonAvatar

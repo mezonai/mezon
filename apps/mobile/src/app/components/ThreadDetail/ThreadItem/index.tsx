@@ -1,4 +1,4 @@
-import { AngleRightIcon, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import { getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
@@ -16,6 +16,8 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { useMessageSender } from '../../../hooks/useMessageSender';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN, AppStackParamList } from '../../../navigation/ScreenTypes';
@@ -107,7 +109,7 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 				</View>
 			</View>
 			<View style={{ marginLeft: size.s_30, marginRight: -size.s_4 }}>
-				<AngleRightIcon width={25} height={25} color={themeValue.textDisabled} />
+				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={25} height={25} color={themeValue.textDisabled} />
 			</View>
 		</Pressable>
 	);

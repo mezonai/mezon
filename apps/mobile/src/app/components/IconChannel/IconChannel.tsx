@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { Colors, size } from '@mezon/mobile-ui';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -42,9 +41,9 @@ function IconChannel({ channelPrivate, type }: { channelPrivate: number; type })
 			case ChannelType.CHANNEL_TYPE_APP:
 				return <MezonIconCDN icon={IconCDN.channelApp} width={size.s_20} height={size.s_20} color={Colors.textGray} />;
 			case ChannelType.CHANNEL_TYPE_ANNOUNCEMENT:
-				return <Icons.Announcement defaultSize={size.s_20} defaultFill={Colors.textGray} />;
+				return <MezonIconCDN icon={IconCDN.announcementIcon} width={size.s_20} height={size.s_20} color={Colors.textGray} />;
 			case ChannelType.CHANNEL_TYPE_FORUM:
-				return <Icons.Forum defaultSize={size.s_20} defaultFill={Colors.textGray} />;
+				return <MezonIconCDN icon={IconCDN.forumIcon} width={size.s_20} height={size.s_20} color={Colors.textGray} />;
 
 			default:
 				return null;

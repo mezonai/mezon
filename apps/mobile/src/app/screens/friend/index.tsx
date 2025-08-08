@@ -1,5 +1,4 @@
 import { useDirect, useFriends } from '@mezon/core';
-import { ChevronIcon, PaperPlaneIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity, getStore, selectDirectsOpenlist } from '@mezon/store-mobile';
 import { User } from 'mezon-js';
@@ -8,9 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useThrottledCallback } from 'use-debounce';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { EFriendItemAction } from '../../components/FriendItem';
 import { FriendListByAlphabet } from '../../components/FriendListByAlphabet';
 import { UserInformationBottomSheet } from '../../components/UserInformationBottomSheet';
+import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { normalizeString } from '../../utils/helpers';
 import { style } from './styles';
@@ -161,7 +162,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 
 			{!searchText?.trim()?.length || filteredFriendList?.length === 0 ? (
 				<Pressable style={styles.requestFriendWrapper} onPress={() => navigateToRequestFriendScreen()}>
-					<PaperPlaneIcon width={25} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.paperPlaneIcon} width={25} color={themeValue.text} />
 					<View style={styles.fill}>
 						<Text style={styles.defaultText}>{t('friends:friendRequest.title')}</Text>
 						<View style={styles.requestContentWrapper}>
@@ -174,7 +175,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 							</Text>
 						</View>
 					</View>
-					<ChevronIcon width={25} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={25} color={themeValue.text} />
 				</Pressable>
 			) : null}
 			<FriendListByAlphabet

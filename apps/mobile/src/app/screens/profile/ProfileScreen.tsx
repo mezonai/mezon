@@ -1,5 +1,5 @@
 import { useFriends, useMemberStatus } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
@@ -317,7 +317,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						<Text style={styles.text}>{userProfile?.user?.username}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity onPress={showSendTokenBottomSheet} style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
-						<CheckIcon width={size.s_20} height={size.s_20} color={Colors.azureBlue} />
+						<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={Colors.azureBlue} />
 						<View style={styles.token}>
 							<Text style={styles.text}>
 								{`${t('token')} ${tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}`}
@@ -332,7 +332,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						}}
 						style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}
 					>
-						<Icons.SendMoney height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						<MezonIconCDN icon={IconCDN.sendMoneyIcon} height={size.s_22} width={size.s_22} color={baseColor.bgSuccess} />
 						<View style={styles.token}>
 							<Text style={styles.text}>{tStack('settingStack.sendToken')}</Text>
 						</View>
@@ -345,7 +345,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						}}
 						style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10, marginTop: size.s_10 }}
 					>
-						<Icons.History height={size.s_20} width={size.s_20} color={baseColor.gray} />
+						<MezonIconCDN icon={IconCDN.historyIcon} height={size.s_24} width={size.s_24} color={baseColor.bgSuccess} />
 						<View style={styles.token}>
 							<Text style={styles.text}>{tStack('settingStack.historyTransaction')}</Text>
 						</View>

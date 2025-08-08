@@ -1,4 +1,3 @@
-import { CallIcon, CheckIcon, MessageIcon } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
@@ -96,10 +95,10 @@ export const FriendItem = React.memo(
 						{isFriend && showAction && !selectMode ? (
 							<View style={styles.friendAction}>
 								<Pressable onPress={() => onPressAction(EFriendItemAction.Call)}>
-									<CallIcon width={24} height={18} color={themeValue.text} />
+									<MezonIconCDN icon={IconCDN.phoneCallIcon} width={24} height={18} color={themeValue.text} />
 								</Pressable>
 								<Pressable onPress={() => onPressAction(EFriendItemAction.MessageDetail)}>
-									<MessageIcon width={25} height={18} color={themeValue.text} />
+									<MezonIconCDN icon={IconCDN.chatIcon} width={25} height={18} color={themeValue.text} />
 								</Pressable>
 							</View>
 						) : null}
@@ -111,7 +110,7 @@ export const FriendItem = React.memo(
 								</Pressable>
 								{!isSentRequestFriend ? (
 									<Pressable onPress={() => onPressAction(EFriendItemAction.Approve)} style={styles.approveIcon}>
-										<CheckIcon width={25} height={18} color={Colors.white} />
+										<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={25} height={18} color={Colors.white} />
 									</Pressable>
 								) : null}
 							</View>

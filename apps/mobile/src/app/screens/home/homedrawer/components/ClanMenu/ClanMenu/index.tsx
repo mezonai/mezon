@@ -76,10 +76,6 @@ export default function ClanMenu() {
 	}, [navigation]);
 
 	const organizationMenu: IMezonMenuItemProps[] = [
-		// {
-		// 	onPress: () => reserve(),
-		// 	title: t('menu.organizationMenu.createChannel'),
-		// },
 		{
 			onPress: () => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -117,28 +113,6 @@ export default function ClanMenu() {
 			title: t('menu.optionsMenu.auditLog'),
 			isShow: isCanEditRole
 		},
-
-		// {
-		// 	title: t('menu.optionsMenu.showAllChannels'),
-		// 	component: <MezonSwitch />,
-		// },
-		// {
-		// 	title: t('menu.optionsMenu.hideMutedChannels'),
-		// 	component: <MezonSwitch />,
-		// },
-		// {
-		// 	title: t('menu.optionsMenu.allowDirectMessage'),
-		// 	component: <MezonSwitch />,
-		// },
-		// {
-		// 	title: t('menu.optionsMenu.allowMessageRequest'),
-
-		// 	component: <MezonSwitch />,
-		// },
-		// {
-		// 	onPress: () => reserve(),
-		// 	title: t('menu.optionsMenu.reportServer'),
-		// },
 		{
 			onPress: async () => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -221,11 +195,6 @@ export default function ClanMenu() {
 				<ClanMenuInfo clan={currentClan} />
 
 				<ScrollView contentContainerStyle={styles.actionWrapper} horizontal>
-					{/*<MezonButtonIcon*/}
-					{/*	title={`18 ${t('actions.boot')}`}*/}
-					{/*	icon={<Icons.BoostTier2Icon color={baseColor.purple} />}*/}
-					{/*	onPress={() => reserve()}*/}
-					{/*/>*/}
 					<MezonButtonIcon
 						title={t('actions.invite')}
 						icon={<MezonIconCDN icon={IconCDN.groupPlusIcon} color={themeValue.textStrong} />}

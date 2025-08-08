@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { auditLogFilterActions, selectAllUserClans, selectUserAuditLog, useAppDispatch } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
@@ -8,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonOption from '../../../componentUI/MezonOption';
+import { IconCDN } from '../../../constants/icon_cdn';
 import InputSearchAuditLog from '../InputSearchAuditLog/InputSearchAuditLog';
 
 export default function FilterUserAuditLog() {
@@ -24,7 +25,11 @@ export default function FilterUserAuditLog() {
 	const userOptions = useMemo(
 		() =>
 			[
-				{ title: t('filterUserAuditLog.allUsers'), icon: <Icons.IconPeople height={size.s_30} width={size.s_30} />, value: '' },
+				{
+					title: t('filterUserAuditLog.allUsers'),
+					icon: <MezonIconCDN icon={IconCDN.peopleIcon} color={themeValue.text} height={size.s_30} width={size.s_30} />,
+					value: ''
+				},
 				...(usersClan || []).map((item: UsersClanEntity) => ({
 					title: item?.user?.display_name ? item?.user?.display_name : item?.user?.username,
 					icon: (

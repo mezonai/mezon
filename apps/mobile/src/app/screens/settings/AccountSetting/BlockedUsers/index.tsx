@@ -1,5 +1,4 @@
 import { useFriends } from '@mezon/core';
-import { CheckIcon, CloseIcon } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity, selectBlockedUsers } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
@@ -7,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
 import { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -26,7 +27,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 					type: 'success',
 					props: {
 						text2: t('notification.unblockUser.success', { ns: 'userProfile' }),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 					}
 				});
 			}
@@ -35,7 +36,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 				type: 'error',
 				props: {
 					text2: t('notification.unblockUser.error', { ns: 'userProfile' }),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		}

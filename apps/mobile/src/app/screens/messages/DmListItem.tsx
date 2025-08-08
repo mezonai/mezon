@@ -1,20 +1,20 @@
-import { PaperclipIcon, STORAGE_MY_USER_ID, convertTimestampToTimeAgo, load } from '@mezon/mobile-components';
+import { convertTimestampToTimeAgo, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { Colors, useTheme } from '@mezon/mobile-ui';
 import { directActions, selectDirectById, selectIsUnreadDMById, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { IExtendedMessage, createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, IExtendedMessage } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import BuzzBadge from '../../components/BuzzBadge/BuzzBadge';
 import ImageNative from '../../components/ImageNative';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { DmListItemLastMessage } from './DMListItemLastMessage';
-import { TypingDmItem } from './TypingDMItem';
 import { style } from './styles';
+import { TypingDmItem } from './TypingDMItem';
 
 export const DmListItem = React.memo((props: { id: string; navigation: any; onLongPress }) => {
 	const { themeValue } = useTheme();
@@ -89,7 +89,7 @@ export const DmListItem = React.memo((props: { id: string; navigation: any; onLo
 					>
 						{renderLastMessageContent}
 						{'attachment '}
-						<PaperclipIcon width={13} height={13} color={Colors.textGray} />
+						<MezonIconCDN icon={IconCDN.attachmentIcon} width={13} height={13} color={Colors.textGray} />
 					</Text>
 				</View>
 			);

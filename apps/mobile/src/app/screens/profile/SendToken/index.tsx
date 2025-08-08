@@ -1,7 +1,6 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useDirect, useSendInviteMessage } from '@mezon/core';
-import { Icons } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	FriendsEntity,
@@ -386,7 +385,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 						<View style={styles.fullscreenModal}>
 							<View style={styles.modalHeader}>
 								<View>
-									<Icons.TickIcon width={100} height={100} />
+									<MezonIconCDN icon={IconCDN.tickIcon} color={baseColor.bgSuccess} width={100} height={100} />
 								</View>
 								<Text style={styles.successText}>{t('toast.success.sendSuccess')}</Text>
 								<Text style={styles.amountText}>{tokenCount} ₫</Text>
@@ -428,7 +427,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 										<Text style={styles.textActionMore}>{t('saveImage')}</Text>
 									</TouchableOpacity>
 									<TouchableOpacity style={styles.buttonActionMore} onPress={handleSendNewToken}>
-										<Icons.ArrowLeftRightIcon color={themeValue.textStrong} />
+										<MezonIconCDN icon={IconCDN.arrowLeftRightIcon} color={themeValue.textStrong} />
 										<Text style={styles.textActionMore}>{t('sendNewToken')}</Text>
 									</TouchableOpacity>
 								</View>

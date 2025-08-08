@@ -243,7 +243,7 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '' }: I
 						</TouchableOpacity>
 						{!isPreviewRecord && (
 							<TouchableOpacity onPress={handlePreviewRecord} style={styles.boxIcon}>
-								<Icons.RecordIcon color={themeValue.white} />
+								<MezonIconCDN icon={IconCDN.recordIcon} color={themeValue.white} />
 							</TouchableOpacity>
 						)}
 					</View>

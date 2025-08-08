@@ -1,5 +1,4 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { appActions, selectAllPermissionsDefault, selectAllRolesClan, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -97,7 +96,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 					type: 'success',
 					props: {
 						text2: t('roleDetail.changesSaved'),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 					}
 				});
 				navigation.goBack();

@@ -1,4 +1,4 @@
-import { IUserStatus, OwnerIcon } from '@mezon/mobile-components';
+import { IUserStatus } from '@mezon/mobile-components';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { getStore, selectMemberClanByUserId2 } from '@mezon/store-mobile';
 import { ChannelMembersEntity, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
@@ -6,6 +6,8 @@ import { ChannelType } from 'mezon-js';
 import { useContext, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { getUserStatusByMetadata } from '../../../utils/helpers';
 import { threadDetailContext } from '../../ThreadDetail/MenuThreadDetail';
 import { AddedByUser } from '../MemberItem/AddedByUser';
@@ -96,7 +98,7 @@ export function MemberProfile({
 					</View>
 				)}
 				{![ChannelType.CHANNEL_TYPE_DM].includes(currentChannel?.type) && (isDMThread ? creatorDMId : creatorClanId) === userInfo?.id && (
-					<OwnerIcon width={16} height={16} />
+					<MezonIconCDN icon={IconCDN.ownerIcon} color={themeValue.borderWarning} width={16} height={16} />
 				)}
 			</View>
 			{isDMThread && currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP && <AddedByUser groupId={currentChannel?.id} userId={user?.id} />}

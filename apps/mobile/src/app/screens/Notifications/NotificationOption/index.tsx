@@ -1,5 +1,4 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { CheckIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -38,25 +37,31 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 					title: t('tabNotify.forYou'),
 					icon: <MezonIconCDN icon={IconCDN.atIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.INDIVIDUAL),
-					component: selectedTabs === InboxType.INDIVIDUAL ? <CheckIcon color={themeValue.textStrong} /> : null
+					component:
+						selectedTabs === InboxType.INDIVIDUAL ? (
+							<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.textStrong} />
+						) : null
 				},
 				{
 					title: t('tabNotify.mention'),
 					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.MENTIONS),
-					component: selectedTabs === InboxType.MENTIONS ? <CheckIcon color={themeValue.textStrong} /> : null
+					component:
+						selectedTabs === InboxType.MENTIONS ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.textStrong} /> : null
 				},
 				{
 					title: t('tabNotify.messages'),
 					icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.MESSAGES),
-					component: selectedTabs === InboxType.MESSAGES ? <CheckIcon color={themeValue.textStrong} /> : null
+					component:
+						selectedTabs === InboxType.MESSAGES ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.textStrong} /> : null
 				},
 				{
 					title: t('tabNotify.topics'),
 					icon: <MezonIconCDN icon={IconCDN.discussionIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.TOPICS),
-					component: selectedTabs === InboxType.TOPICS ? <CheckIcon color={themeValue.textStrong} /> : null
+					component:
+						selectedTabs === InboxType.TOPICS ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.textStrong} /> : null
 				}
 			] satisfies IMezonMenuItemProps[],
 		[]

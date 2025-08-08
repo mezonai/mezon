@@ -1,10 +1,11 @@
-import { CameraIcon, CheckIcon, PlayIcon } from '@mezon/mobile-components';
 import { Colors, size } from '@mezon/mobile-ui';
 import { PreSendAttachment } from '@mezon/utils';
 import { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
 import React, { memo, useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Platform, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface GalleryItemProps {
@@ -42,7 +43,7 @@ const GalleryItem = ({
 	if (item?.isUseCamera) {
 		return (
 			<TouchableOpacity style={[styles.cameraPicker]} onPress={onOpenCamera}>
-				<CameraIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
+				<MezonIconCDN icon={IconCDN.cameraIcon} color={themeValue.text} width={size.s_24} height={size.s_24} />
 			</TouchableOpacity>
 		);
 	}
@@ -79,12 +80,12 @@ const GalleryItem = ({
 			)}
 			{isVideo && (
 				<View style={styles.videoOverlay}>
-					<PlayIcon width={size.s_20} height={size.s_20} />
+					<MezonIconCDN icon={IconCDN.playIcon} width={size.s_20} height={size.s_20} />
 				</View>
 			)}
 			{isSelected && (
 				<View style={styles.iconSelected}>
-					<CheckIcon color={Colors.bgViolet} />
+					<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.bgViolet} />
 				</View>
 			)}
 			{isSelected && <View style={styles.selectedOverlay} />}

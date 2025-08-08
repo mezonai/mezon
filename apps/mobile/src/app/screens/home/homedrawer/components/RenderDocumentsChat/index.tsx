@@ -1,9 +1,10 @@
-import { FileIcon } from '@mezon/mobile-components';
 import { Colors, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { EMimeTypes, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { openUrl } from 'react-native-markdown-display';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { checkFileTypeImage, isAudio, isVideo } from '../../../../../utils/helpers';
 import RenderAudioChat from '../RenderAudioChat/RenderAudioChat';
 import { RenderImageChat } from '../RenderImageChat';
@@ -35,7 +36,7 @@ export const RenderDocumentsChat = React.memo(({ document, onLongPress, onPressI
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={() => openUrl(document.url)} onLongPress={onLongPress} disabled={isUploading}>
 			<View style={styles.fileViewer}>
-				<FileIcon width={verticalScale(30)} height={verticalScale(30)} color={Colors.bgViolet} />
+				<MezonIconCDN icon={IconCDN.fileIcon} width={verticalScale(30)} height={verticalScale(30)} color={Colors.bgViolet} />
 				<View style={{ maxWidth: '75%' }}>
 					<Text style={styles.fileName} numberOfLines={2}>
 						{document.filename}

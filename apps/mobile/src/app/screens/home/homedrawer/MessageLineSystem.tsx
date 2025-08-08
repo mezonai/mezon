@@ -1,4 +1,4 @@
-import { ActionEmitEvent, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity, channelsActions, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
@@ -190,7 +190,9 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	return (
 		<View style={[styles.wrapperMessageBox, { marginVertical: size.s_10, paddingLeft: 0 }]}>
 			<View>
-				{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon />}
+				{message?.code === TypeMessage.Welcome && (
+					<MezonIconCDN icon={IconCDN.auditLog} width={size.s_24} height={size.s_24} color={baseColor.bgSuccess} />
+				)}
 				{message?.code === TypeMessage.CreateThread && (
 					<MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
 				)}

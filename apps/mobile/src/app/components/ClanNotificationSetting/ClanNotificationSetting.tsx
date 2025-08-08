@@ -1,4 +1,4 @@
-import { optionNotification, PlusIcon } from '@mezon/mobile-components';
+import { optionNotification } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { defaultNotificationActions, selectCurrentClanId, selectDefaultNotificationClan, useAppDispatch } from '@mezon/store-mobile';
 import { useEffect } from 'react';
@@ -84,7 +84,7 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 				{
 					title: t('notificationOverrides.addChannelsAllCategory'),
 					onPress: () => handleOverridesNotification(),
-					icon: <PlusIcon height={16} width={16} color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.plusLargeIcon} height={16} width={16} color={themeValue.text} />
 				}
 			],
 			title: t('notificationOverrides.title')

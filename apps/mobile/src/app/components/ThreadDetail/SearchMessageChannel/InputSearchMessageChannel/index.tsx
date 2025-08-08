@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, FilterSearchIcon, IOption, IUerMention } from '@mezon/mobile-components';
+import { IOption, IUerMention } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import debounce from 'lodash.debounce';
@@ -109,7 +109,7 @@ const InputSearchMessageChannel = ({
 		<View style={styles.wrapper}>
 			<TouchableOpacity onPress={onGoBack} style={{ height: '100%', paddingRight: size.s_10 }}>
 				<View style={{ alignSelf: 'center', justifyContent: 'center', flex: 1 }}>
-					<ArrowLeftIcon width={20} height={20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.backArrowLarge} width={20} height={20} color={Colors.textGray} />
 				</View>
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
@@ -181,7 +181,7 @@ const InputSearchMessageChannel = ({
 					}}
 					style={styles.listSearchIcon}
 				>
-					<FilterSearchIcon width={20} height={20} color={themeValue.textStrong} />
+					<MezonIconCDN icon={IconCDN.filterHorizontalIcon} width={20} height={20} color={themeValue.textStrong} />
 				</TouchableOpacity>
 			</Tooltip>
 		</View>

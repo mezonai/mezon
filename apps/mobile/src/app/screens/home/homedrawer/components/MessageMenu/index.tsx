@@ -1,5 +1,5 @@
 import { useAuth, useFriends } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, CloseIcon, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -32,7 +32,7 @@ import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../../../componentUI/MezonMenu';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -137,7 +137,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					type: 'success',
 					props: {
 						text2: t('notification.blockUser.success'),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 					}
 				});
 			}
@@ -146,7 +146,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				type: 'error',
 				props: {
 					text2: t('notification.blockUser.error'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		} finally {
@@ -162,7 +162,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					type: 'success',
 					props: {
 						text2: t('notification.unblockUser.success'),
-						leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 					}
 				});
 			}
@@ -171,7 +171,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				type: 'error',
 				props: {
 					text2: t('notification.unblockUser.error'),
-					leadingIcon: <CloseIcon color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
 				}
 			});
 		} finally {
@@ -244,14 +244,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		}
 	];
 
-	const favoriteMenu: IMezonMenuItemProps[] = [
-		{
-			onPress: () => reserve(),
-			title: t('menu.favorite'),
-			icon: <Icons.FavoriteFilledIcon color={themeValue.textStrong} />
-		}
-	];
-
 	const muteOrUnMuteChannel = async (active: ENotificationActive) => {
 		const body = {
 			channel_id: messageInfo?.channel_id || '',
@@ -306,10 +298,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
 			)
 		}
-		// {
-		// 	onPress: () => reserve(),
-		// 	title: t('menu.notificationSettings')
-		// }
 	];
 
 	const menu: IMezonMenuSectionProps[] = [

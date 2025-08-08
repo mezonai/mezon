@@ -1,5 +1,4 @@
 import { useRoles } from '@mezon/core';
-import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectCurrentClanId } from '@mezon/store-mobile';
 import { useEffect, useState } from 'react';
@@ -44,7 +43,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 				type: 'success',
 				props: {
 					text2: t('createNewRole.createSuccess', { roleName }),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 		} else {

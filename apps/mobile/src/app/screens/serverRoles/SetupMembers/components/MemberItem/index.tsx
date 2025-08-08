@@ -1,5 +1,4 @@
 import { useRoles } from '@mezon/core';
-import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
@@ -50,7 +49,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 				type: 'success',
 				props: {
 					text2: t('setupMember.deletedMember', { memberName }),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 		} else {

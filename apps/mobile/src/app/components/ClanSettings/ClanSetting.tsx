@@ -6,7 +6,7 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, ScrollView, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../componentUI/MezonMenu';
+import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
@@ -53,12 +53,6 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.circleInformation} color={themeValue.text} />
 		},
-		// {
-		// 	title: t('menu.settings.moderation'),
-		// 	onPress: () => reserve(),
-		// 	expandable: true,
-		// 	icon: <Icons.ModerationIcon color={themeValue.text} />,
-		// },
 		{
 			title: t('menu.settings.auditLog'),
 			onPress: () => {
@@ -68,12 +62,6 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			icon: <MezonIconCDN icon={IconCDN.clipboardIcon} color={themeValue.text} />,
 			isShow: isCanEditRole
 		},
-		// {
-		// 	title: t('menu.settings.channels'),
-		// 	onPress: () => reserve(),
-		// 	expandable: true,
-		// 	icon: <Icons.ChannelListIcon color={themeValue.text} />,
-		// },
 		{
 			title: t('menu.settings.integrations'),
 			onPress: () => {
@@ -109,36 +97,6 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
 		}
-		// {
-		// 	title: t('menu.settings.webhooks'),
-		// 	onPress: () => reserve(),
-		// 	expandable: true,
-		// 	icon: <Icons.WebhookIcon color={themeValue.text} />
-		// }
-		// {
-		// 	title: t('menu.settings.security'),
-		// 	onPress: () => reserve(),
-		// 	expandable: true,
-		// 	icon: <Icons.ShieldUserIcon color={themeValue.text} />,
-		// },
-	];
-
-	const communityMenu: IMezonMenuItemProps[] = [
-		{
-			title: t('menu.community.enableCommunity'),
-			onPress: () => reserve(),
-			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.treeHouse} color={themeValue.text} />
-		}
-	];
-
-	const subscriptionMenu: IMezonMenuItemProps[] = [
-		{
-			title: t('menu.subscriptions.getStarted'),
-			onPress: () => reserve(),
-			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.shopSparkleIcon} color={themeValue.text} />
-		}
 	];
 
 	const userManagementMenu: IMezonMenuItemProps[] = [
@@ -171,12 +129,6 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
 		}
-		// {
-		// 	title: t('menu.userManagement.bans'),
-		// 	onPress: () => reserve(),
-		// 	expandable: true,
-		// 	icon: <Icons.HammerIcon color={themeValue.text} />
-		// }
 	];
 
 	const menu: IMezonMenuSectionProps[] = [
@@ -184,14 +136,6 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			title: t('menu.settings.title'),
 			items: settingsMenu
 		},
-		// {
-		// 	title: t('menu.community.title'),
-		// 	items: communityMenu,
-		// },
-		// {
-		// 	title: t('menu.subscriptions.title'),
-		// 	items: subscriptionMenu,
-		// },
 		{
 			title: t('menu.userManagement.title'),
 			items: userManagementMenu

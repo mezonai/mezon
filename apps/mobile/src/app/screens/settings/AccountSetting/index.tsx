@@ -1,8 +1,5 @@
 import { useAuth } from '@mezon/core';
 import {
-	CheckIcon,
-	ChevronIcon,
-	CloseIcon,
 	remove,
 	STORAGE_CHANNEL_CURRENT_CACHE,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
@@ -27,6 +24,8 @@ import { Alert, FlatList, Platform, Text, TouchableOpacity, View } from 'react-n
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { SeparatorWithLine } from '../../../components/Common';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, SettingScreenProps } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -78,7 +77,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 					type: 'success',
 					props: {
 						text2: t('toast.deleteAccount.success'),
-						leadingIcon: <CheckIcon color={Colors.green} width={size.s_20} height={size.s_20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={size.s_20} height={size.s_20} />
 					}
 				});
 			}
@@ -88,7 +87,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 				type: 'error',
 				props: {
 					text2: t('toast.deleteAccount.error'),
-					leadingIcon: <CloseIcon color={Colors.red} width={size.s_20} height={size.s_20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={size.s_20} height={size.s_20} />
 				}
 			});
 		}
@@ -211,7 +210,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 									<Text style={styles.optionTitle}>{item.title}</Text>
 									<View style={styles.optionRightSide}>
 										{item?.description ? <Text style={styles.optionDescription}>{item.description}</Text> : null}
-										<ChevronIcon height={15} width={15} color={themeValue?.text} />
+										<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue?.text} />
 									</View>
 								</TouchableOpacity>
 							);
@@ -233,7 +232,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 									<Text style={styles.optionTitle}>{item.title}</Text>
 									<View style={styles.optionRightSide}>
 										{item?.description ? <Text style={styles.optionDescription}>{item.description}</Text> : null}
-										<ChevronIcon height={15} width={15} color={themeValue?.text} />
+										<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue?.text} />
 									</View>
 								</TouchableOpacity>
 							);
@@ -257,7 +256,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 									</Text>
 									<View style={styles.optionRightSide}>
 										{item?.description ? <Text style={styles.optionDescription}>{item.description}</Text> : null}
-										<ChevronIcon height={15} width={15} color={themeValue?.text} />
+										<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue?.text} />
 									</View>
 								</TouchableOpacity>
 							);

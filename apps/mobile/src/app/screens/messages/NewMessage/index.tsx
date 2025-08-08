@@ -1,12 +1,10 @@
 import { useDirect, useFriends } from '@mezon/core';
-import { ChevronIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity, directActions, getStore, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
 import { User } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Toast from 'react-native-toast-message';
 import { useThrottledCallback } from 'use-debounce';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../../components/Common';
@@ -131,7 +129,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 						<MezonIconCDN icon={IconCDN.userGroupIcon} />
 					</View>
 					<Text style={styles.actionTitle}>{t('message:newMessage.newGroup')}</Text>
-					<ChevronIcon height={15} width={15} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue.text} />
 				</TouchableOpacity>
 				<SeparatorWithLine />
 				<TouchableOpacity onPress={() => navigateToAddFriendScreen()} style={styles.actionItem}>
@@ -139,7 +137,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 						<MezonIconCDN icon={IconCDN.userIcon} />
 					</View>
 					<Text style={styles.actionTitle}>{t('message:newMessage.addFriend')}</Text>
-					<ChevronIcon height={15} width={15} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={15} width={15} color={themeValue.text} />
 				</TouchableOpacity>
 			</View>
 

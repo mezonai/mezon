@@ -1,6 +1,6 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useRoles } from '@mezon/core';
-import { CheckIcon, debounce } from '@mezon/mobile-components';
+import { debounce } from '@mezon/mobile-components';
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
@@ -60,7 +60,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 				type: 'success',
 				props: {
 					text2: t('setupMember.addedMember'),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 		} else {

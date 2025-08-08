@@ -1,10 +1,11 @@
-import { HomeTab, MessageTab, NotiTab, ProfileTab } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectHiddenBottomTabMobile, useAppSelector } from '@mezon/store-mobile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Notifications from '../../screens/Notifications';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -48,7 +49,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: 'Clans',
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <HomeTab color={color} width={size.s_22} height={size.s_22} />
+					tabBarIcon: ({ color }) => <MezonIconCDN icon={IconCDN.homeIcon} color={color} width={size.s_22} height={size.s_22} />
 				}}
 			/>
 			<TabStack.Screen
@@ -58,7 +59,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: t('navigationTabs.messages'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <MessageTab color={color} width={size.s_22} height={size.s_22} />
+					tabBarIcon: ({ color }) => <MezonIconCDN icon={IconCDN.chatIcon} color={color} width={size.s_22} height={size.s_22} />
 				}}
 			/>
 			<TabStack.Screen
@@ -68,7 +69,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: t('navigationTabs.notifications'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <NotiTab color={color} width={size.s_22} height={size.s_22} />
+					tabBarIcon: ({ color }) => <MezonIconCDN icon={IconCDN.bellIcon} color={color} width={size.s_22} height={size.s_22} />
 				}}
 			/>
 			<TabStack.Screen
@@ -78,7 +79,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: t('navigationTabs.profile'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <ProfileTab color={color} width={size.s_22} height={size.s_22} />
+					tabBarIcon: ({ color }) => <MezonIconCDN icon={IconCDN.userIcon} color={color} width={size.s_22} height={size.s_22} />
 				}}
 			/>
 		</TabStack.Navigator>

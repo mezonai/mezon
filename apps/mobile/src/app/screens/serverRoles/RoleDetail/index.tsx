@@ -1,5 +1,5 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon, isEqual } from '@mezon/mobile-components';
+import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { rolesClanActions, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
@@ -136,7 +136,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 				type: 'success',
 				props: {
 					text2: t('roleDetail.changesSaved'),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);

@@ -1,16 +1,6 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useEmojiSuggestionContext } from '@mezon/core';
-import {
-	ActionEmitEvent,
-	BicycleIcon,
-	BowlIcon,
-	debounce,
-	HeartIcon,
-	LeafIcon,
-	ObjectIcon,
-	RibbonIcon,
-	SmilingFaceIcon
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, debounce } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectCurrentTopicId, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import { FOR_SALE_CATE, IEmoji, RECENT_EMOJI_CATEGORY } from '@mezon/utils';
@@ -98,14 +88,14 @@ export default function EmojiSelectorContainer({
 			<MezonIconCDN icon={IconCDN.shopSparkleIcon} color={themeValue.textStrong} />,
 			<MezonIconCDN icon={IconCDN.clockIcon} color={themeValue.textStrong} />,
 			...clanEmojis,
-			<SmilingFaceIcon height={size.s_24} width={size.s_24} color={themeValue.textStrong} />,
-			<LeafIcon color={themeValue.textStrong} />,
-			<BowlIcon color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_24} width={size.s_24} color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.leafIcon} color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.bowlIcon} color={themeValue.textStrong} />,
 			<MezonIconCDN icon={IconCDN.gameControllerIcon} color={themeValue.textStrong} />,
-			<BicycleIcon color={themeValue.textStrong} />,
-			<ObjectIcon color={themeValue.textStrong} />,
-			<HeartIcon color={themeValue.textStrong} />,
-			<RibbonIcon color={themeValue.textStrong} />
+			<MezonIconCDN icon={IconCDN.bicycleIcon} color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.objectIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.heartIcon} color={themeValue.textStrong} />,
+			<MezonIconCDN icon={IconCDN.redFlag} color={themeValue.textStrong} />
 		];
 	}, [categoryEmoji, themeValue]);
 

@@ -1,7 +1,8 @@
-import { EmptyPinIcon } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './EmptyPinMessage.style';
 
 const EmptyPinMessage = () => {
@@ -10,7 +11,7 @@ const EmptyPinMessage = () => {
 	const { t } = useTranslation(['pinMessage']);
 	return (
 		<View style={styles.emptyPinMessageBox}>
-			<EmptyPinIcon width={120} height={120} />
+			<MezonIconCDN icon={IconCDN.emptyPinIcon} width={120} height={120} useOriginalColor={true} />
 			<Text style={styles.emptyPinMessageTitle}>{t('emptyTitle')}</Text>
 			<View>
 				<Text style={styles.emptyPinMessageHeaderText}> {t('PROTIP')}</Text>

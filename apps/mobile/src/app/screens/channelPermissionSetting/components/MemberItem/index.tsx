@@ -1,5 +1,4 @@
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
-import { OwnerIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { channelUsersActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
@@ -112,7 +111,7 @@ export const MemberItem = memo(
 							>
 								{member?.user?.display_name || member?.user?.username}
 							</Text>
-							{isClanOwner && <OwnerIcon width={16} height={16} />}
+							{isClanOwner && <MezonIconCDN icon={IconCDN.ownerIcon} color={themeValue.borderWarning} width={16} height={16} />}
 						</View>
 						{!isAdvancedSetting && (
 							<Text

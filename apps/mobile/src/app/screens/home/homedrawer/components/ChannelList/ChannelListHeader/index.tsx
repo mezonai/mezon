@@ -1,4 +1,4 @@
-import { ActionEmitEvent, ETypeSearch, VerifyIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent, ETypeSearch } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -78,7 +78,7 @@ const ChannelListHeader = () => {
 						<Text numberOfLines={1} style={styles.titleServer}>
 							{clanName}
 						</Text>
-						<VerifyIcon width={size.s_18} height={size.s_18} color={baseColor.blurple} />
+						<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
 					</View>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>

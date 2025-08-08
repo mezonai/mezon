@@ -1,4 +1,3 @@
-import { CallLogCancelIcon, CallLogIncomingIcon, CallLogMissedIcon, CallLogOutgoingIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllAccount, selectDmGroupCurrent } from '@mezon/store-mobile';
 import { IMessageCallLog, IMessageTypeCallLog } from '@mezon/utils';
@@ -8,6 +7,8 @@ import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -70,24 +71,24 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 		switch (callLogType) {
 			case IMessageTypeCallLog.TIMEOUTCALL:
 				return isMe ? (
-					<CallLogOutgoingIcon width={size.s_17} height={size.s_17} color={themeValue.textDisabled} />
+					<MezonIconCDN icon={IconCDN.callOutGoingIcon} width={size.s_17} height={size.s_17} color={themeValue.textDisabled} />
 				) : (
-					<CallLogMissedIcon width={size.s_17} height={size.s_17} color={baseColor.redStrong} />
+					<MezonIconCDN icon={IconCDN.callMissIcon} width={size.s_17} height={size.s_17} color={baseColor.redStrong} />
 				);
 			case IMessageTypeCallLog.REJECTCALL:
-				return <CallLogCancelIcon width={size.s_17} height={size.s_17} color={baseColor.redStrong} />;
+				return <MezonIconCDN icon={IconCDN.callCancelIcon} width={size.s_17} height={size.s_17} color={baseColor.redStrong} />;
 			case IMessageTypeCallLog.CANCELCALL:
 				return isMe ? (
-					<CallLogCancelIcon width={size.s_17} height={size.s_17} color={baseColor.redStrong} />
+					<MezonIconCDN icon={IconCDN.callCancelIcon} width={size.s_17} height={size.s_17} color={baseColor.redStrong} />
 				) : (
-					<CallLogMissedIcon width={size.s_17} height={size.s_17} color={baseColor.redStrong} />
+					<MezonIconCDN icon={IconCDN.callMissIcon} width={size.s_17} height={size.s_17} color={baseColor.redStrong} />
 				);
 			case IMessageTypeCallLog.FINISHCALL:
 			case IMessageTypeCallLog.STARTCALL:
 				return isMe ? (
-					<CallLogOutgoingIcon width={size.s_17} height={size.s_17} color={themeValue.textDisabled} />
+					<MezonIconCDN icon={IconCDN.callOutGoingIcon} width={size.s_17} height={size.s_17} color={themeValue.textDisabled} />
 				) : (
-					<CallLogIncomingIcon width={size.s_17} height={size.s_17} color={themeValue.textDisabled} />
+					<MezonIconCDN icon={IconCDN.callInComingIcon} width={size.s_17} height={size.s_17} color={themeValue.textDisabled} />
 				);
 			default:
 				return '';

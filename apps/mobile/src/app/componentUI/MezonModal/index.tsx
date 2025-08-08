@@ -1,4 +1,3 @@
-import { ArrowLeftIcon } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { ReactNode } from 'react';
 import { Keyboard, Modal, ModalBaseProps, Pressable, Text, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
@@ -71,7 +70,7 @@ export const MezonModal = (props: IMezonModalProps) => {
 						<View style={[styles.headerWrapper, isEmptyHeader && styles.bgDefault, headerStyles]}>
 							{visibleBackButton ? (
 								<Pressable onPress={() => onBack && onBack()} style={styles.buttonHeader}>
-									<ArrowLeftIcon height={size.s_20} width={size.s_20} />
+									<MezonIconCDN icon={IconCDN.backArrowLarge} height={size.s_20} width={size.s_20} />
 								</Pressable>
 							) : (
 								<View />

@@ -1,6 +1,5 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { CheckIcon } from '@mezon/mobile-components';
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectAllUserClans } from '@mezon/store-mobile';
 import { EPermission, UsersClanEntity } from '@mezon/utils';
@@ -144,7 +143,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				type: 'success',
 				props: {
 					text2: t('setupMember.addedMember'),
-					leadingIcon: <CheckIcon color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
 				}
 			});
 		} else {

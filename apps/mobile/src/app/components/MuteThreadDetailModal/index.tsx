@@ -1,5 +1,5 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
@@ -137,7 +137,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const openBottomSheet = () => {
 		const data = {
 			heightFitContent: true,
-			children: <NotificationSetting channel={currentChannel}/>
+			children: <NotificationSetting channel={currentChannel} />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
@@ -251,7 +251,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				<View>
 					<TouchableOpacity onPress={() => openBottomSheet()} style={styles.wrapperItemNotification}>
 						<Text style={styles.option}>{t('bottomSheet.title')}</Text>
-						<AngleRight width={20} height={20} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={20} height={20} color={themeValue.text} />
 					</TouchableOpacity>
 					<Text style={styles.InfoTitle}>{t('notifySettingThreadModal.description')}</Text>
 				</View>

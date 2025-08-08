@@ -1,4 +1,4 @@
-import { ActionEmitEvent, AngleRight, ENotificationActive, ENotificationChannelId, Icons } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { defaultNotificationCategoryActions, selectCurrentClanId, selectDefaultNotificationCategory, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, ICategoryChannel } from '@mezon/utils';
@@ -8,7 +8,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import { IconCDN } from '../../constants/icon_cdn';
 import CategoryNotificationSetting from '../CategoryNotificationSetting';
 import { style } from './styles';
 
@@ -189,7 +191,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 						}}
 						style={styles.wrapperUnmuteBox}
 					>
-						<Icons.BellSlashIcon width={20} height={20} style={{ marginRight: 20 }} color={themeValue.text} />
+						<MezonIconCDN icon={IconCDN.bellSlashIcon} width={20} height={20} customStyle={{ marginRight: 20 }} color={themeValue.text} />
 						<Text style={styles.option}>{t('bottomSheet.unMute')}</Text>
 					</TouchableOpacity>
 				</View>
@@ -203,7 +205,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 			<View>
 				<TouchableOpacity onPress={() => openBottomSheet()} style={styles.wrapperItemNotification}>
 					<Text style={styles.option}>{t('bottomSheet.title')}</Text>
-					<AngleRight width={20} height={20} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={20} height={20} color={themeValue.text} />
 				</TouchableOpacity>
 			</View>
 		</View>

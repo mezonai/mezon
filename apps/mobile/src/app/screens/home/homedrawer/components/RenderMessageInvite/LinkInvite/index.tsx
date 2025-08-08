@@ -1,5 +1,5 @@
 import { useInvite } from '@mezon/core';
-import { STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID, VerifyIcon, remove, save } from '@mezon/mobile-components';
+import { remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, clansActions, getStoreAsync, inviteActions, selectInviteById, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
+import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { style } from '../RenderMessageInvite.styles';
 
@@ -83,7 +85,9 @@ function LinkInvite({ inviteID }: { inviteID: string }) {
 							<Text style={styles.clanName} numberOfLines={1}>
 								{selectInvite?.clan_name}
 							</Text>
-							{selectInvite?.clan_name && <VerifyIcon width={size.s_16} height={size.s_16} color={themeValue.textStrong} />}
+							{selectInvite?.clan_name && (
+								<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_16} height={size.s_16} color={themeValue.textStrong} />
+							)}
 						</View>
 
 						{selectInvite?.channel_label && (

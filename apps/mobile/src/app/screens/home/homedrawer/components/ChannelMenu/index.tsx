@@ -132,23 +132,6 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			onPress: () => handleCopyLink(),
 			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.textStrong} />
 		}
-		//TODO: update later
-		// {
-		// 	title: t('menu.inviteMenu.favorite'),
-		// 	onPress: () => {
-		// 		inviteRef?.current?.present();
-		// 		dismiss();
-		// 	},
-		// 	icon: <Icons.StarIcon color={themeValue.textStrong} />,
-		// },
-		// {
-		// 	title: t('menu.inviteMenu.copyLink'),
-		// 	onPress: () => {
-		// 		inviteRef?.current?.present();
-		// 		dismiss();
-		// 	},
-		// 	icon: <Icons.LinkIcon color={themeValue.textStrong} />,
-		// },
 	];
 
 	const markFavoriteChannel = () => {
@@ -276,12 +259,6 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
 			isShow: isCanManageChannel
 		},
-		// {
-		// 	title: t('menu.organizationMenu.duplicateChannel'),
-		// 	onPress: () => reserve(),
-		// 	icon: <Icons.CopyIcon color={themeValue.textStrong} />,
-		// 	isShow: isCanManageChannel
-		// },
 		{
 			title: t('menu.organizationMenu.deleteChannel'),
 			icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={Colors.textRed} />,
@@ -389,12 +366,6 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			},
 			isShow: channel?.creator_id === currentUserId || isCanManageThread
 		}
-		// {
-		// 	title: t('menu.manageThreadMenu.copyLink'),
-		// 	icon: <Icons.LinkIcon color={themeValue.textStrong} />,
-		// 	onPress: () => reserve(),
-		// 	isShow: isCanManageThread
-		// }
 	];
 
 	const mainChannelMenu: IMezonMenuSectionProps[] = [

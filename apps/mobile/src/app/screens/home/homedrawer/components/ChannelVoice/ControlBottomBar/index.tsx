@@ -1,7 +1,6 @@
 import { TrackReference, useLocalParticipant } from '@livekit/react-native';
 import {
 	ActionEmitEvent,
-	Icons,
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	getUpdateOrAddClanChannelCache,
@@ -196,9 +195,9 @@ const ControlBottomBar = ({
 				{!isGroupCall && (
 					<TouchableOpacity onPress={handleToggleScreenShare} style={styles.menuIcon}>
 						{isScreenShareEnabled ? (
-							<Icons.ShareScreenIcon color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.shareScreenIcon} color={themeValue.textStrong} />
 						) : (
-							<Icons.ShareScreenSlashIcon color={themeValue.textStrong} />
+							<MezonIconCDN icon={IconCDN.shareScreenSlashIcon} color={themeValue.textStrong} />
 						)}
 					</TouchableOpacity>
 				)}

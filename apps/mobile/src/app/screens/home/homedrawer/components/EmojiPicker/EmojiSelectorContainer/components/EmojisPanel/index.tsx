@@ -1,4 +1,4 @@
-import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
 import { IEmoji, getSrcEmoji } from '@mezon/utils';
@@ -51,7 +51,7 @@ const EmojisPanel: FC<EmojisPanelProps> = ({ emojisData, onEmojiSelect }) => {
 							type: 'success',
 							props: {
 								text2: 'Buy item successfully!',
-								leadingIcon: <CheckIcon color={Colors.green} width={30} height={17} />
+								leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={30} height={17} />
 							}
 						});
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });

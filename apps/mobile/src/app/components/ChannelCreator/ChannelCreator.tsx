@@ -1,4 +1,4 @@
-import { CrossIcon, getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import { getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, channelsActions, createNewChannel, getStoreAsync, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
@@ -52,7 +52,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 
 			headerLeft: () => (
 				<Pressable style={{ padding: size.s_20 }} onPress={handleClose}>
-					<CrossIcon height={size.s_16} width={size.s_16} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.closeLargeIcon} height={size.s_16} width={size.s_16} color={themeValue.text} />
 				</Pressable>
 			)
 		});

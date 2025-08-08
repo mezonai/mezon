@@ -40,7 +40,7 @@ const CanvasItem = memo(({ canvas, currentUser, creatorIdChannel, onPressItem, o
 			</Text>
 			<View style={styles.buttonGroup}>
 				<TouchableOpacity style={styles.button} onPress={handleCopyLinkToClipboard}>
-					<Icons.CopyLink height={size.s_16} width={size.s_16} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.linkIcon} height={size.s_16} width={size.s_16} color={themeValue.text} />
 				</TouchableOpacity>
 				{!isDisableDelCanvas && (
 					<TouchableOpacity style={styles.button} onPress={handleDeleteCanvas}>

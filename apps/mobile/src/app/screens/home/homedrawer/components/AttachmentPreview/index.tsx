@@ -1,4 +1,3 @@
-import { PlayIcon } from '@mezon/mobile-components';
 import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import React, { memo } from 'react';
@@ -58,7 +57,7 @@ const AttachmentPreview = memo(({ channelId }: IProps) => {
 
 						{isVideo && (
 							<View style={styles.videoOverlay}>
-								<PlayIcon width={size.s_20} height={size.s_20} />
+								<MezonIconCDN icon={IconCDN.playIcon} width={size.s_20} height={size.s_20} />
 							</View>
 						)}
 					</View>

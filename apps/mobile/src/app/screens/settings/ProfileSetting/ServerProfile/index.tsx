@@ -1,5 +1,5 @@
 import { useClanProfileSetting } from '@mezon/core';
-import { ActionEmitEvent, CheckIcon } from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	ClansEntity,
@@ -148,7 +148,9 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 
 										<Text style={styles.clanName}>{item?.clan_name}</Text>
 									</View>
-									{item?.clan_id === selectedClan?.clan_id ? <CheckIcon color="green" /> : null}
+									{item?.clan_id === selectedClan?.clan_id ? (
+										<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color="green" />
+									) : null}
 								</TouchableOpacity>
 							);
 						}}
