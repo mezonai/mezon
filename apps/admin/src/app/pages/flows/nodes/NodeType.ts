@@ -269,6 +269,49 @@ const NodeTypes = [
 			headers: {},
 			body: ''
 		}
+	},
+	{
+		type: 'quickMenu',
+		label: 'Quick Menu',
+
+		schema: yup.object().shape({
+			menuName: yup.string().required('Menu Name is required')
+		}),
+
+		bridgeSchema: {
+			type: 'object',
+			properties: {
+				menuName: {
+					type: 'string',
+					uniforms: {
+						component: CustomTextField,
+						label: 'Menu Name',
+						name: 'menuName',
+						placeholder: 'Enter menu name'
+					}
+				},
+				functionBody: {
+					type: 'string',
+					uniforms: {
+						component: CodeEditorField,
+						label: 'Function Body',
+						name: 'functionBody'
+					}
+				}
+			},
+			required: ['commandName']
+		},
+
+		anchors: {
+			source: [],
+			target: []
+		},
+		initialValue: {
+			url: '',
+			method: 'POST',
+			headers: {},
+			body: ''
+		}
 	}
 ];
 export default NodeTypes;

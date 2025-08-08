@@ -60,7 +60,6 @@ const Flow = () => {
 		setEdges(flowState.edges);
 	}, [flowState.edges, setEdges]);
 
-	// handle drag, drop and connect nodes
 	const onConnect = useCallback(
 		(params: Connection) => {
 			flowDispatch(addEdge(params as Edge));
@@ -72,7 +71,6 @@ const Flow = () => {
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
 
-	// create list node type from NodeType and CustomNode to use in ReactFlow
 	const listNodeType = useMemo(() => {
 		const obj: { [key: string]: (props: any) => JSX.Element } = {};
 		NodeTypes.forEach((item, index) => {
@@ -106,7 +104,6 @@ const Flow = () => {
 
 	const handleClickSaveFlow = React.useCallback(async () => {
 		let checkValidate = true;
-		// get data from all nodes
 		const formData: {
 			[key: string]: {
 				[key: string]: string;
@@ -122,7 +119,6 @@ const Flow = () => {
 					};
 				};
 				data[nodeId] = nodeRef?.getFormData?.() ?? {};
-				// check validate of all nodes
 				const check = nodeRef?.checkValidate?.();
 				if (!check) checkValidate = false;
 				return data;
@@ -134,7 +130,6 @@ const Flow = () => {
 			}
 		);
 
-		// check validate of all nodes, if one node is invalid, return
 		if (!checkValidate) return;
 		const listNodeInFlow: INode[] = [];
 		nodes.forEach((node) => {
@@ -162,7 +157,6 @@ const Flow = () => {
 			};
 			listNodeInFlow.push(newNode);
 		});
-		// loop through all edges to get connection
 		const listEdgeInFlow: IEdge[] = [];
 		edges.forEach((edge: Edge) => {
 			const newEdge = {
@@ -199,20 +193,18 @@ const Flow = () => {
 			toast.error('Flow must have at least one node');
 			return;
 		}
-		if (!flowDataSave.connections.length) {
-			toast.error('Flow must have at least one connection');
-			return;
-		}
+		// if (!flowDataSave.connections.length) {
+		// 	toast.error('Flow must have at least one connection');
+		// 	return;
+		// }
 		flowDispatch(changeLoading(true));
 		try {
 			if (flowId) {
 				await flowService.updateFlow({ ...flowDataSave, flowId });
 				toast.success('Update flow success');
-				// call api update flow
 			} else {
 				const response = await flowService.createNewFlow(flowDataSave);
 				toast.success('Save flow success');
-				// navigate to flow detail after create flow
 				navigate(`/developers/applications/${applicationId}/flow/${response.id}`);
 			}
 		} catch (error) {
@@ -242,7 +234,6 @@ const Flow = () => {
 		flowDispatch(setEdgesContext(edges));
 	};
 
-	// handle drop node from menu to flow, add new node to flow
 	const onDrop = useCallback(
 		(event: React.DragEvent<HTMLDivElement>) => {
 			event.preventDefault();
@@ -294,7 +285,7 @@ const Flow = () => {
 				};
 			});
 			flowDispatch(setNodesContext(listNode));
-			const listEdge: Edge[] = flowDetail.connections?.map((edge: IEdge) => {
+			const listEdge: Edge[] = (flowDetail.connections ?? []).map((edge: IEdge) => {
 				return {
 					id: uuidv4(),
 					source: nodeId[edge.sourceNodeId],
@@ -307,14 +298,12 @@ const Flow = () => {
 		};
 
 		const checkIsExampleFlow = ExampleFlow.find((item) => item.id === flowId || item.id === exampleFlowId);
-		// set flow data from example flow => use example flow template to create new flow
 		if (exampleFlowId && checkIsExampleFlow) {
 			setFlowDetail(checkIsExampleFlow.flowDetail);
 			setIsExampleFlow(false);
 			return;
 		}
 
-		// set flow data is empty when flowId is empty => create new flow
 		if (!flowId) {
 			flowDispatch(setNodesContext([]));
 			flowDispatch(setEdgesContext([]));
@@ -322,14 +311,12 @@ const Flow = () => {
 			return;
 		}
 
-		// get flow detail from example flow to display in flow editor
 		if (checkIsExampleFlow) {
 			setFlowDetail(checkIsExampleFlow.flowDetail);
 			setIsExampleFlow(true);
 			return;
 		}
 
-		// get flow detail when flowId is not empty
 		const getDetailFlow = async () => {
 			flowDispatch(changeLoading(true));
 			try {
@@ -342,12 +329,10 @@ const Flow = () => {
 				flowDispatch(changeLoading(false));
 			}
 		};
-		// get flow detail from api to display in flow editor
 		getDetailFlow();
 	}, [flowId, flowDispatch, exampleFlowId]);
 
 	useEffect(() => {
-		// handle delete node when press delete key
 		const onKeyUp = (event: KeyboardEvent) => {
 			if (event.key === 'Delete') {
 				const selectedNodes = document.querySelectorAll('.selected');
@@ -387,11 +372,10 @@ const Flow = () => {
 				minZoom={0.5}
 				maxZoom={3}
 				defaultViewport={{ x: 100, y: 100, zoom: 1 }}
-				nodesDraggable={!isExampleFlow} // disable drag node if current flow is example flow
-				nodesConnectable={!isExampleFlow} // disable connect node if current flow is example flow
-				elementsSelectable={!isExampleFlow} // disable select node if current flow is example flow
-				zoomOnScroll={!isExampleFlow} // disable zoom on scroll if current flow is example flow
-				// fitView
+				nodesDraggable={!isExampleFlow}
+				nodesConnectable={!isExampleFlow}
+				elementsSelectable={!isExampleFlow}
+				zoomOnScroll={!isExampleFlow}
 				colorMode="light"
 			>
 				{!isExampleFlow && (
