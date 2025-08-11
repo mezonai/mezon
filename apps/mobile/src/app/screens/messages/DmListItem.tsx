@@ -51,10 +51,12 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	const otherMemberList = useMemo(() => {
 		const userIdList = directMessage.user_id;
 		const usernameList = directMessage?.usernames || [];
+		const displayNameList = directMessage?.display_names || [];
 
 		return usernameList?.map((username, index) => ({
 			userId: userIdList?.[index],
-			username: username
+			username: username,
+			displayName: displayNameList?.[index]
 		}));
 	}, [directMessage]);
 
@@ -69,7 +71,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 
 		const lastMessageSender = otherMemberList?.find?.((it) => it?.userId === senderId);
 		if (lastMessageSender?.username) {
-			return `${lastMessageSender.username}: `;
+			return `${lastMessageSender?.displayName || lastMessageSender?.username}: `;
 		}
 
 		return '';
@@ -115,7 +117,6 @@ export const DmListItem = React.memo((props: { id: string }) => {
 					<DmListItemLastMessage
 						content={typeof content === 'object' ? content : safeJSONParse(content || '{}')}
 						styleText={{ color: isUnReadChannel && !isYourAccount ? themeValue.white : themeValue.textDisabled }}
-						// code={directMessage.last_sent_message?.content}
 					/>
 				)}
 			</View>

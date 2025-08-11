@@ -266,6 +266,7 @@ export interface ChannelCategorySettingState extends EntityState<NotiChannelCate
 		{
 			loadingStatus: LoadingStatus;
 			cache?: CacheMetadata;
+			list?: NotiChannelCategorySettingEntity[];
 		}
 	>;
 	loadingStatus: LoadingStatus;
@@ -402,6 +403,7 @@ export const channelCategorySettingSlice = createSlice({
 
 					if (!fromCache) {
 						channelCategorySettingAdapter.setAll(state, notification_channel_category_settings_list);
+						state.byClans[clanId].list = notification_channel_category_settings_list as NotiChannelCategorySettingEntity[];
 						state.byClans[clanId].cache = createCacheMetadata(CHANNEL_CATEGORY_SETTING_CACHE_TIME);
 					}
 
@@ -460,3 +462,15 @@ export const getchannelCategorySettingListState = (rootState: {
 export const selectAllchannelCategorySetting = createSelector(getchannelCategorySettingListState, selectAll);
 
 export const selectEntiteschannelCategorySetting = createSelector(getchannelCategorySettingListState, selectEntities);
+
+export const selectChannelCategorySettingsByCurrentClan = createSelector(
+	[
+		getchannelCategorySettingListState,
+		(state: RootState) => state.clans.currentClanId as string
+	],
+	(state, clanId) => {
+		const list = state.byClans[clanId]?.list;
+		if (list && list.length > 0) return list;
+		return selectAll(state);
+	}
+);

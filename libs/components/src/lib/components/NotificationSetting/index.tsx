@@ -4,7 +4,7 @@ import {
 	defaultNotificationActions,
 	defaultNotificationCategoryActions,
 	notificationSettingActions,
-	selectAllchannelCategorySetting,
+	selectChannelCategorySettingsByCurrentClan,
 	selectCurrentChannel,
 	selectCurrentClan,
 	selectCurrentClanId,
@@ -74,7 +74,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const notificatonSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.id || ''));
 
-	const channelCategorySettings = useSelector(selectAllchannelCategorySetting);
+	const channelCategorySettings = useSelector(selectChannelCategorySettingsByCurrentClan);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const sortedChannelCategorySettings = React.useMemo(() => {
@@ -92,6 +92,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		});
 		return settingsCopy;
 	}, [channelCategorySettings]);
+	console.log('danh sach channelCategorySettings:', sortedChannelCategorySettings);
 	const handleNotificationClanChange = (event: any, notification: number) => {
 		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClan?.id, notification_type: notification }));
 	};
@@ -251,6 +252,9 @@ const ModalNotificationSetting = (props: ModalParam) => {
 							value={selectedOption}
 							placeholder="Select or create an option..."
 							styles={customStyles}
+							classNames={{
+								menuList: () => 'thread-scroll'
+							}}
 						/>
 					</div>
 					<div className={`mt-4 overflow-visible bg-theme-setting-primary `}>
