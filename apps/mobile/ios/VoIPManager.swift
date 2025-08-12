@@ -256,9 +256,32 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
             payload: payloadDict,
             withCompletionHandler: {
                 print("log  => Incoming call reported successfully with UUID: \(callUUID)")
+                // Show native call screen after CallKit reports the call
+                DispatchQueue.main.async {
+                    self.showNativeCallScreen(with: notificationData, uuid: callUUID)
+                }
             }
         )
         completion()
+    }
+
+    // Add this new method to show the native call screen
+    private func showNativeCallScreen(with callData: [String: Any], uuid: String) {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            print("log  => Could not find window to present call screen")
+            return
+        }
+        
+        let callScreenVC = CallScreenViewController()
+        callScreenVC.configureWithCallData(callData, uuid: uuid)
+        callScreenVC.modalPresentationStyle = .fullScreen
+        callScreenVC.modalTransitionStyle = .crossDissolve
+        
+        // Present the call screen
+        window.rootViewController?.present(callScreenVC, animated: true) {
+            print("log  => Native call screen presented successfully")
+        }
     }
 
     // Helper method to report a dummy call when payload is invalid
