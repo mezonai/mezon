@@ -193,7 +193,10 @@ export default class App {
 			if (forceQuit.isEnabled) {
 				app.exit(0);
 				forceQuit.disable();
+				return;
 			}
+			event.preventDefault();
+			App.mainWindow.hide();
 		});
 
 		App.application.on('before-quit', async () => {
@@ -202,6 +205,7 @@ export default class App {
 			} catch (error) {
 				console.error('Update check failed:', error);
 			}
+			forceQuit.enable();
 			tray.destroy();
 			App.application.exit();
 		});
