@@ -190,19 +190,16 @@ export default class App {
 
 		// Emitted when the window is closed.
 		App.mainWindow.on('close', (event) => {
-			if (process.platform === 'win32' && !isQuitting) {
-				app.exit(0);
+			if (process.platform === 'darwin' && !isQuitting) {
+				event.preventDefault();
+				App.mainWindow.hide();
 				return;
 			}
 
 			if (forceQuit.isEnabled) {
 				app.exit(0);
 				forceQuit.disable();
-				return;
 			}
-
-			event.preventDefault();
-			App.mainWindow.hide();
 		});
 
 		App.application.on('before-quit', async () => {
