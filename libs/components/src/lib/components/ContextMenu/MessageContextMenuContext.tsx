@@ -22,6 +22,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { ShowContextMenuParams, useContextMenu } from 'react-contexify';
 import { useModal } from 'react-modal-hook';
 import ModalDeleteMess from '../DeleteMessageModal/ModalDeleteMess';
+import GiveCoffeeModal from '../GiveCoffeeModal';
+import { GiveCoffeeModalProvider } from '../GiveCoffeeModal/GiveCoffeeModalContext';
 import { ModalAddPinMess } from '../PinMessModal';
 import MessageContextMenu from './MessageContextMenu';
 
@@ -51,6 +53,7 @@ type MessageContextMenuContextValue = {
 	onVisibilityChange: (status: boolean) => void;
 	openDeleteMessageModal: () => void;
 	openPinMessageModal: () => void;
+	openGiveCoffeeModal: () => void;
 	selectedMessageId: string | null;
 };
 
@@ -83,6 +86,9 @@ export const MessageContextMenuContext = createContext<MessageContextMenuContext
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 	},
 	openPinMessageModal: () => {
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+	},
+	openGiveCoffeeModal: () => {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 	},
 	selectedMessageId: null
@@ -140,6 +146,13 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 				channelLabel={currentChannel?.channel_label || ''}
 			/>
 		);
+	}, [messageIdRef.current]);
+
+	const [openGiveCoffeeModal, closeGiveCoffeeModal] = useModal(() => {
+		const store = getStore();
+		const appState = store.getState() as RootState;
+		const message = getMessage(appState, isTopic, messageIdRef.current);
+		return <GiveCoffeeModal message={message} isTopic={isTopic} onClose={closeGiveCoffeeModal} />;
 	}, [messageIdRef.current]);
 
 	const handlePinMessage = useCallback(async () => {
@@ -204,9 +217,10 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 				isTopic={isTopic}
 				openDeleteMessageModal={openDeleteMessageModal}
 				openPinMessageModal={openPinMessageModal}
+				openGiveCoffeeModal={openGiveCoffeeModal}
 			/>
 		);
-	}, [elementTarget, isMenuVisible, isTopic]);
+	}, [elementTarget, isMenuVisible, isTopic, openDeleteMessageModal, openPinMessageModal, openGiveCoffeeModal]);
 
 	const setPositionShow = useCallback((pos: string) => {
 		setPosShowMenu(pos);
@@ -261,7 +275,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			};
 			showContextMenu(event, niceProps);
 		},
-		[]
+		[showContextMenu]
 	);
 
 	const value = useMemo(
@@ -276,6 +290,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			onVisibilityChange,
 			openDeleteMessageModal,
 			openPinMessageModal,
+			openGiveCoffeeModal,
 			selectedMessageId
 		}),
 		[
@@ -289,6 +304,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			onVisibilityChange,
 			openDeleteMessageModal,
 			openPinMessageModal,
+			openGiveCoffeeModal,
 			selectedMessageId
 		]
 	);
@@ -297,8 +313,10 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 
 	return (
 		<MessageContextMenuContext.Provider value={value}>
-			{children}
-			{shouldRender && menu}
+			<GiveCoffeeModalProvider>
+				{children}
+				{shouldRender && menu}
+			</GiveCoffeeModalProvider>
 		</MessageContextMenuContext.Provider>
 	);
 };
