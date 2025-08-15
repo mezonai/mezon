@@ -200,7 +200,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			attachments?: ApiMessageAttachment[],
 			hide_editted?: boolean,
 			topic_id?: string,
-			isTopic?: boolean
+			isTopic?: boolean,
+			oldMentions?: string
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
@@ -224,7 +225,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				attachments,
 				hide_editted,
 				topic_id,
-				!!isTopic
+				!!isTopic,
+				oldMentions
 			);
 			if (topic_id && !isTopic) {
 				dispatch(topicsActions.updateInitMessage({ content: trimContent, mentions: mentions }));

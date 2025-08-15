@@ -13,6 +13,7 @@ import { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';
+import { useGetOldMentions } from './useGetOldMentions';
 
 export const useEditMessage = (channelId: string, channelLabel: string, mode: number, message: IMessageWithUser) => {
 	const clanIdInMes = useMemo(() => {
@@ -35,6 +36,7 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 
 	const dispatch = useDispatch();
 	const { editSendMessage } = useChatSending({ channelOrDirect: currentDirectOrChannel, mode });
+	const getOldMentions = useGetOldMentions(channelId);
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
 
@@ -71,11 +73,12 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 
 	const handleSend = useCallback(
 		(editMessage: IMessageSendPayload, messageId: string, draftMention: ApiMessageMention[], topic_id: string, isTopic?: boolean) => {
-			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id, isTopic);
+			const oldMentions = getOldMentions(messageId);
+			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id, isTopic, oldMentions);
 			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topic_id as string);
 			dispatch(referencesActions.setOpenEditMessageState(false));
 		},
-		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, clanIdInMes, mode, message]
+		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, getOldMentions]
 	);
 
 	return {

@@ -50,6 +50,7 @@ export * from './lib/chat/hooks/useEventManagement';
 export * from './lib/chat/hooks/useEventManagementQuantity';
 export * from './lib/chat/hooks/useFormatDate';
 export * from './lib/chat/hooks/useFriends';
+export * from './lib/chat/hooks/useGetOldMentions';
 export * from './lib/chat/hooks/useGetPriorityNameFromUserClan';
 export * from './lib/chat/hooks/useGifs';
 export * from './lib/chat/hooks/useGifsStickersEmojis';

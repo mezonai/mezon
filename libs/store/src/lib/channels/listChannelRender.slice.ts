@@ -238,6 +238,26 @@ export const listChannelRenderSlice = createSlice({
 				return channel;
 			});
 		},
+		updateChannelUnreadCount: (state, action: PayloadAction<{ channelId: string; clanId: string; count: number; isReset?: boolean }>) => {
+			const { channelId, clanId, count, isReset = false } = action.payload;
+			if (clanId === '0') {
+				return;
+			}
+			if (!state.listChannelRender[clanId]) {
+				return;
+			}
+			state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
+				if (channel.id === channelId) {
+					const currentCount = (channel as IChannel).count_mess_unread || 0;
+					const newCount = isReset ? count : Math.max(0, currentCount + count);
+					return {
+						...channel,
+						count_mess_unread: newCount
+					};
+				}
+				return channel;
+			});
+		},
 		removeBadgeFromChannel: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
 			const { channelId, clanId } = action.payload;
 			const channels = state.listChannelRender[clanId];
