@@ -486,6 +486,54 @@ const ExampleFlow: IExampleFlow[] = [
 				image: []
 			}
 		}
+	},
+	{
+		id: 'example-flow-5',
+		flowName: 'Quick Menu Example',
+		description: 'This is an example flow quick menu',
+		status: 'active',
+		flowDetail: {
+			id: '89c19669-073a-40c7-b55a-0a07c4458510',
+			userId: 'a08a1932-10cc-479c-8c1c-7b14cde57fd2',
+			flowName: 'Quick Menu Example',
+			description: 'This is an example about command flow',
+
+			nodes: [
+				{
+					id: 'e3d0ac76-5ca9-4f2f-9f8c-3464f0eaa069',
+					nodeType: 'quickMenu',
+					nodeName: 'quickMenu',
+					measured: '{"width":250,"height":261}',
+					position: '{"x":-38,"y":-30}',
+					parameters: [
+						{
+							nodeId: 'e3d0ac76-5ca9-4f2f-9f8c-3464f0eaa069',
+							parameterKey: 'menuName',
+							parameterValue: 'menuNameExample',
+							id: '01188a03-38a3-42a5-8efa-0966c7a851e9'
+						},
+						{
+							nodeId: 'e3d0ac76-5ca9-4f2f-9f8c-3464f0eaa069',
+							parameterKey: 'functionBody',
+							parameterValue:
+								'let title = "List href or album";\ndata.items.forEach((item) => {\n\ttitle += ` - ${item.href}`;\n});\nreturn title;',
+							id: '01188a03-38a3-42a5-8efa-0966c7a851e9'
+						}
+					],
+					data: {
+						id: ''
+					},
+					selected: false
+				}
+			]
+		},
+		message: {
+			input: '*exampleQuickMenuFlow',
+			output: {
+				message: 'Hello! this is example flow \nwith quick menu',
+				image: []
+			}
+		}
 	}
 ];
 export default ExampleFlow;

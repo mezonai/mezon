@@ -1,5 +1,7 @@
+import { selectAppDetail } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FlowContext } from '../../context/FlowContext';
 import flowService from '../../services/flowService';
@@ -13,6 +15,8 @@ const Flows = () => {
 	const handleGoToAddFlowPage = () => {
 		navigate(`/developers/applications/${applicationId}/add-flow`);
 	};
+	const appDetail = useSelector(selectAppDetail);
+
 	const [hasToken, setHasToken] = useState(false);
 	const [openAppTokenModal, setOpenAppTokenModal] = useState(false);
 
@@ -32,7 +36,7 @@ const Flows = () => {
 
 	const handleCreateApplication = useCallback(
 		(token: string) => {
-			flowService.createApplication(applicationId as string, token);
+			flowService.createApplication(applicationId as string, appDetail?.appname ?? '', applicationId as string, token);
 		},
 		[applicationId]
 	);

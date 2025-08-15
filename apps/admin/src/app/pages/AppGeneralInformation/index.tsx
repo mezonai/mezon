@@ -194,12 +194,10 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	};
 
 	const handleOpenSaveChangeForBotShadow = (value: string) => {
-
-		const checked = value === "true";
+		const checked = value === 'true';
 		setChangeBotShadow(checked);
 		setShadowModified(true);
 		setOpenSaveChange(true);
-
 	};
 
 	const handleOpenSaveChangeForUrl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -260,7 +258,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			updateRequest.about = changeAboutApp;
 		}
 
-		(updateRequest as any).is_shadow = changeBotShadow ? "true" : "false";
+		(updateRequest as any).is_shadow = changeBotShadow ? 'true' : 'false';
 
 		if (Object.keys(updateRequest).length === 0) return;
 
@@ -331,11 +329,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 					{!isUrlValid && <div className="text-red-500 text-sm">Please enter a valid URL (e.g., https://example.com).</div>}
 				</div>
 			) : (
-				<ToggleItem
-					label="Bot Shadow"
-					value={changeBotShadow ? "true" : "false"}
-					handleToggle={handleOpenSaveChangeForBotShadow}
-				/>
+				<ToggleItem label="Bot Shadow" value={changeBotShadow ? 'true' : 'false'} handleToggle={handleOpenSaveChangeForBotShadow} />
 			)}
 
 			{openSaveChange && isUrlValid && <ModalSaveChanges onReset={handleResetChange} onSave={handleEditAppOrBot} />}
@@ -356,8 +350,9 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				<div>{appId}</div>
 				<div
 					onClick={() => handleCopyID(appId)}
-					className={`py-[7px] px-[16px] rounded-xl ${idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
-						} cursor-pointer w-[90px] text-[15px] text-white rounded-xl flex items-center justify-center`}
+					className={`py-[7px] px-[16px] rounded-xl ${
+						idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
+					} cursor-pointer w-[90px] text-[15px] text-white rounded-xl flex items-center justify-center`}
 				>
 					{idCopied ? 'Copied!' : 'Copy'}
 				</div>
@@ -374,7 +369,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 					</div>
 				) : (
 					<div className=" mt-1">
-							<span className="text-sm text-gray-500 ">
+						<span className="text-sm text-gray-500 ">
 							For security purposes, tokens can only be viewed once, when created. If you forgot or lost access to your token, please
 							regenerate a new one.
 						</span>
@@ -383,17 +378,20 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				{visibleToken && (
 					<div
 						onClick={() => handleCopyUrl(visibleToken)}
-						className={`mt-2 py-[7px] px-[16px] ${tokenCopied ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-800'
-							} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${openSaveChange ? 'pointer-events-none opacity-50' : ''
-							}`}
+						className={`mt-2 py-[7px] px-[16px] ${
+							tokenCopied ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-800'
+						} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${
+							openSaveChange ? 'pointer-events-none opacity-50' : ''
+						}`}
 					>
 						{tokenCopied ? 'Copied!' : 'Copy Token'}
 					</div>
 				)}
 				<div
 					onClick={handleResetToken}
-					className={`py-[7px] px-[16px]  flex items-center justify-center bg-indigo-600 hover:bg-indigo-700  cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${openSaveChange ? 'pointer-events-none opacity-50' : ''
-						}`}
+					className={`py-[7px] px-[16px]  flex items-center justify-center bg-indigo-600 hover:bg-indigo-700  cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${
+						openSaveChange ? 'pointer-events-none opacity-50' : ''
+					}`}
 				>
 					Reset Token
 				</div>
@@ -402,8 +400,9 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			<div className="flex justify-end">
 				<div
 					onClick={toggleDeletePopup}
-					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-xl w-fit ${openSaveChange ? 'pointer-events-none opacity-50' : ''
-						}`}
+					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-xl w-fit ${
+						openSaveChange ? 'pointer-events-none opacity-50' : ''
+					}`}
 				>
 					Delete {setAppOrBot}
 				</div>

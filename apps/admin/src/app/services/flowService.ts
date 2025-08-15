@@ -79,11 +79,11 @@ const getApplication = async (appId: string) => {
 	}
 };
 
-const createApplication = async (appId: string, appToken: string) => {
+const createApplication = async (appId: string, username: string, referralId: string, appToken: string) => {
 	try {
 		const response = await apiInstance(`/application`, {
 			method: 'POST',
-			body: JSON.stringify({ appId, appToken })
+			body: JSON.stringify({ appId, appToken, username, referralId })
 		});
 		return response as { id: string };
 	} catch (error) {
