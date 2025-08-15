@@ -1,4 +1,5 @@
-import { TIME_OFFSET } from '@mezon/utils';
+import { TIME_OFFSET, TypeMessage } from '@mezon/utils';
+import { ChannelMessage } from 'mezon-js';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -81,5 +82,83 @@ export const resetChannelBadgeCount = (dispatch: any, params: ResetBadgeParams) 
 
 	if (clanId !== '0' && badgeCount !== undefined && badgeCount > 0) {
 		dispatch(clansActions.updateClanBadgeCount({ clanId, count: badgeCount * -1 }));
+	}
+};
+
+export interface DecreaseChannelBadgeParams {
+	message: ChannelMessage;
+	userId: string;
+	store: any;
+}
+
+const isMessageMentionOrReply = (msg: ChannelMessage, currentUserId: string): boolean => {
+	const hasMention = msg.mentions?.some((mention) => mention.user_id === currentUserId) ?? false;
+	const isReply = msg.references?.some((ref) => ref.message_sender_id === currentUserId) ?? false;
+
+	return hasMention || isReply;
+};
+
+export const decreaseChannelBadgeCount = (dispatch: any, params: DecreaseChannelBadgeParams) => {
+	const { message, userId, store } = params;
+
+	if (message?.code !== TypeMessage.ChatRemove || message.sender_id === userId) {
+		return;
+	}
+
+	const messageTimestamp =
+		message.update_time_seconds && message.update_time_seconds > 0 ? message.update_time_seconds : message.create_time_seconds || 0;
+
+	// Handle direct messages (DM/Group)
+	if (!message.clan_id || message.clan_id === '0') {
+		const dmMeta = store.getState().directmeta?.entities?.[message.channel_id];
+		if (dmMeta && messageTimestamp > dmMeta.lastSeenTimestamp && dmMeta.count_mess_unread > 0) {
+			dispatch(directMetaActions.setCountMessUnread({ channelId: message.channel_id, count: -1 }));
+		}
+		return;
+	}
+
+	// Handle clan channels
+	if (message.clan_id && message.clan_id !== '0') {
+		const channelMeta = store.getState().channelmeta?.entities?.[message.channel_id];
+		const channel = store.getState().channels?.byClans?.[message.clan_id]?.entities?.entities?.[message.channel_id];
+		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
+
+		if (
+			channel &&
+			lastSeenTimestamp &&
+			messageTimestamp > lastSeenTimestamp &&
+			(channel.count_mess_unread || 0) > 0 &&
+			isMessageMentionOrReply(message, userId)
+		) {
+			dispatch(
+				listChannelRenderAction.updateChannelUnreadCount({
+					channelId: message.channel_id,
+					clanId: message.clan_id,
+					count: -1
+				})
+			);
+
+			dispatch(
+				channelsActions.updateChannelBadgeCount({
+					clanId: message.clan_id,
+					channelId: message.channel_id,
+					count: -1
+				})
+			);
+
+			dispatch(
+				listChannelsByUserActions.updateChannelBadgeCount({
+					channelId: message.channel_id,
+					count: -1
+				})
+			);
+
+			dispatch(
+				clansActions.updateClanBadgeCount({
+					clanId: message.clan_id,
+					count: -1
+				})
+			);
+		}
 	}
 };
