@@ -3,16 +3,17 @@ import { appActions, canvasActions, canvasAPIActions, selectIdCanvas, useAppDisp
 import { ICanvas } from '@mezon/utils';
 import { ButtonCopy } from 'libs/components/src/lib/components';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 type GroupCanvasProps = {
 	canvas: ICanvas;
 	channelId?: string;
 	clanId: string;
 	creatorIdChannel?: string;
 	onClose: () => void;
+	selectedCanvasId: string | null;
+	onSelectCanvas: (canvasId: string) => void;
 };
 
-const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: GroupCanvasProps) => {
+const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, selectedCanvasId, onSelectCanvas }: GroupCanvasProps) => {
 	const canvasId = canvas.id;
 	const currentIdCanvas = useSelector(selectIdCanvas);
 	const { userProfile } = useAuth();
@@ -25,6 +26,13 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 		dispatch(appActions.setIsShowCanvas(true));
 		dispatch(canvasActions.setIdCanvas(canvasId || ''));
 		onClose();
+	};
+
+	const handleCanvasClick = () => {
+		if (canvasId) {
+			onSelectCanvas(canvasId);
+			handleOpenCanvas();
+		}
 	};
 
 	const handleDeleteCanvas = async () => {
@@ -42,6 +50,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 		}
 	};
 
+	const isSelected = selectedCanvasId === canvasId && canvasId;
 	const link =
 		canvas.parent_id && canvas.parent_id !== '0'
 			? `/chat/clans/${clanId}/threads/${channelId}/canvas/${canvasId}`
@@ -49,9 +58,13 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel }: G
 
 	return (
 		<div className="w-full flex gap-2 relative">
-			<Link className="w-full py-2 pl-4 pr-4 cursor-pointer rounded-lg border-theme-primary" role="button" to={link} onClick={handleOpenCanvas}>
+			<div
+				className={`w-full py-2 pl-4 pr-4 cursor-pointer rounded-lg border-theme-primary ${isSelected ? 'bg-item-theme text-theme-primary-active' : ''}`}
+				role="button"
+				onClick={handleCanvasClick}
+			>
 				<div className="h-6 text-xs one-line font-semibold leading-6 ">{canvas.title ? canvas.title : 'Untitled'}</div>
-			</Link>
+			</div>
 			<ButtonCopy
 				copyText={process.env.NX_CHAT_APP_REDIRECT_URI + link}
 				className={`absolute top-2 !rounded-full overflow-hidden  ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}  `}

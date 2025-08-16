@@ -109,7 +109,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, i
 				ref={threadLinkRef}
 				to={channelPath}
 				key={thread.channel_id}
-				className={`${classes[state]} ml-10 w-full leading-[24px] rounded-lg font-medium text-theme-primary-hover  text-[16px] max-w-full one-line ${isActive || isUnReadChannel || numberNotification > 0 ? 'dark:font-medium font-semibold text-theme-primary-active ' : ' '} ${isActive ? 'bg-item-hover text-theme-primary-active bg-item-theme' : 'text-theme-primary'}`}
+				className={`${isActive ? 'bg-item-theme text-theme-primary-active' : classes[state]} ml-10 w-full leading-[24px] rounded-lg font-medium text-[16px] max-w-full one-line ${isActive || isUnReadChannel || numberNotification > 0 ? 'dark:font-medium font-semibold' : ''} ${!isActive ? 'text-theme-primary' : ''}`}
 				onClick={() => {
 					handleClick(thread);
 				}}

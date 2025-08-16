@@ -5,12 +5,13 @@ import {
 	selectCanvasIdsByChannelId,
 	selectCurrentChannel,
 	selectCurrentClanId,
+	selectIdCanvas,
 	selectTheme,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { RefObject, useMemo, useRef, useState } from 'react';
+import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import EmptyCanvas from './EmptyCanvas';
 import GroupCanvas from './GroupCanvas';
@@ -28,6 +29,8 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const appearanceTheme = useSelector(selectTheme);
 	const [keywordSearch, setKeywordSearch] = useState('');
+	const currentIdCanvas = useSelector(selectIdCanvas);
+	const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(currentIdCanvas);
 	// const { countCanvas } = useAppSelector((state) => selectCanvasCursors(state, currentChannel?.channel_id ?? ''));
 	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, currentChannel?.channel_id ?? '', currentChannel?.parent_id));
 	const filteredCanvases = useMemo(() => {
@@ -35,6 +38,12 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 		const lowerCaseQuery = keywordSearch.toLowerCase().trim();
 		return canvases.filter((entity) => entity.title.toLowerCase().includes(lowerCaseQuery));
 	}, [canvases, keywordSearch]);
+
+	useEffect(() => {
+		if (currentIdCanvas && !selectedCanvasId) {
+			setSelectedCanvasId(currentIdCanvas);
+		}
+	}, [currentIdCanvas, selectedCanvasId]);
 
 	const handleCreateCanvas = () => {
 		const isThread = Boolean(currentChannel?.parent_id && currentChannel?.parent_id !== '0');
@@ -52,6 +61,10 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 		dispatch(canvasActions.setContent(''));
 		dispatch(canvasActions.setIdCanvas(null));
 		onClose();
+	};
+
+	const handleSelectCanvas = (canvasId: string) => {
+		setSelectedCanvasId(canvasId);
 	};
 
 	const modalRef = useRef<HTMLDivElement>(null);
@@ -110,6 +123,8 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 								channelId={currentChannel?.channel_id}
 								clanId={currentClanId || ''}
 								creatorIdChannel={currentChannel?.creator_id}
+								selectedCanvasId={selectedCanvasId}
+								onSelectCanvas={handleSelectCanvas}
 							/>
 						);
 					})}
