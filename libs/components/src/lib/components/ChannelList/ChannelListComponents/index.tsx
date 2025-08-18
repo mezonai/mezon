@@ -68,16 +68,24 @@ export const Events = memo(() => {
 	useEffect(() => {
 		if (currentClan?.is_onboarding) {
 			dispatch(onboardingActions.fetchOnboarding({ clan_id: currentClanId as string }));
-			dispatch(onboardingActions.fetchProcessingOnboarding({}));
+			dispatch(onboardingActions.fetchProcessingOnboarding({ clan_id: currentClanId as string }));
 		}
-	}, [currentClan?.is_onboarding]);
+	}, [currentClan?.is_onboarding, currentClan]);
 
 	const checkPreviewMode = useMemo(() => {
 		if (previewMode) {
 			return true;
 		}
-		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && onboardingByClan?.mission.length > 0 && currentClan?.is_onboarding;
-	}, [selectUserProcessing?.onboarding_step, onboardingByClan?.mission.length, previewMode, currentClan?.is_onboarding]);
+		if (selectUserProcessing) {
+			return (
+				onboardingByClan?.sumMission &&
+				onboardingByClan?.sumMission > 0 &&
+				currentClan?.is_onboarding &&
+				selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS
+			);
+		}
+		return false;
+	}, [selectUserProcessing, onboardingByClan?.mission.length, previewMode, currentClan?.is_onboarding]);
 	const handleClose = () => {
 		dispatch(topicsActions.setIsShowCreateTopic(false));
 		dispatch(threadsActions.setIsShowCreateThread({ channelId: currentChannelId as string, isShowCreateThread: false }));
@@ -192,8 +200,8 @@ const EventNotification = ({ event, handleOpenDetail }: { event: EventManagement
 };
 
 const OnboardingGetStart = ({ link, clanId }: { link: string; clanId: string }) => {
-	const missionDone = useSelector(selectMissionDone);
-	const missionSum = useSelector(selectMissionSum);
+	const missionDone = useSelector((state) => selectMissionDone(state, clanId));
+	const missionSum = useSelector((state) => selectMissionSum(state, clanId));
 
 	const completionPercentage = useMemo(() => {
 		return missionDone ? (missionDone / missionSum) * 100 - 100 : -97;
