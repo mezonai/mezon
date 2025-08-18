@@ -1,7 +1,16 @@
-import { channelsActions, selectAllChannels, selectCurrentChannel, selectCurrentClan, selectMembersClanCount, useAppSelector } from '@mezon/store';
+import {
+	channelsActions,
+	selectAllChannels,
+	selectCurrentChannel,
+	selectCurrentClan,
+	selectLastMessageByChannelId,
+	selectMembersClanCount,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { TypeMessage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, memo, useEffect, useMemo } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import ModalInvite from '../ListMemberInvite/modalInvite';
@@ -14,6 +23,13 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 	const numberChannel = useSelector(selectAllChannels);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentClan = useSelector(selectCurrentClan);
+	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, currentChannel?.id as string));
+	const checkLastMessage = useMemo(() => {
+		if (lastMessage?.code === TypeMessage.Indicator) {
+			return false;
+		}
+		return true;
+	}, [lastMessage]);
 
 	const dispatch = useDispatch();
 	const [openInviteClanModal, closeInviteClanModal] = useModal(() => <ModalInvite onClose={closeInviteClanModal} open={true} />);
@@ -52,7 +68,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 			) : (
 				<>
 					<Onboarditem icon={<Icons.AddPerson />} title="Invite your friends" tick={numberMemberClan > 1} onClick={openInviteClanModal} />
-					<Onboarditem icon={<Icons.Sent />} title="Send your first message" tick={!!nextMessageId} onClick={handleSendMessage} />
+					<Onboarditem icon={<Icons.Sent />} title="Send your first message" tick={checkLastMessage} onClick={handleSendMessage} />
 					<Onboarditem icon={<Icons.Download />} title="Download the Mezon App" tick={true} onClick={handleSendMessage} />
 					<Onboarditem icon={<Icons.Hashtag />} title="Create your channel" tick={numberChannel.length > 1} onClick={handleCreateChannel} />
 				</>
@@ -61,7 +77,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 	);
 }
 
-const Onboarditem = ({ icon, title, tick, onClick }: { icon: ReactNode; title: string; tick: boolean; onClick: () => void }) => {
+const Onboarditem = memo(({ icon, title, tick, onClick }: { icon: ReactNode; title: string; tick: boolean; onClick: () => void }) => {
 	const handleOnClickItem = () => {
 		if (!tick) {
 			onClick();
@@ -83,24 +99,4 @@ const Onboarditem = ({ icon, title, tick, onClick }: { icon: ReactNode; title: s
 			)}
 		</div>
 	);
-};
-
-const AppInfor = ({ desc, link }: { desc?: string; link?: string }) => {
-	const handleNavigateLink = () => {
-		window.open(link, '_blank');
-	};
-	return (
-		<div className="flex gap-1 text-sm">
-			{desc && (
-				<div className="inline-block break-all">
-					{desc}{' '}
-					{link && (
-						<a className="underline text-blue-600 cursor-pointer break-all" onClick={handleNavigateLink}>
-							{link}
-						</a>
-					)}
-				</div>
-			)}
-		</div>
-	);
-};
+});
