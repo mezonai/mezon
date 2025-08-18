@@ -807,7 +807,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				return;
 			}
 
-			const preservedItemElements = listItemElementsRef.current.filter((element) => messageIds.includes(element.id.replace('msg-', '')));
+			const preservedItemElements = listItemElementsRef.current.filter((element) => messageIds.includes(element.id?.replace('msg-', '')));
 
 			const anchor = preservedItemElements[1] || preservedItemElements[0];
 
