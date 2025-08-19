@@ -1,8 +1,8 @@
-import { QRCodeCanvas } from "qrcode.react";
 import { useState } from 'react';
 import { FaCopy, FaFacebook, FaReddit, FaTwitter } from 'react-icons/fa';
 import { HiOutlineCalendarDays, HiOutlineChatBubbleLeftRight, HiOutlineLightBulb, HiOutlineUserGroup } from 'react-icons/hi2';
 import { IoMdClose } from 'react-icons/io';
+import QRCode from "react-qr-code";
 import { useParams } from 'react-router-dom';
 import ImageWithSkeleton from '../components/common/ImageWithSkeleton';
 import { DEFAULT_IMAGES } from '../constants/constants';
@@ -275,12 +275,7 @@ export default function ClanDetailPage() {
 								<p className="text-gray-700 mb-3 font-medium">Scan QR Code</p>
 								<div className="flex justify-center mb-3">
 									<div className="bg-white p-3 rounded-lg shadow-sm border">
-										<QRCodeCanvas
-											value={inviteLink}
-											size={120}
-											level="M"
-											includeMargin={true}
-										/>
+										<QRCode value={inviteLink} size={120} />
 									</div>
 								</div>
 								<p className="text-xs text-gray-500">Use your phone camera to scan and join</p>
