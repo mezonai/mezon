@@ -82,6 +82,8 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 					localStorage.setItem('persist:apps', JSON.stringify(persistApp));
 					localStorage.setItem('current-theme', "${themeBasic}");
 				}
+			} else {
+				throw new Error('persist:apps data is not a valid string');
 			}
 		} catch (error) {
 			console.error('Error parsing persist:apps data:', error);
@@ -135,23 +137,9 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 	true;
   `;
 
-	// const reloadChannelApp = () => {
-	// 	webviewRef?.current?.reload();
-	// };
 	const onMessage = (event: any) => {
 		console.error('Received message from WebView:', event?.nativeEvent?.data);
 	};
-
-	// const onPressOption = (option: IOption) => {
-	// 	if (option?.value === OptionChannelApp.Refresh) {
-	// 		reloadChannelApp();
-	// 	}
-	// 	setIsShowTooltip(false);
-	// };
-
-	// const toggleTooltip = () => {
-	// 	setIsShowTooltip(!isShowTooltip);
-	// };
 
 	const onClose = () => {
 		navigation.goBack();
@@ -181,24 +169,6 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 				<MezonIconCDN icon={IconCDN.closeSmallBold} height={size.s_16} width={size.s_16} />
 				<Text style={styles.buttonText}>Close</Text>
 			</TouchableOpacity>
-			{/* <View style={styles.toolTipContainer}>
-				<Tooltip
-					isVisible={isShowTooltip}
-					content={<ChannelAppOptions onPressOption={onPressOption} />}
-					contentStyle={styles.toolTip}
-					arrowSize={{ width: 0, height: 0 }}
-					placement="center"
-					onClose={() => setIsShowTooltip(false)}
-					closeOnBackgroundInteraction={true}
-					disableShadow={true}
-					closeOnContentInteraction={true}
-				>
-					<TouchableOpacity onPress={toggleTooltip} style={styles.reloadButton}>
-						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_16} width={size.s_16} />
-						<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={size.s_14} width={size.s_14} />
-					</TouchableOpacity>
-				</Tooltip>
-			</View> */}
 
 			<WebView
 				ref={webviewRef}
