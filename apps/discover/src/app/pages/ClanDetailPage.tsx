@@ -1,3 +1,4 @@
+import { QRCodeCanvas } from "qrcode.react";
 import { useState } from 'react';
 import { FaCopy, FaFacebook, FaReddit, FaTwitter } from 'react-icons/fa';
 import { HiOutlineCalendarDays, HiOutlineChatBubbleLeftRight, HiOutlineLightBulb, HiOutlineUserGroup } from 'react-icons/hi2';
@@ -8,12 +9,14 @@ import { DEFAULT_IMAGES } from '../constants/constants';
 import { useDiscover } from '../context/DiscoverContext';
 import { useNavigation } from '../hooks/useNavigation';
 
+
 export default function ClanDetailPage() {
 	const { id } = useParams();
 	const { clans } = useDiscover();
 	const clan = clans.find((c: any) => c.clan_id === id);
 	const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 	const [isCopied, setIsCopied] = useState(false);
+	const [isJoinOptionsOpen, setIsJoinOptionsOpen] = useState(false);
 	const { toClanPage } = useNavigation();
 
 	if (!clan) {
@@ -36,13 +39,18 @@ export default function ClanDetailPage() {
 	];
 	const inviteLink = `https://mezon.ai/invite/${clan?.invite_id}`;
 	const handleNavigate = () => {
-		if (clan?.clan_id) {
-			window.location.href = inviteLink;
+		if (clan?.invite_id) {
+			window.open(`https://mezon.ai/invite/${clan.invite_id}`, "_blank");
 		}
 	};
 
+
 	const handleShare = () => {
 		setIsShareDialogOpen(true);
+	};
+
+	const handleJoinOptions = () => {
+		setIsJoinOptionsOpen(true);
 	};
 
 	const handleCopy = () => {
@@ -134,7 +142,7 @@ export default function ClanDetailPage() {
 						</div>
 						<div className="flex flex-col gap-2 min-w-[160px]">
 							<button
-								onClick={handleNavigate}
+								onClick={handleJoinOptions}
 								className="bg-[#5865f2] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#4752c4]"
 							>
 								Join Clan
@@ -235,7 +243,6 @@ export default function ClanDetailPage() {
 								</button>
 							</div>
 						</div>
-
 						<div className="flex justify-center gap-4">
 							{socials.map((s: any, idx: number) => (
 								<a
@@ -248,6 +255,47 @@ export default function ClanDetailPage() {
 									{s.icon}
 								</a>
 							))}
+						</div>
+					</div>
+				</div>
+			)}
+
+			{isJoinOptionsOpen && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative">
+						<button onClick={() => setIsJoinOptionsOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+							<IoMdClose size={24} />
+						</button>
+
+						<h2 className="text-xl font-bold mb-4 text-center">Join Clan</h2>
+						<p className="text-gray-600 mb-6 text-center">Choose how you want to join this clan</p>
+
+						<div className="space-y-4">
+							<div className="text-center p-4 border-2 border-gray-200 rounded-lg  transition-colors">
+								<p className="text-gray-700 mb-3 font-medium">Scan QR Code</p>
+								<div className="flex justify-center mb-3">
+									<div className="bg-white p-3 rounded-lg shadow-sm border">
+										<QRCodeCanvas
+											value={inviteLink}
+											size={120}
+											level="M"
+											includeMargin={true}
+										/>
+									</div>
+								</div>
+								<p className="text-xs text-gray-500">Use your phone camera to scan and join</p>
+							</div>
+
+							<div className="text-center p-4 border-2 border-gray-200 rounded-lg  transition-colors">
+								<p className="text-gray-700 mb-3 font-medium">Open Link Directly</p>
+								<button
+									onClick={handleNavigate}
+									className="bg-[#5865f2] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#4752c4] transition-colors w-full"
+								>
+									Join Now
+								</button>
+								<p className="text-xs text-gray-500 mt-2">Open in new tab</p>
+							</div>
 						</div>
 					</div>
 				</div>
