@@ -133,7 +133,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const currentMission = useMemo(() => {
 		return onboardingClan.mission[missionDone || 0];
 	}, [missionDone, channelId, onboardingClan.mission]);
-	const selectUserProcessing = useSelector(selectProcessingByClan(currentClan?.clan_id as string));
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClan?.clan_id as string));
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	useEffect(() => {

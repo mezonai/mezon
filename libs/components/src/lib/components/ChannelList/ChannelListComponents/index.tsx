@@ -64,7 +64,7 @@ export const Events = memo(() => {
 	}, []);
 
 	const dispatch = useAppDispatch();
-	const selectUserProcessing = useSelector(selectProcessingByClan(currentClan?.clan_id as string));
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClan?.clan_id as string));
 	useEffect(() => {
 		if (currentClan?.is_onboarding) {
 			dispatch(onboardingActions.fetchOnboarding({ clan_id: currentClanId as string }));

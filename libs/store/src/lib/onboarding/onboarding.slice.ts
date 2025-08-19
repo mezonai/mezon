@@ -629,10 +629,9 @@ export const selectOnboardingByClan = createSelector([getOnboardingState, (state
 	);
 });
 
-export const selectProcessingByClan = (clanId: string) =>
-	createSelector(getOnboardingState, (state) => {
-		return selectById(state, clanId);
-	});
+export const selectProcessingByClan = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
+	return selectById(state, clan_id);
+});
 export const selectCurrentMission = createSelector(
 	[getOnboardingState, (state, clan_id: string) => clan_id, selectMissionDone],
 	(state, clan_id, missionIndex) => {

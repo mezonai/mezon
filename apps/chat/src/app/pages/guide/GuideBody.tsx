@@ -32,7 +32,7 @@ function GuideBody() {
 	const formOnboarding = useSelector(selectFormOnboarding);
 	const missionSum = useSelector((state) => selectMissionSum(state, currentClanId as string));
 	const missionDone = useSelector((state) => selectMissionDone(state, currentClanId as string));
-	const selectUserProcessing = useSelector(selectProcessingByClan(currentClanId as string));
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClanId as string));
 	const answerByClanId = useAppSelector((state) => selectAnswerByClanId(state, currentClanId as string));
 
 	const handleDoMission = useCallback(
