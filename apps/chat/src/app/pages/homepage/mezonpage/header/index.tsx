@@ -1,5 +1,6 @@
 import { selectIsLogin } from '@mezon/store';
 import { Icons, Image } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { throttle } from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -52,21 +53,36 @@ const HeaderMezon = memo((props: HeaderProps) => {
 		handleScroll();
 	}, [sideBarIsOpen, handleScroll]);
 
-	const NavLink: React.FC<NavLinkProps> = ({ href, section, label }) => (
-		<a
-			href={href}
-			onClick={(event) => scrollToSection(section, event)}
-			className="border-b-2 border-transparent shadow-none text-[16px] leading-[24px] text-[#7C92AF] font-semibold flex flex-row items-center px-[2px] hover:border-[#8FA7BF] hover:text-[#8FA7BF] focus:border-transparent focus:rounded-lg focus:shadow-[0px_0px_0px_4px_#678FFF]"
-		>
-			{label}
-		</a>
-	);
+	const NavLink: React.FC<NavLinkProps> = ({ href, section, label }) => {
+		let linkPath: string;
+		if (section === 'home') {
+			linkPath = 'homepage.header.link.home';
+		} else if (section === 'feature') {
+			linkPath = 'homepage.header.link.feature';
+		} else {
+			linkPath = 'homepage.header.link.developers';
+		}
 
+		return (
+			<a
+				data-e2e={generateE2eId(linkPath as any)}
+				href={href}
+				onClick={(event) => scrollToSection(section, event)}
+				className="border-b-2 border-transparent shadow-none text-[16px] leading-[24px] text-[#7C92AF] font-semibold flex flex-row items-center px-[2px] hover:border-[#8FA7BF] hover:text-[#8FA7BF] focus:border-transparent focus:rounded-lg focus:shadow-[0px_0px_0px_4px_#678FFF]"
+			>
+				{label}
+			</a>
+		);
+	};
 	return (
 		<div
 			className={`layout fixed flex flex-col items-center w-full z-50 ${isScrolled ? 'bg-[#0B0E2D4D] z-50 shadow-[0px_4px_12px_0px_#0B0E2D26] backdrop-blur-[24px]' : ''} h-[80px] max-md:h-[72px]`}
 		>
-			<div ref={refHeader} className={`header fixed z-50 w-10/12 max-lg:w-full max-md:border-b-[1px] max-md:border-[#4465FF4D]`}>
+			<div
+				ref={refHeader}
+				data-e2e={generateE2eId('homepage.header.container.navigation')}
+				className={`header fixed z-50 w-10/12 max-lg:w-full max-md:border-b-[1px] max-md:border-[#4465FF4D]`}
+			>
 				<div className="flex items-center justify-between md:px-[32px] max-md:px-[16px] max-md:py-[14px] h-[80px] max-md:h-[72px]">
 					<div className="flex items-center gap-[40px]">
 						<Link to={'/mezon'} className="flex items-center gap-[4.92px]">
@@ -78,6 +94,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							<NavLink href="#overview" section="overview" label="Overview" />
 							<NavLink href="#feature" section="feature" label="Features" />
 							<a
+								data-e2e={generateE2eId('homepage.header.link.developers')}
 								href={'developers/applications'}
 								target="_blank"
 								rel="noopener noreferrer"
@@ -121,6 +138,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 					</div>
 					<div className="w-fit">
 						<Link
+							data-e2e={generateE2eId('homepage.header.button.login')}
 							className="hidden lg:block px-[16px] py-[10px] bg-[#1024D4] rounded-lg text-[#F4F7F9] text-[16px] leading-[24px] hover:bg-[#0C1AB2] focus:bg-[#281FB5] whitespace-nowrap"
 							to={'/mezon'}
 							onClick={() => trackHeaderLoginClick(isLogin ? 'Open Mezon' : 'Login')}
