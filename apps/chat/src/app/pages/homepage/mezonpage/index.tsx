@@ -1,7 +1,7 @@
 import { CustomCookieConsent } from '@mezon/components';
 import mezonPackage from '@mezon/package-js';
 import { Icons, Image } from '@mezon/ui';
-import { Platform, getPlatform } from '@mezon/utils';
+import { Platform, generateE2eId, getPlatform } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Footer from './footer';
@@ -129,6 +129,7 @@ function MezonPage() {
 							<h1
 								style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial' }}
 								className="tracking-[-.02em] text-center text-[60px] max-md:text-[36px] leading-[72px] max-md:leading-[48px] text-[#F4F7F9] max-md:text-textDarkTheme"
+								data-e2e={generateE2eId('homepage.main-page.heading.title')}
 							>
 								The Live, Work, and Play Platform – the best Discord alternative.
 							</h1>
