@@ -154,6 +154,7 @@
     "autoprefixer": "10.4.16",
     "babel-jest": "^29.7.0",
     "babel-loader": "^8.2.3",
+    "babel-plugin-react-remove-properties": "^0.3.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.10.0",
     "dotenv": "^16.5.0",

@@ -9,4 +9,18 @@
     ],
   ],
   "plugins": [],
+  "env": {
+    "production": {
+      "plugins": [
+        [
+          "react-remove-properties",
+          {
+            "properties": [
+              "data-e2e"
+            ]
+          }
+        ]
+      ]
+    }
+  }
 }
