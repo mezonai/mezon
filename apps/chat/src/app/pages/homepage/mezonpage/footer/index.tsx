@@ -1,5 +1,5 @@
 import { Icons, Image } from '@mezon/ui';
-import { Platform, getPlatform } from '@mezon/utils';
+import { Platform, generateE2eId, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { DropdownButton } from '..';
 interface FooterProps {
@@ -228,7 +228,9 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 			</div>
 			<div className="bg-[#0B0E2D] py-[48px] max-md:py-[24px] flex flex-col items-center">
 				<div className="w-10/12 px-[32px] max-md:px-[16px] flex items-center gap-[32px] justify-between max-lg:gap-[24px] max-lg:w-full max-lg:flex-col-reverse max-lg:items-start">
-					<div className="text-[16px] leading-[24px] font-normal text-[#7C92AF]">© 2024 Mezon. All rights reserved.</div>
+					<div data-e2e={generateE2eId('homepage.footer.text.copyright')} className="text-[16px] leading-[24px] font-normal text-[#7C92AF]">
+						© 2024 Mezon. All rights reserved.
+					</div>
 					<div className="flex items-center gap-[24px]">
 						<a href="https://www.linkedin.com/company/106435035" target="_blank" rel="noreferrer">
 							<Image src={`assets/instagram.svg`} />
