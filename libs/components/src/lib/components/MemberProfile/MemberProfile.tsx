@@ -1,6 +1,6 @@
 import { ChannelMembersEntity, selectCurrentClan } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EUserStatus, MemberProfileType, UserStatus, createImgproxyUrl } from '@mezon/utils';
+import { EUserStatus, MemberProfileType, UserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo, useRef } from 'react';
 import { AvatarImage } from '../../components';
@@ -332,9 +332,9 @@ const DMUserName = ({
 }: Omit<UserNameProps, 'isDM' | 'isFooter' | 'userId'>) => {
 	return (
 		<span
-			className={`one-line text-start ${hideLongName && 'truncate !block'} ${
-				isOwnerClanOrGroup && 'max-w-[140px]'
-			} ${isListFriend ? 'text-theme-primary' : ''}`}
+			className={`one-line text-start ${hideLongName && 'truncate !block'} ${isOwnerClanOrGroup && 'max-w-[140px]'
+				} ${isListFriend ? 'text-theme-primary' : ''}`}
+			data-e2e={generateE2eId(`chat.direct_message.chat_item.username`)}
 		>
 			{!isHiddenAvatarPanel && name}
 		</span>

@@ -58,6 +58,7 @@ import {
 	filterEmptyArrays,
 	filterMentionsWithAtSign,
 	formatMentionsToString,
+	generateE2eId,
 	getDisplayMention,
 	parseHtmlAsFormattedText,
 	processBoldEntities,
@@ -806,9 +807,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		<div className={`contain-layout relative bg-theme-surface rounded-lg `} ref={containerRef}>
 			<div className="relative">
 				<span
-					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${
-						draftRequest?.valueTextInput ? 'hidden' : 'opacity-100'
-					} sm:opacity-100 max-sm:opacity-100`}
+					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${draftRequest?.valueTextInput ? 'hidden' : 'opacity-100'
+						} sm:opacity-100 max-sm:opacity-100`}
 					style={{
 						whiteSpace: 'nowrap',
 						overflow: 'hidden',
@@ -820,6 +820,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					{ephemeralTargetUserId ? `Ephemeral message to ${ephemeralTargetUserDisplay}...` : 'Write your thoughts here...'}
 				</span>
 				<MentionsInput
+					data-e2e={generateE2eId(`chat.direct_message.chat_item.text_area`)}
 					onPaste={(event: any) => {
 						const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
 						if (pastedData) {

@@ -1,7 +1,7 @@
 import { useAuth, useEscapeKeyClose } from '@mezon/core';
 import {
-	RolesClanEntity,
 	channelUsersActions,
+	RolesClanEntity,
 	selectAllRolesClan,
 	selectAllUserChannel,
 	selectAllUserClans,
