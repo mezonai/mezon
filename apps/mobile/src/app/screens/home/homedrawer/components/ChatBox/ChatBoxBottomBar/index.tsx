@@ -10,7 +10,7 @@ import {
 	mentionRegexSplit,
 	save
 } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
 	emojiSuggestionActions,
@@ -68,7 +68,7 @@ export const triggersConfig: TriggersConfig<'mention' | 'hashtag' | 'emoji' | 's
 		isInsertSpaceAfterMention: true,
 		textStyle: {
 			fontWeight: 'bold',
-			color: Colors.white
+			color: 'white'
 		}
 	},
 	emoji: {

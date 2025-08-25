@@ -1,4 +1,3 @@
-import { IS_TABLET } from '@mezon/mobile-components';
 import { Attributes, baseColor, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
@@ -12,7 +11,7 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 		headerContainer: {
 			alignItems: 'center',
 			marginTop: size.s_30,
-			marginBottom: IS_TABLET ? size.s_10 : size.s_30,
+			marginBottom: isTabletLandscape ? size.s_10 : size.s_30,
 			paddingVertical: Metrics.size.m,
 			paddingHorizontal: Metrics.size.xl
 		},

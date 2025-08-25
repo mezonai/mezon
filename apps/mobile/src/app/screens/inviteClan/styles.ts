@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -57,7 +57,7 @@ export const style = (colors: Attributes) =>
 		},
 
 		defaultAvatarText: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: size.s_26,
 			fontWeight: '600'
 		},
@@ -83,7 +83,7 @@ export const style = (colors: Attributes) =>
 		},
 
 		joinButtonText: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: size.s_14,
 			fontWeight: '600',
 			letterSpacing: 0.5

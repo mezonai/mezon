@@ -1,5 +1,5 @@
 import { ITabList } from '@mezon/mobile-components';
-import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 interface IHeaderTabSearchProps {
@@ -15,7 +15,7 @@ const HeaderTabSearch = ({ onPress, tabList, activeTab }: IHeaderTabSearchProps)
 				flexDirection: 'row',
 				justifyContent: 'flex-start',
 				alignItems: 'center',
-				borderBottomColor: Colors.borderDim,
+				borderBottomColor: '#5a5b5c30',
 				borderBottomWidth: 1
 			}}
 		>
@@ -25,7 +25,7 @@ const HeaderTabSearch = ({ onPress, tabList, activeTab }: IHeaderTabSearchProps)
 						style={{
 							paddingBottom: size.s_10,
 							paddingVertical: size.s_20,
-							borderBottomColor: Colors.bgViolet,
+							borderBottomColor: themeValue.bgViolet,
 							borderBottomWidth: tab?.index === activeTab ? size.s_2 : 0,
 							alignItems: 'center'
 						}}

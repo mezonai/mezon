@@ -1,9 +1,9 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
 	headerModal: {
-		backgroundColor: Colors.transparent,
+		backgroundColor: 'transparent',
 		paddingHorizontal: size.s_20
 	},
 	titleHeader: {
@@ -11,11 +11,11 @@ export const styles = StyleSheet.create({
 		textAlign: 'center'
 	},
 	option: {
-		backgroundColor: Colors.secondary
+		backgroundColor: '#242427'
 	},
 	durationText: {
 		fontSize: size.label,
-		color: Colors.textGray,
+		color: '#c7c7c7',
 		fontWeight: '600',
 		marginBottom: size.s_10,
 		marginTop: size.s_30

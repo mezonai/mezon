@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentClanId } from '@mezon/store-mobile';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +7,9 @@ import { Platform, Pressable, StatusBar, Text, TouchableOpacity, View } from 're
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
-import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -35,7 +35,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 				type: 'success',
 				props: {
 					text2: t('createNewRole.createSuccess', { roleName }),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -44,7 +44,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}
@@ -88,7 +88,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 						<View
 							style={[
 								{
-									backgroundColor: roleName?.trim()?.length === 0 ? Colors.bgGrayDark : Colors.bgViolet
+									backgroundColor: roleName?.trim()?.length === 0 ? '#676b73' : themeValue.bgViolet
 								},
 								styles.button
 							]}

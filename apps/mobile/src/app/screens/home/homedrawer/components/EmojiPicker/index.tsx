@@ -1,7 +1,7 @@
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending, useGifsStickersEmoji } from '@mezon/core';
 import { debounce, isEmpty } from '@mezon/mobile-components';
-import { Colors, Fonts, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { Fonts, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	MediaType,
 	selectAnonymousMode,
@@ -47,14 +47,14 @@ function TextTab({ selected, title, onPress }: TextTabProps) {
 			<Pressable
 				onPress={onPress}
 				style={{
-					backgroundColor: selected ? Colors.bgViolet : 'transparent',
+					backgroundColor: selected ? themeValue.bgViolet : 'transparent',
 					...styles.selected,
 					alignItems: 'center',
 					justifyContent: 'center',
 					height: '100%'
 				}}
 			>
-				<Text style={{ color: selected ? Colors.white : Colors.gray72, fontSize: Fonts.size.small, textAlign: 'center' }}>{title}</Text>
+				<Text style={{ color: selected ? 'white' : '#727272', fontSize: Fonts.size.small, textAlign: 'center' }}>{title}</Text>
 			</Pressable>
 		</View>
 	);

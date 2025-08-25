@@ -6,7 +6,6 @@ import notifee from '@notifee/react-native';
 import { getApp } from '@react-native-firebase/app';
 import { getInitialNotification, getMessaging } from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
-import BootSplash from 'react-native-bootsplash';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from '../../utils/helpers';
 import { APP_SCREEN } from '../ScreenTypes';
@@ -42,19 +41,6 @@ export const Authentication = memo(() => {
 	useEffect(() => {
 		getInitRouterName();
 	}, []);
-
-	useEffect(() => {
-		let splashTask;
-		if (initRouteName) {
-			splashTask = setTimeout(() => {
-				BootSplash.hide({ fade: false });
-			}, 1);
-		}
-
-		return () => {
-			if (splashTask) clearTimeout(splashTask);
-		};
-	}, [initRouteName]);
 
 	if (!initRouteName) return null;
 

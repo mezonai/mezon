@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentTopicId } from '@mezon/store-mobile';
 import { EmojiDataOptionals, TypeMessage, calculateTotalCount } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -114,7 +114,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 
 			{messageReactions?.length ? (
 				<Pressable onPress={() => !preventAction && openEmojiPicker?.()} style={styles.addEmojiIcon}>
-					<MezonIconCDN icon={IconCDN.faceIcon} height={size.s_20} width={size.s_20} color={Colors.gray72} />
+					<MezonIconCDN icon={IconCDN.faceIcon} height={size.s_20} width={size.s_20} color={baseColor.gray} />
 				</Pressable>
 			) : null}
 		</View>

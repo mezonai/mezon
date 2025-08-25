@@ -4,6 +4,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { resetCachedMessageActionNeedToResolve } from '../../../utils/helpers';
 import { ActionMessageSelected } from './components/ChatBox/ActionMessageSelected';
 import { ChatBoxBottomBar } from './components/ChatBox/ChatBoxBottomBar';
@@ -73,58 +74,59 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 	}, []);
 
 	return (
-		<View
-			style={{
-				backgroundColor: themeValue.primary,
-				borderTopWidth: 1,
-				borderTopColor: themeValue.border,
-				flexDirection: 'column',
-				justifyContent: 'space-between'
-			}}
-		>
-			{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
-				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={deleteMessageActionNeedToResolve} />
-			)}
-			{!props?.canSendMessage && !isDM ? (
-				<View
-					style={{
-						zIndex: 10,
-						width: '95%',
-						marginVertical: size.s_6,
-						alignSelf: 'center',
-						marginBottom: size.s_20
-					}}
-				>
+		<LinearGradient start={{ x: 1, y: 0 }} end={{ x: 0, y: 0 }} colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}>
+			<View
+				style={{
+					borderTopWidth: 1,
+					borderTopColor: themeValue.border,
+					flexDirection: 'column',
+					justifyContent: 'space-between'
+				}}
+			>
+				{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
+					<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={deleteMessageActionNeedToResolve} />
+				)}
+				{!props?.canSendMessage && !isDM ? (
 					<View
 						style={{
-							backgroundColor: themeValue.charcoal,
-							padding: size.s_16,
-							borderRadius: size.s_20,
-							marginHorizontal: size.s_6
+							zIndex: 10,
+							width: '95%',
+							marginVertical: size.s_6,
+							alignSelf: 'center',
+							marginBottom: size.s_20
 						}}
 					>
-						<Text
+						<View
 							style={{
-								color: themeValue.textDisabled,
-								textAlign: 'center'
+								backgroundColor: themeValue.charcoal,
+								padding: size.s_16,
+								borderRadius: size.s_20,
+								marginHorizontal: size.s_6
 							}}
 						>
-							{t('noSendMessagePermission')}
-						</Text>
+							<Text
+								style={{
+									color: themeValue.textDisabled,
+									textAlign: 'center'
+								}}
+							>
+								{t('noSendMessagePermission')}
+							</Text>
+						</View>
 					</View>
-				</View>
-			) : (
-				<ChatBoxBottomBar
-					messageActionNeedToResolve={messageActionNeedToResolve}
-					onDeleteMessageActionNeedToResolve={deleteMessageActionNeedToResolve}
-					channelId={props?.channelId}
-					mode={props?.mode}
-					hiddenIcon={props?.hiddenIcon}
-					messageAction={props?.messageAction}
-					isPublic={props?.isPublic}
-					topicChannelId={props?.topicChannelId}
-				/>
-			)}
-		</View>
+				) : (
+					<ChatBoxBottomBar
+						messageActionNeedToResolve={messageActionNeedToResolve}
+						onDeleteMessageActionNeedToResolve={deleteMessageActionNeedToResolve}
+						channelId={props?.channelId}
+						mode={props?.mode}
+						hiddenIcon={props?.hiddenIcon}
+						messageAction={props?.messageAction}
+						isPublic={props?.isPublic}
+						topicChannelId={props?.topicChannelId}
+					/>
+				)}
+			</View>
+		</LinearGradient>
 	);
 });

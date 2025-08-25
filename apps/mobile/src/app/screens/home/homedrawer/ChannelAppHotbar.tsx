@@ -30,7 +30,7 @@ const ChannelAppHotbar = ({ channelId, clanId }: channelAppHotBarProps) => {
 				paddingVertical: size.s_6,
 				paddingHorizontal: size.s_10,
 				gap: size.s_10,
-				backgroundColor: themeValue.primary
+				backgroundColor: 'transparent'
 			}}
 		>
 			<TouchableOpacity style={styles.channelAppButton} onPress={openChannelApp}>

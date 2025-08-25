@@ -1,4 +1,4 @@
-import { Attributes, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -14,7 +14,7 @@ export const style = (colors: Attributes) =>
 			paddingTop: 0
 		},
 		groupAvatar: {
-			backgroundColor: Colors.orange,
+			backgroundColor: baseColor.orange,
 			width: size.s_60,
 			height: size.s_60,
 			borderRadius: 50,
@@ -35,7 +35,7 @@ export const style = (colors: Attributes) =>
 		textAvatar: {
 			textAlign: 'center',
 			fontSize: size.h4,
-			color: Colors.white
+			color: 'white'
 		},
 		serverName: {
 			color: colors.textStrong,

@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -46,9 +46,9 @@ export const style = (colors: Attributes) =>
 			borderRadius: 50
 		},
 		bgAddFriendIcon: {
-			backgroundColor: Colors.pink
+			backgroundColor: baseColor.pink
 		},
 		bgNewGroupIcon: {
-			backgroundColor: Colors.bgViolet
+			backgroundColor: colors.bgViolet
 		}
 	});

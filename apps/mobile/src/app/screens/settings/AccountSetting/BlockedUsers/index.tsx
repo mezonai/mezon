@@ -1,5 +1,5 @@
 import { useFriends } from '@mezon/core';
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity, selectBlockedUsers } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 					type: 'success',
 					props: {
 						text2: t('notification.unblockUser.success', { ns: 'userProfile' }),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 					}
 				});
 			}
@@ -36,7 +36,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 				type: 'error',
 				props: {
 					text2: t('notification.unblockUser.error', { ns: 'userProfile' }),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}

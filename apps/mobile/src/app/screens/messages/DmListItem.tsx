@@ -1,5 +1,5 @@
 import { ActionEmitEvent, convertTimestampToTimeAgo, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import {
 	directActions,
 	DirectEntity,
@@ -103,7 +103,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 					>
 						{renderLastMessageContent}
 						{'attachment '}
-						<MezonIconCDN icon={IconCDN.attachmentIcon} width={13} height={13} color={Colors.textGray} />
+						<MezonIconCDN icon={IconCDN.attachmentIcon} width={13} height={13} color={'#c7c7c7'} />
 					</Text>
 				</View>
 			);

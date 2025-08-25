@@ -6,7 +6,7 @@ import {
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectDirectsOpenlist } from '@mezon/store';
 import {
 	channelMetaActions,
@@ -532,9 +532,9 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 							style={[styles.sendButton, { opacity: channelSelected && isAttachmentUploaded ? 1 : 0.5 }]}
 						>
 							{isLoading ? (
-								<Flow size={size.s_28} color={Colors.white} />
+								<Flow size={size.s_28} color={'white'} />
 							) : (
-								<MezonIconCDN icon={IconCDN.sendMessageIcon} width={size.s_28} height={size.s_20} color={Colors.white} />
+								<MezonIconCDN icon={IconCDN.sendMessageIcon} width={size.s_28} height={size.s_20} color={'white'} />
 							)}
 						</TouchableOpacity>
 					</View>

@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { appActions, selectHasInternetMobile } from '@mezon/store-mobile';
 import NetInfo from '@react-native-community/netinfo';
 import React, { useEffect, useRef } from 'react';
@@ -106,12 +106,12 @@ const styles = StyleSheet.create({
 		backgroundColor: 'rgba(255, 255, 255, 0.93)',
 		borderRadius: 10,
 		elevation: 5, // Android shadow
-		shadowColor: Colors.black, // iOS shadow
+		shadowColor: 'black', // iOS shadow
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.3,
 		shadowRadius: 4,
 		borderStartWidth: 5,
-		borderColor: Colors.textRed
+		borderColor: baseColor.redStrong
 	},
 	text1: { textAlign: 'left', fontSize: size.medium, fontWeight: 'bold', marginBottom: 5, color: 'black' },
 	text2: { textAlign: 'left', fontSize: size.small, fontWeight: '500', color: 'grey' }

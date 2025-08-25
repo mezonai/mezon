@@ -19,7 +19,7 @@ import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgprox
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { DeviceEventEmitter, NativeModules, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { useSendSignaling } from '../../../components/CallingGroupModal';
@@ -31,7 +31,6 @@ import { ConfirmBuzzMessageModal } from '../../home/homedrawer/components/Confir
 import { OptionChannelHeader } from '../../home/homedrawer/components/HeaderOptions';
 import HeaderTooltip from '../../home/homedrawer/components/HeaderTooltip';
 import { UserStatusDM } from '../UserStatusDM';
-const { AudioModule } = NativeModules;
 
 interface HeaderProps {
 	from?: string;
@@ -199,11 +198,6 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				directMessageId
 			}
 		});
-		try {
-			AudioModule.playDialtone();
-		} catch (e) {
-			console.error('Failed to play dialtone', e);
-		}
 	};
 
 	const headerOptions: IOption[] = [

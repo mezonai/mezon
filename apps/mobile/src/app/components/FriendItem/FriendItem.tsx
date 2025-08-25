@@ -1,4 +1,4 @@
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { useMemo } from 'react';
@@ -106,11 +106,11 @@ export const FriendItem = React.memo(
 						{isPendingFriendRequest && showAction && !selectMode ? (
 							<View style={styles.friendAction}>
 								<Pressable onPress={() => onPressAction(EFriendItemAction.Delete)}>
-									<MezonIconCDN icon={IconCDN.closeIcon} width={18} height={18} color={Colors.textGray} />
+									<MezonIconCDN icon={IconCDN.closeIcon} width={18} height={18} color={'#c7c7c7'} />
 								</Pressable>
 								{!isSentRequestFriend ? (
 									<Pressable onPress={() => onPressAction(EFriendItemAction.Approve)} style={styles.approveIcon}>
-										<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={25} height={18} color={Colors.white} />
+										<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={25} height={18} color={'white'} />
 									</Pressable>
 								) : null}
 							</View>
@@ -123,11 +123,11 @@ export const FriendItem = React.memo(
 									disabled={disabled}
 									isChecked={isChecked}
 									onPress={(value) => onSelectChange(friend, value)}
-									fillColor={Colors.bgButton}
+									fillColor={'#5865f2'}
 									iconStyle={{ borderRadius: 5 }}
 									innerIconStyle={{
 										borderWidth: 1.5,
-										borderColor: isChecked ? Colors.bgButton : Colors.white,
+										borderColor: isChecked ? '#5865f2' : 'white',
 										borderRadius: 5,
 										opacity: disabled ? 0.4 : 1
 									}}

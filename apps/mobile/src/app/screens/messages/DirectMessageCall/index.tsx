@@ -20,12 +20,13 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import { useWebRTCCallMobile } from '../../../hooks/useWebRTCCallMobile';
 import { ConnectionState } from './ConnectionState';
 import { style } from './styles';
+const { AudioModule } = NativeModules;
 
 interface IDirectMessageCallProps {
 	route: any;
 }
 
-export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
+export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) => {
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const styles = style(themeValue);
@@ -40,6 +41,16 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 	const isRemoteVideo = useSelector(selectRemoteVideo);
 	const navigation = useNavigation<any>();
 	const [isMirror, setIsMirror] = useState<boolean>(true);
+
+	useEffect(() => {
+		if (!isAnswerCall) {
+			try {
+				AudioModule.playDialtone();
+			} catch (e) {
+				console.error('e', e);
+			}
+		}
+	}, [isAnswerCall]);
 
 	const {
 		callState,
@@ -161,7 +172,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 		}
 		const timer = setTimeout(() => {
 			startCall(isVideoCall, isAnswerCall);
-		}, 2000);
+		}, 1000);
 
 		return () => {
 			clearTimeout(timer);
@@ -193,7 +204,7 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 							}}
 							style={styles.buttonCircle}
 						>
-							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} />
+							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} color={themeValue.white} />
 						</TouchableOpacity>
 					</View>
 					{isConnected !== null && <ConnectionState isConnected={isConnected} />}
@@ -258,18 +269,18 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 								{localMediaControl?.camera ? (
 									<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
 								{localMediaControl?.mic ? (
 									<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
 								) : (
-									<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
 								)}
 							</TouchableOpacity>
 							<TouchableOpacity onPress={() => {}} style={styles.menuIcon}>
-								<MezonIconCDN icon={IconCDN.chatIcon} />
+								<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />
 							</TouchableOpacity>
 
 							<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
@@ -281,4 +292,26 @@ export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
 			)}
 		</View>
 	);
+});
+
+export const DirectMessageCall = memo(({ route }: IDirectMessageCallProps) => {
+	const dispatch = useAppDispatch();
+
+	const [isReady, setIsReady] = useState<boolean>(false);
+
+	useEffect(() => {
+		let timer: NodeJS.Timeout;
+		if (!route.params?.isAnswerCall) {
+			dispatch(DMCallActions.removeAll());
+			timer = setTimeout(() => {
+				setIsReady(true);
+			}, 500);
+		}
+		return () => {
+			timer && clearTimeout(timer);
+		};
+	}, [route.params?.isAnswerCall]);
+
+	if (!isReady) return null;
+	return <DirectMessageCallMain route={route} />;
 });

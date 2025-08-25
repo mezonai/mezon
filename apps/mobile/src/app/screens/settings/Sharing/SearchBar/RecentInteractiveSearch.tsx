@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ClansEntity, DirectEntity } from '@mezon/store-mobile';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
@@ -301,7 +301,7 @@ export const RecentInteractiveSearch = React.memo(
 								styles={styles}
 							/>
 						}
-						contentStyle={{ minWidth: size.s_150, padding: 0, borderRadius: size.s_10, backgroundColor: Colors.primary }}
+						contentStyle={{ minWidth: size.s_150, padding: 0, borderRadius: size.s_10, backgroundColor: themeValue.primary }}
 						arrowSize={{ width: 0, height: 0 }}
 						placement="bottom"
 						onClose={() => setIsVisibleToolTip(false)}

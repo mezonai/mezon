@@ -1,6 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, getStoreAsync } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -308,7 +308,7 @@ export const QRScanner = () => {
 				<LinearGradient
 					start={{ x: 0, y: 1.2 }}
 					end={{ x: 1, y: 0 }}
-					colors={[baseColor.white, Colors.bgViolet, Colors.textLink]}
+					colors={[baseColor.white, themeValue.bgViolet, baseColor.link]}
 					style={styles.popupLogin}
 				>
 					<View style={styles.popupLoginSub}>

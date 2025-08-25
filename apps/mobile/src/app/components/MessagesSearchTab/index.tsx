@@ -1,5 +1,5 @@
 import { ETypeSearch, getUpdateOrAddClanChannelCache, GroupedMessages, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	ChannelUsersEntity,
@@ -46,7 +46,7 @@ const MessagesSearchTab = React.memo(({ typeSearch, currentChannel }: { typeSear
 	const ViewLoadMore = () => {
 		return (
 			<View style={styles.loadMoreChannelMessage}>
-				<ActivityIndicator size="large" color={Colors.tertiary} />
+				<ActivityIndicator size="large" color={'#ccc'} />
 			</View>
 		);
 	};

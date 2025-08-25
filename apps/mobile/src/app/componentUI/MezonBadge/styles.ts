@@ -1,4 +1,4 @@
-import { Colors, Fonts, Metrics } from '@mezon/mobile-ui';
+import { baseColor, Fonts, Metrics } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -9,25 +9,25 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: Metrics.size.s,
 		borderRadius: 50,
-		backgroundColor: Colors.gray72,
+		backgroundColor: baseColor.gray,
 		paddingHorizontal: 7,
 		paddingVertical: Metrics.size.xs
 	},
 
 	containerSuccess: {
-		backgroundColor: Colors.green
+		backgroundColor: baseColor.green
 	},
 
 	containerDanger: {
-		backgroundColor: Colors.textRed
+		backgroundColor: baseColor.redStrong
 	},
 
 	containerWarning: {
-		backgroundColor: Colors.textViolet
+		backgroundColor: '#5a62f4'
 	},
 
 	title: {
-		color: Colors.white,
+		color: 'white',
 		fontSize: Fonts.size.tiny
 	}
 });

@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -47,7 +47,7 @@ export const style = (colors: Attributes) =>
 			marginRight: size.s_14
 		},
 		saveText: {
-			color: Colors.textViolet,
+			color: colors.bgViolet,
 			fontSize: size.s_16
 		},
 		wrapper: {
@@ -92,7 +92,7 @@ export const style = (colors: Attributes) =>
 			gap: size.s_10
 		},
 		finishButton: {
-			backgroundColor: Colors.bgViolet,
+			backgroundColor: colors.bgViolet,
 			paddingVertical: size.s_14,
 			borderRadius: size.s_8
 		},

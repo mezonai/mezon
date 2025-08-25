@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { AttachmentEntity, selectAllListAttachmentByChannel, sleep } from '@mezon/store-mobile';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
@@ -180,7 +180,7 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 				type: 'success',
 				props: {
 					text2: t('copyImage'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={Colors.bgGrayLight} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={'#676b73'} />
 				}
 			});
 		} else {
@@ -249,8 +249,8 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 			/>
 			{showSavedImage && (
 				<View style={{ position: 'absolute', top: '50%', width: '100%', alignItems: 'center' }}>
-					<View style={{ backgroundColor: Colors.bgDarkSlate, padding: size.s_10, borderRadius: size.s_10 }}>
-						<Text style={{ color: Colors.white }}>{t('savedSuccessfully')}</Text>
+					<View style={{ backgroundColor: '#2a2e31', padding: size.s_10, borderRadius: size.s_10 }}>
+						<Text style={{ color: 'white' }}>{t('savedSuccessfully')}</Text>
 					</View>
 				</View>
 			)}

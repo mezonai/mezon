@@ -1,10 +1,10 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
 	textError: {
 		fontSize: size.s_12,
-		color: Colors.textRed,
+		color: baseColor.redStrong,
 		fontStyle: 'italic'
 	},
 	errorWrapper: {

@@ -10,12 +10,11 @@ export const style = (colors: Attributes) =>
 		listChannels: {
 			paddingTop: size.s_14,
 			paddingBottom: size.s_30,
-			backgroundColor: colors.primary
 		},
 		wrapperLoadMore: {
 			position: 'absolute',
 			left: 0,
-			backgroundColor: colors.primary,
+			backgroundColor: 'transparent',
 			height: size.s_40,
 			width: '100%',
 			paddingVertical: size.s_20,

@@ -1,6 +1,6 @@
 import { useRoles } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -41,7 +41,7 @@ function RoleCoLourComponent({ roleId, disable = false }: { roleId: string; disa
 					type: 'success',
 					props: {
 						text2: t('failed'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 					}
 				});
 			}

@@ -1,5 +1,5 @@
 import { IOption } from '@mezon/mobile-components';
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
@@ -18,7 +18,7 @@ export const appsOptions = [
 		title: 'option',
 		content: 'Refresh App',
 		value: OptionChannelApp.Refresh,
-		icon: <MezonIconCDN icon={IconCDN.reloadIcon} color={Colors.textGray} />
+		icon: <MezonIconCDN icon={IconCDN.reloadIcon} color={baseColor.gray} />
 	}
 ];
 

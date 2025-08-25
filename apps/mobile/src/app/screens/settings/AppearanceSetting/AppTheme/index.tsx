@@ -2,6 +2,7 @@ import { ThemeMode, ThemeModeBase, themeColors, useTheme } from '@mezon/mobile-u
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import MezonSlideOption, { IMezonSlideOptionsData } from '../../../../componentUI/MezonSlideOption';
 import { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -19,6 +20,19 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 		[]
 	);
 
+	const BoxGradientSelector = useCallback(
+		({
+			color = 'transparent',
+			colorSecond = 'transparent',
+			border = 'transparent'
+		}: {
+			color?: string;
+			colorSecond?: string;
+			border?: string;
+		}) => <LinearGradient colors={[color, colorSecond]} style={[styles.box, { borderColor: border }]} />,
+		[]
+	);
+
 	const themeOptions = useMemo(
 		() =>
 			[
@@ -31,17 +45,29 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 					element: <BoxSelector color={themeColors.light.primary} border={themeColors.light.border} />,
 					value: ThemeModeBase.LIGHT,
 					title: t('fields.light')
+				},
+				{
+					element: (
+						<BoxGradientSelector
+							color={themeColors.sunrise.primary}
+							colorSecond={themeColors.sunrise.secondary}
+							border={themeColors.sunrise.border}
+						/>
+					),
+					value: ThemeModeBase.SUNRISE,
+					title: t('fields.sunrise')
+				},
+				{
+					element: (
+						<BoxGradientSelector
+							color={themeColors.redDark.primary}
+							colorSecond={themeColors.redDark.secondary}
+							border={themeColors.redDark.border}
+						/>
+					),
+					value: ThemeModeBase.REDDARK,
+					title: t('fields.readDark')
 				}
-				// {
-				// 	element: (
-				// 		<BoxSelector
-				// 			color={systemTheme == 'light' ? themeColors.light.primary : themeColors.dark.primary}
-				// 			border={systemTheme == 'light' ? themeColors.light.border : themeColors.dark.border}
-				// 		/>
-				// 	),
-				// 	value: ThemeModeAuto.AUTO,
-				// 	title: t('fields.system')
-				// }
 			] satisfies IMezonSlideOptionsData[],
 		[]
 	);
@@ -55,8 +81,8 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 	}
 
 	return (
-		<View style={styles.container}>
+		<LinearGradient colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]} style={styles.container}>
 			<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeIndex} />
-		</View>
+		</LinearGradient>
 	);
 }

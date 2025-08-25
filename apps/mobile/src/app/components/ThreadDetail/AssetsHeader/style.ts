@@ -1,4 +1,4 @@
-import { Attributes, Colors } from '@mezon/mobile-ui';
+import { Attributes } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -13,7 +13,7 @@ export const style = (colors: Attributes) =>
 		},
 
 		tabLabel: {
-			color: Colors.white
+			color: 'white'
 		},
 
 		a: {
@@ -24,7 +24,7 @@ export const style = (colors: Attributes) =>
 		},
 		b: {
 			position: 'absolute',
-			backgroundColor: Colors.bgViolet,
+			backgroundColor: colors.bgViolet,
 			height: 3,
 			top: 0,
 			borderRadius: 50

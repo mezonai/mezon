@@ -1,4 +1,4 @@
-import { Attributes, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -48,14 +48,14 @@ export const style = (colors: Attributes) =>
 		},
 
 		removeNotifyText: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: size.label,
 			flex: 1,
 			fontWeight: '500'
 		},
 		removeNotifyContainer: {
 			flexDirection: 'row',
-			backgroundColor: Colors.bgPrimary,
+			backgroundColor: '#3e4247',
 			width: '100%',
 			paddingHorizontal: size.s_10,
 			paddingVertical: size.s_16,

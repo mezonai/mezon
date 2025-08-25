@@ -1,4 +1,4 @@
-import { Colors } from '@mezon/mobile-ui';
+import { baseColor } from '@mezon/mobile-ui';
 import { TouchableOpacity, View } from 'react-native';
 import { Wave } from 'react-native-animated-spinkit';
 import FastImage from 'react-native-fast-image';
@@ -14,7 +14,7 @@ export default function GiftItem({ loading, data, onPress }: GifItemProps) {
 	if (loading) {
 		return (
 			<View style={styles.containerLoading}>
-				<Wave color={Colors.bgViolet} />
+				<Wave color={baseColor.blurple} />
 			</View>
 		);
 	}

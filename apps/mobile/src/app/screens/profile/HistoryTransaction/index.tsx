@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	fetchListWalletLedger,
 	selectAllAccount,
@@ -70,7 +70,7 @@ export const HistoryTransactionScreen = () => {
 	const ViewLoadMore = () => {
 		return (
 			<View style={styles.loadMoreChannelMessage}>
-				<Flow size={size.s_30} color={Colors.tertiary} />
+				<Flow size={size.s_30} color={'#ccc'} />
 			</View>
 		);
 	};

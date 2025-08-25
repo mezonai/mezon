@@ -1,10 +1,10 @@
-import { Attributes, Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, Metrics, size } from '@mezon/mobile-ui';
 import { Platform, StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		closeIcon: {
-			color: Colors.white
+			color: 'white'
 		},
 		container: {
 			flex: 1,
@@ -27,14 +27,14 @@ export const style = (colors: Attributes) =>
 		},
 		buttonHeader: {
 			width: size.s_30,
-			alignItems: 'center',
+			alignItems: 'center'
 		},
 		headerContent: {
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			flexBasis: 10,
 			flexGrow: 1,
-			flexDirection: 'row',
+			flexDirection: 'row'
 		},
 		textTitle: {
 			color: colors.textStrong,

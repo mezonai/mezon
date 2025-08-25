@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
 import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
-import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	MessagesEntity,
 	appActions,
@@ -262,7 +262,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			type: 'success',
 			props: {
 				text2: t('toast.copyText'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={Colors.bgGrayLight} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={'#676b73'} />
 			}
 		});
 	};
@@ -393,7 +393,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				type: 'success',
 				props: {
 					text2: t('toast.markMessage'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 				}
 			});
 			onClose();
@@ -424,7 +424,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				type: 'success',
 				props: {
 					text2: t('toast.markMessage'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 				}
 			});
 		} catch (error) {
@@ -432,7 +432,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				type: 'error',
 				props: {
 					text2: t('toast.markMessageUnreadFailed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} />
 				}
 			});
 			console.error('Error marking message as unread:', error);
@@ -454,7 +454,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					type: 'success',
 					props: {
 						text2: t('toast.copyImage'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={Colors.bgGrayLight} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={'#676b73'} />
 					}
 				});
 			}

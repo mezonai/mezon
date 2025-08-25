@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -24,12 +24,12 @@ export const style = (colors: Attributes) =>
 		},
 		SubmitButton: {
 			margin: size.s_10,
-			backgroundColor: Colors.red,
+			backgroundColor: baseColor.redStrong,
 			borderRadius: size.s_4
 		},
 		SubmitText: {
 			paddingVertical: size.s_10,
-			color: Colors.white,
+			color: 'white',
 			textAlign: 'center'
 		},
 		messageBox: {

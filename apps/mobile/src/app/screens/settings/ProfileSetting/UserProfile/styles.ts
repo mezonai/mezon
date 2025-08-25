@@ -1,4 +1,4 @@
-import { Attributes, Colors } from '@mezon/mobile-ui';
+import { Attributes } from '@mezon/mobile-ui';
 import { Dimensions, StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -11,7 +11,7 @@ export const style = (colors: Attributes) =>
 		btnIcon: {
 			padding: 7,
 			borderRadius: 10,
-			backgroundColor: Colors.bgViolet
+			backgroundColor: colors.bgViolet
 		},
 
 		btnGroup: {

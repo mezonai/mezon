@@ -1,4 +1,4 @@
-import { Attributes, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -12,12 +12,12 @@ export const style = (colors: Attributes) =>
 			gap: size.s_10
 		},
 		label: {
-			color: Colors.white,
+			color: 'white',
 			textTransform: 'uppercase',
 			paddingHorizontal: size.s_20
 		},
 		labelNormal: {
-			color: Colors.white
+			color: 'white'
 		},
 		labelIconWrapper: {
 			display: 'flex',
@@ -28,13 +28,13 @@ export const style = (colors: Attributes) =>
 		description: {
 			marginTop: size.s_10,
 			paddingHorizontal: size.s_20,
-			color: Colors.gray48,
+			color: baseColor.gray,
 			fontSize: Fonts.size.small
 		},
 		input: {
-			backgroundColor: Colors.secondary,
+			backgroundColor: '#242427',
 			marginVertical: size.s_10,
-			color: Colors.white,
+			color: 'white',
 			paddingHorizontal: size.s_20,
 			paddingVertical: 0,
 			height: size.s_50
@@ -46,6 +46,6 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			paddingHorizontal: size.s_20,
 			paddingVertical: size.s_10,
-			backgroundColor: Colors.secondary
+			backgroundColor: '#242427'
 		}
 	});

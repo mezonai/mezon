@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
@@ -49,7 +49,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 				type: 'success',
 				props: {
 					text2: t('setupMember.deletedMember', { memberName }),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -57,7 +57,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}
@@ -103,11 +103,11 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 							size={20}
 							isChecked={isSelected}
 							onPress={(value) => onSelectChange(value, member?.id)}
-							fillColor={Colors.bgButton}
+							fillColor={'#5865f2'}
 							iconStyle={{ borderRadius: 5 }}
 							innerIconStyle={{
 								borderWidth: 1.5,
-								borderColor: isSelected ? Colors.bgButton : Colors.tertiary,
+								borderColor: isSelected ? '#5865f2' : '#ccc',
 								borderRadius: 5,
 								opacity: disabled ? 0.4 : 1
 							}}

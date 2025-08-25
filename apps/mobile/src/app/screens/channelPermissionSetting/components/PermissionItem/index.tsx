@@ -1,4 +1,4 @@
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,20 +16,20 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 	const permissionOptionList = [
 		{
 			icon: (color: string) => <MezonIconCDN icon={IconCDN.closeIcon} color={color} />,
-			activeBackground: Colors.persianRed,
-			color: Colors.persianRed,
+			activeBackground: baseColor.redStrong,
+			color: baseColor.redStrong,
 			type: EPermissionStatus.Deny
 		},
 		{
 			icon: (color: string) => <MezonIconCDN icon={IconCDN.slashIcon} height={size.s_16} width={size.s_16} color={color} />,
-			activeBackground: Colors.outerSpace,
-			color: Colors.outerSpace,
+			activeBackground: '#404249',
+			color: '#404249',
 			type: EPermissionStatus.None
 		},
 		{
 			icon: (color: string) => <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={color} />,
-			activeBackground: Colors.jungleGreen,
-			color: Colors.jungleGreen,
+			activeBackground: baseColor.gray,
+			color: baseColor.gray,
 			type: EPermissionStatus.Allow
 		}
 	];
@@ -71,7 +71,7 @@ export const PermissionItem = memo(({ permission, status, onPermissionStatusChan
 										height: size.s_30
 									}}
 								>
-									{icon(isActive ? Colors.white : color)}
+									{icon(isActive ? 'white' : color)}
 								</View>
 							</TouchableOpacity>
 						);

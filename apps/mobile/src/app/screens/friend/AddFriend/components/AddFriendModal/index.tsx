@@ -1,5 +1,5 @@
 import { useAuth, useFriends } from '@mezon/core';
-import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { friendsActions, requestAddFriendParam, selectStatusSentMobile } from '@mezon/store-mobile';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ export const AddFriendModal = React.memo((props: IAddFriendModal) => {
 					type: 'success',
 					props: {
 						text2: t('toast.sendAddFriendSuccess'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 					}
 				});
 				resetField();
@@ -51,7 +51,7 @@ export const AddFriendModal = React.memo((props: IAddFriendModal) => {
 					type: 'success',
 					props: {
 						text2: t('toast.sendAddFriendFail'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 					}
 				});
 			}

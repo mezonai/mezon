@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -16,7 +16,7 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_10
 		},
 		groupAvatar: {
-			backgroundColor: Colors.orange,
+			backgroundColor: baseColor.orange,
 			width: size.s_42,
 			height: size.s_42,
 			borderRadius: size.s_42,
@@ -24,11 +24,11 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		badge: {
-			backgroundColor: Colors.red,
+			backgroundColor: baseColor.redStrong,
 			position: 'absolute',
 			borderRadius: size.s_20,
 			borderWidth: size.s_2,
-			borderColor: Colors.secondary,
+			borderColor: colors.secondary,
 			minWidth: size.s_20,
 			paddingHorizontal: size.s_2,
 			paddingVertical: size.s_2,
@@ -39,7 +39,7 @@ export const style = (colors: Attributes) =>
 			right: -5
 		},
 		badgeText: {
-			color: Colors.white,
+			color: 'white',
 			fontWeight: 'bold',
 			fontSize: size.tiny
 		},
@@ -61,7 +61,7 @@ export const style = (colors: Attributes) =>
 		textAvatar: {
 			textAlign: 'center',
 			fontSize: size.h5,
-			color: Colors.white
+			color: 'white'
 		},
 		lineBottom: {
 			width: '50%',

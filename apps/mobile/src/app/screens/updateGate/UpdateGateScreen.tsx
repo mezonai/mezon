@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +43,7 @@ const UpdateGateScreen = ({ route }) => {
 			<TouchableOpacity onPress={onPress}>
 				<View
 					style={{
-						backgroundColor: Colors.white,
+						backgroundColor: 'white',
 						flexDirection: 'row',
 						justifyContent: 'space-between',
 						paddingHorizontal: size.s_10,
@@ -67,13 +67,13 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: size.s_40,
-		backgroundColor: Colors.secondary,
+		backgroundColor: '#242427',
 		justifyContent: 'space-between'
 	},
 	title: {
 		fontSize: size.s_20,
 		fontWeight: 'bold',
-		color: Colors.white,
+		color: 'white',
 		textAlign: 'center'
 	},
 	subTitle: {
@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
 		marginTop: size.s_10,
 		fontSize: size.s_16,
 		lineHeight: size.s_24,
-		color: Colors.tertiary
+		color: '#ccc'
 	},
 	titleBtn: {
 		flex: 1,
 		textAlign: 'center',
 		fontSize: size.s_16,
 		fontWeight: 'bold',
-		color: Colors.black
+		color: '#000000'
 	}
 });

@@ -1,6 +1,6 @@
 import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	EStateFriend,
@@ -318,17 +318,17 @@ const UserProfile = React.memo(
 			{
 				id: 4,
 				text: t('userAction.addFriend'),
-				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={Colors.green} />,
+				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.green} />,
 				action: handleAddFriend,
 				isShow: !infoFriend && !isBlocked,
 				textStyles: {
-					color: Colors.green
+					color: baseColor.green
 				}
 			},
 			{
 				id: 5,
 				text: t('userAction.pending'),
-				icon: <MezonIconCDN icon={IconCDN.clockIcon} color={Colors.goldenrodYellow} />,
+				icon: <MezonIconCDN icon={IconCDN.clockIcon} color={baseColor.goldenrodYellow} />,
 				action: () => {
 					setIsShowPendingContent(true);
 				},
@@ -337,7 +337,7 @@ const UserProfile = React.memo(
 					infoFriend?.state !== undefined &&
 					[EFriendState.ReceivedRequestFriend, EFriendState.SentRequestFriend].includes(infoFriend?.state),
 				textStyles: {
-					color: Colors.goldenrodYellow
+					color: baseColor.goldenrodYellow
 				}
 			}
 		];
@@ -391,7 +391,7 @@ const UserProfile = React.memo(
 
 		return (
 			<View style={[styles.wrapper]}>
-				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : Colors.titleReset }]}>
+				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : baseColor.gray }]}>
 					{!isCheckOwner && (
 						<View style={{ flexDirection: 'row' }}>
 							<TouchableOpacity
@@ -501,12 +501,15 @@ const UserProfile = React.memo(
 							<View style={{ marginTop: size.s_16 }}>
 								<Text style={styles.receivedFriendRequestTitle}>{t('incomingFriendRequest')}</Text>
 								<View style={{ flexDirection: 'row', gap: size.s_10, marginTop: size.s_10 }}>
-									<TouchableOpacity onPress={() => handleAcceptFriend()} style={[styles.button, { backgroundColor: Colors.green }]}>
+									<TouchableOpacity
+										onPress={() => handleAcceptFriend()}
+										style={[styles.button, { backgroundColor: baseColor.green }]}
+									>
 										<Text style={styles.defaultText}>{t('accept')}</Text>
 									</TouchableOpacity>
 									<TouchableOpacity
 										onPress={() => handleIgnoreFriend()}
-										style={[styles.button, { backgroundColor: Colors.bgGrayDark }]}
+										style={[styles.button, { backgroundColor: baseColor.bgButtonSecondary }]}
 									>
 										<Text style={styles.defaultText}>{t('ignore')}</Text>
 									</TouchableOpacity>

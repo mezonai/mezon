@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -32,10 +32,10 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'row',
 			justifyContent: 'flex-end',
 			gap: size.s_20,
-			width: size.s_70,
+			width: size.s_70
 		},
 		actionText: {
-			color: Colors.textViolet,
+			color: '#5a62f4',
 			fontSize: size.medium
 		},
 		searchFriend: {

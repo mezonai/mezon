@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -19,6 +19,6 @@ export const style = (colors: Attributes) =>
 			color: baseColor.blurple
 		},
 		notChange: {
-			color: Colors.titleSteelGray
+			color: '#939292'
 		}
 	});

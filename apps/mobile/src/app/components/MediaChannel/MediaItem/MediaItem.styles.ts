@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -6,7 +6,8 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		width: '100%',
 		height: '100%',
-		backgroundColor: Colors.bgCharcoal,
+		borderWidth: 1,
+		borderColor: 'rgba(78,78,78,0.4)',
 		borderRadius: size.s_10,
 		overflow: 'hidden'
 	},
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
 		right: size.s_8,
 		borderRadius: size.s_50,
 		borderWidth: 1,
-		borderColor: Colors.secondary
+		borderColor: '#242427'
 	},
 	image: { width: '100%', height: '100%' },
 	video: {

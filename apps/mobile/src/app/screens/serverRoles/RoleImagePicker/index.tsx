@@ -1,5 +1,5 @@
 import { useRoles } from '@mezon/core';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan } from '@mezon/store-mobile';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ function RoleImagePicker({ roleId, disable = false }: { roleId: string; disable?
 					type: 'success',
 					props: {
 						text2: t('failed'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 					}
 				});
 			}
@@ -45,7 +45,7 @@ function RoleImagePicker({ roleId, disable = false }: { roleId: string; disable?
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}

@@ -1,6 +1,6 @@
 import { useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	FriendsEntity,
@@ -108,7 +108,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 			type: 'success',
 			props: {
 				text2: t('copyLink'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={Colors.textLink} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={baseColor.link} />
 			}
 		});
 	}, [currentInviteLink, t]);

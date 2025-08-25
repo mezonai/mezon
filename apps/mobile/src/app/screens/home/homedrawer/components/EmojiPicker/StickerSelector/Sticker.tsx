@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_SALE_CATE } from '@mezon/utils';
 import React, { memo, useCallback, useMemo, useState } from 'react';
@@ -91,7 +91,7 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 							type: 'success',
 							props: {
 								text2: 'Buy item successfully!',
-								leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={30} height={17} />
+								leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
 							}
 						});
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });

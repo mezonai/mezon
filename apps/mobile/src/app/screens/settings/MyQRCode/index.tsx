@@ -171,10 +171,10 @@ export const MyQRCode = () => {
 				{!isGenerating && qrCode?.[activeTab] && activeTab === 'profile' && (
 					<View style={styles.actionsRow}>
 						<TouchableOpacity style={styles.actionButton} onPress={handleDownloadQRCode}>
-							<MezonIconCDN icon={IconCDN.downloadIcon} color={themeValue.primary} />
+							<MezonIconCDN icon={IconCDN.downloadIcon} color={themeValue.text} />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.actionButton} onPress={handleShareQRCode}>
-							<MezonIconCDN icon={IconCDN.shareIcon} color={themeValue.primary} />
+							<MezonIconCDN icon={IconCDN.shareIcon} color={themeValue.text} />
 						</TouchableOpacity>
 					</View>
 				)}

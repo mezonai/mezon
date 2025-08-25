@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -49,7 +49,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_10
 		},
 		deleteText: {
-			color: Colors.textRed
+			color: baseColor.redStrong
 		},
 		flex: {
 			flex: 1
@@ -70,7 +70,7 @@ export const style = (colors: Attributes) =>
 		saveText: {
 			fontSize: size.s_18,
 			textAlign: 'center',
-			color: Colors.textViolet
+			color: colors.bgViolet
 		},
 		backButton: {
 			marginLeft: size.s_16

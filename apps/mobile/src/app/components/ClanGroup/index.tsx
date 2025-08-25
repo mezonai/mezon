@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ClanGroup as ClanGroupType, clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useMemo } from 'react';
@@ -20,7 +20,7 @@ interface ClanGroupProps {
 
 export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: ClanGroupProps) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue, Colors);
+	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const groupClan = useMemo(() => {
 		if (!group?.clanIds?.length || !clans?.length) return [];

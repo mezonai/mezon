@@ -1,6 +1,6 @@
 import { useAuth, useFriends } from '@mezon/core';
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	EStateFriend,
@@ -112,7 +112,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			},
 			isShow: isGroup,
 			title: lastOne ? t('delete.leaveGroup') : t('menu.leaveGroup'),
-			textStyle: { color: Colors.textRed }
+			textStyle: { color: baseColor.redStrong }
 		}
 	];
 
@@ -137,7 +137,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					type: 'success',
 					props: {
 						text2: t('notification.blockUser.success'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 					}
 				});
 			}
@@ -146,7 +146,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				type: 'error',
 				props: {
 					text2: t('notification.blockUser.error'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		} finally {
@@ -162,7 +162,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					type: 'success',
 					props: {
 						text2: t('notification.unblockUser.success'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 					}
 				});
 			}
@@ -171,7 +171,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				type: 'error',
 				props: {
 					text2: t('notification.unblockUser.error'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		} finally {

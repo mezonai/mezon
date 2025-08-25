@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId2, useAppSelector } from '@mezon/store-mobile';
 import { IAttachmentEntity, convertTimeString } from '@mezon/utils';
 import { memo } from 'react';
@@ -24,9 +24,9 @@ const ChannelFileItem = memo(({ file }: ChannelFileItemProps) => {
 
 	return (
 		<TouchableOpacity style={styles.container} onPress={onPressItem}>
-			<MezonIconCDN icon={IconCDN.fileIcon} height={size.s_34} width={size.s_34} color={Colors.bgViolet} />
+			<MezonIconCDN icon={IconCDN.fileIcon} height={size.s_34} width={size.s_34} color={themeValue.bgViolet} />
 			<View>
-				<Text style={[styles.fileName, { color: Colors.bgViolet }]} numberOfLines={1} ellipsizeMode="tail">
+				<Text style={[styles.fileName, { color: themeValue.bgViolet }]} numberOfLines={1} ellipsizeMode="tail">
 					{file?.filename}
 				</Text>
 				<View style={styles.footer}>

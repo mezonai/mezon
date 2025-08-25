@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
 	},
 	container: {
 		overflow: 'hidden',
-		backgroundColor: Colors.bgDarkCharcoal,
+		backgroundColor: '#323232',
 		alignSelf: 'center',
 		borderRadius: size.s_10,
 		padding: size.s_10,
@@ -26,15 +26,15 @@ export const styles = StyleSheet.create({
 	noButton: {
 		paddingVertical: size.s_10,
 		borderRadius: 50,
-		backgroundColor: Colors.bgGrayDark
+		backgroundColor: '#676b73'
 	},
 	yesButton: {
 		paddingVertical: size.s_10,
 		borderRadius: 50,
-		backgroundColor: Colors.bgViolet
+		backgroundColor: '#5a62f4'
 	},
 	buttonText: {
-		color: Colors.white,
+		color: 'white',
 		textAlign: 'center'
 	},
 	buttonsWrapper: {
@@ -43,11 +43,11 @@ export const styles = StyleSheet.create({
 	},
 	title: {
 		fontSize: size.h6,
-		color: Colors.white,
+		color: 'white',
 		paddingBottom: size.s_10
 	},
 	descriptionText: {
-		color: Colors.tertiary
+		color: '#ccc'
 	},
 	messageBox: {
 		paddingVertical: size.s_4,

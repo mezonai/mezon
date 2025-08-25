@@ -1,9 +1,9 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
 	tapToSeeAttachmentText: {
-		color: Colors.tertiary,
+		color: '#ccc',
 		fontSize: size.medium
 	},
 	attachmentBox: {

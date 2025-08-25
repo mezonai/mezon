@@ -1,10 +1,10 @@
-import { Attributes, Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		wrapper: {
 			flexDirection: 'row',
-			backgroundColor: Colors.transparent,
+			backgroundColor: 'transparent',
 			paddingBottom: size.s_20,
 			alignItems: 'center',
 			justifyContent: 'space-between',

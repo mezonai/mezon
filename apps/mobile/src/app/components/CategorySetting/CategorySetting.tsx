@@ -8,7 +8,7 @@ import {
 	load,
 	save
 } from '@mezon/mobile-components';
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, channelsActions, getStoreAsync, selectCategoryById, useAppDispatch } from '@mezon/store-mobile';
 import { ICategoryChannel, IChannel } from '@mezon/utils';
 import { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
@@ -77,7 +77,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 			[
 				{
 					title: t('fields.categoryDelete.delete'),
-					textStyle: { color: Colors.textRed },
+					textStyle: { color: baseColor.redStrong },
 					onPress: () => handlePressDeleteCategory()
 				}
 			] satisfies IMezonMenuItemProps[],
@@ -120,7 +120,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 			type: 'success',
 			props: {
 				text2: t('toast.updated'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 			}
 		});
 	};

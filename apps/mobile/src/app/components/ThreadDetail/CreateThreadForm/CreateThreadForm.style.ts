@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -53,7 +53,7 @@ export const style = (colors: Attributes) =>
 			borderWidth: 1,
 			fontSize: size.label,
 			fontWeight: '500',
-			color: Colors.white,
+			color: 'white',
 			paddingHorizontal: size.s_10,
 			height: size.s_40,
 			paddingVertical: 0
@@ -75,8 +75,8 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		messageBox: {
-			borderTopColor: Colors.bgGrayDark,
-			borderBottomColor: Colors.bgGrayDark,
+			borderTopColor: '#676b73',
+			borderBottomColor: '#676b73',
 			borderTopWidth: 0.5,
 			borderBottomWidth: 0.5,
 			paddingTop: size.s_20,

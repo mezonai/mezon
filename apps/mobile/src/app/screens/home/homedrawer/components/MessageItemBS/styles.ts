@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -55,18 +55,18 @@ export const style = (colors: Attributes) =>
 		},
 		reactIcon: {
 			fontSize: size.h4,
-			color: Colors.white
+			color: 'white'
 		},
 		actionText: {
 			color: colors.text,
 			fontSize: size.h8
 		},
 		warningActionText: {
-			color: Colors.textRed,
+			color: baseColor.redStrong,
 			fontSize: size.h8
 		},
 		actionIcon: {
-			color: Colors.white
+			color: 'white'
 		},
 		bottomSheetBar: {
 			width: size.s_30,

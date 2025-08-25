@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -11,11 +11,11 @@ export const style = (colors: Attributes) =>
 			fontSize: size.medium,
 			marginRight: size.s_10,
 			fontWeight: '600',
-			color: Colors.white
+			color: 'white'
 		},
 		dateMessageBox: {
 			fontSize: size.small,
-			color: Colors.white
+			color: 'white'
 		},
 		wrapperAvatar: {
 			width: size.s_40,
@@ -23,7 +23,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_40,
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: Colors.gray72,
+			backgroundColor: baseColor.gray,
 			overflow: 'hidden'
 		},
 		imageWrapper: {
@@ -35,7 +35,7 @@ export const style = (colors: Attributes) =>
 		},
 		imageSelected: {
 			borderWidth: 2,
-			borderColor: Colors.azureBlue
+			borderColor: baseColor.azureBlue
 		},
 		image: {
 			width: '100%',

@@ -1,4 +1,4 @@
-import { Attributes, Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
@@ -19,7 +19,7 @@ export const style = (colors: Attributes) =>
 		},
 		typeFile: {
 			fontSize: size.small,
-			color: Colors.textGray,
+			color: '#c7c7c7',
 			textTransform: 'uppercase'
 		}
 	});

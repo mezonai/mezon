@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
@@ -19,7 +19,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_50,
 			justifyContent: 'center',
 			alignItems: 'center',
-			shadowColor: Colors.black,
+			shadowColor: 'black',
 			shadowOffset: {
 				width: 0,
 				height: 4
@@ -39,7 +39,7 @@ export const style = (colors: Attributes) =>
 		},
 		textAvatarMessageBoxDefault: {
 			fontSize: size.h4,
-			color: Colors.white
+			color: 'white'
 		},
 		logoUser: {
 			width: '100%',

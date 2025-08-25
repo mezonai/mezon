@@ -35,9 +35,9 @@ import { ChatBox } from '../../../screens/home/homedrawer/ChatBox';
 import MessageItem from '../../../screens/home/homedrawer/MessageItem';
 import PanelKeyboard from '../../../screens/home/homedrawer/PanelKeyboard';
 import { EMessageActionType } from '../../../screens/home/homedrawer/enums';
+import StatusBarHeight from '../../StatusBarHeight/StatusBarHeight';
 import { style } from './CreateThreadForm.style';
 import HeaderLeftThreadForm from './HeaderLeftThreadForm';
-import StatusBarHeight from "../../StatusBarHeight/StatusBarHeight";
 
 type CreateThreadFormScreen = typeof APP_SCREEN.MENU_THREAD.CREATE_THREAD_FORM_MODAL;
 

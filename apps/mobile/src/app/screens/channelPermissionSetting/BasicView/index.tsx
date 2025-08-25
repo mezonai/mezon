@@ -1,12 +1,12 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
+	IUpdateChannelRequest,
 	appActions,
 	channelsActions,
 	fetchUserChannels,
-	IUpdateChannelRequest,
 	listChannelRenderAction,
 	rolesClanActions,
 	selectAllUserChannel,
@@ -94,7 +94,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 				dispatch(appActions.setLoadingMainMobile(true));
 
-				const currentChannelPrivate = isPublic ? 1 : 0
+				const currentChannelPrivate = isPublic ? 1 : 0;
 				const updateUpdateChannelRequest: ApiChangeChannelPrivateRequest = {
 					channel_id: channel?.channel_id || '',
 					channel_private: currentChannelPrivate,
@@ -102,9 +102,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 					role_ids: []
 				};
 
-				const response = await dispatch(
-					channelsActions.updateChannelPrivate(updateUpdateChannelRequest)
-				);
+				const response = await dispatch(channelsActions.updateChannelPrivate(updateUpdateChannelRequest));
 
 				dispatch(
 					channelsActions.updateChannelPrivateState({
@@ -132,7 +130,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 						type: 'success',
 						props: {
 							text2: t('channelPermission.toast.success'),
-							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
 						}
 					});
 				}

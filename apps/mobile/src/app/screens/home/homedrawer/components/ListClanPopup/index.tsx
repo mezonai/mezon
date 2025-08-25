@@ -117,10 +117,13 @@ export const ListClanPopup = React.memo(() => {
 		}
 
 		const currentThreshold = calculateDynamicThreshold(dragIndexRef.current, placeholderIndexRef.current);
-		const canGroup = currentThreshold !== null && currentDragDistance !== null && fromItem?.type === CLAN && currentDragDistance < currentThreshold
-		canGroup ? setGroupPreviewMap({
-			[toItem?.clan?.clan_id ?? toItem?.group?.id]: placeholderIndexRef.current
-		}) : setGroupPreviewMap({});
+		const canGroup =
+			currentThreshold !== null && currentDragDistance !== null && fromItem?.type === CLAN && currentDragDistance < currentThreshold;
+		canGroup
+			? setGroupPreviewMap({
+					[toItem?.clan?.clan_id ?? toItem?.group?.id]: placeholderIndexRef.current
+				})
+			: setGroupPreviewMap({});
 	};
 
 	const onCreateClanModal = useCallback(() => {
@@ -189,7 +192,7 @@ export const ListClanPopup = React.memo(() => {
 			setIsDragging(false);
 			dragIndexRef.current = null;
 			placeholderIndexRef.current = null;
-			
+
 			if (from === to) {
 				return;
 			}
@@ -198,9 +201,7 @@ export const ListClanPopup = React.memo(() => {
 				const fromItem = groupClans[from];
 				const toItem = groupClans[to];
 
-				if (
-					fromItem?.type === GROUP || groupPreviewMap?.[toItem?.clan?.clan_id ?? toItem?.group?.id] === undefined
-				) {
+				if (fromItem?.type === GROUP || groupPreviewMap?.[toItem?.clan?.clan_id ?? toItem?.group?.id] === undefined) {
 					const newClanGroupOrder = data?.map((item) => {
 						if (item?.type === GROUP) {
 							return {

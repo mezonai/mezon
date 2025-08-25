@@ -1,5 +1,5 @@
 import { usePermissionChecker } from '@mezon/core';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity, selectAllRolesClan } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useEffect, useMemo } from 'react';
@@ -95,7 +95,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 											<View style={styles.roleItem}>
 												<MezonIconCDN
 													icon={IconCDN.shieldUserIcon}
-													color={item?.color || Colors.gray72}
+													color={item?.color || baseColor.gray}
 													height={size.s_32}
 													width={size.s_32}
 												/>

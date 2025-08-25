@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	EventManagementEntity,
@@ -179,7 +179,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 				type: 'success',
 				props: {
 					text2: t('share.copied'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={Colors.textLink} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={baseColor.link} />
 				}
 			});
 		}

@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { Dimensions, StyleSheet } from 'react-native';
 
 const marginWidth = Dimensions.get('screen').width * 0.3;
@@ -17,10 +17,10 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			marginRight: size.s_10
 		},
 		radioItemDeActive: {
-			backgroundColor: Colors.secondary
+			backgroundColor: colors.secondary
 		},
 		radioItemActive: {
-			backgroundColor: Colors.bgViolet
+			backgroundColor: colors.bgViolet
 		},
 		inviteHeader: {
 			padding: size.s_16,
@@ -78,7 +78,7 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 		},
 		inviteWrapper: {
 			flex: 1,
-			backgroundColor: Colors.bgCharcoal,
+			backgroundColor: '#313338',
 			width: '100%',
 			borderTopRightRadius: size.s_8,
 			borderTopLeftRadius: size.s_8
@@ -87,7 +87,7 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			padding: size.s_16,
-			borderBottomColor: Colors.bgCharcoal,
+			borderBottomColor: '#313338',
 			borderBottomWidth: 1
 		},
 		searchInviteFriendWrapper: {
@@ -97,12 +97,12 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			color: colors.text
 		},
 		linkText: {
-			color: Colors.textLink
+			color: baseColor.link
 		},
 		channelInviteTitle: {
 			fontSize: size.s_14,
 			fontWeight: '600',
-			color: Colors.tertiary
+			color: colors.tertiary
 		},
 		channelInviteItem: {
 			width: '100%',
@@ -116,11 +116,11 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			paddingVertical: size.s_20,
 			borderBottomWidth: 2,
 			borderTopWidth: 2,
-			borderColor: Colors.borderPrimary,
+			borderColor: colors.borderRadio,
 			paddingHorizontal: size.s_10
 		},
 		inviteChannelListTitle: {
-			color: Colors.header1,
+			color: '#888c94',
 			fontSize: size.s_16,
 			fontWeight: '500'
 		},
@@ -129,12 +129,12 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			gap: size.s_10
 		},
 		advancedSettingTitle: {
-			color: Colors.header1,
+			color: '#888c94',
 			fontSize: size.s_16,
 			fontWeight: '500'
 		},
 		advancedSettingSubTitle: {
-			color: Colors.header2,
+			color: '#676b73',
 			fontSize: size.s_16,
 			fontWeight: '500'
 		},
@@ -145,12 +145,12 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			paddingRight: size.s_10
 		},
 		temporaryMemberTitle: {
-			color: Colors.textGray,
+			color: baseColor.gray,
 			fontSize: size.s_16
 		},
 		textUnknown: {
 			textAlign: 'center',
-			color: Colors.white,
+			color: 'white',
 			paddingHorizontal: size.s_16,
 			fontSize: size.label,
 			fontWeight: '600',

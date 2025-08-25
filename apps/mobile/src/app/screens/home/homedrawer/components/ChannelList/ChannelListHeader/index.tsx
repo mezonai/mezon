@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
 import { EventViewer } from '../../../../../../components/Event';
@@ -71,47 +72,53 @@ const ChannelListHeader = () => {
 	};
 
 	return (
-		<View style={[styles.container]}>
-			{!!clanName && (
-				<TouchableOpacity onPressIn={handlePress} style={styles.listHeader}>
-					<View style={styles.titleNameWrapper}>
-						<Text numberOfLines={1} style={styles.titleServer}>
-							{clanName}
-						</Text>
-						<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
-					</View>
-					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
-							{`${members} ${t('info.members')}`}
-						</Text>
-						<View
-							style={{
-								width: size.s_4,
-								height: size.s_4,
-								borderRadius: size.s_4,
-								backgroundColor: themeValue.textDisabled,
-								marginHorizontal: size.s_8
-							}}
-						/>
-						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
-							{t('common.community')}
-						</Text>
-					</View>
-				</TouchableOpacity>
-			)}
-			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
-				<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
-					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
-					<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity onPressIn={onOpenScanQR} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.scanQR} height={size.s_18} width={size.s_18} color={themeValue.text} />
-				</TouchableOpacity>
-				<TouchableOpacity onPressIn={onOpenEvent} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
-				</TouchableOpacity>
+		<LinearGradient
+			start={{ x: 1, y: 0 }}
+			end={{ x: 0, y: 0 }}
+			colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
+		>
+			<View style={styles.container}>
+				{!!clanName && (
+					<TouchableOpacity onPressIn={handlePress} style={styles.listHeader}>
+						<View style={styles.titleNameWrapper}>
+							<Text numberOfLines={1} style={styles.titleServer}>
+								{clanName}
+							</Text>
+							<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
+						</View>
+						<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+							<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
+								{`${members} ${t('info.members')}`}
+							</Text>
+							<View
+								style={{
+									width: size.s_4,
+									height: size.s_4,
+									borderRadius: size.s_4,
+									backgroundColor: themeValue.textDisabled,
+									marginHorizontal: size.s_8
+								}}
+							/>
+							<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
+								{t('common.community')}
+							</Text>
+						</View>
+					</TouchableOpacity>
+				)}
+				<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
+					<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
+						<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+						<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
+					</TouchableOpacity>
+					<TouchableOpacity onPressIn={onOpenScanQR} style={styles.iconWrapper}>
+						<MezonIconCDN icon={IconCDN.scanQR} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					</TouchableOpacity>
+					<TouchableOpacity onPressIn={onOpenEvent} style={styles.iconWrapper}>
+						<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					</TouchableOpacity>
+				</View>
 			</View>
-		</View>
+		</LinearGradient>
 	);
 };
 

@@ -1,5 +1,4 @@
 import { mentionRegex, mentionRegexSplit } from '@mezon/mobile-components';
-import { Colors } from '@mezon/mobile-ui';
 import { selectEmojiObjSuggestion } from '@mezon/store-mobile';
 import React from 'react';
 import { Text } from 'react-native';
@@ -57,7 +56,7 @@ export const RenderTextContent = ({ text }: RenderTextContentProps) => {
 			const isEmojiPattern = highlightEmojiRegex.test(part);
 			const isHighlighted = isEmojiPattern ? !!emojiObjPicked[part] : false;
 			return (
-				<Text key={`${index}-${part}-renderTextWithMention`} style={isHighlighted && { fontWeight: 'bold', color: Colors.bgViolet }}>
+				<Text key={`${index}-${part}-renderTextWithMention`} style={isHighlighted && { fontWeight: 'bold', color: '#5a62f4' }}>
 					{part}
 				</Text>
 			);

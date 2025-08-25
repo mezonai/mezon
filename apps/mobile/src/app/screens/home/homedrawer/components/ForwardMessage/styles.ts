@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -14,24 +14,24 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: Colors.bgViolet,
+		backgroundColor: baseColor.blurple,
 		paddingVertical: size.s_14,
 		borderRadius: 50,
 		marginHorizontal: size.s_10,
 		marginBottom: size.s_24
 	},
 	btnText: {
-		color: Colors.white,
+		color: 'white',
 		fontSize: size.medium
 	},
 	memberAvatar: {
 		height: size.s_34,
 		width: size.s_34,
 		borderRadius: 50,
-		backgroundColor: Colors.bgGrayDark
+		backgroundColor: '#676b73'
 	},
 	groupAvatar: {
-		backgroundColor: Colors.orange,
+		backgroundColor: baseColor.orange,
 		width: size.s_34,
 		height: size.s_34,
 		borderRadius: 50,

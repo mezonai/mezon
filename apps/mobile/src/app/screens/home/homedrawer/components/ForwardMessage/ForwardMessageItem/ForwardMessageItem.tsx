@@ -1,4 +1,4 @@
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
@@ -125,11 +125,11 @@ function ForwardMessageItem({
 						onPress={(value) => {
 							handleSelectChange(value);
 						}}
-						fillColor={Colors.bgButton}
+						fillColor={'#5865f2'}
 						iconStyle={{ borderRadius: 5 }}
 						innerIconStyle={{
 							borderWidth: 1.5,
-							borderColor: isChecked ? Colors.bgButton : themeValue.white,
+							borderColor: isChecked ? '#5865f2' : themeValue.white,
 							borderRadius: 5,
 							opacity: 1
 						}}

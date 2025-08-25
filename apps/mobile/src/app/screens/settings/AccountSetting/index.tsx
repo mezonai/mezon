@@ -6,7 +6,7 @@ import {
 	STORAGE_KEY_TEMPORARY_ATTACHMENT,
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
 } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	accountActions,
 	authActions,
@@ -79,7 +79,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 					type: 'success',
 					props: {
 						text2: t('toast.deleteAccount.success'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={size.s_20} height={size.s_20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={size.s_20} height={size.s_20} />
 					}
 				});
 			}
@@ -89,7 +89,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 				type: 'error',
 				props: {
 					text2: t('toast.deleteAccount.error'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={size.s_20} height={size.s_20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={size.s_20} height={size.s_20} />
 				}
 			});
 		}

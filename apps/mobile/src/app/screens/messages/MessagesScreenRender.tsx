@@ -3,7 +3,8 @@ import { acitvitiesActions, directActions, useAppDispatch } from '@mezon/store-m
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { FlatList, Keyboard, Platform, Pressable, RefreshControl, View } from 'react-native';
+import { FlatList, Keyboard, Platform, Pressable, RefreshControl } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -49,7 +50,12 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	}, []);
 
 	return (
-		<View style={styles.container}>
+		<LinearGradient
+			start={{ x: 1, y: 0 }}
+			end={{ x: 0, y: 0 }}
+			colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+			style={styles.container}
+		>
 			<MessageHeader />
 			<FlatList
 				data={dmGroupChatList?.length > 0 ? dmGroupChatList : []}
@@ -75,7 +81,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			<Pressable style={styles.addMessage} onPress={() => navigateToNewMessageScreen()}>
 				<MezonIconCDN icon={IconCDN.messagePlusIcon} width={size.s_22} height={size.s_22} />
 			</Pressable>
-		</View>
+		</LinearGradient>
 	);
 });
 

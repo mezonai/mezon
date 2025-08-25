@@ -86,7 +86,7 @@ export const style = (colors: Attributes) =>
 			marginVertical: size.s_20
 		},
 		qrWrapper: {
-			backgroundColor: colors.white,
+			backgroundColor: colors.primary,
 			padding: size.s_10,
 			alignSelf: 'center',
 			margin: 0,
@@ -137,6 +137,6 @@ export const style = (colors: Attributes) =>
 			paddingVertical: size.s_8,
 			paddingHorizontal: size.s_16,
 			borderRadius: size.s_8,
-			backgroundColor: colors.white
+			backgroundColor: colors.primary
 		}
 	});

@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -122,7 +122,7 @@ export const style = (colors: Attributes) =>
 		},
 		createButtonText: {
 			textAlign: 'center',
-			color: Colors.white,
+			color: 'white',
 			fontWeight: 'bold'
 		},
 		backdrop: {
@@ -154,6 +154,6 @@ export const style = (colors: Attributes) =>
 			color: colors.text
 		},
 		activeTabTitle: {
-			color: Colors.white
+			color: 'white'
 		}
 	});

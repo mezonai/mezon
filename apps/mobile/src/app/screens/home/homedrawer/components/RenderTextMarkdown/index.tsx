@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Attributes, Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	RootState,
@@ -160,8 +160,8 @@ export const markdownStyles = (
 			backgroundColor: colors.midnightBlue
 		},
 		blockquote: {
-			backgroundColor: Colors.tertiaryWeight,
-			borderColor: Colors.textGray
+			backgroundColor: '#1E1E1E',
+			borderColor: '#c7c7c7'
 		},
 		tr: {
 			borderColor: colors.border
@@ -252,16 +252,16 @@ export function extractIds(url: string): { clanId: string | null; channelId: str
 
 const renderChannelIcon = (channelType: number, channelId: string, themeValue: Attributes) => {
 	if (channelType === ChannelType.CHANNEL_TYPE_GMEET_VOICE || channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-		return <CustomIcon name="voice" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />;
+		return <CustomIcon name="voice" size={size.s_14} color={baseColor.link} style={{ marginTop: size.s_10 }} />;
 	}
 	if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
-		return <CustomIcon name="thread" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />;
+		return <CustomIcon name="thread" size={size.s_14} color={baseColor.link} style={{ marginTop: size.s_10 }} />;
 	}
 	if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) {
-		return <CustomIcon name="stream" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />;
+		return <CustomIcon name="stream" size={size.s_14} color={baseColor.link} style={{ marginTop: size.s_10 }} />;
 	}
 	if (channelType === ChannelType.CHANNEL_TYPE_APP) {
-		return <CustomIcon name="app" size={size.s_14} color={Colors.textLink} style={{ marginTop: size.s_10 }} />;
+		return <CustomIcon name="app" size={size.s_14} color={baseColor.link} style={{ marginTop: size.s_10 }} />;
 	}
 	if (channelId === 'undefined') {
 		return <Feather name="lock" size={size.s_14} color={themeValue.text} style={{ marginTop: size.s_10 }} />;
@@ -302,12 +302,7 @@ const renderTextPalainContain = (
 					<Text
 						key={`line-${idx}_${headingText}`}
 						style={[
-							themeValue ? markdownStyles(
-								themeValue,
-								isUnReadChannel,
-								isLastMessage,
-								isBuzzMessage
-							)?.[`heading${headingLevel}`] : {}
+							themeValue ? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage)?.[`heading${headingLevel}`] : {}
 						]}
 					>
 						{headingText}
@@ -523,7 +518,7 @@ export const RenderTextMarkdownContent = ({
 									style={
 										themeValue
 											? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape)
-												.blockSpacing
+													.blockSpacing
 											: {}
 									}
 								>
@@ -694,17 +689,7 @@ export const RenderTextMarkdownContent = ({
 			)
 		);
 	} else if (embedNotificationMessage) {
-		textParts.push(
-			renderTextPalainContain(
-				themeValue,
-				embedNotificationMessage,
-				lastIndex,
-				isUnReadChannel,
-				isLastMessage,
-				isBuzzMessage,
-				true
-			)
-		);
+		textParts.push(renderTextPalainContain(themeValue, embedNotificationMessage, lastIndex, isUnReadChannel, isLastMessage, isBuzzMessage, true));
 	}
 
 	return (

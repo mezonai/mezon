@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectAllUserClans } from '@mezon/store-mobile';
 import { EPermission, UsersClanEntity } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -91,7 +91,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				type: 'success',
 				props: {
 					text2: t('setupMember.addedMember'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -99,7 +99,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	MessagesEntity,
@@ -185,7 +185,7 @@ const ForwardMessageScreen = () => {
 				type: 'success',
 				props: {
 					text2: t('forwardMessagesSuccessfully'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={30} height={17} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
 				}
 			});
 		} catch (error) {
@@ -220,7 +220,7 @@ const ForwardMessageScreen = () => {
 				type: 'success',
 				props: {
 					text2: t('forwardMessagesSuccessfully'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={30} height={17} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
 				}
 			});
 		} catch (error) {

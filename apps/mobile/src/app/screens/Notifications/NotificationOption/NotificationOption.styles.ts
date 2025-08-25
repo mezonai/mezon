@@ -1,4 +1,4 @@
-import { Attributes, Colors, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -8,11 +8,11 @@ export const style = (colors: Attributes) =>
 			paddingVertical: verticalScale(10)
 		},
 		optionContainer: {
-			backgroundColor: Colors.bgPrimary,
+			backgroundColor: '#3e4247',
 			borderRadius: 8
 		},
 		headerTitle: {
-			color: Colors.white,
+			color: 'white',
 			textAlign: 'center',
 			fontWeight: '600',
 			fontSize: size.h5,
@@ -27,13 +27,13 @@ export const style = (colors: Attributes) =>
 			gap: 20
 		},
 		textOption: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: size.label,
 			flex: 1,
 			fontWeight: '500'
 		},
 		notifySetting: {
-			backgroundColor: Colors.bgGrayLight,
+			backgroundColor: '#676b73',
 			borderRadius: 8,
 			marginTop: verticalScale(20)
 		},

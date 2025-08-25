@@ -105,7 +105,7 @@ export function MemberProfile({
 						{!!userVoiceStatus && (
 							<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
 								<MezonIconCDN icon={IconCDN.channelVoice} color={baseColor.green} width={12} height={12} />
-								<Text style={{ color: themeValue.textNormal, fontSize: 12, fontWeight: '500' }}>In voice</Text>
+								<Text style={{ color: themeValue.textDisabled, fontSize: size.s_12, fontWeight: '500' }}>In voice</Text>
 							</View>
 						)}
 						{isDMThread && currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP && (

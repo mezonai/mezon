@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -39,27 +39,27 @@ export const style = (colors: Attributes) =>
 			width: '80%',
 			alignSelf: 'center',
 			padding: size.s_10,
-			backgroundColor: Colors.bgButton,
+			backgroundColor: '#5865f2',
 			borderRadius: size.s_50,
 			marginBottom: size.s_10
 		},
 		createClan: {
 			width: '100%',
 			padding: size.s_10,
-			backgroundColor: Colors.transparent,
+			backgroundColor: 'transparent',
 			borderWidth: 2,
-			borderColor: Colors.bgDarkCharcoal,
+			borderColor: '#323232',
 			borderRadius: size.s_50
 		},
 		textCreateClan: {
 			fontSize: size.label,
-			color: Colors.textGray,
+			color: '#c7c7c7',
 			fontWeight: '600',
 			textAlign: 'center'
 		},
 		textJoinClan: {
 			fontSize: size.label,
-			color: Colors.white,
+			color: 'white',
 			fontWeight: '600',
 			textAlign: 'center'
 		}

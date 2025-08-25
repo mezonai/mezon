@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTabletLandscape: boolean) =>
@@ -43,7 +43,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 
 		whiteText: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: isTabletLandscape ? size.label : size.s_14
 		},
 
@@ -58,7 +58,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			alignItems: 'center',
 			justifyContent: 'center',
 			gap: size.s_8,
-			backgroundColor: Colors.bgViolet,
+			backgroundColor: colors.bgViolet,
 			borderRadius: 50,
 			flex: 1,
 			paddingVertical: size.s_10,

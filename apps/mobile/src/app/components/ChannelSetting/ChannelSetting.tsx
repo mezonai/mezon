@@ -1,7 +1,7 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
 	channelUsersActions,
@@ -130,7 +130,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			type: 'success',
 			props: {
 				text2: t('toast.updated'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 			}
 		});
 	};
@@ -208,16 +208,16 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			[
 				{
 					title: isChannel ? t('fields.channelDelete.delete') : t('fields.threadDelete.delete'),
-					textStyle: { color: Colors.textRed },
+					textStyle: { color: baseColor.redStrong },
 					onPress: () => handlePressDeleteChannel(),
-					icon: <MezonIconCDN icon={IconCDN.trashIcon} color={Colors.textRed} />,
+					icon: <MezonIconCDN icon={IconCDN.trashIcon} color={baseColor.redStrong} />,
 					isShow: isChannel ? isCanManageChannel : isCanManageThread || channel?.creator_id === currentUserId
 				},
 				{
 					title: isChannel ? t('fields.channelDelete.leave') : t('fields.threadLeave.leave'),
-					textStyle: { color: Colors.textRed },
+					textStyle: { color: baseColor.redStrong },
 					onPress: () => handlePressLeaveChannel(),
-					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
+					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={baseColor.redStrong} />,
 					isShow:
 						channel?.creator_id !== currentUserId &&
 						(!isChannel || (channel?.channel_private === 1 && channel?.type !== ChannelType.CHANNEL_TYPE_APP))

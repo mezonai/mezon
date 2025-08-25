@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { width } from 'libs/mobile-ui/src/lib/themes/Metrics';
 import { StyleSheet } from 'react-native';
 
@@ -55,7 +55,7 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		deleteText: {
-			color: Colors.white,
+			color: 'white',
 			fontWeight: 'bold',
 			fontSize: size.s_14
 		},

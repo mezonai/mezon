@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -39,7 +39,7 @@ export const style = (colors: Attributes) =>
 		},
 		memberReactCount: {
 			marginLeft: size.s_12,
-			color: Colors.bgGrayDark,
+			color: '#676b73',
 			fontSize: size.small,
 			fontWeight: 'bold'
 		},
@@ -78,7 +78,7 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.border
 		},
 		originEmojiColor: {
-			color: Colors.white
+			color: 'white'
 		},
 		emojiTab: {
 			fontSize: size.input
@@ -94,13 +94,13 @@ export const style = (colors: Attributes) =>
 			width: '100%',
 			height: '100%',
 			borderRadius: size.s_50,
-			backgroundColor: Colors.titleReset,
+			backgroundColor: 'rgba(148, 154, 164, 1)',
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
 		textAvatarBoxDefault: {
 			fontSize: size.s_22,
-			color: Colors.white
+			color: 'white'
 		},
 		memberWrapper: {
 			flexDirection: 'row',
@@ -112,7 +112,7 @@ export const style = (colors: Attributes) =>
 			height: size.s_36,
 			borderRadius: size.s_36,
 			overflow: 'hidden',
-			backgroundColor: Colors.bgGrayDark
+			backgroundColor: '#676b73'
 		},
 		image: {
 			width: '100%',
@@ -123,7 +123,7 @@ export const style = (colors: Attributes) =>
 			color: colors.white
 		},
 		mentionText: {
-			color: Colors.bgGrayDark
+			color: '#676b73'
 		},
 		addEmojiIcon: {
 			width: size.s_18,
@@ -147,14 +147,14 @@ export const style = (colors: Attributes) =>
 		confirmDeleteEmoji: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			backgroundColor: Colors.red,
+			backgroundColor: baseColor.redStrong,
 			paddingVertical: size.s_6,
 			paddingHorizontal: size.s_12,
 			gap: size.s_6,
 			borderRadius: 50
 		},
 		confirmText: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: size.h6
 		},
 		emojiText: {
@@ -167,11 +167,11 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		noActionTitle: {
-			color: Colors.white,
+			color: 'white',
 			fontSize: size.h6
 		},
 		noActionContent: {
-			color: Colors.textGray,
+			color: '#c7c7c7',
 			fontSize: size.medium
 		}
 	});

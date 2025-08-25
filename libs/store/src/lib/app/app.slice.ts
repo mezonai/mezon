@@ -64,7 +64,7 @@ export const initialAppState: AppState = {
 	initialParams: {},
 	closeMenu: false,
 	statusMenu: true,
-	hiddenBottomTabMobile: true,
+	hiddenBottomTabMobile: false,
 	hasInternetMobile: true,
 	loadingMainMobile: false,
 	isFromFcmMobile: false,

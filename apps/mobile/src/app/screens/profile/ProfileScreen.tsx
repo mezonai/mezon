@@ -1,6 +1,6 @@
 import { useFriends, useMemberStatus } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	FriendsEntity,
 	accountActions,
@@ -183,7 +183,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				type: 'success',
 				props: {
 					text2: t('copySuccess'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={Colors.textLink} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={baseColor.link} />
 				}
 			});
 		} catch (error) {
@@ -317,7 +317,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						<Text style={styles.text}>{userProfile?.user?.username}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity onPress={showSendTokenBottomSheet} style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
-						<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={Colors.azureBlue} />
+						<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={baseColor.azureBlue} />
 						<View style={styles.token}>
 							<Text style={styles.text}>
 								{`${t('token')} ${tokenInWallet ? formatNumber(Number(tokenInWallet), 'vi-VN', 'VND') : '0'}`}

@@ -1,4 +1,4 @@
-import { Attributes, Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -14,11 +14,11 @@ export const style = (colors: Attributes) =>
 		},
 
 		badge: {
-			backgroundColor: Colors.red,
+			backgroundColor: baseColor.redStrong,
 			position: 'absolute',
 			borderRadius: size.s_24,
 			borderWidth: size.s_4,
-			borderColor: Colors.secondary,
+			borderColor: colors.secondary,
 			minWidth: size.s_24,
 			height: size.s_24,
 			alignItems: 'center',
@@ -28,7 +28,7 @@ export const style = (colors: Attributes) =>
 		},
 
 		badgeText: {
-			color: Colors.white,
+			color: 'white',
 			fontWeight: 'bold',
 			fontSize: size.tiny
 		},

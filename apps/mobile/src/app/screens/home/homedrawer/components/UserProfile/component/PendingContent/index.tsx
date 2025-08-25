@@ -1,6 +1,6 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useFriends } from '@mezon/core';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { FriendsEntity } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { memo } from 'react';
@@ -117,7 +117,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 								<View style={{ padding: size.s_14 }}>
 									<Text
 										style={{
-											color: isWarning ? Colors.textRed : themeValue.text
+											color: isWarning ? baseColor.redStrong : themeValue.text
 										}}
 									>
 										{text}

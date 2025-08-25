@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { IMessageWithUser } from '@mezon/utils';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -77,7 +77,7 @@ export const ReportMessageModal = memo((props: IReportMessageModalProps) => {
 				type: 'success',
 				props: {
 					text2: t('reportMessage.reportSubmitted'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		});
@@ -103,7 +103,7 @@ export const ReportMessageModal = memo((props: IReportMessageModalProps) => {
 								<Text style={styles.reportCategory}>{t('reportMessage.reportCategory')}</Text>
 
 								<View style={styles.reportCategoryWrapper}>
-									<MezonIconCDN icon={IconCDN.circleIcon} color={Colors.bgViolet} height={5} width={5} />
+									<MezonIconCDN icon={IconCDN.circleIcon} color={themeValue.bgViolet} height={5} width={5} />
 									<Text style={styles.reportCategoryTitle}>{reportSelected?.title}</Text>
 								</View>
 							</View>

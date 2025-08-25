@@ -1,5 +1,5 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, selectAllPermissionsDefault, selectAllRolesClan, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -100,7 +100,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 					type: 'success',
 					props: {
 						text2: t('roleDetail.changesSaved'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 					}
 				});
 				navigation.goBack();
@@ -111,7 +111,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		} finally {
@@ -159,7 +159,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}

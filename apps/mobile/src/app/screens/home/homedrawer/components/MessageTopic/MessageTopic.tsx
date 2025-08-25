@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity, selectMemberClanByUserId2, topicsActions, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
@@ -37,7 +37,7 @@ const MessageTopic = ({ message }: { message: MessagesEntity }) => {
 				/>
 				<Text style={styles.repliesText}>{t('creator')}</Text>
 				<Text style={styles.dateMessageBox}>{t('viewTopic')}</Text>
-				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={size.s_16} height={size.s_16} color={Colors.gray72} />
+				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={size.s_16} height={size.s_16} color={baseColor.gray} />
 			</TouchableOpacity>
 		</View>
 	);

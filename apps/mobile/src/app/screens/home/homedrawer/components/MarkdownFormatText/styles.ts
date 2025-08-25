@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -25,7 +25,7 @@ export const style = (colors: Attributes) =>
 			height: size.s_20
 		},
 		textLink: {
-			color: Colors.textLink,
+			color: baseColor.link,
 			textDecorationLine: 'none',
 			lineHeight: size.s_22
 		}

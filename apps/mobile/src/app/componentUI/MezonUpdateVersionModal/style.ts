@@ -1,10 +1,9 @@
-import { Colors } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = () =>
 	StyleSheet.create({
 		closeIcon: {
-			color: Colors.white
+			color: 'white'
 		},
 		modalOverlay: {
 			flex: 1,

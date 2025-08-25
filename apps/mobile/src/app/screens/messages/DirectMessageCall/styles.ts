@@ -23,7 +23,7 @@ export const style = (colors: Attributes) =>
 			zIndex: 10
 		},
 		buttonCircle: {
-			backgroundColor: colors.border,
+			backgroundColor: colors.primary,
 			padding: size.s_8,
 			borderRadius: size.s_22
 		},
@@ -73,7 +73,7 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center'
 		},
 		titleConfirm: {
-			color: colors.primary,
+			color: colors.text,
 			marginVertical: size.s_10,
 			fontSize: size.s_18,
 			textAlign: 'center'
