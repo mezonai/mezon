@@ -253,9 +253,19 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 			)}
 			<Pressable style={styles.channelTitle} onPress={navigateToThreadDetail}>
 				{isTypeDMGroup ? (
-					<View style={styles.groupAvatar}>
-						<MezonIconCDN icon={IconCDN.groupIcon} width={18} height={18} />
-					</View>
+					currentDmGroup?.topic && !currentDmGroup?.topic?.includes('avatar-group.png') ? (
+						<View style={styles.groupAvatarWrapper}>
+							<ImageNative
+								url={createImgproxyUrl(currentDmGroup?.topic ?? '')}
+								style={{ width: '100%', height: '100%' }}
+								resizeMode={'cover'}
+							/>
+						</View>
+					) : (
+						<View style={styles.groupAvatar}>
+							<MezonIconCDN icon={IconCDN.groupIcon} width={18} height={18} />
+						</View>
+					)
 				) : (
 					<View style={styles.avatarWrapper}>
 						{dmAvatar ? (

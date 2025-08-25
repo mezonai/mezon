@@ -260,7 +260,8 @@ export const style = (colors: Attributes) =>
 			marginHorizontal: size.s_20,
 			paddingVertical: size.s_10,
 			flexDirection: 'row',
-			justifyContent: 'space-between'
+			justifyContent: 'space-between',
+			alignItems: 'center',
 		},
 		friendItemWrapperInvited: {
 			opacity: 0.6
@@ -470,6 +471,26 @@ export const style = (colors: Attributes) =>
 			display: 'flex',
 			flexDirection: 'column',
 			alignItems: 'center'
+		},
+		groupAvatar: {
+			backgroundColor: Colors.orange,
+			width: size.s_50,
+			height: size.s_50,
+			borderRadius: 50,
+			justifyContent: 'center',
+			alignItems: 'center',
+			overflow: 'hidden'
+		},
+		groupAvatarWrapper: {
+			width: size.s_40,
+			height: size.s_40,
+			borderRadius: size.s_20,
+			overflow: 'hidden'
+		},
+		defaultAvatar: {
+			width: size.s_40,
+			height: size.s_40,
+			borderRadius: size.s_20
 		},
 		channelView: {
 			flex: 1,

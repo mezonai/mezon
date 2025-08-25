@@ -3,6 +3,8 @@
   "inviteLinks": "Liên kết mời",
   "leaveGroup": "Rời nhóm",
   "closeDM": "Đóng tin nhắn",
-  "groupName": "TÊN NHÓM",
-  "save": "Lưu"
+  "groupName": "Tên nhóm",
+  "save": "Lưu",
+  "removeAvatar": "Xóa ảnh",
+  "invalidGroupName": "Tên nhóm không hợp lệ"
 }

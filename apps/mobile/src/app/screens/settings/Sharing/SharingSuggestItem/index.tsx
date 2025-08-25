@@ -24,6 +24,7 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestIt
 	}, [item?.parent_id]);
 
 	const isGroupDM = useMemo(() => item?.type === ChannelType.CHANNEL_TYPE_GROUP, [item?.type]);
+	const isAvatar = useMemo(() => item?.topic && !item?.topic?.includes('avatar-group.png'), [item?.topic]);
 
 	const handleChooseItem = () => {
 		onChooseItem(item);
@@ -36,6 +37,14 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestIt
 				avatarUrl: item?.channel_avatar?.[0]
 			};
 		}
+
+		if (item?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			return {
+				name: item?.channel_label,
+				avatarUrl: item?.topic
+			};
+		}
+
 		const clan = clans?.[item?.clan_id];
 		return {
 			name: clan?.clan_name,
@@ -45,7 +54,7 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestIt
 
 	return (
 		<TouchableOpacity style={styles.itemSuggestion} onPress={handleChooseItem}>
-			{isGroupDM ? (
+			{isGroupDM && !isAvatar ? (
 				<FastImage
 					source={Images.AVATAR_GROUP}
 					style={{

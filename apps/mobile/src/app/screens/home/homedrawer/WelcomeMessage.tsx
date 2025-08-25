@@ -13,11 +13,12 @@ import {
 	selectMemberClanByUserId2,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { ChannelStatusEnum, IChannel } from '@mezon/utils';
+import { ChannelStatusEnum, createImgproxyUrl, IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
+import ImageNative from '../../../components/ImageNative';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -98,6 +99,12 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 
 	const creatorUser = useAppSelector((state) => selectMemberClanByUserId2(state, currenChannel?.creator_id));
 
+	const groupDMAvatar = useMemo(() => {
+		const isAvatar = currenChannel?.topic && !currenChannel?.topic?.includes('avatar-group.png');
+		if (!isAvatar) return '';
+		return currenChannel?.topic;
+	}, [currenChannel?.topic]);
+
 	const handleAddFriend = async () => {
 		if (targetUserId) {
 			const store = await getStoreAsync();
@@ -177,7 +184,7 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 	return (
 		<View style={[styles.wrapperWelcomeMessage, isDMGroup && styles.wrapperCenter]}>
 			{isDM ? (
-				isDMGroup ? (
+				isDMGroup && !groupDMAvatar ? (
 					<MezonAvatar
 						height={size.s_50}
 						width={size.s_50}
@@ -187,6 +194,14 @@ const WelcomeMessage = React.memo(({ channelId, uri }: IWelcomeMessage) => {
 						isCountBadge={isCountBadge}
 						countBadge={remainingCount}
 					/>
+				) : isDMGroup && groupDMAvatar ? (
+					<View style={styles.groupAvatar}>
+						<ImageNative
+							url={createImgproxyUrl(groupDMAvatar ?? '', { width: 50, height: 50, resizeType: 'fit' })}
+							style={{ width: '100%', height: '100%' }}
+							resizeMode={'cover'}
+						/>
+					</View>
 				) : currenChannel?.channel_avatar && currenChannel.channel_avatar[0] ? (
 					<MezonAvatar height={size.s_100} width={size.s_100} avatarUrl={currenChannel.channel_avatar[0]} username={userName} />
 				) : (

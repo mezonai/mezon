@@ -7,6 +7,7 @@ import {
 	fetchDirectMessage,
 	removeMemberChannel,
 	selectCurrentUserId,
+	selectDmGroupCurrent,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
@@ -34,6 +35,8 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		return !currentChannel?.user_id?.length;
 	}, [currentChannel?.user_id]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
+	const currentDMGroup = useAppSelector(selectDmGroupCurrent(currentChannel?.id));
+	const currentAvatar = currentDMGroup?.topic;
 
 	const menuSetting: IMezonMenuItemProps[] = [
 		{
@@ -45,8 +48,8 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				await sleep(500);
 				const data = {
-					snapPoints: ['70%'],
-					children: <CustomGroupDm dmGroupId={currentChannel?.id} channelLabel={channelLabel} />
+					snapPoints: ['90%'],
+					children: <CustomGroupDm dmGroupId={currentChannel?.id} channelLabel={channelLabel} currentAvatar={currentAvatar} />
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			}

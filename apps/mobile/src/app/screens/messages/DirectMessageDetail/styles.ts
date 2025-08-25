@@ -44,6 +44,12 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
+		groupAvatarWrapper: {
+			width: size.s_30,
+			height: size.s_30,
+			borderRadius: size.s_20,
+			overflow: 'hidden'
+		},
 		friendAvatar: {
 			width: size.s_30,
 			height: size.s_30,

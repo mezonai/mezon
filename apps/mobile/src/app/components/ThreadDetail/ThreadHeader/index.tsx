@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectDmGroupCurrent } from '@mezon/store-mobile';
-import { ChannelStatusEnum } from '@mezon/utils';
+import { ChannelStatusEnum, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useContext, useMemo } from 'react';
@@ -13,6 +13,7 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { UserStatusDM } from '../../../screens/messages/UserStatusDM';
+import ImageNative from '../../ImageNative';
 import MenuCustomDm from '../../MenuCustomDm';
 import { threadDetailContext } from '../MenuThreadDetail';
 import { style } from './styles';
@@ -44,6 +45,25 @@ export const ThreadHeader = memo(() => {
 	const isChannel = useMemo(() => {
 		return !!currentChannel?.channel_label && !Number(currentChannel?.parent_id);
 	}, [currentChannel?.channel_label, currentChannel?.parent_id]);
+
+	const groupDMAvatar = useMemo(() => {
+		const avatar = currentDmGroup?.topic;
+		const isDefaultAvatar = currentDmGroup?.topic.includes('avatar-group.png');
+		return !isDefaultAvatar ? (
+			<View style={styles.groupAvatarWrapper}>
+				<ImageNative
+					url={createImgproxyUrl(avatar)}
+					style={{ width: '100%', height: '100%' }}
+					resizeMode={'cover'}
+				/>
+			</View>
+
+		) : (
+			<View style={styles.groupAvatar}>
+				<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
+			</View>
+		);
+	}, [currentDmGroup?.topic]);
 
 	const handlebackMessageDetail = () => {
 		if (isDMThread && !isTabletLandscape) {
@@ -88,9 +108,7 @@ export const ThreadHeader = memo(() => {
 				<View style={styles.avatarWrapper}>
 					<View>
 						{currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
-							<View style={[styles.groupAvatar, styles.avatarSize]}>
-								<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
-							</View>
+							groupDMAvatar
 						) : (
 							<View>
 								<UserStatusDM
@@ -122,12 +140,13 @@ export const ThreadHeader = memo(() => {
 						{channelLabel}
 					</Text>
 				</View>
-			)}
+			)
+			}
 			{isDMThread && (
 				<TouchableOpacity onPress={openMenu} style={styles.iconMenuHeader}>
 					<MezonIconCDN icon={IconCDN.moreHorizontalIcon} color={themeValue.white} />
 				</TouchableOpacity>
 			)}
-		</View>
+		</View >
 	);
 });

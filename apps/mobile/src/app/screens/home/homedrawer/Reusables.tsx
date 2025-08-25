@@ -1,9 +1,11 @@
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { createImgproxyUrl } from '@mezon/utils';
+import Images from 'apps/mobile/src/assets/Images';
 import { ChannelType, User } from 'mezon-js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import Images from '../../../../assets/Images';
+import ImageNative from '../../../components/ImageNative';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonButton from '../../../componentUI/MezonButton';
 import { style } from './styles';
@@ -15,6 +17,7 @@ export type Receiver = {
 	type?: ChannelType;
 	user?: User;
 	id?: string;
+	topic?: string;
 };
 
 export interface IFriendListItemProps {
@@ -29,6 +32,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation();
 	const styles = style(themeValue);
+	const isGroupAvatar = !dmGroup?.topic?.includes('avatar-group.png');
 
 	return (
 		<View>
@@ -42,9 +46,19 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 				>
 					<View style={styles.friendItemContent}>
 						{Number(dmGroup.type) === ChannelType.CHANNEL_TYPE_GROUP ? (
-							<Image source={Images.AVATAR_GROUP} style={{ width: 40, height: 40, borderRadius: 50 }} />
+							isGroupAvatar ? (
+								<View style={styles.groupAvatarWrapper}>
+									<ImageNative
+										url={createImgproxyUrl(dmGroup?.topic ?? '')}
+										style={{ width: '100%', height: '100%' }}
+										resizeMode={'cover'}
+									/>
+								</View>
+							) : (
+								<Image source={Images.AVATAR_GROUP} style={styles.defaultAvatar} />
+							)
 						) : (
-							<MezonAvatar avatarUrl={dmGroup?.channel_avatar?.at(0)} username={dmGroup?.channel_label} height={40} width={40} />
+							<MezonAvatar avatarUrl={dmGroup?.channel_avatar?.at(0)} username={dmGroup?.channel_label} height={size.s_40} width={size.s_40} />
 						)}
 						<Text style={styles.friendItemName} numberOfLines={1} ellipsizeMode="tail">
 							{dmGroup?.channel_label}
