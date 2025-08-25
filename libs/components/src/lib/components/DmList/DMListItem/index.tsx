@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { ChannelMembersEntity, MemberProfileType } from '@mezon/utils';
+import { ChannelMembersEntity, generateE2eId, MemberProfileType } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -118,6 +118,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			<button
 				className={`group-hover/itemListDm:opacity-100 opacity-0 absolute right-2 text-gray-500 text-2xl hover:text-red-500 top-[6px]`}
 				onClick={(e) => handleCloseClick(e)}
+				data-e2e={generateE2eId(`chat.direct-message.chat-item.close-DM-button`)}
 			>
 				&times;
 			</button>

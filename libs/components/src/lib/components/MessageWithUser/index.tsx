@@ -12,7 +12,8 @@ import {
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
 	convertDateString,
-	convertTimeHour
+	convertTimeHour,
+	generateE2eId
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
@@ -185,7 +186,7 @@ function MessageWithUser({
 				<HoverStateWrapper
 					isSearchMessage={isSearchMessage}
 					popup={!isEphemeralMessage ? popup : undefined}
-					onContextMenu={!isEphemeralMessage ? onContextMenu : () => {}}
+					onContextMenu={!isEphemeralMessage ? onContextMenu : () => { }}
 					messageId={message.id}
 					className={classNames(
 						'fullBoxText relative group dark:font-normal font-medium',
@@ -221,11 +222,11 @@ function MessageWithUser({
 							mode={mode}
 							onClick={
 								checkAnonymousOnReplied
-									? () => {}
+									? () => { }
 									: (e) => {
-											isClickReply.current = true;
-											handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, checkAnonymousOnReplied);
-										}
+										isClickReply.current = true;
+										handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, checkAnonymousOnReplied);
+									}
 							}
 							isAnonymousReplied={checkAnonymousOnReplied}
 						/>
@@ -241,11 +242,11 @@ function MessageWithUser({
 									mode={mode}
 									onClick={
 										checkAnonymous
-											? () => {}
+											? () => { }
 											: (e) => {
-													isClickReply.current = false;
-													handleOpenShortUser(e, message?.sender_id);
-												}
+												isClickReply.current = false;
+												handleOpenShortUser(e, message?.sender_id);
+											}
 									}
 								/>
 								<MessageHead
@@ -253,11 +254,11 @@ function MessageWithUser({
 									mode={mode}
 									onClick={
 										checkAnonymous
-											? () => {}
+											? () => { }
 											: (e) => {
-													isClickReply.current = false;
-													handleOpenShortUser(e, message?.sender_id);
-												}
+												isClickReply.current = false;
+												handleOpenShortUser(e, message?.sender_id);
+											}
 									}
 									isDM={isDM}
 								/>
@@ -437,6 +438,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 			onMouseLeave={handleMouseLeave}
 			onContextMenu={onContextMenu}
 			id={`msg-${messageId}`}
+			data-e2e={generateE2eId(`chat.direct-message.message.item`)}
 		>
 			{children}
 			{isHover && (

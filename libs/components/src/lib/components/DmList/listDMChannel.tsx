@@ -7,7 +7,7 @@ import {
 	selectStatusStream,
 	selectVoiceJoined
 } from '@mezon/store';
-import { isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -104,7 +104,7 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 								height: `${virtualRow.size}px`,
 								transform: `translateY(${virtualRow.start}px)`
 							}}
-							className="dm-wrap"
+							className="dm-wrap" data-e2e={generateE2eId(`chat.direct-message.chat-list`)}
 						>
 							<DMListItem
 								currentDmGroupId={currentDmGroupId as string}
@@ -113,7 +113,7 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 								isActive={isActive}
 								navigateToFriends={() => navigate(`/chat/direct/friends`)}
 								// eslint-disable-next-line @typescript-eslint/no-empty-function
-								joinToChatAndNavigate={isActive ? () => {} : joinToChatAndNavigate}
+								joinToChatAndNavigate={isActive ? () => { } : joinToChatAndNavigate}
 							/>
 						</div>
 					);

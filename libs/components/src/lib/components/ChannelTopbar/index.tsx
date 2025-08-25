@@ -41,7 +41,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageSendPayload, IMessageTypeCallLog, SubPanelName, ValidateSpecialCharacters, createImgproxyUrl } from '@mezon/utils';
+import { IMessageSendPayload, IMessageTypeCallLog, SubPanelName, ValidateSpecialCharacters, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -242,6 +242,7 @@ const TopBarChannelText = memo(() => {
 								className={`overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent outline-none leading-10 text-theme-primary max-w-[250px] min-w-0`}
 								onClick={handleStartEditing}
 								title={channelDmGroupLabel}
+								data-e2e={generateE2eId(`chat.direct-message.chat-item.namegroup`)}
 							>
 								{channelDmGroupLabel}
 							</div>
@@ -628,7 +629,7 @@ const DmTopbarTools = memo(() => {
 
 					<AddMemberToGroupDm currentDmGroup={currentDmGroup} />
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-						<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}>
+						<button title="Show Member List" onClick={() => setIsShowMemberListDM(!isShowMemberListDM)} data-e2e={generateE2eId(`chat.direct-message.member-list.button`)}>
 							<span>
 								<Icons.MemberList defaultSize="size-5" />
 							</span>
@@ -921,7 +922,7 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 					/>
 				</div>
 			)}
-			<span title="Add friends to DM">
+			<span title="Add friends to DM" data-e2e={generateE2eId(`chat.direct-message.create-group.button`)}>
 				<Icons.IconAddFriendDM defaultSize="size-5" />
 			</span>
 		</div>
