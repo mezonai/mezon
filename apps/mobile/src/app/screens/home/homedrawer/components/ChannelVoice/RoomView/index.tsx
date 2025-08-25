@@ -1,5 +1,6 @@
 import { TrackReference, VideoTrack, useParticipants } from '@livekit/react-native';
 import { ScreenCapturePickerView } from '@livekit/react-native-webrtc';
+import { ActiveSoundReaction } from '@mezon/components';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { ThemeModeBase, size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -64,7 +65,8 @@ const RoomView = ({
 	clanId,
 	onFocusedScreenChange,
 	isGroupCall = false,
-	participantsCount = 0
+	participantsCount = 0,
+	activeSoundReactions
 }: {
 	isAnimationComplete: boolean;
 	onPressMinimizeRoom: () => void;
@@ -73,6 +75,7 @@ const RoomView = ({
 	onFocusedScreenChange: (track: TrackReference | null) => void;
 	isGroupCall?: boolean;
 	participantsCount?: number;
+	activeSoundReactions: Map<string, ActiveSoundReaction>;
 }) => {
 	const marginWidth = Dimensions.get('screen').width;
 	const { themeValue, themeBasic } = useTheme();
@@ -163,7 +166,11 @@ const RoomView = ({
 
 	return (
 		<View style={[styles.roomViewContainer, isPiPMode && styles.roomViewContainerPiP]}>
-			{!isAnimationComplete ? <FocusedScreenPopup /> : <ParticipantScreen setFocusedScreenShare={setFocusedScreenShareProp} />}
+			{!isAnimationComplete ? (
+				<FocusedScreenPopup />
+			) : (
+				<ParticipantScreen setFocusedScreenShare={setFocusedScreenShareProp} activeSoundReactions={activeSoundReactions} />
+			)}
 			{isAnimationComplete && isGroupCall && isShowPreCallInterface && (
 				<View style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: size.s_100 * 2 }}>
 					<LottieView

@@ -4,7 +4,7 @@ import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_SALE_CATE } from '@mezon/utils';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
 import MezonConfirm from '../../../../../../componentUI/MezonConfirm';
@@ -55,7 +55,8 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 
 export default memo(function Sticker({ stickerList, categoryName, onClickSticker, isAudio, forSale }: ISticker) {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
+	const widthScreen = useWindowDimensions().width;
+	const styles = style(themeValue, widthScreen);
 	const { t } = useTranslation(['token']);
 	const dispatch = useAppDispatch();
 	const [isExpanded, setIsExpanded] = useState(!(categoryName === FOR_SALE_CATE && forSale));

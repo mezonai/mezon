@@ -1,16 +1,16 @@
-import { Attributes, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (colors: Attributes, widthScreen: number) =>
 	StyleSheet.create({
 		content: {
-			height: (Metrics.screenWidth - size.s_6 * size.s_10) / 5.1,
-			width: (Metrics.screenWidth - size.s_6 * size.s_10) / 5.1,
+			height: (widthScreen - size.s_6 * size.s_10) / 5.1,
+			width: (widthScreen - size.s_6 * size.s_10) / 5.1,
 			borderRadius: 10,
 			overflow: 'hidden'
 		},
 		audioContent: {
-			width: (Metrics.screenWidth - size.s_30) / 2.01,
+			width: (widthScreen - size.s_30) / 2.01,
 			height: size.s_90,
 			borderRadius: 10,
 			overflow: 'hidden',

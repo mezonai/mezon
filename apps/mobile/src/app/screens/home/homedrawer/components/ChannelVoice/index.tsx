@@ -1,11 +1,14 @@
 import { AudioSession, LiveKitRoom, TrackReference, useConnectionState } from '@livekit/react-native';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectIsPiPMode, selectVoiceInfo, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
+import { getStore, selectChannelById2, selectIsPiPMode, selectVoiceInfo, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, NativeModules, Platform, View } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
+import { ReactionChannelInfo } from '../../../../../../../../../libs/components/src/lib/components/VoiceChannel/MyVideoConference/Reaction/types';
+import { useSendReaction } from '../../../../../../../../../libs/components/src/lib/components/VoiceChannel/MyVideoConference/Reaction/useSendReaction';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
+import { useSoundReactions } from '../../../../../hooks/useSoundReactions';
 import { CallReactionHandler } from './CallReactionHandler';
 import HeaderRoomView from './HeaderRoomView';
 import RoomView from './RoomView';
@@ -112,10 +115,16 @@ function ChannelVoice({
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const dispatch = useAppDispatch();
 	const isRequestingPermission = useRef(false);
-
 	const channelId = useMemo(() => {
 		return voiceInfo?.channelId;
 	}, [voiceInfo]);
+	const currentChannel = useMemo(() => {
+		const store = getStore();
+		const channel = selectChannelById2(store.getState(), channelId);
+		return channel;
+	}, [channelId]);
+	const { sendSoundReaction } = useSendReaction({ currentChannel: currentChannel as ReactionChannelInfo });
+	const { handleSoundReaction, activeSoundReactions } = useSoundReactions();
 	const clanId = useMemo(() => {
 		return voiceInfo?.clanId;
 	}, [voiceInfo]);
@@ -223,10 +232,11 @@ function ChannelVoice({
 						onPressMinimizeRoom={onPressMinimizeRoom}
 						isGroupCall={isGroupCall}
 						isShow={isAnimationComplete && !focusedScreenShare && !isPiPMode}
+						sendSoundReaction={sendSoundReaction}
 					/>
 					<ConnectionMonitor />
 					{!isGroupCall && !isPiPMode && isAnimationComplete && (
-						<CallReactionHandler channelId={channelId} isAnimatedCompleted={isAnimationComplete} />
+						<CallReactionHandler channelId={channelId} isAnimatedCompleted={isAnimationComplete} onSoundReaction={handleSoundReaction} />
 					)}
 					<RoomView
 						channelId={channelId}
@@ -236,6 +246,7 @@ function ChannelVoice({
 						onFocusedScreenChange={setFocusedScreenShare}
 						isGroupCall={isGroupCall}
 						participantsCount={participantsCount}
+						activeSoundReactions={activeSoundReactions}
 					/>
 				</LiveKitRoom>
 			</View>

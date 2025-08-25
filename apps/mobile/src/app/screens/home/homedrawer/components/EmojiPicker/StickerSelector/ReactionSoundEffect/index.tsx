@@ -1,100 +1,137 @@
-import { size, useTheme } from '@mezon/mobile-ui';
-import { MediaType, selectAllStickerSuggestion, selectCurrentClan, useAppSelector } from '@mezon/store';
-import { memo, useCallback, useMemo, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { MediaType, selectAllStickerSuggestion, useAppSelector } from '@mezon/store-mobile';
+import { ClanSticker } from 'mezon-js';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import Sticker from '../Sticker';
 import { style } from '../styles';
 
-type IReactionSoundEffectProps = {
+interface StickerWithMediaType extends ClanSticker {
+	media_type?: MediaType;
+}
+
+type StickerSelectorProps = {
 	onSelected?: (soundId: string) => void;
 };
 
-const ReactionSoundEffect = ({ onSelected }: IReactionSoundEffectProps) => {
+const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const [selectedType, setSelectedType] = useState('');
-
-	const currentClan = useAppSelector(selectCurrentClan);
-	const allSounds = useAppSelector(selectAllStickerSuggestion);
+	const [selectedCategory, setSelectedCategory] = useState(null);
+	const allStickers = useAppSelector(selectAllStickerSuggestion);
 
 	const clanSoundEffect = useMemo(() => {
-		return allSounds?.filter((sound) => (sound as any).media_type === MediaType.AUDIO);
-	}, [allSounds]);
+		if (!allStickers?.length) return [];
+
+		try {
+			return allStickers.filter((sticker: StickerWithMediaType) => sticker?.media_type === MediaType.AUDIO);
+		} catch (error) {
+			console.error('Error get list clanSoundEffect:', error);
+			return [];
+		}
+	}, [allStickers]);
 
 	const categoryLogo = useMemo(() => {
-		if (clanSoundEffect?.length === 0) return [];
+		if (!clanSoundEffect?.length) return [];
+		const uniqueMap = new Map();
 
-		return clanSoundEffect
-			?.map((sound) => ({
-				id: sound?.clan_id,
-				type: sound?.clan_name,
-				url: sound?.logo
-			}))
-			?.filter((sound, index, self) => index === self?.findIndex((s) => s?.id === sound?.id));
-	}, [clanSoundEffect]);
+		try {
+			clanSoundEffect.forEach((sound) => {
+				const key = sound?.clan_id;
+				if (!uniqueMap.has(key)) {
+					uniqueMap.set(key, {
+						id: sound?.clan_id,
+						type: sound?.clan_name,
+						url: sound?.logo,
+						forSale: false
+					});
+				}
+			});
 
-	const sounds = useMemo(() => {
-        if (clanSoundEffect?.length === 0) return [];
-
-		return clanSoundEffect?.map((sound) => ({
-			id: sound?.id,
-			url: sound?.source,
-			type: sound?.clan_name,
-			name: sound?.shortname
-		}));
+			return Array.from(uniqueMap.values());
+		} catch (error) {
+			console.error('Error get list categoryLogo:', error);
+			return [];
+		}
 	}, [clanSoundEffect]);
 
 	const handlePressCategory = (name: string) => {
-		setSelectedType(name);
+		setSelectedCategory(name);
 	};
 
-    const handleClickSound = useCallback((sound: any) => {
-        onSelected && onSelected(sound?.id);
-    }, [onSelected]);
+	const handleClickSound = useCallback(
+		(sound: any) => {
+			onSelected(sound?.id);
+		},
+		[onSelected]
+	);
+
+	useEffect(() => {
+		return () => {
+			setSelectedCategory(null);
+		};
+	}, []);
 
 	return (
-		<View style={{ padding: size.s_10 }}>
+		<ScrollView style={{ paddingHorizontal: size.s_10, paddingBottom: size.s_10 }}>
 			<ScrollView horizontal contentContainerStyle={styles.btnWrap}>
 				{categoryLogo?.length > 0 &&
-					categoryLogo?.map((item, index) => (
-						<TouchableOpacity key={`logo_${index}_${item?.type}`} onPress={() => handlePressCategory(item?.type)} style={styles.btnEmo}>
-							<FastImage
-								resizeMode={FastImage.resizeMode.cover}
-								source={{
-									uri: item?.url || currentClan?.logo || '',
-									cache: FastImage.cacheControl.immutable,
-									priority: FastImage.priority.high
-								}}
-								style={{ height: '100%', width: '100%' }}
-							/>
+					categoryLogo.map((item) => (
+						<TouchableOpacity
+							key={`key_${item?.id}_${item?.type}`}
+							onPress={() => handlePressCategory(item?.type)}
+							style={[
+								styles.btnEmo,
+								{
+									backgroundColor: item?.type === selectedCategory ? baseColor.blurple : 'transparent'
+								}
+							]}
+						>
+							<View style={styles.btnEmoImage}>
+								{item?.url ? (
+									<FastImage
+										resizeMode={FastImage.resizeMode.cover}
+										source={{
+											uri: item?.url,
+											cache: FastImage.cacheControl.immutable,
+											priority: FastImage.priority.high
+										}}
+										style={{ height: '100%', width: '100%' }}
+									/>
+								) : (
+									<View style={styles.forSaleContainer}>
+										<Text style={styles.forSaleText}>{item?.type?.charAt(0)?.toUpperCase()}</Text>
+									</View>
+								)}
+							</View>
 						</TouchableOpacity>
 					))}
 			</ScrollView>
 
-			{!selectedType
+			{!selectedCategory
 				? categoryLogo?.length > 0 &&
-					categoryLogo?.map((item, index) => (
+					categoryLogo.map((item) => (
 						<Sticker
-							key={`${index}_${item?.type}`}
-							stickerList={sounds}
+							key={`sound_${item?.id}_${item?.type}`}
+							stickerList={clanSoundEffect}
 							onClickSticker={handleClickSound}
 							categoryName={item?.type}
-							isAudio={true}
+							isAudio
 						/>
 					))
 				: [
 						<Sticker
-							key={`selected_${selectedType}`}
-							stickerList={sounds}
+							key={`selected_sound_${selectedCategory?.id}_${selectedCategory?.type}`}
+							stickerList={clanSoundEffect}
 							onClickSticker={handleClickSound}
-							categoryName={selectedType}
-							isAudio={true}
+							categoryName={selectedCategory}
+							isAudio
 						/>
 					]}
-		</View>
+		</ScrollView>
 	);
 };
 
-export default memo(ReactionSoundEffect);
+export default memo(StickerSelector);

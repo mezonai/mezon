@@ -11,7 +11,7 @@ import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { style } from '../styles';
 
 const ParticipantItem = memo(
-	({ username, isMicrophoneEnabled, isSpeaking, screenTrackRef, videoTrackRef, setFocusedScreenShare }: any) => {
+	({ username, isMicrophoneEnabled, isSpeaking, screenTrackRef, videoTrackRef, setFocusedScreenShare, activeSoundReactions }: any) => {
 		const isTabletLandscape = useTabletLandscape();
 		const store = getStore();
 		const { themeValue } = useTheme();
@@ -28,6 +28,19 @@ const ParticipantItem = memo(
 
 		const handleFocusScreen = () => {
 			setFocusedScreenShare(screenTrackRef);
+		};
+
+		const hasActiveSoundReaction = useMemo(() => {
+			const activeSoundReaction = activeSoundReactions?.get(username);
+			return Boolean(activeSoundReaction);
+		}, [activeSoundReactions, username]);
+
+		const renderSoundEffectIcon = () => {
+			return (
+				<View style={styles.soundEffectIcon}>
+					<MezonIconCDN icon={IconCDN.activityIcon} height={size.s_16} width={size.s_16} color={themeValue.textStrong} />
+				</View>
+			);
 		};
 
 		return (
@@ -51,6 +64,7 @@ const ParticipantItem = memo(
 							style={styles.participantView}
 							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 						/>
+						{!isPiPMode && hasActiveSoundReaction && renderSoundEffectIcon()}
 						{!isPiPMode && (
 							<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '90%' }]}>
 								<MezonIconCDN icon={IconCDN.shareScreenIcon} height={size.s_14} />
@@ -81,6 +95,7 @@ const ParticipantItem = memo(
 							style={styles.participantView}
 							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 						/>
+						{hasActiveSoundReaction && renderSoundEffectIcon()}
 						<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 							{isMicrophoneEnabled ? (
 								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.white} />
@@ -101,6 +116,7 @@ const ParticipantItem = memo(
 							isSpeaking && { borderWidth: 1, borderColor: themeValue.textLink }
 						]}
 					>
+						{hasActiveSoundReaction && renderSoundEffectIcon()}
 						<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: size.s_10 }}>
 							{!voiceUsername ? (
 								<MezonIconCDN icon={IconCDN.loadingIcon} width={24} height={24} />
@@ -135,12 +151,13 @@ const ParticipantItem = memo(
 			prevProps?.isMicrophoneEnabled === nextProps?.isMicrophoneEnabled &&
 			prevProps?.isSpeaking === nextProps?.isSpeaking &&
 			prevProps?.videoTrackRef === nextProps?.videoTrackRef &&
-			prevProps?.screenTrackRef === nextProps?.screenTrackRef
+			prevProps?.screenTrackRef === nextProps?.screenTrackRef &&
+			prevProps?.activeSoundReactions === nextProps?.activeSoundReactions
 		);
 	}
 );
 
-const ParticipantScreen = ({ setFocusedScreenShare }) => {
+const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions }) => {
 	const participants = useParticipants();
 	const sortedParticipants = useMemo(() => {
 		return [...participants].sort((a, b) => {
@@ -214,6 +231,7 @@ const ParticipantScreen = ({ setFocusedScreenShare }) => {
 								screenTrackRef={screenTrackRef}
 								tracks={tracks}
 								setFocusedScreenShare={setFocusedScreenShare}
+								activeSoundReactions={activeSoundReactions}
 							/>
 						);
 					})}

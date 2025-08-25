@@ -8,6 +8,7 @@ import { DeviceEventEmitter, NativeModules, Platform, Text, TouchableOpacity, Vi
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import AudioOutputTooltip from '../../AudioOutputTooltip';
+import ReactionSoundEffect from '../../EmojiPicker/StickerSelector/ReactionSoundEffect';
 import { ContainerMessageActionModal } from '../../MessageItemBS/ContainerMessageActionModal';
 import { style } from '../styles';
 import SwitchCamera from './SwitchCamera';
@@ -25,9 +26,10 @@ type headerProps = {
 	clanId: string;
 	onPressMinimizeRoom: () => void;
 	isGroupCall?: boolean;
+	sendSoundReaction: (soundId: string) => void;
 };
 
-const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCall = false, isShow }: headerProps) => {
+const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCall = false, isShow, sendSoundReaction }: headerProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [currentAudioOutput, setCurrentAudioOutput] = useState<string>('earpiece');
@@ -128,6 +130,18 @@ const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCa
 		return channel?.channel_label || '';
 	}, [channelId]);
 
+	const handleSoundSelect = useCallback(
+		async (soundId: string) => {
+			try {
+				sendSoundReaction(soundId);
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			} catch (error) {
+				console.error('Error sending sound effect:', error);
+			}
+		},
+		[sendSoundReaction]
+	);
+
 	const handleOpenEmojiPicker = () => {
 		const data = {
 			snapPoints: ['45%', '75%'],
@@ -140,6 +154,16 @@ const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCa
 					channelId={channelId}
 				/>
 			),
+			containerStyle: { zIndex: 1001 },
+			backdropStyle: { zIndex: 1000, backgroundColor: 'rgba(0, 0, 0, 0.3)' }
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
+
+	const handleOpenSoundEffect = () => {
+		const data = {
+			snapPoints: ['45%', '75%'],
+			children: <ReactionSoundEffect onSelected={handleSoundSelect} />,
 			containerStyle: { zIndex: 1001 },
 			backdropStyle: { zIndex: 1000, backgroundColor: 'rgba(0, 0, 0, 0.3)' }
 		};
@@ -163,6 +187,11 @@ const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCa
 				{!isGroupCall && (
 					<TouchableOpacity onPress={handleOpenEmojiPicker} style={[styles.buttonCircle]}>
 						<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_24} width={size.s_24} color={themeValue.white} />
+					</TouchableOpacity>
+				)}
+				{!isGroupCall && (
+					<TouchableOpacity onPress={handleOpenSoundEffect} style={[styles.buttonCircle]}>
+						<MezonIconCDN icon={IconCDN.activityIcon} height={size.s_24} width={size.s_24} color={themeValue.white} />
 					</TouchableOpacity>
 				)}
 				<SwitchCamera />

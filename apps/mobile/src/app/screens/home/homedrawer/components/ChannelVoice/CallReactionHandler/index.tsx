@@ -1,10 +1,11 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useMezon } from '@mezon/transport';
-import { getSrcEmoji } from '@mezon/utils';
+import { getSrcEmoji, getSrcSound } from '@mezon/utils';
 import { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, View } from 'react-native';
+import { Animated, Dimensions, Easing, Platform, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Sound from 'react-native-sound';
 import { style } from '../styles';
 
 const { width, height } = Dimensions.get('window');
@@ -44,6 +45,7 @@ interface EmojiItem {
 interface ReactProps {
 	channelId: string;
 	isAnimatedCompleted: boolean;
+	onSoundReaction: (senderId: string, soundId: string) => void;
 }
 
 // Memoized emoji component for better performance
@@ -77,12 +79,13 @@ const AnimatedEmoji = memo(({ item }: { item: EmojiItem }) => {
 
 AnimatedEmoji.displayName = 'AnimatedEmoji';
 
-export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted }: ReactProps) => {
+export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSoundReaction }: ReactProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [displayedEmojis, setDisplayedEmojis] = useState<EmojiItem[]>([]);
 	const { socketRef } = useMezon();
 	const animationTimeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+	const soundRefs = useRef<Map<string, Sound>>(new Map());
 
 	// Cleanup function for timeouts
 	const cleanupTimeouts = useCallback(() => {
@@ -204,6 +207,39 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted }: Rea
 		[createEmojiAnimation, removeEmoji]
 	);
 
+	const playSound = useCallback((soundUrl: string, soundId: string) => {
+		try {
+			const currentSound = soundRefs.current.get(soundId);
+			if (currentSound) {
+				currentSound.pause();
+				currentSound.setCurrentTime(0);
+			}
+
+			const sound = new Sound(soundUrl, Sound.MAIN_BUNDLE, (error) => {
+				if (error) {
+					console.error('Failed to load sound reaction:', error);
+					return;
+				}
+
+				if (Platform.OS === 'ios') {
+					sound.setNumberOfLoops(0);
+				}
+				sound.setVolume(1.0);
+				soundRefs.current.set(soundId, sound);
+
+				sound.play((success) => {
+					if (!success) {
+						console.error('Sound playback failed');
+					}
+					sound.release();
+					soundRefs.current.delete(soundId);
+				});
+			});
+		} catch (error) {
+			console.error('Error playing sound reaction:', error);
+		}
+	}, []);
+
 	// Optimized socket message handler
 	const handleVoiceReactionMessage = useCallback(
 		(message: VoiceReactionSend) => {
@@ -212,15 +248,26 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted }: Rea
 			try {
 				const emojis = message.emojis || [];
 				const emojiId = emojis[0];
+				const senderId = message.sender_id;
 
 				if (emojiId) {
-					createAndAnimateEmoji(emojiId);
+					if (emojiId.startsWith('sound:')) {
+						const soundId = emojiId.replace('sound:', '');
+						const soundUrl = getSrcSound(soundId);
+
+						playSound(soundUrl, soundId);
+						if (onSoundReaction && senderId) {
+							onSoundReaction(senderId, soundId);
+						}
+					} else {
+						createAndAnimateEmoji(emojiId);
+					}
 				}
 			} catch (error) {
 				console.error('Error handling voice reaction:', error);
 			}
 		},
-		[channelId, createAndAnimateEmoji]
+		[channelId, createAndAnimateEmoji, onSoundReaction, playSound]
 	);
 
 	// Effect for socket handling with proper cleanup
@@ -233,6 +280,12 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted }: Rea
 		return () => {
 			if (currentSocket) {
 				currentSocket.onvoicereactionmessage = () => {};
+			}
+			if (soundRefs.current && soundRefs.current.size > 0) {
+				soundRefs.current.forEach((sound) => {
+					sound.pause();
+				});
+				soundRefs.current?.clear();
 			}
 			cleanupTimeouts();
 		};

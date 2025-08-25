@@ -157,5 +157,13 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			marginHorizontal: size.s_10,
 			alignSelf: 'center'
+		},
+		soundEffectIcon: {
+			position: 'absolute',
+			top: size.s_4,
+			right: size.s_4,
+			padding: size.s_6,
+			borderRadius: size.s_20,
+			backgroundColor: colors.bgViolet
 		}
 	});
