@@ -44,6 +44,7 @@ interface IMezonImagePickerProps {
 	onPressAvatar?: () => void;
 	imageWidth?: number;
 	imageHeight?: number;
+	autoCloseBottomSheet?: boolean;
 }
 
 export interface IMezonImagePickerHandler {
@@ -100,7 +101,8 @@ export default memo(
 			disabled,
 			onPressAvatar,
 			imageHeight,
-			imageWidth
+			imageWidth,
+			autoCloseBottomSheet = true
 		}: IMezonImagePickerProps,
 		ref
 	) {
@@ -159,9 +161,9 @@ export default memo(
 						onLoad && onLoad(url);
 					}
 				}
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				autoCloseBottomSheet && DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			} catch (error) {
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				autoCloseBottomSheet && DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				console.error('Error in handleImage:', error);
 			}
 		}

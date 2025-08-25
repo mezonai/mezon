@@ -186,7 +186,12 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
-
+		groupAvatarWrapper: {
+			width: size.s_40,
+			height: size.s_40,
+			borderRadius: size.s_20,
+			overflow: 'hidden'
+		},
 		lastMessage: {
 			color: colors.textStrong,
 			fontSize: size.small

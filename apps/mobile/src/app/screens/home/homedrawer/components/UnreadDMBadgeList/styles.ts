@@ -52,6 +52,12 @@ export const style = (colors: Attributes) =>
 			height: size.s_42,
 			width: size.s_42
 		},
+		groupAvatarWrapper: {
+			width: size.s_42,
+			height: size.s_42,
+			borderRadius: size.s_42,
+			overflow: 'hidden'
+		},
 		wrapperTextAvatar: {
 			width: size.s_42,
 			height: size.s_42,

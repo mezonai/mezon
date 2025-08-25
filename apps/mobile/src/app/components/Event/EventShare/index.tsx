@@ -49,7 +49,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 		return {
 			channelId: dm?.id,
 			type: dm?.type,
-			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.channel_avatar?.[0] : 'assets/images/avatar-group.png',
+			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.channel_avatar?.[0] : dm?.topic,
 			name: dm?.channel_label,
 			clanId: '',
 			clanName: ''

@@ -1,5 +1,6 @@
 import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
+import ImageNative from 'apps/mobile/src/app/components/ImageNative';
 import { ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -56,10 +57,21 @@ function ForwardMessageItem({
 					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_GROUP:
+				const isAvatar = item?.avatar && !item?.avatar?.includes('avatar-group.png');
 				return (
-					<View style={styles.groupAvatar}>
-						<MezonIconCDN icon={IconCDN.userGroupIcon} />
-					</View>
+					isAvatar ? (
+						<View style={{ width: size.s_24, height: size.s_24, borderRadius: size.s_12, overflow: 'hidden' }}>
+							<ImageNative
+								url={createImgproxyUrl(item?.avatar ?? '')}
+								style={{ width: '100%', height: '100%' }}
+								resizeMode={'cover'}
+							/>
+						</View>
+					) : (
+						<View style={styles.groupAvatar}>
+							<MezonIconCDN icon={IconCDN.userGroupIcon} width={size.s_12} height={size.s_12} color={themeValue.white} />
+						</View>
+					)
 				);
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return (

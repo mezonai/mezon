@@ -3,6 +3,20 @@ import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
+		defaultAvatar: {
+			width: size.s_60,
+			height: size.s_60,
+			borderRadius: size.s_50,
+			backgroundColor: baseColor.orange,
+			alignItems: 'center',
+			justifyContent: 'center'
+		},
+		removeAvatarText: {
+			marginTop: size.s_10,
+			fontSize: size.s_12,
+			fontWeight: '600',
+			color: colors.textLink
+		},
 		label: {
 			fontSize: size.label,
 			fontWeight: '600',
@@ -15,21 +29,24 @@ export const style = (colors: Attributes) =>
 			textAlign: 'center'
 		},
 		labelInput: {
-			fontSize: size.label,
-			fontWeight: '400',
+			fontSize: size.s_14,
+			fontWeight: '600',
 			color: colors.text,
-			marginBottom: size.s_20
+			marginBottom: size.s_10
 		},
 		saveButton: {
-			position: 'absolute',
-			right: size.s_20,
-			top: size.s_12,
-			justifyContent: 'center',
-			alignItems: 'center'
+			backgroundColor: baseColor.blurple,
+			borderRadius: size.s_100,
+			paddingVertical: size.s_8,
+			paddingHorizontal: size.s_8,
+			alignItems: 'center',
+			marginTop: size.s_20
 		},
 		saveText: {
-			color: baseColor.blurple,
-			fontSize: size.s_14
+			color: colors.white,
+			fontSize: size.s_14,
+			fontWeight: '600',
+			letterSpacing: 0.5
 		}
 	});
 

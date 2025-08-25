@@ -90,7 +90,8 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 					channel_label: itemDM?.channel_label ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`,
 					channel_avatar: itemDM?.channel_avatar,
 					type: itemDM?.type,
-					id: itemDM?.channel_id
+					id: itemDM?.channel_id,
+					topic: itemDM?.topic
 				});
 			}
 		});
@@ -101,6 +102,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 	const userInviteList = useMemo(() => {
 		return userListInvite?.filter((dm) => normalizeString(dm?.channel_label).includes(normalizeString(searchUserText)));
 	}, [searchUserText, userListInvite]);
+	console.log('log  => userInviteList', userInviteList);
 
 	const addInviteLinkToClipboard = useCallback(() => {
 		Clipboard.setString(currentInviteLink || currentInviteLinkRef?.current);

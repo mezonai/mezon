@@ -31,11 +31,18 @@ export const style = (colors: Attributes) =>
 			fontSize: size.h5,
 			fontWeight: '700'
 		},
+		groupAvatarWrapper: {
+			width: size.s_50,
+			height: size.s_50,
+			borderRadius: size.s_28,
+			overflow: 'hidden'
+		},
 		groupAvatar: {
 			backgroundColor: Colors.orange,
 			borderRadius: 50,
 			justifyContent: 'center',
-			alignItems: 'center'
+			alignItems: 'center',
+			overflow: 'hidden'
 		},
 		friendAvatar: {
 			borderRadius: 50
@@ -61,8 +68,9 @@ export const style = (colors: Attributes) =>
 			height: size.s_50
 		},
 		avatarWrapper: {
+			marginTop: size.s_10,
 			alignItems: 'center',
-			gap: size.s_14
+			gap: size.s_4
 		},
 		iconBackHeader: {
 			zIndex: 1000,

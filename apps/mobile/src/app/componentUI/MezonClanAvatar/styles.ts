@@ -36,7 +36,7 @@ export const style = (colors: Attributes, isMsgReply = false) =>
 			alignItems: 'center'
 		},
 		textAvatarMessageBoxDefault: {
-			fontSize: isMsgReply ? size.h8 : size.h4,
+			fontSize: isMsgReply ? size.h8 : size.h7,
 			color: Colors.white
 		}
 	});

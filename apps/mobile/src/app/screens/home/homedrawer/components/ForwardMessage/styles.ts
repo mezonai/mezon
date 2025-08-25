@@ -32,9 +32,9 @@ export const styles = StyleSheet.create({
 	},
 	groupAvatar: {
 		backgroundColor: Colors.orange,
-		width: size.s_34,
-		height: size.s_34,
-		borderRadius: 50,
+		width: size.s_24,
+		height: size.s_24,
+		borderRadius: size.s_12,
 		justifyContent: 'center',
 		alignItems: 'center'
 	}

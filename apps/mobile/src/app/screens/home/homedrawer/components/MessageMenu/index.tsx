@@ -21,6 +21,7 @@ import {
 } from '@mezon/store-mobile';
 import { createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
+import ImageNative from 'apps/mobile/src/app/components/ImageNative';
 import { ApiUpdateChannelDescRequest, ChannelType } from 'mezon-js';
 import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
 import React, { memo, useEffect, useMemo } from 'react';
@@ -42,6 +43,7 @@ interface IServerMenuProps {
 }
 
 function MessageMenu({ messageInfo }: IServerMenuProps) {
+	console.log('log  => messageInfo', messageInfo);
 	const { t } = useTranslation(['dmMessage']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -332,9 +334,19 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				{isGroup ? (
-					<View style={styles.groupAvatar}>
-						<MezonIconCDN icon={IconCDN.groupIcon} />
-					</View>
+					messageInfo?.topic && !messageInfo?.topic?.includes('avatar-group.png') ? (
+						<View style={{ width: size.s_60, height: size.s_60, borderRadius: size.s_30, overflow: 'hidden' }}>
+							<ImageNative
+								url={createImgproxyUrl(messageInfo?.topic ?? '')}
+								style={{ width: '100%', height: '100%' }}
+								resizeMode={'cover'}
+							/>
+						</View>
+					) : (
+						<View style={styles.groupAvatar}>
+							<MezonIconCDN icon={IconCDN.groupIcon} />
+						</View>
+					)
 				) : (
 					<View style={styles.avatarWrapper}>
 						{messageInfo?.channel_avatar?.[0] ? (

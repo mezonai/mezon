@@ -51,7 +51,7 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			alignItems: 'center',
 			paddingVertical: 0,
-			lineHeight: size.s_42,
+			lineHeight: size.s_36,
 			color: colors.white
 		},
 
@@ -105,5 +105,12 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.primary,
 			fontSize: size.s_14,
 			color: colors.white
+		},
+
+		groupAvatarWrapper: {
+			width: size.s_18,
+			height: size.s_18,
+			borderRadius: size.s_12,
+			overflow: 'hidden'
 		}
 	});

@@ -1,5 +1,7 @@
 import { Colors, size, useTheme } from '@mezon/mobile-ui';
 import { ClansEntity, DirectEntity } from '@mezon/store-mobile';
+import ImageNative from 'apps/mobile/src/app/components/ImageNative';
+import { createImgproxyUrl } from 'libs/utils/src/lib/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -90,6 +92,8 @@ export const RecentInteractiveSearch = React.memo(
 			],
 			[t]
 		);
+
+		const isGroupDMAvatar = useMemo(() => selectedChannel?.topic && !selectedChannel?.topic?.includes('avatar-group.png'), [selectedChannel?.topic]);
 
 		const filterLabelMap: Record<FilterType, string> = useMemo(
 			() => ({
@@ -214,14 +218,24 @@ export const RecentInteractiveSearch = React.memo(
 						{selectedChannel ? (
 							<View style={styles.iconLeftInput}>
 								{selectedChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
-									<FastImage
-										source={Images.AVATAR_GROUP}
-										style={{
-											width: size.s_18,
-											height: size.s_18,
-											borderRadius: size.s_18
-										}}
-									/>
+									isGroupDMAvatar ? (
+										<View style={styles.groupAvatarWrapper}>
+											<ImageNative
+												url={createImgproxyUrl(selectedChannel?.topic ?? '')}
+												style={{ width: '100%', height: '100%' }}
+												resizeMode={'cover'}
+											/>
+										</View>
+									) : (
+										<FastImage
+											source={Images.AVATAR_GROUP}
+											style={{
+												width: size.s_18,
+												height: size.s_18,
+												borderRadius: size.s_18
+											}}
+										/>
+									)
 								) : (
 									<MezonAvatar
 										avatarUrl={selectedChannel?.channel_avatar?.[0] || clans?.[selectedChannel?.clan_id]?.logo}

@@ -1,8 +1,10 @@
 {
-  "customiseGroup":"Customise Group",
-  "inviteLinks":"Invite Links",
-  "leaveGroup":"Leave Group",
-  "closeDM":"Close DM",
-  "groupName": "GROUP NAME",
-  "save": "Save"
+  "customiseGroup": "Customize Group",
+  "inviteLinks": "Invite Links",
+  "leaveGroup": "Leave Group",
+  "closeDM": "Close DM",
+  "groupName": "Group name",
+  "save": "Save",
+  "removeAvatar": "Remove avatar",
+  "invalidGroupName": "Invalid group name"
 }

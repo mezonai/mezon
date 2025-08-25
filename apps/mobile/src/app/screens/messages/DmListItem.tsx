@@ -151,9 +151,19 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	return (
 		<TouchableOpacity style={[styles.messageItem]} onPress={redirectToMessageDetail} onLongPress={() => handleLongPress(directMessage)}>
 			{isTypeDMGroup ? (
-				<View style={styles.groupAvatar}>
-					<MezonIconCDN icon={IconCDN.groupIcon} />
-				</View>
+				directMessage?.topic && !directMessage?.topic?.includes('avatar-group.png') ? (
+					<View style={styles.groupAvatarWrapper}>
+						<ImageNative
+							url={createImgproxyUrl(directMessage?.topic ?? '')}
+							style={{ width: '100%', height: '100%' }}
+							resizeMode={'cover'}
+						/>
+					</View>
+				) : (
+					<View style={styles.groupAvatar}>
+						<MezonIconCDN icon={IconCDN.groupIcon} />
+					</View>
+				)
 			) : (
 				<View style={styles.avatarWrapper}>
 					{directMessage?.channel_avatar?.[0] ? (
