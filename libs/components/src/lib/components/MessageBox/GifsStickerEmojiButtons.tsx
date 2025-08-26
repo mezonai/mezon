@@ -1,7 +1,8 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
 import { reactionActions, referencesActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ILongPressType, SubPanelName } from '@mezon/utils';
+import type { E2eKeyType } from '@mezon/utils';
+import { ILongPressType, SubPanelName, generateE2eId } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 
 export type GifStickerEmojiButtonsProps = {
@@ -12,10 +13,16 @@ export type GifStickerEmojiButtonsProps = {
 	onToggleEmojiPopup?: (isVisible: boolean, event?: React.MouseEvent) => void;
 	isEmojiPopupVisible?: boolean;
 	isTopic: boolean;
+	dataE2E?: {
+		gif: E2eKeyType;
+		sticker: E2eKeyType;
+		emoji: E2eKeyType;
+		mic: E2eKeyType;
+	};
 };
 
 const GifStickerEmojiButtons = memo(
-	({ hasPermissionEdit, voiceLongPress, isRecording, onToggleEmojiPopup, isTopic }: GifStickerEmojiButtonsProps) => {
+	({ hasPermissionEdit, voiceLongPress, isRecording, onToggleEmojiPopup, isTopic, dataE2E }: GifStickerEmojiButtonsProps) => {
 		const dispatch = useAppDispatch();
 		const { setSubPanelActive, subPanelActive } = useGifsStickersEmoji();
 		const { setShowCategories, setClickedTrendingGif, setButtonArrowBack } = useGifs();
@@ -83,7 +90,11 @@ const GifStickerEmojiButtons = memo(
 		return (
 			<div className="flex flex-row absolute h-11 items-center gap-2 top-0 right-3 z-20">
 				{!isTopic && (
-					<div {...voiceLongPress} className={`w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+					<div
+						{...voiceLongPress}
+						className={`w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+						data-e2e={dataE2E && generateE2eId(dataE2E.mic)}
+					>
 						<Icons.MicEnable className={`w-5 h-5 ${isRecording ? 'text-red-600' : 'text-theme-primary text-theme-primary-hover'} `} />
 					</div>
 				)}
@@ -92,6 +103,7 @@ const GifStickerEmojiButtons = memo(
 					onClick={handleOpenGifs}
 					className={`block text-theme-primary-hover
 						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+					data-e2e={dataE2E && generateE2eId(dataE2E.gif)}
 				>
 					<Icons.Gif className={`w-5 h-5 ${subPanelActive === SubPanelName.GIFS ? 'text-theme-primary-active' : 'text-theme-primary'}`} />
 				</div>
@@ -99,6 +111,7 @@ const GifStickerEmojiButtons = memo(
 				<div
 					onClick={handleOpenStickers}
 					className={`block text-theme-primary-hover  max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+					data-e2e={dataE2E && generateE2eId(dataE2E.sticker)}
 				>
 					<Icons.Sticker
 						className={`w-5 h-5 ${subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
@@ -108,6 +121,7 @@ const GifStickerEmojiButtons = memo(
 				<div
 					onClick={handleOpenEmoji}
 					className={`w-5 h-5 text-theme-primary-hover  ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+					data-e2e={dataE2E && generateE2eId(dataE2E.emoji)}
 				>
 					<Icons.Smile
 						className={`w-5 h-5 ${subPanelActive === SubPanelName.EMOJI ? 'text-theme-primary-active' : 'text-theme-primary'}`}

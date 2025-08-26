@@ -68,6 +68,7 @@ import Mention from './Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
 import { ChatBoxToolbarWrapper } from './components';
+import type { EmojiActionToolbarE2E } from './components/ChatBoxToolbarWrapper';
 import { useClickUpToEditMessage, useEmojiPicker, useFocusEditor, useFocusManager, useKeyboardHandler } from './hooks';
 import parseHtmlAsFormattedText, { ApiMessageEntityTypes } from './parseHtmlAsFormattedText';
 import processMention from './processMention';
@@ -80,6 +81,13 @@ const slashCommands = [
 		description: 'Send an ephemeral message (only visible to selected user)'
 	}
 ];
+
+const EMOJI_ACTION_TOOLBAR_E2E: EmojiActionToolbarE2E = {
+	gif: 'chat.mention.gif',
+	sticker: 'chat.mention.sticker',
+	emoji: 'chat.mention.emoji',
+	mic: 'chat.mention.voice'
+};
 
 /**
  * Custom hook to search and filter emojis based on user input
@@ -823,7 +831,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		focusEditorIfMatch: (element: HTMLElement | null, targetInputId?: string) => {
 			editorRef.current?.focus();
 		},
-		onDirectEmojiInsert: (emojiId, emojiShortname) => {}
+		onDirectEmojiInsert: (emojiId, emojiShortname) => { }
 	});
 
 	const handleSearchUserMention = useCallback(
@@ -938,9 +946,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		<div className={`contain-layout relative bg-theme-surface rounded-lg ${props?.isThread && 'border-theme-primary'}`} ref={containerRef}>
 			<div className="relative">
 				<span
-					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${
-						draftRequest?.valueTextInput ? 'hidden' : 'opacity-100'
-					} sm:opacity-100 max-sm:opacity-100`}
+					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${draftRequest?.valueTextInput ? 'hidden' : 'opacity-100'
+						} sm:opacity-100 max-sm:opacity-100`}
 					style={{
 						whiteSpace: 'nowrap',
 						overflow: 'hidden',
@@ -974,7 +981,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					maxHistorySize={50}
 					hasFilesToSend={attachmentData.length > 0}
 					currentChannelId={props.currentChannelId}
-					data-e2e={generateE2eId(`chat.direct_message.chat_item.text_area`)}
+					dataE2E={generateE2eId('chat.mention.input')}
 				>
 					<Mention
 						trigger="@"
@@ -983,9 +990,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						renderSuggestion={(suggestion: any, search: string, highlightedDisplay: React.ReactNode, index: number, focused: boolean) => {
 							return (
 								<div
-									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
-									}`}
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+										}`}
 								>
 									<SuggestItem
 										avatarUrl={suggestion.avatarUrl}
@@ -1015,9 +1021,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						renderSuggestion={(suggestion, search, _highlightedDisplay, _index, focused) => (
 							<div
 								key={suggestion.id}
-								className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-									focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
-								}`}
+								className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									}`}
 							>
 								<SuggestItem
 									valueHightLight={search}
@@ -1047,9 +1052,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						) => {
 							return (
 								<div
-									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
-									}`}
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+										}`}
 								>
 									<SuggestItem
 										emojiId={suggestion.id}
@@ -1100,9 +1104,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 							return (
 								<div
 									key={suggestion.id}
-									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
-									}`}
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+										}`}
 								>
 									<SuggestItem display={suggestion.display} subText={suggestion.description} symbol="/" valueHightLight={search} />
 								</div>
@@ -1120,6 +1123,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				mode={props.mode || ChannelStreamMode.STREAM_MODE_CHANNEL}
 				isTopic={props.isTopic || false}
 				onEmojiSelect={insertEmojiDirectly}
+				dataE2E={EMOJI_ACTION_TOOLBAR_E2E}
 			/>
 			{draftRequest?.content && draftRequest.content.length > MIN_THRESHOLD_CHARS && (
 				<div className="w-16 text-red-300 bottom-0 right-0 absolute">{MIN_THRESHOLD_CHARS - draftRequest.content.length}</div>

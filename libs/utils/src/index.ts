@@ -5,6 +5,8 @@ export * from './lib/constants/quickMenu';
 export * from './lib/constants/webrtc';
 export * from './lib/contextmenu';
 export * from './lib/dom';
+export * from './lib/e2e-testing/constants';
+export * from './lib/e2e-testing/generateE2eId';
 export * from './lib/e2ee';
 export * from './lib/errors';
 export * from './lib/fasterdom';
