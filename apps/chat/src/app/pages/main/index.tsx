@@ -50,7 +50,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
+import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId, isLinuxDesktop, isMacDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -369,6 +369,7 @@ const SidebarMenu = memo(
 					<div className="mt-3">
 						<NavLinkComponent>
 							<div
+								data-e2e={generateE2eId('clan_page.side_bar.button.add_channel')}
 								className="flex items-center justify-between text-theme-primary group"
 								onClick={openCreateClanModal}
 								title="Create CLans"

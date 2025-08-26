@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import { selectCurrentClanId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission } from '@mezon/utils';
+import { EPermission, generateE2eId } from '@mezon/utils';
 import React, { RefObject, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ItemModal from './ItemModal';
@@ -83,6 +83,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					endIcon={<Icons.Bell className=" text-theme-primary-hover" />}
 				/>
 				<button
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.show_empty_category`)}
 					onClick={toggleShowEmptyCategory}
 					className="flex items-center w-full justify-between rounded-sm  text-theme-primary-hover bg-item-hover pr-2"
 				>
