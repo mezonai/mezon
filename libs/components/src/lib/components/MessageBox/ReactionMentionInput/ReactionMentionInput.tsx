@@ -58,6 +58,7 @@ import {
 	filterEmptyArrays,
 	filterMentionsWithAtSign,
 	formatMentionsToString,
+	generateE2eId,
 	getDisplayMention,
 	parseHtmlAsFormattedText,
 	processBoldEntities,
@@ -820,6 +821,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					{ephemeralTargetUserId ? `Ephemeral message to ${ephemeralTargetUserDisplay}...` : 'Write your thoughts here...'}
 				</span>
 				<MentionsInput
+					data-e2e={generateE2eId(`chat.direct_message.chat_item.text_area`)}
 					onPaste={(event: any) => {
 						const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
 						if (pastedData) {

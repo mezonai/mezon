@@ -2,7 +2,7 @@ import { BaseProfile } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends } from '@mezon/core';
 import { FriendsEntity, selectCurrentTabStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ETabUserStatus, EUserStatus, MetaDateStatusUser } from '@mezon/utils';
+import { ETabUserStatus, EUserStatus, MetaDateStatusUser, generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -171,7 +171,10 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 	);
 
 	return (
-		<div className="border-t-theme-primary group/list_friends text-theme-primary flex items-center h-full">
+		<div
+			className="border-t-theme-primary group/list_friends text-theme-primary"
+			data-e2e={generateE2eId(`chat.direct_message.friend_list.all_friend`)}
+		>
 			<div
 				key={friend?.user?.id}
 				onClick={directMessageWithUser}

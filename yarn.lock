@@ -2401,7 +2401,14 @@
   resolved "https://registry.yarnpkg.com/@livekit/components-styles/-/components-styles-1.1.6.tgz#53d6a7a659d6ca51bd5eaec6542a09f09485cab6"
   integrity sha512-V6zfuREC2ksW8z6T6WSbEvdLB5ICVikGz1GtLr59UcxHDyAsKDbuDHAyl3bF3xBqPKYmY3GWF3Qk39rnScyOtA==
 
-"@livekit/mutex@1.1.1":
+"@livekit/krisp-noise-filter@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@livekit/krisp-noise-filter/-/krisp-noise-filter-0.3.4.tgz#ce97cdb83200a596211f1c3815cfd42e7397a7d3"
+  integrity sha512-gvC0OevzIPBAr8f2S4P/BdUxVJYp7rvDoORHAmU6yppK6NKn+GNbkMosz0NpsI+Te18etBBOjaKmhoD7/PoXVA==
+  dependencies:
+    "@livekit/mutex" "^1.1.1"
+
+"@livekit/mutex@1.1.1", "@livekit/mutex@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@livekit/mutex/-/mutex-1.1.1.tgz#72492b611d55be8130ba2271b7a436d94b1bc6d4"
   integrity sha512-EsshAucklmpuUAfkABPxJNhzj9v2sG7JuzFDL4ML1oJQSV14sqrpTYnsaOudMAw9yOaW53NU3QQTlUQoRs4czw==
@@ -13377,17 +13384,17 @@ mezon-active-windows@0.1.38:
   dependencies:
     node-addon-api "^1.7.2"
 
-mezon-js-protobuf@1.8.19:
-  version "1.8.19"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.8.19.tgz#940f3fb944a2e6ed0347d1e1ab929f54d457bf42"
-  integrity sha512-iSPBsPtSTcmY9argC/DOo2ITP2YdXXIbnkZLEVBARs8i87AWe1oLwSO4PPXKLeUVRniNpk3HyceegmYWvSLBBA==
+mezon-js-protobuf@1.8.24:
+  version "1.8.24"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.8.24.tgz#0b407409731eb3f16c3e7898d9d0bd64fee951bc"
+  integrity sha512-v3ZeYyNWroVX2jaWbvrCwxPYC5DlMc6pvLIV8Tco9Mc7oPoCDm4ERs/f0PY3LlBHhNJYS3m1seVUn/70zJwdNw==
   dependencies:
     "@scarf/scarf" "^1.1.1"
 
-mezon-js@2.12.44:
-  version "2.12.44"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.12.44.tgz#24e2ab02c1b2a812db0864203204a96c540b8eb8"
-  integrity sha512-anfMBhSivugJyEvnSeuC00OEOG23n2B7P68x0Id+t2OYETud0i4orAmIkHKQZra14BCe7cJbDRQeQN/MhDOcRA==
+mezon-js@2.12.54:
+  version "2.12.54"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.12.54.tgz#bb5f45563c6d7c224fe1fcb8a432cede14e47992"
+  integrity sha512-31k1oIDJQNuMoo/ybb0fZSvwrooMZJNDJXRZQxQ5IzHbDNT2QcoecJvgJD8AVcVGshOzd1UEgOcM7katNxywXQ==
   dependencies:
     "@scarf/scarf" "^1.1.1"
     base64-arraybuffer "^1.0.2"

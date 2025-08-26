@@ -92,6 +92,44 @@ export const DATA_E2E_IDENTIFIER = {
 				}
 			}
 		}
+	},
+	chat: {
+		direct_message: {
+			chat_list: '',
+			chat_item: {
+				username: '',
+				close_dm_button: '',
+				text_area: '',
+				namegroup: ''
+			},
+			create_group: {
+				button: ''
+			},
+			leave_group: {
+				button: ''
+			},
+			search_input: '',
+			friend_list: {
+				friend_item: '',
+				username_friend_item: '',
+				all_friend: ''
+			},
+			member_list: {
+				button: '',
+				member_count: ''
+			},
+			add_to_group: {
+				button: ''
+			},
+			message: {
+				item: ''
+			},
+			menu: {
+				leave_group: {
+					button: ''
+				}
+			}
+		}
 	}
 };
 

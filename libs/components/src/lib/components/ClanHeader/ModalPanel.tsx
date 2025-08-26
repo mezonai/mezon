@@ -42,6 +42,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 			setIsShowModalPanelClan(false);
 		}
 	}, [statusMarkAsReadClan]);
+
 	return (
 		<div
 			onClick={(e) => e.stopPropagation()}
@@ -50,6 +51,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 			<div className="flex flex-col pb-1 mb-1 border-b-[0.08px] border-b-theme-primary last:border-b-0 last:mb-0 last:pb-0">
 				{canManageClan && (
 					<ItemModal
+						data-e2e={generateE2eId(`clan_page.header.modal_panel.create_category`)}
 						className="text-theme-primary-hover bg-item-theme-hover"
 						onClick={handleShowCreateCategory}
 						children="Create Category"
@@ -57,6 +59,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					/>
 				)}
 				<ItemModal
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.mark_as_read`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={statusMarkAsReadClan === 'pending' ? undefined : () => handleMarkAsReadClan(currentClanId as string)}
 					disabled={statusMarkAsReadClan === 'pending'}
@@ -65,18 +68,21 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 				</ItemModal>
 
 				<ItemModal
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.invite_people`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowInviteClanModal}
 					children="Invite People"
 					endIcon={<Icons.AddPerson />}
 				/>
 				<ItemModal
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.clan_settings`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowServerSettings}
 					children="Clan Settings"
 					endIcon={<Icons.SettingProfile className="text-theme-primary-hover" />}
 				/>
 				<ItemModal
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.notification_setting`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowNotificationSetting}
 					children="Notification Settings"

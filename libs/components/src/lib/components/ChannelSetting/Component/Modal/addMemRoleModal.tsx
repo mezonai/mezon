@@ -249,11 +249,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 					>
 						Cancel
 					</button>
-					<ButtonLoading
-						label="Done"
-						onClick={handleAddMember}
-						className="px-4 py-2 rounded-lg btn-primary btn-primary-hover"
-					/>
+					<ButtonLoading label="Done" onClick={handleAddMember} className="px-4 py-2 rounded-lg btn-primary btn-primary-hover" />
 				</div>
 			</div>
 		</div>
