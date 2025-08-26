@@ -1,5 +1,6 @@
 import { useAppParams, useAuth } from '@mezon/core';
 import { ChannelMembersEntity, selectGrouplMembers, useAppSelector } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { memo } from 'react';
 import { MemberContextMenuProvider } from '../../../contexts';
@@ -28,7 +29,10 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 	return (
 		<div className="self-stretch w-full h-[268px] flex-col justify-start items-start flex pt-[16px] pb-[16px] ml-2 mr-1 gap-[24px]">
 			<div className="w-full">
-				<p className="mb-3 ml-2 font-semibold flex items-center gap-[4px] font-title text-xs tracking-wide uppercase">
+				<p
+					className="mb-3 ml-2 font-semibold flex items-center gap-[4px] font-title text-xs tracking-wide uppercase"
+					data-e2e={generateE2eId(`chat.direct_message.member_list.member_count`)}
+				>
 					MEMBER - {memberGroups.length}
 				</p>
 				{

@@ -1,7 +1,7 @@
 import { useColorsRoleById } from '@mezon/core';
 import { ChannelMembersEntity, selectCurrentChannelId, selectCurrentDM } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EUserStatus, UsersClanEntity, createImgproxyUrl } from '@mezon/utils';
+import { EUserStatus, UsersClanEntity, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../components';
@@ -76,7 +76,11 @@ export function ClanUserName({ name, userId, isOwner }: { name: string; userId: 
 
 	return (
 		<div className="flex text-start gap-1">
-			<span style={{ color: userRolesClan.highestPermissionRoleColor }} className="one-line text-start ">
+			<span
+				data-e2e={generateE2eId(`chat.direct_message.chat_item.username`)}
+				style={{ color: userRolesClan.highestPermissionRoleColor }}
+				className="one-line text-start "
+			>
 				{name}
 			</span>
 

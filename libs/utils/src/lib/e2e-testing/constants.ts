@@ -26,7 +26,7 @@ export const DATA_E2E_IDENTIFIER = {
 				navigation: ''
 			}
 		},
-		'main-page': {
+		main_page: {
 			container: '',
 			heading: {
 				title: ''
@@ -40,6 +40,94 @@ export const DATA_E2E_IDENTIFIER = {
 		footer: {
 			text: {
 				copyright: ''
+			}
+		}
+	},
+	clan_page: {
+		header: {
+			title: {
+				clan_name: ''
+			},
+			modal_panel: {
+				item: '',
+				create_category: '',
+				invite_people: '',
+				clan_settings: '',
+				notification_setting: '',
+				mark_as_read: '',
+				show_empty_category: ''
+			}
+		},
+		side_bar: {
+			channel_list: {
+				category: ''
+			},
+			button: {
+				add_channel: ''
+			}
+		},
+		modal: {
+			create_category: {
+				input: {
+					category_name: ''
+				},
+				toggle: {
+					private: ''
+				},
+				button: {
+					confirm: '',
+					cancel: ''
+				}
+			},
+			create_clan: {
+				input: {
+					clan_name: ''
+				},
+				toggle: {
+					private: ''
+				},
+				button: {
+					confirm: '',
+					cancel: ''
+				}
+			}
+		}
+	},
+	chat: {
+		direct_message: {
+			chat_list: '',
+			chat_item: {
+				username: '',
+				close_dm_button: '',
+				text_area: '',
+				namegroup: ''
+			},
+			create_group: {
+				button: ''
+			},
+			leave_group: {
+				button: ''
+			},
+			search_input: '',
+			friend_list: {
+				friend_item: '',
+				username_friend_item: '',
+				all_friend: ''
+			},
+			member_list: {
+				button: '',
+				member_count: ''
+			},
+			add_to_group: {
+				button: ''
+			},
+			message: {
+				item: ''
+			},
+			menu: {
+				leave_group: {
+					button: ''
+				}
 			}
 		}
 	}

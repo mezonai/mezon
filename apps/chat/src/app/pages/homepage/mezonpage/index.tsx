@@ -129,7 +129,7 @@ function MezonPage() {
 							<h1
 								style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial' }}
 								className="tracking-[-.02em] text-center text-[60px] max-md:text-[36px] leading-[72px] max-md:leading-[48px] text-[#F4F7F9] max-md:text-textDarkTheme"
-								data-e2e={generateE2eId('homepage.main-page.heading.title')}
+								data-e2e={generateE2eId('homepage.main_page.heading.title')}
 							>
 								The Live, Work, and Play Platform – the best Discord alternative.
 							</h1>

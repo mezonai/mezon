@@ -7,7 +7,7 @@ import {
 	selectStatusStream,
 	selectVoiceJoined
 } from '@mezon/store';
-import { isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -105,6 +105,7 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 								transform: `translateY(${virtualRow.start}px)`
 							}}
 							className="dm-wrap"
+							data-e2e={generateE2eId(`chat.direct_message.chat_list`)}
 						>
 							<DMListItem
 								currentDmGroupId={currentDmGroupId as string}

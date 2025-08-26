@@ -2,7 +2,7 @@ import { toChannelPage, useAppNavigation, useClans } from '@mezon/core';
 import { channelsActions, checkDuplicateNameClan, selectCurrentChannelId, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
-import { DEBOUNCE_TYPING_TIME, LIMIT_SIZE_UPLOAD_IMG, ValidateSpecialCharacters, fileTypeImage } from '@mezon/utils';
+import { DEBOUNCE_TYPING_TIME, LIMIT_SIZE_UPLOAD_IMG, ValidateSpecialCharacters, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -157,6 +157,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						<div className="w-full">
 							<span className="font-[700] text-[16px] leading-6">CLAN NAME</span>
 							<InputField
+								data-e2e={generateE2eId('clan_page.modal.create_clan.input.clan_name')}
 								onChange={handleInputChange}
 								type="text"
 								className="mb-2 mt-4 py-2"
@@ -181,12 +182,14 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 					/>
 					<div className="flex items-center border-t border-solid dark:border-borderDefault rounded-b justify-between pt-4">
 						<Button
+							data-e2e={generateE2eId('clan_page.modal.create_clan.button.cancel')}
 							className="text-contentBrandLight px-4 py-2 background-transparent font-semibold text-sm outline-none focus:outline-none rounded-lg"
 							onClick={onClose}
 						>
 							Back
 						</Button>
 						<ButtonLoading
+							data-e2e={generateE2eId('clan_page.modal.create_clan.button.confirm')}
 							className={`font-semibold btn-primary btn-primary-hover text-sm px-4 py-2 shadow hover:shadow-lg rounded-lg ${checkvalidate !== EValidateListMessage.VALIDATED ? 'opacity-50 cursor-not-allowed' : ''}`}
 							onClick={handleCreateClan}
 							label="Create"

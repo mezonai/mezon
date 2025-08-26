@@ -1,7 +1,7 @@
 import { useAppNavigation, useEscapeKeyClose, useFriends, useOnClickOutside } from '@mezon/core';
 import { DirectEntity, FriendsEntity, IFriend, channelUsersActions, directActions, selectAllFriends, useAppDispatch } from '@mezon/store';
 import { Icons, InputField } from '@mezon/ui';
-import { GROUP_CHAT_MAXIMUM_MEMBERS, createImgproxyUrl } from '@mezon/utils';
+import { GROUP_CHAT_MAXIMUM_MEMBERS, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
@@ -252,6 +252,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 								onMouseEnter={() => setIdActive(friend.id ?? '')}
 								onMouseLeave={() => setIdActive(friend.id ?? '')}
 								className={`${idActive === friend.id ? 'bg-item-theme ' : ''} flex items-center h-10 px-2 ml-3 mr-2 py-[8px] rounded-lg cursor-pointer`}
+								data-e2e={generateE2eId(`chat.direct_message.friend_list.friend_item`)}
 							>
 								<label className="flex flex-row items-center justify-between w-full gap-2 py-[3px] cursor-pointer">
 									<div className="flex flex-row items-center gap-2">
@@ -267,7 +268,10 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 											className="size-8"
 											classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
 										/>
-										<span className={`text-base font-medium text-theme-primary-active one-line`}>
+										<span
+											className={`text-base font-medium text-theme-primary-active one-line`}
+											data-e2e={generateE2eId(`chat.direct_message.friend_list.username_friend_item`)}
+										>
 											{friend.user?.display_name}
 										</span>
 										<span className="  font-medium">{friend.user?.username}</span>
@@ -296,6 +300,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 						disabled={selectedFriends.length === 0}
 						onClick={handleCreateDM}
 						className="h-[38px] w-full text-sm text-white bg-buttonPrimary  hover:bg-bgSelectItemHover rounded"
+						data-e2e={generateE2eId(`chat.direct_message.create_group.button`)}
 					>
 						{currentDM?.type === ChannelType.CHANNEL_TYPE_GROUP
 							? 'Add to Group Chat'

@@ -11,7 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, ICategory, ICategoryChannel, IChannel, MouseButton } from '@mezon/utils';
+import { EPermission, generateE2eId, ICategory, ICategoryChannel, IChannel, MouseButton } from '@mezon/utils';
 import React, { memo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -177,7 +177,9 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 					className="text-theme-primary flex items-center px-0.5 w-full font-title tracking-wide text-theme-primary-hover uppercase text-sm font-medium"
 				>
 					{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}
-					<span className="one-line">{category.category_name}</span>
+					<span className="one-line" data-e2e={generateE2eId('clan_page.side_bar.channel_list.category')}>
+						{category.category_name}
+					</span>
 				</button>
 
 				{!category.isFavor && (

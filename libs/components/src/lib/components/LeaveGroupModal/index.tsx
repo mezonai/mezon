@@ -7,6 +7,7 @@ import {
 	selectDmGroupCurrentId,
 	useAppDispatch
 } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -76,7 +77,11 @@ function LeaveGroupModal({ groupWillBeLeave, onClose, navigateToFriends }: Leave
 					<div onClick={onClose} className=" cursor-pointer hover:underline text-theme-primary">
 						Cancel
 					</div>
-					<div onClick={handleLeaveAndClose} className="bg-[#da373c] text-white hover:bg-[#a12828] rounded-md px-4 py-2 cursor-pointer">
+					<div
+						onClick={handleLeaveAndClose}
+						className="bg-[#da373c] text-white hover:bg-[#a12828] rounded-md px-4 py-2 cursor-pointer"
+						data-e2e={generateE2eId(`chat.direct_message.leave_group.button`)}
+					>
 						Leave Group
 					</div>
 				</div>

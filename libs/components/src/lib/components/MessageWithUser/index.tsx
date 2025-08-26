@@ -12,7 +12,8 @@ import {
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
 	convertDateString,
-	convertTimeHour
+	convertTimeHour,
+	generateE2eId
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
@@ -437,6 +438,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 			onMouseLeave={handleMouseLeave}
 			onContextMenu={onContextMenu}
 			id={`msg-${messageId}`}
+			data-e2e={generateE2eId(`chat.direct_message.message.item`)}
 		>
 			{children}
 			{isHover && (
