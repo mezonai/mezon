@@ -72,7 +72,7 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	}, [userJoined, navigate, clanId, channelId, onClose]);
 
 	return (
-		<Modal showModal={showModal} onClose={handleClose} isInviteModal={true} title="Join Server">
+		<Modal showModal={showModal} onClose={handleClose} isInviteModal={true} title="Join Clan">
 			<div className="bg-theme-setting-primary text-theme-primary rounded-md p-6 w-full max-w-[440px] flex flex-col items-center">
 				<div className="flex items-center justify-center mb-3">
 					<div className="relative w-12 h-12 flex items-center justify-center">
@@ -108,7 +108,7 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 
 				<div className="w-full bg-input-secondary rounded-md p-3 mb-5 flex items-center">
 					<div>
-						<div className="text-xs font-medium uppercase tracking-wide">Server Settings</div>
+						<div className="text-xs font-medium uppercase tracking-wide">Clan Settings</div>
 						<div className="text-xs">You can customize these at any time</div>
 					</div>
 				</div>

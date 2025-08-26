@@ -189,8 +189,8 @@ const ImageEditor = React.memo(({ imageSource, onClose, setImageObject, setImage
 	}, [imageSource, handleClose]);
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-			<div className="bg-[#313338] rounded-lg text-white text-center flex flex-col items-center w-[600px] h-fit">
+		<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-[99999]">
+			<div className="bg-[#313338] rounded-lg text-white text-center flex flex-col items-center w-[600px] h-fit ">
 				<ImageEditorHeader handleClose={handleClose} />
 				<ImageEditorCanvas
 					bgCanvasRef={bgCanvasRef}

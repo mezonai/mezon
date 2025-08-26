@@ -68,6 +68,10 @@ function MezonPage() {
 		});
 	};
 
+	const HighLightText = ({ content }: { content: string }) => {
+		return <span className="text-[#8D5BDF] font-bold  ">{content}</span>;
+	};
+
 	const trackDownloadEvent = (platform: string, downloadType: string) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
 			(window as any).gtag('event', 'download_click', {
@@ -112,34 +116,37 @@ function MezonPage() {
 				fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial'
 			}}
 		>
-			<div
-				className="layout relative flex flex-col items-center text-textDarkTheme overflow-visibile"
-				style={{
-					background: 'linear-gradient(rgba(3, 3, 32, 0) -15.28%, rgb(15, 15, 99) -93.02%, rgba(3, 3, 32, 0) 105.23%)'
-				}}
-			>
+			<div className="bg-white layout relative flex flex-col items-center text-textDarkTheme overflow-visibile">
 				{!sideBarIsOpen && <HeaderMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />}
 
 				<div className="container w-10/12 max-lg:w-full max-md:px-[16px] max-md:mt-[72px]" id="home" ref={homeRef}>
 					<div
-						className={`max-md:pb-0 max-md:mt-[36px] md:mt-[200px] md:pb-[120px] flex flex-col gap-[48px] max-md:gap-[32px] md:px-[32px] transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-						style={backgroundImageStyle}
+						className={`bg-white max-md:pb-0 max-md:mt-[36px] md:mt-[100px] md:pb-[50px] flex flex-col gap-[48px] max-md:gap-[32px] md:px-[32px] transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
 					>
-						<div className="flex flex-col items-center justify-center gap-[24px] m-auto text-center w-full max-w-full md:max-w-[662px]">
-							<h1
-								style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial' }}
-								className="tracking-[-.02em] text-center text-[60px] max-md:text-[36px] leading-[72px] max-md:leading-[48px] text-[#F4F7F9] max-md:text-textDarkTheme"
+						<div className="flex flex-col gap-5 items-center">
+							<div
+								className="text-black text-6xl max-w-[1000px] font-bold leading-relaxed text-center max-md:text-4xl max-sm:text-3xl"
 								data-e2e={generateE2eId('homepage.main_page.heading.title')}
 							>
-								The Live, Work, and Play Platform – the best Discord alternative.
-							</h1>
-							<div className="text-[20px] text-[#C2D5DF] text-center leading-[30px] hidden md:block">
-								<div>Mezon is great for playing games and chilling with friends, </div>
-								<div>or even building a worldwide community.</div>
-								<div>Customize your own space to talk, play, and hang out.</div>
+								The <HighLightText content="Live" />, <HighLightText content="Work" />, and <HighLightText content="Play Platform" />{' '}
+								the best <HighLightText content="Discord" /> Alternative
 							</div>
+							<div className="text-3xl max-w-[800px] leading-normal text-center flex flex-col max-md:text-2xl max-sm:text-xl">
+								<span className="text-black">
+									<HighLightText content="Mezon" /> is great for playing games and chilling with friends, or even building a
+									worldwide community.
+								</span>
+								<span className="text-black">
+									Customize your own space to <HighLightText content="talk" />, <HighLightText content="play" />, and{' '}
+									<HighLightText content="hang out" />.
+								</span>
+							</div>
+							<div className="w-3/4 h-full">
+								<img src="/assets/homepage-bg.png" alt="banner-desktop" width={1600} height={1000} className="w-full h-full" />
+							</div>
+							<div className="flex items-center gap-5 max-sm:flex-col"></div>
 						</div>
-						<div className="flex justify-center items-center gap-[12px]">
+						<div className="max-md:mb-10 flex justify-center items-center gap-[12px]">
 							<a
 								className="cursor-pointer"
 								href="https://apps.apple.com/vn/app/mezon/id6502750046"

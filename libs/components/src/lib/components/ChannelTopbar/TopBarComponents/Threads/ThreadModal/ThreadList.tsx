@@ -1,7 +1,6 @@
 import { useOnScreen } from '@mezon/core';
-import { selectTheme, ThreadsEntity } from '@mezon/store';
+import { selectCurrentClanId, selectTheme, ThreadsEntity, useAppSelector } from '@mezon/store';
 import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import GroupThreads from './GroupThreads';
 import { getActiveThreads, getJoinedThreadsWithinLast30Days, getThreadsOlderThan30Days } from './hepler';
 
@@ -14,6 +13,9 @@ type ThreadListProps = {
 
 export default function ThreadList({ isLoading, threads, loadMore, preventClosePannel }: ThreadListProps) {
 	const ulRef = useRef<HTMLUListElement | null>(null);
+
+	const currentClanId = useAppSelector(selectCurrentClanId);
+
 	const activeThreads = getActiveThreads(threads);
 	const joinedThreads = getJoinedThreadsWithinLast30Days(threads);
 	const oldThreads = getThreadsOlderThan30Days(threads);
@@ -25,7 +27,7 @@ export default function ThreadList({ isLoading, threads, loadMore, preventCloseP
 	const isLastInActive = activeThreads.includes(lastThread);
 	const isLastInJoined = joinedThreads.includes(lastThread);
 	const isLastInOld = oldThreads.includes(lastThread);
-	const appearanceTheme = useSelector(selectTheme);
+	const appearanceTheme = useAppSelector(selectTheme);
 	useEffect(() => {
 		if (isIntersecting) {
 			loadMore();

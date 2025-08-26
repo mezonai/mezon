@@ -1,8 +1,9 @@
-import { selectCurrentClan, selectMemberClanByUserId } from '@mezon/store';
+import { clansActions, selectCurrentClan, selectMemberClanByUserId, useAppDispatch } from '@mezon/store';
 import { useSelector } from 'react-redux';
 import GuideBody from './GuideBody';
 
 function GuideMain() {
+	const dispatch = useAppDispatch();
 	const currentClan = useSelector(selectCurrentClan);
 	const clanOwner = useSelector(selectMemberClanByUserId(currentClan?.creator_id as string));
 	return (
@@ -11,7 +12,7 @@ function GuideMain() {
 				<div
 					className={`h-36 w-full object-cover ${currentClan?.banner ? '' : 'bg-private-theme'} rounded-xl flex items-center justify-center`}
 				>
-					{currentClan?.banner ? <img src={currentClan.banner} className="w-full h-full object-cover  rounded-xl" /> : null}
+					{currentClan?.banner ? <img src={currentClan.banner} alt="" className="w-full h-full object-cover  rounded-xl" /> : null}
 				</div>
 			</div>
 			<div className="flex flex-col w-full relative justify-end pt-2">
@@ -19,7 +20,7 @@ function GuideMain() {
 					className={`absolute -top-12 h-28 w-28 rounded-3xl object-cover shadow-sm ${currentClan?.logo ? '' : 'bg-zinc-950'} flex items-center justify-center`}
 				>
 					{currentClan?.logo ? (
-						<img src={currentClan.logo} className="w-full h-full object-cover  rounded-3xl" />
+						<img src={currentClan.logo} alt="" className="w-full h-full object-cover  rounded-3xl" />
 					) : (
 						<p className="text-4xl font-bold">{currentClan?.clan_name?.charAt(0)}</p>
 					)}
@@ -52,9 +53,13 @@ function GuideMain() {
 						</svg>
 					</div>
 					<div className="flex-1 flex justify-end">
-						<div className="w-24 h-9 py-[2px] flex items-center justify-center rounded-lg border-theme-primary bg-theme-input text-theme-primary-hover bg-secondary-button-hover ">
+						<button
+							type="button"
+							onClick={() => dispatch(clansActions.toggleInvitePeople({ status: true }))}
+							className="w-24 h-9 py-[2px] flex items-center justify-center rounded-lg border-theme-primary bg-theme-input text-theme-primary-hover bg-secondary-button-hover "
+						>
 							Invite
-						</div>
+						</button>
 					</div>
 				</div>
 			</div>

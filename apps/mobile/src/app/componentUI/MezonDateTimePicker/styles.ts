@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -49,7 +49,7 @@ export const style = (colors: Attributes) =>
 		},
 		wrapperError: {
 			width: '100%',
-			backgroundColor: Colors.textRed,
+			backgroundColor: baseColor.redStrong,
 			marginTop: size.s_6,
 			padding: size.s_6,
 			borderRadius: size.s_8

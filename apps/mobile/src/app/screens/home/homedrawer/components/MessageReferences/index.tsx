@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelMembersEntity, getStore, messagesActions, selectMemberClanByUserId2, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
 import { ApiMessageRef } from 'mezon-js/api.gen';
@@ -87,7 +87,7 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 					{messageReferences?.has_attachment || isEmbedMessage ? (
 						<Text>
 							<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')} </Text>
-							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={Colors.textGray} />
+							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={'#c7c7c7'} />
 						</Text>
 					) : (
 						<DmListItemLastMessage

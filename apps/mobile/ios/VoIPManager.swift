@@ -11,46 +11,11 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
     private let notificationDataKey = "notificationDataCalling"
     private let activeCallUUIDKey = "activeCallUUID"
 
-    @objc
-    func handleAnswerCall(_ callUUID: String) {
-        DispatchQueue.main.async {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-                print("log => Unable to get AppDelegate")
-                return
-            }
-
-            // Create a React Native view with props
-            let bridge = RCTBridge(delegate: appDelegate.reactNativeDelegate, launchOptions: nil)
-            let initialProps: [String: Any] = ["callUUID": callUUID, "payload": "payload"]
-            let rootView = RCTRootView(bridge: bridge!, moduleName: "ComingCallApp", initialProperties: initialProps)
-
-            // Create a new UIViewController
-            let callViewController = UIViewController()
-            callViewController.view = rootView
-
-            // Set the new view controller as the rootViewController
-            appDelegate.window?.rootViewController = callViewController
-            appDelegate.window?.makeKeyAndVisible()
-        }
-    }
-
     override init() {
         super.init()
         setupPushRegistry()
-        NotificationCenter.default.addObserver(
-          self,
-          selector: #selector(onAnswerCallNotification(_:)),
-          name: NSNotification.Name("RNCallKeepPerformAnswerCallAction"),
-          object: nil
-        )
     }
 
-    @objc
-    private func onAnswerCallNotification(_ notification: Notification) {
-        if let callUUID = notification.userInfo?["callUUID"] as? String {
-            handleAnswerCall(callUUID)
-        }
-    }
     // MARK: - React Native Bridge Methods
 
     @objc
@@ -196,6 +161,19 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         }
     }
 
+  @objc
+  func endCurrentCallKeep(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+      if let activeUUID = getActiveCallUUID() {
+          RNCallKeep.endCall(withUUID: activeUUID, reason: 6)
+          clearStoredNotificationDataInternal()
+          UserDefaults.standard.removeObject(forKey: activeCallUUIDKey)
+          UserDefaults.standard.synchronize()
+          resolve("Call ended successfully")
+      } else {
+          reject("NO_ACTIVE_CALL", "No active call UUID found", nil)
+      }
+  }
+
     // MARK: - VoIP Notification Handling
 
     private func handleVoIPNotification(payload: PKPushPayload, completion: @escaping () -> Void) {
@@ -204,15 +182,11 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
 
          // Only proceed if the app is in the background or killed
         guard appState == .background else {
-           print("log  => App is in the foreground, skipping logic")
            completion()
            return
         }
 
         guard let offerValue = payloadDict["offer"] else {
-            print("log  => No 'offer' key found in payload")
-            // Even if there's no offer, we need to report something to CallKit to avoid crash
-            reportDummyCall(completion: completion)
             return
         }
         let callUUID = UUID().uuidString
@@ -240,22 +214,14 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         } else {
             print("log  => Unexpected format for 'offer': \(type(of: offerValue))")
             dump(offerValue)
-            reportDummyCall(completion: completion)
             return
         }
-
-        print("log  => Caller Name: \(callerName)")
-        print("log  => Caller Avatar: \(callerAvatar)")
-        print("log  => Caller ID: \(callerId)")
-        print("log  => Channel ID: \(channelId)")
-        print("log  => offer \(offer)")
 
         if offer == "CANCEL_CALL" {
             print("log  => Cancel call received")
             if let activeUUID = getActiveCallUUID() {
                 print("log  => Ending call with UUID: \(activeUUID)")
                 RNCallKeep.endCall(withUUID: activeUUID, reason: 6)
-                RNCallKeep.endCall(withUUID: "0731961b-415b-44f3-a960-dd94ef3372fc", reason: 6)
                 clearStoredNotificationDataInternal()
             } else {
                 print("log  => No active call UUID found, cannot end call")
@@ -296,28 +262,4 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         completion()
     }
 
-    // Helper method to report a dummy call when payload is invalid
-    private func reportDummyCall(completion: @escaping () -> Void) {
-        let callUUID = UUID().uuidString
-
-        RNCallKeep.reportNewIncomingCall(
-            callUUID,
-            handle: "Unknown",
-            handleType: "generic",
-            hasVideo: true,
-            localizedCallerName: "Unknown Caller",
-            supportsHolding: true,
-            supportsDTMF: true,
-            supportsGrouping: false,
-            supportsUngrouping: false,
-            fromPushKit: true,
-            payload: nil,
-            withCompletionHandler: {
-                print("log  => Dummy call reported to avoid crash")
-                // Immediately end the dummy call
-                RNCallKeep.endCall(withUUID: callUUID, reason: 6)
-            }
-        )
-        completion()
-    }
 }

@@ -1,11 +1,10 @@
-import { Attributes, Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		clansBox: {
-			flex: 1,
-			marginTop: size.s_10
+			flex: 1
 		},
 		serverItem: {
 			marginBottom: size.s_10
@@ -79,7 +78,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: verticalScale(15)
 		},
 		lineActiveClan: {
-			backgroundColor: Colors.azureBlue,
+			backgroundColor: '#4173c3',
 			width: size.s_6,
 			height: '80%',
 			top: '20%',

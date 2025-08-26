@@ -12,6 +12,7 @@ import {
 	groupCallActions,
 	pinMessageActions,
 	searchMessagesActions,
+	selectAllAccount,
 	selectChannelById,
 	selectCloseMenu,
 	selectCurrentChannel,
@@ -33,6 +34,8 @@ import {
 	selectNotifiSettingsEntitiesById,
 	selectSession,
 	selectStatusMenu,
+	selectUpdateDmGroupError,
+	selectUpdateDmGroupLoading,
 	threadsActions,
 	toastActions,
 	topicsActions,
@@ -41,12 +44,14 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageSendPayload, IMessageTypeCallLog, SubPanelName, ValidateSpecialCharacters, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { IMessageSendPayload, IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
 import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEditGroupModal } from '../../hooks/useEditGroupModal';
 import CreateMessageGroup from '../DmList/CreateMessageGroup';
+import ModalEditGroup from '../ModalEditGroup';
 import { NotificationTooltip } from '../NotificationList';
 import SearchMessageChannel from '../SearchMessageChannel';
 import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
@@ -102,6 +107,7 @@ const TopBarChannelText = memo(() => {
 	}, [setStatusMenu]);
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
+
 	const handleNavigateToParent = () => {
 		if (!channelParent?.id || !channelParent?.clan_id) {
 			return;
@@ -110,75 +116,44 @@ const TopBarChannelText = memo(() => {
 		closeMenu();
 	};
 	const currentDmGroup = useSelector(selectCurrentDM);
+	const userProfile = useSelector(selectAllAccount);
 	const channelDmGroupLabel = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_label || currentDmGroup?.usernames?.join(',');
 		}
 		return currentDmGroup?.channel_label;
 	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
-
-	const [isEditing, setIsEditing] = useState(false);
-	const [editError, setEditError] = useState<string | null>(null);
-	const [editValue, setEditValue] = useState(channelDmGroupLabel || '');
-
-	useEffect(() => {
-		if (isEditing) setEditValue(channelDmGroupLabel || '');
-	}, [isEditing, channelDmGroupLabel]);
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const value = e.target.value;
-		setEditValue(value);
-		const regex = ValidateSpecialCharacters();
-		if (regex.test(value)) {
-			setEditError(null);
-		} else {
-			setEditError('Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).');
-		}
-	};
-
-	const handleChangeGroupName = useCallback(
-		async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-			if (e.key === 'Enter') {
-				e.preventDefault();
-				const value = editValue.trim();
-				const regex = ValidateSpecialCharacters();
-				if (!regex.test(value)) {
-					setEditError('Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).');
-					return;
-				}
-				setEditError(null);
-				dispatch(
-					channelsActions.updateChannel({
-						channel_id: currentDmGroup.channel_id as string,
-						category_id: '',
-						app_id: '',
-						channel_label: (e.target as HTMLTextAreaElement).value
-					})
-				);
-				setIsEditing(false);
-			}
-			if (e.key === 'Escape') {
-				setIsEditing(false);
-				setEditError(null);
-			}
-		},
-		[currentDmGroup, dispatch, editValue]
-	);
-
-	const handleRestoreName = useCallback(
-		(e: React.FocusEvent<HTMLTextAreaElement, Element>) => {
-			setEditValue(channelDmGroupLabel as string);
-			setIsEditing(false);
-			setEditError(null);
-		},
-		[channelDmGroupLabel]
-	);
-
-	const handleStartEditing = useCallback(() => {
+	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			setIsEditing(true);
+			return currentDmGroup?.topic || 'assets/images/avatar-group.png';
 		}
-	}, [currentDmGroup?.type]);
+
+		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_id) {
+			const currentUserId = userProfile?.user?.id;
+			const otherUserId = currentDmGroup.user_id.find((id) => id !== currentUserId);
+			if (otherUserId && currentDmGroup.channel_avatar) {
+				const otherUserAvatar = currentDmGroup.channel_avatar.find(
+					(avatar): avatar is string => typeof avatar === 'string' && !avatar.includes(currentUserId || '')
+				);
+				return otherUserAvatar || currentDmGroup.channel_avatar[0];
+			}
+		}
+	}, [currentDmGroup, userProfile?.user?.id]);
+
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channel_id || '')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channel_id || '')(state));
+
+	const editGroupModal = useEditGroupModal({
+		channelId: currentDmGroup?.channel_id,
+		currentGroupName: channelDmGroupLabel || '',
+		currentAvatar: currentDmGroup?.topic || ''
+	});
+
+	const handleOpenEditModal = useCallback(() => {
+		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			editGroupModal.openEditModal();
+		}
+	}, [currentDmGroup?.type, editGroupModal]);
 
 	const handleCloseCanvas = () => {
 		dispatch(appActions.setIsShowCanvas(false));
@@ -187,7 +162,6 @@ const TopBarChannelText = memo(() => {
 	return (
 		<>
 			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary">
-				{editError && <span className="absolute  text-xs top-[52px] text-colorDanger mb-1 break-words w-full">{editError}</span>}
 				<div className="flex sbm:hidden pl-3 px-2 text-theme-primary" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
@@ -218,35 +192,23 @@ const TopBarChannelText = memo(() => {
 					<div className="flex items-center gap-3 flex-1 overflow-hidden">
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
-							avatar={currentDmGroup?.channel_avatar?.[0]}
+							avatar={dmUserAvatar}
 							avatarName={currentDmGroup?.channel_label?.at(0)}
 						/>
 
-						{isEditing ? (
-							<div className=" relative flex flex-col flex-1 min-w-0">
-								<textarea
-									key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}`}
-									rows={1}
-									className={`none-draggable-area cursor-text font-medium bg-transparent flex-1 outline-none resize-none w-full leading-10 truncate one-line text-theme-primary `}
-									value={editValue}
-									onChange={handleInputChange}
-									onKeyDown={handleChangeGroupName}
-									onBlur={handleRestoreName}
-									maxLength={64}
-									style={{ minHeight: 40, maxWidth: 250, minWidth: 0, overflow: 'hidden' }}
-								></textarea>
-							</div>
-						) : (
-							<div
-								key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
-								className={`overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'cursor-text' : 'pointer-events-none cursor-default'} font-medium bg-transparent outline-none leading-10 text-theme-primary max-w-[250px] min-w-0`}
-								onClick={handleStartEditing}
-								title={channelDmGroupLabel}
-								data-e2e={generateE2eId(`chat.direct_message.chat_item.namegroup`)}
-							>
-								{channelDmGroupLabel}
-							</div>
-						)}
+						<div
+							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
+							className={`overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area ${
+								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
+									? 'cursor-pointer hover:text-theme-primary-active transition-colors'
+									: 'pointer-events-none cursor-default'
+							} font-medium bg-transparent outline-none leading-10 text-theme-primary max-w-[250px] min-w-0`}
+							onClick={handleOpenEditModal}
+							title={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'Click to edit group' : channelDmGroupLabel}
+							data-e2e={generateE2eId(`chat.direct_message.chat_item.namegroup`)}
+						>
+							{channelDmGroupLabel}
+						</div>
 					</div>
 				)}
 			</div>
@@ -264,6 +226,21 @@ const TopBarChannelText = memo(() => {
 				)}
 				{!isMemberPath && <SearchMessageChannel mode={channel ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_DM} />}
 			</div>
+
+			{editGroupModal.isEditModalOpen && (
+				<ModalEditGroup
+					isOpen={editGroupModal.isEditModalOpen}
+					onClose={editGroupModal.closeEditModal}
+					onSave={editGroupModal.handleSave}
+					onImageUpload={editGroupModal.handleImageUpload}
+					groupName={editGroupModal.groupName}
+					onGroupNameChange={editGroupModal.setGroupName}
+					imagePreview={editGroupModal.imagePreview}
+					className="z-[200]"
+					isLoading={updateDmGroupLoading}
+					error={updateDmGroupError}
+				/>
+			)}
 		</>
 	);
 });
@@ -406,6 +383,13 @@ const ChannelTopbarTools = memo(
 
 const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; avatar?: string; avatarName?: string }) => {
 	if (isGroup) {
+		if (avatar) {
+			return (
+				<div className="flex items-center justify-center">
+					<img className="w-8 h-8 rounded-full object-cover" src={avatar} alt="" />
+				</div>
+			);
+		}
 		return (
 			<div className="flex items-center justify-center">
 				<img className="w-8 h-8 rounded-full object-cover" src="assets/images/avatar-group.png" alt="" />
@@ -417,7 +401,7 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 			{avatar ? (
 				<img className="w-8 h-8 rounded-full object-cover " src={createImgproxyUrl(avatar)} alt="" />
 			) : (
-				<div className="w-8 h-8 rounded-full uppercase flex items-center justify-center font-semibold dark:bg-bgAvatarDark bg-bgAvatarLight dark:text-bgAvatarLight text-bgAvatarDark">
+				<div className="w-8 h-8 rounded-full uppercase flex items-center justify-center font-semibold dark:bg-bgAvatarLight dark:text-bgAvatarDark text-bgAvatarLight">
 					{avatarName}
 				</div>
 			)}

@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
 	usernameMessageBox: {
@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
 	},
 	dateMessageBox: {
 		fontSize: size.small,
-		color: Colors.gray72
+		color: baseColor.gray
 	},
 	wrapperAvatarCombine: {
 		width: size.s_40

@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, Fonts, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
@@ -44,7 +44,7 @@ export const style = (colors: Attributes) =>
 			width: size.s_30,
 			height: size.s_30,
 			borderRadius: size.s_50,
-			backgroundColor: Colors.titleReset,
+			backgroundColor: '#949AA4FF',
 			justifyContent: 'center',
 			alignItems: 'center'
 		},

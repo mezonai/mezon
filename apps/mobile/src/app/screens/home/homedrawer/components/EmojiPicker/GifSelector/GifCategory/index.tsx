@@ -1,5 +1,5 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
-import { Colors } from '@mezon/mobile-ui';
+import { baseColor } from '@mezon/mobile-ui';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import FastImage from 'react-native-fast-image';
@@ -21,7 +21,7 @@ export default function GifCategory({ loading, data }: GifCategoryProps) {
 	if (loading) {
 		return (
 			<View style={styles.containerLoading}>
-				<Flow color={Colors.bgViolet} />
+				<Flow color={baseColor.purple} />
 			</View>
 		);
 	}

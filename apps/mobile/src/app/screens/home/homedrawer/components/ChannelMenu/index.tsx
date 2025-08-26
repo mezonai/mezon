@@ -1,11 +1,7 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
-import {
-	ActionEmitEvent,
-	ENotificationActive,
-	ENotificationChannelId
-} from '@mezon/mobile-components';
-import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
 	channelUsersActions,
@@ -261,7 +257,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		},
 		{
 			title: t('menu.organizationMenu.deleteChannel'),
-			icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.closeSmallBold} color={baseColor.redStrong} />,
 			onPress: async () => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				await sleep(500);
@@ -278,16 +274,16 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			textStyle: {
-				color: Colors.textRed
+				color: baseColor.redStrong
 			},
 			isShow: isCanManageChannel
 		},
 		{
 			title: t('menu.organizationMenu.leaveChannel'),
-			icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={baseColor.redStrong} />,
 			onPress: handlePressLeaveChannel,
 			textStyle: {
-				color: Colors.textRed
+				color: baseColor.redStrong
 			},
 			isShow: channel?.creator_id !== currentUserId && channel?.channel_private === 1
 		}
@@ -296,7 +292,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const manageThreadMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.manageThreadMenu.leaveThread'),
-			icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={baseColor.redStrong} />,
 			onPress: async () => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				await sleep(500);
@@ -313,7 +309,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			textStyle: {
-				color: Colors.textRed
+				color: baseColor.redStrong
 			},
 			isShow: channel?.creator_id !== currentUserId
 		},
@@ -345,7 +341,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		},
 		{
 			title: t('menu.manageThreadMenu.deleteThread'),
-			icon: <MezonIconCDN icon={IconCDN.trashIcon} color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.trashIcon} color={baseColor.redStrong} />,
 			onPress: async () => {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				await sleep(500);
@@ -362,7 +358,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 			},
 			textStyle: {
-				color: Colors.textRed
+				color: baseColor.redStrong
 			},
 			isShow: channel?.creator_id === currentUserId || isCanManageThread
 		}

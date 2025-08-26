@@ -30,9 +30,9 @@ function GuideBody() {
 	const { navigate, toChannelPage } = useAppNavigation();
 	const dispatch = useAppDispatch();
 	const formOnboarding = useSelector(selectFormOnboarding);
-	const missionSum = useSelector(selectMissionSum);
-	const missionDone = useSelector(selectMissionDone);
-	const selectUserProcessing = useSelector(selectProcessingByClan(currentClanId as string));
+	const missionSum = useSelector((state) => selectMissionSum(state, currentClanId as string));
+	const missionDone = useSelector((state) => selectMissionDone(state, currentClanId as string));
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClanId as string));
 	const answerByClanId = useAppSelector((state) => selectAnswerByClanId(state, currentClanId as string));
 
 	const handleDoMission = useCallback(

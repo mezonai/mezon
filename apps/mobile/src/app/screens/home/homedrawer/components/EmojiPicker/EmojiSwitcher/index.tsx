@@ -1,18 +1,17 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { memo, useEffect, useState } from 'react';
-import { Keyboard, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
-import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 
 export type IProps = {
-	mode: IModeKeyboardPicker;
-	onChange: (mode: IModeKeyboardPicker) => void;
+	mode: string;
+	onChange: (mode: string) => void;
 };
 
 function EmojiSwitcher({ mode: _mode, onChange }: IProps) {
 	const { themeValue } = useTheme();
-	const [mode, setMode] = useState<IModeKeyboardPicker>(_mode);
+	const [mode, setMode] = useState<string>(_mode);
 
 	const onPickerPress = () => {
 		if (mode !== 'emoji') {

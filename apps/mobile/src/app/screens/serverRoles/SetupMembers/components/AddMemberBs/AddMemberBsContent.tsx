@@ -1,7 +1,7 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useRoles } from '@mezon/core';
 import { debounce } from '@mezon/mobile-components';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { RolesClanEntity } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -60,7 +60,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 				type: 'success',
 				props: {
 					text2: t('setupMember.addedMember'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -68,7 +68,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}
@@ -101,7 +101,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 								style={{
 									fontSize: verticalScale(13),
 									textAlign: 'center',
-									color: Colors.textViolet
+									color: themeValue.bgViolet
 								}}
 							>
 								{t('setupMember.add')}

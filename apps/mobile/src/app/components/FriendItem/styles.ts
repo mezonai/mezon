@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -33,10 +33,10 @@ export const style = (colors: Attributes) =>
 			fontSize: size.medium
 		},
 		online: {
-			backgroundColor: Colors.green
+			backgroundColor: baseColor.green
 		},
 		offline: {
-			backgroundColor: Colors.bgGrayDark
+			backgroundColor: '#676b73'
 		},
 		defaultText: {
 			color: colors.textStrong
@@ -45,7 +45,7 @@ export const style = (colors: Attributes) =>
 			opacity: 0.4
 		},
 		disabled: {
-			color: Colors.gray72
+			color: baseColor.gray
 		},
 		statusCircle: {
 			position: 'absolute',
@@ -63,7 +63,7 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 		approveIcon: {
-			backgroundColor: Colors.green,
+			backgroundColor: baseColor.green,
 			width: size.s_28,
 			height: size.s_28,
 			alignItems: 'center',
@@ -88,7 +88,7 @@ export const style = (colors: Attributes) =>
 		textAvatar: {
 			textAlign: 'center',
 			fontSize: size.h5,
-			color: Colors.white
+			color: 'white'
 		},
 		fill: {
 			flex: 1

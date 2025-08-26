@@ -8,7 +8,7 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.primary,
 			position: 'absolute',
 			top: 0,
 			left: 0,
@@ -41,11 +41,13 @@ export const style = (colors: Attributes) =>
 
 		// Content container
 		container: {
-			backgroundColor: colors.borderHighlight,
+			backgroundColor: colors.secondary,
 			flex: 1,
 			padding: size.s_16,
 			marginHorizontal: size.s_16,
-			borderRadius: size.s_12
+			borderRadius: size.s_12,
+			borderBottomColor: colors.primary,
+			borderBottomWidth: 1
 		},
 		title: {
 			fontSize: size.s_13,

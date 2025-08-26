@@ -16,6 +16,7 @@ interface EmojiPopupModalProps {
 	setIsEmojiPopupVisible: (visible: boolean) => void;
 	setSubPanelActive: (panel: SubPanelName) => void;
 	isTopic?: boolean;
+	onEmojiSelect?: (emojiId: string, emojiShortname: string) => void;
 }
 
 interface EmojiPopupModalReturnType {
@@ -23,7 +24,7 @@ interface EmojiPopupModalReturnType {
 }
 
 export const useEmojiPopupModal = (props: EmojiPopupModalProps): EmojiPopupModalReturnType => {
-	const { popupRef, mode, isEmojiPopupVisible, setIsEmojiPopupVisible, setSubPanelActive, isTopic = false } = props;
+	const { popupRef, mode, isEmojiPopupVisible, setIsEmojiPopupVisible, setSubPanelActive, isTopic = false, onEmojiSelect } = props;
 
 	const currentChannel = useCurrentInbox();
 
@@ -37,7 +38,7 @@ export const useEmojiPopupModal = (props: EmojiPopupModalProps): EmojiPopupModal
 				onClick={(e) => {
 					e.stopPropagation();
 				}}
-				className="fixed top-0 z-50 flex items-end justify-end"
+				className="fixed top-0 z-20 flex items-end justify-end"
 				onMouseDown={(e) => {
 					e.stopPropagation();
 				}}
@@ -56,12 +57,13 @@ export const useEmojiPopupModal = (props: EmojiPopupModalProps): EmojiPopupModal
 							emojiAction={EmojiPlaces.EMOJI_EDITOR}
 							mode={mode}
 							isTopic={isTopic}
+							onEmojiSelect={onEmojiSelect}
 						/>
 					</EmojiSuggestionProvider>
 				</div>
 			</div>
 		);
-	}, [currentChannel, mode, setSubPanelActive, clickPosition, isTopic]);
+	}, [currentChannel, mode, setSubPanelActive, clickPosition, isTopic, onEmojiSelect]);
 
 	useEffect(() => {
 		if (!isEmojiPopupVisible) {

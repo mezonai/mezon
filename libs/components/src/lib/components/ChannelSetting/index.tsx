@@ -1,7 +1,7 @@
-import { useEscapeKeyClose, useOnClickOutside, usePermissionChecker } from '@mezon/core';
-import { fetchUserChannels, fetchWebhooks, selectCloseMenu, selectCurrentClanId, useAppDispatch } from '@mezon/store';
+import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
+import { fetchUserChannels, selectChannelById, selectCloseMenu, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, IChannel } from '@mezon/utils';
+import { IChannel } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import QuickMenuAccessManager from '../ClanSettings/SettingChannel/QuickMenuAccessManager';
@@ -28,8 +28,13 @@ export enum EChannelSettingTab {
 const SettingChannel = (props: ModalSettingProps) => {
 	const { onClose, channel } = props;
 
+	const channelId = (channel?.channel_id || (channel as any)?.id || '') as string;
+	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
+	const currentChannel = (channelFromStore || channel) as IChannel;
+
 	const [currentSetting, setCurrentSetting] = useState<string>(EChannelSettingTab.OVERVIEW);
 	const [menu, setMenu] = useState(true);
+	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel.channel_label || '');
 
 	const handleSettingItemClick = (settingName: string) => {
 		setCurrentSetting(settingName);
@@ -37,15 +42,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 			setMenu(false);
 		}
 	};
-	const clanId = useSelector(selectCurrentClanId) as string;
 	const dispatch = useAppDispatch();
-	const [canManageChannel] = usePermissionChecker([EPermission.manageChannel]);
-
-	useEffect(() => {
-		if (canManageChannel) {
-			dispatch(fetchWebhooks({ channelId: channel.channel_id as string, clanId: clanId }));
-		}
-	}, [channel.channel_id, canManageChannel, dispatch, clanId]);
 
 	useEffect(() => {
 		dispatch(fetchUserChannels({ channelId: channel.channel_id as string }));
@@ -65,6 +62,10 @@ const SettingChannel = (props: ModalSettingProps) => {
 
 	useEscapeKeyClose(modalRef, handleClose);
 	useOnClickOutside(modalRef, handleClose);
+
+	useEffect(() => {
+		setDisplayChannelLabel(currentChannel.channel_label || '');
+	}, [currentChannel.channel_id, currentChannel.channel_label]);
 
 	return (
 		<div
@@ -97,8 +98,11 @@ const SettingChannel = (props: ModalSettingProps) => {
 					onCloseModal={onClose}
 					stateClose={closeMenu}
 					stateMenu={menu}
+					displayChannelLabel={displayChannelLabel}
 				/>
-				{currentSetting === EChannelSettingTab.OVERVIEW && <OverviewChannel channel={channel} />}
+				{currentSetting === EChannelSettingTab.OVERVIEW && (
+					<OverviewChannel channel={channel} onDisplayLabelChange={setDisplayChannelLabel} />
+				)}
 				{currentSetting === EChannelSettingTab.PREMISSIONS && (
 					<PermissionsChannel channel={channel} openModalAdd={openModalAdd} parentRef={modalRef} />
 				)}

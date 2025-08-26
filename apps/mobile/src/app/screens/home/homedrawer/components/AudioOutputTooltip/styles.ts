@@ -30,7 +30,9 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			alignItems: 'center',
 			alignSelf: 'center',
-			backgroundColor: colors.border
+			backgroundColor: colors.secondary,
+			borderColor: colors.border,
+			borderWidth: 1
 		},
 		iconTooltipActive: {
 			backgroundColor: colors.white

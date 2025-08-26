@@ -1,5 +1,5 @@
 import { IOption, IUerMention } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import debounce from 'lodash.debounce';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -109,12 +109,12 @@ const InputSearchMessageChannel = ({
 		<View style={styles.wrapper}>
 			<TouchableOpacity onPress={onGoBack} style={{ height: '100%', paddingRight: size.s_10 }}>
 				<View style={{ alignSelf: 'center', justifyContent: 'center', flex: 1 }}>
-					<MezonIconCDN icon={IconCDN.backArrowLarge} width={20} height={20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_20} height={size.s_20} color={themeValue.text} />
 				</View>
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
 				<View style={{ marginRight: size.s_6 }}>
-					<MezonIconCDN icon={IconCDN.magnifyingIcon} width={20} height={20} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
 				</View>
 				{shouldShowBadge ? (
 					<View
@@ -164,7 +164,7 @@ const InputSearchMessageChannel = ({
 						}}
 					/>
 				}
-				contentStyle={{ minWidth: size.s_220, padding: 0, borderRadius: size.s_10, backgroundColor: Colors.primary }}
+				contentStyle={{ minWidth: size.s_220, padding: 0, borderRadius: size.s_10, backgroundColor: themeValue.primary }}
 				arrowSize={{ width: 0, height: 0 }}
 				placement="bottom"
 				onClose={() => setIsVisibleToolTip(false)}

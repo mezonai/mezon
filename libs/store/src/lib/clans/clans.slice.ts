@@ -615,6 +615,10 @@ export const clansSlice = createSlice({
 			if (state.cache) {
 				state.cache = undefined;
 			}
+		},
+		clearClanGroups: (state) => {
+			state.clanGroups = clanGroupAdapter.getInitialState();
+			state.clanGroupOrder = [];
 		}
 	},
 	extraReducers: (builder) => {

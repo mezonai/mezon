@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { Dimensions, StyleSheet } from 'react-native';
 const { width } = Dimensions.get('screen');
 
@@ -50,7 +50,7 @@ export const style = (colors: Attributes) =>
 			marginBottom: size.s_4
 		},
 		deleteText: {
-			color: Colors.white,
+			color: 'white',
 			fontWeight: 'bold',
 			fontSize: size.s_14
 		},
@@ -78,7 +78,7 @@ export const style = (colors: Attributes) =>
 			width: size.s_30,
 			height: size.s_30,
 			borderRadius: size.s_30,
-			overflow: 'hidden',
+			overflow: 'hidden'
 		},
 		user: {
 			flexDirection: 'row',

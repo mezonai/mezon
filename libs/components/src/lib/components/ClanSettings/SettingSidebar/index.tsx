@@ -21,7 +21,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [isClanOwner, hasClanPermission] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
 	const userProfile = useSelector(selectAllAccount);
 	const clanId = currentClan?.clan_id;
-	const isCommunityEnabled = useSelector((state: RootState) => clanId ? selectIsCommunityEnabled(state, clanId) : false);
+	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {
 		let filteredListItem = sidebarItem.listItem.filter((item) => {
@@ -29,15 +29,13 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 				return hasClanPermission;
 			}
 			if (item.id === ItemSetting.ON_BOARDING || item.id === ItemSetting.ON_COMUNITY) {
-				return isClanOwner;
+				return hasClanPermission;
 			}
 			return true;
 		});
 
 		filteredListItem = filteredListItem.map((item) =>
-			item.id === ItemSetting.ON_COMUNITY && isCommunityEnabled
-				? { ...item, name: 'Community Overview' }
-				: item
+			item.id === ItemSetting.ON_COMUNITY && isCommunityEnabled ? { ...item, name: 'Community Overview' } : item
 		);
 
 		return {
@@ -85,7 +83,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 				))}
 				{isClanOwner && (
 					<button
-						className={`mt-[5px] text-red-500 w-full py-1 px-[10px] mb-1 text-[16px] font-medium rounded text-left bg-item-hover`}
+						className={`mt-[5px] text-red-500 w-full py-1 px-[10px] mb-1 text-[16px] font-medium rounded text-left hover:bg-[#f67e882a]`}
 						onClick={setIsShowDeletePopup}
 					>
 						Delete clan

@@ -93,7 +93,7 @@ const ModalCustomStatus = ({ name, status, onClose }: ModalCustomStatusProps) =>
 						<div className="mb-2 block">
 							<p className="text-theme-primary text-xs uppercase font-semibold">Clear after</p>
 						</div>
-						<Menu menu={menuTime} className="bg-theme-setting-primary border-none py-0 w-[200px] [&>ul]:py-0">
+						<Menu menu={menuTime} className="bg-[var(--theme-setting-primary)] border-none py-0 w-[200px] [&>ul]:py-0">
 							<div className="flex items-center justify-between rounded-lg cursor-pointer h-9 text-theme-primary-hover bg-input-secondary px-3 text-theme-primary">
 								<li className="text-[14px] text-theme-primary w-full py-[6px] list-none select-none">{timeSetReset}</li>
 								<Icons.ArrowDown />

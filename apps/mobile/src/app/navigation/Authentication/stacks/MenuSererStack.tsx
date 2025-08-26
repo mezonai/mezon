@@ -161,7 +161,8 @@ export const MenuClanStacks = ({ }: any) => {
 				name={APP_SCREEN.MENU_CLAN.CREATE_NEW_ROLE}
 				component={CreateNewRole}
 				options={{
-					headerLeftLabelVisible: false
+					headerLeftLabelVisible: false,
+					headerShown: false
 				}}
 			/>
 
@@ -177,7 +178,8 @@ export const MenuClanStacks = ({ }: any) => {
 				name={APP_SCREEN.MENU_CLAN.SETUP_PERMISSIONS}
 				component={SetupPermissions}
 				options={{
-					headerLeftLabelVisible: false
+					headerLeftLabelVisible: false,
+					headerShown: false
 				}}
 			/>
 
@@ -185,7 +187,8 @@ export const MenuClanStacks = ({ }: any) => {
 				name={APP_SCREEN.MENU_CLAN.SETUP_ROLE_MEMBERS}
 				component={SetupMembers}
 				options={{
-					headerLeftLabelVisible: false
+					headerLeftLabelVisible: false,
+					headerShown: false
 				}}
 			/>
 

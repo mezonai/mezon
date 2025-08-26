@@ -119,12 +119,16 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 							</p>
 						</td>
 						<td className="text-[15px] text-center">
-							<p className="inline-flex gap-x-2 items-center ">
-								{role.role_user_list?.role_users?.length ?? 0}
-								<Icons.MemberIcon defaultSize="w-5 h-[30px] min-w-5" />
-							</p>
+							{role?.slug === `everyone-${role?.clan_id}` ? (
+								<p className="inline-flex gap-x-2 items-center ">All Members</p>
+							) : (
+								<p className="inline-flex gap-x-2 items-center ">
+									{role.role_user_list?.role_users?.length ?? 0}
+									<Icons.MemberIcon defaultSize="w-5 h-[30px] min-w-5" />
+								</p>
+							)}
 						</td>
-						<td className="  flex h-14 justify-center items-center">
+						<td className={` flex h-14 justify-center items-center ${role?.slug === `everyone-${role?.clan_id}` && 'ml-[2.8rem]'}`}>
 							<div className="flex gap-x-2">
 								<div className="text-[15px] cursor-pointer bg-red-500 p-2 rounded-full opacity-0 group-hover:opacity-100 group-hover:text-white">
 									{hasPermissionEdit ? (
@@ -137,7 +141,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 										</span>
 									)}
 								</div>
-								{hasPermissionEdit && (
+								{hasPermissionEdit && role?.slug !== `everyone-${role?.clan_id}` && (
 									<div
 										className={`text-[15px] cursor-pointer bg-red-500 p-2 text-white rounded-full ${hasPermissionEdit ? 'opacity-100' : 'opacity-20'}`}
 										onClick={(e) => handleOpenDeleteRoleModal(e, role.id)}

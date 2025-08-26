@@ -5,6 +5,7 @@
         <item name="android:datePickerDialogTheme">@style/DialogDatePicker.Theme</item>
     </style>
     <style name="BootTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@drawable/splash_screen</item>
         <item name="android:statusBarColor">@color/black</item>

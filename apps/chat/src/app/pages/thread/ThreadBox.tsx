@@ -274,7 +274,7 @@ const ThreadBox = () => {
 
 				setUndoHistory((prevUndoHistory) => [
 					...prevUndoHistory,
-					{ valueTextInput: request.valueTextInput, content: request.content, mentionRaw: request.mentionRaw }
+					{ valueTextInput: request.valueTextInput, content: request.content, mentionRaw: request?.mentionRaw }
 				]);
 
 				setRedoHistory((prevRedoHistory) => prevRedoHistory.slice(1));
@@ -296,7 +296,7 @@ const ThreadBox = () => {
 				if (shiftKey || isComposing) {
 					return;
 				} else {
-					const hasToken = request?.mentionRaw?.length > 0;
+					const hasToken = request?.mentionRaw && request?.mentionRaw?.length > 0;
 
 					const emptyRequest: RequestInput = {
 						content: '',

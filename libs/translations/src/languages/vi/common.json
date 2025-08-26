@@ -14,6 +14,7 @@
     "unmuteNotification": "Bật thông báo",
     "inviteMembers": "Mời bạn bè",
     "addMembers": "Thêm thành viên",
-    "copyImage": "Đã Sao chép ảnh",
-    "copyImageFailed": "Sao chép không thành công: {{error}}"
+    "copyImage": "Đã sao chép ảnh",
+    "copyImageFailed": "Sao chép không thành công: {{error}}",
+    "enable": "Bật"
 }

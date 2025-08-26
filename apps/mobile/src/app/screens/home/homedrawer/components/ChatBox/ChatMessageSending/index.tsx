@@ -40,6 +40,7 @@ import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
+import { showNotificationPermissionBottomSheet } from '../../../../../../utils/notificationPermissionHelper';
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../../../types';
 import { style } from '../ChatBoxBottomBar/style';
@@ -124,7 +125,7 @@ export const ChatMessageSending = memo(
 		}, [attachmentFilteredByChannelId]);
 
 		const roleList = useMemo(() => {
-			const rolesInClan = selectAllRolesClan(store.getState());
+			const rolesInClan = selectAllRolesClan(store.getState() as any);
 			return rolesInClan?.map((item) => ({
 				roleId: item.id ?? '',
 				roleName: item?.title ?? ''
@@ -153,7 +154,7 @@ export const ChatMessageSending = memo(
 		};
 
 		const getUsersNotExistingInThread = (mentions) => {
-			const rolesInClan = selectAllRolesClan(store.getState());
+			const rolesInClan = selectAllRolesClan(store.getState() as any);
 			const userIds = uniqueUsers(mentions, membersOfChild, rolesInClan, [messageActionNeedToResolve?.targetMessage?.sender_id || '']);
 			const usersNotExistingInThread = userIds?.filter((userId) => membersOfParent?.some((member) => member?.id === userId)) as string[];
 
@@ -287,6 +288,7 @@ export const ChatMessageSending = memo(
 						references: []
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.SEND_MESSAGE, payloadThreadSendMessage);
+					showNotificationPermissionBottomSheet();
 				} else {
 					if (type === EMessageActionType.EditMessage) {
 						await onEditMessage(

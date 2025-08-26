@@ -49,6 +49,8 @@ export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanv
 					localStorage.setItem('persist:apps', JSON.stringify(persistApp));
 					localStorage.setItem('current-theme', "${themeBasic}");
 				}
+			} else {
+				throw new Error('persist:apps data is not a valid string');
 			}
 		} catch (error) {
 			console.error('Error parsing persist:apps data:', error);
@@ -62,7 +64,10 @@ export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanv
 		}
 	})();
 	true;
-	(function() {
+	`;
+
+	const injectedDataJS = `
+  	(function() {
       var style = document.createElement('style');
       style.innerHTML = \`
         .h-heightTopBar {
@@ -108,7 +113,7 @@ export function CanvasScreen({ route }: MenuChannelScreenProps<ScreenChannelCanv
 				originWhitelist={['*']}
 				style={styles.container}
 				injectedJavaScriptBeforeContentLoaded={injectedJS}
-				injectedJavaScript={injectedJS}
+				injectedJavaScript={injectedDataJS}
 				javaScriptEnabled={true}
 				onMessage={onMessage}
 				nestedScrollEnabled={true}

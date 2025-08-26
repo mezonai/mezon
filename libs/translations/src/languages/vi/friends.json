@@ -23,7 +23,7 @@
         "addFriendToast": "Đã gửi yêu cầu kết bạn"
     },
     "friends": "Bạn bè",
-    "noFriendsResultsFound": "không tìm thấy kết quả bạn bè",
+    "noFriendsResultsFound": "Không tìm thấy kết quả bạn bè",
     "toast": {
         "sendAddFriendSuccess": "Yêu cầu kết bạn đã được gửi",
         "sendAddFriendFail": "Không có ID hoặc tên người dùng hợp lệ được cung cấp."

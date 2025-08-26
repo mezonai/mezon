@@ -14,7 +14,7 @@ export const style = (colors: Attributes) =>
 		// Input wrapper for search
 		inputWrapper: {
 			flex: 1,
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondary,
 			flexDirection: 'row',
 			alignItems: 'center',
 			paddingHorizontal: size.s_10,
@@ -57,7 +57,7 @@ export const style = (colors: Attributes) =>
 
 		// Filter button
 		filterButton: {
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondary,
 			paddingHorizontal: size.s_10,
 			height: size.s_42,
 			width: size.s_42,

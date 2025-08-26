@@ -221,7 +221,7 @@ const ContentPanel = React.memo(
 		setBuzzInputRequest?: (value: RequestInput) => void;
 		toggleEmojiPanel?: () => void;
 		isTopic: boolean;
-		onEmojiSelect?: (emoji: string, emojiId: string) => void;
+		onEmojiSelect?: (emojiId: string, emoji: string) => void;
 	}) => {
 		const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 		const isFocusThreadBox = useSelector(selectClickedOnThreadBoxStatus);

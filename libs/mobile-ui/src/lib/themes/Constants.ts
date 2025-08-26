@@ -1,9 +1,8 @@
-import { ThemeModeBase } from '../hooks/useTheme';
-
 export type HexColor = `#${string}`;
 type Colors = { [key: string]: HexColor };
 export type Attributes = {
 	primary: HexColor;
+	primaryGradiant?: HexColor;
 	secondary: HexColor;
 	secondaryWeight: HexColor;
 	secondaryLight: HexColor;
@@ -45,7 +44,7 @@ export type Attributes = {
 	textSuccess: HexColor;
 };
 
-type ThemeColor = Record<ThemeModeBase, Attributes>;
+type ThemeColor = Record<any, Attributes>;
 
 export const baseColor = {
 	blurple: '#5e65de',
@@ -63,7 +62,12 @@ export const baseColor = {
 	bgButtonSecondary: '#4E5057',
 	bgSuccess: '#16A34A',
 	bgDanger: '#DA373C',
-	bgDeepLavender: '#505cdc'
+	bgDeepLavender: '#505cdc',
+	link: '#007AFF',
+	azureBlue: '#4173c3',
+	goldenrodYellow: '#f2b13a',
+	caribbeanGreen: '#1FA07C',
+	pink: '#e148c7'
 } satisfies Colors;
 
 export const brandColors = {
@@ -116,20 +120,63 @@ export const themeColors: ThemeColor = {
 	light: {
 		primary: '#f2f3f5',
 		secondary: '#ffffff',
-		tertiary: '#ecedef',
-		border: '#cbccce',
+		tertiary: '#e1e1e1',
+		border: '#979797',
 		borderHighlight: '#e0e1e3',
 		borderDim: '#f4f4f4',
 		borderRadio: '#4d4d54',
 		text: '#29292b',
 		textStrong: '#070709',
-		textDisabled: '#a0a1a6',
+		textDisabled: '#404042',
 		textNormal: '#e0e1e3',
 		secondaryWeight: '#F0F0F0',
 		secondaryLight: '#ffffff',
 		white: '#000000',
 		black: '#FFFFFF',
 		bgInputPrimary: '#a0a1a6',
+		charcoal: '#f2f3f5',
+		jet: '#ecedef',
+		channelUnread: '#000000',
+		channelNormal: '#6c7077',
+		midnightBlue: '#d1e0ff',
+		textLink: '#3297ff',
+		reactionBg: 'rgba(229,231,235,0.6)',
+		reactionBorder: '#2563eb',
+		selectedOverlay: '#FFFFFF96',
+		bgViolet: '#5a62f4',
+		colorAvatarDefault: '#8a97a5',
+		colorActiveClan: '#d8e2f0',
+		textRoleLink: '#00b098',
+		darkMossGreen: '#e2f1e5',
+		badgeHighlight: '#fff',
+		bgBrown: '#876E4B',
+		textWarning: '#FEF08A',
+		borderWarning: '#EAB308',
+		darkJade: '#50f5c0',
+		bgInfor: '#3b82f61a',
+		borderInfor: '#3b82f680',
+		headerInfor: '#60a5fa',
+		descInfor: '#93c5fdcc',
+		textSuccess: '#00d4aa'
+	},
+	sunrise: {
+		primary: '#ead9e0',
+		primaryGradiant: '#fbdbe3',
+		secondary: '#fae9ef',
+		tertiary: '#faf2f2',
+		border: '#F5EBEA',
+		borderHighlight: '#e0e1e3',
+		borderDim: '#f4f4f4',
+		borderRadio: '#4d4d54',
+		text: '#181819',
+		textStrong: '#070709',
+		textDisabled: '#404042',
+		textNormal: '#e0e1e3',
+		secondaryWeight: '#ffe5ed',
+		secondaryLight: '#f8ebee',
+		white: '#000000',
+		black: '#FFFFFF',
+		bgInputPrimary: '#707075',
 		charcoal: '#f2f3f5',
 		jet: '#ecedef',
 		channelUnread: '#000000',

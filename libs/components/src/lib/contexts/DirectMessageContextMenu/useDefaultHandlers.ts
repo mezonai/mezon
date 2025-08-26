@@ -15,6 +15,7 @@ interface UseDefaultHandlersParams {
 	handleLeaveDmGroup: (channelId: string, isLastOne: boolean) => Promise<void>;
 	blockFriend: (username: string, userId: string) => Promise<boolean>;
 	unBlockFriend: (username: string, userId: string) => Promise<boolean>;
+	openEditGroupModal?: () => void;
 }
 
 export function useDefaultHandlers({
@@ -29,7 +30,8 @@ export function useDefaultHandlers({
 	handleRemoveMemberFromGroup,
 	handleLeaveDmGroup,
 	blockFriend,
-	unBlockFriend
+	unBlockFriend,
+	openEditGroupModal
 }: UseDefaultHandlersParams) {
 	const createDefaultHandlers = useCallback(
 		(user?: any): DirectMessageContextMenuHandlers => {
@@ -91,6 +93,11 @@ export function useDefaultHandlers({
 				},
 				handleUnblockFriend: async () => {
 					await unBlockFriend(user?.usernames?.[0], user?.user_id?.[0]);
+				},
+				handleEditGroup: () => {
+					if (openEditGroupModal) {
+						openEditGroupModal();
+					}
 				}
 			};
 		},
@@ -106,7 +113,8 @@ export function useDefaultHandlers({
 			handleRemoveMemberFromGroup,
 			handleLeaveDmGroup,
 			blockFriend,
-			unBlockFriend
+			unBlockFriend,
+			openEditGroupModal
 		]
 	);
 

@@ -11,13 +11,13 @@
     "setPassword": "Đặt mật khẩu",
     "disableAccountAlert": {
         "title": "Vô hiệu hoá tài khoản",
-        "description": "Bạn có chắn chắn muốn vô hiệu hoá tài khoản?",
+        "description": "Bạn có chắc chắn muốn vô hiệu hoá tài khoản?",
         "noConfirm": "Không",
         "yesConfirm": "Có"
     },
     "deleteAccountAlert": {
         "title": "Xoá tài khoản",
-        "description": "Bạn có chắn chắn muốn xoá tài khoản?",
+        "description": "Bạn có chắc chắn muốn xoá tài khoản?",
         "noConfirm": "Không",
         "yesConfirm": "Có"
     },

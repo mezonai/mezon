@@ -52,9 +52,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					<Image src={`assets/images/mezon-logo-black.svg`} width={32} height={32} className="aspect-square object-cover" />
 					<div className="font-semibold text-[22.15px] leading-[26.58px] tracking-[0.06em]">mezon</div>
 				</Link>
-				<Icons.MenuClose className="w-[20px] max-lg:block" onClick={toggleSideBar} />
-
-				<div className="hidden max-md:block absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] bg-[#8D72C5] rounded-[50%] filter blur-[70px] mix-blend-color-dodge"></div>
+				<Icons.MenuClose className="w-[20px] max-lg:block cursor-pointer" onClick={toggleSideBar} />
 			</div>
 
 			<div

@@ -12,6 +12,7 @@ interface ChatBoxToolbarWrapperProps {
 	isRecording: boolean;
 	mode: ChannelStreamMode;
 	isTopic: boolean;
+	onEmojiSelect?: (emojiId: string, emojiShortname: string) => void;
 }
 
 const ChatBoxToolbarWrapper: React.FC<ChatBoxToolbarWrapperProps> = ({
@@ -20,7 +21,8 @@ const ChatBoxToolbarWrapper: React.FC<ChatBoxToolbarWrapperProps> = ({
 	voiceLongPress = {} as ILongPressType,
 	isRecording = false,
 	mode = ChannelStreamMode.STREAM_MODE_CHANNEL,
-	isTopic = false
+	isTopic = false,
+	onEmojiSelect
 }) => {
 	const [isEmojiPopupVisible, setIsEmojiPopupVisible] = useState<boolean>(false);
 	const popupRef = useRef<HTMLDivElement | null>(null);
@@ -32,7 +34,8 @@ const ChatBoxToolbarWrapper: React.FC<ChatBoxToolbarWrapperProps> = ({
 		isEmojiPopupVisible,
 		setIsEmojiPopupVisible,
 		setSubPanelActive,
-		isTopic
+		isTopic,
+		onEmojiSelect
 	});
 
 	return (

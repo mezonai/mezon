@@ -16,6 +16,7 @@ import MezonOption from '../../componentUI/MezonOption';
 import MezonSwitch from '../../componentUI/MezonSwitch';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { checkNotificationPermissionAndNavigate } from '../../utils/notificationPermissionHelper';
 import { validInput } from '../../utils/validate';
 import { style } from './styles';
 
@@ -85,22 +86,25 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			return;
 		}
 
-		if (
-			newChannelCreatedId &&
-			channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
-			channelType !== ChannelType.CHANNEL_TYPE_STREAMING &&
-			channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE
-		) {
-			navigation.replace(APP_SCREEN.HOME_DEFAULT);
-			requestAnimationFrame(async () => {
-				await store.dispatch(channelsActions.joinChannel({ clanId: clanID ?? '', channelId: channelID, noFetchMembers: false }));
-			});
-			const dataSave = getUpdateOrAddClanChannelCache(clanID, channelID);
-			save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-			await sleep(1000);
-		} else {
-			navigation.goBack();
-		}
+		await checkNotificationPermissionAndNavigate(async () => {
+			if (
+				newChannelCreatedId &&
+				channelType !== ChannelType.CHANNEL_TYPE_GMEET_VOICE &&
+				channelType !== ChannelType.CHANNEL_TYPE_STREAMING &&
+				channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE
+			) {
+				navigation.replace(APP_SCREEN.HOME_DEFAULT);
+				requestAnimationFrame(async () => {
+					await store.dispatch(channelsActions.joinChannel({ clanId: clanID ?? '', channelId: channelID, noFetchMembers: false }));
+				});
+				const dataSave = getUpdateOrAddClanChannelCache(clanID, channelID);
+				save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
+				await sleep(1000);
+			} else {
+				navigation.goBack();
+			}
+		});
+
 		setChannelName('');
 		dispatch(appActions.setLoadingMainMobile(false));
 	}

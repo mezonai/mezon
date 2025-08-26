@@ -3,17 +3,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, TouchableOpacity } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
-import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 
 export type AttachmentPickerProps = {
-	mode: IModeKeyboardPicker;
-	onChange: (mode: IModeKeyboardPicker) => void;
+	mode: string;
+	onChange: (mode: string) => void;
 };
 
 function AttachmentSwitcher({ mode: _mode, onChange }: AttachmentPickerProps) {
 	const { themeValue } = useTheme();
 	const rotation = useRef(new Animated.Value(0)).current; // 0 is initial value for rotation
-	const [mode, setMode] = useState<IModeKeyboardPicker>(_mode);
+	const [mode, setMode] = useState<string>(_mode);
 	const onPickerPress = () => {
 		if (mode !== 'attachment') {
 			Keyboard.dismiss();

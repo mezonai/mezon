@@ -68,10 +68,13 @@ export function useImage() {
 			}
 
 			if (!base64Data) throw new Error('Failed to get base64 data');
-
 			if (Platform.OS === 'ios') {
-				const dataUri = `data:image/${extension};base64,${base64Data}`
-				await Clipboard.setString(dataUri);
+				if (ImageClipboardModule && ImageClipboardModule?.copyImageFromPath) {
+					await ImageClipboardModule.copyImageFromPath(filePath);
+				} else {
+					const fileUrl = `file://${filePath}`;
+					await Clipboard.setImage(fileUrl);
+				}
 			} else {
 				await ImageClipboardModule.setImage(base64Data);
 			}
@@ -85,7 +88,7 @@ export function useImage() {
 			console.error('Error processing image:', err);
 			throw err;
 		}
-	}
+	};
 
 	const checkAndRequestPermission = async () => {
 		const permission = Platform.select({

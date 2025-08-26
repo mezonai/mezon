@@ -32,11 +32,13 @@ export const style = (colors: Attributes) =>
 			flexGrow: 1,
 			borderBottomColor: colors.borderDim,
 			minHeight: size.s_50,
-			alignItems: 'center'
+			alignItems: 'center',
+			paddingVertical: size.s_8
 		},
 		nameItem: {
 			gap: size.s_4,
-			justifyContent: 'center'
+			justifyContent: 'center',
+			width: '100%'
 		},
 
 		container: {

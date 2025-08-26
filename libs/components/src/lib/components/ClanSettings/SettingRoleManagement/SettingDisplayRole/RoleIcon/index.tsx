@@ -1,6 +1,5 @@
 import { useRoles } from '@mezon/core';
 import {
-	getNewAddMembers,
 	getNewColorRole,
 	getNewNameRole,
 	getNewSelectedPermissions,
@@ -26,7 +25,6 @@ const RoleIcon = () => {
 	const newSelectedPermissions = useSelector(getNewSelectedPermissions);
 	const removeMemberRoles = useSelector(getRemoveMemberRoles);
 	const removePermissions = useSelector(getRemovePermissions);
-	const newAddMembers = useSelector(getNewAddMembers);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { updateRole } = useRoles();
 	const dispatch = useDispatch();
@@ -45,7 +43,7 @@ const RoleIcon = () => {
 			currentRoleId || '',
 			nameRoleNew,
 			colorRoleNew,
-			newAddMembers,
+			[],
 			newSelectedPermissions,
 			removeMemberRoles,
 			removePermissions,
@@ -66,8 +64,8 @@ const RoleIcon = () => {
 				{currentRoleIcon ? (
 					<img src={currentRoleIcon} alt="" className={'w-20 h-20'} />
 				) : (
-						<div className={'bg-theme-setting-nav flex justify-center items-center w-20 h-20'}>
-							<Icons.ImageUploadIcon className="w-6 h-6 text-theme-primary" />
+					<div className={'bg-theme-setting-nav flex justify-center items-center w-20 h-20'}>
+						<Icons.ImageUploadIcon className="w-6 h-6 text-theme-primary" />
 					</div>
 				)}
 				<input type="file" className={'hidden'} ref={fileInputRef} />

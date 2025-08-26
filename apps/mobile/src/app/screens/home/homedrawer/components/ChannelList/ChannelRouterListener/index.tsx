@@ -4,7 +4,7 @@ import { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useEffect } from 'react';
-import { DeviceEventEmitter, Linking } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Linking } from 'react-native';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../../../../utils/helpers';
@@ -39,6 +39,7 @@ const ChannelRouterListener = () => {
 
 	const handleRouteData = async (channel?: IChannel, isFromSearch = false) => {
 		requestAnimationFrame(async () => {
+			Keyboard.dismiss();
 			if (channel?.type === ChannelType.CHANNEL_TYPE_STREAMING || channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 				openBottomSheetJoinVoice(channel);
 				return;

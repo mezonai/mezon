@@ -205,7 +205,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const posInReply = isJumMessageEnabled && !isTokenClickAble;
 
 	return (
-		<div className={` inline${!isLink ? ' bg-item-theme' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}>
+		<div className={` inline${!isLink ? ' bg-item-theme rounded-lg' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}>
 			{isLink && content && isGoogleMapsLink(content) ? (
 				<a
 					onClick={() => onClickLink(content)}
@@ -227,7 +227,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 					</a>
 				)
 			)}
-			{!isReply && isLink && content && isYouTubeLink(content) && <YouTubeEmbed url={content} isSearchMessage={isSearchMessage} />}
+			{!isReply && isLink && content && isYouTubeLink(content) && <YouTubeEmbed url={content} isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
@@ -263,13 +263,13 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, i
 	const posInPinOrNotification = isInPinMsg || posInNotification;
 	return (
 		<span
-			className={!posInPinOrNotification ? 'text-theme-primary-active rounded-md bg-markdown-code p-2' : 'w-full'}
+			className={!posInPinOrNotification ? 'text-theme-primary-active rounded-md  p-2' : 'w-full'}
 			style={{ display: posInPinOrNotification ? '' : 'inline', padding: 2, margin: 0 }}
 		>
 			<code
 				className={`w-full text-sm font-sans px-2 ${
 					posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
-				} ${posInPinOrNotification && isLightMode ? 'pin-msg-modeLight' : posInPinOrNotification && !isLightMode ? 'pin-msg' : null}`}
+					} ${posInPinOrNotification && ' text-theme-primary rounded-lg'}`}
 				style={{
 					fontFamily: 'sans-serif',
 					wordWrap: 'break-word',
@@ -322,19 +322,19 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 	);
 };
 
-const YouTubeEmbed: React.FC<{ url: string; isSearchMessage?: boolean }> = ({ url, isSearchMessage }) => {
+const YouTubeEmbed: React.FC<{ url: string; isSearchMessage?: boolean; isInPinMsg?: boolean }> = ({ url, isSearchMessage, isInPinMsg }) => {
 	const embedUrl = getYouTubeEmbedUrl(url);
 	const { width, height } = getYouTubeEmbedSize(url, isSearchMessage);
 
 	return (
-		<div className="flex">
+		<div className={`flex ${isInPinMsg ? 'w-full' : ''}`}>
 			<div className="border-l-4 rounded-l border-[#ff001f]"></div>
-			<div className="p-4 bg-[#2b2d31] rounded">
+			<div className={`p-4 bg-[#2b2d31] rounded ${isInPinMsg ? 'flex-1 min-w-0' : ''}`}>
 				<iframe
 					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 					title={url}
 					src={embedUrl}
-					style={{ width, height, border: 'none' }}
+					style={{ width, height, border: 'none', maxWidth: '100%' }}
 					allowFullScreen
 				></iframe>
 			</div>

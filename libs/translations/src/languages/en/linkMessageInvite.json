@@ -1,6 +1,6 @@
 {
-  "title":"INVITE TO JOIN A CLAN",
-  "offline":"offline",
+  "title": "INVITE TO JOIN A CLAN",
+  "offline": "offline",
   "online": "online",
   "join": "Join",
   "inviteTo": "INVITE TO {{clanName}}",

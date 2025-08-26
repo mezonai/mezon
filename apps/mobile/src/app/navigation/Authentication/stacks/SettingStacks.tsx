@@ -16,7 +16,7 @@ import { Sharing } from '../../../screens/settings/Sharing';
 import { APP_SCREEN } from '../../ScreenTypes';
 
 // eslint-disable-next-line no-empty-pattern
-export const SettingStacks = ({}: any) => {
+export const SettingStacks = ({ }: any) => {
 	const Stack = createStackNavigator();
 	const { t } = useTranslation(['screenStack']);
 	const { themeValue } = useTheme();
@@ -127,7 +127,7 @@ export const SettingStacks = ({}: any) => {
 				name={APP_SCREEN.SETTINGS.MY_QR_CODE}
 				component={MyQRCode}
 				options={{
-					headerTitle: '',
+					headerTitle: t('settingStack.myQRCode', 'My QR Code'),
 					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.primary

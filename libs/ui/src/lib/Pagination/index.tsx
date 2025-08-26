@@ -30,7 +30,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
 
 	const baseBtn = 'px-3 py-1 rounded-md border text-sm transition-colors duration-200';
 	const activeBtn = 'bg-active-button text-theme-primary-active';
-	const normalBtn = 'bg-button-primary btn-theme-primary text-gray-700 border-gray-300 hover:bg-gray-100';
+	const normalBtn = ' text-theme-primary border-theme-primary btn-primary btn-primary-hover';
 	const disabledBtn = 'opacity-50 cursor-not-allowed';
 
 	return (

@@ -1,6 +1,6 @@
 import { useNotification } from '@mezon/core';
 import { ActionEmitEvent, getUpdateOrAddClanChannelCache, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
 	channelsActions,
@@ -298,7 +298,7 @@ const Notifications = () => {
 	const ViewLoadMore = () => {
 		return (
 			<View style={styles.loadMoreChannelMessage}>
-				<ActivityIndicator size="large" color={Colors.tertiary} />
+				<ActivityIndicator size="large" color={'#ccc'} />
 			</View>
 		);
 	};

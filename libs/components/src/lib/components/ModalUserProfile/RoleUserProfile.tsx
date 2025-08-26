@@ -113,7 +113,7 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 					<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-theme-input-primary hoverIconBlackImportant ml-1">
 						<Tooltip
 							overlay={
-								<div className={'flex flex-col items-start gap-1 bg-theme-surface '}>
+								<div className={'flex flex-col items-start gap-1 bg-theme-surface rounded-md '}>
 									{userRolesClan.slice(6, userRolesClan.length).map((userRole, index) => (
 										<RoleClanItem
 											key={`${userRole.id}_role`}

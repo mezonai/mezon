@@ -31,7 +31,7 @@ function AppWithStore() {
 					<Routes>
 						<Route path="/" element={<Navigate to="/clans" replace />} />
 						<Route path="/clans" element={<DiscoverPage />} />
-						<Route path="/clan/:id" element={<ClanDetailPage />} />
+						<Route path="/clans/clan/:id" element={<ClanDetailPage />} />
 					</Routes>
 				</Suspense>
 			</div>

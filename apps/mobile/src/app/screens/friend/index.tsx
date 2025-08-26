@@ -14,6 +14,7 @@ import { UserInformationBottomSheet } from '../../components/UserInformationBott
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { normalizeString } from '../../utils/helpers';
+import { checkNotificationPermissionAndNavigate } from '../../utils/notificationPermissionHelper';
 import { style } from './styles';
 
 export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => {
@@ -70,7 +71,9 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				user?.user?.avatar_url
 			);
 			if (response?.channel_id) {
-				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+				await checkNotificationPermissionAndNavigate(() => {
+					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+				});
 			}
 		},
 		[createDirectMessageWithUser, navigation]

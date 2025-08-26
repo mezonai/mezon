@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, useAppDispatch } from '@mezon/store-mobile';
 import { ApiUpdateChannelDescRequest } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
@@ -52,7 +52,7 @@ const CustomGroupDm = ({ dmGroupId, channelLabel }: { dmGroupId: string; channel
 						width: size.s_60,
 						height: size.s_60,
 						borderRadius: size.s_50,
-						backgroundColor: Colors.orange,
+						backgroundColor: baseColor.orange,
 						alignItems: 'center',
 						justifyContent: 'center'
 					}}

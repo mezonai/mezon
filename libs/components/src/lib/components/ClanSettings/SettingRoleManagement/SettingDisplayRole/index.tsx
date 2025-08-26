@@ -76,12 +76,12 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 					Role name<b className="text-red-600">*</b>
 				</div>
 				<input
-					className={` text-[15px] w-full  p-[7px] font-normal border-theme-primary text-theme-message bg-input-secondary rounded-lg outline-none ${hasPermissionEdit ? '' : 'cursor-not-allowed'}`}
+					className={` text-[15px] w-full  p-[7px] font-normal border-theme-primary text-theme-message bg-input-secondary rounded-lg outline-none ${!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clan_id}` ? 'cursor-not-allowed' : ''}`}
 					type="text"
 					value={nameRole}
 					onChange={handleDisplayName}
 					maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
-					disabled={!hasPermissionEdit}
+					disabled={!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clan_id}`}
 				/>
 			</div>
 			<RoleColor />

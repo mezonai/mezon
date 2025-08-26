@@ -2,7 +2,7 @@ import { CHANNEL_INPUT_ID, GENERAL_INPUT_ID } from '@mezon/utils';
 import { RefObject, useEffect } from 'react';
 
 interface UseFocusManagerProps {
-	editorRef: RefObject<HTMLInputElement>;
+	editorRef: RefObject<HTMLDivElement>;
 	isTopic: boolean;
 	isMenuClosed: boolean;
 	isStatusMenuOpen: boolean;

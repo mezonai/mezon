@@ -277,17 +277,6 @@ function MessageWithUser({
 							</div>
 						)}
 
-						{(message?.attachments?.length as number) > 0 && (
-							<MessageAttachment
-								observeIntersectionForLoading={observeIntersectionForLoading}
-								mode={mode}
-								message={message}
-								onContextMenu={onContextMenu}
-								isInSearchMessage={isSearchMessage}
-								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}
-							/>
-						)}
-
 						{isEditing && (
 							<MessageInput
 								messageId={message?.id}
@@ -316,6 +305,17 @@ function MessageWithUser({
 									</div>
 								)}
 							</>
+						)}
+
+						{(message?.attachments?.length as number) > 0 && (
+							<MessageAttachment
+								observeIntersectionForLoading={observeIntersectionForLoading}
+								mode={mode}
+								message={message}
+								onContextMenu={onContextMenu}
+								isInSearchMessage={isSearchMessage}
+								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}
+							/>
 						)}
 
 						{Array.isArray(message?.content?.embed) && (

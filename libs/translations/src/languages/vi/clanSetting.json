@@ -7,8 +7,8 @@
             "auditLog": "Nhật ký chỉnh sửa",
             "channels": "Kênh",
             "integrations": "Tích hợp",
-            "emoji": "Emoji",
-            "sticker": "Sticker",
+            "emoji": "Biểu tượng cảm xúc",
+            "sticker": "Nhãn dán",
             "webhooks": "Webhook",
             "security": "Bảo mật",
             "permissionDenied": "Bạn không có quyền để chỉnh sửa",
@@ -20,7 +20,7 @@
         },
         "subscriptions": {
             "title": "Gói đăng ký clan",
-            "getStarted": "Bắt đâu"
+            "getStarted": "Bắt đầu"
         },
         "userManagement": {
             "title": "Quản lý người dùng",

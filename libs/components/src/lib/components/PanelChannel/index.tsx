@@ -478,6 +478,9 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 							<Menu
 								trigger="hover"
 								menu={menuMute}
+								align={{
+									points: ['bl', 'br']
+								}}
 								className="bg-theme-contexify text-theme-primary border-theme-primary ml-[3px] py-[6px] px-[8px] w-[200px]"
 								onVisibleChange={handleOpenMenuMute}
 							>

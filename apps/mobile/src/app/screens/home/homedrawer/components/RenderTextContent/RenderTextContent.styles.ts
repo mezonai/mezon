@@ -1,14 +1,14 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
 	contentMessageMention: {
 		fontSize: size.medium,
 		fontWeight: '600',
-		color: Colors.textLink
+		color: baseColor.link
 	},
 	contentMessageBox: {
 		fontSize: size.medium,
-		color: Colors.tertiary,
+		color: '#ccc',
 		marginTop: -5
 	},
 	iconEmojiInMessage: {

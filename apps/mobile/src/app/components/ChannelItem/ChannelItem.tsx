@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelUsersEntity, clansActions, getStore, selectChannelById, selectCurrentClanId, useAppSelector } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -63,13 +63,13 @@ export const ChannelItem = React.memo(({ channelData }: ChannelItemProps) => {
 								<Text style={styles.channelName} numberOfLines={1}>
 									{channelData?.channel_label}
 								</Text>
-								<MezonIconCDN icon={IconCDN.lockIcon} width={10} height={10} color={Colors.textGray} />
+								<MezonIconCDN icon={IconCDN.lockIcon} width={10} height={10} color={'#c7c7c7'} />
 							</View>
 							{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 						</View>
 					</View>
 					<View style={styles.joinChannelBtn}>
-						<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={Colors.textGray} />
+						<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={'#c7c7c7'} />
 						<Text style={styles.joinChannelBtnText}>{t('joinChannel')}</Text>
 					</View>
 				</View>

@@ -70,7 +70,7 @@ export const MacOSWindowControls: React.FC<MacOSWindowControlsProps> = ({ classN
 
 	return (
 		<div
-			className={`fixed top-3 left-3 flex items-center gap-2 z-[9999] ${className}`}
+			className={`fixed top-0 left-0 flex items-center gap-2 z-[9999] rounded-sm pl-3 px-2 py-3 backdrop-blur-sm ${className}`}
 			style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
 		>
 			<MacOSButton onClick={handleClose} backgroundColor="#ff5f57" icon={<Icons.MacOSCloseIcon />} />

@@ -1,14 +1,13 @@
 import { getFirstMessageOfTopic, selectMemberClanByUserId2, threadsActions, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
-	EBacktickType,
-	ETypeLinkMedia,
-	IExtendedMessage,
-	IMessageWithUser,
-	MEZON_MENTIONS_COPY_KEY,
-	addMention,
-	createImgproxyUrl,
-	isValidEmojiData
+  EBacktickType,
+  ETypeLinkMedia,
+  IExtendedMessage,
+  IMessageWithUser,
+  addMention,
+  createImgproxyUrl,
+  isValidEmojiData
 } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
@@ -41,33 +40,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 	})();
 
 	const handleCopyMessage = (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => {
-		if (message?.content && message?.mentions) {
-			const key = MEZON_MENTIONS_COPY_KEY;
-			const copyData = {
-				message: {
-					...message,
-					mentions:
-						message?.mentions
-							?.map((mention) => {
-								if ((mention?.s || 0) >= startIndex && mention?.e && mention?.e <= endIndex) {
-									return {
-										...mention,
-										s: (mention?.s || 0) - startIndex,
-										e: mention?.e - startIndex
-									};
-								}
-							})
-							?.filter(Boolean) || []
-				},
-				startIndex: startIndex,
-				endIndex: endIndex
-			};
-			const value = JSON.stringify(copyData);
 
-			event.preventDefault();
-
-			event.clipboardData.setData(key, value);
-		}
 	};
 
 	return (

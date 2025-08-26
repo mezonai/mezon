@@ -151,7 +151,7 @@ const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCa
 			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20, flexGrow: 1, flexShrink: 1 }}>
 				{!isGroupCall && (
 					<TouchableOpacity onPress={onPressMinimizeRoom} style={styles.buttonCircle}>
-						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} />
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} color={themeValue.white} />
 					</TouchableOpacity>
 				)}
 				<Text numberOfLines={1} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>

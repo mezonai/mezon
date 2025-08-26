@@ -3,6 +3,7 @@ import {
 	ChannelsEntity,
 	EStateFriend,
 	RootState,
+	directActions,
 	selectAllAccount,
 	selectCurrentChannel,
 	selectDirectById,
@@ -11,16 +12,21 @@ import {
 	selectIsShowCreateThread,
 	selectMemberClanByUserId,
 	selectThreadCurrentChannel,
+	selectUpdateDmGroupError,
+	selectUpdateDmGroupLoading,
 	selectUserIdCurrentDm,
+	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum, createImgproxyUrl } from '@mezon/utils';
+import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useEditGroupModal } from '../../hooks/useEditGroupModal';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
+import ModalEditGroup from '../ModalEditGroup';
 
 export type ChatWelComeProp = {
 	readonly name?: Readonly<string>;
@@ -34,9 +40,27 @@ export type ChatWelComeProp = {
 
 function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeProp) {
 	const { directId } = useAppParams();
+	const dispatch = useAppDispatch();
 	const directChannel = useAppSelector((state) => selectDirectById(state, directId));
 	const currentChannel = useSelector(selectCurrentChannel);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '')(state));
+	const editGroupModal = useEditGroupModal({
+		channelId: directChannel?.channel_id,
+		currentGroupName: name || directChannel?.channel_label || 'Group',
+		currentAvatar: directChannel?.topic || ''
+	});
+	useEffect(() => {
+		if (directId) {
+			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		}
+	}, [directId, dispatch]);
+
+	const handleOpenEditModal = useCallback(() => {
+		editGroupModal.openEditModal();
+	}, [editGroupModal]);
+
 	const selectedChannel =
 		mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP
 			? directChannel
@@ -82,15 +106,30 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 							<WelComeDm
 								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
 								username={username}
-								avatar={avatarDM}
+								avatar={isDmGroup ? directChannel?.topic : avatarDM}
 								classNameSubtext={classNameSubtext}
 								showName={showName}
 								isDmGroup={isDmGroup}
+								onEditGroup={isDmGroup ? handleOpenEditModal : undefined}
 							/>
 						)}
 					</>
 				}
 			</div>
+
+
+				<ModalEditGroup
+				isOpen={editGroupModal.isEditModalOpen}
+				onClose={editGroupModal.closeEditModal}
+				onSave={editGroupModal.handleSave}
+				onImageUpload={editGroupModal.handleImageUpload}
+				groupName={editGroupModal.groupName}
+				onGroupNameChange={editGroupModal.setGroupName}
+				imagePreview={editGroupModal.imagePreview}
+					className="z-[200]"
+				isLoading={updateDmGroupLoading}
+				error={updateDmGroupError}
+			/>
 		</div>
 	);
 }
@@ -166,13 +205,16 @@ type WelComeDmProps = {
 	classNameSubtext: string;
 	showName: JSX.Element;
 	isDmGroup: boolean;
+	onEditGroup?: () => void;
 };
 
 const WelComeDm = (props: WelComeDmProps) => {
-	const { name = '', username = '', avatar = '', classNameSubtext, showName, isDmGroup } = props;
+	const { name = '', username = '', avatar = '', classNameSubtext, showName, isDmGroup, onEditGroup } = props;
 
 	const userID = useSelector(selectUserIdCurrentDm);
 	const checkAddFriend = useSelector(selectFriendStatus(userID[0] || ''));
+
+
 
 	return (
 		<>
@@ -181,7 +223,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 				alt={username}
 				username={username}
 				className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] font-semibold"
-				srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+				srcImgProxy={avatar || ''}
 				src={avatar}
 				classNameText="!text-4xl font-semibold"
 			/>
@@ -200,6 +242,24 @@ const WelComeDm = (props: WelComeDmProps) => {
 					)}
 				</p>
 			</div>
+			{isDmGroup && onEditGroup && (
+				<button
+					onClick={onEditGroup}
+					className="inline-flex items-center gap-2 px-3 py-2 mt-2 bg-item-theme  text-theme-primary text-sm font-medium rounded-md transition-all duration-150 hover:shadow-lg hover:scale-[1.02] group w-fit"
+					title="Edit Group"
+				>
+					<svg
+						className="w-4 h-4 transition-transform group-hover:scale-110 "
+						viewBox="0 0 16 16"
+						fill="currentColor"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M8.29289 3.70711L1 11V15H5L12.2929 7.70711L8.29289 3.70711Z" />
+						<path d="M9.70711 2.29289L13.7071 6.29289L15.1716 4.82843C15.702 4.29799 16 3.57857 16 2.82843C16 1.26633 14.7337 0 13.1716 0C12.4214 0 11.702 0.297995 11.1716 0.828428L9.70711 2.29289Z" />
+					</svg>
+					Edit Group
+				</button>
+			)}
 			{!isDmGroup && <StatusFriend username={username} checkAddFriend={checkAddFriend} userID={userID[0]} />}
 		</>
 	);

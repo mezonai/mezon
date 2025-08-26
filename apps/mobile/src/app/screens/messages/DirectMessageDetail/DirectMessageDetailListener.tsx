@@ -1,7 +1,7 @@
 import { ChatContext } from '@mezon/core';
 import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_IS_LAST_ACTIVE_TAB_DM, load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { clansActions, directActions, getStore, selectDmGroupCurrentId, selectIdMessageToJump, useAppDispatch } from '@mezon/store-mobile';
+import { clansActions, directActions, selectDmGroupCurrentId, useAppDispatch } from '@mezon/store-mobile';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useContext, useEffect, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Platform, StatusBar, View } from 'react-native';
@@ -50,13 +50,14 @@ export const DirectMessageDetailListener = memo(({ dmType, directMessageId }: { 
 				StatusBar.setBackgroundColor(themeValue.primary);
 			}
 			requestAnimationFrame(async () => {
-				const store = getStore();
-				const idMessageToJump = selectIdMessageToJump(store.getState());
-				if (idMessageToJump?.id) return;
-				await directMessageLoader();
+				handleReconnect('DM detail reconnect attempt loader');
 			});
-		}, [directMessageLoader, themeValue.primary])
+		}, [handleReconnect, themeValue.primary])
 	);
+
+	useEffect(() => {
+		directMessageLoader();
+	}, [directMessageLoader]);
 
 	useEffect(() => {
 		const blurListener = navigation.addListener('blur', () => {

@@ -54,7 +54,9 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 	return (
 		<>
 			<div className="pr-5">
-				<div className="w-full flex justify-between mb-5 border-b border-gray-200 dark:border-gray-500">
+				<div
+					className={`w-full flex  mb-5 border-b border-gray-200 dark:border-gray-500 ${activeRole?.slug === `everyone-${activeRole?.clan_id}` ? 'justify-around' : 'justify-between'}`}
+				>
 					<span className={` ${clickRole === EVERYONE_ROLE_ID ? ' cursor-not-allowed' : ''}`}>
 						<button
 							className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectDisplayTab ? 'dark:text-white text-black' : 'text-contentTertiary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
@@ -81,20 +83,22 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 							className={`absolute inset-x-0 bottom-0 h-[2px] group-hover:bg-blue-300 ${isSelectPermissionTab ? 'bg-blue-400' : ''}`}
 						/>
 					</button>
-					<span className={` ${clickRole === EVERYONE_ROLE_ID ? ' cursor-not-allowed' : ''}`}>
-						<button
-							className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectManageTab ? 'dark:text-white text-black' : 'text-contentTertiary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
-							onClick={() => {
-								handleButtonClick('Manage Members');
-								dispatch(toggleIsShowFalse());
-							}}
-						>
-							Manage Members ({roleUsersCount > 0 ? roleUsersCount : 0})
-							<div
-								className={`absolute inset-x-0 bottom-0 h-[2px] group-hover:bg-blue-300 ${isSelectManageTab ? 'bg-blue-400' : ''}`}
-							/>
-						</button>
-					</span>
+					{activeRole?.slug !== `everyone-${activeRole?.clan_id}` && (
+						<span className={` ${clickRole === EVERYONE_ROLE_ID ? ' cursor-not-allowed' : ''}`}>
+							<button
+								className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectManageTab ? 'dark:text-white text-black' : 'text-contentTertiary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
+								onClick={() => {
+									handleButtonClick('Manage Members');
+									dispatch(toggleIsShowFalse());
+								}}
+							>
+								Manage Members ({roleUsersCount > 0 ? roleUsersCount : 0})
+								<div
+									className={`absolute inset-x-0 bottom-0 h-[2px] group-hover:bg-blue-300 ${isSelectManageTab ? 'bg-blue-400' : ''}`}
+								/>
+							</button>
+						</span>
+					)}
 				</div>
 			</div>
 

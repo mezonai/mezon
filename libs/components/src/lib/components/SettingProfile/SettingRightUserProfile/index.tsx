@@ -14,8 +14,9 @@ import { handleUploadFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
 import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
+import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
 import { Coords } from '../../ChannelLink';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
@@ -248,6 +249,17 @@ const SettingRightUser = ({
 		setOpenModalDeleteAcc(false);
 	};
 
+	const qrCodeProfile = useMemo(() => {
+		const qrData = {
+			id: userProfile?.user?.id || '',
+			name: userProfile?.user?.display_name || userProfile?.user?.username || '',
+			avatar: userProfile?.user?.avatar_url || ''
+		};
+		const endcodeData = btoa(encodeURIComponent(JSON.stringify(qrData)));
+		const qrDataLink = `https://mezon.ai/chat/${userProfile?.user?.username}?data=${endcodeData}`;
+
+		return qrDataLink;
+	}, [userProfile]);
 	return (
 		<>
 			<div className="flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col">
@@ -343,9 +355,17 @@ const SettingRightUser = ({
 						</div>
 					</div>
 				</div>
-				<div className="flex-1 flex flex-col gap-2">
-					<p className="mt-[20px]  font-semibold tracking-wide text-sm">PREVIEW</p>
-					<PreviewSetting isLoading={isLoading} profiles={editProfile} isDM={isDM} />
+				<div className="flex-1 flex flex-col gap-2 relative">
+					<p className="font-semibold tracking-wide text-sm">PREVIEW</p>
+					<PreviewSetting
+						isLoading={isLoading}
+						profiles={editProfile}
+						qrProfile={
+							<div className="p-4 rounded-lg bg-white">
+								<QRCode level="H" value={qrCodeProfile} className="w-full h-full" />
+							</div>
+						}
+					/>
 				</div>
 			</div>
 			{(urlImage !== avatar && flags) ||

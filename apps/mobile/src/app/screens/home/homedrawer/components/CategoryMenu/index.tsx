@@ -1,7 +1,7 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, baseColor, useTheme } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
 	categoriesActions,
@@ -91,7 +91,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	}, [dispatch, statusMarkAsReadCategory]);
 
 	useEffect(() => {
-		dispatch(defaultNotificationCategoryActions.getDefaultNotificationCategory({ categoryId: category?.id }));
+		dispatch(defaultNotificationCategoryActions.getDefaultNotificationCategory({ categoryId: category?.id, clanId: category?.clan_id }));
 		dispatch(fetchSystemMessageByClanId({ clanId: category.clan_id }));
 	}, []);
 
@@ -194,10 +194,10 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 		{
 			title: t('menu.organizationMenu.delete'),
 			onPress: handleDelete,
-			icon: <MezonIconCDN icon={IconCDN.closeLargeIcon} color={Colors.textRed} />,
+			icon: <MezonIconCDN icon={IconCDN.closeLargeIcon} color={baseColor.redStrong} />,
 			isShow: isCanManageChannel,
 			textStyle: {
-				color: Colors.textRed
+				color: baseColor.redStrong
 			}
 		}
 	];

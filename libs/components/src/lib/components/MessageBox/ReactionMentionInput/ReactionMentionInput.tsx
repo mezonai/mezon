@@ -1,4 +1,4 @@
-import { useGifsStickersEmoji, useReference } from '@mezon/core';
+import { useEmojiSuggestionContext, useGifsStickersEmoji, useReference } from '@mezon/core';
 import {
 	ChannelsEntity,
 	channelMembersActions,
@@ -17,14 +17,12 @@ import {
 	selectCurrentTopicId,
 	selectDataReferences,
 	selectEmojiObjSuggestion,
-	selectHasKeyE2ee,
 	selectIdMessageRefEdit,
 	selectOpenEditMessageState,
 	selectOpenThreadMessageState,
 	selectQuickMenuByChannelId,
 	selectReactionRightState,
 	selectStatusMenu,
-	selectTheme,
 	threadsActions,
 	useAppDispatch,
 	useAppSelector
@@ -34,17 +32,17 @@ import {
 	CREATING_TOPIC,
 	ChannelMembersEntity,
 	GENERAL_INPUT_ID,
+	ID_MENTION_HERE,
 	IEmojiOnMessage,
 	IHashtagOnMessage,
 	ILongPressType,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageWithUser,
-	MEZON_MENTIONS_COPY_KEY,
 	MIN_THRESHOLD_CHARS,
-	MentionDataProps,
 	MentionReactInputProps,
 	QUICK_MENU_TYPE,
+	RECENT_EMOJI_CATEGORY,
 	RequestInput,
 	SubPanelName,
 	TITLE_MENTION_HERE,
@@ -53,41 +51,25 @@ import {
 	adjustPos,
 	blankReferenceObj,
 	checkIsThread,
-	convertMentionOnfile,
 	extractCanvasIdsFromText,
 	filterEmptyArrays,
-	filterMentionsWithAtSign,
-	formatMentionsToString,
 	generateE2eId,
-	getDisplayMention,
-	parseHtmlAsFormattedText,
 	processBoldEntities,
+	processEntitiesDirectly,
 	processMarkdownEntities,
 	searchMentionsHashtag,
-	threadError,
-	updateMentionPositions
+	threadError
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import React, { ReactElement, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Mention as MentionComponent, MentionItem, MentionsInput as MentionsInputComponent } from 'react-mentions';
+import React, { ReactElement, RefObject, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import CustomModalMentions from './CustomModalMentions';
-import lightMentionsInputStyle from './LightRmentionInputStyle';
-import darkMentionsInputStyle from './RmentionInputStyle';
-import mentionStyle from './RmentionStyle';
+import Mention from './Mention';
+import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
 import { ChatBoxToolbarWrapper } from './components';
-import {
-	useClickUpToEditMessage,
-	useEmojiPicker,
-	useEmojiQuery,
-	useFocusEditor,
-	useFocusManager,
-	useKeyboardHandler,
-	usePasteMentions,
-	useUndoRedoHistory
-} from './hooks';
+import { useClickUpToEditMessage, useEmojiPicker, useFocusEditor, useFocusManager, useKeyboardHandler } from './hooks';
+import parseHtmlAsFormattedText, { ApiMessageEntityTypes } from './parseHtmlAsFormattedText';
 import processMention from './processMention';
 import { getCanvasTitles } from './utils/canvas';
 
@@ -98,9 +80,6 @@ const slashCommands = [
 		description: 'Send an ephemeral message (only visible to selected user)'
 	}
 ];
-
-const MentionsInput = MentionsInputComponent as any;
-const Mention = MentionComponent as any;
 
 /**
  * Custom hook to search and filter emojis based on user input
@@ -130,14 +109,9 @@ export interface MentionReactBaseProps extends MentionReactInputProps {
 	currentDmGroupId?: string;
 }
 
-type ChannelsMentionProps = {
-	id: string;
-	display: string;
-	subText: string;
-};
-
 export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElement => {
-	const editorRef = useRef<HTMLInputElement | null>(null);
+	const editorRef = useRef<MentionsInputHandle | null>(null);
+	const editorElementRef = useRef<HTMLDivElement | null>(null); // For legacy hooks compatibility
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const {
 		currentChannel,
@@ -157,7 +131,26 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const [mentionEveryone, setMentionEveryone] = useState(false);
 	const addEmojiState = useSelector(selectAddEmojiState);
 	const emojiPicked = useSelector(selectEmojiObjSuggestion);
-	const { queryEmojis } = useEmojiQuery();
+
+	const { emojis } = useEmojiSuggestionContext();
+
+	const queryEmojis = useCallback(
+		(query: string) => {
+			if (!query || emojis.length === 0) return [];
+			const q = query.toLowerCase();
+			const matches: { id: string; display: string; src?: string }[] = [];
+
+			for (const { id, shortname, category, src } of emojis) {
+				if (category === RECENT_EMOJI_CATEGORY || !shortname || !shortname.includes(q)) continue;
+				if (!id) continue;
+				matches.push({ id, display: shortname, src });
+				if (matches.length === 20) break;
+			}
+
+			return matches;
+		},
+		[emojis]
+	);
 
 	const [isEphemeralMode, setIsEphemeralMode] = useState(false);
 	const [ephemeralTargetUserId, setEphemeralTargetUserId] = useState<string | null>(null);
@@ -178,33 +171,33 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const isDm = props.mode === ChannelStreamMode.STREAM_MODE_DM;
 
-	const appearanceTheme = useSelector(selectTheme);
 	const userProfile = useSelector(selectAllAccount);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
+	const allChannels = useAppSelector(selectAllChannels);
+	const allHashtagDm = useAppSelector(selectAllHashtagDm);
 	const { setOpenThreadMessageState, checkAttachment } = useReference(scopeId || '');
 	const [mentionData, setMentionData] = useState<ApiMessageMention[]>([]);
-	const [valueHighlight, setValueHightlight] = useState<string>('');
-	const [titleModalMention, setTitleModalMention] = useState('');
 	const [displayPlaintext, setDisplayPlaintext] = useState<string>('');
 	const [displayMarkup, setDisplayMarkup] = useState<string>('');
 	const [mentionUpdated, setMentionUpdated] = useState<IMentionOnMessage[]>([]);
 	const [isPasteMulti, setIsPasteMulti] = useState<boolean>(false);
 	const [isFocused, setIsFocused] = useState(false);
 
-	const { addToUndoHistory, handleUndoRedoShortcut } = useUndoRedoHistory({
-		updateDraft,
-		draftRequest
-	});
+	useEffect(() => {
+		if (editorRef.current) {
+			editorElementRef.current = editorRef.current.getElement();
+		}
+	}, [editorRef.current]);
 
 	const { focusEditorIfMatch } = useFocusEditor({
-		editorRef,
+		editorRef: editorElementRef,
 		isTopic: props.isTopic
 	});
 
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
 	useFocusManager({
-		editorRef,
+		editorRef: editorElementRef as RefObject<HTMLDivElement>,
 		isTopic: props.isTopic || false,
 		isMenuClosed: useSelector(selectCloseMenu),
 		isStatusMenuOpen: useSelector(selectStatusMenu),
@@ -218,16 +211,34 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		hasAttachments: attachmentFiltered?.files?.length > 0
 	});
 
-	useEmojiPicker({
-		editorRef,
-		emojiPicked,
-		addEmojiState,
-		dispatch,
-		focusEditorIfMatch
-	});
+	const handleSendWithFormattedText = useCallback(
+		(formattedText: FormattedText, anonymousMessage?: boolean) => {
+			const checkedRequest: RequestInput = {
+				content: formattedText.text,
+				valueTextInput: formattedText.text,
+				entities: formattedText.entities || []
+			};
 
-	const handleSend = useCallback(
-		(anonymousMessage?: boolean) => {
+			return handleSendInternal(checkedRequest, anonymousMessage);
+		},
+		[
+			props,
+			nameValueThread,
+			threadCurrentChannel,
+			dataReferences,
+			dispatch,
+			isPrivate,
+			mentionEveryone,
+			addMemberToThread,
+			currentChannel,
+			setOpenThreadMessageState,
+			updateDraft,
+			setSubPanelActive
+		]
+	);
+
+	const handleSendInternal = useCallback(
+		(checkedRequest: RequestInput, anonymousMessage?: boolean) => {
 			//TODO: break logic send width thread box, channel, topic box, dm
 			if (props.isThread && !nameValueThread?.trim() && !props.isTopic && !threadCurrentChannel) {
 				dispatch(threadsActions.setNameThreadError(threadError.name));
@@ -236,8 +247,199 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 			const store = getStore();
 			const rolesClan = selectAllRolesClan(store.getState());
+
+			if (checkedRequest.entities && checkedRequest.entities.length > 0) {
+				const {
+					mentions: mentionList,
+					hashtags: hashtagList,
+					emojis: emojiList,
+					markdown: markdownList
+				} = processEntitiesDirectly(checkedRequest.entities, checkedRequest.content, rolesClan);
+
+				const usersNotExistingInThread: string[] = [];
+				if (props.membersOfChild && props.membersOfParent) {
+					mentionList.forEach((mention) => {
+						if (mention.user_id) {
+							const existsInChild = props.membersOfChild?.some((member) => member.user?.id === mention.user_id);
+							const existsInParent = props.membersOfParent?.some((member) => member.user?.id === mention.user_id);
+
+							if (!existsInChild && existsInParent) {
+								usersNotExistingInThread.push(mention.user_id);
+							}
+						}
+					});
+				}
+
+				const text = checkedRequest.content;
+				const hasToken = mentionList.length > 0 || hashtagList.length > 0 || emojiList.length > 0;
+
+				const payload: {
+					t: string;
+					hg: IHashtagOnMessage[];
+					ej: IEmojiOnMessage[];
+					mk: IMarkdownOnMessage[];
+					cvtt?: Record<string, string>;
+				} = {
+					t: text,
+					hg: hashtagList as IHashtagOnMessage[],
+					ej: emojiList as IEmojiOnMessage[],
+					mk: markdownList
+				};
+
+				const canvasLinks = extractCanvasIdsFromText(text || '');
+				const canvasTitles = getCanvasTitles(canvasLinks);
+				if (Object.keys(canvasTitles).length > 0) {
+					payload.cvtt = canvasTitles;
+				}
+
+				const addMentionToPayload = addMention(payload, mentionList);
+				const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);
+
+				const encoder = new TextEncoder();
+				const payloadJson = JSON.stringify(removeEmptyOnPayload);
+				const utf8Bytes = encoder.encode(payloadJson);
+
+				if (utf8Bytes.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
+					setIsPasteMulti(true);
+					props.handleConvertToFile(payload.t ?? '');
+					updateDraft({
+						valueTextInput: '',
+						content: '',
+						mentionRaw: [],
+						entities: []
+					});
+					return;
+				}
+
+				const attachmentData = attachmentFiltered?.files || [];
+
+				if (checkIsThread(currentChannel as ChannelsEntity) && usersNotExistingInThread.length > 0 && addMemberToThread) {
+					addMemberToThread(currentChannel!, usersNotExistingInThread);
+				}
+
+				if (checkIsThread(currentChannel as ChannelsEntity) && currentChannel?.active === ThreadStatus.activePublic && joinningToThread) {
+					dispatch(threadsActions.updateActiveCodeThread({ channelId: currentChannel.channel_id ?? '', activeCode: ThreadStatus.joined }));
+					joinningToThread(currentChannel, [userProfile?.user?.id ?? '']);
+				}
+
+				if (isReplyOnChannel) {
+					props.onSend(
+						filterEmptyArrays(payload),
+						mentionList,
+						attachmentData,
+						[dataReferences],
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					);
+					setMentionEveryone(false);
+					dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
+				} else if (isSendMessageOnThreadBox) {
+					props.onSend(
+						{ t: valueThread?.content.t || '' },
+						valueThread?.mentions,
+						valueThread?.attachments,
+						valueThread?.references,
+						{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					);
+				} else if (isReplyOnTopic) {
+					props.onSend(
+						filterEmptyArrays(payload),
+						mentionList,
+						attachmentData,
+						[dataReferencesTopic],
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					);
+					setMentionEveryone(false);
+					dispatch(
+						referencesActions.setDataReferences({
+							channelId: currTopicId ?? '',
+							dataReferences: blankReferenceObj
+						})
+					);
+				} else {
+					props.onSend(
+						filterEmptyArrays(payload),
+						mentionList,
+						attachmentData,
+						undefined,
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					);
+					setMentionEveryone(false);
+				}
+
+				updateDraft({
+					valueTextInput: '',
+					content: '',
+					mentionRaw: [],
+					entities: []
+				});
+
+				dispatch(
+					emojiSuggestionActions.setSuggestionEmojiObjPicked({
+						shortName: '',
+						id: '',
+						isReset: true
+					})
+				);
+
+				dispatch(
+					referencesActions.setAtachmentAfterUpload({
+						channelId: props.currentChannelId ?? '',
+						files: []
+					})
+				);
+
+				setMentionUpdated([]);
+				setDisplayPlaintext('');
+				setDisplayMarkup('');
+				setIsPasteMulti(false);
+				setSubPanelActive(SubPanelName.NONE);
+
+				if (ephemeralTargetUserId) {
+					setEphemeralTargetUserId(null);
+					setEphemeralTargetUserDisplay(null);
+				}
+
+				return;
+			}
+
+			const mentionsFromEntities = (checkedRequest.entities || [])
+				.filter((entity: any) => entity.type === 'MessageEntityMentionName')
+				.map((entity: any) => {
+					const mentionText = checkedRequest.content.substring(entity.offset, entity.offset + entity.length);
+					return {
+						id: entity.userId || '',
+						display: mentionText,
+						plainTextIndex: entity.offset,
+						index: entity.offset,
+						childIndex: 0,
+						length: entity.length
+					};
+				});
+
+			const mentionsToProcess = mentionsFromEntities.length > 0 ? mentionsFromEntities : [];
+
 			const { mentionList, hashtagList, emojiList, usersNotExistingInThread } = processMention(
-				draftRequest?.mentionRaw || [],
+				mentionsToProcess,
 				rolesClan,
 				props.membersOfChild as ChannelMembersEntity[],
 				props.membersOfParent as ChannelMembersEntity[],
@@ -246,16 +448,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 			const hasToken = mentionList.length > 0 || hashtagList.length > 0 || emojiList.length > 0; // no remove trim() if message has token
 
-			const emptyRequest: RequestInput = {
-				content: '',
-				valueTextInput: '',
-				mentionRaw: []
-			};
-			const checkedRequest = draftRequest ? draftRequest : emptyRequest;
-			const { text, entities } = parseHtmlAsFormattedText(hasToken ? checkedRequest.content : checkedRequest.content.trim());
+			const { content: text, entities } = checkedRequest;
 			const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
 
-			const boldMarkdownArr = processBoldEntities(checkedRequest.mentionRaw, mk);
+			const boldMarkdownArr = processBoldEntities(mentionsToProcess, mk);
 
 			const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(mk, mentionList, hashtagList, emojiList, text);
 			const payload: {
@@ -289,7 +485,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				updateDraft({
 					valueTextInput: displayMarkup,
 					content: displayPlaintext,
-					mentionRaw: []
+					mentionRaw: [],
+					entities: []
 				});
 
 				return;
@@ -372,7 +569,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				updateDraft({
 					valueTextInput: '',
 					content: '',
-					mentionRaw: []
+					mentionRaw: [],
+					entities: []
 				});
 				setOpenThreadMessageState(false);
 			} else if (isReplyOnTopic) {
@@ -425,7 +623,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			updateDraft({
 				valueTextInput: '',
 				content: '',
-				mentionRaw: []
+				mentionRaw: [],
+				entities: []
 			});
 
 			dispatch(
@@ -447,9 +646,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setIsPasteMulti(false);
 			setSubPanelActive(SubPanelName.NONE);
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
-			draftRequest,
 			mentionData,
 			nameValueThread,
 			props,
@@ -461,7 +658,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			mentionEveryone,
 			addMemberToThread,
 			currentChannel,
-			props.currentChannelId,
 			setOpenThreadMessageState,
 			updateDraft,
 			setSubPanelActive
@@ -469,11 +665,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	);
 
 	const { onKeyDown } = useKeyboardHandler({
-		editorRef,
-		draftRequest,
+		editorRef: editorElementRef as RefObject<HTMLDivElement>,
 		updateDraft,
-		handleUndoRedoShortcut,
-		handleSend,
 		anonymousMode,
 		isEphemeralMode,
 		setIsEphemeralMode,
@@ -491,6 +684,26 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			return attachmentFiltered.files;
 		}
 	}, [attachmentFiltered?.files]);
+
+	const hashtagData = useMemo(() => {
+		if (isDm) {
+			return allHashtagDm
+				.map((item) => ({
+					id: item?.channel_id ?? '',
+					display: item?.channel_label ?? '',
+					subText: item?.clan_name ?? ''
+				}))
+				.filter((mention) => mention.id || mention.display || mention.subText);
+		} else {
+			return allChannels
+				.map((item) => ({
+					id: item?.channel_id ?? '',
+					display: item?.channel_label ?? '',
+					subText: item?.category_name ?? ''
+				}))
+				.filter((mention) => mention.id || mention.display || mention.subText);
+		}
+	}, [isDm, allHashtagDm, allChannels]);
 
 	const isReplyOnChannel = dataReferences.message_ref_id && !props.isTopic ? true : false;
 	const isReplyOnTopic = dataReferencesTopic.message_ref_id && props.isTopic ? true : false;
@@ -512,47 +725,27 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		}
 	}, [draftRequest?.content]);
 
-	const onChangeMentionInput = (event: { target: { value: string } }, newValue: string, newPlainTextValue: string, mentions: MentionItem[]) => {
+	const onChangeMentionInput = (html: string) => {
+		const { text: newPlainTextValue, entities } = parseHtmlAsFormattedText(html);
+		const newValue = html;
 		const previousValue = prevValueRef.current;
 		const previousPlainText = prevPlainTextRef.current;
-		const newMentions = updateMentionPositions(mentions || [], newValue, newPlainTextValue);
+		const newMentions = entities?.filter((item) => item.type === ApiMessageEntityTypes.MentionName) || [];
 
 		dispatch(threadsActions.setMessageThreadError(''));
-
-		addToUndoHistory();
-
 		const store = getStore();
-
-		if (newPlainTextValue.startsWith('/ephemeral ')) {
-			const command = newPlainTextValue.substring(11).trim();
-			if (command) {
-				const matchedUser = props.listMentions?.find(
-					(user) =>
-						user.display?.toLowerCase().includes(command.toLowerCase()) || user.username?.toLowerCase().includes(command.toLowerCase())
-				);
-				if (matchedUser) {
-					setEphemeralTargetUserId(String(matchedUser.id));
-					setEphemeralTargetUserDisplay(matchedUser.display || matchedUser.username || '');
-					updateDraft({
-						valueTextInput: '',
-						content: '',
-						mentionRaw: []
-					});
-					return;
-				}
-			}
-		}
-
 		if (isEphemeralMode && newMentions.length > 0) {
-			const selectedUser = newMentions[0];
+			const selectedUser = newMentions[0] as any;
 			if (selectedUser) {
-				setEphemeralTargetUserId(String(selectedUser.id));
-				setEphemeralTargetUserDisplay(selectedUser.display || '');
+				const displayName = newPlainTextValue.substring(selectedUser.offset, selectedUser.offset + selectedUser.length);
+				setEphemeralTargetUserId(String(selectedUser?.userId));
+				setEphemeralTargetUserDisplay(displayName);
 				setIsEphemeralMode(false);
 				updateDraft({
 					valueTextInput: '',
 					content: '',
-					mentionRaw: []
+					mentionRaw: [],
+					entities: []
 				});
 				return;
 			}
@@ -561,10 +754,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		updateDraft({
 			valueTextInput: newValue,
 			content: newPlainTextValue,
-			mentionRaw: newMentions || []
+			entities: entities || []
 		});
 
-		if (newMentions?.some((mention) => mention.display === TITLE_MENTION_HERE)) {
+		if (newMentions?.some((mention) => (mention as any).userId === ID_MENTION_HERE)) {
 			setMentionEveryone(true);
 		} else {
 			setMentionEveryone(false);
@@ -572,36 +765,37 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		if (typeof props.onTyping === 'function') {
 			props.onTyping();
 		}
-		const onlyMention = filterMentionsWithAtSign(newMentions);
-		const convertToMarkUpString = formatMentionsToString(onlyMention);
-		const convertToPlainTextString = getDisplayMention(onlyMention);
-		const rolesClan = selectAllRolesClan(store.getState());
+		// const onlyMention = filterMentionsWithAtSign(newMentions);
+		// const convertToMarkUpString = formatMentionsToString(onlyMention);
+		// const convertToPlainTextString = getDisplayMention(onlyMention);
+		// const rolesClan = selectAllRolesClan(store.getState());
 
-		const mentionUpdated = convertMentionOnfile(rolesClan, convertToPlainTextString, onlyMention as MentionItem[]);
-		setDisplayPlaintext(convertToPlainTextString);
-		setDisplayMarkup(convertToMarkUpString);
+		// const mentionUpdated = convertMentionOnfile(rolesClan, convertToPlainTextString, onlyMention as MentionItem[]);
+		// setDisplayPlaintext(convertToPlainTextString);
+		// setDisplayMarkup(convertToMarkUpString);
 		setMentionUpdated(mentionUpdated);
 
 		if (!isPasteMulti) {
-			setDisplayPlaintext(convertToPlainTextString);
-			setDisplayMarkup(convertToMarkUpString);
+			// setDisplayPlaintext(convertToPlainTextString);
+			// setDisplayMarkup(convertToMarkUpString);
 			setMentionUpdated(mentionUpdated);
 		} else {
 			setDisplayPlaintext(newPlainTextValue);
 			setDisplayMarkup(newValue);
-			const { mentionList } = processMention(
-				[...(draftRequest?.mentionRaw || [])],
-				rolesClan,
-				props.membersOfChild as ChannelMembersEntity[],
-				props.membersOfParent as ChannelMembersEntity[],
-				''
-			);
+			// const { mentionList } = processMention(
+			// 	[...(draftRequest?.mentionRaw || [])],
+			// 	rolesClan,
+			// 	props.membersOfChild as ChannelMembersEntity[],
+			// 	props.membersOfParent as ChannelMembersEntity[],
+			// 	''
+			// );
 
-			setMentionUpdated(mentionList);
+			// setMentionUpdated(mentionList);
 			updateDraft({
 				valueTextInput: newValue,
 				content: newPlainTextValue,
-				mentionRaw: newMentions || []
+				mentionRaw: newMentions || [],
+				entities: entities || []
 			});
 			setIsPasteMulti(false);
 		}
@@ -615,24 +809,25 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			updateDraft({
 				valueTextInput: previousValue || '',
 				content: previousPlainText || '',
-				mentionRaw: draftRequest?.mentionRaw || []
+				entities: draftRequest?.entities || []
 			});
 			setPastedContent('');
 		}
-
-		if (newPlainTextValue.endsWith('@')) {
-			setTitleModalMention('Members');
-		} else if (newPlainTextValue.endsWith('#')) {
-			setTitleModalMention('Text channels');
-		} else if (newPlainTextValue.endsWith(':')) {
-			setTitleModalMention('Emoji matching');
-		} else if (newPlainTextValue.endsWith('/')) {
-			setTitleModalMention('Commands');
-		}
 	};
 
+	const { insertEmojiDirectly } = useEmojiPicker({
+		editorRef,
+		emojiPicked,
+		addEmojiState,
+		dispatch,
+		focusEditorIfMatch: (element: HTMLElement | null, targetInputId?: string) => {
+			editorRef.current?.focus();
+		},
+		onDirectEmojiInsert: (emojiId, emojiShortname) => {}
+	});
+
 	const handleSearchUserMention = useCallback(
-		(search: string, callback: any) => {
+		async (search: string): Promise<any[]> => {
 			if (!props.listMentions?.length && props.currentClanId && props.currentClanId !== '0') {
 				dispatch(
 					channelMembersActions.fetchChannelMembers({
@@ -643,46 +838,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				);
 			}
 
-			setValueHightlight(search);
-			callback(
-				searchMentionsHashtag(
-					search,
-					!isEphemeralMode ? props.listMentions || [] : props.listMentions?.filter((item) => item.display !== TITLE_MENTION_HERE) || []
-				)
-			);
+			const filteredMentions = !isEphemeralMode
+				? props.listMentions || []
+				: props.listMentions?.filter((item) => item.display !== TITLE_MENTION_HERE && item.id !== userProfile?.user?.id) || [];
+
+			return searchMentionsHashtag(search, filteredMentions);
 		},
-		[props.listMentions, isEphemeralMode]
-	);
-
-	const handleSearchHashtag = useCallback(
-		(search: string, callback: any) => {
-			setValueHightlight(search);
-			const store = getStore();
-			if (isDm) {
-				const commonChannelDms = selectAllHashtagDm(store.getState());
-				const mentions = commonChannelDms
-					.map((item) => ({
-						id: item?.channel_id ?? '',
-						display: item?.channel_label ?? '',
-						subText: item?.clan_name ?? ''
-					}))
-					.filter((mention) => mention.id || mention.display || mention.subText) as ChannelsMentionProps[];
-
-				callback(searchMentionsHashtag(search, mentions ?? []));
-			} else {
-				const channels = selectAllChannels(store.getState());
-
-				const listChannelsMention = channels
-					.map((item) => ({
-						id: item?.channel_id ?? '',
-						display: item?.channel_label ?? '',
-						subText: item?.category_name ?? ''
-					}))
-					.filter((mention) => mention.id || mention.display || mention.subText) as ChannelsMentionProps[];
-				callback(searchMentionsHashtag(search, listChannelsMention ?? []));
-			}
-		},
-		[isDm]
+		[props.listMentions, isEphemeralMode, props.currentClanId, props.currentChannelId, dispatch]
 	);
 
 	const generateCommandsList = useCallback(
@@ -706,38 +868,37 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	);
 
 	const handleSearchSlashCommands = useCallback(
-		async (search: string, callback: any) => {
-			setValueHightlight(search);
-
+		async (search: string): Promise<any[]> => {
 			const store = getStore();
 			const channelQuickMenuItems = selectQuickMenuByChannelId(store.getState(), props.currentChannelId || '');
 			const hasExistingData = channelQuickMenuItems && channelQuickMenuItems.length > 0;
 
 			if (hasExistingData) {
-				callback(generateCommandsList(search));
+				const commands = generateCommandsList(search);
 				if (props.currentChannelId) {
 					try {
 						await dispatch(
 							quickMenuActions.listQuickMenuAccess({ channelId: props.currentChannelId, menuType: QUICK_MENU_TYPE.FLASH_MESSAGE })
 						);
-						callback(generateCommandsList(search));
+						return generateCommandsList(search);
 					} catch (error) {
 						console.error('Error fetching fresh commands:', error);
+						return commands;
 					}
 				}
+				return commands;
 			} else {
-				callback([{ id: 'loading', display: 'loading', description: 'Loading commands...', isLoading: true }]);
 				try {
 					if (props.currentChannelId) {
 						await dispatch(
 							quickMenuActions.listQuickMenuAccess({ channelId: props.currentChannelId, menuType: QUICK_MENU_TYPE.FLASH_MESSAGE })
 						);
 					}
-					callback(generateCommandsList(search));
+					return generateCommandsList(search);
 				} catch (error) {
 					console.error('Error fetching commands:', error);
 					const builtInCommands = slashCommands.filter((cmd) => cmd.display.toLowerCase().includes(search.toLowerCase()));
-					callback(builtInCommands);
+					return builtInCommands;
 				}
 			}
 		},
@@ -748,12 +909,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		(commandId: string, suggestion?: any) => {
 			if (commandId === 'ephemeral') {
 				setIsEphemeralMode(true);
-				setTitleModalMention('Select user for ephemeral message');
-				updateDraft({
-					valueTextInput: '@',
-					content: '@',
-					mentionRaw: []
-				});
+				editorRef.current?.insertMentionCommand('@', true);
 			} else if (commandId.startsWith('quick_menu_')) {
 				const quickMenuItemId = commandId.replace('quick_menu_', '');
 				const store = getStore();
@@ -763,11 +919,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				const quickMenuItem = channelQuickMenuItems.find((item) => item.id === quickMenuItemId);
 
 				if (quickMenuItem && quickMenuItem.action_msg) {
-					updateDraft({
-						valueTextInput: quickMenuItem.action_msg,
-						content: quickMenuItem.action_msg,
-						mentionRaw: []
-					});
+					editorRef.current?.insertMentionCommand(quickMenuItem.action_msg, true);
 				}
 			}
 		},
@@ -775,33 +927,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	);
 
 	useClickUpToEditMessage({
-		editorRef,
+		editorRef: editorElementRef as RefObject<HTMLDivElement>,
 		currentChannelId: props.currentChannelId,
 		userId: userProfile?.user?.id,
 		draftRequest,
 		dispatch
 	});
-
-	const onPasteMentions = usePasteMentions({
-		draftRequest,
-		updateDraft,
-		editorRef,
-		membersOfChild: props.membersOfChild,
-		membersOfParent: props.membersOfParent
-	});
-
-	const handleShowModalE2ee = useCallback((): void => {
-		const store = getStore();
-		const hasKeyE2ee = selectHasKeyE2ee(store.getState());
-		// This function is just checking if E2EE key exists, no return needed
-	}, []);
-
-	const handleFocus = () => setIsFocused(true);
-	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-		if (!event.target.value) {
-			setIsFocused(false);
-		}
-	};
 
 	return (
 		<div className={`contain-layout relative bg-theme-surface rounded-lg ${props?.isThread && 'border-theme-primary'}`} ref={containerRef}>
@@ -821,167 +952,133 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					{ephemeralTargetUserId ? `Ephemeral message to ${ephemeralTargetUserDisplay}...` : 'Write your thoughts here...'}
 				</span>
 				<MentionsInput
-					data-e2e={generateE2eId(`chat.direct_message.chat_item.text_area`)}
-					onPaste={(event: any) => {
-						const pastedData = event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY);
-						if (pastedData) {
-							onPasteMentions(event);
-							event.preventDefault();
-						} else {
-							event.preventDefault();
-							const pastedText = event.clipboardData.getData('text');
-							setPastedContent(pastedText);
-						}
-					}}
-					onPasteCapture={async (event: any) => {
-						if (event.clipboardData.getData(MEZON_MENTIONS_COPY_KEY)) {
-							event.preventDefault();
-						} else {
-							if (props.handlePaste) {
-								await props.handlePaste(event);
-							}
-						}
-					}}
-					id={inputElementId}
-					inputRef={editorRef}
+					id={CHANNEL_INPUT_ID}
+					ref={editorRef}
 					value={draftRequest?.valueTextInput ?? ''}
 					onChange={onChangeMentionInput}
-					onFocus={handleFocus}
-					onBlur={handleBlur}
-					autoFocus={false}
-					style={{
-						...(appearanceTheme === 'light' ? lightMentionsInputStyle : darkMentionsInputStyle),
-						suggestions: {
-							...(appearanceTheme === 'light' ? lightMentionsInputStyle.suggestions : darkMentionsInputStyle.suggestions),
-							width: `${!closeMenu ? props.mentionWidth : '90vw'}`,
-							left: `${!closeMenu ? '-40px' : '-30px'}`
-						},
-						control: {
-							padding: props.isThread ? '1px 0' : '0'
-						},
-
-						'&multiLine': {
-							highlighter: {
-								padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
-								border: 'none',
-								maxHeight: '350px',
-								overflow: 'auto',
-								scrollbarWidth: 'none'
-							},
-							input: {
-								padding: props.isThread && !threadCurrentChannel ? '8px' : '9px 120px 9px 9px',
-								outline: 'none',
-								maxHeight: '350px',
-								overflow: 'auto',
-								borderRadius: '8px'
-							}
-						}
-					}}
-					className={`mentions min-h-11 cursor-not-allowed text-theme-message rounded-lg`}
-					allowSpaceInQuery={true}
 					onKeyDown={onKeyDown}
-					forceSuggestionsAboveCursor={true}
-					customSuggestionsContainer={(children: React.ReactNode) => {
-						return (
-							<CustomModalMentions
-								isThreadBoxOrTopicBox={props.isThread || props.isTopic}
-								children={children}
-								titleModalMention={titleModalMention}
-							/>
-						);
+					placeholder={ephemeralTargetUserId ? `Ephemeral message to ${ephemeralTargetUserDisplay}...` : 'Write your thoughts here...'}
+					className={`mentions min-h-11 text-theme-message rounded-lg`}
+					style={{
+						padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
+						border: 'none',
+						maxHeight: '350px',
+						overflow: 'auto',
+						borderRadius: '8px'
 					}}
-					onClick={handleShowModalE2ee}
+					onSend={(formattedText: FormattedText) => {
+						handleSendWithFormattedText(formattedText, anonymousMode);
+					}}
+					onHandlePaste={props.handlePaste}
+					enableUndoRedo={true}
+					maxHistorySize={50}
+					hasFilesToSend={attachmentData.length > 0}
+					currentChannelId={props.currentChannelId}
+					data-e2e={generateE2eId(`chat.direct_message.chat_item.text_area`)}
 				>
 					<Mention
-						appendSpaceOnAdd={true}
-						data={handleSearchUserMention}
 						trigger="@"
-						displayTransform={(id: any, display: any) => {
-							return display === TITLE_MENTION_HERE ? `${display}` : `@${display}`;
-						}}
-						renderSuggestion={(suggestion: MentionDataProps) => {
+						title="MEMBERS"
+						data={handleSearchUserMention}
+						renderSuggestion={(suggestion: any, search: string, highlightedDisplay: React.ReactNode, index: number, focused: boolean) => {
 							return (
-								<SuggestItem
-									valueHightLight={valueHighlight}
-									avatarUrl={suggestion.avatarUrl}
-									subText={
-										suggestion.display === TITLE_MENTION_HERE
-											? 'Notify everyone who has permission to see this channel'
-											: (suggestion.username ?? '')
-									}
-									subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
-									showAvatar={suggestion.display !== TITLE_MENTION_HERE}
-									display={suggestion.display}
-									emojiId=""
-									color={suggestion.color}
-								/>
+								<div
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									}`}
+								>
+									<SuggestItem
+										avatarUrl={suggestion.avatarUrl}
+										valueHightLight={search}
+										wrapSuggestItemStyle="justify-between w-full"
+										subText={
+											suggestion.display === TITLE_MENTION_HERE
+												? 'Notify everyone who has permission to see this channel'
+												: (suggestion.username ?? '')
+										}
+										subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
+										showAvatar={suggestion.display !== TITLE_MENTION_HERE}
+										display={suggestion.display}
+										color={suggestion.color}
+									/>
+								</div>
 							);
 						}}
-						style={mentionStyle}
-						className="bg-mention"
+						markup="@[__display__](__id__)"
+						displayPrefix="@"
 					/>
 					<Mention
-						markup="#[__display__](__id__)"
-						appendSpaceOnAdd={true}
-						data={handleSearchHashtag}
 						trigger="#"
-						displayTransform={(id: any, display: any) => {
-							return `#${display}`;
-						}}
-						style={mentionStyle}
-						renderSuggestion={(suggestion: any) =>
-							suggestion?.id && suggestion?.display ? (
+						title="TEXT CHANNELS"
+						displayPrefix="#"
+						data={hashtagData}
+						renderSuggestion={(suggestion, search, _highlightedDisplay, _index, focused) => (
+							<div
+								key={suggestion.id}
+								className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+									focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+								}`}
+							>
 								<SuggestItem
-									valueHightLight={valueHighlight}
+									valueHightLight={search}
 									display={suggestion.display}
 									symbol="#"
-									subText={(suggestion as ChannelsMentionProps).subText}
+									subText={suggestion.subText}
 									channelId={suggestion.id}
-									emojiId=""
 								/>
-							) : null
-						}
-						className="bg-mention"
+							</div>
+						)}
+						markup="#[__display__](__id__)"
 					/>
 					<Mention
+						title="EMOJI MATCHING"
 						trigger=":"
 						markup="::[__display__](__id__)"
 						data={queryEmojis}
-						displayTransform={(id: any, display: any) => {
+						displayTransform={(_id: any, display: any) => {
 							return `${display}`;
 						}}
-						renderSuggestion={(suggestion: any) => {
+						renderSuggestion={(
+							suggestion: any,
+							search: string,
+							_highlightedDisplay: React.ReactNode,
+							_index: number,
+							focused: boolean
+						) => {
 							return (
-								<SuggestItem
-									display={suggestion.display ?? ''}
-									symbol={(suggestion as any).emoji}
-									emojiId={suggestion.id as string}
-								/>
+								<div
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									}`}
+								>
+									<SuggestItem
+										emojiId={suggestion.id}
+										display={suggestion.display}
+										valueHightLight={search}
+										symbol={(suggestion as any).emoji}
+									/>
+								</div>
 							);
 						}}
-						className="dark:bg-[#3B416B] bg-bgLightModeButton"
 						appendSpaceOnAdd={true}
 					/>
 					<Mention
-						trigger="**"
-						markup="**__display__**"
-						data={[]}
-						displayTransform={(id: any, display: any) => {
-							return `${display}`;
-						}}
-						className="color-mention"
-						style={{ WebkitTextStroke: 1, WebkitTextStrokeColor: appearanceTheme === 'dark' ? 'white' : 'black' }}
-					/>
-					<Mention
 						trigger="/"
+						title="COMMANDS"
 						data={handleSearchSlashCommands}
-						displayTransform={(id: any, display: any) => {
+						displayTransform={(_id: any, display: any) => {
 							return `/${display}`;
 						}}
-						onAdd={(id: string, display: string, startPos: number, endPos: number, suggestion: any) => {
-							handleSlashCommandSelect(id, suggestion);
+						onAdd={(id: string, _display: string, _startPos: number, _endPos: number) => {
+							handleSlashCommandSelect(id);
 						}}
-						renderSuggestion={(suggestion: any) => {
+						renderSuggestion={(
+							suggestion: any,
+							search: string,
+							_highlightedDisplay: React.ReactNode,
+							_index: number,
+							focused: boolean
+						) => {
 							if (suggestion.isLoading || suggestion.display === 'loading') {
 								return (
 									<div className="flex items-center gap-2 p-3 text-gray-400">
@@ -1001,12 +1098,14 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 								);
 							}
 							return (
-								<SuggestItem
-									valueHightLight={valueHighlight}
-									display={suggestion.display}
-									symbol="/"
-									subText={suggestion.description}
-								/>
+								<div
+									key={suggestion.id}
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									}`}
+								>
+									<SuggestItem display={suggestion.display} subText={suggestion.description} symbol="/" valueHightLight={search} />
+								</div>
 							);
 						}}
 						appendSpaceOnAdd={false}
@@ -1020,6 +1119,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				isRecording={!!props.isRecording}
 				mode={props.mode || ChannelStreamMode.STREAM_MODE_CHANNEL}
 				isTopic={props.isTopic || false}
+				onEmojiSelect={insertEmojiDirectly}
 			/>
 			{draftRequest?.content && draftRequest.content.length > MIN_THRESHOLD_CHARS && (
 				<div className="w-16 text-red-300 bottom-0 right-0 absolute">{MIN_THRESHOLD_CHARS - draftRequest.content.length}</div>

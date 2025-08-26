@@ -55,9 +55,16 @@ export function MemberProfile({
 	const currentChannel = useContext(threadDetailContext);
 	const name = useMemo(() => {
 		if (userInfo) {
-			return nickName || userInfo?.username || userInfo.clan_nick || userInfo?.user?.username;
+			return (
+				(!isDMThread && nickName) ||
+				(!isDMThread && userInfo?.clan_nick) ||
+				userInfo?.display_name ||
+				userInfo?.user?.display_name ||
+				userInfo?.username ||
+				userInfo?.user?.username
+			);
 		}
-	}, [nickName, userInfo]);
+	}, [isDMThread, nickName, userInfo]);
 	const userColorRolesClan = useColorsRoleById(userInfo?.id || '')?.highestPermissionRoleColor;
 
 	const colorUserName = useMemo(() => {
@@ -86,32 +93,27 @@ export function MemberProfile({
 			<View style={{ ...styles.nameContainer, borderBottomWidth: 1 }}>
 				{!isHideUserName && (
 					<View style={styles.nameItem}>
-						{!!userInfo?.display_name?.length && userInfo?.display_name !== name && (
-							<Text style={{ color: themeValue.text }}>
-								{userInfo?.display_name?.length > numCharCollapse
-									? `${userInfo?.display_name?.substring(0, numCharCollapse)}...`
-									: userInfo?.display_name}
-							</Text>
-						)}
 						<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_4 }}>
 							<Text style={{ color: colorUserName }}>
 								{userInfo?.username?.length > numCharCollapse ? `${name.substring(0, numCharCollapse)}...` : name}
 							</Text>
-							{![ChannelType.CHANNEL_TYPE_DM].includes(currentChannel?.type) && (isDMThread ? creatorDMId : creatorClanId) === userInfo?.id && (
-								<MezonIconCDN icon={IconCDN.ownerIcon} color={themeValue.borderWarning} width={16} height={16} />
-							)}
+							{![ChannelType.CHANNEL_TYPE_DM].includes(currentChannel?.type) &&
+								(isDMThread ? creatorDMId : creatorClanId) === userInfo?.id && (
+									<MezonIconCDN icon={IconCDN.ownerIcon} color={themeValue.borderWarning} width={16} height={16} />
+								)}
 						</View>
 						{!!userVoiceStatus && (
 							<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
 								<MezonIconCDN icon={IconCDN.channelVoice} color={baseColor.green} width={12} height={12} />
-								<Text style={{ color: themeValue.text, fontSize: 12, fontWeight: '500' }}>In voice</Text>
+								<Text style={{ color: themeValue.textDisabled, fontSize: size.s_12, fontWeight: '500' }}>In voice</Text>
 							</View>
+						)}
+						{isDMThread && currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP && (
+							<AddedByUser groupId={currentChannel?.id} userId={user?.id} />
 						)}
 					</View>
 				)}
-
 			</View>
-			{isDMThread && currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP && <AddedByUser groupId={currentChannel?.id} userId={user?.id} />}
 		</View>
 	);
 }

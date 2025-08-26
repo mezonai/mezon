@@ -49,9 +49,9 @@ function DirectUnread({ directMessage, checkMoveOut }: DirectMessUnreadProp) {
 					srcImgProxy={
 						direct.type === ChannelType.CHANNEL_TYPE_DM
 							? createImgproxyUrl(direct?.channel_avatar?.at(0) ?? '', { width: 300, height: 300, resizeType: 'fill-down' })
-							: 'assets/images/avatar-group.png'
+							: createImgproxyUrl(direct?.topic ?? 'assets/images/avatar-group.png', { width: 300, height: 300, resizeType: 'fill-down' })
 					}
-					src={direct.type === ChannelType.CHANNEL_TYPE_DM ? direct?.channel_avatar?.at(0) : 'assets/images/avatar-group.png'}
+					src={direct.type === ChannelType.CHANNEL_TYPE_DM ? direct?.channel_avatar?.at(0) : direct?.topic ?? 'assets/images/avatar-group.png'}
 				/>
 				{directMessage?.count_mess_unread && (
 					<div

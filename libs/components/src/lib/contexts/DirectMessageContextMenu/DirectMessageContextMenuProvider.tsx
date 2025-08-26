@@ -1,20 +1,27 @@
+
 import { useAppParams } from '@mezon/core';
 import {
 	ChannelMembersEntity,
 	EStateFriend,
 	RootState,
+	directActions,
 	selectAllAccount,
 	selectFriendById,
 	selectHasKeyE2ee,
 	selectNotifiSettingsEntitiesById,
+	selectUpdateDmGroupError,
+	selectUpdateDmGroupLoading,
+	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { EMuteState, FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { FC, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Menu, Submenu, useContextMenu } from 'react-contexify';
 import { useSelector } from 'react-redux';
+import ModalEditGroup from '../../components/ModalEditGroup';
 import ItemPanelMember from '../../components/PanelMember/ItemPanelMember';
+import { useEditGroupModal } from '../../hooks/useEditGroupModal';
 import { MemberMenuItem } from '../MemberContextMenu';
 import { useModals } from '../MemberContextMenu/useModals';
 import {
@@ -31,6 +38,7 @@ import { useMenuStyles } from './useMenuStyles';
 import { useNotificationSettings } from './useNotificationSettings';
 import { useProfileModal } from './useProfileModal';
 
+
 const DirectMessageContextMenuContext = createContext<DirectMessageContextMenuContextType | undefined>(undefined);
 
 export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps> = ({
@@ -40,6 +48,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 }) => {
 	const [currentUser, setCurrentUser] = useState<ChannelMembersEntity | any>(null);
 	const [currentHandlers, setCurrentHandlers] = useState<DirectMessageContextMenuHandlers | null>(null);
+	const dispatch = useAppDispatch();
 
 	const userProfile = useSelector(selectAllAccount);
 	const hasKeyE2ee = useAppSelector(selectHasKeyE2ee);
@@ -60,6 +69,20 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const { openProfileItem } = useModals({
 		currentUser
 	});
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentUser?.channel_id || '')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentUser?.channel_id || '')(state));
+
+	const editGroupModal = useEditGroupModal({
+		channelId: currentUser?.channelId || currentUser?.channel_id,
+		currentGroupName: currentUser?.channel_label || 'Group',
+		currentAvatar: currentUser?.topic || ''
+	});
+
+	useEffect(() => {
+		if (currentUser?.channel_id) {
+			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		}
+	}, [currentUser?.channel_id, dispatch]);
 	const showMenu = useCallback(
 		(event: React.MouseEvent) => {
 			show({ event });
@@ -107,7 +130,8 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		handleRemoveMemberFromGroup,
 		handleLeaveDmGroup,
 		blockFriend,
-		unBlockFriend
+		unBlockFriend,
+		openEditGroupModal: editGroupModal.openEditModal
 	});
 
 	const { showContextMenu } = useContextMenuHandlers({
@@ -249,7 +273,9 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 										/>
 									</Submenu>
 								))}
-
+							{contextMenuId !== DMCT_GROUP_CHAT_ID && isDmGroup && (
+								<ItemPanelMember children={'Edit Group'} onClick={currentHandlers.handleEditGroup} />
+							)}
 							{contextMenuId === DMCT_GROUP_CHAT_ID && isOwnerClanOrGroup && (
 								<ItemPanelMember children="Remove From Group" onClick={currentHandlers.handleRemoveFromGroup} danger />
 							)}
@@ -261,6 +287,19 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 					)}
 				</Menu>
 			)}
+
+				<ModalEditGroup
+				isOpen={editGroupModal.isEditModalOpen}
+				onClose={editGroupModal.closeEditModal}
+				onSave={editGroupModal.handleSave}
+				onImageUpload={editGroupModal.handleImageUpload}
+				groupName={editGroupModal.groupName}
+				onGroupNameChange={editGroupModal.setGroupName}
+				imagePreview={editGroupModal.imagePreview}
+					className="z-[200]"
+				isLoading={updateDmGroupLoading}
+				error={updateDmGroupError}
+				/>
 		</DirectMessageContextMenuContext.Provider>
 	);
 };
@@ -274,3 +313,4 @@ export const useDirectMessageContextMenu = () => {
 };
 
 export * from './types';
+

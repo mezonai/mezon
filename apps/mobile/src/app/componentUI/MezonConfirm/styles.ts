@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTabletLandscape: boolean) =>
@@ -48,7 +48,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			backgroundColor: colors.primary
 		},
 		btnDefault: {
-			backgroundColor: Colors.bgViolet
+			backgroundColor: colors.bgViolet
 		},
 		btnDanger: {
 			backgroundColor: baseColor.buzzRed

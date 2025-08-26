@@ -24,7 +24,7 @@ export const style = (colors: Attributes) =>
 		menuFooter: {
 			position: 'absolute',
 			borderRadius: size.s_80,
-			backgroundColor: 'rgba(48,48,48,0.55)',
+			backgroundColor: colors.secondary,
 			paddingHorizontal: size.s_10,
 			paddingVertical: size.s_4,
 			alignItems: 'center',
@@ -37,7 +37,9 @@ export const style = (colors: Attributes) =>
 			fontWeight: '500'
 		},
 		buttonCircle: {
-			backgroundColor: colors.border,
+			backgroundColor: colors.secondary,
+			borderColor: colors.border,
+			borderWidth: 1,
 			padding: size.s_8,
 			alignItems: 'center',
 			justifyContent: 'center',
@@ -69,7 +71,7 @@ export const style = (colors: Attributes) =>
 			position: 'relative',
 			width: size.s_50,
 			height: size.s_50,
-			backgroundColor: colors.border,
+			backgroundColor: colors.secondaryWeight,
 			borderWidth: 0.5,
 			borderColor: colors.textDisabled,
 			borderRadius: size.s_50
@@ -106,7 +108,7 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: colors.border,
+			backgroundColor: colors.secondary,
 			gap: size.s_10,
 			borderRadius: size.s_10,
 			width: '48%',

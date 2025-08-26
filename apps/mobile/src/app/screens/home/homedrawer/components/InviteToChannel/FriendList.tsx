@@ -1,5 +1,6 @@
 import { useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	DirectEntity,
 	FriendsEntity,
@@ -17,7 +18,7 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiSystemMessage } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import { Chase } from 'react-native-animated-spinkit';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -27,6 +28,7 @@ import { SeparatorWithLine } from '../../../../../components/Common';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { normalizeString } from '../../../../../utils/helpers';
 import { FriendListItem, Receiver } from '../../Reusables';
+import { QRModal } from './QRModal';
 import { style } from './styles';
 
 interface IInviteToChannelProp {
@@ -106,10 +108,17 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 			type: 'success',
 			props: {
 				text2: t('copyLink'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={Colors.textLink} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.linkIcon} color={baseColor.link} />
 			}
 		});
 	}, [currentInviteLink, t]);
+
+	const handleShowQRModal = useCallback(() => {
+		const data = {
+			children: <QRModal inviteLink={currentInviteLink} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	}, [currentInviteLink]);
 
 	const directMessageWithUser = async (user: Receiver) => {
 		const response = await createDirectMessageWithUser(user?.user?.id, user?.user?.display_name, user?.user?.username, user?.user?.avatar_url);
@@ -189,23 +198,13 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 				onPress: () => (!currentInviteLink ? null : addInviteLinkToClipboard())
 			},
 			{
-				title: t('iconTitle.youtube'),
-				icon: <MezonIconCDN icon={IconCDN.brandYoutubeIcon} color={themeValue.text} />,
-				onPress: () => addInviteLinkToClipboard()
-			},
-			{
-				title: t('iconTitle.facebook'),
-				icon: <MezonIconCDN icon={IconCDN.brandFacebookIcon} color={themeValue.text} />,
-				onPress: () => addInviteLinkToClipboard()
-			},
-			{
-				title: t('iconTitle.twitter'),
-				icon: <MezonIconCDN icon={IconCDN.brandTwitterIcon} color={themeValue.text} width={18} height={18} />,
-				onPress: () => addInviteLinkToClipboard()
+				title: t('iconTitle.qrcode'),
+				icon: <MezonIconCDN icon={IconCDN.myQRcodeIcon} color={themeValue.text} />,
+				onPress: handleShowQRModal
 			}
 		];
 		return iconList;
-	}, [t, currentInviteLink, themeValue.text, addInviteLinkToClipboard]);
+	}, [currentInviteLink, addInviteLinkToClipboard, handleShowQRModal, t, themeValue.text]);
 
 	const getInviteToChannelIcon = ({ icon, title, onPress }: IInviteToChannelIconProp) => {
 		return (

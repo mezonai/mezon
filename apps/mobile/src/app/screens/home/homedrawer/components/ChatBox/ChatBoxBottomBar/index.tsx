@@ -10,7 +10,7 @@ import {
 	mentionRegexSplit,
 	save
 } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	RootState,
 	emojiSuggestionActions,
@@ -47,7 +47,6 @@ import { resetCachedChatbox, resetCachedMessageActionNeedToResolve } from '../..
 import { EMessageActionType } from '../../../enums';
 import { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';
-import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 import EmojiSwitcher from '../../EmojiPicker/EmojiSwitcher';
 import { RenderTextContent } from '../../RenderTextContent';
 import { ChatBoxListener } from '../ChatBoxListener';
@@ -69,7 +68,7 @@ export const triggersConfig: TriggersConfig<'mention' | 'hashtag' | 'emoji' | 's
 		isInsertSpaceAfterMention: true,
 		textStyle: {
 			fontWeight: 'bold',
-			color: Colors.white
+			color: 'white'
 		}
 	},
 	emoji: {
@@ -123,7 +122,7 @@ export const ChatBoxBottomBar = memo(
 		const [mentionTextValue, setMentionTextValue] = useState('');
 		const [listMentions, setListMentions] = useState<MentionDataProps[]>([]);
 		const [isFocus, setIsFocus] = useState<boolean>(false);
-		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<IModeKeyboardPicker>('text');
+		const [modeKeyBoardBottomSheet, setModeKeyBoardBottomSheet] = useState<string>('text');
 		const [textChange, setTextChange] = useState<string>('');
 		const [isEphemeralMode, setIsEphemeralMode] = useState<boolean>(false);
 		const [ephemeralTargetUserInfo, setEphemeralTargetUserInfo] = useState<IEphemeralTargetUserInfo>({
@@ -275,7 +274,7 @@ export const ChatBoxBottomBar = memo(
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
 		}, [dispatch, onDeleteMessageActionNeedToResolve, channelId]);
 
-		const handleKeyboardBottomSheetMode = useCallback((mode: IModeKeyboardPicker) => {
+		const handleKeyboardBottomSheetMode = useCallback((mode: string) => {
 			setModeKeyBoardBottomSheet(mode);
 			if (mode === 'emoji' || mode === 'attachment') {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
@@ -314,7 +313,8 @@ export const ChatBoxBottomBar = memo(
 
 			if (!text) return;
 
-			const convertedHashtag = convertMentionsToText(text);
+			const rawConvertedHashtag = convertMentionsToText(text);
+			const convertedHashtag = convertMentionsToText(text?.replace?.(/\*\*([\s\S]*?)\*\*/g, '$1'));
 			const words = convertedHashtag?.split?.(mentionRegexSplit);
 
 			const mentionList: Array<{ user_id: string; s: number; e: number }> = [];
@@ -372,7 +372,7 @@ export const ChatBoxBottomBar = memo(
 			hashtagsOnMessage.current = hashtagList;
 			mentionsOnMessage.current = mentionList;
 			setMentionTextValue(text);
-			textValueInputRef.current = convertedHashtag;
+			textValueInputRef.current = rawConvertedHashtag;
 			chatMessageLeftAreaRef?.current?.setAttachControlVisibility(false);
 		};
 
@@ -524,7 +524,7 @@ export const ChatBoxBottomBar = memo(
 
 				if (imageUri?.startsWith('data:image/')) {
 					const base64Data = imageUri.split(',')?.[1];
-					if (base64Data?.length > 0) {
+					if (base64Data?.length > 10) {
 						setImageBase64(imageUri);
 					}
 				}

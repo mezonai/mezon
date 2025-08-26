@@ -2,8 +2,9 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { selectLogoCustom } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { NestableScrollContainer } from 'react-native-draggable-flatlist';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
@@ -16,7 +17,7 @@ import BadgeFriendRequest from './BadgeFriendRequest';
 import { style } from './styles';
 
 const ServerList = React.memo(() => {
-	const { themeValue, themeBasic } = useTheme();
+	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const logoCustom = useSelector(selectLogoCustom);
@@ -26,7 +27,12 @@ const ServerList = React.memo(() => {
 	};
 
 	return (
-		<View style={styles.wrapperServerList}>
+		<LinearGradient
+			start={{ x: 1, y: 0 }}
+			end={{ x: 0, y: 0 }}
+			colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+			style={styles.wrapperServerList}
+		>
 			<TouchableOpacity style={styles.wrapperLogo} onPress={() => navigateToDM()}>
 				{logoCustom ? (
 					<MezonAvatar width={size.s_42} height={size.s_42} avatarUrl={logoCustom} username="" />
@@ -40,7 +46,7 @@ const ServerList = React.memo(() => {
 				<UnreadDMBadgeList />
 				<ListClanPopup />
 			</NestableScrollContainer>
-		</View>
+		</LinearGradient>
 	);
 });
 

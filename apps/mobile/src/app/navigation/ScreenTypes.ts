@@ -20,6 +20,7 @@ export const APP_SCREEN = {
 	CHANNEL_APP: 'CHANNEL_APP',
 	INVITE_CLAN: 'INVITE_CLAN',
 	WALLET: 'WALLET',
+	PROFILE_DETAIL: 'PROFILE_DETAIL',
 
 	SERVERS: {
 		STACK: 'ROUTES.SERVERS.STACK',
@@ -323,6 +324,7 @@ export type AppStackParamList = {
 	[APP_SCREEN.DRAWER_BAR]: undefined;
 	[APP_SCREEN.HOME]: undefined;
 	[APP_SCREEN.HOME_DEFAULT]: undefined;
+	[APP_SCREEN.PROFILE_DETAIL]: { username?: string; data?: string };
 	[APP_SCREEN.SERVERS.STACK]: NavigatorScreenParams<ServerStackParamList>;
 	[APP_SCREEN.NOTIFICATION.STACK]: NavigatorScreenParams<NotificationStackParamList>;
 	[APP_SCREEN.MESSAGES.STACK]: NavigatorScreenParams<MessagesStackParamList>;

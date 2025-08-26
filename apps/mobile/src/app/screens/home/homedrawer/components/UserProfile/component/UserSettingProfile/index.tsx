@@ -1,6 +1,6 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelMembersEntity,
 	channelUsersActions,
@@ -177,7 +177,7 @@ const UserSettingProfile = ({
 						type: 'success',
 						props: {
 							text2: t('permissions.toast.kickMemberSuccess'),
-							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
 						}
 					});
 				} else {
@@ -189,7 +189,7 @@ const UserSettingProfile = ({
 					type: 'error',
 					props: {
 						text2: t('permissions.toast.kickMemberFailed'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} />
 					}
 				});
 			}
@@ -213,7 +213,7 @@ const UserSettingProfile = ({
 					type: 'success',
 					props: {
 						text2: t('permissions.toast.removeMemberThreadSuccess'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
 					}
 				});
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
@@ -222,7 +222,7 @@ const UserSettingProfile = ({
 					type: 'error',
 					props: {
 						text2: t('permissions.toast.removeMemberThreadFailed'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} />
 					}
 				});
 			}
@@ -249,7 +249,6 @@ const UserSettingProfile = ({
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	};
 
-	
 	function handleUserModalClose() {
 		setVisibleManageUserModal(false);
 		onShowManagementUserModalChange?.(false);

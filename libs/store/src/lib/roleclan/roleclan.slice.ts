@@ -728,8 +728,10 @@ const handleMapUpdateRole = (
 	const existingUsers = role.role_user_list?.role_users || [];
 
 	const userUpdate = existingUsers.filter((u) => (u.id ? !removeUserSet.has(u.id) : false));
+	const existingUserIdSet = new Set(userUpdate.map((u) => u.id).filter((id): id is string => Boolean(id)));
 	for (const id of add_user_ids) {
-		if (removeUserSet.has(id)) continue; // không thêm nếu đã nằm trong danh sách remove
+		if (removeUserSet.has(id)) continue;
+		if (existingUserIdSet.has(id)) continue;
 		const u = users[id];
 		if (!u) continue;
 
@@ -742,6 +744,7 @@ const handleMapUpdateRole = (
 			location: u.user?.location,
 			online: u.user?.online
 		});
+		existingUserIdSet.add(id);
 	}
 
 	return {

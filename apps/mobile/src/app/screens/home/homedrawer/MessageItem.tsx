@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	MessagesEntity,
@@ -226,7 +226,7 @@ const MessageItem = React.memo(
 		}, []);
 
 		const handleLongPressMessage = useCallback(() => {
-			if (preventAction) return;
+			if (preventAction || isMessageSystem) return;
 			dispatch(setSelectedMessage(message));
 			const data = {
 				snapPoints: ['55%', '85%'],
@@ -261,9 +261,9 @@ const MessageItem = React.memo(
 		return (
 			<Swipeable
 				ref={swipeRef}
-				enabled={!preventAction}
+				enabled={!preventAction && !isMessageSystem}
 				dragOffsetFromLeftEdge={500}
-				dragOffsetFromRightEdge={12}
+				dragOffsetFromRightEdge={10}
 				renderRightActions={renderRightActions}
 				onSwipeableWillOpen={handleSwipeOpen}
 			>
@@ -414,7 +414,7 @@ const MessageItem = React.memo(
 								{message?.content?.isCard && message?.code !== TypeMessage.Topic && <ButtonGotoTopic message={message} />}
 								{message?.code === TypeMessage.Topic && message?.content?.isCard && <MessageTopic message={message} />}
 							</View>
-							{message.isError && <Text style={{ color: Colors.textRed }}>{t('unableSendMessage')}</Text>}
+							{message.isError && <Text style={{ color: baseColor.redStrong }}>{t('unableSendMessage')}</Text>}
 							{!preventAction && !!message?.reactions?.length ? (
 								<MessageAction
 									userId={userId}

@@ -26,10 +26,14 @@ export interface RuleType extends ApiOnboardingContent {
 
 export interface OnboardingState extends EntityState<ApiOnboardingSteps, string> {
 	onboardingPreviewMode: boolean;
-	missionDone: number;
-	missionSum: number;
-	guideFinished: boolean;
-	listOnboarding: Record<string, OnboardingClanType>;
+	listOnboarding: Record<
+		string,
+		OnboardingClanType & {
+			sumMission?: number;
+			doneMission?: number;
+			allDone?: boolean;
+		}
+	>;
 	formOnboarding: {
 		greeting: ApiOnboardingContent | null;
 		rules: RuleType[];
@@ -315,14 +319,13 @@ export const onboardingSlice = createSlice({
 			state.onboardingPreviewMode = false;
 		},
 		doneMission: (state, action: PayloadAction<{ clan_id: string }>) => {
+			const missionDone = state.listOnboarding[action.payload.clan_id].doneMission || 0;
+			const sumMission = state.listOnboarding[action.payload.clan_id].sumMission || 0;
 			if (
-				state.missionDone < state.missionSum &&
+				missionDone < sumMission &&
 				onboardingUserAdapter.getSelectors().selectById(state, action.payload.clan_id)?.onboarding_step !== DONE_ONBOARDING_STATUS
 			) {
-				state.missionDone = state.missionDone + 1;
-				if (state.missionDone + 1 === state.missionSum) {
-					state.guideFinished = true;
-				}
+				state.listOnboarding[action.payload.clan_id].doneMission = (state.listOnboarding[action.payload.clan_id].doneMission || 0) + 1;
 			}
 		},
 		addGreeting: (state, action: PayloadAction<ApiOnboardingContent>) => {
@@ -451,7 +454,7 @@ export const onboardingSlice = createSlice({
 					});
 
 					state.listOnboarding[clan_id] = onboardingClan;
-					state.missionSum = onboardingClan.mission.length;
+					state.listOnboarding[clan_id].sumMission = onboardingClan.mission.length;
 
 					if (!state.onboardingCache[clan_id]) {
 						state.onboardingCache[clan_id] = getInitialOnboardingState();
@@ -538,7 +541,7 @@ export const onboardingSlice = createSlice({
 			})
 			.addCase(fetchProcessingOnboarding.fulfilled, (state, action) => {
 				if (action.payload && !action.payload.fromCache) {
-					onboardingUserAdapter.setAll(state, action.payload.steps);
+					onboardingUserAdapter.setMany(state, action.payload.steps);
 					state.onboardingStepCache = {
 						lastFetched: Date.now(),
 						expiresAt: Date.now() + 1000 * 60 * 60,
@@ -604,10 +607,13 @@ export const getOnboardingState = (rootState: { [ONBOARDING_FEATURE_KEY]: Onboar
 
 export const selectOnboardingMode = createSelector(getOnboardingState, (state) => state.onboardingPreviewMode);
 
-export const selectMissionDone = createSelector(getOnboardingState, (state) => state.missionDone);
+export const selectMissionDone = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
+	return state.listOnboarding[clan_id]?.doneMission || 0;
+});
 
-export const selectMissionSum = createSelector(getOnboardingState, (state) => state.missionSum);
-export const selectFinishGuide = createSelector(getOnboardingState, (state) => state.guideFinished);
+export const selectMissionSum = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
+	return state.listOnboarding[clan_id]?.sumMission || 0;
+});
 
 export const selectFormOnboarding = createSelector(getOnboardingState, (state) => state.formOnboarding);
 
@@ -617,12 +623,15 @@ export const selectOnboardingByClan = createSelector([getOnboardingState, (state
 			greeting: null,
 			mission: [],
 			question: [],
-			rule: []
+			rule: [],
+			sumMission: 0
 		}
 	);
 });
 
-export const selectProcessingByClan = (clanId: string) => createSelector(getOnboardingState, (state) => selectById(state, clanId));
+export const selectProcessingByClan = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
+	return selectById(state, clan_id);
+});
 export const selectCurrentMission = createSelector(
 	[getOnboardingState, (state, clan_id: string) => clan_id, selectMissionDone],
 	(state, clan_id, missionIndex) => {

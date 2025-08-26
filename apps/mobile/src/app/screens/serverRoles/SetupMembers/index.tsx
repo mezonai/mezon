@@ -1,22 +1,25 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { usePermissionChecker, useRoles } from '@mezon/core';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllRolesClan, selectAllUserClans } from '@mezon/store-mobile';
 import { EPermission, UsersClanEntity } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Platform, Pressable, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, Pressable, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../components/Common';
+import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
 import { AddMemberBS } from './components/AddMemberBs';
 import { MemberItem } from './components/MemberItem';
+import { style } from './styles';
 
 type SetupMembersScreen = typeof APP_SCREEN.MENU_CLAN.SETUP_ROLE_MEMBERS;
 export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMembersScreen>) => {
@@ -27,6 +30,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 	const [selectedMemberIdList, setSelectedMemberIdList] = useState<string[]>([]);
 	const [searchMemberText, setSearchMemberText] = useState('');
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const { updateRole } = useRoles();
 	const clanRole = useMemo(() => {
 		return rolesClan?.find((r) => r?.id === roleId);
@@ -54,52 +58,6 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 		return hasAdminPermission || isClanOwner || hasManageClanPermission;
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
-	useEffect(() => {
-		navigation.setOptions({
-			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
-			headerTitle: !isEditRoleMode
-				? t('setupMember.title')
-				: () => {
-						return (
-							<View>
-								<Text
-									style={{
-										textAlign: 'center',
-										fontWeight: 'bold',
-										fontSize: verticalScale(18),
-										color: themeValue.white
-									}}
-								>
-									{clanRole?.title}
-								</Text>
-								<Text
-									style={{
-										textAlign: 'center',
-										color: themeValue.text
-									}}
-								>
-									{t('roleDetail.role')}
-								</Text>
-							</View>
-						);
-					},
-			headerLeft: () => {
-				if (isEditRoleMode) {
-					return (
-						<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
-							<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={20} width={20} color={themeValue.textStrong} />
-						</Pressable>
-					);
-				}
-				return (
-					<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-						<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
-					</Pressable>
-				);
-			}
-		});
-	}, [clanRole?.title, isEditRoleMode, navigation, t, themeValue?.text, themeValue.textStrong, themeValue?.white]);
-
 	const setInitialSelectedMember = useCallback(() => {
 		const assignedMemberIds = clanRole?.role_user_list?.role_users?.map((user) => user?.id);
 		const membersInRole = usersClan?.filter((user) => assignedMemberIds?.includes(user?.user?.id));
@@ -126,24 +84,14 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 	};
 
 	const updateMemberToRole = async () => {
-		const selectedPermissions = newRole?.permission_list?.permissions.filter((it) => it?.active).map((it) => it?.id);
-		const response = await updateRole(
-			newRole?.clan_id,
-			newRole?.id,
-			newRole?.title,
-			newRole?.color || '',
-			selectedMemberIdList,
-			selectedPermissions,
-			[],
-			[]
-		);
+		const response = await updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', selectedMemberIdList, [], [], []);
 		if (response) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
 			Toast.show({
 				type: 'success',
 				props: {
 					text2: t('setupMember.addedMember'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -151,7 +99,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}
@@ -175,37 +123,45 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 		bottomSheetRef.current?.dismiss();
 	}, []);
 
+	const handleClose = useCallback(() => {
+		if (isEditRoleMode) {
+			navigation.goBack();
+		} else {
+			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
+		}
+	}, [isEditRoleMode, navigation]);
+
 	return (
-		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14 }}>
-				<View style={{ flex: 1, paddingTop: size.s_10 }}>
+		<KeyboardAvoidingView
+			behavior={'padding'}
+			keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
+			style={styles.flex}
+		>
+			<StatusBarHeight />
+			<View style={styles.header}>
+				<Pressable style={styles.backButton} onPress={handleClose}>
+					<MezonIconCDN
+						icon={isEditRoleMode ? IconCDN.arrowLargeLeftIcon : IconCDN.closeSmallBold}
+						height={size.s_20}
+						width={size.s_20}
+						color={themeValue.textStrong}
+					/>
+				</Pressable>
+				{!isEditRoleMode ? (
+					<Text style={styles.title}>{t('setupMember.title')}</Text>
+				) : (
+					<View style={styles.roleName}>
+						<Text style={styles.name}>{clanRole?.title}</Text>
+						<Text style={styles.emptyText}>{t('roleDetail.role')}</Text>
+					</View>
+				)}
+			</View>
+			<View style={styles.container}>
+				<View style={styles.addMember}>
 					{!isEditRoleMode && (
-						<View
-							style={{
-								paddingVertical: size.s_10,
-								borderBottomWidth: 1,
-								borderBottomColor: themeValue.borderDim,
-								marginBottom: size.s_20
-							}}
-						>
-							<Text
-								style={{
-									color: themeValue.white,
-									textAlign: 'center',
-									fontWeight: 'bold',
-									fontSize: verticalScale(24)
-								}}
-							>
-								{t('setupMember.addMember')}
-							</Text>
-							<Text
-								style={{
-									color: themeValue.text,
-									textAlign: 'center'
-								}}
-							>
-								{t('setupMember.description')}
-							</Text>
+						<View style={styles.addMemberTitle}>
+							<Text style={styles.addMemberText}>{t('setupMember.addMember')}</Text>
+							<Text style={styles.addMemberDescription}>{t('setupMember.description')}</Text>
 						</View>
 					)}
 
@@ -213,33 +169,18 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 
 					{isEditRoleMode && (
 						<TouchableOpacity onPress={openAddMemberBottomSheet}>
-							<View
-								style={{
-									flexDirection: 'row',
-									backgroundColor: themeValue.secondary,
-									padding: size.s_10,
-									borderRadius: size.s_6,
-									gap: size.s_10,
-									justifyContent: 'center'
-								}}
-							>
+							<View style={styles.addMemberButton}>
 								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} />
-								<View style={{ flex: 1 }}>
-									<Text
-										style={{
-											color: themeValue.text
-										}}
-									>
-										{t('setupMember.addMember')}
-									</Text>
+								<View style={styles.flex}>
+									<Text style={styles.text}>{t('setupMember.addMember')}</Text>
 								</View>
 								<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} />
 							</View>
 						</TouchableOpacity>
 					)}
-					<View style={{ marginVertical: size.s_10, flex: 1 }}>
+					<View style={styles.memberList}>
 						{filteredMemberList.length ? (
-							<View style={{ borderRadius: size.s_10, overflow: 'hidden' }}>
+							<View style={styles.listWrapper}>
 								<FlatList
 									data={filteredMemberList}
 									keyExtractor={(item) => item?.id}
@@ -263,44 +204,23 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 							</View>
 						) : (
 							<View>
-								<Text
-									style={{
-										color: themeValue.text,
-										textAlign: 'center'
-									}}
-								>
-									{t('setupMember.noMembersFound')}
-								</Text>
+								<Text style={styles.emptyText}>{t('setupMember.noMembersFound')}</Text>
 							</View>
 						)}
 					</View>
 				</View>
 
 				{!isEditRoleMode ? (
-					<View style={{ marginBottom: size.s_16, gap: size.s_10 }}>
+					<View style={styles.bottomButton}>
 						<TouchableOpacity onPress={() => updateMemberToRole()}>
-							<View style={{ backgroundColor: Colors.bgViolet, paddingVertical: size.s_14, borderRadius: size.s_8 }}>
-								<Text
-									style={{
-										color: 'white',
-										textAlign: 'center'
-									}}
-								>
-									{t('setupMember.finish')}
-								</Text>
+							<View style={styles.finishButton}>
+								<Text style={styles.buttonText}>{t('setupMember.finish')}</Text>
 							</View>
 						</TouchableOpacity>
 
 						<TouchableOpacity onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-							<View style={{ paddingVertical: size.s_14, borderRadius: size.s_8 }}>
-								<Text
-									style={{
-										color: themeValue.text,
-										textAlign: 'center'
-									}}
-								>
-									{t('skipStep')}
-								</Text>
+							<View style={styles.cancelButton}>
+								<Text style={styles.buttonText}>{t('skipStep')}</Text>
 							</View>
 						</TouchableOpacity>
 					</View>
@@ -308,6 +228,6 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 					<AddMemberBS bottomSheetRef={bottomSheetRef} memberList={unAssignedMemberList} role={clanRole} onClose={onClose} />
 				)}
 			</View>
-		</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	);
 };

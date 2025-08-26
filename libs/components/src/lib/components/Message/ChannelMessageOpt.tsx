@@ -432,7 +432,7 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 	const useHandleClickOption = useCallback(
 		(event: React.MouseEvent<HTMLButtonElement>) => {
 			const target = event.target as HTMLElement;
-			const btn = findParentByClass(target, 'popup-btn');
+			const btn = target.classList.contains('popup-btn') ? target : findParentByClass(target, 'popup-btn');
 			const btnX = btn?.getBoundingClientRect()?.left ?? 0;
 			const btnY = btn?.getBoundingClientRect()?.top ?? 0;
 			const y = btnY;
@@ -449,7 +449,7 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 			'option',
 			'option',
 			useHandleClickOption,
-			<Icons.ThreeDot defaultSize={'w-5 h-5 dark:hover:text-white hover:text-black'} />
+			<Icons.ThreeDot defaultSize={'w-5 h-5 text-theme-primary text-theme-primary-hover'} />
 		);
 	});
 }

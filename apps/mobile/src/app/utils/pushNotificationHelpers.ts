@@ -9,7 +9,7 @@ import {
 	STORAGE_MY_USER_ID
 } from '@mezon/mobile-components';
 import { appActions, channelsActions, clansActions, directActions, getFirstMessageOfTopic, getStoreAsync, topicsActions } from '@mezon/store-mobile';
-import notifee from '@notifee/react-native';
+import notifee, { AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
 import {
 	AndroidBadgeIconType,
 	AndroidCategory,
@@ -28,9 +28,7 @@ import {
 	hasPermission,
 	requestPermission
 } from '@react-native-firebase/messaging';
-import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
 const messaging = getMessaging(getApp());
@@ -91,6 +89,46 @@ export const checkNotificationPermission = async () => {
 		}
 	} catch (error) {
 		console.error('Error checking notification permission:', error);
+	}
+};
+
+// Check notification permission cross-platform with optional ensure-request.
+// - By default (ensureRequest = false): check-only, no system prompt.
+// - If ensureRequest = true: will prompt when applicable (iOS NOT_DETERMINED, Android 13+ runtime permission not yet granted).
+export const getNotificationPermission = async (ensureRequest = false): Promise<boolean> => {
+	try {
+		if (Platform.OS === 'ios') {
+			const settings = await notifee.getNotificationSettings();
+			let status = settings.authorizationStatus;
+
+			if (ensureRequest && status === NotifeeAuthorizationStatus.NOT_DETERMINED) {
+				const req = await notifee.requestPermission();
+				status = req.authorizationStatus;
+			}
+
+			return status === NotifeeAuthorizationStatus.AUTHORIZED || status === NotifeeAuthorizationStatus.PROVISIONAL;
+		}
+
+		// Android
+		const notifSettings = await notifee.getNotificationSettings();
+		const enabledInSystemSettings = notifSettings.authorizationStatus === NotifeeAuthorizationStatus.AUTHORIZED;
+
+		const androidApiLevel = typeof Platform.Version === 'string' ? parseInt(Platform.Version, 10) : Platform.Version;
+		if (androidApiLevel >= 33) {
+			const permission = PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS;
+			let granted = await PermissionsAndroid.check(permission);
+			if (ensureRequest && !granted) {
+				const res = await PermissionsAndroid.request(permission);
+				granted = res === PermissionsAndroid.RESULTS.GRANTED;
+			}
+			return granted && enabledInSystemSettings;
+		}
+
+		// Android < 13: no runtime permission; rely on system app notification toggle
+		return enabledInSystemSettings;
+	} catch (error) {
+		console.error('getNotificationPermission error:', error);
+		return false;
 	}
 };
 
@@ -158,16 +196,18 @@ const getConfigDisplayNotificationAndroid = async (data: Record<string, string |
 	try {
 		const groupId = await getOrCreateChannelGroup(channel);
 		const channelId = await createNotificationChannel(channel, groupId || '', (data?.sound as string) || 'default');
+		const now = Date.now();
 
 		return {
 			...defaultConfig,
 			channelId,
 			tag: channelId,
-			sortKey: new Date().getTime().toString(),
 			category: AndroidCategory.MESSAGE,
 			groupId: groupId,
 			groupSummary: false,
-			groupAlertBehavior: AndroidGroupAlertBehavior.ALL
+			groupAlertBehavior: AndroidGroupAlertBehavior.ALL,
+			sortKey: String(Number.MAX_SAFE_INTEGER - now),
+			timestamp: now
 		};
 	} catch (error) {
 		console.error('Error configuring Android notification:', error);
@@ -241,8 +281,8 @@ export const createLocalNotification = async (title: string, body: string, data:
 
 		const configDisplayNotificationAndroid: NotificationAndroid =
 			Platform.OS === 'android' ? await getConfigDisplayNotificationAndroid(data) : {};
-
-		const notificationId = `${data?.sender || 'unknown'}_${data?.body}_${new Date().getMilliseconds()}`;
+		const timestamp = Date.now();
+		const notificationId = `${data?.sender || 'unknown'}_${timestamp}`;
 		const isAlreadyDisplayed = await isNotificationAlreadyDisplayed(data);
 		if (isAlreadyDisplayed) {
 			return;
@@ -254,7 +294,7 @@ export const createLocalNotification = async (title: string, body: string, data:
 			title: title.trim(),
 			body: body.trim(),
 			subtitle: isValidString(data?.subtitle) ? (data.subtitle as string) : '',
-			data: data,
+			data: { ...data, notificationTimestamp: timestamp },
 			android: configDisplayNotificationAndroid,
 			ios: {}
 		});
@@ -267,6 +307,12 @@ export const createLocalNotification = async (title: string, body: string, data:
 			);
 
 			if (groupNotifications.length > 1) {
+				const sortedNotifications = groupNotifications.sort((a, b) => {
+					const timestampA = a.notification.android?.timestamp || 0;
+					const timestampB = b.notification.android?.timestamp || 0;
+					return timestampB - timestampA;
+				});
+
 				await notifee.displayNotification({
 					id: `summary_${configDisplayNotificationAndroid.groupId}`,
 					title: 'New Messages',
@@ -276,6 +322,8 @@ export const createLocalNotification = async (title: string, body: string, data:
 						...configDisplayNotificationAndroid,
 						groupSummary: true,
 						groupAlertBehavior: AndroidGroupAlertBehavior.SUMMARY,
+						timestamp: Math.max(...groupNotifications.map((n) => n.notification.android?.timestamp || 0)),
+						sortKey: String(Number.MAX_SAFE_INTEGER - Date.now()),
 						style: {
 							type: AndroidStyle.MESSAGING,
 							person: {
@@ -283,7 +331,7 @@ export const createLocalNotification = async (title: string, body: string, data:
 								icon: (configDisplayNotificationAndroid?.largeIcon || '') as string
 							},
 							group: true,
-							messages: groupNotifications.map((n) => ({
+							messages: sortedNotifications.map((n) => ({
 								text: n.notification.body || '',
 								timestamp: n.notification.android?.timestamp || Date.now(),
 								person: {
@@ -504,19 +552,5 @@ export const getVoIPToken = async () => {
 		return await VoIPManager.getVoIPToken();
 	} catch (e) {
 		return '';
-	}
-};
-
-export const setupIncomingCall = async (body: string) => {
-	try {
-		const bodyData = safeJSONParse(body || '{}');
-		if (bodyData?.offer === 'CANCEL_CALL') {
-			const callID = '0731961b-415b-44f3-a960-dd94ef3372fc';
-			RNCallKeep.endCall(callID);
-			return;
-		}
-	} catch (error) {
-		console.error('log  => setupIncomingCall', error);
-		/* empty */
 	}
 };

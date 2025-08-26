@@ -1,4 +1,4 @@
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -33,12 +33,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		height: 80,
-		backgroundColor: Colors.black,
+		backgroundColor: 'black',
 		paddingLeft: 10,
 		paddingRight: 10,
 		gap: 10
 	},
 	icon: {
-		color: Colors.gray48
+		color: '#484848'
 	}
 });

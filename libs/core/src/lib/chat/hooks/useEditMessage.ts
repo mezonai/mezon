@@ -4,6 +4,7 @@ import {
 	selectChannelById,
 	selectDirectById,
 	selectIdMessageRefEdit,
+	selectMessageByMessageId,
 	selectOpenEditMessageState,
 	useAppSelector
 } from '@mezon/store';
@@ -35,6 +36,10 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 
 	const dispatch = useDispatch();
 	const { editSendMessage } = useChatSending({ channelOrDirect: currentDirectOrChannel, mode });
+	const oldMentionsString = useAppSelector((state) => {
+		const entity = selectMessageByMessageId(state, channelId, message?.id || '');
+		return entity?.mentions ? JSON.stringify(entity.mentions) : '';
+	});
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
 
@@ -71,11 +76,12 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 
 	const handleSend = useCallback(
 		(editMessage: IMessageSendPayload, messageId: string, draftMention: ApiMessageMention[], topic_id: string, isTopic?: boolean) => {
-			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id, isTopic);
+			const oldMentions = oldMentionsString;
+			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id, isTopic, oldMentions);
 			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topic_id as string);
 			dispatch(referencesActions.setOpenEditMessageState(false));
 		},
-		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, clanIdInMes, mode, message]
+		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, oldMentionsString]
 	);
 
 	return {

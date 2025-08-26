@@ -232,7 +232,7 @@ const ChannelLinkComponent = ({
 			{channelType === ChannelType.CHANNEL_TYPE_GMEET_VOICE ? (
 				<span
 					ref={channelLinkRef}
-					className={`${classes[state]} pointer-events-none ${channel.status === StatusVoiceChannel.Active ? 'cursor-pointer' : 'cursor-not-allowed'} ${isActive ? 'bg-item-theme text-theme-primary-active' : ''}`}
+					className={`${isActive ? 'bg-item-theme text-theme-primary-active' : classes[state]} pointer-events-none ${channel.status === StatusVoiceChannel.Active ? 'cursor-pointer' : 'cursor-not-allowed'}`}
 					onClick={() => {
 						handleVoiceChannel(channel.id);
 						openModalJoinVoiceChannel(channel.meeting_code || '');
@@ -242,7 +242,7 @@ const ChannelLinkComponent = ({
 					{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
 					<div className="relative mt-[-5px]">
 						{isPrivate === ChannelStatusEnum.isPrivate && <Icons.SpeakerLocked defaultSize="w-5 h-5 " />}
-						{!isPrivate && <Icons.Speaker defaultSize="w-5 5-5 " defaultFill="text-theme-primary" />}
+						{!isPrivate && <Icons.Speaker defaultSize="w-5 h-5 " defaultFill="text-theme-primary" />}
 					</div>
 					<p
 						className={`ml-2 w-full pointer-events-none text-base text-theme-primary  ${highLightVoiceChannel ? 'bg-item-theme text-theme-primary-hover font-semibold' : ''}`}

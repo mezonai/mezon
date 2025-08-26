@@ -16,7 +16,9 @@ interface IIntegrationsProps {
 const Integrations = ({ currentChannel, isClanSetting }: IIntegrationsProps) => {
 	const [isOpenWebhooks, setIsOpenWebhooks] = useState(false);
 	const [isOpenClanWebhooks, setIsOpenClanWebhooks] = useState(false);
-	const allWebhooks = useAppSelector((state) => selectWebhooksByChannelId(state, isClanSetting ? '0' : (currentChannel?.channel_id ?? '')));
+	const allWebhooks = useAppSelector((state) =>
+		selectWebhooksByChannelId(state, isClanSetting ? '0' : (currentChannel?.channel_id ?? ''), currentChannel?.clan_id ?? '')
+	);
 	const allClanWebhooks = useSelector(selectAllClanWebhooks);
 	return (
 		<div className="mt-[60px]">

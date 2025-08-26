@@ -1,15 +1,18 @@
 import { useRoles } from '@mezon/core';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { selectCurrentClanId } from '@mezon/store-mobile';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Platform, Pressable, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, Pressable, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import { style } from './styles';
 
 type CreateNewRoleScreen = typeof APP_SCREEN.MENU_CLAN.CREATE_NEW_ROLE;
 export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleScreen>) => {
@@ -18,18 +21,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { createRole } = useRoles();
 	const { themeValue } = useTheme();
-
-	useEffect(() => {
-		navigation.setOptions({
-			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
-			headerTitle: t('createNewRole.title'),
-			headerLeft: () => (
-				<Pressable style={{ padding: 20 }} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
-					<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
-				</Pressable>
-			)
-		});
-	}, [navigation, t, themeValue.textStrong]);
+	const styles = style(themeValue);
 
 	const onRoleNameChange = (roleName: string) => {
 		setRoleName(roleName);
@@ -43,7 +35,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 				type: 'success',
 				props: {
 					text2: t('createNewRole.createSuccess', { roleName }),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -52,36 +44,32 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 				type: 'success',
 				props: {
 					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}
 	};
 	return (
-		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<View style={{ backgroundColor: themeValue.primary, flex: 1, paddingHorizontal: size.s_14, justifyContent: 'space-between' }}>
+		<KeyboardAvoidingView
+			behavior={'padding'}
+			keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
+			style={styles.container}
+		>
+			<StatusBarHeight />
+			<View style={styles.header}>
+				<Pressable style={styles.backButton} onPress={() => navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING)}>
+					<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
+				</Pressable>
+				<Text style={styles.title}>{t('createNewRole.title')}</Text>
+			</View>
+
+			<View style={styles.wrapper}>
 				<View>
-					<View style={{ paddingVertical: size.s_10, borderBottomWidth: 1, borderBottomColor: themeValue.borderDim }}>
-						<Text
-							style={{
-								fontSize: verticalScale(24),
-								textAlign: 'center',
-								fontWeight: 'bold',
-								color: themeValue.text
-							}}
-						>
-							{t('createNewRole.createANewRole')}
-						</Text>
-						<Text
-							style={{
-								textAlign: 'center',
-								color: themeValue.text
-							}}
-						>
-							{t('createNewRole.description')}
-						</Text>
+					<View style={styles.desciptionWrapper}>
+						<Text style={styles.newRole}>{t('createNewRole.createANewRole')}</Text>
+						<Text style={styles.description}>{t('createNewRole.description')}</Text>
 					</View>
-					<View style={{ marginTop: size.s_18 }}>
+					<View style={styles.input}>
 						<MezonInput
 							value={roleName}
 							onTextChange={onRoleNameChange}
@@ -90,7 +78,7 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 						/>
 					</View>
 				</View>
-				<View style={{ marginBottom: size.s_16 }}>
+				<View style={styles.bottom}>
 					<TouchableOpacity
 						onPress={() => {
 							if (roleName?.trim()?.length === 0) return;
@@ -98,23 +86,18 @@ export const CreateNewRole = ({ navigation }: MenuClanScreenProps<CreateNewRoleS
 						}}
 					>
 						<View
-							style={{
-								backgroundColor: roleName?.trim()?.length === 0 ? Colors.bgGrayDark : Colors.bgViolet,
-								paddingVertical: size.s_14,
-								borderRadius: size.s_8
-							}}
+							style={[
+								{
+									backgroundColor: roleName?.trim()?.length === 0 ? '#676b73' : themeValue.bgViolet
+								},
+								styles.button
+							]}
 						>
-							<Text
-								style={{
-									color: 'white'
-								}}
-							>
-								{t('createNewRole.create')}
-							</Text>
+							<Text style={styles.buttonText}>{t('createNewRole.create')}</Text>
 						</View>
 					</TouchableOpacity>
 				</View>
 			</View>
-		</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	);
 };

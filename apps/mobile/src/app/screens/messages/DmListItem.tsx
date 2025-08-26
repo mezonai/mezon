@@ -1,6 +1,14 @@
 import { ActionEmitEvent, convertTimestampToTimeAgo, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
-import { Colors, useTheme } from '@mezon/mobile-ui';
-import { directActions, DirectEntity, selectDirectById, selectIsUnreadDMById, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { useTheme } from '@mezon/mobile-ui';
+import {
+	directActions,
+	DirectEntity,
+	messagesActions,
+	selectDirectById,
+	selectIsUnreadDMById,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { createImgproxyUrl, IExtendedMessage } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
@@ -36,6 +44,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	}, [senderId]);
 
 	const redirectToMessageDetail = async () => {
+		dispatch(messagesActions.setIdMessageToJump(null));
 		if (!isTabletLandscape) {
 			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
 				directMessageId: directMessage?.id
@@ -94,7 +103,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 					>
 						{renderLastMessageContent}
 						{'attachment '}
-						<MezonIconCDN icon={IconCDN.attachmentIcon} width={13} height={13} color={Colors.textGray} />
+						<MezonIconCDN icon={IconCDN.attachmentIcon} width={13} height={13} color={'#c7c7c7'} />
 					</Text>
 				</View>
 			);

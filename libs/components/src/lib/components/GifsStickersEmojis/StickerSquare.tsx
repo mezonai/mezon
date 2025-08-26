@@ -32,6 +32,7 @@ interface ICategorizedStickerProps {
 		clanName: string | undefined;
 		clanId: string | undefined;
 		forSale: boolean | undefined;
+		shortname: string;
 	}[];
 	categoryName: string;
 	logo?: string;
@@ -53,6 +54,7 @@ type StickerPanel = {
 	forSale?: boolean;
 	clanName?: string;
 	clanId?: string;
+	shortname?: string;
 };
 
 const searchStickers = (stickers: ClanSticker[], searchTerm: string) => {
@@ -108,7 +110,8 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				type: sticker.clan_name,
 				clanName: sticker.category,
 				clanId: sticker.clan_id,
-				forSale: sticker.is_for_sale
+				forSale: sticker.is_for_sale,
+				shortname: sticker.shortname || ''
 			}))
 		].filter(Boolean);
 	}, [searchedStickers]);
@@ -274,6 +277,8 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 };
 
 const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticker, onOpenBuySticker }) => {
+	const { setPlaceHolderInput } = useGifsStickersEmoji();
+
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
@@ -284,6 +289,7 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 							<div
 								className="group relative w-full h-full border border-bgHoverMember aspect-square overflow-hidden flex items-center rounded-lg cursor-pointer"
 								key={sticker.id}
+								onMouseEnter={() => setPlaceHolderInput(sticker.shortname || '')}
 							>
 								<img
 									src={sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/` + sticker.id + `.webp`}

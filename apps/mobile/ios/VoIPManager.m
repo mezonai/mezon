@@ -15,4 +15,7 @@ RCT_EXTERN_METHOD(getStoredNotificationData:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(clearStoredNotificationData:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(endCurrentCallKeep:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+
 @end

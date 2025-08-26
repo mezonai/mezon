@@ -5,7 +5,8 @@
     "copyLink": "Sao chép",
     "facebook": "Facebook",
     "youtube": "YouTube",
-    "twitter": "X"
+    "twitter": "X",
+    "qrcode": "Mã QR"
   },
   "copyLink": "Đã sao chép liên kết!",
   "unknownChannel": "CHANNEL KHÔNG XÁC ĐỊNH",
@@ -19,5 +20,16 @@
   "temporaryMembership": "Thành viên tạm thời",
   "memberAutoKick": "Thành viên sẽ bị tự động đá ra khi họ ngắt kết nối trừ khi được gán một vai trò.",
   "btnInvite": "Mời",
-  "btnSent": "Đã mời"
+  "btnSent": "Đã mời",
+  "qrModal": {
+    "title": "Mã QR",
+    "scanToJoin": "Quét mã này để tham gia {{clanName}}!",
+    "scanToJoinDefault": "Quét mã này để tham gia clan!",
+    "generating": "Đang tạo mã QR...",
+    "errorGenerating": "Lỗi khi tạo mã QR",
+    "downloadSuccess": "Đã lưu mã QR vào thư viện",
+    "downloadError": "Lỗi khi tải mã QR",
+    "shareError": "Lỗi khi chia sẻ mã QR",
+    "clanDefaultName": "Clan"
+  }
 }

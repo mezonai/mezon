@@ -66,18 +66,6 @@
       android:supportsRtl="true"
       android:launchMode="singleTask"
       android:networkSecurityConfig="@xml/network_security_config">
-        <!--callkeep-->
-        <service android:name="io.wazo.callkeep.VoiceConnectionService"
-             android:label="Wazo"
-             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-             android:foregroundServiceType="phoneCall|dataSync|camera|microphone"
-             android:exported="true"
-        >
-            <intent-filter>
-                <action android:name="android.telecom.ConnectionService" />
-            </intent-filter>
-        </service>
-        <service android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService" android:exported="true"/>
         <receiver
                 android:name=".NotificationActionReceiver"
                 android:exported="false">
@@ -120,7 +108,7 @@
         android:screenOrientation="fullUser"
         android:showWhenLocked="false"
         android:turnScreenOn="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/BootTheme"
         android:supportsPictureInPicture="true"
         android:exported="true">
         <intent-filter>
@@ -224,7 +212,7 @@
         tools:replace="android:value" />
       <meta-data
       android:name="com.google.android.geo.API_KEY"
-      android:value=""/>
+      android:value="AIzaSyDYY_IWJQEc42Dx1Ly0-YfvDNNAQtQ1t2s"/>
       <provider
         android:name="androidx.core.content.FileProvider"
         android:authorities="${applicationId}.fileprovider"

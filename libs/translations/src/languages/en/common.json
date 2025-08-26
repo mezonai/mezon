@@ -15,5 +15,6 @@
     "inviteMembers": "Invite Members",
     "addMembers": "Add Members",
     "copyImage": "Copied Image",
-    "copyImageFailed": "Failed to copy image: {{error}}"
+    "copyImageFailed": "Failed to copy image: {{error}}",
+    "enable": "Enable"
 }

@@ -8,7 +8,7 @@ const EnableComunity = ({ onEnable }: { onEnable: () => void }) => {
       <div className="relative z-10 flex flex-col items-center">
         <div className="mb-8 p-4 bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg">
           <img
-            src={"assets/images/comunity_mezon_v2.png"}
+            src={"assets/images/community.png"}
             alt="Mezon Community"
             className="max-w-[350px] w-full h-auto rounded-lg shadow-md"
           />

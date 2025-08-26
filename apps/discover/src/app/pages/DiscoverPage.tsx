@@ -33,7 +33,6 @@ export default function DiscoverPage() {
 
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-8">
 					<div className={`flex flex-col gap-4 ${categories.length > 0 ? 'lg:flex-row lg:gap-8' : ''}`}>
-						{/* Categories sidebar - chỉ hiển thị khi có categories */}
 						{categories.length > 0 && (
 							<div className="w-full lg:w-64 flex-shrink-0">
 								<Categories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />

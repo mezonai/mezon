@@ -12,7 +12,7 @@ const ChannelListWrapper = React.memo(
 		const [showChannelList, setShowChannelList] = useState(false);
 
 		useEffect(() => {
-			const splashTask = requestAnimationFrame(() => {
+			const splashTask = requestAnimationFrame(async () => {
 				setShowChannelList(true);
 			});
 			return () => cancelAnimationFrame(splashTask);

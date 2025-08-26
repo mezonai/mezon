@@ -1,4 +1,4 @@
-import { Attributes, Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -32,7 +32,7 @@ export const style = (colors: Attributes) =>
 			fontWeight: '700'
 		},
 		groupAvatar: {
-			backgroundColor: Colors.orange,
+			backgroundColor: baseColor.orange,
 			borderRadius: 50,
 			justifyContent: 'center',
 			alignItems: 'center'
@@ -51,10 +51,10 @@ export const style = (colors: Attributes) =>
 			borderColor: colors.secondary
 		},
 		online: {
-			backgroundColor: Colors.green
+			backgroundColor: baseColor.green
 		},
 		offline: {
-			backgroundColor: Colors.bgGrayDark
+			backgroundColor: '#676b73'
 		},
 		avatarSize: {
 			width: size.s_50,

@@ -1,5 +1,5 @@
 import { useMyRole, usePermissionChecker } from '@mezon/core';
-import { Colors, baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	ChannelMembersEntity,
 	rolesClanActions,
@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	usersClanActions
 } from '@mezon/store-mobile';
-import { EPermission, EVERYONE_ROLE_ID } from '@mezon/utils';
+import { EPermission } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -99,7 +99,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 				height: size.s_12,
 				width: size.s_12,
 				borderRadius: size.s_12,
-				backgroundColor: Colors.bgToggleOnBtn
+				backgroundColor: '#008ECC'
 			},
 			icon: {
 				width: size.s_30,
@@ -134,12 +134,14 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 
 	const editableRoleList = useMemo(() => {
 		if (!rolesClan) return [];
-		return rolesClan.filter((role) => role?.id !== EVERYONE_ROLE_ID);
+		return rolesClan.filter((role) => role?.slug !== `everyone-${role?.clan_id}`);
 	}, [rolesClan]);
 
 	const roleList = useMemo(() => {
 		if (!editMode) {
-			return activeRoleOfUser?.map((role) => ({ ...role, disabled: false })) || [];
+			return (
+				activeRoleOfUser?.map((role) => ({ ...role, disabled: false }))?.filter((role) => role?.slug !== `everyone-${role?.clan_id}`) || []
+			);
 		}
 		return (
 			editableRoleList?.map((role) => ({
@@ -165,7 +167,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 				type: 'success',
 				props: {
 					text2: 'Changes Saved',
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
@@ -173,7 +175,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 				type: 'success',
 				props: {
 					text2: 'Failed',
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} width={20} height={20} />
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
 				}
 			});
 		}
@@ -292,7 +294,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 	const renderCheckboxInnerStyle = useCallback(
 		(isSelected: boolean) => ({
 			borderWidth: 1.5,
-			borderColor: isSelected ? Colors.bgButton : Colors.tertiary,
+			borderColor: isSelected ? '#5865f2' : themeValue.tertiary,
 			borderRadius: 5
 		}),
 		[]
@@ -387,7 +389,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 														size={20}
 														isChecked={isSelected}
 														onPress={(value) => onSelectedRoleChange(value, role?.id, role?.color)}
-														fillColor={isDisable ? Colors.bgGrayDark : Colors.bgButton}
+														fillColor={isDisable ? '#676b73' : '#5865f2'}
 														iconStyle={checkboxStyles.iconStyle}
 														innerIconStyle={renderCheckboxInnerStyle(isSelected)}
 														textStyle={checkboxStyles.textStyle}
@@ -432,7 +434,7 @@ export const ManageUserModal = memo<IManageUserModalProp>(({ user, visible, oncl
 									<Text
 										style={{
 											fontSize: editMode ? verticalScale(16) : verticalScale(13),
-											color: isLoading ? Colors.textGray : baseColor.blurple
+											color: isLoading ? '#c7c7c7' : baseColor.blurple
 										}}
 									>
 										{editMode ? t('manage.cancel') : t('manage.editRoles')}

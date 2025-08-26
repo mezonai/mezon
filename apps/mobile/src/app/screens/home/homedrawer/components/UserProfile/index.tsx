@@ -1,6 +1,6 @@
 import { useAuth, useDirect, useFriends, useMemberCustomStatus, useMemberStatus } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	EStateFriend,
@@ -29,6 +29,7 @@ import ImageNative from '../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { getUserStatusByMetadata } from '../../../../../utils/helpers';
+import { checkNotificationPermissionAndNavigate } from '../../../../../utils/notificationPermissionHelper';
 import { style } from './UserProfile.styles';
 import EditUserProfileBtn from './component/EditUserProfileBtn';
 import { PendingContent } from './component/PendingContent';
@@ -146,7 +147,9 @@ const UserProfile = React.memo(
 		}, [infoFriend?.state]);
 
 		const userRolesClan = useMemo(() => {
-			return userById?.role_id ? rolesClan?.filter?.((role) => userById?.role_id?.includes(role.id)) : [];
+			return userById?.role_id
+				? rolesClan?.filter?.((role) => userById?.role_id?.includes(role.id) && role?.slug !== `everyone-${role?.clan_id}`)
+				: [];
 		}, [userById?.role_id, rolesClan]);
 
 		const isCheckOwner = useMemo(() => {
@@ -183,13 +186,16 @@ const UserProfile = React.memo(
 					message?.user?.username || user?.user?.username || user?.username || userById?.user?.username,
 					message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
 				);
+
 				if (response?.channel_id) {
-					if (isTabletLandscape) {
-						dispatch(directActions.setDmGroupCurrentId(directMessage?.id || ''));
-						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-					} else {
-						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
-					}
+					await checkNotificationPermissionAndNavigate(() => {
+						if (isTabletLandscape) {
+							dispatch(directActions.setDmGroupCurrentId(directMessage?.id || ''));
+							navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+						} else {
+							navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+						}
+					});
 				}
 			},
 			[
@@ -284,14 +290,14 @@ const UserProfile = React.memo(
 				text: t('userAction.sendMessage'),
 				icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />,
 				action: navigateToMessageDetail,
-				isShow: !!infoFriend || !!userById
+				isShow: (!!infoFriend && infoFriend?.state === EFriendState.Friend) || !!userById
 			},
 			{
 				id: 2,
 				text: t('userAction.voiceCall'),
 				icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
 				action: () => handleCallUser(userId || user?.id),
-				isShow: !!infoFriend || !!userById
+				isShow: (!!infoFriend && infoFriend?.state === EFriendState.Friend) || !!userById
 			},
 			// {
 			// 	id: 3,
@@ -312,17 +318,17 @@ const UserProfile = React.memo(
 			{
 				id: 4,
 				text: t('userAction.addFriend'),
-				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={Colors.green} />,
+				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.green} />,
 				action: handleAddFriend,
 				isShow: !infoFriend && !isBlocked,
 				textStyles: {
-					color: Colors.green
+					color: baseColor.green
 				}
 			},
 			{
 				id: 5,
 				text: t('userAction.pending'),
-				icon: <MezonIconCDN icon={IconCDN.clockIcon} color={Colors.goldenrodYellow} />,
+				icon: <MezonIconCDN icon={IconCDN.clockIcon} color={baseColor.goldenrodYellow} />,
 				action: () => {
 					setIsShowPendingContent(true);
 				},
@@ -331,7 +337,7 @@ const UserProfile = React.memo(
 					infoFriend?.state !== undefined &&
 					[EFriendState.ReceivedRequestFriend, EFriendState.SentRequestFriend].includes(infoFriend?.state),
 				textStyles: {
-					color: Colors.goldenrodYellow
+					color: baseColor.goldenrodYellow
 				}
 			}
 		];
@@ -385,7 +391,7 @@ const UserProfile = React.memo(
 
 		return (
 			<View style={[styles.wrapper]}>
-				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : Colors.titleReset }]}>
+				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : baseColor.gray }]}>
 					{!isCheckOwner && (
 						<View style={{ flexDirection: 'row' }}>
 							<TouchableOpacity
@@ -455,26 +461,26 @@ const UserProfile = React.memo(
 							{userById
 								? !isDM
 									? userById?.clan_nick ||
-									userById?.user?.display_name ||
-									userById?.user?.username ||
-									user?.clan_nick ||
-									user?.user?.display_name ||
-									user?.user?.username
+										userById?.user?.display_name ||
+										userById?.user?.username ||
+										user?.clan_nick ||
+										user?.user?.display_name ||
+										user?.user?.username
 									: userById?.user?.display_name || userById?.user?.username
 								: user?.display_name ||
-								user?.user?.display_name ||
-								user?.username ||
-								user?.user?.username ||
-								(checkAnonymous ? 'Anonymous' : message?.username)}
+									user?.user?.display_name ||
+									user?.username ||
+									user?.user?.username ||
+									(checkAnonymous ? 'Anonymous' : message?.username)}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
 								? userById?.user?.username || userById?.user?.display_name
 								: user?.username ||
-								user?.user?.username ||
-								user?.display_name ||
-								user?.user?.display_name ||
-								(checkAnonymous ? 'Anonymous' : message?.username)}
+									user?.user?.username ||
+									user?.display_name ||
+									user?.user?.display_name ||
+									(checkAnonymous ? 'Anonymous' : message?.username)}
 						</Text>
 						{isCheckOwner && <EditUserProfileBtn user={userById || (user as any)} />}
 						{!isCheckOwner && (
@@ -495,12 +501,15 @@ const UserProfile = React.memo(
 							<View style={{ marginTop: size.s_16 }}>
 								<Text style={styles.receivedFriendRequestTitle}>{t('incomingFriendRequest')}</Text>
 								<View style={{ flexDirection: 'row', gap: size.s_10, marginTop: size.s_10 }}>
-									<TouchableOpacity onPress={() => handleAcceptFriend()} style={[styles.button, { backgroundColor: Colors.green }]}>
+									<TouchableOpacity
+										onPress={() => handleAcceptFriend()}
+										style={[styles.button, { backgroundColor: baseColor.green }]}
+									>
 										<Text style={styles.defaultText}>{t('accept')}</Text>
 									</TouchableOpacity>
 									<TouchableOpacity
 										onPress={() => handleIgnoreFriend()}
-										style={[styles.button, { backgroundColor: Colors.bgGrayDark }]}
+										style={[styles.button, { backgroundColor: baseColor.bgButtonSecondary }]}
 									>
 										<Text style={styles.defaultText}>{t('ignore')}</Text>
 									</TouchableOpacity>

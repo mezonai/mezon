@@ -1,4 +1,4 @@
-import { messagesActions, selectClanView, selectCurrentChannel, selectCurrentClanId, useAppDispatch } from '@mezon/store';
+import { messagesActions, selectClanView, selectCurrentChannel, selectCurrentClanId, selectMessagesByChannel, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { isPublicChannel, transformPayloadWriteSocket } from '@mezon/utils';
 import React, { useMemo } from 'react';
@@ -17,12 +17,18 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 	const isClanView = useSelector(selectClanView);
 	const { socketRef } = useMezon();
 	const channel = useSelector(selectCurrentChannel);
+	const channelMessages = useSelector((state: any) => selectMessagesByChannel(state, channelId));
 	const deleteSendMessage = React.useCallback(
 		async (messageId: string) => {
 			const socket = socketRef.current;
 			if (!socket) return;
 
 			try {
+				const message = channelMessages?.entities?.[messageId];
+				const mentions = message?.mentions || [];
+				const references = message?.references || [];
+				const mentionsString = JSON.stringify(mentions);
+				const referencesString = JSON.stringify(references);
 				dispatch(
 					messagesActions.remove({
 						channelId,
@@ -37,25 +43,37 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				});
 
 				if (isTopic) {
-					const response = await socket.removeChatMessage(
+					await socket.removeChatMessage(
 						payload.clan_id,
 						channel?.channel_id || '',
 						mode,
 						payload.is_public,
 						messageId,
 						hasAttachment,
-						channelId
+						channelId,
+						mentionsString,
+						referencesString
 					);
 
 					return;
 				}
 
-				await socket.removeChatMessage(payload.clan_id, channelId, mode, payload.is_public, messageId, hasAttachment);
+				await socket.removeChatMessage(
+					payload.clan_id,
+					channelId,
+					mode,
+					payload.is_public,
+					messageId,
+					hasAttachment,
+					undefined,
+					mentionsString,
+					referencesString
+				);
 			} catch (e) {
 				console.error(e);
 			}
 		},
-		[socketRef, channel, channelId, dispatch, currentClanId, mode, isClanView, hasAttachment]
+		[socketRef, channelMessages?.entities, dispatch, channelId, currentClanId, channel, isClanView, isTopic, mode, hasAttachment]
 	);
 
 	return useMemo(

@@ -125,7 +125,7 @@ export default function InvitePage() {
 
 				<div className="w-full bg-input-secondary rounded-md p-3 mb-5 flex items-center">
 					<div>
-						<div className=" text-xs font-medium uppercase tracking-wide">Server Settings</div>
+						<div className=" text-xs font-medium uppercase tracking-wide">Clan Settings</div>
 						<div className="text-xs">You can customize these at any time</div>
 					</div>
 				</div>

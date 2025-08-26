@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 import { MentionItem } from 'react-mentions';
 import { isYouTubeLink } from '.';
-import { EBacktickType, ETypeMEntion, IMarkdownOnMessage, RequestInput, SymbolsAndIdsLengthOfMentionValue } from '../types';
+import { EBacktickType, ETypeMEntion, IMarkdownOnMessage } from '../types';
 
 export enum ApiMessageEntityTypes {
 	Bold = 'MessageEntityBold',
@@ -466,97 +466,3 @@ export const processBoldEntities = (entities: MentionItem[], markdown: IMarkdown
 	return boldMarkdownArr;
 };
 
-function addSymbolsAndIdsLengthOfMention(value: number, mentionType: number) {
-	let newValue = value;
-	if (mentionType === ETypeMEntion.HASHTAG || mentionType === ETypeMEntion.MENTION) {
-		newValue += SymbolsAndIdsLengthOfMentionValue.MENTION_OR_HASHTAG;
-	} else if (mentionType === ETypeMEntion.EMOJI) {
-		newValue += SymbolsAndIdsLengthOfMentionValue.EMOJI;
-	} else {
-		newValue += SymbolsAndIdsLengthOfMentionValue.BOLD;
-	}
-	return newValue;
-}
-
-function sortMentionsByIndex(mentions: MentionItem[]) {
-	return [...mentions].sort((a, b) => a.index - b.index);
-}
-
-interface IHandleBoldShortCutParams {
-	setRequestInput: (request: RequestInput, isThread?: boolean) => void;
-	request: RequestInput;
-	editorRef: React.MutableRefObject<HTMLInputElement | null>;
-}
-
-export const handleBoldShortCut = ({ editorRef, request, setRequestInput }: IHandleBoldShortCutParams) => {
-	if (!editorRef.current) return;
-	let plainTextStart = editorRef.current.selectionStart ?? 0;
-	let plainTextEnd = editorRef.current.selectionEnd ?? 0;
-	if (plainTextStart === plainTextEnd) return;
-
-	let valueStart = plainTextStart;
-	let valueEnd = plainTextEnd;
-	const sortedMentionsArr = sortMentionsByIndex(request.mentionRaw);
-	const newMentionArr: MentionItem[] = [];
-
-	let selectedTextIsInsideMention = false;
-
-	for (let index = 0; index < sortedMentionsArr.length; index++) {
-		const item = sortedMentionsArr[index];
-		const plainMentionStartPosition = item.plainTextIndex;
-		const plainMentionEndPosition = item.plainTextIndex + item.display.length;
-		const mentionWithValueStartPosition = item.index;
-		const mentionWithValueEndPosition = item.index + addSymbolsAndIdsLengthOfMention(item.display.length, item.childIndex);
-
-		if (plainTextStart > plainMentionStartPosition && plainTextEnd > plainMentionEndPosition) {
-			newMentionArr.push(item);
-			valueStart = addSymbolsAndIdsLengthOfMention(valueStart, item.childIndex);
-			valueEnd = addSymbolsAndIdsLengthOfMention(valueEnd, item.childIndex);
-			if (plainTextStart < plainMentionEndPosition) {
-				valueStart = mentionWithValueEndPosition;
-				plainTextStart = plainMentionEndPosition;
-			}
-		} else if (plainTextStart >= plainMentionStartPosition && plainTextEnd <= plainMentionEndPosition) {
-			selectedTextIsInsideMention = true;
-			break;
-		} else if (plainTextStart <= plainMentionStartPosition && plainTextEnd >= plainMentionEndPosition) {
-			selectedTextIsInsideMention = true;
-			break;
-		} else {
-			const mentionWithNewIndex: MentionItem = {
-				...item,
-				index: item.index + 4
-			};
-			newMentionArr.push(mentionWithNewIndex);
-			if (plainTextStart < plainMentionStartPosition && plainTextEnd <= plainMentionEndPosition && plainTextEnd > plainMentionStartPosition) {
-				valueEnd = mentionWithValueStartPosition;
-				plainTextEnd = plainMentionStartPosition;
-			}
-		}
-	}
-	const boldedText = request.content.substring(plainTextStart, plainTextEnd);
-
-	if (boldedText.trim() === '' || selectedTextIsInsideMention) return;
-
-	const mentionItem: MentionItem = {
-		display: boldedText,
-		id: '',
-		childIndex: ETypeMEntion.BOLD,
-		index: valueStart,
-		plainTextIndex: plainTextStart
-	};
-
-	if (request.mentionRaw.length > 0) {
-		setRequestInput({
-			...request,
-			mentionRaw: [...newMentionArr, mentionItem],
-			valueTextInput: request.valueTextInput.slice(0, valueStart) + `**${boldedText}**` + request.valueTextInput.slice(valueEnd)
-		});
-	} else {
-		setRequestInput({
-			...request,
-			mentionRaw: [mentionItem],
-			valueTextInput: request.valueTextInput.slice(0, valueStart) + `**${boldedText}**` + request.valueTextInput.slice(valueEnd)
-		});
-	}
-};

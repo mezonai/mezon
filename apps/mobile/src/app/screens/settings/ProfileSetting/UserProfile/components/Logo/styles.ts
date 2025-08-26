@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -27,6 +27,6 @@ export const style = (colors: Attributes) =>
 			borderRadius: 12,
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: Colors.bgViolet
+			backgroundColor: colors.bgViolet
 		}
 	});

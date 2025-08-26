@@ -34,7 +34,7 @@
         },
         "channelSlowMode": {
             "title": "Slowmode Cooldown",
-            "description": "Members will be restricted to sending one message and creating one thread per this interval, unless they have Mange Channel or Manage Messages permissions.",
+            "description": "Members will be restricted to sending one message and creating one thread per this interval, unless they have Manage Channel or Manage Messages permissions.",
             "slowModeOff": "Slowmode is off",
             "_5seconds": "5 seconds",
             "_10seconds": "10 seconds",
@@ -78,14 +78,14 @@
     },
     "confirm": {
         "delete": {
-            "content": "Are you sure you want to delete #{{channelName}} ?. This cannot be undone",
+            "content": "Are you sure you want to delete #{{channelName}}?. This cannot be undone!",
             "confirmText": "Delete",
             "title": "Delete channel",
             "systemChannel": "You can't delete system channel",
             "error": "Delete channel failed: {{error}}"
         },
         "leave": {
-            "content": "Are you sure you want to leave #{{channelName}} ?. This cannot be undone",
+            "content": "Are you sure you want to leave #{{channelName}}?. This cannot be undone!",
             "confirmText": "Leave",
             "title": "Leave channel"
         },
@@ -150,7 +150,7 @@
         "cancel": "Cancel",
         "create": "Create",
         "deleteModal": "DELETE ACTION",
-        "deleteTitle": "Are you sure you want to delete /{{key}} ? This cannot be undone !",
+        "deleteTitle": "Are you sure you want to delete /{{key}} ? This cannot be undone!",
         "flashMessage": "Flash Message",
         "quickMenu": "Quick Menu",
         "menuName": "Menu Name",

@@ -1,5 +1,4 @@
 import { useParticipants, useTracks, VideoTrack } from '@livekit/react-native';
-import { Icons } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { getStore, selectIsPiPMode, selectMemberClanByUserName, useAppSelector } from '@mezon/store-mobile';
 import { Track } from 'livekit-client';

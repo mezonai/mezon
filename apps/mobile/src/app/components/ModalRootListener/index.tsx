@@ -47,9 +47,22 @@ const ModalRootListener = () => {
 	}, [fadeAnim, scaleAnim, setChildren]);
 
 	const closeModal = useCallback(() => {
-		setVisible(false);
-		clearDataModal();
-	}, [clearDataModal]);
+		Animated.parallel([
+			Animated.timing(fadeAnim, {
+				toValue: 0,
+				duration: 150,
+				useNativeDriver: true,
+			}),
+			Animated.timing(scaleAnim, {
+				toValue: 0.6,
+				duration: 150,
+				useNativeDriver: true,
+			}),
+		]).start(() => {
+			setVisible(false);
+			clearDataModal();
+		});
+	}, [fadeAnim, scaleAnim, clearDataModal]);
 
 	useEffect(() => {
 		const modalListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_TRIGGER_MODAL, ({ isDismiss, data }) => {

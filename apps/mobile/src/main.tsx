@@ -5,7 +5,7 @@ import { enableScreens } from 'react-native-screens';
 import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
 import { isNotificationProcessed } from './app/utils/notificationCache';
-import { createLocalNotification, setupIncomingCall } from './app/utils/pushNotificationHelpers';
+import { createLocalNotification } from './app/utils/pushNotificationHelpers';
 const messaging = getMessaging(getApp());
 
 const isValidString = (value: unknown): value is string => {
@@ -18,12 +18,9 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
 	try {
 		const offer = remoteMessage?.data?.offer;
 
-		// Safe handling of offer data (calls are always processed)
-		if (offer && isValidString(offer)) {
-			await setupIncomingCall(offer);
+		if (offer) {
 			return;
 		}
-
 		// Safe handling of notification data
 		if (!remoteMessage?.notification && remoteMessage?.data && Platform.OS === 'android') {
 			const { title, body } = remoteMessage.data;

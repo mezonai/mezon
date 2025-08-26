@@ -21,9 +21,7 @@ export function AddedByUser({ groupId, userId }: AddedByUserProps) {
 	return (
 		<Text
 			style={{
-				position: 'absolute',
 				bottom: size.s_2,
-				left: size.s_36 + size.s_24,
 				fontSize: size.s_10,
 				color: themeValue.textDisabled,
 				maxWidth: '85%'

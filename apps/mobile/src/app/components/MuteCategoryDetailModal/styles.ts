@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -19,8 +19,8 @@ export const style = (colors: Attributes) =>
 		wrapperItem: {
 			paddingVertical: size.s_20,
 			paddingHorizontal: size.s_10,
-			backgroundColor: Colors.bgDarkCharcoal,
-			borderBottomColor: Colors.gray48,
+			backgroundColor: '#323232',
+			borderBottomColor: baseColor.gray,
 			borderBottomWidth: 0.5
 		},
 		wrapperUnmuteBox: {

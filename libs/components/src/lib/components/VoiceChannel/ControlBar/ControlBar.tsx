@@ -1,4 +1,4 @@
-import { useLocalParticipant, useLocalParticipantPermissions, usePersistentUserChoices, useTracks } from '@livekit/components-react';
+import { useLocalParticipant, useLocalParticipantPermissions, usePersistentUserChoices } from '@livekit/components-react';
 import {
 	selectGroupCallJoined,
 	selectShowCamera,
@@ -17,18 +17,17 @@ import { ChannelStreamMode } from 'mezon-js';
 
 import { EmojiSuggestionProvider } from '@mezon/core';
 import isElectron from 'is-electron';
-import { LocalTrackPublication, RoomEvent, ScreenSharePresets, Track, VideoPresets } from 'livekit-client';
+import { LocalTrackPublication, ScreenSharePresets, Track, VideoPresets } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import { usePopup } from '../../DraggablePopup/usePopup';
+import { toast } from 'react-toastify';
 import { GifStickerEmojiPopup } from '../../GifsStickersEmojis';
 import SoundSquare from '../../GifsStickersEmojis/SoundSquare';
 import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
 import { ReactionChannelInfo } from '../MyVideoConference/Reaction/types';
 import { useSendReaction } from '../MyVideoConference/Reaction/useSendReaction';
-import VoicePopout from '../VoicePopout/VoicePopout';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
 import { ScreenShareToggleButton } from './TrackToggle/ScreenShareToggleButton';
 import { TrackToggle } from './TrackToggle/TrackToggle';
@@ -92,12 +91,6 @@ const ControlBar = ({
 	const { saveAudioInputDeviceId, saveVideoInputDeviceId } = usePersistentUserChoices({
 		preventSave: !saveUserChoices
 	});
-
-	useEffect(() => {
-		if (!isOpenPopOut) {
-			closeVoicePopup();
-		}
-	}, [isOpenPopOut]);
 
 	const handleRequestCameraPermission = useCallback(async () => {
 		const permissionStatus = await requestMediaPermission('video');
@@ -262,38 +255,22 @@ const ControlBar = ({
 		[dispatch]
 	);
 
-	const screenShareTracks = useTracks(
-		[
-			{ source: Track.Source.Camera, withPlaceholder: true },
-			{ source: Track.Source.ScreenShare, withPlaceholder: false }
-		],
-		{ updateOnlyOn: [RoomEvent.ActiveSpeakersChanged], onlySubscribed: false }
-	);
-
-	const [openVoicePopup, closeVoicePopup] = usePopup(
-		({ closePopup }) => (
-			<VoicePopout
-				tracks={screenShareTracks}
-				onClose={() => {
-					closePopup();
-				}}
-			/>
-		),
-		{
-			title: 'Voice Channel',
-			handleClose: () => dispatch(voiceActions.setOpenPopOut(false))
-		}
-	);
-
-	const togglePopout = useCallback(() => {
-		if (isOpenPopOut) {
-			closeVoicePopup();
-			dispatch(voiceActions.setOpenPopOut(false));
+	const togglePopout = useCallback(async () => {
+		const video = document.getElementById('focusTrack') as HTMLVideoElement | null;
+		if (video) {
+			try {
+				if (document.pictureInPictureElement) {
+					await document.exitPictureInPicture();
+				} else {
+					await video.requestPictureInPicture();
+				}
+			} catch (err) {
+				console.error('PiP error:', err);
+			}
 		} else {
-			openVoicePopup();
-			dispatch(voiceActions.setOpenPopOut(true));
+			toast.warning('Please select a video track to popout !');
 		}
-	}, [dispatch, isOpenPopOut, openVoicePopup, closeVoicePopup]);
+	}, [dispatch]);
 
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
@@ -321,7 +298,7 @@ const ControlBar = ({
 	}, [showSoundPanel]);
 
 	const handleEmojiSelect = useCallback(
-		(emoji: string, emojiId: string) => {
+		(emojiId: string, emoji: string) => {
 			sendEmojiReaction(emoji, emojiId);
 		},
 		[sendEmojiReaction]
@@ -426,12 +403,10 @@ const ControlBar = ({
 							onDeviceError={(error) => onDeviceError?.({ source: Track.Source.Camera, error })}
 						/>
 						{hasCameraAccess && (
-							<>
-								<MediaDeviceMenu
-									kind="videoinput"
-									onActiveDeviceChange={(_kind, deviceId) => saveVideoInputDeviceId(deviceId ?? 'default')}
-								/>
-							</>
+							<MediaDeviceMenu
+								kind="videoinput"
+								onActiveDeviceChange={(_kind, deviceId) => saveVideoInputDeviceId(deviceId ?? 'default')}
+							/>
 						)}
 					</div>
 				)}

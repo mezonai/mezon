@@ -1,4 +1,4 @@
-import { Colors, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { appActions, selectCurrentLanguage, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,7 @@ export const LanguageSetting = () => {
 				renderItem={({ item }) => (
 					<Pressable onPress={() => changeLanguage(item.value)} style={[themeStyles.languageItem]}>
 						<Text style={themeStyles.optionText}>{item.title}</Text>
-						{currentLanguage === item.value ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.bgViolet} /> : null}
+						{currentLanguage === item.value ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.bgViolet} /> : null}
 					</Pressable>
 				)}
 			/>

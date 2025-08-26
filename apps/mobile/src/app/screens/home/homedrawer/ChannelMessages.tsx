@@ -25,6 +25,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DeviceEventEmitter, Keyboard, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { TopAlert } from '../../../components/NotificationPermissionAlert';
 import { IconCDN } from '../../../constants/icon_cdn';
 import MessageItem from './MessageItem';
 import ChannelMessageList, { ViewLoadMore } from './components/ChannelMessageList';
@@ -66,6 +67,7 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 	const navigation = useNavigation<any>();
 
 	const userId = useSelector(selectAllAccount)?.user?.id;
+
 
 	useEffect(() => {
 		const event = DeviceEventEmitter.addListener(ActionEmitEvent.SCROLL_TO_BOTTOM_CHAT, () => {
@@ -275,6 +277,8 @@ const ChannelMessages = React.memo(({ channelId, topicId, clanId, mode, isDM, is
 
 	return (
 		<View style={styles.wrapperChannelMessage}>
+			<TopAlert />
+
 			<ChannelMessageLoading channelId={channelId} isEmptyMsg={!messages?.length} />
 			{isLoadMore.current?.[ELoadMoreDirection.top] && <ViewLoadMore isLoadMoreTop={true} />}
 			{messages?.length ? (

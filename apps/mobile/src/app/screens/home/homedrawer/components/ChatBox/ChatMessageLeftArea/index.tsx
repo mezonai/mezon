@@ -6,14 +6,13 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import AttachmentSwitcher from '../../AttachmentPicker/AttachmentSwitcher';
-import { IModeKeyboardPicker } from '../../BottomKeyboardPicker';
 import { style } from '../ChatBoxBottomBar/style';
 
 interface IChatMessageLeftAreaProps {
 	isAvailableSending: boolean;
 	isShowCreateThread?: boolean;
-	modeKeyBoardBottomSheet: IModeKeyboardPicker;
-	handleKeyboardBottomSheetMode: (mode: IModeKeyboardPicker) => void;
+	modeKeyBoardBottomSheet: string;
+	handleKeyboardBottomSheetMode: (mode: string) => void;
 }
 
 export interface IChatMessageLeftAreaRef {

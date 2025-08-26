@@ -1,31 +1,31 @@
 import { useChatReaction, useEmojiSuggestionContext, useEscapeKeyClose, useGifsStickersEmoji, usePermissionChecker } from '@mezon/core';
 import {
-	emojiRecentActions,
-	emojiSuggestionActions,
-	referencesActions,
-	selectAddEmojiState,
-	selectCurrentChannel,
-	selectMessageByMessageId,
-	selectModeResponsive,
-	selectThreadCurrentChannel,
-	useAppDispatch,
-	useAppSelector
+  emojiRecentActions,
+  emojiSuggestionActions,
+  referencesActions,
+  selectAddEmojiState,
+  selectCurrentChannel,
+  selectMessageByMessageId,
+  selectModeResponsive,
+  selectThreadCurrentChannel,
+  useAppDispatch,
+  useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
-	EEmojiCategory,
-	EPermission,
-	EmojiPlaces,
-	FOR_SALE_CATE,
-	IEmoji,
-	MAX_LENGTH_MESSAGE_BUZZ,
-	ModeResponsive,
-	RECENT_EMOJI_CATEGORY,
-	RequestInput,
-	SubPanelName,
-	getIdSaleItemFromSource,
-	getSrcEmoji,
-	isPublicChannel
+  EEmojiCategory,
+  EPermission,
+  EmojiPlaces,
+  FOR_SALE_CATE,
+  IEmoji,
+  MAX_LENGTH_MESSAGE_BUZZ,
+  ModeResponsive,
+  RECENT_EMOJI_CATEGORY,
+  RequestInput,
+  SubPanelName,
+  getIdSaleItemFromSource,
+  getSrcEmoji,
+  isPublicChannel
 } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MentionItem } from 'react-mentions';
@@ -156,7 +156,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			if (props.emojiAction === EmojiPlaces.EMOJI_EDITOR_BUZZ) {
 				const lastIndexOfInputPlainText = (buzzInputRequest?.content ?? '')?.length;
 				if (lastIndexOfInputPlainText > MAX_LENGTH_MESSAGE_BUZZ) return;
-				const buzzInputRequestMentionArr = buzzInputRequest?.mentionRaw ?? [];
+				// const buzzInputRequestMentionArr = buzzInputRequest?.mentionRaw ?? [];
 				const lastIndexOfInputValue = (buzzInputRequest?.valueTextInput ?? '')?.length;
 				const newEmoji: MentionItem = {
 					childIndex: 0,
@@ -168,7 +168,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 				if (setBuzzInputRequest) {
 					setBuzzInputRequest({
 						content: (buzzInputRequest?.content ?? '') + emojiPicked,
-						mentionRaw: [...buzzInputRequestMentionArr, newEmoji],
+						// mentionRaw: [...buzzInputRequestMentionArr, newEmoji],
 						valueTextInput: (buzzInputRequest?.valueTextInput ?? '') + `::[${emojiPicked}](${emojiId})`
 					});
 				}
@@ -177,7 +177,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 				}
 			}
 			if (props.onEmojiSelect) {
-				props.onEmojiSelect(emojiPicked, emojiId);
+				props.onEmojiSelect(emojiId, emojiPicked);
 			}
 		},
 		[
@@ -197,7 +197,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			setSuggestionEmojiObjPicked,
 			shiftPressedState,
 			buzzInputRequest?.content,
-			buzzInputRequest?.mentionRaw,
+			// buzzInputRequest?.mentionRaw,
 			buzzInputRequest?.valueTextInput,
 			setBuzzInputRequest,
 			toggleEmojiPanel,

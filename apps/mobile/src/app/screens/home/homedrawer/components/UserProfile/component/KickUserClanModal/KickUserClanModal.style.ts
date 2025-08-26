@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -10,20 +10,20 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			justifyContent: 'center',
 			borderRadius: size.s_14,
-			backgroundColor: colors.bgInputPrimary,
+			backgroundColor: colors.bgInputPrimary
 		},
 		userMinusIcon: { flexDirection: 'row', alignContent: 'center', justifyContent: 'center', marginBottom: size.s_20 },
 		clanName: {
 			textAlign: 'center',
 			fontSize: size.medium,
 			fontWeight: '700',
-			color: colors.text,
+			color: colors.text
 		},
 		textError: {
 			textAlign: 'center',
 			fontSize: size.s_14,
 			fontWeight: '700',
-			color: Colors.vividScarlet,
+			color: '#d1323f',
 			paddingTop: size.s_10
 		},
 		description: {
@@ -35,23 +35,23 @@ export const style = (colors: Attributes) =>
 			lineHeight: 1.4 * 16
 		},
 		textAreaBox: {
-			paddingVertical: Metrics.size.xl,
+			paddingVertical: Metrics.size.xl
 		},
 		textReason: {
 			fontSize: size.label,
 			fontWeight: '600',
-			color: Colors.textGray,
+			color: baseColor.gray,
 			marginBottom: size.s_10
 		},
 		input: {
-			backgroundColor: Colors.bgCharcoal,
-			color: Colors.textGray,
+			backgroundColor: '#313338',
+			color: colors.textDisabled,
 			fontSize: size.label,
 			fontWeight: '600'
 		},
 		button: {
 			borderRadius: size.s_20,
-			backgroundColor: Colors.danger,
+			backgroundColor: baseColor.redStrong,
 			padding: size.s_10
 		},
 		textButton: {

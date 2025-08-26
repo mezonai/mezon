@@ -1,6 +1,6 @@
 import { useFriends } from '@mezon/core';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, FriendsEntity, channelUsersActions, directActions, useAppDispatch } from '@mezon/store-mobile';
+import { DirectEntity, FriendsEntity, appActions, channelUsersActions, directActions, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType, User } from 'mezon-js';
 import { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -17,6 +17,7 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
+import { checkNotificationPermissionAndNavigate } from '../../../utils/notificationPermissionHelper';
 import { style } from './styles';
 
 export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: any }) => {
@@ -69,15 +70,23 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 	};
 
 	const handleAddMemberToGroupChat = async (listAdd: ApiCreateChannelDescRequest) => {
-		await dispatch(
-			channelUsersActions.addChannelUsers({
-				channelId: directMessage?.channel_id as string,
-				clanId: directMessage?.clan_id as string,
-				userIds: listAdd.user_ids ?? [],
-				channelType: directMessage?.type
-			})
-		);
-		handleMenuThreadBack();
+		try {
+			dispatch(appActions.setLoadingMainMobile(true));
+			const listMembersAdd = listAdd?.user_ids?.filter((userId) => !directMessage?.user_id?.includes(userId)) ?? [];
+			await dispatch(
+				channelUsersActions.addChannelUsers({
+					channelId: directMessage?.channel_id as string,
+					clanId: directMessage?.clan_id as string,
+					userIds: listMembersAdd,
+					channelType: directMessage?.type
+				})
+			);
+			handleMenuThreadBack();
+		} catch (error) {
+			console.error('Error adding member to group chat:', error);
+		} finally {
+			dispatch(appActions.setLoadingMainMobile(false));
+		}
 	};
 
 	const createNewGroup = async () => {
@@ -110,15 +119,17 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		);
 		const resPayload = response.payload as ApiCreateChannelDescRequest;
 		if (resPayload.channel_id) {
-			if (isTabletLandscape) {
-				await dispatch(directActions.setDmGroupCurrentId(resPayload.channel_id));
-				navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-			} else {
-				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
-					directMessageId: resPayload.channel_id,
-					from: APP_SCREEN.MESSAGES.NEW_GROUP
-				});
-			}
+			await checkNotificationPermissionAndNavigate(() => {
+				if (isTabletLandscape) {
+					dispatch(directActions.setDmGroupCurrentId(resPayload.channel_id));
+					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+				} else {
+					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
+						directMessageId: resPayload.channel_id,
+						from: APP_SCREEN.MESSAGES.NEW_GROUP
+					});
+				}
+			});
 		}
 	};
 

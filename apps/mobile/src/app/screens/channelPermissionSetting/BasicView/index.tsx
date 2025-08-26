@@ -1,11 +1,13 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
+	IUpdateChannelRequest,
 	appActions,
 	channelsActions,
 	fetchUserChannels,
+	listChannelRenderAction,
 	rolesClanActions,
 	selectAllUserChannel,
 	selectAllUserClans,
@@ -14,6 +16,7 @@ import {
 } from '@mezon/store-mobile';
 import { isPublicChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
+import { ApiChangeChannelPrivateRequest } from 'mezon-js/api.gen';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -59,7 +62,10 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 
 	const availableRoleList = useMemo(() => {
 		if (channel?.channel_private) {
-			return listOfChannelRole?.filter((role) => typeof role?.role_channel_active === 'number' && role?.role_channel_active === 1);
+			return listOfChannelRole?.filter(
+				(role) =>
+					typeof role?.role_channel_active === 'number' && role?.role_channel_active === 1 && role?.slug !== `everyone-${role?.clan_id}`
+			);
 		}
 		return [];
 	}, [listOfChannelRole, channel?.channel_private]);
@@ -83,19 +89,39 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 	};
 
 	const updateChannel = useCallback(
-		async (privateChannel: boolean) => {
+		async (isPublic: boolean) => {
 			try {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 				dispatch(appActions.setLoadingMainMobile(true));
 
-				const response = await dispatch(
-					channelsActions.updateChannelPrivate({
-						channel_id: channel.id,
-						channel_private: privateChannel ? 1 : 0,
-						user_ids: [userId],
-						role_ids: []
+				const currentChannelPrivate = isPublic ? 1 : 0;
+				const updateUpdateChannelRequest: ApiChangeChannelPrivateRequest = {
+					channel_id: channel?.channel_id || '',
+					channel_private: currentChannelPrivate,
+					user_ids: [userId],
+					role_ids: []
+				};
+
+				const response = await dispatch(channelsActions.updateChannelPrivate(updateUpdateChannelRequest));
+
+				dispatch(
+					channelsActions.updateChannelPrivateState({
+						clanId: channel?.clan_id || '',
+						channelId: channel?.channel_id || '',
+						channelPrivate: Number(!isPublic)
 					})
 				);
+				dispatch(
+					listChannelRenderAction.updateChannelInListRender({
+						channelId: channel?.channel_id || '',
+						clanId: channel?.clan_id || '',
+						dataUpdate: {
+							...updateUpdateChannelRequest,
+							channel_private: Number(!isPublic)
+						} as IUpdateChannelRequest
+					})
+				);
+
 				const isError = ERequestStatus.Rejected === response?.meta?.requestStatus;
 				if (isError) {
 					throw new Error();
@@ -104,7 +130,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 						type: 'success',
 						props: {
 							text2: t('channelPermission.toast.success'),
-							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
 						}
 					});
 				}

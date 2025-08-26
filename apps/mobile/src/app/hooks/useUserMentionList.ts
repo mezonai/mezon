@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { EVERYONE_ROLE_ID, getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
+import { getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiRole } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
@@ -78,7 +78,7 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 		if (!Array.isArray(rolesInClan)) {
 			return [];
 		}
-		return rolesInClan.filter((role) => role?.id && role.id !== EVERYONE_ROLE_ID);
+		return rolesInClan.filter((role) => role?.id && role?.slug !== `everyone-${role?.clan_id}`);
 	}, [rolesInClan]);
 
 	const getMembersChannel = useCallback((): ChannelMembersEntity[] => {

@@ -48,9 +48,9 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 					url: STICKER_WAVE.URL,
 					filetype: 'image/gif',
 					filename: STICKER_WAVE.NAME,
-					size: 115712,
-					width: 306,
-					height: 300
+					size: 309248,
+					width: 154,
+					height: 150
 				}
 			];
 

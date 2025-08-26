@@ -21,6 +21,9 @@ const SettingRightClan: React.FC<SettingUserClanProfileEditProps> = ({ clanId })
 			<p className="mt-[20px] font-bold text-sm  tracking-wide">CHOOSE A CLAN</p>
 
 			<Select
+				classNames={{
+					menuList: () => 'thread-scroll'
+				}}
 				className=" mt-1 text-theme-primary-active bg-input-secondary rounded-lg	"
 				classNamePrefix="select"
 				value={

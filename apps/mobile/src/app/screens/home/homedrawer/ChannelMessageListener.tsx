@@ -17,7 +17,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect } from 'react';
-import { DeviceEventEmitter, Linking, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Linking, View } from 'react-native';
 import { useWebRTCStream } from '../../../components/StreamContext/StreamContext';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { linkGoogleMeet } from '../../../utils/helpers';
@@ -71,7 +71,7 @@ const ChannelMessageListener = React.memo(() => {
 				const currentDirectId = selectDmGroupCurrentId(store.getState());
 				const currentClanId = currentDirectId ? '0' : clanIdStore;
 				const topicIdStore = selectCurrentTopicId(store.getState());
-
+				Keyboard.dismiss();
 				if (topicIdStore) {
 					navigation.goBack();
 				}

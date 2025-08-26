@@ -3,7 +3,7 @@ import { ETypeMEntion, IEmojiOnMessage, IHashtagOnMessage, IMentionOnMessage, ge
 import { MentionItem } from 'react-mentions';
 
 const processMention = (
-	mentionsRaw: MentionItem[],
+	mentionsRaw: MentionItem[] | undefined,
 	roles: RolesClanEntity[],
 	membersOfChild: ChannelMembersEntity[],
 	membersOfParent: ChannelMembersEntity[],

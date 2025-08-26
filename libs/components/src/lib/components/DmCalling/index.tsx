@@ -47,6 +47,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const avatarImages = currentDmGroup?.channel_avatar || [];
+	const nameImages = currentDmGroup?.display_names || [];
 	const isMuteMicrophone = useSelector(selectIsMuteMicrophone);
 	const isShowShareScreen = useSelector(selectIsShowShareScreen);
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
@@ -316,7 +317,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								key={index}
 								height={'75px'}
 								alt={`Avatar ${index + 1}`}
-								username={`Avatar ${index + 1}`}
+								username={nameImages[index] ? nameImages[index] : `Avatar ${index + 1}`}
 								className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] font-semibold"
 								srcImgProxy={createImgproxyUrl(avatar ?? '', {
 									width: 300,

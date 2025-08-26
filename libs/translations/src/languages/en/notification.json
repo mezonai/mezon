@@ -8,8 +8,35 @@
     "notificationSettings": "Notification Settings"
   },
   "removeNotification": "Remove Notification",
-  "nothingHere":"Nothing here yet",
-  "comeBackNotify":"Come back for notifications on events , streams and more",
+  "nothingHere": "Nothing here yet",
+  "comeBackNotify": "Come back for notifications on events , streams and more",
   "repliedTo": "Replied To: ",
-  "sender": "Sender: "
+  "sender": "Sender: ",
+  "seeWhenAnswersAppear": "See when the answers appear",
+  "enablePushNotifications": "Enable push notifications",
+  "permissionAlert": {
+    "turnOnNotifications": "Turn on notifications",
+    "permissionDescription": "Please allow Mezon to send you notifications to stay in touch with your friends and family.",
+    "openSettings": "Open Settings",
+    "features": {
+      "newMessages": {
+        "title": "Get notified about new messages",
+        "description": "Stay updated when friends send you messages"
+      },
+      "mentions": {
+        "title": "Know when you are mentioned in groups",
+        "description": "Never miss when someone mentions you"
+      },
+      "muteControl": {
+        "title": "Mute specific chats and types of chats",
+        "description": "Control which notifications you receive"
+      }
+    }
+  },
+  "permissionRequest": {
+    "title": "Notification Permission",
+    "permissionDenied": "Notification permission denied.",
+    "cancel": "Cancel",
+    "ok": "OK"
+  }
 }

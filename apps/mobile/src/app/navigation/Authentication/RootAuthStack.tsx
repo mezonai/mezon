@@ -12,9 +12,11 @@ import HomeDefaultWrapper from '../../screens/home/homedrawer/HomeDefaultWrapper
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
 import InviteClanScreen from '../../screens/inviteClan/InviteClanScreen';
 import { DirectMessageDetailScreen } from '../../screens/messages/DirectMessageDetail';
+import { ProfileDetail } from '../../screens/profile/ProfileDetail';
 import { WalletScreen } from '../../screens/wallet';
 import { APP_SCREEN } from '../ScreenTypes';
 import { AuthenticationLoader } from './AuthenticationLoader';
+import { BadgeAppIconLoader } from './BadgeAppIconLoader';
 import BottomNavigatorWrapper from './BottomNavigatorWrapper';
 import { FCMNotificationLoader } from './FCMNotificationLoader';
 import { ListenerLoader } from './ListenerLoader';
@@ -84,13 +86,13 @@ export const RootAuthStack = memo(
 								open: {
 									animation: 'timing',
 									config: {
-										duration: 200
+										duration: 150
 									}
 								},
 								close: {
 									animation: 'timing',
 									config: {
-										duration: 200
+										duration: 100
 									}
 								}
 							},
@@ -115,13 +117,13 @@ export const RootAuthStack = memo(
 								open: {
 									animation: 'timing',
 									config: {
-										duration: 200
+										duration: 150
 									}
 								},
 								close: {
 									animation: 'timing',
 									config: {
-										duration: 200
+										duration: 100
 									}
 								}
 							}
@@ -162,6 +164,15 @@ export const RootAuthStack = memo(
 					/>
 					<RootStack.Screen name={APP_SCREEN.CHANNEL_APP} component={ChannelAppScreen} />
 					<RootStack.Screen name={APP_SCREEN.WALLET} component={WalletScreen} />
+					<RootStack.Screen
+						name={APP_SCREEN.PROFILE_DETAIL}
+						component={ProfileDetail}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal'
+						}}
+					/>
 					<RootStack.Screen name={APP_SCREEN.SHOP.STACK} children={(props) => <ShopStack {...props} />} />
 					<RootStack.Screen name={APP_SCREEN.INVITE_CLAN} component={InviteClanScreen} />
 				</RootStack.Navigator>
@@ -171,6 +182,7 @@ export const RootAuthStack = memo(
 				<CallingModalGroupWrapper />
 				<ChannelRouterListener />
 				<ListenerLoader />
+				<BadgeAppIconLoader />
 			</View>
 		);
 	}

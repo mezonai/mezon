@@ -2,7 +2,7 @@
   "actions": {
     "editMessage": "Chỉnh sửa tin nhắn",
     "reply": "Trả lời",
-    "createThread": "Tạo chuỗi",
+    "createThread": "Tạo chủ đề",
     "copyText": "Sao chép văn bản",
     "deleteMessage": "Xóa tin nhắn",
     "pinMessage": "Ghim tin nhắn",
@@ -117,7 +117,7 @@
   "callLog": {
     "cancel": "Bạn đã từ chối",
     "missed": "Bạn bị nhỡ",
-    "receiverRejected": "Nguời nhận từ chối",
+    "receiverRejected": "Người nhận từ chối",
     "youRejected": "Bạn đã từ chối",
     "audioCall": "Cuộc gọi thoại",
     "videoCall": "Cuộc gọi video",
@@ -140,7 +140,7 @@
   },
   "turnOffAnonymous": "Tắt ẩn danh",
   "turnOnAnonymous": "Bật ẩn danh",
-  "goToTopic": "Đi đến Topic",
+  "goToTopic": "Đi đến topic",
   "creator": "Người tạo",
   "viewTopic": "Xem topic",
   "mapView": {

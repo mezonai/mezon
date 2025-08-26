@@ -17,7 +17,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { ButtonLoading, Icons, InputField } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR, EVERYONE_ROLE_ID } from '@mezon/utils';
+import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DeleteModal } from '../DeleteRoleModal/deleteRoleModal';
@@ -89,10 +89,10 @@ const ServerSettingMainRoles = (props: ModalOpenEdit) => {
 		<>
 			{!openEdit && (
 				<>
-					<p className="text-sm mb-4">Use roles to group your server members and assign permissions.</p>
+					<p className="text-sm mb-4">Use roles to group your clan members and assign permissions.</p>
 					<div
 						onClick={() => {
-							handleRoleClick(EVERYONE_ROLE_ID);
+							handleRoleClick(rolesClan.find((role) => role.slug === `everyone-${currentClanId}`)?.id || '');
 							setOpenEdit(true);
 						}}
 						className="rounded-lg border-theme-primary bg-theme-input p-4 pr-6 flex justify-between cursor-pointer group mb-4 bg-item-hover text-theme-primary-hover"
@@ -103,7 +103,7 @@ const ServerSettingMainRoles = (props: ModalOpenEdit) => {
 							</div>
 							<div className="">
 								<h4 className="text-base font-semibold">Default permissions</h4>
-								<p className="text-xs">@everyone •&nbsp;applies to all server members</p>
+								<p className="text-xs">@everyone •&nbsp;applies to all clan members</p>
 							</div>
 						</div>
 						<Icons.ArrowDown defaultSize="w-[20px] h-[30px] -rotate-90 " />

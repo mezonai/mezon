@@ -1,6 +1,6 @@
 import { useClans, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, optionNotification } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	ChannelsEntity,
 	appActions,
@@ -385,7 +385,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const deleteMenu: IMezonMenuItemProps[] = [
 		{
 			title: t('menu.deleteServer.delete'),
-			textStyle: { color: Colors.textRed },
+			textStyle: { color: baseColor.redStrong },
 			onPress: openBottomSheet
 		}
 	];

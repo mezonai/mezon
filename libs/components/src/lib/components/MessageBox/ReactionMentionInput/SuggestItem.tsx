@@ -1,10 +1,10 @@
 import {
-	ChannelsEntity,
-	selectAllChannelsByUser,
-	selectAllHashtagDm,
-	selectChannelById,
-	selectNumberMemberVoiceChannel,
-	useAppSelector
+  ChannelsEntity,
+  selectAllChannelsByUser,
+  selectAllHashtagDm,
+  selectChannelById,
+  selectNumberMemberVoiceChannel,
+  useAppSelector
 } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import { SearchItemProps, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
@@ -136,8 +136,8 @@ const SuggestItem = ({
 	}, []);
 
 	return (
-		<div className={`flex flex-row items-center h-[24px] ${wrapSuggestItemStyle ?? 'justify-between'}`}>
-			<div className="flex flex-row items-center gap-2 py-[3px] text-theme-primary-hover text-theme-primary-hover">
+		<div className={`flex flex-row items-center h-[24px] w-full ${wrapSuggestItemStyle ?? 'justify-between'}`}>
+			<div className="flex flex-row items-center gap-2 py-[3px] text-theme-primary text-theme-primary-hover">
 				{showAvatar && (
 					<div>
 						{color ? (

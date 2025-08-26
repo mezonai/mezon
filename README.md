@@ -337,6 +337,9 @@ We welcome contributions from the community! Here's how you can help:
 Mezon is built on top of amazing open-source technologies:
 
 -   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
+-   [livekit](https://livekit.io) - Livekit
+-   [imgproxy](https://imgproxy.net) - imgproxy
+-   [minio](https://min.io) - minio
 -   [React](https://reactjs.org/) - UI framework
 -   [Nx](https://nx.dev/) - Monorepo tooling
 -   And many other fantastic open-source projects

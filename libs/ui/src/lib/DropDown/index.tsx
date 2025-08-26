@@ -1,8 +1,9 @@
 import { AlignType } from '@rc-component/trigger';
 import RcDropdown from 'rc-dropdown';
-import 'rc-dropdown/assets/index.css';
+// import 'rc-dropdown/assets/index.css';
 import { createContext, JSXElementConstructor, ReactElement, ReactNode, useContext } from 'react';
 import { Item } from './Dropdown.Content';
+import './rc-dropdown.scss';
 
 type MenuTriggerProps = {
 	children: ReactNode;
@@ -54,7 +55,7 @@ const Dropdown = ({ children, className, placement, holdOnClick = false, menu, t
 			trigger={trigger}
 			overlay={menu}
 			placement={'bottomRight'}
-			overlayClassName={`text-theme-message bg-input-secondary rounded-lg ${className}`}
+			overlayClassName={`text-theme-message bg-[var(--theme-setting-nav)]  rounded-lg ${className}`}
 			minOverlayWidthMatchTrigger
 			autoDestroy={true}
 			visible={visible}

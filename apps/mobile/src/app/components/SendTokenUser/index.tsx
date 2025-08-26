@@ -1,5 +1,4 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { forwardRef, useMemo } from 'react';

@@ -9,7 +9,7 @@ const style = (colors: Attributes) =>
 			gap: size.s_14,
 			marginTop: size.s_20,
 			paddingHorizontal: size.s_10,
-			backgroundColor: colors.primary
+			backgroundColor: 'transparent'
 		},
 		avatar: { width: size.s_40, height: size.s_40, borderRadius: size.s_40, backgroundColor: colors.secondaryLight },
 		smailText: { marginBottom: size.s_10, height: size.s_16, borderRadius: size.s_10, width: size.s_100, backgroundColor: colors.secondaryLight },

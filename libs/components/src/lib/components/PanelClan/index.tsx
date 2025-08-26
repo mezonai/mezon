@@ -155,7 +155,7 @@ const PanelClan: React.FC<IPanelCLanProps> = ({ coords, clan, setShowClanListMen
 			tabIndex={-1}
 			role={'button'}
 			style={{ left: coords.mouseX, bottom: positionTop ? '12px' : 'auto', top: positionTop ? 'auto' : coords.mouseY }}
-			className="outline-none fixed top-full  rounded-sm z-20 w-[200px] py-[10px] px-[10px] shadow-md bg-theme-contexify"
+			className="outline-none fixed top-full  rounded-sm z-50 w-[200px] py-[10px] px-[10px] shadow-md bg-theme-contexify"
 		>
 			{userProfile ? (
 				<GroupPanels>

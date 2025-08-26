@@ -1,10 +1,19 @@
-import { useTheme } from '@mezon/mobile-ui';
-import { directActions, DirectEntity, selectDirectById, selectDirectsUnreadlist, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { size, useTheme } from '@mezon/mobile-ui';
+import {
+	DirectEntity,
+	directActions,
+	selectDirectById,
+	selectDirectsUnreadlist,
+	selectIsLoadDMData,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { Circle } from 'react-native-animated-spinkit';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
@@ -82,8 +91,14 @@ export const UnreadDMBadgeList = React.memo(() => {
 	const styles = style(themeValue);
 
 	const unReadDM = useSelector(selectDirectsUnreadlist);
+	const isLoading = useSelector(selectIsLoadDMData);
 	return (
 		<View style={[styles.container, !!unReadDM?.length && styles.containerBottom]}>
+			{!isLoading && (
+				<View style={{ paddingVertical: size.s_20 }}>
+					<Circle color={themeValue.textDisabled} size={size.s_42} />
+				</View>
+			)}
 			{!!unReadDM?.length &&
 				unReadDM?.map((dm: DirectEntity, index) => {
 					return <UnreadDMBadgeItem key={`${dm?.id}_${index}`} dmId={dm?.id} numUnread={dm?.count_mess_unread || 0} />;

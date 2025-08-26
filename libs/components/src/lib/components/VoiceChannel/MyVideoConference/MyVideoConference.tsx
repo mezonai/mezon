@@ -11,7 +11,7 @@ import {
 } from '@livekit/components-react';
 import { useAppDispatch, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { LocalParticipant, LocalTrackPublication, RemoteParticipant, RoomEvent, Track } from 'livekit-client';
+import { LocalParticipant, LocalTrackPublication, RemoteParticipant, RemoteTrackPublication, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import ControlBar from '../ControlBar/ControlBar';
@@ -119,21 +119,28 @@ export function MyVideoConference({
 			}
 		};
 
-		const handleTrackUnpublish = (participant: RemoteParticipant) => {
+		const handleUserDisconnect = (participant: RemoteParticipant) => {
 			if (focusTrack && focusTrack?.participant.sid === participant.sid) {
 				layoutContext.pin.dispatch?.({ msg: 'clear_pin' });
+			}
+		};
+		const handleTrackUnpublish = async (publication: RemoteTrackPublication, participant: RemoteParticipant) => {
+			if (focusTrack.publication?.trackSid === publication.trackSid) {
+				await document.exitPictureInPicture();
 			}
 		};
 		room?.on('disconnected', handleDisconnected);
 		room?.on('localTrackUnpublished', handleLocalTrackUnpublished);
 		room?.on('reconnected', handleReconnectedRoom);
-		room?.on('participantDisconnected', handleTrackUnpublish);
+		room?.on('participantDisconnected', handleUserDisconnect);
+		room?.on('trackUnpublished', handleTrackUnpublish);
 
 		return () => {
 			room?.off('disconnected', handleDisconnected);
 			room?.off('localTrackUnpublished', handleLocalTrackUnpublished);
 			room?.off('reconnected', handleReconnectedRoom);
-			room?.off('participantDisconnected', handleTrackUnpublish);
+			room?.off('participantDisconnected', handleUserDisconnect);
+			room?.off('trackUnpublished', handleTrackUnpublish);
 		};
 	}, [room, focusTrack?.participant.sid]);
 

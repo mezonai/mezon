@@ -5,19 +5,31 @@
         "copyLink": "Copy Link",
         "facebook": "Facebook",
         "youtube": "YouTube",
-        "twitter": "X"
+        "twitter": "X",
+        "qrcode": "QR Code"
     },
     "copyLink": "Link Copied!",
     "unknownChannel": "UNKNOWN CHANNEL",
-    "yourLinkInvite":"Your invite link expires in",
+    "yourLinkInvite": "Your invite link expires in",
     "inviteFriendToChannel": "Invite friend to channel",
     "editInviteLink": "Edit invite link",
     "inviteChannel": "INVITE CHANNEL",
-    "advancedSettings":"ADVANCED SETTINGS",
-    "expireAfter":"EXPIRE AFTER",
-    "maxUsers":"MAX USERS",
-    "temporaryMembership":"Temporary Membership",
-    "memberAutoKick":"Members are automatically kicked when they disconnect unless a role is assigned.",
+    "advancedSettings": "ADVANCED SETTINGS",
+    "expireAfter": "EXPIRE AFTER",
+    "maxUsers": "MAX USERS",
+    "temporaryMembership": "Temporary Membership",
+    "memberAutoKick": "Members are automatically kicked when they disconnect unless a role is assigned.",
     "btnInvite": "Invite",
-    "btnSent": "Sent"
+    "btnSent": "Sent",
+    "qrModal": {
+        "title": "QR Code",
+        "scanToJoin": "Scan this code to join the {{clanName}}!",
+        "scanToJoinDefault": "Scan this code to join the clan!",
+        "generating": "Generating QR code...",
+        "errorGenerating": "Error generating QR code",
+        "downloadSuccess": "QR code saved to gallery",
+        "downloadError": "Error downloading QR code",
+        "shareError": "Error sharing QR code",
+        "clanDefaultName": "Clan"
+    }
 }

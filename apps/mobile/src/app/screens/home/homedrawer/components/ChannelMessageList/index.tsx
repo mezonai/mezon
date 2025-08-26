@@ -1,5 +1,5 @@
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { MessagesEntity } from '@mezon/store-mobile';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, View } from 'react-native';
@@ -21,7 +21,7 @@ export const ViewLoadMore = ({ isLoadMoreTop = false }: { isLoadMoreTop?: boolea
 
 	return (
 		<View style={[styles.wrapperLoadMore, isLoadMoreTop ? { top: 0 } : { bottom: 0 }]}>
-			<Flow size={size.s_30} color={Colors.tertiary} />
+			<Flow size={size.s_30} color={themeValue.text} />
 		</View>
 	);
 };

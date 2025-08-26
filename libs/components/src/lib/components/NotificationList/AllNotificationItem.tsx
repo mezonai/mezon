@@ -88,11 +88,15 @@ function AllNotificationItem({ notify }: NotifyMentionProps) {
 	return (
 		<div className=" bg-transparent rounded-[8px] relative group">
 			<button
-				className="absolute mr-1  top-[10px] z-50 right-3 rounded-full w-6 h-6 flex items-center justify-center text-[10px] hover:text-colorDanger"
-				onClick={(event) => handleDeleteNotification(event, parseNotify.id, parseNotify.category as NotificationCategory)}
+				onClick={(event) =>
+					handleDeleteNotification(event, parseNotify.id, parseNotify.category as NotificationCategory)
+				}
+				className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 rounded-full bg-item-theme-hover text-theme-primary hover:text-red-500 text-sm font-bold shadow-md transition-all  hover:scale-110 active:scale-95"
 			>
 				✕
 			</button>
+
+
 			{parseNotify.category === NotificationCategory.MENTIONS && (
 				<button
 					className="absolute py-1 px-2 bottom-[10px] z-50 right-3 text-[10px] rounded-lg border-theme-primary transition-all duration-300 group-hover:block hidden"

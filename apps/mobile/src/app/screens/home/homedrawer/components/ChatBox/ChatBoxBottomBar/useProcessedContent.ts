@@ -14,7 +14,8 @@ const useProcessedContent = (inputText: string) => {
 	useEffect(() => {
 		const processInput = () => {
 			const resultString = inputText.replace(/[[\]<>]/g, '');
-			const { emojis, links, markdowns, voiceRooms, bolds } = processText(resultString, emojiObjPicked);
+			const { bolds } = processBold(resultString);
+			const { emojis, links, markdowns, voiceRooms } = processText(resultString, emojiObjPicked);
 			emojiList.current = emojis;
 			linkList.current = links;
 			markdownList.current = markdowns;
@@ -30,18 +31,53 @@ const useProcessedContent = (inputText: string) => {
 
 export default useProcessedContent;
 
-const processText = (inputString: string, emojiObjPicked: any) => {
+const processBold = (inputString: string) => {
+	const bolds: ILinkOnMessage[] = [];
+	const boldPrefix = '**';
+	let i = 0;
+	let cleanedPosition = 0;
+
+	while (i < inputString.length) {
+		const start = inputString.indexOf(boldPrefix, i);
+		if (start === -1) break;
+
+		const end = inputString.indexOf(boldPrefix, start + boldPrefix.length);
+		if (end === -1) break;
+
+		const boldText = inputString.slice(start + boldPrefix.length, end);
+
+		cleanedPosition += start - i;
+
+		if (boldText.trim().length > 0) {
+			const startIndex = cleanedPosition;
+			const endIndex = startIndex + boldText.length;
+
+			bolds.push({
+				type: EBacktickType.BOLD,
+				s: startIndex,
+				e: endIndex
+			} as ILinkOnMessage);
+
+			cleanedPosition += boldText.length;
+		}
+
+		i = end + boldPrefix.length;
+	}
+
+	return { bolds };
+};
+
+const processText = (rawInputString: string, emojiObjPicked: any) => {
 	const emojis: IEmojiOnMessage[] = [];
 	const links: ILinkOnMessage[] = [];
 	const markdowns: IMarkdownOnMessage[] = [];
 	const voiceRooms: ILinkVoiceRoomOnMessage[] = [];
-	const bolds: ILinkOnMessage[] = [];
 
 	const singleBacktick = '`';
 	const tripleBacktick = '```';
 	const googleMeetPrefix = 'https://meet.google.com/';
 	const colon = ':';
-	const boldPrefix = '**';
+	const inputString = rawInputString?.replace?.(/\*\*([\s\S]*?)\*\*/g, '$1');
 
 	type Handler = {
 		predicate: (i: number) => boolean;
@@ -113,28 +149,6 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 					} as ILinkOnMessage);
 				}
 				return i2;
-			}
-		},
-		// Bold handler
-		{
-			predicate: (idx) => inputString.substring(idx, idx + boldPrefix.length) === boldPrefix,
-			handler: (idx) => {
-				const startindex = idx;
-				let i2 = idx + boldPrefix.length;
-				let bold = '';
-				while (i2 < inputString.length && inputString.substring(i2, i2 + boldPrefix.length) !== boldPrefix) {
-					bold += inputString[i2];
-					i2++;
-				}
-				if (i2 < inputString.length && inputString.substring(i2, i2 + boldPrefix.length) === boldPrefix) {
-					i2 += boldPrefix.length;
-					const endindex = i2;
-					if (bold.trim().length > 0) {
-						bolds.push({ type: EBacktickType.BOLD, s: startindex, e: endindex - boldPrefix.length * 2 } as ILinkOnMessage);
-					}
-					return endindex;
-				}
-				return idx + 1;
 			}
 		},
 		// Triple backtick markdown handler
@@ -216,5 +230,5 @@ const processText = (inputString: string, emojiObjPicked: any) => {
 		if (!handled) i++;
 	}
 
-	return { emojis, links, markdowns, voiceRooms, bolds };
+	return { emojis, links, markdowns, voiceRooms };
 };

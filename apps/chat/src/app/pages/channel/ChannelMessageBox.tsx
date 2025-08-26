@@ -27,7 +27,7 @@ export type ChannelMessageBoxProps = {
 };
 
 export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMessageBoxProps>) {
-	const currentMission = useSelector(selectMissionDone);
+	const currentMission = useSelector((state) => selectMissionDone(state, clanId as string));
 	const channelId = useMemo(() => {
 		return channel?.channel_id;
 	}, [channel?.channel_id]);
@@ -57,7 +57,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, false, undefined, ephemeralReceiverId);
 			handDoMessageMission();
 		},
-		[sendMessage, currentMission]
+		[sendMessage, currentMission, onboardingList?.mission]
 	);
 
 	const handDoMessageMission = () => {

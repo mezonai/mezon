@@ -4,7 +4,8 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		wrapper: {
-			flex: 1
+			flex: 1,
+			backgroundColor: colors.primary
 		},
 		backHeader: {
 			width: size.s_50,

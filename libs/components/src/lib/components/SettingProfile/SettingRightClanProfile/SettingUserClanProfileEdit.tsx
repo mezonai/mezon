@@ -19,10 +19,9 @@ interface SettingUserClanProfileEditProps {
 	flagOption: boolean;
 	setFlagOption: (flagOption: boolean) => void;
 	clanId: string;
-	isDM?: boolean;
 }
 
-const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({ flagOption, clanId, setFlagOption, isDM }) => {
+const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({ flagOption, clanId, setFlagOption }) => {
 	const { userProfile } = useAuth();
 	const { sessionRef, clientRef } = useMezon();
 	const userClansProfile = useSelector(selectUserClanProfileByClanID(clanId ?? '', userProfile?.user?.id ?? ''));
@@ -250,7 +249,6 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 					<PreviewSetting
 						profiles={editProfile}
 						currentDisplayName={!displayName ? userProfile?.user?.display_name : ''}
-						isDM={isDM}
 						isLoading={isLoading}
 					/>
 				</div>

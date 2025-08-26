@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Metrics, size } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, NativeModules, Platform, TouchableOpacity, View } from 'react-native';
@@ -77,7 +77,7 @@ export const RenderVideoChat = React.memo(
 							height: Math.max(160, size.s_100 * 2.5),
 							alignItems: 'center',
 							justifyContent: 'center',
-							backgroundColor: Colors.borderDim
+							backgroundColor: '#5a5b5c30'
 						}}
 					>
 						<ActivityIndicator />
@@ -94,7 +94,7 @@ export const RenderVideoChat = React.memo(
 								width: '100%',
 								height: Math.max(160, size.s_100 * 2.5),
 								borderRadius: size.s_4,
-								backgroundColor: Colors.borderDim
+								backgroundColor: '#5a5b5c30'
 							}}
 							resizeMode="cover"
 						/>

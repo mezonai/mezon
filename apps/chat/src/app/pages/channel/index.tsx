@@ -124,16 +124,16 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 
 	const currentClan = useSelector(selectCurrentClan);
-	const missionDone = useSelector(selectMissionDone);
-	const missionSum = useSelector(selectMissionSum);
+	const missionDone = useSelector((state) => selectMissionDone(state, currentClan?.id as string));
+	const missionSum = useSelector((state) => selectMissionSum(state, currentClan?.id as string));
 	const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel.clan_id as string));
 	const appIsOpen = useAppSelector((state) => selectToCheckAppIsOpening(state, channelId));
 	const appButtonLabel = appIsOpen ? 'Reset App' : 'Launch App';
 
 	const currentMission = useMemo(() => {
-		return onboardingClan.mission[missionDone];
-	}, [missionDone, channelId]);
-	const selectUserProcessing = useSelector(selectProcessingByClan(currentClan?.clan_id as string));
+		return onboardingClan.mission[missionDone || 0];
+	}, [missionDone, channelId, onboardingClan.mission]);
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClan?.clan_id as string));
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	useEffect(() => {
@@ -444,7 +444,7 @@ const OnboardingGuide = ({
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
-			{missionDone < missionSum && currentMission ? (
+			{(missionDone || 0) < missionSum && currentMission ? (
 				<div
 					className="relative rounded-t-md w-[calc(100%_-_32px)] h-14 left-4 bu bg-theme-contexify top-2 flex pt-2 px-4 pb-4 items-center gap-3"
 					onClick={handleDoNextMission}

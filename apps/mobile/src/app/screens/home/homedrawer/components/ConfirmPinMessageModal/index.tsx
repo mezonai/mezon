@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors } from '@mezon/mobile-ui';
-import { AppDispatch, UpdatePinMessage, getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId } from '@mezon/store-mobile';
+import { baseColor } from '@mezon/mobile-ui';
+import { AppDispatch, getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId, UpdatePinMessage } from '@mezon/store-mobile';
 import { isValidUrl } from '@mezon/transport';
 import { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../../../../components/Common';
+import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { EMessageActionType } from '../../enums';
@@ -97,7 +97,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			type: 'success',
 			props: {
 				text2: EMessageActionType.PinMessage === type ? t('pinSuccess') : t('unpinSuccess'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.green} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 			}
 		});
 		onClose();

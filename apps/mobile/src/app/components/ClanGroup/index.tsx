@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { ClanGroup as ClanGroupType, clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useMemo } from 'react';
@@ -20,36 +20,46 @@ interface ClanGroupProps {
 
 export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: ClanGroupProps) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue, Colors);
+	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
-	const groupClans = useMemo(() => {
-		return group?.clanIds?.map((clanId) => clans?.find((clan) => clan?.clan_id === clanId));
+	const groupClan = useMemo(() => {
+		if (!group?.clanIds?.length || !clans?.length) return [];
+		try {
+			return clans.filter((clan) => group.clanIds.includes(clan?.clan_id));
+		} catch (error) {
+			console.error('Error in groupClan: ', error);
+			return [];
+		}
 	}, [clans, group?.clanIds]);
 
 	const totalBadgeCount = useMemo(() => {
-		if (!group?.clanIds) return 0;
+		if (!groupClan?.length) return 0;
 
 		try {
-			return group.clanIds.reduce((total, clanId) => {
-				const clan = clans?.find((c) => c?.clan_id === clanId);
+			return groupClan.reduce((total, clan) => {
 				return total + (clan?.badge_count || 0);
 			}, 0);
 		} catch (error) {
 			console.error('Error in totalBadgeCount: ', error);
 			return 0;
 		}
-	}, [group?.clanIds, clans]);
+	}, [groupClan]);
 
 	const handleRemoveClanFromGroup = (clanId: string) => {
-		dispatch(clansActions.removeClanFromGroup({ groupId: group?.id, clanId }));
+		if (group?.id && clanId) {
+			dispatch(clansActions.removeClanFromGroup({ groupId: group.id, clanId }));
+		}
 	};
 
 	const handleToggleGroup = () => {
-		if (group?.clanIds?.length === 1) {
-			handleRemoveClanFromGroup(group?.clanIds?.[0]);
+		if (group?.id) {
+			dispatch(clansActions.toggleGroupExpanded(group.id));
 		}
-		dispatch(clansActions.toggleGroupExpanded(group?.id));
 	};
+
+	if (!groupClan?.length) {
+		return null;
+	}
 
 	const renderClanContent = (clan: any) => {
 		return (
@@ -78,7 +88,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 					<MezonIconCDN icon={IconCDN.forderIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
 				</TouchableOpacity>
 
-				{groupClans?.map((clan) => (
+				{groupClan?.map((clan) => (
 					<View key={`${clan?.clan_id}-expanded-container`} style={styles.clanContainer}>
 						<ClanIcon key={`${clan?.clan_id}-expanded`} data={clan} onPress={onClanPress} drag={undefined} isActive={false} />
 						<TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveClanFromGroup(clan?.clan_id)}>
@@ -94,8 +104,8 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 		<ScaleDecorator activeScale={1.5}>
 			<TouchableOpacity style={styles.collapsedGroup} onPress={handleToggleGroup} onLongPress={drag} disabled={isActive}>
 				<View style={styles.groupIcon}>
-					<View style={styles.multipleClansView}>
-						{groupClans?.slice(0, groupClans?.length === 2 ? 2 : 4)?.map((clan) => (
+					<View style={[styles.multipleClansView, groupClan.length === 1 && styles.singleClanView]}>
+						{groupClan?.slice(0, 4)?.map((clan) => (
 							<View key={`${clan?.clan_id}-collapsed`} style={styles.quarterClan}>
 								{renderClanContent(clan)}
 							</View>

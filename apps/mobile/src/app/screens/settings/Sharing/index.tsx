@@ -6,7 +6,7 @@ import {
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectDirectsOpenlist } from '@mezon/store';
 import {
 	channelMetaActions,
@@ -72,7 +72,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const [channelSelected, setChannelSelected] = useState<any>();
 	const [attachmentUpload, setAttachmentUpload] = useState<any>([]);
 
-	const listDM = useRef(useSelector(selectDirectsOpenlist));
+	const listDM = useSelector(selectDirectsOpenlist);
 	const topUserSuggestion = useRef(useSelector((state: any) => selectDirectById(state, topUserSuggestionId)));
 	const listChannels = useRef(useSelector(selectAllChannelsByUser));
 	const clans = useRef(useSelector(selectClansEntities));
@@ -83,22 +83,14 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	}, [handleReconnect]);
 
 	useEffect(() => {
-		if (!listDM?.current?.length) dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		if (!listDM?.length) dispatch(directActions.fetchDirectMessage({ noCache: true }));
 		if (data && data?.length === 1 && (data?.[0]?.weblink || data?.[0]?.text)) setDataText(data?.[0]?.weblink || data?.[0]?.text);
 		if (dataMedia?.length) convertFileFormat();
-		setDataShareTo([...(topUserSuggestion.current ? [topUserSuggestion.current] : []), ...listDMText, ...listChannelsText]);
-		return () => {
-			if (timerRef.current) {
-				clearTimeout(timerRef.current);
-			}
-		};
-	}, []);
+	}, [data, dispatch, listDM?.length]);
 
 	const listChannelsText = useMemo(() => {
 		return listChannels.current
-			?.filter(
-				(channel) => channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE
-			)
+			?.filter((channel) => channel.type !== ChannelType.CHANNEL_TYPE_GMEET_VOICE && channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE)
 			.sort((a, b) => {
 				const aLastSeen = a?.last_seen_message?.timestamp_seconds || 0;
 				const bLastSeen = b?.last_seen_message?.timestamp_seconds || 0;
@@ -108,26 +100,25 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 
 	const listDMText = useMemo(() => {
 		try {
-			const data = (listDM?.current
-				?.filter?.((channel) => !!channel?.channel_label && channel?.id !== topUserSuggestionId) || [])
-				.sort((a, b) => {
-					const aLastSeen = a?.last_seen_message?.timestamp_seconds || 0;
-					const bLastSeen = b?.last_seen_message?.timestamp_seconds || 0;
-					return bLastSeen - aLastSeen;
-				});
+			const data = (listDM?.filter?.((channel) => !!channel?.channel_label && channel?.id !== topUserSuggestionId) || []).sort((a, b) => {
+				const aLastSeen = a?.last_seen_message?.timestamp_seconds || 0;
+				const bLastSeen = b?.last_seen_message?.timestamp_seconds || 0;
+				return bLastSeen - aLastSeen;
+			});
 
 			return data || [];
 		} catch (e) {
 			return [];
 		}
-	}, []);
+	}, [listDM, topUserSuggestionId]);
 
+	useEffect(() => {
+		setDataShareTo([...(topUserSuggestion.current ? [topUserSuggestion.current] : []), ...listDMText, ...listChannelsText]);
+	}, [listChannelsText, listDMText]);
 
 	const dataMedia = useMemo(() => {
 		return data?.filter((data: { contentUri: string; filePath: string }) => !!data?.contentUri || !!data?.filePath);
-	}, []);
-
-	const timerRef = useRef<NodeJS.Timeout | null>(null);
+	}, [data]);
 
 	const handleSearchResults = useCallback((results: any[]) => {
 		setDataShareTo(results);
@@ -406,18 +397,16 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 		return attachmentUpload.every((attachment: any) => attachment?.url?.includes('http'));
 	}, [attachmentUpload]);
 
-	const renderItemSuggest = useCallback(
-		({ item, index }) => {
-			return (
-				<SharingSuggestItem
-					key={`${item?.channel_id}_${index}_share_suggest_item`}
-					item={item}
-					clans={clans.current}
-					onChooseItem={onChooseSuggestion}
-				/>
-			);
-		}, []
-	);
+	const renderItemSuggest = useCallback(({ item, index }) => {
+		return (
+			<SharingSuggestItem
+				key={`${item?.channel_id}_${index}_share_suggest_item`}
+				item={item}
+				clans={clans.current}
+				onChooseItem={onChooseSuggestion}
+			/>
+		);
+	}, []);
 
 	return (
 		<View style={styles.wrapper}>
@@ -445,30 +434,29 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				/>
 
 				<View style={styles.container}>
-					{!!dataShareTo?.length && (
-						<View>
-							<Text style={styles.title}>{t('suggestions')}</Text>
-							<FlatList
-								data={dataShareTo}
-								keyExtractor={(item, index) => `${item?.id}_${index}_suggestion`}
-								renderItem={renderItemSuggest}
-								keyboardShouldPersistTaps={'handled'}
-								onEndReachedThreshold={0.1}
-								initialNumToRender={1}
-								maxToRenderPerBatch={5}
-								windowSize={100}
-								updateCellsBatchingPeriod={10}
-								decelerationRate={'fast'}
-								disableVirtualization={true}
-								removeClippedSubviews={true}
-								getItemLayout={(_, index) => ({
-									length: size.s_42,
-									offset: size.s_42 * index,
-									index
-								})}
-							/>
-						</View>
-					)}
+					<View>
+						<Text style={styles.title}>{t('suggestions')}</Text>
+						<FlatList
+							data={dataShareTo?.length ? dataShareTo : []}
+							keyExtractor={(item, index) => `${item?.id}_${index}_suggestion`}
+							renderItem={renderItemSuggest}
+							keyboardShouldPersistTaps={'handled'}
+							onEndReachedThreshold={0.1}
+							initialNumToRender={1}
+							maxToRenderPerBatch={5}
+							windowSize={100}
+							updateCellsBatchingPeriod={10}
+							decelerationRate={'fast'}
+							disableVirtualization={true}
+							showsVerticalScrollIndicator={false}
+							removeClippedSubviews={true}
+							getItemLayout={(_, index) => ({
+								length: size.s_42,
+								offset: size.s_42 * index,
+								index
+							})}
+						/>
+					</View>
 				</View>
 				<View style={styles.chatArea}>
 					{!!getAttachmentUnique(attachmentUpload)?.length && (
@@ -544,9 +532,9 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 							style={[styles.sendButton, { opacity: channelSelected && isAttachmentUploaded ? 1 : 0.5 }]}
 						>
 							{isLoading ? (
-								<Flow size={size.s_28} color={Colors.white} />
+								<Flow size={size.s_28} color={'white'} />
 							) : (
-								<MezonIconCDN icon={IconCDN.sendMessageIcon} width={size.s_28} height={size.s_20} color={Colors.white} />
+								<MezonIconCDN icon={IconCDN.sendMessageIcon} width={size.s_28} height={size.s_20} color={'white'} />
 							)}
 						</TouchableOpacity>
 					</View>

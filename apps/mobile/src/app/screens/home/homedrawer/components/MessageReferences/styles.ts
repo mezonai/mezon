@@ -1,4 +1,4 @@
-import { Attributes, Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
@@ -21,7 +21,7 @@ export const style = (colors: Attributes) =>
 			width: size.s_20,
 			height: size.s_20,
 			borderRadius: size.s_50,
-			backgroundColor: Colors.gray48,
+			backgroundColor: baseColor.gray,
 			overflow: 'hidden'
 		},
 		repliedMessageWrapper: {
@@ -41,17 +41,17 @@ export const style = (colors: Attributes) =>
 		},
 		textAvatarMessageBoxDefault: {
 			fontSize: size.s_22,
-			color: Colors.white
+			color: 'white'
 		},
 		imageMessageRender: {
 			borderRadius: verticalScale(5),
 			marginVertical: size.s_6,
 			borderWidth: 0.5,
-			borderColor: Colors.borderPrimary
+			borderColor: '#363940'
 		},
 		repliedTextAvatar: {
 			fontSize: size.s_12,
-			color: Colors.white
+			color: 'white'
 		},
 		replyContentWrapper: {
 			width: '85%',
@@ -61,7 +61,7 @@ export const style = (colors: Attributes) =>
 			overflow: 'hidden'
 		},
 		replyDisplayName: {
-			color: Colors.caribbeanGreen,
+			color: baseColor.caribbeanGreen,
 			fontSize: size.small
 		},
 		tapToSeeAttachmentText: {

@@ -1,4 +1,4 @@
-import { Attributes, Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -9,25 +9,26 @@ export const style = (colors: Attributes) =>
 
 		wrapperLogo: {
 			alignSelf: 'center',
-			marginHorizontal: size.s_10
+			marginHorizontal: size.s_10,
+			paddingBottom: size.s_6
 		},
 
 		badge: {
-			backgroundColor: Colors.red,
+			backgroundColor: baseColor.redStrong,
 			position: 'absolute',
 			borderRadius: size.s_24,
 			borderWidth: size.s_4,
-			borderColor: Colors.secondary,
+			borderColor: colors.secondary,
 			minWidth: size.s_24,
 			height: size.s_24,
 			alignItems: 'center',
 			justifyContent: 'center',
-			bottom: -5,
+			bottom: 0,
 			right: -5
 		},
 
 		badgeText: {
-			color: Colors.white,
+			color: 'white',
 			fontWeight: 'bold',
 			fontSize: size.tiny
 		},
@@ -42,5 +43,5 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.secondary
 		},
 		contentScroll: { paddingBottom: size.s_100 },
-		separatorLine: { width: '60%', marginTop: size.s_10, alignSelf: 'center' }
+		separatorLine: { width: '60%', marginTop: size.s_6, alignSelf: 'center' }
 	});

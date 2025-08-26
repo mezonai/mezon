@@ -1,23 +1,5 @@
-import {
-	useAppNavigation,
-	useDirect,
-	useEscapeKeyClose,
-	useMemberCustomStatus,
-	useMemberStatus,
-	useOnClickOutside,
-	useSettingFooter,
-	useUserById
-} from '@mezon/core';
-import {
-	ChannelMembersEntity,
-	notificationActions,
-	selectCurrentClan,
-	selectCurrentUserId,
-	selectFriendStatus,
-	selectModeResponsive,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { useEscapeKeyClose, useMemberCustomStatus, useMemberStatus, useOnClickOutside, useSettingFooter, useUserById } from '@mezon/core';
+import { ChannelMembersEntity, selectCurrentClan, selectCurrentUserId, selectFriendStatus, selectModeResponsive, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EUserSettings, INotification, ModeResponsive } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -66,7 +48,6 @@ const UserProfileModalInner = ({
 	status,
 	customStatus
 }: UserProfileModalInnerProps) => {
-	const dispatch = useAppDispatch();
 	const userProfileRef = useRef<HTMLDivElement | null>(null);
 	const modeResponsive = useAppSelector(selectModeResponsive);
 	const userById = useUserById(userId);
@@ -75,8 +56,6 @@ const UserProfileModalInner = ({
 	const [openGroupIconBanner, setGroupIconBanner] = useState<OpenModalProps>(initOpenModal);
 	const [activeTab, setActiveTab] = useState<string>(typeTab.ABOUT_ME);
 	const [color, setColor] = useState<string>('');
-	const { createDirectMessageWithUser } = useDirect();
-	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const isSelf = currentUserId === userId;
 	const [isOPenEditOption, setIsOPenEditOption] = useState(false);
@@ -87,15 +66,6 @@ const UserProfileModalInner = ({
 	const displayUsername = name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username;
 	const userStatus = useMemberStatus(userId || '');
 	const currentClan = useSelector(selectCurrentClan);
-	const directMessageWithUser = async (userId: string) => {
-		const response = await createDirectMessageWithUser(userId);
-		if (response.channel_id) {
-			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
-			await navigate('/' + directChat);
-			onClose?.();
-			dispatch(notificationActions.setIsShowInbox(false));
-		}
-	};
 
 	const handleActiveTabChange = (tabId: string) => {
 		setActiveTab(tabId);
@@ -211,17 +181,7 @@ const UserProfileModalInner = ({
 									</div>
 								)}
 							</div>
-						) : (
-							<div className="flex items-end pr-4">
-								{/* <button
-									onClick={() => directMessageWithUser(userId || '')}
-									className="flex items-center h-8 px-4 rounded-[3px] dark:bg-buttonProfile bg-buttonMessageHover dark:hover:bg-buttonMessageHover hover:bg-buttonProfile"
-								>
-									<Icons.MessageIcon className="text-bgLightPrimary" />
-									<span className="text-sm text-bgLightPrimary font-semibold">Message</span>
-								</button> */}
-							</div>
-						)}
+						) : null}
 					</div>
 				</div>
 				<div className="bg-theme-contexify pt-[60px] pb-4 px-4 rounded-b-md w-full flex-1">

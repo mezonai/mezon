@@ -11,5 +11,15 @@
     "copySuccess": "User ID Copied",
     "emptyId": "Invalid User ID",
     "errorCopy": "Error when copy User ID: #{{error}}",
-    "manageWallet": "Manage Wallet"
+    "manageWallet": "Manage Wallet",
+    "userProfile": "USER PROFILE",
+    "message": "Message",
+    "call": "Call",
+    "addFriend": "Add Friend",
+    "cancelRequest": "Cancel Request",
+    "acceptRequest": "Accept Request",
+    "noThanks": "No, Thanks",
+    "userNotFound": "User not found",
+    "userNotFoundMessage": "The user with username @{{username}} could not be found.",
+    "goBack": "Go Back"
 }

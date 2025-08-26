@@ -65,6 +65,7 @@ const MembersSearchTab = ({ listMemberSearch }: MembersSearchTabProps) => {
 					onPress={onDetailMember}
 					isHiddenStatus={!userMeta}
 					isOffline={!userMeta?.online}
+					isMobile={userMeta?.isMobile}
 					user={user}
 					key={`${item?.['id']}_member_search_${index}}`}
 				/>

@@ -107,16 +107,16 @@ const MessageModalImage = () => {
 	};
 
 	const handleSelectNextImage = () => {
-		const newIndex = currentIndexAtt > 0 ? currentIndexAtt - 1 : currentIndexAtt;
+		if (!attachments) {
+			return;
+		}
+		const newIndex = currentIndexAtt < attachments.length - 1 ? currentIndexAtt + 1 : currentIndexAtt;
 		if (newIndex !== currentIndexAtt) {
 			handleSelectImage(newIndex);
 		}
 	};
 	const handleSelectPreviousImage = () => {
-		if (!attachments) {
-			return;
-		}
-		const newIndex = currentIndexAtt < attachments.length - 1 ? currentIndexAtt + 1 : currentIndexAtt;
+		const newIndex = currentIndexAtt > 0 ? currentIndexAtt - 1 : currentIndexAtt;
 		if (newIndex !== currentIndexAtt) {
 			handleSelectImage(newIndex);
 		}
@@ -324,10 +324,7 @@ const SenderUser = () => {
 					{user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username}
 				</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
-					{attachment?.create_time
-						? convertTimeString(attachment.create_time)
-						: 'N/A'
-					}
+					{attachment?.create_time ? convertTimeString(attachment.create_time) : 'N/A'}
 				</div>
 			</div>
 		</div>

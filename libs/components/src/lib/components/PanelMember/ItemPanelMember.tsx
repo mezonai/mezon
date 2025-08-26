@@ -14,7 +14,7 @@ const ItemPanelMember = ({ children, danger, onClick }: ItemPanelMemberProps) =>
 			data-e2e={generateE2eId(`chat.direct_message.menu.leave_group.button`)}
 		>
 			<li
-				className={`text-[14px] text-theme-primary-hover ${danger ? 'text-colorDanger hover:text-[#ff6e6e]' : 'text-theme-primary '} font-medium w-full py-[6px] px-[13px] text-left cursor-pointer list-none`}
+				className={`text-[14px]  ${danger ? 'text-colorDanger ' : 'text-theme-primary '} font-medium w-full py-[6px] px-[13px] text-left cursor-pointer list-none`}
 			>
 				{children}
 			</li>

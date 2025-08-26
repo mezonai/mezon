@@ -1,49 +1,32 @@
-import { useChannelMembers, useEditMessage, useEmojiSuggestionContext, useEscapeKey } from '@mezon/core';
+import { useChannelMembers, useEditMessage, useEmojiSuggestionContext } from '@mezon/core';
 import {
-	ChannelMembersEntity,
-	MessagesEntity,
-	pinMessageActions,
-	selectAllChannels,
-	selectAllHashtagDm,
-	selectAllRolesClan,
-	selectChannelDraftMessage,
-	selectCurrentChannelId,
-	selectTheme,
-	useAppDispatch,
-	useAppSelector
+  MessagesEntity,
+  pinMessageActions,
+  selectAllChannels,
+  selectAllHashtagDm,
+  selectAllRolesClan,
+  selectCurrentChannelId,
+  useAppDispatch
 } from '@mezon/store';
 import {
-	IMentionOnMessage,
-	IMessageSendPayload,
-	MentionDataProps,
-	RECENT_EMOJI_CATEGORY,
-	TITLE_MENTION_HERE,
-	ThemeApp,
-	addMarkdownPrefix,
-	addMention,
-	adjustTokenPositions,
-	createFormattedString,
-	filterEmptyArrays,
-	generateNewPlaintext,
-	getMarkdownPrefixItems,
-	prepareProcessedContent,
-	searchMentionsHashtag,
-	updateMarkdownPositions,
-	updateMentionPositions
+  RECENT_EMOJI_CATEGORY,
+  TITLE_MENTION_HERE,
+  addMention,
+  convertMessageToHtml,
+  filterEmptyArrays,
+  processEntitiesDirectly,
+  searchMentionsHashtag
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Mention, MentionsInput, OnChangeHandlerFunc } from 'react-mentions';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalDeleteMess from '../../components/DeleteMessageModal/ModalDeleteMess';
-import CustomModalMentions from '../../components/MessageBox/ReactionMentionInput/CustomModalMentions';
+import Mention from '../../components/MessageBox/ReactionMentionInput/Mention';
+import MentionsInput, { type FormattedText, type MentionsInputHandle } from '../../components/MessageBox/ReactionMentionInput/MentionsInput';
+import parseHtmlAsFormattedText from '../../components/MessageBox/ReactionMentionInput/parseHtmlAsFormattedText';
 import SuggestItem from '../../components/MessageBox/ReactionMentionInput/SuggestItem';
-import processMention from '../../components/MessageBox/ReactionMentionInput/processMention';
 import { UserMentionList } from '../../components/UserMentionList';
-import lightMentionsInputStyle from './LightRmentionInputStyle';
-import darkMentionsInputStyle from './RmentionInputStyle';
-import mentionStyle from './RmentionStyle';
 
 type MessageInputProps = {
 	messageId: string;
@@ -62,15 +45,14 @@ type ChannelsMentionProps = {
 
 const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode, channelLabel, message, isTopic }) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const { openEditMessageState, idMessageRefEdit, handleCancelEdit, handleSend, setChannelDraftMessage } = useEditMessage(
+	const { openEditMessageState, idMessageRefEdit, handleCancelEdit, handleSend } = useEditMessage(
 		isTopic ? currentChannelId || '' : channelId,
 		channelLabel,
 		mode,
 		message
 	);
 	const { emojis } = useEmojiSuggestionContext();
-	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-	const appearanceTheme = useSelector(selectTheme);
+	const editorRef = useRef<MentionsInputHandle | null>(null);
 	const mentionListData = UserMentionList({ channelID: channelId, channelMode: mode });
 	const rolesClan = useSelector(selectAllRolesClan);
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
@@ -79,19 +61,19 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 	}, [message?.id]);
 	const dispatch = useAppDispatch();
 
-	const queryEmojis = (query: string, callback: (data: any[]) => void) => {
-		if (!query || emojis.length === 0) return;
+	const queryEmojis = (query: string) => {
+		if (!query || emojis.length === 0) return [];
 		const q = query.toLowerCase();
-		const matches: { id: string; display: string }[] = [];
+		const matches: { id: string; display: string; src?: string }[] = [];
 
-		for (const { id, shortname, category } of emojis) {
+		for (const { id, shortname, category, src } of emojis) {
 			if (category === RECENT_EMOJI_CATEGORY || !shortname || !shortname.includes(q)) continue;
 			if (!id) continue;
-			matches.push({ id, display: shortname });
+			matches.push({ id, display: shortname, src });
 			if (matches.length === 20) break;
 		}
 
-		if (matches.length) callback(matches);
+		return matches;
 	};
 	const channels = useSelector(selectAllChannels);
 
@@ -111,164 +93,76 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 
 	useEffect(() => {
 		if (openEditMessageState && message.id === idMessageRefEdit) {
-			textareaRef.current?.focus();
+			editorRef.current?.focus();
 		}
 	}, [openEditMessageState, message.id, idMessageRefEdit]);
 
-	const channelDraftMessage = useAppSelector((state) => selectChannelDraftMessage(state, channelId));
 
-	// update prefix if type: c/pre/boldtext
-	const markdownHasPrefix = getMarkdownPrefixItems(channelDraftMessage?.draftContent?.mk ?? []);
-	const plaintextOriginal = channelDraftMessage?.draftContent?.t;
-	const updatePrefixDraftMesssage = useMemo(() => {
-		const originalDraftContent = {
-			hg: channelDraftMessage?.draftContent?.hg,
-			ej: channelDraftMessage?.draftContent?.ej,
-			lk: channelDraftMessage?.draftContent?.lk,
-			mk: channelDraftMessage?.draftContent?.mk,
-			vk: channelDraftMessage?.draftContent?.vk,
-			tp: channelDraftMessage?.draftTopicId,
-			cid: channelDraftMessage?.draftContent?.cid
+
+	const initialFormattedValue = useMemo(() => {
+
+		if (!message.content) return '';
+
+		const extendedMessage = {
+			t: message.content.t || '',
+			mentions: message.mentions || [],
+			hg: message.content.hg || [],
+			ej: message.content.ej || [],
+			mk: message.content.mk || []
 		};
-		// to get markdown will be add prefix include: code/pre/boldtext
-		// if markdown do not exist no need update
-		if (!markdownHasPrefix || markdownHasPrefix.length === 0) {
-			return {
-				updatedDraftContent: {
-					...originalDraftContent,
-					t: plaintextOriginal
-				},
-				mentionNewPos: channelDraftMessage?.draftMention
-			};
-		} else {
-			// to add `/``` or ** to token markdown
-			const addPrefix = addMarkdownPrefix(markdownHasPrefix, plaintextOriginal ?? '');
-			// to calculator new position of token markdown after added frefix
-			const updatedNewPos = updateMarkdownPositions(addPrefix ?? []);
-			// get the new plaintext with token added prefix
-			const newPlaintext = generateNewPlaintext(updatedNewPos, plaintextOriginal ?? '');
-			// update pos mention
-			const mentionNewPos = adjustTokenPositions(channelDraftMessage?.draftMention ?? [], updatedNewPos, true);
-			const hashtagNewPos = adjustTokenPositions(originalDraftContent?.hg ?? [] ?? [], updatedNewPos, true);
-			const emojiNewPos = adjustTokenPositions(originalDraftContent?.ej ?? [] ?? [], updatedNewPos, true);
+		return convertMessageToHtml(extendedMessage);
 
-			return {
-				updatedDraftContent: {
-					...originalDraftContent,
-					t: newPlaintext,
-					hg: hashtagNewPos,
-					ej: emojiNewPos
-				},
-				mentionNewPos: mentionNewPos
-			};
-		}
-	}, [channelDraftMessage?.draftContent?.t]);
+	}, [message.content, message.mentions]);
 
-	const { updatedDraftContent, mentionNewPos } = updatePrefixDraftMesssage;
+	const [inputValue, setInputValue] = useState(initialFormattedValue);
 
-	const processedContentDraft = useMemo(() => {
-		return {
-			t: updatedDraftContent?.t,
-			hg: updatedDraftContent?.hg,
-			ej: updatedDraftContent?.ej,
-			lk: updatedDraftContent?.lk,
-			mk: updatedDraftContent?.mk,
-			vk: updatedDraftContent?.vk,
-			tp: updatedDraftContent?.tp,
-			cid: updatedDraftContent?.cid
-		};
-	}, [channelDraftMessage?.draftTopicId, channelDraftMessage?.draftContent, updatePrefixDraftMesssage]);
-
-	const addMentionToContent = useMemo(
-		() => addMention(processedContentDraft as IMessageSendPayload, mentionNewPos as IMentionOnMessage[]),
-		[processedContentDraft, mentionNewPos]
-	);
-
-	const attachmentOnMessage = useMemo(() => {
-		return message.attachments;
-	}, [message.attachments]);
-
-	const formatContentDraft = useMemo(() => createFormattedString(addMentionToContent), [addMentionToContent]);
-
-	const handleFocus = () => {
-		if (textareaRef.current) {
-			const length = textareaRef.current.value.length;
-			textareaRef.current.setSelectionRange(length, length);
-		}
-	};
-
-	useEscapeKey(handleCancelEdit);
-
-	const draftContent = channelDraftMessage?.draftContent?.t;
+	useEffect(() => {
+		setInputValue(initialFormattedValue);
+	}, [initialFormattedValue]);
 
 	const originalContent = useMemo(() => {
 		return message.content?.t;
 	}, [message.content?.t]);
 
-	const onSend = async (e: React.KeyboardEvent<Element>) => {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault();
-			e.stopPropagation();
-			textareaRef.current?.blur();
 
-			if (draftContent?.trim() === '') {
-				showModal();
-			} else if (draftContent === originalContent) {
-				handleCancelEdit();
-			} else {
-				const { updatedProcessedContent, adjustedMentionsPos } = prepareProcessedContent(
-					processedContentDraft as IMessageSendPayload,
-					mentionNewPos as IMentionOnMessage[]
-				);
 
-				try {
-					await handleSend(
-						filterEmptyArrays(updatedProcessedContent as any),
-						message.id,
-						adjustedMentionsPos,
-						isTopic ? channelId : message?.content?.tp || '',
-						isTopic
-					);
-
-					dispatch(
-						pinMessageActions.updatePinMessage({
-							channelId: channelId,
-							pinId: message.id,
-							pinMessage: {
-								...message,
-								content: JSON.stringify(updatedProcessedContent)
-							}
-						})
-					);
-				} catch (error) {}
-
-				handleCancelEdit();
-			}
+	const handleSendWithFormattedText = async (formattedText: FormattedText) => {
+		const { text: newPlainTextValue, entities } = formattedText;
+		if (newPlainTextValue?.trim() === '') {
+			showModal();
+			return;
 		}
-		if (e.key === 'Escape') {
-			e.preventDefault();
-			e.stopPropagation();
+
+		if (newPlainTextValue === originalContent) {
 			handleCancelEdit();
+			return;
 		}
-	};
 
-	const handleSave = async () => {
-		if (draftContent?.trim() === '') {
-			textareaRef.current?.blur();
-			return showModal();
-		} else if (draftContent !== '' && draftContent === originalContent) {
-			return handleCancelEdit();
-		} else {
-			const { updatedProcessedContent, adjustedMentionsPos } = prepareProcessedContent(
-				processedContentDraft as IMessageSendPayload,
-				mentionNewPos as IMentionOnMessage[]
-			);
+		if (entities && entities.length > 0) {
+			const {
+				mentions: mentionList,
+				hashtags: hashtagList,
+				emojis: emojiList,
+				markdown: markdownList
+			} = processEntitiesDirectly(entities, newPlainTextValue, rolesClan);
+
+
+			const payload = {
+				t: newPlainTextValue,
+				hg: hashtagList,
+				ej: emojiList,
+				mk: markdownList,
+				cid: message?.content?.cid
+			};
+
+			const addMentionToPayload = addMention(payload, mentionList);
+			const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);
 
 			try {
 				await handleSend(
-					filterEmptyArrays(updatedProcessedContent as any),
+					removeEmptyOnPayload,
 					message.id,
-					adjustedMentionsPos,
+					mentionList,
 					isTopic ? channelId : message?.content?.tp || '',
 					isTopic
 				);
@@ -279,54 +173,45 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 						pinId: message.id,
 						pinMessage: {
 							...message,
-							content: JSON.stringify(updatedProcessedContent)
+							content: JSON.stringify(removeEmptyOnPayload)
 						}
 					})
 				);
 			} catch (error) {}
+		} else {
+			const payload = {
+				t: newPlainTextValue,
+				cid: message?.content?.cid
+			};
+
+			try {
+				await handleSend(
+					payload,
+					message.id,
+					[],
+					isTopic ? channelId : message?.content?.tp || '',
+					isTopic
+				);
+
+				dispatch(
+					pinMessageActions.updatePinMessage({
+						channelId: channelId,
+						pinId: message.id,
+						pinMessage: {
+							...message,
+							content: JSON.stringify(payload)
+						}
+					})
+			);
+			} catch (error) {}
 		}
+
 		handleCancelEdit();
 	};
 
-	const [titleMention, setTitleMention] = useState('');
 
-	const handleChange: OnChangeHandlerFunc = (event, newValue, newPlainTextValue, mentions) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-
-		const newMentions = updateMentionPositions(mentions, newValue, newPlainTextValue);
-
-		const { mentionList, hashtagList, emojiList } = processMention(
-			newMentions,
-			rolesClan,
-			membersOfChild as ChannelMembersEntity[],
-			membersOfParent as ChannelMembersEntity[]
-		);
-
-		setChannelDraftMessage(
-			channelId,
-			messageId,
-			{
-				t: newPlainTextValue,
-				hg: hashtagList,
-				ej: emojiList,
-				cid: message?.content?.cid
-			},
-			mentionList,
-			attachmentOnMessage ?? [],
-			message.content.tp as string
-		);
-
-		if (newPlainTextValue.endsWith('@')) {
-			setTitleMention('Members');
-		} else if (newPlainTextValue.endsWith('#')) {
-			setTitleMention('Channel List');
-		} else if (newPlainTextValue.endsWith(':')) {
-			setTitleMention('Emoji matching');
-		}
-	};
 	const commonChannels = useSelector(selectAllHashtagDm);
 
-	const [valueHighlight, setValueHightlight] = useState<string>('');
 	const commonChannelsMention: ChannelsMentionProps[] = useMemo(() => {
 		if (mode === ChannelStreamMode.STREAM_MODE_DM) {
 			return commonChannels.map((item) => {
@@ -340,17 +225,32 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		return [];
 	}, [mode, commonChannels]);
 
-	const handleSearchUserMention = (search: any, callback: any) => {
-		setValueHightlight(search);
-		callback(searchMentionsHashtag(search, mentionListData ?? []));
+	const handleSearchUserMention = (search: string) => {
+		return searchMentionsHashtag(search, mentionListData ?? []) as any;
 	};
 
-	const handleSearchHashtag = (search: any, callback: any) => {
-		setValueHightlight(search);
+	const handleSearchHashtag = (search: string) => {
 		if (mode === ChannelStreamMode.STREAM_MODE_DM) {
-			callback(searchMentionsHashtag(search, commonChannelsMention ?? []));
+			return searchMentionsHashtag(search, commonChannelsMention ?? []) as any;
 		} else {
-			callback(searchMentionsHashtag(search, listChannelsMention ?? []));
+			return searchMentionsHashtag(search, listChannelsMention ?? []) as any;
+		}
+	};
+
+	const handleSave = () => {
+		if (editorRef.current) {
+			const element = editorRef.current.getElement();
+			if (element) {
+				const formattedText = parseHtmlAsFormattedText(element.innerHTML, true, false);
+				handleSendWithFormattedText(formattedText as FormattedText);
+			}
+		}
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement | HTMLTextAreaElement | HTMLInputElement>) => {
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			handleCancelEdit();
 		}
 	};
 
@@ -358,85 +258,95 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		<div className="inputEdit w-full flex flex-col">
 			<div className="w-full">
 				<MentionsInput
-					onFocus={handleFocus}
-					inputRef={textareaRef}
-					value={formatContentDraft ?? '{}'}
-					className={`w-full bg-theme-surface border-theme-primary  rounded-lg p-[10px] text-theme-message customScrollLightMode mt-[5px]'}`}
-					onKeyDown={onSend}
-					onChange={handleChange}
-					rows={channelDraftMessage?.draftContent?.t?.split('\n').length}
-					forceSuggestionsAboveCursor={true}
-					style={appearanceTheme === ThemeApp.Light ? lightMentionsInputStyle : darkMentionsInputStyle}
-					customSuggestionsContainer={(children: React.ReactNode) => {
-						return <CustomModalMentions children={children} titleModalMention={titleMention} />;
+					ref={editorRef}
+					value={inputValue}
+					setCaretToEnd={true}
+					className={`w-full bg-theme-surface border-theme-primary rounded-lg p-[10px] text-theme-message customScrollLightMode mt-[5px]`}
+					onSend={(formattedText: FormattedText) => {
+						handleSendWithFormattedText(formattedText);
+					}}
+					onKeyDown={handleKeyDown}
+					placeholder="Edit message..."
+					style={{
+						minHeight: '40px',
 					}}
 				>
 					<Mention
-						appendSpaceOnAdd={true}
-						data={handleSearchUserMention}
 						trigger="@"
-						displayTransform={(id: any, display: any) => {
-							return display === TITLE_MENTION_HERE ? `${display}` : `@${display}`;
-						}}
-						renderSuggestion={(suggestion: MentionDataProps) => {
+						title="MEMBERS"
+						data={handleSearchUserMention}
+						displayPrefix="@"
+						markup="@[__display__](__id__)"
+						appendSpaceOnAdd={true}
+						renderSuggestion={(suggestion: any, search: string, highlightedDisplay: React.ReactNode, index: number, focused: boolean) => {
 							return (
-								<SuggestItem
-									valueHightLight={valueHighlight}
-									avatarUrl={suggestion.avatarUrl}
-									subText={
-										suggestion.display === TITLE_MENTION_HERE
-											? 'Notify everyone who has permission to see this channel'
-											: (suggestion.username ?? '')
-									}
-									subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
-									showAvatar={suggestion.display !== TITLE_MENTION_HERE}
-									emojiId=""
-									display={suggestion.display}
-								/>
+								<div
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									}`}
+								>
+									<SuggestItem
+                    avatarUrl={suggestion.avatarUrl}
+                    valueHightLight={search}
+                    wrapSuggestItemStyle="justify-between w-full"
+
+                    subText={
+                      suggestion.display === TITLE_MENTION_HERE
+                        ? 'Notify everyone who has permission to see this channel'
+                        : (suggestion.username ?? '')
+                    }
+                    subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
+                    showAvatar={suggestion.display !== TITLE_MENTION_HERE}
+                    display={suggestion.display}
+                    color={suggestion.color}
+									/>
+								</div>
 							);
 						}}
-						style={mentionStyle}
-						className="bg-theme-surface"
 					/>
 					<Mention
+						trigger="#"
+						title="TEXT CHANNELS"
+						data={handleSearchHashtag}
+						displayPrefix="#"
 						markup="#[__display__](__id__)"
 						appendSpaceOnAdd={true}
-						data={handleSearchHashtag}
-						trigger="#"
-						displayTransform={(id: any, display: any) => {
-							return `#${display}`;
-						}}
-						style={mentionStyle}
-						renderSuggestion={(suggestion) => (
-							<SuggestItem
-								valueHightLight={valueHighlight}
-								display={suggestion.display ?? ''}
-								symbol="#"
-								subText={(suggestion as ChannelsMentionProps).subText}
-								channelId={suggestion.id}
-								emojiId=""
-							/>
+						renderSuggestion={(suggestion, search, highlightedDisplay, index, focused) => (
+							<div key={suggestion.id} className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+								focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+							}`}>
+								<SuggestItem
+						     valueHightLight={search}
+                 display={suggestion.display}
+                 symbol="#"
+                 subText={(suggestion).subText}
+                 channelId={suggestion.id}
+								/>
+							</div>
 						)}
-						className="bg-theme-surface"
 					/>
 					<Mention
 						trigger=":"
-						markup="::[__display__](__id__)"
+						title="EMOJI MATCHING"
 						data={queryEmojis}
-						displayTransform={(id: any, display: any) => {
-							return `${display}`;
-						}}
-						renderSuggestion={(suggestion) => {
+						markup="::[__display__](__id__)"
+						appendSpaceOnAdd={true}
+						renderSuggestion={(suggestion: any, search: string, highlightedDisplay: React.ReactNode, index: number, focused: boolean) => {
 							return (
-								<SuggestItem
-									display={suggestion.display ?? ''}
-									symbol={(suggestion as any).emoji}
-									emojiId={suggestion.id as string}
-								/>
+								<div
+									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									}`}
+								>
+									<SuggestItem
+                    emojiId={suggestion.id}
+                    display={suggestion.display}
+                    valueHightLight={search}
+                    symbol={(suggestion as any).emoji}
+									/>
+								</div>
 							);
 						}}
-						className="bg-theme-surface"
-						appendSpaceOnAdd={true}
 					/>
 				</MentionsInput>
 				<div className="text-xs flex text-theme-primary">

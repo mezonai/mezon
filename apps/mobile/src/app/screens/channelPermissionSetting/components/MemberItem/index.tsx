@@ -1,5 +1,5 @@
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { channelUsersActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
@@ -40,9 +40,9 @@ export const MemberItem = memo(
 				props: {
 					text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
 					leadingIcon: isError ? (
-						<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+						<MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} />
 					) : (
-						<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+						<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
 					)
 				}
 			});
@@ -60,11 +60,11 @@ export const MemberItem = memo(
 							size={20}
 							isChecked={isChecked}
 							onPress={(value) => onSelectMemberChange(value, member?.user?.id)}
-							fillColor={Colors.bgButton}
+							fillColor={'#5865f2'}
 							iconStyle={{ borderRadius: 5 }}
 							innerIconStyle={{
 								borderWidth: 1.5,
-								borderColor: isChecked ? Colors.bgButton : Colors.tertiary,
+								borderColor: isChecked ? '#5865f2' : '#ccc',
 								borderRadius: 5
 							}}
 						/>

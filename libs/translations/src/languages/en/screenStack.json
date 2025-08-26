@@ -20,8 +20,8 @@
         "auditLog": "Audit Log",
         "filterByUser": "Filter By User",
         "filterByAction": "Filter By Action",
-        "sound": "Sound Sticker",
-        "createSound": "Create Sound Sticker"
+        "sound": "Sound Effect",
+        "createSound": "Create Sound Effect"
     },
     "menuChannelStack": {
         "channelSetting": "Channel Settings",

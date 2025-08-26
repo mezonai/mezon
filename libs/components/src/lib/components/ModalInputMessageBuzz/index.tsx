@@ -69,7 +69,7 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 
 	const handleSendBuzzMsg = useCallback(() => {
 		const emojiArr: IEmojiOnMessage[] = [];
-		inputRequest.mentionRaw.forEach((item) => {
+		inputRequest.mentionRaw?.forEach((item) => {
 			const emoji: IEmojiOnMessage = {
 				emojiid: item.id,
 				s: item.plainTextIndex,

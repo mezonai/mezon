@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { CanvasAPIEntity } from '@mezon/store-mobile';
 import { ApiAccount } from 'mezon-js/api.gen';

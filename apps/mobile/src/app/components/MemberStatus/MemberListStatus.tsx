@@ -102,6 +102,8 @@ export const MemberListStatus = React.memo(() => {
 		}
 	};
 
+	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, currentChannel?.channel_id));
+
 	const listMembersChannelGroupDM = useMemo(() => {
 		const store = getStore();
 		const membersMetaEntities = selectClanMembersMetaEntities(store.getState());
@@ -144,9 +146,8 @@ export const MemberListStatus = React.memo(() => {
 			online: onlineUsers?.map((item) => item),
 			offline: offlineUsers?.map((item) => item)
 		};
-	}, [currentChannel?.channel_id, isDMThread, myUserId]);
+	}, [currentChannel?.channel_id, isDMThread, myUserId, userChannels]);
 
-	const userChannels = useAppSelector((state) => selectAllChannelMembers(state, currentChannel?.channel_id));
 	const lisMembers = useMemo(() => {
 		if (!userChannels || !listMembersChannelGroupDM) {
 			return {

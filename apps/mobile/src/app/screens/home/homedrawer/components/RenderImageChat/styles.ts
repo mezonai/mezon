@@ -4,7 +4,6 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		imageMessageRender: {
 			borderRadius: verticalScale(5),
-			marginTop: size.s_2,
 			overflow: 'hidden'
 		},
 		wrapperTypingLabel: {

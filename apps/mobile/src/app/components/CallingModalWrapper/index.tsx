@@ -111,6 +111,8 @@ const CallingModalWrapper = () => {
 						}
 					});
 					await clearUpStorageCalling();
+					const VoIPManager = NativeModules?.VoIPManager;
+					await VoIPManager.endCurrentCallKeep();
 				}
 			} else {
 				await clearUpStorageCalling();

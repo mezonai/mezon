@@ -1,12 +1,13 @@
 import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 	StyleSheet.create({
 		card: {
 			borderRadius: size.s_10,
 			overflow: 'hidden',
-			elevation: 3
+			elevation: 3,
+			width: isTabletLandscape ? '75%' : '100%'
 		},
 		map: {
 			width: '100%',

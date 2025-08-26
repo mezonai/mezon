@@ -11,5 +11,15 @@
   "copySuccess": "Đã sao chép ID người dùng",
   "emptyId": "ID không hợp lệ",
   "errorCopy": "Lỗi khi copy ID người dùng: #{{error}}",
-  "manageWallet": "Quản lý ví"
+  "manageWallet": "Quản lý ví",
+  "userProfile": "HỒ SƠ NGƯỜI DÙNG",
+  "message": "Tin nhắn",
+  "call": "Gọi",
+  "addFriend": "Thêm bạn",
+  "cancelRequest": "Hủy lời mời",
+  "acceptRequest": "Chấp nhận lời mời",
+  "noThanks": "Không, cảm ơn",
+  "userNotFound": "Không tìm thấy người dùng",
+  "userNotFoundMessage": "Không thể tìm thấy người dùng với tên @{{username}}.",
+  "goBack": "Quay lại"
 }

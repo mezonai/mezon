@@ -1,6 +1,6 @@
 import { useClans } from '@mezon/core';
 import { ActionEmitEvent, QUALITY_IMAGE_UPLOAD, save, setDefaultChannelLoader, STORAGE_CLAN_ID } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, checkDuplicateNameClan, clansActions, getStoreAsync, selectCurrentChannel } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import React, { memo, useEffect, useState } from 'react';
@@ -125,9 +125,9 @@ const CreateClanModal = memo(() => {
 								customStyle={styles.addIcon}
 								height={size.s_30}
 								width={size.s_30}
-								color={Colors.bgButton}
+								color={'#5865f2'}
 							/>
-							<MezonIconCDN icon={IconCDN.cameraIcon} height={size.s_20} width={size.s_20} color={Colors.bgGrayLight} />
+							<MezonIconCDN icon={IconCDN.cameraIcon} height={size.s_20} width={size.s_20} color={'#676b73'} />
 							<Text style={styles.uploadText}>{t('upload')}</Text>
 						</View>
 					) : (

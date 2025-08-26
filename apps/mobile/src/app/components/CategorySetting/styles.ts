@@ -1,4 +1,4 @@
-import { Attributes, Colors, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -12,9 +12,9 @@ export const style = (colors: Attributes) =>
 			fontSize: size.regular
 		},
 		changed: {
-			color: Colors.textViolet
+			color: colors.bgViolet
 		},
 		notChange: {
-			color: Colors.titleSteelGray
+			color: '#939292'
 		}
 	});

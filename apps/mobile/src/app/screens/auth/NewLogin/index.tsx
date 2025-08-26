@@ -7,7 +7,6 @@ import { sleep } from '@mezon/utils';
 import * as Sentry from '@sentry/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import BootSplash from 'react-native-bootsplash';
 import Toast from 'react-native-toast-message';
 import WebView from 'react-native-webview';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
@@ -30,10 +29,6 @@ const NewLoginScreen = () => {
 	const dispatch = useAppDispatch();
 	const { clientRef } = useMezon();
 	const haveSentOTPRef = useRef<boolean>(false);
-
-	useEffect(() => {
-		BootSplash.hide({ fade: true });
-	}, []);
 
 	useEffect(() => {
 		haveSentOTPRef.current = false;

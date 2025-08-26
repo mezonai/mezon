@@ -1,4 +1,4 @@
-import { Attributes, baseColor, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTablet?: boolean) =>
@@ -14,7 +14,6 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 
 		container: {
-			backgroundColor: colors.primary,
 			flex: 1
 		},
 
@@ -158,7 +157,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			backgroundColor: baseColor.green
 		},
 		offline: {
-			backgroundColor: Colors.bgGrayDark
+			backgroundColor: '#676b73'
 		},
 
 		defaultText: {
@@ -179,7 +178,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 
 		groupAvatar: {
-			backgroundColor: Colors.orange,
+			backgroundColor: baseColor.orange,
 			width: size.s_40,
 			height: size.s_40,
 			borderRadius: size.s_50,
@@ -217,7 +216,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		textAvatar: {
 			textAlign: 'center',
 			fontSize: size.h4,
-			color: Colors.white
+			color: 'white'
 		},
 		lottie: { width: size.s_30, height: size.s_20 },
 		contentMessage: {
@@ -293,6 +292,6 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 		desActivity: {
 			fontSize: size.s_10,
-			color: colors.textDisabled,
+			color: colors.textDisabled
 		}
 	});

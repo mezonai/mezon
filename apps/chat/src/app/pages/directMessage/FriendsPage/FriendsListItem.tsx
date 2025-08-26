@@ -52,24 +52,24 @@ const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: 
 	return (
 		<div
 			ref={menuRef}
-			className="dark:bg-[#242529] bg-bgLightMode border dark:border-borderDefault text-contentSecondary p-2 w-[150px] text-[14px] font-medium absolute z-50"
+			className="bg-theme-contexify p-2 w-[150px] text-[14px] font-medium absolute z-50"
 			style={menuStyle}
 		>
 			<div className="flex flex-col gap-1">
 				<button
-					className="dark:hover:bg-hoverPrimary hover:bg-bgLightModeThird dark:text-textDarkTheme text-[#6a6b72] p-2 rounded-[5px] w-full flex"
+					className="text-theme-primary bg-item-hover p-2 rounded-[5px] w-full flex"
 					onClick={onClose}
 				>
 					Start Video Call
 				</button>
 				<button
-					className="dark:hover:bg-hoverPrimary hover:bg-bgLightModeThird dark:text-textDarkTheme text-[#6a6b72] p-2 rounded-[5px] w-full flex"
+					className="text-theme-primary bg-item-hover p-2 rounded-[5px] w-full flex"
 					onClick={onClose}
 				>
 					Start Voice Call
 				</button>
 				<button
-					className="dark:hover:bg-colorDanger dark:hover:text-contentSecondary hover:bg-bgLightModeThird p-2 rounded-[5px] w-full text-colorDanger flex"
+					className="hover:bg-[#f67e882a] p-2 rounded-[5px] w-full text-colorDanger flex"
 					onClick={() => {
 						onDeleteFriend(friend?.user?.username as string, friend?.user?.id as string);
 						onClose();
@@ -78,7 +78,7 @@ const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: 
 					Remove Friend
 				</button>
 				<button
-					className="dark:hover:bg-colorDanger dark:hover:text-contentSecondary hover:bg-bgLightModeThird p-2 rounded-[5px] w-full text-colorDanger flex"
+					className="hover:bg-[#f67e882a] p-2 rounded-[5px] w-full text-colorDanger flex"
 					onClick={() => {
 						onBlockFriend(friend?.user?.username as string, friend?.user?.id as string);
 						onClose();

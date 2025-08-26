@@ -11,7 +11,7 @@
     "createANewRole": "Tạo một vai trò mới",
     "description": "Đặt tên và màu sắc độc đáo cho vai trò này. Bạn luôn có thể thay đổi điều này sau.",
     "create": "Tạo",
-    "newRole": "vai trò mới",
+    "newRole": "Nhập tên vai trò mới...",
     "roleName": "TÊN VAI TRÒ",
     "createSuccess": "Tạo vai trò {{roleName}} thành công",
     "cannotCreate": "Không thể tạo {{roleName}}"
@@ -54,6 +54,8 @@
     "reset": "Đặt lại",
     "save": "Lưu"
   },
-  "roleImagePicker": "Biểu tượng role",
-  "notifyEveryone": "Thông báo cho tất cả những người có quyền xem kênh này."
+  "roleImagePicker": "Biểu tượng vai trò",
+  "notifyEveryone": "Thông báo cho tất cả những người có quyền xem kênh này.",
+  "removeImage": "Xoá",
+  "allMembers": "Tất cả thành viên"
 }

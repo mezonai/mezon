@@ -15,8 +15,8 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../utils/helpers';
+import { checkNotificationPermissionAndNavigate } from '../../../utils/notificationPermissionHelper';
 import { style } from './styles';
-
 export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
@@ -74,15 +74,17 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 				user?.user?.avatar_url || ''
 			);
 			if (response?.channel_id) {
-				if (isTabletLandscape) {
-					await dispatch(directActions.setDmGroupCurrentId(response?.channel_id));
-					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
-				} else {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
-				}
+				await checkNotificationPermissionAndNavigate(() => {
+					if (isTabletLandscape) {
+						dispatch(directActions.setDmGroupCurrentId(response?.channel_id));
+						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
+					} else {
+						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+					}
+				});
 			}
 		},
-		[createDirectMessageWithUser, navigation, store]
+		[createDirectMessageWithUser, dispatch, isTabletLandscape, navigation, store]
 	);
 
 	const handleFriendAction = useCallback(

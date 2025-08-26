@@ -165,7 +165,7 @@ export default function EmojiSelectorContainer({
 
 	const ListCategoryArea = useCallback(() => {
 		return (
-			<View style={{ backgroundColor: themeBasic === 'dark' || isReactMessage ? themeValue.primary : themeValue.tertiary }}>
+			<View style={{ backgroundColor: themeValue.primary }}>
 				<View style={styles.textInputWrapper}>
 					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={18} width={18} color={themeValue.text} />
 					<TextInput

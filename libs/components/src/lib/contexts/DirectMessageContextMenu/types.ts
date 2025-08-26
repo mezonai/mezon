@@ -20,6 +20,7 @@ export interface DirectMessageContextMenuHandlers {
 	handleEnableE2EE: () => void;
 	handleRemoveFromGroup: () => void;
 	handleLeaveGroup: () => void;
+	handleEditGroup: () => void;
 	handleBlockFriend: () => Promise<void>;
 	handleUnblockFriend: () => Promise<void>;
 }

@@ -1,4 +1,4 @@
-import { Colors, size, verticalScale } from '@mezon/mobile-ui';
+import { size, verticalScale } from '@mezon/mobile-ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
@@ -11,7 +11,7 @@ const LoadingModal = ({ isVisible }: IProps) => {
 	if (!isVisible) return <View />;
 	return (
 		<View style={styles.centeredView}>
-			<Flow size={size.s_34 * 2} color={Colors.bgViolet} />
+			<Flow size={size.s_34 * 2} color={'#5a62f4'} />
 		</View>
 	);
 };
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 		height: '100%'
 	},
 	modalView: {
-		backgroundColor: Colors.black,
+		backgroundColor: 'black',
 		borderRadius: verticalScale(20),
 		padding: verticalScale(20),
 		alignItems: 'center',

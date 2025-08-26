@@ -7,6 +7,7 @@ import {
 	selectChannelSecond,
 	selectCurrentChannelId,
 	selectCurrentClanId,
+	threadsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -39,6 +40,15 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onCloseModal,
 
 	const handleDeleteChannel = async (channelId: string) => {
 		await dispatch(channelsActions.deleteChannel({ channelId, clanId: currentClanId as string }));
+
+		if (isThread) {
+			const parentChannelId = (selectedChannel?.parent_id as string) || '';
+			const threadId = selectedChannel?.id as string;
+			if (parentChannelId && threadId) {
+				await dispatch(threadsActions.remove(threadId));
+				await dispatch(threadsActions.removeThreadFromCache({ channelId: parentChannelId, threadId }));
+			}
+		}
 		if (channelId === currentChannelId) {
 			if (currentChannelId === channelNavId) {
 				channelNavId = channelSecond.id;

@@ -64,6 +64,8 @@ export * from './mediaDimensions';
 export * from './mergeRefs';
 export * from './message';
 export * from './parseHtmlAsFormattedText';
+export * from './processEntitiesDirectly';
+export * from './convertMessageToHtml';
 export * from './resetScroll';
 export * from './schedulers';
 export * from './select';

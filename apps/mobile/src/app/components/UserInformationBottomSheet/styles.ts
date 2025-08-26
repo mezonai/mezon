@@ -1,10 +1,10 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: Colors.bgCharcoal,
+		backgroundColor: '#313338',
 		width: '100%',
 		borderTopRightRadius: 8,
 		borderTopLeftRadius: 8
@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
 		width: size.s_30,
 		height: size.s_4,
 		borderRadius: 20,
-		backgroundColor: Colors.bgCharcoal
+		backgroundColor: '#313338'
 	},
 	bottomSheet: {
 		borderTopLeftRadius: size.s_14,

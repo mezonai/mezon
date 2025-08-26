@@ -1,4 +1,4 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { PreSendAttachment } from '@mezon/utils';
 import { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
 import React, { memo, useEffect, useState } from 'react';
@@ -85,7 +85,7 @@ const GalleryItem = ({
 			)}
 			{isSelected && (
 				<View style={styles.iconSelected}>
-					<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={Colors.bgViolet} />
+					<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.bgViolet} />
 				</View>
 			)}
 			{isSelected && <View style={styles.selectedOverlay} />}

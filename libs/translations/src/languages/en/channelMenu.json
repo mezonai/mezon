@@ -66,14 +66,14 @@
     "modalConFirmLeaveThread": {
       "title": "Leave Thread",
       "yesButton": "Leave Thread",
-      "textConfirm": "Are you sure you want to Leave Thread ? You can't receive message from thread when leave this thread"
+      "textConfirm": "Are you sure you want to Leave Thread ? You can't receive messages from this thread when leave it"
     },
     "modalConFirmLeaveChannel": {
       "title": "Leave Channel",
       "yesButton": "Leave Channel",
-      "textConfirm": "Are you sure you want to Leave Channel ? You can't receive message from channel when leave this channel",
+      "textConfirm": "Are you sure you want to Leave Channel ? You can't receive messages from this channel when leave it",
       "error": "Leave channel failed: {{error}}"
     },
     "btnBadgeCount": "New",
-    "favoriteChannel":"FAVORITE CHANNEL"
+    "favoriteChannel": "FAVORITE CHANNEL"
 }

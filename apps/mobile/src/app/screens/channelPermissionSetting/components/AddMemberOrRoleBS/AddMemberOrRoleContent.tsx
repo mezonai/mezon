@@ -1,6 +1,6 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { debounce } from '@mezon/mobile-components';
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import {
 	channelUsersActions,
 	selectAllChannelMembers,
@@ -50,7 +50,9 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 
 	const listOfRoleCanAdd = useMemo(() => {
 		const addedRoleIdList = listOfChannelRole?.map((role) => role?.id) || [];
-		return allClanRoles?.filter((role) => !addedRoleIdList.includes(role?.id))?.map((role) => ({ ...role, type: EOverridePermissionType.Role }));
+		return allClanRoles
+			?.filter((role) => !addedRoleIdList.includes(role?.id) && role?.slug !== `everyone-${role?.clan_id}`)
+			?.map((role) => ({ ...role, type: EOverridePermissionType.Role }));
 	}, [listOfChannelRole, allClanRoles]);
 
 	const disableAddButton = useMemo(() => {
@@ -129,9 +131,9 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 			props: {
 				text2: isError ? t('channelPermission.toast.failed') : t('channelPermission.toast.success'),
 				leadingIcon: isError ? (
-					<MezonIconCDN icon={IconCDN.closeIcon} color={Colors.red} />
+					<MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} />
 				) : (
-					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={Colors.green} />
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
 				)
 			}
 		});
@@ -227,7 +229,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 								marginLeft: 0,
 								marginRight: 0,
 								fontWeight: 'bold',
-								color: disableAddButton ? Colors.bgGrayLight : Colors.textViolet
+								color: disableAddButton ? '#676b73' : themeValue.textViolet
 							}}
 						>
 							{t('channelPermission.bottomSheet.add')}

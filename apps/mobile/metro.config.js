@@ -13,22 +13,21 @@ const { assetExts, sourceExts } = defaultConfig.resolver;
 const customConfig = {
 	transformer: {
 		ramBundle: 'index',
-		babelTransformerPath: require.resolve('react-native-svg-transformer'),
 		getTransformOptions: async () => ({
 			transform: {
 				experimentalImportSupport: false,
 				inlineRequires: true
-			},
-		}),
+			}
+		})
 	},
 	resolver: {
 		assetExts: assetExts.filter((ext) => ext !== 'svg'),
 		sourceExts: [...sourceExts, 'cjs', 'mjs', 'svg']
-	},
+	}
 };
 
 module.exports = withNxMetro(mergeConfig(defaultConfig, customConfig), {
 	debug: false,
 	extensions: [],
-	watchFolders: [],
+	watchFolders: []
 });

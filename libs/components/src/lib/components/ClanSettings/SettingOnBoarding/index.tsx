@@ -52,7 +52,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 		setIsSaving(true);
 		try {
 			if (!checkCreateValidate) {
-				toast.error('You need to create at least one task, question, or rule before enabling the community !');
+				toast.error('You need to create at least one task, question, or rule before enabling the Onboarding!');
 				setShowOnboardingHighlight(true);
 				setTimeout(() => setShowOnboardingHighlight(false), 2000);
 				return;

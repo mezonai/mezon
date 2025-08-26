@@ -1,6 +1,6 @@
 import { useEventManagement } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors } from '@mezon/mobile-ui';
+import { baseColor } from '@mezon/mobile-ui';
 import { EventManagementEntity } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -68,7 +68,7 @@ export function EventMenu({ event }: IEventMenuProps) {
 						};
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 					},
-					textStyle: { color: Colors.textRed }
+					textStyle: { color: baseColor.redStrong }
 				}
 				// {
 				// 	title: t('menu.reportEvent'),

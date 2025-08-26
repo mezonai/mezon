@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Attributes, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (themeValue: Attributes, colors: any) =>
+export const style = (themeValue: Attributes) =>
 	StyleSheet.create({
 		expandedGroup: {
 			backgroundColor: themeValue.midnightBlue,
@@ -66,6 +66,10 @@ export const style = (themeValue: Attributes, colors: any) =>
 			alignItems: 'center'
 		},
 
+		singleClanView: {
+			justifyContent: 'flex-start'
+		},
+
 		quarterClan: {
 			width: '40%',
 			height: '40%',
@@ -85,7 +89,7 @@ export const style = (themeValue: Attributes, colors: any) =>
 		},
 
 		badge: {
-			backgroundColor: colors.red,
+			backgroundColor: baseColor.redStrong,
 			position: 'absolute',
 			borderRadius: 20,
 			borderWidth: size.s_2,
@@ -99,7 +103,7 @@ export const style = (themeValue: Attributes, colors: any) =>
 		},
 
 		badgeText: {
-			color: colors.white,
+			color: baseColor.white,
 			fontWeight: 'bold',
 			fontSize: size.s_10
 		}

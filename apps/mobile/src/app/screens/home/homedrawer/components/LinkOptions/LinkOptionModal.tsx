@@ -1,6 +1,6 @@
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import Clipboard from '@react-native-clipboard/clipboard';
 import MezonIconCDN from 'apps/mobile/src/app/componentUI/MezonIconCDN';
 import { IconCDN } from 'apps/mobile/src/app/constants/icon_cdn';
@@ -37,7 +37,7 @@ const LinkOptionModal: React.FC<LinkOptionModalProps> = ({ visible, link }) => {
 			type: 'success',
 			props: {
 				text2: t('actions.copyLinkSuccess', 'Copied link to clipboard'),
-				leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={Colors.bgGrayLight} />
+				leadingIcon: <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={'#676b73'} />
 			}
 		});
 		closeModal();

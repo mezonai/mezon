@@ -1,4 +1,3 @@
-import { Colors } from '@mezon/mobile-ui';
 import { IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
@@ -29,7 +28,7 @@ const MessageNotification = React.memo(({ message }: IMessageNotificationProps) 
 			{message?.attachments?.length ? (
 				<View style={styles.attachmentBox}>
 					<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')}</Text>
-					<MezonIconCDN icon={IconCDN.imageIcon} width={13} height={13} color={Colors.textGray} />
+					<MezonIconCDN icon={IconCDN.imageIcon} width={13} height={13} color={'#c7c7c7'} />
 				</View>
 			) : null}
 			<RenderTextMarkdownContent

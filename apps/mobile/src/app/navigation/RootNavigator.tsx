@@ -1,12 +1,5 @@
 /* eslint-disable no-console */
-import {
-	MezonStoreProvider,
-	appActions,
-	initStore,
-	selectHiddenBottomTabMobile,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store-mobile';
+import { MezonStoreProvider, appActions, initStore, selectHiddenBottomTabMobile, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { extractAndSaveConfig, useMezon } from '@mezon/transport';
 import { LinkingOptions, NavigationContainer, getStateFromPath } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo } from 'react';
@@ -114,6 +107,12 @@ const NavigationMain = memo(
 					},
 					[`${APP_SCREEN.INVITE_CLAN}`]: {
 						path: 'invite/:code',
+						parse: {
+							code: (code) => `${code}`
+						}
+					},
+					[`${APP_SCREEN.PROFILE_DETAIL}`]: {
+						path: 'chat/:code',
 						parse: {
 							code: (code) => `${code}`
 						}

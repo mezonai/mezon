@@ -143,3 +143,17 @@ export function isEqualStringArrayUnordered(a: string[], b: string[]): boolean {
 		return false;
 	}
 }
+
+export const getQueryParam = (url: string, key: string): string | null => {
+	if (!url) return null;
+	const qIndex = url.indexOf('?');
+	if (qIndex === -1) return null;
+	const hashIndex = url.indexOf('#', qIndex);
+	const search = url.slice(qIndex + 1, hashIndex === -1 ? undefined : hashIndex);
+	try {
+		const params = new URLSearchParams(search);
+		return params.get(key);
+	} catch {
+		return null;
+	}
+};

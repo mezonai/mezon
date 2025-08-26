@@ -17,25 +17,29 @@ interface EmojiSuggestionProps {
 }
 
 const filterEmojiData = (emojis: IEmoji[]) => {
-	return emojis.map(({ id, src, shortname, category, is_for_sale }) => {
-		if (is_for_sale && src) {
-			const idSale = getIdSaleItemFromSource(src);
+	return emojis
+		.filter((emoji) => emoji.id && emoji.shortname)
+		.map(({ id, src, shortname, category, is_for_sale }) => {
+			if (is_for_sale && src) {
+				const idSale = getIdSaleItemFromSource(src);
+				return {
+					id: idSale!,
+					display: shortname!,
+					src,
+					category,
+					shortname,
+					is_for_sale
+				};
+			}
 			return {
-				id: idSale,
+				id: id!,
+				display: shortname!,
 				src,
 				category,
 				shortname,
 				is_for_sale
 			};
-		}
-		return {
-			id,
-			src,
-			category,
-			shortname,
-			is_for_sale
-		};
-	});
+		});
 };
 
 export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = {}) {

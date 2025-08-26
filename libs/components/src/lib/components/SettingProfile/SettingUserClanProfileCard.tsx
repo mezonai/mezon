@@ -1,7 +1,7 @@
 import { useAuth, useMemberStatus } from '@mezon/core';
 import { selectAccountCustomStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AvatarProfile from '../ModalUserProfile/AvatarProfile';
 import { getColorAverageFromURL } from './AverageColor';
@@ -13,11 +13,11 @@ export type propProfilesform = {
 	profiles: Profilesform;
 	currentDisplayName?: string;
 	isLoading?: boolean;
-	isDM?: boolean;
+	qrProfile?: React.ReactNode;
 };
 const SettingUserClanProfileCard = (props: propProfilesform) => {
 	const { userProfile } = useAuth();
-	const { profiles, currentDisplayName } = props;
+	const { profiles, currentDisplayName, qrProfile } = props;
 	const checkUrl = profiles.urlImage === undefined || profiles.urlImage === '';
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const [color, setColor] = useState<string>('#323232');
@@ -53,8 +53,8 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 				userStatus={userStatus}
 			/>
 
-			<div className="px-[16px]">
-				<div className="bg-theme-setting-primary text-theme-primary border-theme-primary shadow w-full p-4 my-[16px] rounded-[10px] flex flex-col gap-y-6 xl:gap-y-7">
+			<div className="p-4 flex flex-col gap-4">
+				<div className="bg-theme-setting-primary text-theme-primary border-theme-primary shadow w-full p-4 rounded-[10px] flex flex-col gap-y-6 xl:gap-y-7">
 					<div className="w-[300px]">
 						<p className="font-bold tracking-wider text-xl one-line">
 							{profiles.displayName || currentDisplayName || userProfile?.user?.username}
@@ -62,6 +62,7 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 						<p className="font-medium tracking-wide text-sm">{userProfile?.user?.username}</p>
 					</div>
 				</div>
+				{qrProfile && qrProfile}
 			</div>
 		</div>
 	);

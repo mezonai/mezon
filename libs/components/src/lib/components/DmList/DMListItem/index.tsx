@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { ChannelMembersEntity, createImgproxyUrl, EUserStatus, generateE2eId } from '@mezon/utils';
+import { ChannelMembersEntity, EUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -101,7 +101,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			}}
 		>
 			<DmItemProfile
-				avatar={isTypeDMGroup ? 'assets/images/avatar-group.png' : (directMessage?.channel_avatar?.at(0) ?? '')}
+				avatar={isTypeDMGroup ? directMessage?.topic || 'assets/images/avatar-group.png' : (directMessage?.channel_avatar?.at(0) ?? '')}
 				name={directMessage?.channel_label || ''}
 				number={(directMessage?.user_id?.length || 0) + 1}
 				isTypeDMGroup={isTypeDMGroup}
@@ -159,7 +159,7 @@ const DmItemProfile = ({
 				username={name}
 				className="min-w-8 min-h-8 max-w-8 max-h-8"
 				classNameText="font-semibold"
-				srcImgProxy={createImgproxyUrl(avatar ?? '')}
+				srcImgProxy={avatar || ''}
 				src={avatar}
 			/>
 			{!isTypeDMGroup && (

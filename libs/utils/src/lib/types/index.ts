@@ -1017,7 +1017,8 @@ export enum ETypeLinkMedia {
 export type RequestInput = {
 	valueTextInput: string;
 	content: string;
-	mentionRaw: MentionItem[];
+	mentionRaw?: MentionItem[];
+	entities?: any[];
 };
 
 export type BuzzArgs = {
@@ -1512,7 +1513,7 @@ export type ImageSourceObject = {
 export type HistoryItem = {
 	valueTextInput: string;
 	content: string;
-	mentionRaw: any[];
+	mentionRaw?: any[];
 };
 
 export enum SymbolsAndIdsLengthOfMentionValue {

@@ -1,4 +1,4 @@
-import { Colors, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { useTheme, verticalScale } from '@mezon/mobile-ui';
 import { EMimeTypes, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
 import React from 'react';
 import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from 'react-native';
@@ -35,7 +35,7 @@ export const RenderDocumentsChat = React.memo(({ document, onLongPress, onPressI
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={() => Linking.openURL(document.url)} onLongPress={onLongPress} disabled={isUploading}>
 			<View style={styles.fileViewer}>
-				<MezonIconCDN icon={IconCDN.fileIcon} width={verticalScale(30)} height={verticalScale(30)} color={Colors.bgViolet} />
+				<MezonIconCDN icon={IconCDN.fileIcon} width={verticalScale(30)} height={verticalScale(30)} color={themeValue.bgViolet} />
 				<View style={{ maxWidth: '75%' }}>
 					<Text style={styles.fileName} numberOfLines={2}>
 						{document.filename}

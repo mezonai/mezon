@@ -8,7 +8,7 @@ export const style = (colors: Attributes) =>
 			paddingRight: size.s_10,
 			marginVertical: size.s_4,
 			borderRadius: size.s_8,
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondary,
 			paddingHorizontal: size.s_10,
 			paddingVertical: size.s_16,
 			gap: size.s_8,

@@ -1,11 +1,11 @@
-import { Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (themeValue: any) =>
+export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
 			flex: 1,
-			backgroundColor: themeValue.background,
+			backgroundColor: colors.primary,
 			paddingHorizontal: size.s_16,
 			paddingTop: size.s_16
 		},
@@ -18,9 +18,9 @@ export const style = (themeValue: any) =>
 			paddingVertical: size.s_8,
 			paddingHorizontal: size.s_8,
 			borderRadius: size.s_12,
-			backgroundColor: themeValue.secondary,
+			backgroundColor: colors.secondary,
 			borderBottomWidth: size.s_2,
-			borderBottomColor: themeValue.background
+			borderBottomColor: colors.primary
 		},
 		userInfo: {
 			flexDirection: 'row',
@@ -37,22 +37,22 @@ export const style = (themeValue: any) =>
 			width: size.s_40,
 			height: size.s_40,
 			borderRadius: size.s_20,
-			backgroundColor: themeValue.primary,
+			backgroundColor: colors.primary,
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
 		avatarText: {
-			color: themeValue.text,
+			color: colors.text,
 			fontSize: size.s_16,
 			fontWeight: 'bold'
 		},
 		username: {
 			fontSize: size.s_16,
 			fontWeight: '500',
-			color: themeValue.text
+			color: colors.text
 		},
 		unblockButton: {
-			backgroundColor: Colors.textRed,
+			backgroundColor: baseColor.redStrong,
 			borderRadius: size.s_20,
 			paddingHorizontal: size.s_12,
 			paddingVertical: size.s_8
@@ -67,7 +67,7 @@ export const style = (themeValue: any) =>
 			alignItems: 'center'
 		},
 		emptyText: {
-			color: themeValue.text,
+			color: colors.text,
 			fontSize: size.s_16
 		}
 	});

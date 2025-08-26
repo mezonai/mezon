@@ -14,6 +14,7 @@ import { ICategoryChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Platform, RefreshControl, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import ChannelListBackground from '../components/ChannelList/ChannelListBackground';
@@ -76,19 +77,6 @@ const ChannelList = () => {
 	) as ICategoryChannel[];
 
 	const styles = useMemo(() => style(themeValue, isTabletLandscape), [themeValue, isTabletLandscape]);
-	const contentContainerStyle = useMemo(
-		() => ({
-			backgroundColor: themeValue.secondary,
-			paddingBottom: size.s_6
-		}),
-		[themeValue?.secondary]
-	);
-	const listStyle = useMemo(
-		() => ({
-			backgroundColor: themeValue.secondary
-		}),
-		[themeValue?.secondary]
-	);
 
 	const renderItem = useCallback(
 		({ item, index }) => {
@@ -102,10 +90,7 @@ const ChannelList = () => {
 				const isActive = item?.id === currentChannelId;
 				const isHaveParentActive = item?.threadIds?.includes(currentChannelId);
 				return (
-					<View
-						key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`}
-						style={[{ backgroundColor: themeValue.secondary }, item?.threadIds && { zIndex: 1 }]}
-					>
+					<View key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`} style={[item?.threadIds && { zIndex: 1 }]}>
 						<ChannelListItem data={item} isChannelActive={isActive} isHaveParentActive={isHaveParentActive} />
 					</View>
 				);
@@ -143,7 +128,12 @@ const ChannelList = () => {
 	}, []);
 
 	return (
-		<View style={styles.mainList}>
+		<LinearGradient
+			start={{ x: 1, y: 0 }}
+			end={{ x: 0, y: 0 }}
+			colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
+			style={styles.mainList}
+		>
 			<ChannelListScroll data={data} flashListRef={flashListRef} />
 			<FlatList
 				ref={flashListRef}
@@ -164,12 +154,13 @@ const ChannelList = () => {
 				contentOffset={{ x: 0, y: 0 }}
 				onScrollToIndexFailed={onScrollToIndexFailed}
 				disableVirtualization={false}
-				contentContainerStyle={contentContainerStyle}
-				style={listStyle}
+				contentContainerStyle={{
+					paddingBottom: size.s_6
+				}}
 			/>
 			{!isTabletLandscape && <View style={{ height: 80 }} />}
 			<ButtonNewUnread />
-		</View>
+		</LinearGradient>
 	);
 };
 

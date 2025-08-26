@@ -15,10 +15,10 @@
             "headerTitle": "Step 3 of 3",
             "title": "Here's a preview of your event",
             "subtitle": "This event will auto start when it's time",
-            "subtitleVoice": "When it's time, visit to channel voice to start the event!"
+            "subtitleVoice": "When it's time, visit the voice channel to start the event!"
         },
         "channelSelection": {
-            "title": "Who are aidiences?",
+            "title": "Who are audiences?",
             "description": "Choose members in the specified channel.",
             "channel": "The audience consists of members from {{channel}}: "
         },

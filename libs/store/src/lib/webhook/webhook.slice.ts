@@ -46,12 +46,13 @@ export const fetchWebhooks = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			const response = await fetchWebhooksCached(mezon, channelId, clanId);
+
 			if (Date.now() - response.time > 100) {
 				return {
 					fromCache: true
 				};
 			}
-			return response.webhooks;
+			return { webhooks: response.webhooks, clanId: clanId };
 		} catch (error) {
 			captureSentryError(error, 'integration/fetchWebhooks');
 			return thunkAPI.rejectWithValue(error);
@@ -87,7 +88,7 @@ export const deleteWebhookById = createAsyncThunk(
 				clan_id: data.clanId
 			};
 			const response = await mezon.client.deleteWebhookById(mezon.session, data.webhook.id as string, body);
-			thunkAPI.dispatch(webhookActions.removeOneWebhook({ channelId: data.webhook.channel_id || '', webhookId: data.webhook.id || '' }));
+			thunkAPI.dispatch(webhookActions.removeOneWebhook({ clanId: data.webhook.clan_id || '', webhookId: data.webhook.id || '' }));
 			if (!response) {
 				thunkAPI.rejectWithValue({});
 			}
@@ -120,21 +121,21 @@ export const integrationWebhookSlice = createSlice({
 	reducers: {
 		upsertWebhook: (state, action: PayloadAction<ApiWebhook>) => {
 			const webhook = action.payload;
-			const { channel_id } = webhook;
+			const { clan_id } = webhook;
 
-			if (!channel_id) return;
+			if (!clan_id) return;
 
-			if (!state.webhookList[channel_id]) {
-				state.webhookList[channel_id] = webhookAdapter.getInitialState({
-					id: channel_id
+			if (!state.webhookList[clan_id]) {
+				state.webhookList[clan_id] = webhookAdapter.getInitialState({
+					id: clan_id
 				});
 			}
-			state.webhookList[channel_id] = webhookAdapter.upsertOne(state.webhookList[channel_id], webhook);
+			state.webhookList[clan_id] = webhookAdapter.upsertOne(state.webhookList[clan_id], webhook);
 		},
-		removeOneWebhook: (state, action: PayloadAction<{ channelId: string; webhookId: string }>) => {
-			const { channelId, webhookId } = action.payload;
-			if (state.webhookList[channelId]) {
-				webhookAdapter.removeOne(state.webhookList[channelId], webhookId);
+		removeOneWebhook: (state, action: PayloadAction<{ clanId: string; webhookId: string }>) => {
+			const { clanId, webhookId } = action.payload;
+			if (state.webhookList[clanId]) {
+				webhookAdapter.removeOne(state.webhookList[clanId], webhookId);
 			}
 		}
 	},
@@ -143,24 +144,19 @@ export const integrationWebhookSlice = createSlice({
 			.addCase(fetchWebhooks.pending, (state) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchWebhooks.fulfilled, (state, action: PayloadAction<any>) => {
+			.addCase(fetchWebhooks.fulfilled, (state, action: PayloadAction<{ clanId?: string; fromCache?: boolean; webhooks?: ApiWebhook[] }>) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload?.fromCache) return;
-				const webhooks: ApiWebhook[] = action.payload;
-				if (webhooks) {
-					webhooks.forEach((webhook) => {
-						const { channel_id } = webhook;
-						if (!channel_id) return;
+				const { webhooks, fromCache, clanId } = action.payload;
+				if (fromCache) return;
+				if (webhooks && clanId) {
+					if (!state.webhookList[clanId]) {
+						state.webhookList[clanId] = webhookAdapter.getInitialState({
+							id: clanId
+						});
+					}
 
-						if (!state.webhookList[channel_id]) {
-							state.webhookList[channel_id] = webhookAdapter.getInitialState({
-								id: channel_id
-							});
-						}
-
-						const updatedChannelWebhook = webhookAdapter.setMany(state.webhookList[channel_id], [webhook]);
-						state.webhookList[channel_id] = updatedChannelWebhook;
-					});
+					const updatedChannelWebhook = webhookAdapter.setAll(state.webhookList[clanId], webhooks);
+					state.webhookList[clanId] = updatedChannelWebhook;
 				}
 			})
 			.addCase(fetchWebhooks.rejected, (state) => {
@@ -177,17 +173,19 @@ export const webhookActions = {
 };
 export const getWebHookState = (rootState: { [INTEGRATION_WEBHOOK]: IWebHookState }): IWebHookState => rootState[INTEGRATION_WEBHOOK];
 export const integrationWebhookReducer = integrationWebhookSlice.reducer;
-export const getChannelIdWebhookAsSecondParam = (_: unknown, channelId: string) => channelId;
-export const selectWebhooksByChannelId = createSelector([getWebHookState, getChannelIdWebhookAsSecondParam], (state, channelId) => {
-	if (channelId === '0') {
-		const allEntities = Object.values(state?.webhookList || {}).flatMap((webhookState) => Object.values(webhookState.entities || {}));
-		return allEntities.map((entity) => ({
-			...entity
-		}));
-	}
 
-	const entities = state?.webhookList[channelId]?.entities || {};
-	return Object.values(entities).map((entity) => ({
-		...entity
-	}));
-});
+const { selectAll } = webhookAdapter.getSelectors();
+export const getChannelIdWebhookAsSecondParam = (_: unknown, channelId: string) => channelId;
+export const getChannelIdWebhookAsThirdParam = (_: unknown, __: unknown, clanId: string) => clanId;
+
+export const selectWebhooksByChannelId = createSelector(
+	[getWebHookState, getChannelIdWebhookAsSecondParam, getChannelIdWebhookAsThirdParam],
+	(state, channelId, clanId) => {
+		if (!state.webhookList[clanId]) return [];
+
+		if (channelId === '0') {
+			return selectAll(state.webhookList[clanId]);
+		}
+		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channel_id === channelId);
+	}
+);

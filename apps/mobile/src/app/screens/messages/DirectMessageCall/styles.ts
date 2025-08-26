@@ -19,10 +19,11 @@ export const style = (colors: Attributes) =>
 			borderRadius: 10,
 			flexDirection: 'row',
 			alignItems: 'center',
-			justifyContent: 'space-between'
+			justifyContent: 'space-between',
+			zIndex: 10
 		},
 		buttonCircle: {
-			backgroundColor: colors.border,
+			backgroundColor: colors.primary,
 			padding: size.s_8,
 			borderRadius: size.s_22
 		},
@@ -36,7 +37,8 @@ export const style = (colors: Attributes) =>
 			borderWidth: 1,
 			borderColor: colors.border,
 			backgroundColor: colors.primary,
-			overflow: 'hidden'
+			overflow: 'hidden',
+			zIndex: 10
 		},
 		cardNoVideo: {
 			alignItems: 'center',
@@ -49,7 +51,8 @@ export const style = (colors: Attributes) =>
 			padding: size.s_20,
 			gap: size.s_10,
 			alignItems: 'center',
-			justifyContent: 'center'
+			justifyContent: 'center',
+			zIndex: 10
 		},
 		menuIcon: {
 			justifyContent: 'center',
@@ -70,9 +73,25 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center'
 		},
 		titleConfirm: {
-			color: colors.textStrong,
+			color: colors.text,
 			marginVertical: size.s_10,
 			fontSize: size.s_18,
+			textAlign: 'center'
+		},
+		containerStatusState: {
+			gap: size.s_4,
+			flexDirection: 'row',
+			alignSelf: 'center',
+			justifyContent: 'center',
+			alignItems: 'center',
+			zIndex: 11
+		},
+		statusMain: {
+			width: '100%'
+		},
+		textStatus: {
+			color: '#fabf2b',
+			fontSize: size.s_16,
 			textAlign: 'center'
 		}
 	});

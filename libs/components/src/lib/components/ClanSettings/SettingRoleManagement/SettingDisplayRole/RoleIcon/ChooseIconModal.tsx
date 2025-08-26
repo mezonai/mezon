@@ -1,7 +1,6 @@
 import { useEscapeKeyClose, useOnClickOutside, useRoles } from '@mezon/core';
 import {
 	RootState,
-	getNewAddMembers,
 	getNewAddPermissions,
 	getNewColorRole,
 	getNewNameRole,
@@ -64,7 +63,6 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 		const newSelectedPermissions = getNewAddPermissions(state);
 		const removeMemberRoles = getRemoveMemberRoles(state);
 		const removePermissions = getRemovePermissions(state);
-		const newAddMembers = getNewAddMembers(state);
 
 		setIsLoading(true);
 		const resizeFile = (await resizeFileImage(file, 64, 64, 'file')) as File;
@@ -75,7 +73,7 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 			currentRoleId || '',
 			nameRoleNew,
 			colorRoleNew,
-			newAddMembers,
+			[],
 			newSelectedPermissions,
 			removeMemberRoles,
 			removePermissions,
@@ -122,7 +120,12 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 					</div>
 				</div>
 				<div className={'flex-1 w-full flex flex-col justify-center items-center gap-2 px-2'}>
-					<div className={'rounded flex justify-center items-center w-20 h-20 cursor-pointer group'} onClick={handleIconClick}>
+					<div
+						className={
+							'rounded-full flex border-dashed border-theme-primary border-2 justify-center items-center w-20 h-20 cursor-pointer group'
+						}
+						onClick={handleIconClick}
+					>
 						<Icons.ImageUploadIcon className="w-6 h-6 text-theme-primary group-hover:scale-110 ease-in-out duration-75" />
 					</div>
 					<p className={'text-theme-primary'}>Choose an image to upload</p>

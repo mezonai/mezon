@@ -22,7 +22,7 @@ const FocusedScreenPopup = () => {
 	const member = useAppSelector((state) => selectMemberClanByUserName(state, username));
 	const voiceUsername = member?.clan_nick || member?.user?.display_name || username;
 	const avatar = useMemo(() => {
-		return member?.clan_avatar || member?.user?.avatar_url || 'assets/images/mezon-logo-white.svg';
+		return member?.clan_avatar || member?.user?.avatar_url || '';
 	}, [member]);
 
 	const screenShareOther = otherParticipants.find((p) => p.isScreenShareEnabled);

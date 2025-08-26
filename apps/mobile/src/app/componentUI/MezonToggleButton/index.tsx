@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { Colors } from '@mezon/mobile-ui';
 import { useEffect } from 'react';
 import Animated, { Easing, Extrapolate, interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { styles } from './MezonToggleButton.styles';
@@ -13,10 +12,10 @@ const MezonToggleButton = ({
 	onChange,
 	value = false,
 	containerStyle = {},
-	toggleOffColor = Colors.bgToggleOffBtn,
-	toggleOnColor = Colors.bgToggleOnBtn,
-	toggleBgOnColor = Colors.bgToggleOnBtn,
-	toggleBgOffColor = Colors.bgToggleOnBtn,
+	toggleOffColor = '#c3c3c3',
+	toggleOnColor = '#008ECC',
+	toggleBgOnColor = '#008ECC',
+	toggleBgOffColor = '#008ECC',
 	height = 80,
 	width = 150
 }) => {

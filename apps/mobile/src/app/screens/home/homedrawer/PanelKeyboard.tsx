@@ -4,7 +4,6 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, Platform, View } from 'react-native';
 import AttachmentPicker from './components/AttachmentPicker';
-import { IModeKeyboardPicker } from './components/BottomKeyboardPicker';
 import EmojiPicker from './components/EmojiPicker';
 import { IMessageActionNeedToResolve } from './types';
 
@@ -16,11 +15,11 @@ interface IProps {
 const PanelKeyboard = React.memo((props: IProps) => {
 	const { themeValue, themeBasic } = useTheme();
 	const [heightKeyboardShow, setHeightKeyboardShow] = useState<number>(0);
-	const [typeKeyboardBottomSheet, setTypeKeyboardBottomSheet] = useState<IModeKeyboardPicker>('text');
+	const [typeKeyboardBottomSheet, setTypeKeyboardBottomSheet] = useState<string>('text');
 	const bottomPickerRef = useRef<BottomSheetModal>(null);
 	const [messageActionNeedToResolve, setMessageActionNeedToResolve] = useState<IMessageActionNeedToResolve | null>(null);
 
-	const onShowKeyboardBottomSheet = useCallback(async (isShow: boolean, type?: IModeKeyboardPicker) => {
+	const onShowKeyboardBottomSheet = useCallback(async (isShow: boolean, type?: string) => {
 		const keyboardHeight = Platform.OS === 'ios' ? 365 : 300;
 		if (isShow) {
 			bottomPickerRef?.current?.present();
@@ -37,7 +36,7 @@ const PanelKeyboard = React.memo((props: IProps) => {
 
 	useEffect(() => {
 		const eventListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, ({ isShow = false, mode = '' }) => {
-			onShowKeyboardBottomSheet(isShow, mode as IModeKeyboardPicker);
+			onShowKeyboardBottomSheet(isShow, mode as string);
 		});
 
 		return () => {

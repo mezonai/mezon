@@ -28,17 +28,6 @@ function MessageVideo({ attachmentData, isMobile = false }: MessageImage) {
 			}
 		}
 	};
-	// const handleTogglePlay = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-	// 	e.preventDefault();
-	// 	e.stopPropagation();
-	// 	if (e.currentTarget.paused) {
-	// 		e.currentTarget.play();
-	// 	} else {
-	// 		e.currentTarget.pause();
-	// 	}
-	// };
-
-	// const height = Number(attachmentData?.height) > Number(attachmentData?.width) ? 350 : 275;
 
 	const { width: realWidth, height: realHeight } = attachmentData;
 	const hasZeroDimension = !realWidth || !realHeight;
@@ -68,13 +57,19 @@ function MessageVideo({ attachmentData, isMobile = false }: MessageImage) {
 		}
 	}, [showControl]);
 
-	// const fileVideo = RenderAttachmentThumbnail({
-	// 	attachment: attachmentData,
-	// 	size: 'w-8 h-10'
-	// });
+	const handleDownloadVideo = () => {
+		if (attachmentData.url) {
+			const a = document.createElement('a');
+			a.href = attachmentData.url;
+			a.download = attachmentData.filename || 'video';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		}
+	};
 
 	return (
-		<div className="relative overflow-hidden w-full h-full rounded-lg">
+		<div className="relative overflow-hidden w-full h-full group rounded-lg">
 			<video
 				src={attachmentData.url}
 				controls={showControl}
@@ -95,11 +90,13 @@ function MessageVideo({ attachmentData, isMobile = false }: MessageImage) {
 					<Icons.PlayButton className="w-4 h-4 text-white transition-transform transition-colors duration-150 group-hover:scale-110" />
 				</div>
 			)}
-			{/* {!showControl && (
-				<div className="bottom-1 right-1 absolute w-4 h-4 rounded overflow-hidden cursor-pointer z-10" onClick={handleShowFullVideo}>
-					<Icons.FullScreen className="w-4 h-4 dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-				</div>
-			)} */}
+
+			<div
+				className="group-hover:flex hidden top-2 right-1 cursor-pointer absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center"
+				onClick={handleDownloadVideo}
+			>
+				<Icons.Download defaultSize="!w-4 !h-4 " defaultFill="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
+			</div>
 		</div>
 	);
 }

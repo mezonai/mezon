@@ -8,7 +8,14 @@ export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) =
 		throw new Error('inviteId ID null');
 	}
 	dispatch(inviteActions.getLinkInvite({ inviteId: inviteId }));
-
+	// Handle auto open deeplink when load on mobile
+	if (inviteId) {
+		try {
+			window.location.href = `mezon.ai://invite/${inviteId}`;
+		} catch (e) {
+			console.error('log  => handleJoinChannel error', e);
+		}
+	}
 	return null;
 };
 export const shouldRevalidateInvite: ShouldRevalidateFunction = (ctx) => {

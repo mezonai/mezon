@@ -4,6 +4,8 @@
         "darker": "Darker",
         "light": "Light",
         "midnight": "Midnight",
-        "system": "Auto"
+        "system": "Auto",
+        "sunrise": "Sunrise",
+        "redDark": "Red Dark"
     }
 }

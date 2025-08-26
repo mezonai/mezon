@@ -2,8 +2,8 @@ import { Client } from 'mezon-js';
 import { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { CATEGORY_TYPES, PAGINATION } from '../constants/constants';
-import { clanAPI, type ApiCategoryResponse, type Category } from '../services/api';
+import { PAGINATION } from '../constants/constants';
+import { type Category } from '../services/api';
 
 interface DiscoverContextType {
 	clans: ApiClanDiscover[];
@@ -82,43 +82,9 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 		}
 	};
 
-	const fetchCategories = async () => {
-		try {
-			setCategoriesLoading(true);
-
-			const apiCategories: ApiCategoryResponse[] = await clanAPI.getCategories();
-
-			const mappedCategories: Category[] = apiCategories.map(apiCategory => {
-				const typeInfo = CATEGORY_TYPES[apiCategory.type as keyof typeof CATEGORY_TYPES] || CATEGORY_TYPES[1];
-
-				return {
-					id: apiCategory.id,
-					name: apiCategory.name,
-					count: apiCategory.count,
-					type: apiCategory.type,
-					icon: typeInfo.icon,
-					gradient: typeInfo.gradient
-				};
-			});
-
-			setCategories(mappedCategories);
-			localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(mappedCategories));
-		} catch (err) {
-			console.error('Error fetching categories:', err);
-			setCategories([]);
-		} finally {
-			setCategoriesLoading(false);
-		}
-	};
-
 	useEffect(() => {
 		fetchClansDiscover(currentPage);
 	}, [currentPage]);
-
-	useEffect(() => {
-		fetchCategories();
-	}, []);
-
 	const handlePageChange = (page: number) => {
 		if (page !== currentPage && page >= 1 && page <= totalPages) {
 			setCurrentPage(page);

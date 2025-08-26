@@ -1,4 +1,4 @@
-import { Colors, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ const AddFriendButton = ({ navigation }: { navigation: any }) => {
 			onPress={() => navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND })}
 			style={{ marginRight: size.s_18 }}
 		>
-			<Text style={{ color: Colors.textViolet }}>{t('headerRight.addFriends')}</Text>
+			<Text style={{ color: '#5a62f4' }}>{t('headerRight.addFriends')}</Text>
 		</Pressable>
 	);
 };

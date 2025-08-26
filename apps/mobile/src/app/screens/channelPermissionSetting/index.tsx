@@ -1,4 +1,4 @@
-import { Colors, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -140,7 +140,7 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 									marginLeft: 0,
 									marginRight: 0,
 									textAlign: 'center',
-									color: isActive ? Colors.white : themeValue.text
+									color: isActive ? 'white' : themeValue.text
 								}}
 							>
 								{tab.title}

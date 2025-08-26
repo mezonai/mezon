@@ -1,4 +1,4 @@
-import { Attributes, Colors, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 import { transparent } from 'tailwindcss/colors';
 
@@ -8,9 +8,9 @@ export const style = (colors: Attributes) =>
 		input: {
 			height: size.s_40,
 			padding: 10,
-			backgroundColor: Colors.charcoalBlack,
+			backgroundColor: baseColor.azureBlue,
 			borderRadius: 8,
-			color: Colors.white,
+			color: 'white',
 			marginBottom: size.s_6
 		},
 		wrapperCreateClanModal: {
@@ -70,7 +70,7 @@ export const style = (colors: Attributes) =>
 		serverName: {
 			fontSize: size.label,
 			fontWeight: '600',
-			color: Colors.textGray,
+			color: '#c7c7c7',
 			marginBottom: size.s_6
 		},
 		community: {
@@ -80,13 +80,13 @@ export const style = (colors: Attributes) =>
 			marginBottom: size.s_6
 		},
 		communityGuideLines: {
-			color: Colors.azureBlue
+			color: baseColor.azureBlue
 		},
 		button: {
 			width: '100%',
 			marginTop: size.s_10,
 			paddingVertical: size.s_12,
-			backgroundColor: Colors.bgButton,
+			backgroundColor: '#5865f2',
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'center'
@@ -94,7 +94,7 @@ export const style = (colors: Attributes) =>
 		buttonText: {
 			fontSize: size.s_14,
 			fontWeight: '600',
-			color: Colors.white
+			color: 'white'
 		},
 		uploadText: {
 			fontSize: size.s_14,

@@ -1,20 +1,20 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import {
-	selectChannelMemberByUserIds,
-	selectCurrentChannel,
-	selectCurrentChannelId,
-	selectDmGroupCurrentId,
-	selectMemberByUsername,
-	useAppSelector
+  selectChannelMemberByUserIds,
+  selectCurrentChannel,
+  selectCurrentChannelId,
+  selectDmGroupCurrentId,
+  selectMemberByUsername,
+  useAppSelector
 } from '@mezon/store';
 import {
-	HEIGHT_PANEL_PROFILE,
-	HEIGHT_PANEL_PROFILE_DM,
-	TITLE_MENTION_HERE,
-	WIDTH_CHANNEL_LIST_BOX,
-	WIDTH_CLAN_SIDE_BAR,
-	WIDTH_PANEL_PROFILE,
-	getNameForPrioritize
+  HEIGHT_PANEL_PROFILE,
+  HEIGHT_PANEL_PROFILE_DM,
+  TITLE_MENTION_HERE,
+  WIDTH_CHANNEL_LIST_BOX,
+  WIDTH_CLAN_SIDE_BAR,
+  WIDTH_PANEL_PROFILE,
+  getNameForPrioritize
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { RefObject, memo, useCallback, useMemo, useState } from 'react';
@@ -114,7 +114,7 @@ const MentionUser = ({
 	}, [positionShortUser]);
 
 	const handleOpenShortUser = useCallback(
-		(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		(e: React.MouseEvent<HTMLElement, MouseEvent>) => {
 			if (checkAnonymous) {
 				return;
 			}
@@ -163,15 +163,18 @@ const MentionUser = ({
 				</span>
 			)}
 			{displayToken?.type === MentionType.USER_EXIST && (
-				<button
+				<a
+
+          data-entity-type="MessageEntityMentionName"
+          data-user-id={tagUserId}
 					// eslint-disable-next-line @typescript-eslint/no-empty-function
 					onMouseDown={!isJumMessageEnabled || isTokenClickAble ? (e) => handleOpenShortUser(e) : () => {}}
 					// eslint-disable-next-line @typescript-eslint/no-empty-function
 					style={{ textDecoration: 'none' }}
-					className={`outline-none font-medium px-0.1 rounded-sm whitespace-nowrap bg-mention color-mention hover-mention   ${isJumMessageEnabled ? '' : 'hover:none'}`}
+					className={`cursor-pointer outline-none font-medium px-0.1 rounded-sm whitespace-nowrap bg-mention color-mention hover-mention   ${isJumMessageEnabled ? '' : 'hover:none'}`}
 				>
 					{displayToken.display}
-				</button>
+				</a>
 			)}
 		</>
 	);
