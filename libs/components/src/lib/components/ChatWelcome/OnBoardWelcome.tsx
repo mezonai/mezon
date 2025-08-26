@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { TypeMessage } from '@mezon/utils';
+import { TypeMessage, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ReactNode, memo, useEffect, useMemo } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -67,36 +67,63 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 				</div>
 			) : (
 				<>
-					<Onboarditem icon={<Icons.AddPerson />} title="Invite your friends" tick={numberMemberClan > 1} onClick={openInviteClanModal} />
-					<Onboarditem icon={<Icons.Sent />} title="Send your first message" tick={checkLastMessage} onClick={handleSendMessage} />
-					<Onboarditem icon={<Icons.Download />} title="Download the Mezon App" tick={true} onClick={handleSendMessage} />
-					<Onboarditem icon={<Icons.Hashtag />} title="Create your channel" tick={numberChannel.length > 1} onClick={handleCreateChannel} />
+					<Onboarditem
+						icon={<Icons.AddPerson />}
+						title="Invite your friends"
+						tick={numberMemberClan > 1}
+						onClick={openInviteClanModal}
+						dataE2eId={generateE2eId('onboarding.chat.container.invite_member')}
+					/>
+					<Onboarditem
+						icon={<Icons.Sent />}
+						title="Send your first message"
+						tick={checkLastMessage}
+						onClick={handleSendMessage}
+						dataE2eId={generateE2eId('onboarding.chat.container.send_first_message')}
+					/>
+					<Onboarditem
+						icon={<Icons.Download />}
+						title="Download the Mezon App"
+						tick={true}
+						onClick={handleSendMessage}
+						dataE2eId={generateE2eId('onboarding.chat.container.download_app')}
+					/>
+					<Onboarditem
+						icon={<Icons.Hashtag />}
+						title="Create your channel"
+						tick={numberChannel.length > 1}
+						onClick={handleCreateChannel}
+						dataE2eId={generateE2eId('onboarding.chat.container.create_channel')}
+					/>
 				</>
 			)}
 		</div>
 	);
 }
 
-const Onboarditem = memo(({ icon, title, tick, onClick }: { icon: ReactNode; title: string; tick: boolean; onClick: () => void }) => {
-	const handleOnClickItem = () => {
-		if (!tick) {
-			onClick();
-		}
-	};
-	return (
-		<div
-			className="w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold text-theme-primary-active text-theme-primary-hover bg-item-hover bg-item-theme rounded-lg hover:cursor-pointer"
-			onClick={handleOnClickItem}
-		>
-			{icon}
-			<div className="flex-1 ">{title}</div>
-			{tick ? (
-				<div className="flex items-center justify-center rounded-full aspect-square h-8 bg-green-600">
-					<Icons.Tick fill="white" />
-				</div>
-			) : (
-				<Icons.ArrowRight />
-			)}
-		</div>
-	);
-});
+const Onboarditem = memo(
+	({ icon, title, tick, onClick, dataE2eId }: { icon: ReactNode; title: string; tick: boolean; onClick: () => void; dataE2eId: string }) => {
+		const handleOnClickItem = () => {
+			if (!tick) {
+				onClick();
+			}
+		};
+		return (
+			<div
+				className="w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold text-theme-primary-active text-theme-primary-hover bg-item-hover bg-item-theme rounded-lg hover:cursor-pointer"
+				onClick={handleOnClickItem}
+				data-e2e={dataE2eId}
+			>
+				{icon}
+				<div className="flex-1 ">{title}</div>
+				{tick ? (
+					<div className="flex items-center justify-center rounded-full aspect-square h-8 bg-green-600">
+						<Icons.Tick fill="white" />
+					</div>
+				) : (
+					<Icons.ArrowRight />
+				)}
+			</div>
+		);
+	}
+);
