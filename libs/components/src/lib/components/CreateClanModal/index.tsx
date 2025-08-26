@@ -157,12 +157,12 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						<div className="w-full">
 							<span className="font-[700] text-[16px] leading-6">CLAN NAME</span>
 							<InputField
-								data-e2e={generateE2eId('clan_page.modal.create_clan.input.clan_name')}
 								onChange={handleInputChange}
 								type="text"
 								className="mb-2 mt-4 py-2"
 								placeholder={`Enter the clan name`}
 								maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
+								data-e2e={generateE2eId('clan_page.modal.create_clan.input.clan_name')}
 							/>
 							{checkvalidate !== EValidateListMessage.VALIDATED && (
 								<p className="text-[#e44141] text-xs italic font-thin">{checkvalidate}</p>
@@ -182,18 +182,18 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 					/>
 					<div className="flex items-center border-t border-solid dark:border-borderDefault rounded-b justify-between pt-4">
 						<Button
-							data-e2e={generateE2eId('clan_page.modal.create_clan.button.cancel')}
 							className="text-contentBrandLight px-4 py-2 background-transparent font-semibold text-sm outline-none focus:outline-none rounded-lg"
 							onClick={onClose}
+							data-e2e={generateE2eId('clan_page.modal.create_clan.button.cancel')}
 						>
 							Back
 						</Button>
 						<ButtonLoading
-							data-e2e={generateE2eId('clan_page.modal.create_clan.button.confirm')}
 							className={`font-semibold btn-primary btn-primary-hover text-sm px-4 py-2 shadow hover:shadow-lg rounded-lg ${checkvalidate !== EValidateListMessage.VALIDATED ? 'opacity-50 cursor-not-allowed' : ''}`}
 							onClick={handleCreateClan}
 							label="Create"
 							disabled={checkvalidate !== EValidateListMessage.VALIDATED}
+							data-e2e={generateE2eId('clan_page.modal.create_clan.button.confirm')}
 						/>
 					</div>
 				</div>

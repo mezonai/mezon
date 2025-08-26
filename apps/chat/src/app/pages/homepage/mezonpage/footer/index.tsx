@@ -228,7 +228,7 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 			</div>
 			<div className="bg-[#0B0E2D] py-[48px] max-md:py-[24px] flex flex-col items-center">
 				<div className="w-10/12 px-[32px] max-md:px-[16px] flex items-center gap-[32px] justify-between max-lg:gap-[24px] max-lg:w-full max-lg:flex-col-reverse max-lg:items-start">
-					<div data-e2e={generateE2eId('homepage.footer.text.copyright')} className="text-[16px] leading-[24px] font-normal text-[#7C92AF]">
+					<div className="text-[16px] leading-[24px] font-normal text-[#7C92AF]" data-e2e={generateE2eId('homepage.footer.text.copyright')}>
 						© 2024 Mezon. All rights reserved.
 					</div>
 					<div className="flex items-center gap-[24px]">

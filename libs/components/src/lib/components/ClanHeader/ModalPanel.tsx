@@ -51,47 +51,47 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 			<div className="flex flex-col pb-1 mb-1 border-b-[0.08px] border-b-theme-primary last:border-b-0 last:mb-0 last:pb-0">
 				{canManageClan && (
 					<ItemModal
-						data-e2e={generateE2eId(`clan_page.header.modal_panel.create_category`)}
 						className="text-theme-primary-hover bg-item-theme-hover"
 						onClick={handleShowCreateCategory}
 						children="Create Category"
 						endIcon={<Icons.CreateCategoryIcon />}
+						data-e2e={generateE2eId(`clan_page.header.modal_panel.create_category`)}
 					/>
 				)}
 				<ItemModal
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.mark_as_read`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={statusMarkAsReadClan === 'pending' ? undefined : () => handleMarkAsReadClan(currentClanId as string)}
 					disabled={statusMarkAsReadClan === 'pending'}
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.mark_as_read`)}
 				>
 					{statusMarkAsReadClan === 'pending' ? 'Processing...' : 'Mark As Read'}
 				</ItemModal>
 
 				<ItemModal
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.invite_people`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowInviteClanModal}
 					children="Invite People"
 					endIcon={<Icons.AddPerson />}
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.invite_people`)}
 				/>
 				<ItemModal
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.clan_settings`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowServerSettings}
 					children="Clan Settings"
 					endIcon={<Icons.SettingProfile className="text-theme-primary-hover" />}
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.clan_settings`)}
 				/>
 				<ItemModal
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.notification_setting`)}
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowNotificationSetting}
 					children="Notification Settings"
 					endIcon={<Icons.Bell className=" text-theme-primary-hover" />}
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.notification_setting`)}
 				/>
 				<button
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.show_empty_category`)}
 					onClick={toggleShowEmptyCategory}
 					className="flex items-center w-full justify-between rounded-sm  text-theme-primary-hover bg-item-hover pr-2"
+					data-e2e={generateE2eId(`clan_page.header.modal_panel.show_empty_category`)}
 				>
 					<li className="text-[14px] font-medium flex-1 py-[6px] px-[8px] text-left cursor-pointer list-none">Show Empty Categories</li>
 					<input

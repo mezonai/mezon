@@ -86,12 +86,12 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 					<div className="flex flex-col">
 						<span className="font-[600] text-sm ">What is category's name?</span>
 						<InputField
-							data-e2e={generateE2eId(`clan_page.modal.create_category.input.category_name`)}
 							type="text"
 							onChange={handleInputChange}
 							placeholder="Enter the category's name"
 							className="py-[8px] border-theme-primary bg-theme-input-primary text-[14px] mt-2 mb-0 border-blue-600 border"
 							value={nameCate}
+							data-e2e={generateE2eId(`clan_page.modal.create_category.input.category_name`)}
 						/>
 					</div>
 					{checkValidate && <p className="text-[#e44141] text-xs italic font-thin">{checkValidate}</p>}
@@ -102,7 +102,6 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 						</div>
 						<div className="relative flex flex-wrap items-center">
 							<input
-								data-e2e={generateE2eId(`clan_page.modal.create_category.toggle.private`)}
 								className="peer relative h-4 w-8 cursor-pointer appearance-none rounded-lg bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-4 after:w-4 after:rounded-full
 	after:bg-slate-500 after:transition-all
 	checked:bg-[#5265EC] checked:after:left-4 checked:after:bg-white
@@ -114,6 +113,7 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 								value={1}
 								id="id-c01"
 								onChange={handleToggle}
+								data-e2e={generateE2eId(`clan_page.modal.create_category.toggle.private`)}
 							/>
 						</div>
 					</div>
@@ -124,17 +124,17 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 				</div>
 				<div className=" font-semibold text-sm flex   justify-end flex-row items-center gap-4 py-4 px-6 rounded-bl-[5px] rounded-br-[5px]">
 					<button
-						data-e2e={generateE2eId(`clan_page.modal.create_category.button.cancel`)}
 						onClick={onClose}
 						className=" hover:underline text-theme-primary"
+						data-e2e={generateE2eId(`clan_page.modal.create_category.button.cancel`)}
 					>
 						Cancel
 					</button>
 					<button
-						data-e2e={generateE2eId(`clan_page.modal.create_category.button.confirm`)}
 						className={`px-4 py-2  btn-primary btn-primary-hover rounded-lg  ${checkValidate ? 'opacity-50 cursor-not-allowed' : ''}`}
 						onClick={handleCreateCate}
 						disabled={checkCategoryName}
+						data-e2e={generateE2eId(`clan_page.modal.create_category.button.confirm`)}
 					>
 						Create Category
 					</button>
