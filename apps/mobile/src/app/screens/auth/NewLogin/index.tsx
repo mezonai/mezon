@@ -1,7 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { remove, save, STORAGE_MY_USER_ID, STORAGE_SESSION_KEY } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { accountActions, appActions, useAppDispatch } from '@mezon/store-mobile';
+import { accountActions, appActions, clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { sleep } from '@mezon/utils';
 import * as Sentry from '@sentry/react';
@@ -53,6 +53,7 @@ const NewLoginScreen = () => {
 				}
 				if (res?.user_id) {
 					save(STORAGE_MY_USER_ID, res?.user_id?.toString());
+					dispatch(clansActions.loadUserClanGroups({ userId: res?.user_id?.toString() }));
 				}
 				dispatch(appActions.setLoadingMainMobile(false));
 			} catch (error) {

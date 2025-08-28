@@ -52,6 +52,11 @@ export interface ClanGroupItem {
 	groupId?: string;
 }
 
+export interface UserClanGroupsData {
+	clanGroups: EntityState<ClanGroup, string>;
+	clanGroupOrder: ClanGroupItem[];
+}
+
 const clanMetaAdapter = createEntityAdapter<ClanMeta>();
 const clanGroupAdapter = createEntityAdapter<ClanGroup>();
 
@@ -74,6 +79,8 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	// Add clan groups state
 	clanGroups: EntityState<ClanGroup, string>;
 	clanGroupOrder: ClanGroupItem[];
+	userClanGroups: { [userId: string]: UserClanGroupsData };
+	currentUserId?: string;
 	cache?: CacheMetadata;
 }
 
@@ -399,7 +406,9 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	inviteClanId: undefined,
 	clansOrder: [],
 	clanGroups: clanGroupAdapter.getInitialState(),
-	clanGroupOrder: []
+	clanGroupOrder: [],
+	userClanGroups: {},
+	currentUserId: undefined
 });
 
 type UpdateClanBadgeCountPayload = {
@@ -619,6 +628,26 @@ export const clansSlice = createSlice({
 		clearClanGroups: (state) => {
 			state.clanGroups = clanGroupAdapter.getInitialState();
 			state.clanGroupOrder = [];
+		},
+		saveCurrentUserClanGroups: (state) => {
+			if (state?.currentUserId && state.clanGroups && state.clanGroupOrder) {
+				state.userClanGroups[state.currentUserId] = {
+					clanGroups: state.clanGroups,
+					clanGroupOrder: state.clanGroupOrder
+				};
+			}
+		},
+		loadUserClanGroups: (state, action: PayloadAction<{ userId: string }>) => {
+			const { userId } = action.payload;
+			state.currentUserId = userId;
+
+			if (state.userClanGroups[userId]) {
+				state.clanGroups = state.userClanGroups[userId].clanGroups;
+				state.clanGroupOrder = state.userClanGroups[userId].clanGroupOrder;
+			} else {
+				state.clanGroups = clanGroupAdapter.getInitialState();
+				state.clanGroupOrder = [];
+			}
 		}
 	},
 	extraReducers: (builder) => {

@@ -3,7 +3,7 @@ import { MediaType, selectAllStickerSuggestion, useAppSelector } from '@mezon/st
 import { FOR_SALE_CATE } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
@@ -21,7 +21,8 @@ type StickerSelectorProps = {
 
 const StickerSelector = ({ onSelected, onScroll, mediaType = MediaType.STICKER, searchText }: StickerSelectorProps) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
+	const widthScreen = useWindowDimensions().width;
+	const styles = style(themeValue, widthScreen);
 	const [selectedCategory, setSelectedCategory] = useState(null);
 
 	const isAudio = useMemo(() => mediaType === MediaType.AUDIO, [mediaType]);
