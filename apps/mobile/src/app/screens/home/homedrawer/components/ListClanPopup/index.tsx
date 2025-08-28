@@ -1,6 +1,14 @@
 import { ActionEmitEvent, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { clansActions, directActions, getStoreAsync, selectOrderedClans, selectOrderedClansWithGroups, useAppDispatch } from '@mezon/store-mobile';
+import {
+	clansActions,
+	directActions,
+	getStoreAsync,
+	selectCurrentUserId,
+	selectOrderedClans,
+	selectOrderedClansWithGroups,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
@@ -62,6 +70,8 @@ export const ListClanPopup = React.memo(() => {
 			}
 		};
 	}, [isDragging]);
+
+	const currentUserId = useSelector(selectCurrentUserId);
 
 	const groupClans = useMemo(() => {
 		if (!orderedClansWithGroups?.length) return [];
@@ -231,7 +241,8 @@ export const ListClanPopup = React.memo(() => {
 						} else if (toItem?.type === CLAN) {
 							dispatch(
 								clansActions.createClanGroup({
-									clanIds: [fromItem?.clan?.clan_id, toItem?.clan?.clan_id]
+									clanIds: [fromItem?.clan?.clan_id, toItem?.clan?.clan_id],
+									userId: currentUserId
 								})
 							);
 						}

@@ -777,7 +777,7 @@ export const selectClanGroups = createSelector(
 
 		if (currentUserId) {
 			return allGroups.filter((group) => {
-				if (group.userId) {
+				if (group?.userId) {
 					return group.userId === currentUserId;
 				}
 			});
