@@ -777,11 +777,10 @@ export const selectClanGroups = createSelector(
 
 		if (currentUserId) {
 			return allGroups.filter((group) => {
-				if (group?.userId) {
-					return group.userId === currentUserId;
-				}
+				return group?.userId ? group.userId === currentUserId : true;
 			});
 		}
+
 		return allGroups;
 	}
 );
@@ -797,11 +796,9 @@ export const selectClanGroupOrder = createSelector(
 
 		if (currentUserId) {
 			return allOrder.filter((item) => {
-				if (item.type === 'group' && item?.groupId) {
-					const group = clansState.clanGroups.entities[item.groupId];
-					if (group?.userId) {
-						return group.userId === currentUserId;
-					}
+				if (item?.type === 'group' && item?.groupId) {
+					const group = clansState?.clanGroups?.entities[item.groupId];
+					return group?.userId ? group.userId === currentUserId : true;
 				}
 			});
 		}
