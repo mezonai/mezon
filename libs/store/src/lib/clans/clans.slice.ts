@@ -426,7 +426,7 @@ export const clansSlice = createSlice({
 		},
 
 		createClanGroup: (state, action: PayloadAction<{ clanIds: string[]; name?: string; userId?: string }>) => {
-			const { clanIds, name, userId } = action.payload;
+			const { clanIds, name, userId = '' } = action.payload;
 			const groupId = `group_${Date.now()}`;
 
 			const newGroup: ClanGroup = {
@@ -789,23 +789,7 @@ export const selectClanGroupEntities = createSelector(getClansState, (state) => 
 
 export const selectClanGroupById = (groupId: string) => createSelector(selectClanGroupEntities, (entities) => entities[groupId]);
 
-export const selectClanGroupOrder = createSelector(
-	[getClansState, (state: RootState) => state.account?.userProfile?.user?.id],
-	(clansState, currentUserId) => {
-		const allOrder = clansState?.clanGroupOrder || [];
-
-		if (currentUserId) {
-			return allOrder.filter((item) => {
-				if (item?.type === 'group' && item?.groupId) {
-					const group = clansState?.clanGroups?.entities[item.groupId];
-					return group?.userId ? group.userId === currentUserId : true;
-				}
-			});
-		}
-
-		return allOrder;
-	}
-);
+export const selectClanGroupOrder = createSelector(getClansState, (state) => state?.clanGroupOrder || []);
 
 export const selectOrderedClansWithGroups = createSelector([selectAllClans, selectClanGroups, selectClanGroupOrder], (clans, groups, order) => {
 	if (!order || order.length === 0) {
