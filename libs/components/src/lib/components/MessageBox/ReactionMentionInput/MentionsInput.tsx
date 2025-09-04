@@ -260,6 +260,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 	const [redoHistory, setRedoHistory] = useState<string[]>([]);
 	const isUndoRedoAction = useRef<boolean>(false);
 	const [inputWidth, setInputWidth] = useState(800);
+	const mentionPopupRef = useRef<HTMLDivElement>(null);
 
 	const mentionConfigs = Children.toArray(children)
 		.filter((child): child is React.ReactElement<MentionProps> =>
@@ -1029,10 +1030,34 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 		}
 	}, [activeMentionContext]);
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				activeMentionContext &&
+				mentionPopupRef.current &&
+				inputRef.current &&
+				!mentionPopupRef.current.contains(event.target as Node) &&
+				!inputRef.current.contains(event.target as Node)
+			) {
+				setActiveMentionContext(null);
+			}
+		};
+
+		if (activeMentionContext) {
+			document.addEventListener('mousedown', handleClickOutside);
+			return () => {
+				document.removeEventListener('mousedown', handleClickOutside);
+			};
+		}
+	}, [activeMentionContext]);
+
 	const tooltipOverlay = useMemo(() => {
 		return (
 			<div
-				ref={refs.setFloating}
+				ref={(node) => {
+					refs.setFloating(node);
+					(mentionPopupRef as any).current = node;
+				}}
 				className="mention-popover-container bg-ping-member mt-[-5px] z-[999]"
 				style={{
 					...floatingStyles,
