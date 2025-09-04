@@ -3,7 +3,7 @@ import { KeyboardEvent, RefObject, useCallback } from 'react';
 
 interface UseKeyboardHandlerProps {
 	editorRef: RefObject<HTMLDivElement | null>;
-	updateDraft: (request: Partial<RequestInput>) => void;
+	updateDraft: (request: RequestInput) => void;
 	anonymousMode: boolean;
 	isEphemeralMode?: boolean;
 	setIsEphemeralMode?: (mode: boolean) => void;

@@ -12,7 +12,7 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
-import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage } from '@mezon/utils';
+import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -90,7 +90,7 @@ const SettingRightUser = ({
 					setImageObject={setImageObject}
 					onClose={closeModalEditor}
 					imageSource={imageObject}
-					dataE2EId="edit_avatar_profile"
+					dataE2E={generateE2eId('', 'edit_avatar_profile')}
 				/>
 			) : null,
 		[imageObject]

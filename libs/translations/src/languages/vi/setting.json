@@ -3,6 +3,7 @@
         "title": "Cài đặt tài khoản",
         "getNitro": "Mua Nitro",
         "account": "Tài khoản",
+        "profiles": "Hồ sơ",
         "privacySafety": "Bảo mật và an toàn",
         "familyCenter": "Quản lý gia đình",
         "authorizedApp": "Ứng dụng được cho phép",
@@ -25,9 +26,9 @@
         "appearance": "Giao diện",
         "accessibility": "Trợ năng",
         "language": "Ngôn ngữ",
+        "notifications": "Thông báo",
         "chat": "Trò chuyện",
         "webBrowser": "Trình duyệt web",
-        "notifications": "Thông báo",
         "appIcon": "Biểu tượng",
         "advanced": "Nâng cao"
     },
@@ -46,6 +47,12 @@
     "updateExperience": "Hãy cập nhật để có trải nghiệm tốt nhất!",
     "updateNow": "Cập nhật ngay"
   },
+    "language": {
+        "title": "Ngôn ngữ",
+        "description": "Chọn ngôn ngữ.",
+        "english": "English",
+        "vietnamese": "Tiếng Việt"
+    },
     "logOut": "Đăng xuất",
     "removeAccount": "Xóa tài khoản"
 }

@@ -3,6 +3,7 @@
         "title": "Account Settings",
         "getNitro": "Get Nitro",
         "account": "Account",
+        "profiles": "Profiles",
         "privacySafety": "Privacy & Safety",
         "familyCenter": "Family Center",
         "authorizedApp": "Authorized Apps",
@@ -25,9 +26,9 @@
         "appearance": "Appearance",
         "accessibility": "Accessibility",
         "language": "Language",
+        "notifications": "Notifications",
         "chat": "Chat",
         "webBrowser": "Web Browser",
-        "notifications": "Notifications",
         "appIcon": "App Icon",
         "advanced": "Advanced"
     },
@@ -46,6 +47,12 @@
     "updateExperience": "Let's update to have the best experience!",
     "updateNow": "Update Now"
   },
+    "language": {
+        "title": "Language",
+        "description": "Select your preferred language.",
+        "english": "English",
+        "vietnamese": "Tiếng Việt"
+    },
     "logOut": "Logout",
     "removeAccount": "Remove Account"
 }

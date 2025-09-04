@@ -37,7 +37,7 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 	return (
 		<div
 			className="flex bg-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden mb-2"
-			onClick={() => navigate(`/clans/clan/${clan.clan_id}`)}
+			onClick={() => navigate(`/clans/clan/${clan.short_url || clan.clan_id}`)}
 		>
 			<div className="flex-shrink-0 w-24 sm:w-40 h-24 sm:h-28 md:w-48 md:h-32 bg-gray-200 flex items-center justify-center">
 				<ImageWithSkeleton

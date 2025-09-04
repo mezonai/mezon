@@ -98,9 +98,9 @@ const ParticipantItem = memo(
 						{hasActiveSoundReaction && renderSoundEffectIcon()}
 						<View style={[styles.userName, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 							{isMicrophoneEnabled ? (
-								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.white} />
+								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.text} />
 							) : (
-								<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.white} />
+								<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.text} />
 							)}
 							<Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>
 						</View>
@@ -127,9 +127,9 @@ const ParticipantItem = memo(
 						{!isPiPMode && (
 							<View style={styles.wrapperUser}>
 								{isMicrophoneEnabled ? (
-									<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
+									<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.text} />
 								) : (
-									<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.white} />
+									<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.text} />
 								)}
 								{!voiceUsername ? (
 									<MezonIconCDN icon={IconCDN.loadingIcon} width={24} height={24} />

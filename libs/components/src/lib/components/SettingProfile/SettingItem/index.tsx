@@ -3,10 +3,12 @@ import { LogoutModal } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName: string) => void; initSetting: string }) => {
 	const [selectedButton, setSelectedButton] = useState<string | null>(initSetting);
 	const userProfile = useSelector(selectAllAccount);
+	const { t } = useTranslation(['setting']);
 	const handleButtonClick = (buttonName: string) => {
 		setSelectedButton(buttonName);
 	};
@@ -36,7 +38,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 	return (
 		<div className=" overflow-y-auto w-1/6 xl:w-1/4 min-w-56 bg-theme-setting-nav   flex justify-end pt-96 pr-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-200 2xl:flex-grow hide-scrollbar flex-grow">
 			<div className="w-170px ">
-				<p className="font-bold text-sm tracking-wider text-theme-primary-active">USER SETTINGS</p>
+				<p className="font-bold text-sm tracking-wider text-theme-primary-active">{t('setting:accountSettings.title')}</p>
 				<button
 					className={` w-[170px] text-[16px] text-theme-primary-hover bg-item-hover font-medium rounded-[5px] text-left ml-[-8px] p-2 mt-4  ${selectedButton === 'Account' ? 'bg-button-secondary text-theme-primary-active' : 'text-theme-primary'}`}
 					onClick={() => {
@@ -44,7 +46,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						onItemClick && onItemClick('Account');
 					}}
 				>
-					My Account
+					{t('setting:accountSettings.account')}
 				</button>
 				<br />
 				<button
@@ -55,7 +57,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						onItemClick && onItemClick('Profiles');
 					}}
 				>
-					Profiles
+					{t('setting:accountSettings.profiles')}
 				</button>
 				<div className="hidden">
 					<br />
@@ -72,7 +74,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					</button>
 				</div>
 				<hr className="border-t-theme-primary mt-4" />
-				<button className="pt-2  mt-4 font-bold text-sm tracking-wider">APP SETTINGS</button>
+				<button className="pt-2  mt-4 font-bold text-sm tracking-wider">{t('setting:appSettings.title')}</button>
 				<br />
 				<button
 					className={`p-2  pl-2 ml-[-8px] font-medium ${selectedButton === 'Appearance' ? 'bg-button-secondary text-theme-primary-active' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
@@ -81,7 +83,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						onItemClick && onItemClick('Appearance');
 					}}
 				>
-					Appearance
+					{t('setting:appSettings.appearance')}
 				</button>
 				<br />
 				<button
@@ -91,7 +93,17 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						onItemClick && onItemClick('Notifications');
 					}}
 				>
-					Notifications
+					{t('setting:appSettings.notifications')}
+				</button>
+				<br />
+				<button
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Language' ? 'bg-button-secondary text-theme-primary-active' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					onClick={() => {
+						handleButtonClick('Language');
+						onItemClick && onItemClick('Language');
+					}}
+				>
+					{t('setting:language.title')}
 				</button>
 				<div className="hidden">
 					<br />
@@ -120,7 +132,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleOpenModal();
 					}}
 				>
-					Log Out
+					{t('setting:logOut')}
 				</button>
 				{openModal && <LogoutModal handleLogOut={handleLogOut} onClose={handleCloseModal} />}
 				<div className="h-9"></div>

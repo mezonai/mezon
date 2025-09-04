@@ -7,6 +7,8 @@ jobs:
     runs-on: mezone-fe-dev
     name: Build Mezon FE
     environment: dev
+    env:
+      NODE_ENV: 'development'
     steps:
       - name: Checkout
         uses: actions/checkout@v3

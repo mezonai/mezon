@@ -1,28 +1,31 @@
 /* eslint-disable no-console */
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllEmojiRecent } from '@mezon/store-mobile';
 import { getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { emojiFakeData } from '../fakeData';
+import { ContainerMessageActionModal } from './ContainerMessageActionModal';
 import { style } from './styles';
 
 interface IRecentEmojiMessageAction {
 	messageId: string;
 	handleReact?: any;
 	mode?: ChannelStreamMode;
-	setIsShowEmojiPicker?: any;
+	message?: any;
+	senderDisplayName?: string;
 }
 
 export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAction) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { messageId, mode, handleReact, setIsShowEmojiPicker } = props;
+	const { messageId, mode, handleReact, message, senderDisplayName } = props;
 	const selectRecentEmoji = useSelector(selectAllEmojiRecent);
 
 	const emojiRecentList = useMemo(() => {
@@ -39,7 +42,19 @@ export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAc
 	}, [emojiRecentList]);
 
 	const handleShowPicker = () => {
-		setIsShowEmojiPicker(true);
+		const data = {
+			snapPoints: ['75%'],
+			disableScrollView: true,
+			children: (
+				<ContainerMessageActionModal
+					message={message}
+					mode={mode}
+					senderDisplayName={senderDisplayName}
+					isOnlyEmojiPicker={true}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
 	return (

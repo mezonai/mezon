@@ -2,7 +2,7 @@ import { BaseProfile } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends } from '@mezon/core';
 import { FriendsEntity, selectCurrentTabStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ETabUserStatus, EUserStatus, generateE2eId, MetaDateStatusUser } from '@mezon/utils';
+import { ETabUserStatus, EUserStatus, MetaDateStatusUser, generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -197,6 +197,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 								? ((friend?.user?.metadata as MetaDateStatusUser)?.status as EUserStatus) || EUserStatus.ONLINE
 								: EUserStatus.INVISIBLE
 						}}
+						dataE2E={generateE2eId(`common.friend_list.username`)}
 					/>
 				</div>
 				<div className="w-20" onClick={(e) => e.stopPropagation()}>

@@ -1,8 +1,9 @@
 import { RTCView } from '@livekit/react-native-webrtc';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, IS_ANSWER_CALL_FROM_NATIVE, save } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { DMCallActions, selectAllAccount, selectRemoteVideo, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { IMessageTypeCallLog } from '@mezon/utils';
+import notifee from '@notifee/react-native';
 import { WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useEffect, useState } from 'react';
 import { Alert, BackHandler, DeviceEventEmitter, NativeModules, Platform, TouchableOpacity, View } from 'react-native';
@@ -68,13 +69,17 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 				if (Platform.OS === 'ios') {
 					playDialToneIOS();
 				} else {
-					const { CustomAudioModule } = NativeModules;
-					CustomAudioModule.playDialTone();
+					const { AudioSessionModule } = NativeModules;
+					AudioSessionModule.playDialTone();
 				}
 			} catch (e) {
 				console.error('e', e);
 			}
 		}
+		notifee.stopForegroundService();
+		notifee.cancelNotification('incoming-call', 'incoming-call');
+		notifee.cancelDisplayedNotification('incoming-call', 'incoming-call');
+		save(IS_ANSWER_CALL_FROM_NATIVE, false);
 	}, [isAnswerCall]);
 
 	const initSpeakerConfig = async () => {
@@ -153,7 +158,12 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 					});
 					if (isFromNative) {
 						InCallManager.stop();
-						BackHandler.exitApp();
+						if (Platform.OS === 'android') {
+							NativeModules?.DeviceUtils?.killApp();
+							BackHandler.exitApp();
+						} else {
+							BackHandler.exitApp();
+						}
 						return;
 					}
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });

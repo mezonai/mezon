@@ -1,9 +1,19 @@
 import { useEscapeKeyClose, usePermissionChecker } from '@mezon/core';
-import { fetchClanWebhooks, fetchWebhooks, selectCloseMenu, selectCurrentChannel, selectCurrentClanId, useAppDispatch } from '@mezon/store';
+import {
+	deleteClan,
+	fetchClanWebhooks,
+	fetchWebhooks,
+	selectCloseMenu,
+	selectCurrentChannel,
+	selectCurrentClan,
+	selectCurrentClanId,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import DeleteClanModal from '../DeleteClanModal';
 import SettingComunity from '../SettingComunity';
 import { ExitSetting } from '../SettingProfile';
@@ -47,6 +57,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState<boolean>(false);
 	const currentChannel = useSelector(selectCurrentChannel) || undefined;
 	const currentClanId = useSelector(selectCurrentClanId) as string;
+	const currentClan = useSelector(selectCurrentClan);
+	const navigate = useNavigate();
 	const [isCommunityEnabled, setIsCommunityEnabled] = useState(false);
 
 	const currentSettingPage = () => {
@@ -84,7 +96,10 @@ const ClanSetting = (props: ModalSettingProps) => {
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
-
+	const handleDeleteCurrentClan = async () => {
+		await deleteClan({ clanId: currentClanId || '' });
+		navigate('/mezon');
+	};
 	return (
 		<div ref={modalRef} tabIndex={-1} className="  flex fixed inset-0  w-screen z-30">
 			<div className="flex flex-row w-screen">
@@ -124,7 +139,14 @@ const ClanSetting = (props: ModalSettingProps) => {
 								{currentSettingPage()}
 							</div>
 						</div>
-						{isShowDeletePopup && <DeleteClanModal onClose={() => setIsShowDeletePopup(false)} />}
+						{isShowDeletePopup && (
+							<DeleteClanModal
+								onClose={() => setIsShowDeletePopup(false)}
+								buttonLabel="Delete clan"
+								title={`Delete '${currentClan?.clan_name}'`}
+								onClick={handleDeleteCurrentClan}
+							/>
+						)}
 						<ExitSetting onClose={onClose} />
 					</div>
 				</div>

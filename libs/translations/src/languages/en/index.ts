@@ -36,6 +36,7 @@ import menuCustomDM from './menuCustomDM.json';
 import message from './message.json';
 import notification from './notification.json';
 import notificationSetting from './notificationSetting.json';
+import onBoardingClan from './onBoardingClan.json';
 import pinMessage from './pinMessage.json';
 import profile from './profile.json';
 import profileSetting from './profileSetting.json';
@@ -102,5 +103,6 @@ export default {
 	token,
 	qrScanner,
 	clanSoundSetting,
-	sharing
+	sharing,
+	onBoardingClan
 };

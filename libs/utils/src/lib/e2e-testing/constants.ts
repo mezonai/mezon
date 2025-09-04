@@ -95,6 +95,45 @@ export const DATA_E2E_IDENTIFIER = {
 					confirm: '',
 					cancel: ''
 				}
+			},
+			create_channel: {
+				type: {
+					text: '',
+					voice: '',
+					stream: ''
+				},
+				input: {
+					channel_name: ''
+				},
+				toggle: {
+					is_private: ''
+				},
+				button: {
+					confirm: '',
+					cancel: ''
+				}
+			}
+		},
+		settings: {
+			sidebar: {
+				delete: ''
+			},
+			modal: {
+				delete_clan: {
+					input: '',
+					confirm: '',
+					cancel: ''
+				}
+			}
+		},
+		channel_list: {
+			item: {
+				icon: {
+					hashtag: '',
+					voice: '',
+					stream: ''
+				},
+				name: ''
 			}
 		}
 	},
@@ -109,6 +148,11 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			create_group: {
 				button: ''
+			},
+			edit_group: {
+				button: '',
+				input: '',
+				save_button: '', 
 			},
 			leave_group: {
 				button: ''
@@ -164,7 +208,8 @@ export const DATA_E2E_IDENTIFIER = {
 				topic_discussion: '',
 				forward_message: '',
 				delete_message: ''
-			}
+			},
+			thread_name_input: ''
 		},
 		mention: {
 			input: '',
@@ -173,7 +218,8 @@ export const DATA_E2E_IDENTIFIER = {
 			gif: '',
 			emoji: '',
 			sticker: ''
-		}
+		},
+		suggest_item: ''
 	},
 	onboarding: {
 		chat: {
@@ -216,9 +262,19 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			avatar_image: ''
 		}
+	},
+	common: {
+		friend_list: {
+			username: ''
+		},
+		item_pin_message: {
+			username: ''
+		},
+		delete_pin_message: {
+			username: ''
+		}
 	}
 };
-
 type DotNestedKeys<T> = T extends object
 	? {
 			[K in Extract<keyof T, string>]: T[K] extends object ? K | `${K}.${DotNestedKeys<T[K]>}` : K;

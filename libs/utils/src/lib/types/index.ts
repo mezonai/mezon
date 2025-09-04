@@ -1415,6 +1415,7 @@ export type MentionReactInputProps = {
 	readonly listMentions?: MentionDataProps[] | undefined;
 	readonly isThread?: boolean;
 	readonly isTopic?: boolean;
+	readonly isThreadbox?: boolean;
 	readonly handlePaste?: (event: React.ClipboardEvent<any>, anonymousMessage?: boolean) => Promise<void>;
 	readonly handleConvertToFile?: (valueContent: string, anonymousMessage?: boolean) => Promise<void>;
 	readonly currentClanId?: string;
@@ -1423,6 +1424,7 @@ export type MentionReactInputProps = {
 	hasPermissionEdit?: boolean;
 	voiceLongPress?: ILongPressType;
 	isRecording?: boolean;
+	dataE2E?: string;
 };
 
 export type IOtherCall = {

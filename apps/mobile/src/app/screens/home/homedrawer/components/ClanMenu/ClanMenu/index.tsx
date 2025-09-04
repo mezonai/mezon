@@ -81,7 +81,8 @@ export default function ClanMenu() {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, { screen: APP_SCREEN.MENU_CLAN.CREATE_CATEGORY });
 			},
-			title: t('menu.organizationMenu.createCategory')
+			title: t('menu.organizationMenu.createCategory'),
+			isShow: isCanEditRole
 		},
 		{
 			onPress: () => {

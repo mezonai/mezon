@@ -37,7 +37,7 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: currentChannelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
-	const { setOpenThreadMessageState, checkAttachment } = useReference(currentChannelId || '');
+	const { setOpenThreadMessageState, checkAttachment } = useReference(props.currentChannelId || currentChannelId || '');
 
 	useEffect(() => {
 		setMentionWidth(
@@ -54,7 +54,7 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 	return (
 		<MentionReactBase
 			{...props}
-			currentChannelId={currentChannelId || ''}
+			currentChannelId={props.currentChannelId || currentChannelId || ''}
 			mentionWidth={mentionWidth}
 			addMemberToThread={addMemberToThread}
 			joinningToThread={joinningToThread}
@@ -73,6 +73,7 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 			membersOfParent={membersOfParent || []}
 			dataReferences={dataReferences}
 			dataReferencesTopic={dataReferencesTopic}
+			dataE2E={props?.dataE2E}
 		/>
 	);
 });

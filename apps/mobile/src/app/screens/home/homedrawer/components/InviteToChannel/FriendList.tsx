@@ -1,3 +1,4 @@
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useDirect, useInvite, useSendInviteMessage } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
@@ -18,7 +19,7 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { ApiSystemMessage } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, Pressable, Text, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
 import { Chase } from 'react-native-animated-spinkit';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -102,7 +103,6 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 	const userInviteList = useMemo(() => {
 		return userListInvite?.filter((dm) => normalizeString(dm?.channel_label).includes(normalizeString(searchUserText)));
 	}, [searchUserText, userListInvite]);
-	console.log('log  => userInviteList', userInviteList);
 
 	const addInviteLinkToClipboard = useCallback(() => {
 		Clipboard.setString(currentInviteLink || currentInviteLinkRef?.current);
@@ -251,7 +251,11 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 					</View>
 
 					{!!currentInviteLink && (
-						<FlatList
+						<BottomSheetFlatList
+							nestedScrollEnabled
+							keyboardShouldPersistTaps="handled"
+							keyboardDismissMode="on-drag"
+							showsVerticalScrollIndicator={false}
 							data={userInviteList}
 							extraData={sentIdList}
 							initialNumToRender={5}
@@ -268,7 +272,6 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 										user={item}
 										onPress={handleSendInVite}
 										isSent={sentIdList.includes(item?.id)}
-										isReady={!!currentInviteLink}
 									/>
 								);
 							}}

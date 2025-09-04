@@ -104,9 +104,9 @@ const FocusedScreenPopup = () => {
 				</View>
 				<View style={[styles.userName, { display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
 					{randomParticipant.isMicrophoneEnabled ? (
-						<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} />
+						<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.text} />
 					) : (
-						<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} />
+						<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.text} />
 					)}
 					<Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>
 				</View>

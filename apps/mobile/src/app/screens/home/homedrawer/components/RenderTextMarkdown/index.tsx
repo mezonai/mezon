@@ -552,6 +552,20 @@ export const RenderTextMarkdownContent = ({
 						break;
 					case EBacktickType.VOICE_LINK:
 					case EBacktickType.LINK: {
+						if (isYouTubeLink(contentInElement || '')) {
+							const videoId = extractYoutubeVideoId(contentInElement);
+							markdownBlackParts.push(
+								<RenderYoutubeVideo
+									videoKey={`youtube-${index}`}
+									videoId={videoId}
+									contentInElement={contentInElement}
+									onPress={() => openUrl(contentInElement, null)}
+									onLongPress={() => handleLongPressLink?.(contentInElement)}
+									linkStyle={themeValue ? markdownStyles(themeValue).link : {}}
+								/>
+							);
+							break;
+						}
 						const { clanId, channelId, canvasId } = extractIds(contentInElement);
 
 						const basePath = '/chat/clans/';

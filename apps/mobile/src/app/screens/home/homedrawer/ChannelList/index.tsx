@@ -22,6 +22,7 @@ import ChannelListHeader from '../components/ChannelList/ChannelListHeader';
 import { ChannelListItem } from '../components/ChannelList/ChannelListItem';
 import ChannelListScroll from '../components/ChannelList/ChannelListScroll';
 import ChannelListSection from '../components/ChannelList/ChannelListSection';
+import { ChannelOnboarding } from '../components/ChannelList/ChannelOnboarding';
 import ButtonNewUnread from './ButtonNewUnread';
 import { style } from './styles';
 
@@ -63,6 +64,7 @@ const ChannelList = () => {
 		() => [
 			{ id: 'backgroundHeader' },
 			{ id: 'listHeader' },
+			{ id: 'onBoarding' },
 			...(listChannelRender
 				? isShowEmptyCategory
 					? listChannelRender
@@ -84,6 +86,8 @@ const ChannelList = () => {
 				return <ChannelListBackground />;
 			} else if (index === 1) {
 				return <ChannelListHeader key={`header-${index}`} />;
+			} else if (index === 2) {
+				return <ChannelOnboarding key={`onBoarding-${index}`} />;
 			} else if (item.channels) {
 				return <ChannelListSection data={item} />;
 			} else {
@@ -96,12 +100,13 @@ const ChannelList = () => {
 				);
 			}
 		},
-		[currentChannelId, themeValue.secondary]
+		[currentChannelId]
 	);
 
 	const keyExtractor = useCallback((item, index) => {
 		if (index === 0) return 'backgroundHeader';
 		if (index === 1) return 'listHeader';
+		if (index === 2) return 'onBoarding';
 		return `${item?.id || 'item'}_${item?.isFavor ? 'fav' : 'unfav'}_${index}`;
 	}, []);
 

@@ -1,6 +1,14 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelMembersEntity, directActions, DirectEntity, getStore, selectClanMemberMetaUserId, selectCurrentDM, useAppDispatch } from '@mezon/store-mobile';
+import {
+	ChannelMembersEntity,
+	DirectEntity,
+	directActions,
+	getStore,
+	selectClanMemberMetaUserId,
+	selectCurrentDM,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, FlatList, Keyboard, View } from 'react-native';
@@ -26,14 +34,18 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: MembersSearch
 
 	const store = getStore();
 
-	const handleNavigateToDMGroup = useCallback((id: string) => {
-		if (!isTabletLandscape) {
-			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
-				directMessageId: id
-			});
-		}
-		dispatch(directActions.setDmGroupCurrentId(id));
-	}, [navigation, dispatch, isTabletLandscape]);
+	const handleNavigateToDMGroup = useCallback(
+		(id: string) => {
+			Keyboard.dismiss();
+			if (!isTabletLandscape) {
+				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
+					directMessageId: id
+				});
+			}
+			dispatch(directActions.setDmGroupCurrentId(id));
+		},
+		[navigation, dispatch, isTabletLandscape]
+	);
 
 	const onDetailMember = useCallback(
 		(user: ChannelMembersEntity) => {
@@ -69,10 +81,7 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: MembersSearch
 		[store]
 	);
 
-	const data = useMemo(
-		() => (listMemberSearch ?? []).concat(listDMGroupSearch ?? []),
-		[listMemberSearch, listDMGroupSearch]
-	);
+	const data = useMemo(() => (listMemberSearch ?? []).concat(listDMGroupSearch ?? []), [listMemberSearch, listDMGroupSearch]);
 
 	const renderItem = useCallback(
 		({ item, index }) => {

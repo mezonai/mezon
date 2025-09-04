@@ -1,5 +1,5 @@
 import { PinMessageEntity, selectMemberClanByUserId } from '@mezon/store';
-import { IMessageWithUser, TOPBARS_MAX_WIDTH } from '@mezon/utils';
+import { generateE2eId, IMessageWithUser, TOPBARS_MAX_WIDTH } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useSelector } from 'react-redux';
@@ -31,7 +31,11 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 				<div className="px-4 pb-2 max-h-[60vh] overflow-y-auto hide-scrollbar w-full">
 					<div className="flex items-start gap-2 p-2 shadow-md rounded bg-theme-setting-secondary">
 						<div className="flex-shrink-0">
-							<BaseProfile avatar={pinMessage.avatar || ''} hideIcon={true} />
+							<BaseProfile
+								avatar={pinMessage.avatar || ''}
+								hideIcon={true}
+								dataE2E={generateE2eId(`common.delete_pin_message.username`)}
+							/>
 						</div>
 						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0 pointer-events-none [&_.attachment-actions]:!hidden [&_button]:!hidden">
 							<div className="font-medium">

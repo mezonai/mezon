@@ -39,9 +39,12 @@ export const MemberItem = memo(({ user, isOffline, onPress, currentChannel, isDM
 	const userId = useMemo(() => {
 		return load(STORAGE_MY_USER_ID);
 	}, []);
+
 	const isMe = useMemo(() => {
 		return user?.user?.id === userId;
 	}, [user?.user?.id, userId]);
+
+	const defaultStatus = { status: false, isMobile: false };
 	return (
 		<Pressable
 			onPress={() => {
@@ -50,7 +53,7 @@ export const MemberItem = memo(({ user, isOffline, onPress, currentChannel, isDM
 		>
 			<MemberProfile
 				user={user}
-				userStatus={isHiddenStatus ? null : { status: isMe ? true : !isOffline, isMobile }}
+				userStatus={isHiddenStatus ? defaultStatus : { status: isMe ? true : !isOffline, isMobile }}
 				numCharCollapse={30}
 				isHideIconStatus={userStatus ? false : true}
 				isOffline={isMe ? false : isOffline}

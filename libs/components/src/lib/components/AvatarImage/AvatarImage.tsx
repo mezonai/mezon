@@ -7,10 +7,10 @@ export type AvatarImageProp = {
 	isAnonymous?: boolean;
 	classNameText?: string;
 	srcImgProxy?: string;
-	dataE2EId?: string;
+	dataE2E?: string;
 } & DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>;
 
-export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', isAnonymous, classNameText, dataE2EId, ...rest }: AvatarImageProp) => {
+export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', isAnonymous, classNameText, dataE2E, ...rest }: AvatarImageProp) => {
 	const [isError, setIsError] = useState(false);
 
 	const computedClassName = 'size-10 rounded-full object-cover min-w-5 min-h-5 cursor-pointer ' + className;
@@ -22,7 +22,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 		return (
 			<div
 				className={`flex items-center justify-center size-10 rounded-full bg-white ${computedClassName}`}
-				data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2EId)}
+				data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2E)}
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" className="w-[80%] h-[80%]" viewBox="0 0 87.52 112.55000000000001" x="0px" y="0px">
 					<path
@@ -49,7 +49,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 				src={src}
 				alt={alt}
 				{...rest}
-				data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2EId)}
+				data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2E)}
 			/>
 		);
 	}
@@ -60,7 +60,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 		return (
 			<div
 				className={`size-10 bg-bgAvatarDark  rounded-full flex justify-center items-center text-bgAvatarLight text-[16px] ${className} ${classNameText}`}
-				data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2EId)}
+				data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2E)}
 			>
 				{avatarChar}
 			</div>
@@ -75,7 +75,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 			src={srcImgProxy}
 			alt={alt}
 			{...rest}
-			data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2EId)}
+			data-e2e={generateE2eId('user_setting.profile.avatar_image', dataE2E)}
 		/>
 	);
 };

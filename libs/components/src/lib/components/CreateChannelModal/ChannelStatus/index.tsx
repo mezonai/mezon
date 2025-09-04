@@ -1,4 +1,5 @@
 import { Icons } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { ChannelLableModal } from '../ChannelLabel';
 
 interface ChannelStatusModalProps {
@@ -37,6 +38,7 @@ export const ChannelStatusModal: React.FC<ChannelStatusModalProps> = ({ channelN
 						value={1}
 						id="id-c01"
 						onChange={handleToggle}
+						data-e2e={generateE2eId('clan_page.modal.create_channel.toggle.is_private')}
 					/>
 				</div>
 			</div>

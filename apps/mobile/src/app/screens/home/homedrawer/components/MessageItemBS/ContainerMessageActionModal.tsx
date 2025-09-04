@@ -74,7 +74,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const store = getStore();
 
 	const { t } = useTranslation(['message']);
-	const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
 	const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
 	const [isShowQuickMenuModal, setIsShowQuickMenuModal] = useState(false);
 
@@ -768,7 +767,13 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const renderMessageItemActions = () => {
 		return (
 			<View style={styles.messageActionsWrapper}>
-				<RecentEmojiMessageAction messageId={message.id} mode={mode} handleReact={handleReact} setIsShowEmojiPicker={setIsShowEmojiPicker} />
+				<RecentEmojiMessageAction
+					messageId={message.id}
+					mode={mode}
+					handleReact={handleReact}
+					message={message}
+					senderDisplayName={senderDisplayName}
+				/>
 				<View style={styles.messageActionGroup}>
 					{messageActionList.frequent.map((action) => {
 						return (
@@ -817,7 +822,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	return (
 		<View style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>
-			{isShowEmojiPicker || isOnlyEmojiPicker ? (
+			{isOnlyEmojiPicker ? (
 				<View style={{ padding: size.s_10, minHeight: '100%' }}>
 					<EmojiSelector onSelected={onSelectEmoji} isReactMessage />
 				</View>

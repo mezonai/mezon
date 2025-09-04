@@ -7,10 +7,10 @@ interface ImageEditorProps {
 	onClose: () => void;
 	setImageObject: React.Dispatch<React.SetStateAction<ImageSourceObject | null>>;
 	setImageCropped: React.Dispatch<React.SetStateAction<File | null>>;
-	dataE2EId?: string;
+	dataE2E?: string;
 }
 
-const ImageEditor = React.memo(({ imageSource, onClose, setImageObject, setImageCropped, dataE2EId }: ImageEditorProps) => {
+const ImageEditor = React.memo(({ imageSource, onClose, setImageObject, setImageCropped, dataE2E }: ImageEditorProps) => {
 	const [zoom, setZoom] = useState<number>(1);
 	const [rotation, setRotation] = useState<number>(0);
 	const [offset, setOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -201,7 +201,7 @@ const ImageEditor = React.memo(({ imageSource, onClose, setImageObject, setImage
 					handleMouseUp={handleMouseUp}
 				/>
 				<ImageControls zoom={zoom} handleZoom={handleZoom} handleRotate={handleRotate} />
-				<ImageEditorFooter handleReset={handleReset} handleClose={handleClose} handleApply={handleApply} dataE2EId={dataE2EId} />
+				<ImageEditorFooter handleReset={handleReset} handleClose={handleClose} handleApply={handleApply} dataE2E={dataE2E} />
 			</div>
 		</div>
 	);
@@ -274,16 +274,16 @@ type ImageEditorFooterProps = {
 	handleReset: () => void;
 	handleClose: () => void;
 	handleApply: () => void;
-	dataE2EId?: string;
+	dataE2E?: string;
 };
 
-const ImageEditorFooter = React.memo(({ handleReset, handleClose, handleApply, dataE2EId }: ImageEditorFooterProps) => (
+const ImageEditorFooter = React.memo(({ handleReset, handleClose, handleApply, dataE2E }: ImageEditorFooterProps) => (
 	<div className="flex items-center justify-between px-4 py-5 bg-[#2B2D31] rounded-b-lg w-full">
 		<button
 			onClick={handleReset}
 			className="text-gray-400 hover:text-gray-300 text-sm"
 			title="Reset Changes"
-			data-e2e={generateE2eId(`user_setting.profile.clan_profile.image_editor.button_reset`, dataE2EId)}
+			data-e2e={generateE2eId(`user_setting.profile.clan_profile.image_editor.button_reset`, dataE2E)}
 		>
 			Reset
 		</button>
@@ -292,7 +292,7 @@ const ImageEditorFooter = React.memo(({ handleReset, handleClose, handleApply, d
 				onClick={handleClose}
 				className="text-white text-sm hover:underline"
 				title="Cancel Editing"
-				data-e2e={generateE2eId(`user_setting.profile.clan_profile.image_editor.button_cancel`, dataE2EId)}
+				data-e2e={generateE2eId(`user_setting.profile.clan_profile.image_editor.button_cancel`, dataE2E)}
 			>
 				Cancel
 			</button>
@@ -300,7 +300,7 @@ const ImageEditorFooter = React.memo(({ handleReset, handleClose, handleApply, d
 				onClick={handleApply}
 				className="bg-[#5865F2] hover:bg-[#4752C4] text-white text-sm px-4 py-2 rounded-md"
 				title="Apply Changes"
-				data-e2e={generateE2eId(`user_setting.profile.clan_profile.image_editor.button_apply`, dataE2EId)}
+				data-e2e={generateE2eId(`user_setting.profile.clan_profile.image_editor.button_apply`, dataE2E)}
 			>
 				Apply
 			</button>

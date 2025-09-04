@@ -1,6 +1,6 @@
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { memo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { style } from './style';
 
 interface IProps {
@@ -18,14 +18,16 @@ const AssetsHeader = memo(({ tabActive = 0, onChange, tabList = [] }: IProps) =>
 
 	return (
 		<View style={styles.headerTab}>
-			{tabList?.map((tab, index) => (
-				<Pressable key={index.toString()} onPress={(e) => onChange(index)} style={styles.itemTab}>
-					<Text style={{ color: index === tabActive ? baseColor.blurple : themeValue.text }}>
-						{tab.title} {tab?.quantitySearch ? `(${tab?.quantitySearch})` : ''}
-					</Text>
-					<View style={[styles.itemTabActive, { backgroundColor: index === tabActive ? baseColor.blurple : 'transparent' }]} />
-				</Pressable>
-			))}
+			<ScrollView showsHorizontalScrollIndicator={false} horizontal>
+				{tabList?.map((tab, index) => (
+					<Pressable key={index.toString()} onPress={(e) => onChange(index)} style={styles.itemTab}>
+						<Text style={{ color: index === tabActive ? baseColor.blurple : themeValue.text }}>
+							{tab.title} {tab?.quantitySearch ? `(${tab?.quantitySearch})` : ''}
+						</Text>
+						<View style={[styles.itemTabActive, { backgroundColor: index === tabActive ? baseColor.blurple : 'transparent' }]} />
+					</Pressable>
+				))}
+			</ScrollView>
 		</View>
 	);
 });

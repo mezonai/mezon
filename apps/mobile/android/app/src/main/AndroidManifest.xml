@@ -20,11 +20,11 @@
     <uses-permission android:name="android.permission.INTERNET" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" android:required="false" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" android:required="false" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:required="false" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:required="false" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" android:required="false" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:required="false" />
     <uses-permission android:name="android.permission.CAMERA" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="false" />
@@ -35,20 +35,25 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" android:required="false" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" android:required="false" />
 
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" android:required="false" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" android:required="false" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" android:required="false" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" android:required="false" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" android:required="false" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" android:required="false" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" android:required="false" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" android:required="false" />
     <!--callkeep-->
     <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE" android:required="false" />
-    <uses-permission android:name="android.permission.CALL_PHONE" android:required="false" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:required="false" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" android:required="false" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SHOW_WHEN_LOCKED" />
+    <uses-permission android:name="android.permission.TURN_SCREEN_ON" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
                      android:usesPermissionFlags="neverForLocation"
@@ -66,13 +71,6 @@
       android:supportsRtl="true"
       android:launchMode="singleTask"
       android:networkSecurityConfig="@xml/network_security_config">
-        <receiver
-                android:name=".NotificationActionReceiver"
-                android:exported="false">
-            <intent-filter>
-                <action android:name="DECLINE_CALL_ACTION" />
-            </intent-filter>
-        </receiver>
         <service
             android:name=".CustomFirebaseMessagingService"
             android:enabled="true"
@@ -88,15 +86,16 @@
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
+        android:excludeFromRecents="true"
         android:screenOrientation="fullUser"
         android:showWhenLocked="true"
         android:turnScreenOn="true"
-        android:theme="@style/AppTheme"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="ANSWER_CALL_ACTION" />
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
+        android:theme="@style/CallTheme"
+        android:exported="true" >
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+          </intent-filter>
       </activity>
       <activity
         android:name=".MainActivity"

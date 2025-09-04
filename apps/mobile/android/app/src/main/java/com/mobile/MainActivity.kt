@@ -50,10 +50,6 @@ class MainActivity : ReactActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent);
     setIntent(intent);
-    if (intent?.action == "ANSWER_CALL_ACTION") {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(1001)
-    }
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {

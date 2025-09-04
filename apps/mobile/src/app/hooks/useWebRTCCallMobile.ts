@@ -497,8 +497,14 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 			peerConnection.current = null;
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			if (isFromNative) {
-				InCallManager.stop();
-				BackHandler.exitApp();
+				try {
+					InCallManager.stop();
+					NativeModules?.DeviceUtils?.killApp();
+					BackHandler.exitApp();
+				} catch (e) {
+					console.error('log  => onKillApp', e);
+					BackHandler.exitApp();
+				}
 				return;
 			}
 		} catch (error) {
@@ -614,8 +620,8 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	const stopDialTone = () => {
 		try {
 			if (Platform.OS === 'android') {
-				const { AudioModule } = NativeModules;
-				AudioModule.stopDialTone();
+				const { AudioSessionModule } = NativeModules;
+				AudioSessionModule.stopDialTone();
 			} else {
 				if (dialToneRef.current) {
 					dialToneRef.current.pause();

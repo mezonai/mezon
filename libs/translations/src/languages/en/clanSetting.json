@@ -27,7 +27,17 @@
             "members": "Members",
             "role": "Roles",
             "invite": "Invites",
-            "bans": "Bans"
+            "bans": "Bans",
+            "transferOwnership": "Transfer Ownership"
         }
+    },
+    "transferOwnership": {
+        "title": "Transfer Ownership",
+        "searchPlaceholder": "Search members",
+        "empty": "No members found",
+        "confirmTitle": "Transfer clan owner",
+        "confirm": "Transfer",
+        "description": "Are you sure you want to transfer the clan owner to {{newOwnerName}}?",
+        "btnTransfer": "Transfer"
     }
 }

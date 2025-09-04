@@ -1,7 +1,7 @@
 {
 	"name": "translations",
 	"$schema": "../../node_modules/nx/schemas/project-schema.json",
-	"sourceRoot": "libs/translations/src/i18n.config.ts",
+	"sourceRoot": "libs/translations/src",
 	"projectType": "library",
 	"tags": [],
 	"// targets": "to see all targets run: nx show project translations --web",

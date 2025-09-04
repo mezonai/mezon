@@ -11,9 +11,10 @@ interface ThreadNameTextFieldProps {
 	onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement> | KeyboardEvent<HTMLInputElement>) => Promise<void>;
 	error?: string;
 	className?: string;
+	dataE2E?: string;
 }
 
-const ThreadNameTextField = ({ label, error, placeholder, value, className, onChange, onKeyDown }: ThreadNameTextFieldProps) => {
+const ThreadNameTextField = ({ label, placeholder, value, className, onChange, onKeyDown, dataE2E }: ThreadNameTextFieldProps) => {
 	const dispatch = useAppDispatch();
 	const nameThreadError = useSelector(selectNameThreadError);
 	const [checkValidate, setCheckValidate] = useState(false);
@@ -48,6 +49,7 @@ const ThreadNameTextField = ({ label, error, placeholder, value, className, onCh
 				className={className}
 				onKeyDown={handleKeyDown}
 				maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
+				data-e2e={dataE2E}
 			/>
 			{nameThreadError && <span className="text-[#e44141] text-xs italic font-thin">{nameThreadError}</span>}
 			{checkValidate && (

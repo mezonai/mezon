@@ -22,10 +22,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalDeleteMess from '../../components/DeleteMessageModal/ModalDeleteMess';
-import Mention from '../../components/MessageBox/ReactionMentionInput/Mention';
+import Mention, { type MentionData } from '../../components/MessageBox/ReactionMentionInput/Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from '../../components/MessageBox/ReactionMentionInput/MentionsInput';
-import parseHtmlAsFormattedText from '../../components/MessageBox/ReactionMentionInput/parseHtmlAsFormattedText';
 import SuggestItem from '../../components/MessageBox/ReactionMentionInput/SuggestItem';
+import parseHtmlAsFormattedText from '../../components/MessageBox/ReactionMentionInput/parseHtmlAsFormattedText';
 import { UserMentionList } from '../../components/UserMentionList';
 
 type MessageInputProps = {
@@ -43,7 +43,7 @@ type ChannelsMentionProps = {
 	subText: string;
 };
 
-const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode, channelLabel, message, isTopic }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLabel, message, isTopic }) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const { openEditMessageState, idMessageRefEdit, handleCancelEdit, handleSend } = useEditMessage(
 		isTopic ? currentChannelId || '' : channelId,
@@ -55,7 +55,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 	const editorRef = useRef<MentionsInputHandle | null>(null);
 	const mentionListData = UserMentionList({ channelID: channelId, channelMode: mode });
 	const rolesClan = useSelector(selectAllRolesClan);
-	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
+	useChannelMembers({ channelId: channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
 	const [showModal, closeModal] = useModal(() => {
 		return <ModalDeleteMess mess={message} closeModal={closeModal} mode={mode} />;
 	}, [message?.id]);
@@ -97,10 +97,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		}
 	}, [openEditMessageState, message.id, idMessageRefEdit]);
 
-
-
 	const initialFormattedValue = useMemo(() => {
-
 		if (!message.content) return '';
 
 		const extendedMessage = {
@@ -111,7 +108,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			mk: message.content.mk || []
 		};
 		return convertMessageToHtml(extendedMessage);
-
 	}, [message.content, message.mentions]);
 
 	const [inputValue, setInputValue] = useState(initialFormattedValue);
@@ -120,12 +116,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		setInputValue(initialFormattedValue);
 	}, [initialFormattedValue]);
 
-	const originalContent = useMemo(() => {
-		return message.content?.t;
-	}, [message.content?.t]);
-
-
-
 	const handleSendWithFormattedText = async (formattedText: FormattedText) => {
 		const { text: newPlainTextValue, entities } = formattedText;
 		if (newPlainTextValue?.trim() === '') {
@@ -133,7 +123,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			return;
 		}
 
-		if (newPlainTextValue === originalContent) {
+		const initialFormattedText = parseHtmlAsFormattedText(initialFormattedValue, true, false);
+
+		if (JSON.stringify(formattedText) === JSON.stringify(initialFormattedText)) {
 			handleCancelEdit();
 			return;
 		}
@@ -145,7 +137,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 				emojis: emojiList,
 				markdown: markdownList
 			} = processEntitiesDirectly(entities, newPlainTextValue, rolesClan);
-
 
 			const payload = {
 				t: newPlainTextValue,
@@ -159,13 +150,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			const removeEmptyOnPayload = filterEmptyArrays(addMentionToPayload);
 
 			try {
-				await handleSend(
-					removeEmptyOnPayload,
-					message.id,
-					mentionList,
-					isTopic ? channelId : message?.content?.tp || '',
-					isTopic
-				);
+				handleSend(removeEmptyOnPayload, message.id, mentionList, isTopic ? channelId : message?.content?.tp || '', isTopic);
 
 				dispatch(
 					pinMessageActions.updatePinMessage({
@@ -177,7 +162,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 						}
 					})
 				);
-			} catch (error) {}
+			} catch (error) {
+				console.error('Error sending message:', error);
+			}
 		} else {
 			const payload = {
 				t: newPlainTextValue,
@@ -185,13 +172,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 			};
 
 			try {
-				await handleSend(
-					payload,
-					message.id,
-					[],
-					isTopic ? channelId : message?.content?.tp || '',
-					isTopic
-				);
+				handleSend(payload, message.id, [], isTopic ? channelId : message?.content?.tp || '', isTopic);
 
 				dispatch(
 					pinMessageActions.updatePinMessage({
@@ -202,13 +183,14 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 							content: JSON.stringify(payload)
 						}
 					})
-			);
-			} catch (error) {}
+				);
+			} catch (error) {
+				console.error('Error sending message:', error);
+			}
 		}
 
 		handleCancelEdit();
 	};
-
 
 	const commonChannels = useSelector(selectAllHashtagDm);
 
@@ -225,15 +207,15 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 		return [];
 	}, [mode, commonChannels]);
 
-	const handleSearchUserMention = (search: string) => {
-		return searchMentionsHashtag(search, mentionListData ?? []) as any;
+	const handleSearchUserMention = (search: string): MentionData[] => {
+		return searchMentionsHashtag(search, mentionListData ?? []) as MentionData[];
 	};
 
-	const handleSearchHashtag = (search: string) => {
+	const handleSearchHashtag = (search: string): MentionData[] => {
 		if (mode === ChannelStreamMode.STREAM_MODE_DM) {
-			return searchMentionsHashtag(search, commonChannelsMention ?? []) as any;
+			return searchMentionsHashtag(search, commonChannelsMention ?? []) as MentionData[];
 		} else {
-			return searchMentionsHashtag(search, listChannelsMention ?? []) as any;
+			return searchMentionsHashtag(search, listChannelsMention ?? []) as MentionData[];
 		}
 	};
 
@@ -268,7 +250,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 					onKeyDown={handleKeyDown}
 					placeholder="Edit message..."
 					style={{
-						minHeight: '40px',
+						minHeight: '40px'
 					}}
 				>
 					<Mention
@@ -278,7 +260,13 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 						displayPrefix="@"
 						markup="@[__display__](__id__)"
 						appendSpaceOnAdd={true}
-						renderSuggestion={(suggestion: any, search: string, highlightedDisplay: React.ReactNode, index: number, focused: boolean) => {
+						renderSuggestion={(
+							suggestion: MentionData,
+							search: string,
+							_highlightedDisplay: React.ReactNode,
+							_index: number,
+							focused: boolean
+						) => {
 							return (
 								<div
 									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
@@ -286,19 +274,18 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 									}`}
 								>
 									<SuggestItem
-                    avatarUrl={suggestion.avatarUrl}
-                    valueHightLight={search}
-                    wrapSuggestItemStyle="justify-between w-full"
-
-                    subText={
-                      suggestion.display === TITLE_MENTION_HERE
-                        ? 'Notify everyone who has permission to see this channel'
-                        : (suggestion.username ?? '')
-                    }
-                    subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
-                    showAvatar={suggestion.display !== TITLE_MENTION_HERE}
-                    display={suggestion.display}
-                    color={suggestion.color}
+										avatarUrl={suggestion.avatarUrl as string}
+										valueHightLight={search}
+										wrapSuggestItemStyle="justify-between w-full"
+										subText={
+											suggestion.display === TITLE_MENTION_HERE
+												? 'Notify everyone who has permission to see this channel'
+												: ((suggestion.username as string) ?? '')
+										}
+										subTextStyle={(suggestion.display === TITLE_MENTION_HERE ? 'normal-case' : 'lowercase') + ' text-xs'}
+										showAvatar={suggestion.display !== TITLE_MENTION_HERE}
+										display={suggestion.display}
+										color={suggestion.color as string}
 									/>
 								</div>
 							);
@@ -311,16 +298,19 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 						displayPrefix="#"
 						markup="#[__display__](__id__)"
 						appendSpaceOnAdd={true}
-						renderSuggestion={(suggestion, search, highlightedDisplay, index, focused) => (
-							<div key={suggestion.id} className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-								focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
-							}`}>
+						renderSuggestion={(suggestion, search, _highlightedDisplay, _index, focused) => (
+							<div
+								key={suggestion.id}
+								className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+									focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+								}`}
+							>
 								<SuggestItem
-						     valueHightLight={search}
-                 display={suggestion.display}
-                 symbol="#"
-                 subText={(suggestion).subText}
-                 channelId={suggestion.id}
+									valueHightLight={search}
+									display={suggestion.display}
+									symbol="#"
+									subText={suggestion.subText as string}
+									channelId={suggestion.id}
 								/>
 							</div>
 						)}
@@ -331,7 +321,13 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 						data={queryEmojis}
 						markup="::[__display__](__id__)"
 						appendSpaceOnAdd={true}
-						renderSuggestion={(suggestion: any, search: string, highlightedDisplay: React.ReactNode, index: number, focused: boolean) => {
+						renderSuggestion={(
+							suggestion: MentionData,
+							search: string,
+							_highlightedDisplay: React.ReactNode,
+							_index: number,
+							focused: boolean
+						) => {
 							return (
 								<div
 									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
@@ -339,10 +335,10 @@ const MessageInput: React.FC<MessageInputProps> = ({ messageId, channelId, mode,
 									}`}
 								>
 									<SuggestItem
-                    emojiId={suggestion.id}
-                    display={suggestion.display}
-                    valueHightLight={search}
-                    symbol={(suggestion as any).emoji}
+										emojiId={suggestion.id}
+										display={suggestion.display}
+										valueHightLight={search}
+										symbol={suggestion.emoji}
 									/>
 								</div>
 							);

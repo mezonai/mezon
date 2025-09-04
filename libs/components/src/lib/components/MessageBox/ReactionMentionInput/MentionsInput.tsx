@@ -1,10 +1,12 @@
-import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/react";
-import { ID_MENTION_HERE } from "@mezon/utils";
-import type React from "react";
-import { Children, cloneElement, forwardRef, isValidElement, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { type MentionData, MentionProps, MentionState } from "./Mention";
-import parseHtmlAsFormattedText from "./parseHtmlAsFormattedText";
+import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
+import { ID_MENTION_HERE } from '@mezon/utils';
+import type React from 'react';
+import { Children, cloneElement, forwardRef, isValidElement, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { MentionProps, MentionState, type MentionData } from './Mention';
+import parseHtmlAsFormattedText from './parseHtmlAsFormattedText';
+import { preparePastedHtml } from './utils/cleanHtml';
+import renderText from './utils/renderText';
 
 export interface User {
 	id: string;
@@ -112,7 +114,6 @@ const requestNextMutation = (callback: () => void): void => {
 	Promise.resolve().then(callback);
 };
 
-
 const getHtmlBeforeSelection = (container: HTMLElement): string => {
 	if (!container) {
 		return "";
@@ -184,7 +185,7 @@ const setCaretPosition = (element: Node, position: number): void => {
 	setPosition(element, position);
 };
 
-	const insertHtmlInSelection = (html: string): void => {
+const insertHtmlInSelection = (html: string): void => {
 	const selection = window.getSelection();
 
 	if (selection?.getRangeAt && selection.rangeCount) {
@@ -255,12 +256,14 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 	const [activeMentionContext, setActiveMentionContext] = useState<ActiveMentionContext | null>(null);
 	const [triggerSelection, setTriggerSelection] = useState<boolean>(false);
 	const savedCaretPositionRef = useRef<{range: Range, inputHtml: string} | null>(null);
+		const [suggestionsCount, setSuggestionsCount] = useState(0);
 
 	const [undoHistory, setUndoHistory] = useState<string[]>([]);
 	const [redoHistory, setRedoHistory] = useState<string[]>([]);
 	const isUndoRedoAction = useRef<boolean>(false);
 	const [inputWidth, setInputWidth] = useState(800);
 	const mentionPopupRef = useRef<HTMLDivElement>(null);
+	const detectMentionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const mentionConfigs = Children.toArray(children)
 		.filter((child): child is React.ReactElement<MentionProps> =>
@@ -293,9 +296,18 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 		}
 	}, [value]);
 
+		useEffect(() => {
+			setActiveMentionContext(null);
+			setSuggestionsCount(0);
+		}, [currentChannelId]);
+
 	useEffect(() => {
-		setActiveMentionContext(null);
-	}, [currentChannelId]);
+		return () => {
+			if (detectMentionTimeoutRef.current) {
+				clearTimeout(detectMentionTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	// Build regex for all triggersx
 	const buildTriggerRegex = useCallback(() => {
@@ -409,7 +421,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 			}
 
 			const mentionState: MentionState = {
-				isActive: true,
+				isActive: false,
 				query,
 				startPos,
 				endPos,
@@ -429,6 +441,15 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 		setActiveMentionContext(null);
 	}, [mentionConfigs, buildTriggerRegex]);
 
+	const debouncedDetectMention = useCallback(() => {
+		if (detectMentionTimeoutRef.current) {
+			clearTimeout(detectMentionTimeoutRef.current);
+		}
+		detectMentionTimeoutRef.current = setTimeout(() => {
+			detectMention();
+		}, 100);
+	}, [detectMention]);
+
 	const insertMentionDirectly = useCallback((suggestion: MentionData, config: any, skipFocus = false) => {
 		if (!inputRef.current) {
 			return;
@@ -436,7 +457,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 
 		const { displayTransform, markup = `${config.trigger}[__display__](__id__)`, displayPrefix = config.trigger } = config;
 
-		const display = displayTransform ? displayTransform(suggestion.id, suggestion.display) : suggestion.display;
+				const display = displayTransform ? displayTransform(suggestion.id, suggestion.display) : suggestion.display;
 
 		let htmlToInsert: string;
 		if (markup !== `${config.trigger}[__display__](__id__)`) {
@@ -675,31 +696,39 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 		});
 	}, [onChange, setHtml]);
 
-	const handleSuggestionsChange = useCallback((count: number, isLoading: boolean) => {
-		if (activeMentionContext) {
-			setActiveMentionContext(prev => prev ? {
-				...prev,
-				mentionState: {
-					...prev.mentionState,
-					isActive: count > 0 || isLoading,
-					isLoading,
+		const handleSuggestionsChange = useCallback(
+			(count: number, isLoading: boolean) => {
+				setSuggestionsCount(count);
+				if (activeMentionContext) {
+					setActiveMentionContext((prev) =>
+						prev
+							? {
+									...prev,
+									mentionState: {
+										...prev.mentionState,
+										isActive: count > 0 || isLoading,
+										isLoading
+									}
+								}
+							: null
+					);
 				}
-			} : null);
-		}
-	}, [activeMentionContext]);
+			},
+			[activeMentionContext]
+		);
 
-	const handleMentionSelect = useCallback(
-		(suggestion: MentionData) => {
-			if (!inputRef.current || !activeMentionContext) {
-				return;
-			}
+		const handleMentionSelect = useCallback(
+			(suggestion: MentionData) => {
+				if (!inputRef.current || !activeMentionContext) {
+					return;
+				}
 
-			const { config } = activeMentionContext;
-			insertMentionDirectly(suggestion, config);
-			setActiveMentionContext(null);
-		},
-		[activeMentionContext, insertMentionDirectly],
-	);
+				const { config } = activeMentionContext;
+				insertMentionDirectly(suggestion, config);
+				setActiveMentionContext(null);
+			},
+			[activeMentionContext, insertMentionDirectly]
+		);
 
 	useImperativeHandle(ref, () => ({
 		insertEmoji,
@@ -738,6 +767,8 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 				return;
 			}
 
+      e.preventDefault();
+
 			const items = e.clipboardData.items;
 			let hasImageFiles = false;
 
@@ -750,7 +781,6 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 				}
 
 				if (hasImageFiles) {
-					e.preventDefault();
 					if (onHandlePaste) {
 						onHandlePaste(e);
 					}
@@ -761,70 +791,33 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 			const htmlContent = e.clipboardData.getData('text/html');
 			const plainText = e.clipboardData.getData('text/plain');
 
-      if (htmlContent && htmlContent !== plainText) {
-				e.preventDefault();
+      let pastedFormattedText = htmlContent ? parseHtmlAsFormattedText(
+        preparePastedHtml(htmlContent), undefined, true,
+      ) : undefined;
 
-				const tempDiv = document.createElement('div');
-				tempDiv.innerHTML = htmlContent;
 
-				const unwantedElements = tempDiv.querySelectorAll('script, style, link, meta, title, img');
-				unwantedElements.forEach(el => el.remove());
+      if (!plainText) {
+        return;
+      }
 
-				const allElements = tempDiv.querySelectorAll('*');
-				allElements.forEach(el => {
-					el.removeAttribute('style');
-					el.removeAttribute('class');
-					el.removeAttribute('bgcolor');
-					el.removeAttribute('color');
-				});
 
-				tempDiv.innerHTML = tempDiv.innerHTML
-					.replace(/<\/?(div|p|h[1-6])[^>]*>/gi, '\n')
-					.replace(/<br[^>]*>/gi, '\n')
-					.replace(/<\/?(ul|ol|li)[^>]*>/gi, '\n');
+      const textToPaste = pastedFormattedText?.entities?.length ? pastedFormattedText : { text: plainText };
+      const hasText = textToPaste && textToPaste.text;
 
-				let cleanText = tempDiv.textContent || tempDiv.innerText || plainText || '';
+      if(!hasText) return;
 
-				cleanText = cleanText
-					.replace(/\r\n/g, '\n')
-					.replace(/\r/g, '\n')
-					.replace(/\n\s*\n/g, '\n')
-					.replace(/^\n+|\n+$/g, '')
-					.trim();
+      const newHtml = (renderText(textToPaste.text, ['escape_html', 'br_html']) as string[])
+      .join('')
+      .replace(/\u200b+/g, '\u200b');
 
-				if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
-					document.execCommand('insertText', false, cleanText);
-				} else {
-					const selection = window.getSelection();
-					if (selection && selection.rangeCount > 0) {
-						const range = selection.getRangeAt(0);
-						range.deleteContents();
+      insertHtmlInSelection(newHtml);
+      inputRef.current?.dispatchEvent(new Event('input', { bubbles: true }));
+      setHtml(e.currentTarget.innerHTML);
+      onChange?.(e.currentTarget.innerHTML);
+      debouncedDetectMention();
 
-						if (cleanText.includes('\n')) {
-							const textWithBreaks = cleanText.replace(/\n/g, '<br>');
-							const fragment = range.createContextualFragment(textWithBreaks);
-							range.insertNode(fragment);
-							range.collapse(false);
-						} else {
-							const textNode = document.createTextNode(cleanText);
-							range.insertNode(textNode);
-							range.setStartAfter(textNode);
-							range.collapse(false);
-						}
-
-						selection.removeAllRanges();
-						selection.addRange(range);
-					}
-				}
-
-				const newHtml = e.currentTarget.innerHTML;
-				setHtml(newHtml);
-				onChange?.(newHtml);
-
-				setTimeout(detectMention, 100);
-			}
 		},
-		[disabled, onChange, detectMention, onHandlePaste],
+		[disabled, onChange, debouncedDetectMention, onHandlePaste],
 	);
 
 	const handleInput = useCallback(
@@ -846,9 +839,9 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 			setHtml(newHtml);
 			onChange?.(newHtml);
 
-			setTimeout(detectMention, 100);
+			debouncedDetectMention();
 		},
-		[onChange, detectMention, enableUndoRedo, html, addToHistory],
+		[onChange, debouncedDetectMention, enableUndoRedo, html, addToHistory],
 	);
 
 	const handleKeyDown = useCallback(
@@ -878,40 +871,59 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 				}
 			}
 
-			if (activeMentionContext?.mentionState.isActive) {
-				if (e.key === "ArrowDown") {
-					e.preventDefault();
-					setActiveMentionContext(prev => prev ? {
-						...prev,
-						mentionState: {
-							...prev.mentionState,
-							selectedIndex: Math.min(prev.mentionState.selectedIndex + 1, 10),
-						}
-					} : null);
-					return;
+				if (activeMentionContext?.mentionState.isActive) {
+					if (e.key === 'ArrowDown') {
+						e.preventDefault();
+						setActiveMentionContext((prev) => {
+							if (prev) {
+								const currentIndex = prev.mentionState.selectedIndex;
+								const maxIndex = Math.max(0, suggestionsCount - 1);
+								const nextIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1;
+
+								return {
+									...prev,
+									mentionState: {
+										...prev.mentionState,
+										selectedIndex: nextIndex
+									}
+								};
+							}
+							return null;
+						});
+						return;
+					}
+					if (e.key === 'ArrowUp') {
+						e.preventDefault();
+						setActiveMentionContext((prev) => {
+							if (prev) {
+								const currentIndex = prev.mentionState.selectedIndex;
+								const maxIndex = Math.max(0, suggestionsCount - 1);
+								const prevIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1;
+
+								return {
+									...prev,
+									mentionState: {
+										...prev.mentionState,
+										selectedIndex: prevIndex
+									}
+								};
+							}
+							return null;
+						});
+						return;
+					}
+					if (e.key === 'Escape') {
+						e.preventDefault();
+						setActiveMentionContext(null);
+						return;
+					}
+					if (e.key === 'Enter' || e.key === 'Tab') {
+						e.preventDefault();
+						setTriggerSelection(true);
+						return;
+					}
 				}
-				if (e.key === "ArrowUp") {
-					e.preventDefault();
-					setActiveMentionContext(prev => prev ? {
-						...prev,
-						mentionState: {
-							...prev.mentionState,
-							selectedIndex: Math.max(prev.mentionState.selectedIndex - 1, 0),
-						}
-					} : null);
-					return;
-				}
-				if (e.key === "Escape") {
-					e.preventDefault();
-					setActiveMentionContext(null);
-					return;
-				}
-				if (e.key === "Enter" || e.key === "Tab") {
-					e.preventDefault();
-					setTriggerSelection(true);
-					return;
-				}
-			}
+
 
 			if (!isComposing && e.key === "Enter") {
 				if (
@@ -1012,23 +1024,20 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(({
 		triggerSelection
 	]);
 
-	const { refs, floatingStyles } = useFloating({
-		open: !!activeMentionContext,
-		placement: 'top-start',
-		middleware: [
-			offset(8),
-			flip(),
-			shift({ padding: 8 })
-		],
-		whileElementsMounted: autoUpdate
-	});
+		const { refs, floatingStyles } = useFloating({
+			open: !!activeMentionContext,
+			placement: 'top-start',
+			middleware: [offset({ mainAxis: 8, crossAxis: -55 }), flip(), shift({ padding: 8 })],
+			whileElementsMounted: autoUpdate
+		});
 
-	useEffect(() => {
-		if (activeMentionContext && inputRef.current) {
-			const width = inputRef.current.getBoundingClientRect().width;
-			setInputWidth(width);
-		}
-	}, [activeMentionContext]);
+		useEffect(() => {
+			if (activeMentionContext && inputRef.current) {
+				const parentElement = inputRef.current.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView');
+				const width = parentElement ? parentElement.getBoundingClientRect().width : inputRef.current.getBoundingClientRect().width;
+				setInputWidth(width);
+			}
+		}, [activeMentionContext]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {

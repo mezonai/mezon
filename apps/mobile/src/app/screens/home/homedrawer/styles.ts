@@ -264,7 +264,8 @@ export const style = (colors: Attributes) =>
 			opacity: 0.6
 		},
 		friendItemContent: {
-			flexDirection: 'row'
+			flexDirection: 'row',
+			maxWidth: '70%'
 		},
 		friendItemName: {
 			paddingTop: size.s_10,

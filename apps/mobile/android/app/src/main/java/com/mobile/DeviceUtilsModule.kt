@@ -10,6 +10,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.os.Process
+import android.app.ActivityManager
+import android.app.NotificationManager
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 
 class DeviceUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -36,6 +42,38 @@ class DeviceUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             promise.resolve(isTablet)
         } catch (e: Exception) {
             promise.reject("ERROR", e)
+        }
+    }
+
+    @ReactMethod
+    fun killApp() {
+        try {
+            val notificationManager = reactApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancelAll()
+
+            val activityManager = reactApplicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val appTasks = activityManager.appTasks
+                for (task in appTasks) {
+                    task.finishAndRemoveTask()
+                }
+            }
+
+            val currentActivity = currentActivity
+            currentActivity?.let { activity ->
+                activity.runOnUiThread {
+                    activity.finishAffinity()
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        android.os.Process.killProcess(android.os.Process.myPid())
+                    }, 200)
+                }
+            } ?: run {
+                android.os.Process.killProcess(android.os.Process.myPid())
+            }
+
+        } catch (e: Exception) {
+            android.os.Process.killProcess(android.os.Process.myPid())
         }
     }
 }

@@ -1,11 +1,10 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import useTabletLandscape from 'apps/mobile/src/app/hooks/useTabletLandscape';
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../constants/icon_cdn';
+import useTabletLandscape from '../../../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
 const formatTime = (millis: number) => {
@@ -22,11 +21,6 @@ const RenderAudioItem = React.memo(({ audioURL }: { audioURL: string }) => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [sound, setSound] = useState<Sound | null>(null);
 	const [totalTime, setTotalTime] = useState(0);
-
-	useEffect(() => {
-		InCallManager.setSpeakerphoneOn(true);
-		InCallManager.setForceSpeakerphoneOn(true);
-	}, []);
 
 	useEffect(() => {
 		if (!audioURL) return;

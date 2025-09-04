@@ -55,14 +55,14 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						onClick={handleShowCreateCategory}
 						children="Create Category"
 						endIcon={<Icons.CreateCategoryIcon />}
-						data-e2e={generateE2eId(`clan_page.header.modal_panel.create_category`)}
+						dataE2E={generateE2eId(`clan_page.header.modal_panel.create_category`)}
 					/>
 				)}
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={statusMarkAsReadClan === 'pending' ? undefined : () => handleMarkAsReadClan(currentClanId as string)}
 					disabled={statusMarkAsReadClan === 'pending'}
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.mark_as_read`)}
+					dataE2E={generateE2eId(`clan_page.header.modal_panel.mark_as_read`)}
 				>
 					{statusMarkAsReadClan === 'pending' ? 'Processing...' : 'Mark As Read'}
 				</ItemModal>
@@ -72,21 +72,21 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					onClick={handleShowInviteClanModal}
 					children="Invite People"
 					endIcon={<Icons.AddPerson />}
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.invite_people`)}
+					dataE2E={generateE2eId(`clan_page.header.modal_panel.invite_people`)}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowServerSettings}
 					children="Clan Settings"
 					endIcon={<Icons.SettingProfile className="text-theme-primary-hover" />}
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.clan_settings`)}
+					dataE2E={generateE2eId(`clan_page.header.modal_panel.clan_settings`)}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowNotificationSetting}
 					children="Notification Settings"
 					endIcon={<Icons.Bell className=" text-theme-primary-hover" />}
-					data-e2e={generateE2eId(`clan_page.header.modal_panel.notification_setting`)}
+					dataE2E={generateE2eId(`clan_page.header.modal_panel.notification_setting`)}
 				/>
 				<button
 					onClick={toggleShowEmptyCategory}

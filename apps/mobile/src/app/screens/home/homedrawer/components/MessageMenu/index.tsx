@@ -43,7 +43,6 @@ interface IServerMenuProps {
 }
 
 function MessageMenu({ messageInfo }: IServerMenuProps) {
-	console.log('log  => messageInfo', messageInfo);
 	const { t } = useTranslation(['dmMessage']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);

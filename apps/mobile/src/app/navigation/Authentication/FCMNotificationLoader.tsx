@@ -1,5 +1,5 @@
 import { ChatContext } from '@mezon/core';
-import { STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
+import { IS_ANSWER_CALL_FROM_NATIVE, STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
 import { appActions, getStoreAsync } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
 import { getApp } from '@react-native-firebase/app';
@@ -112,6 +112,18 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 			});
 
 			notifee.onBackgroundEvent(async ({ type, detail }) => {
+				if (
+					Platform.OS === 'android' &&
+					type === EventType.ACTION_PRESS &&
+					(detail.pressAction?.id === 'reject' || detail.pressAction?.id === 'accept')
+				) {
+					if (detail.pressAction?.id === 'accept') {
+						save(IS_ANSWER_CALL_FROM_NATIVE, true);
+					}
+					notifee.stopForegroundService();
+					notifee.cancelNotification('incoming-call', 'incoming-call');
+					notifee.cancelDisplayedNotification('incoming-call', 'incoming-call');
+				}
 				// const { notification, pressAction, input } = detail;
 				if (type === EventType.PRESS && detail) {
 					await processNotification({
@@ -124,6 +136,18 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 			});
 
 			return notifee.onForegroundEvent(({ type, detail }) => {
+				if (
+					Platform.OS === 'android' &&
+					type === EventType.ACTION_PRESS &&
+					(detail.pressAction?.id === 'reject' || detail.pressAction?.id === 'accept')
+				) {
+					if (detail.pressAction?.id === 'accept') {
+						save(IS_ANSWER_CALL_FROM_NATIVE, true);
+					}
+					notifee.stopForegroundService();
+					notifee.cancelNotification('incoming-call', 'incoming-call');
+					notifee.cancelDisplayedNotification('incoming-call', 'incoming-call');
+				}
 				switch (type) {
 					case EventType.DISMISSED:
 						break;

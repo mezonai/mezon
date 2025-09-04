@@ -1,0 +1,12 @@
+{
+    "title": "Hoàn thành hướng dẫn",
+    "description": "Bước {{step}} trên {{total}}",
+    "action": {
+        "title": "Hoàn thành hướng dẫn cho clan của bạn",
+        "description": "Đã hoàn thành {{step}} trên {{total}} bước",
+        "createChannel": "Tạo kênh của bạn",
+        "invite": "Mời một vài người bạn",
+        "sendMessage": "Gửi tin nhắn đầu tiên"
+    }
+
+}

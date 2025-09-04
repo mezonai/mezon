@@ -13,6 +13,7 @@ export type GifStickerEmojiButtonsProps = {
 	onToggleEmojiPopup?: (isVisible: boolean, event?: React.MouseEvent) => void;
 	isEmojiPopupVisible?: boolean;
 	isTopic: boolean;
+	isThreadbox: boolean;
 	dataE2E?: {
 		gif: E2eKeyType;
 		sticker: E2eKeyType;
@@ -22,7 +23,7 @@ export type GifStickerEmojiButtonsProps = {
 };
 
 const GifStickerEmojiButtons = memo(
-	({ hasPermissionEdit, voiceLongPress, isRecording, onToggleEmojiPopup, isTopic, dataE2E }: GifStickerEmojiButtonsProps) => {
+	({ hasPermissionEdit, voiceLongPress, isRecording, onToggleEmojiPopup, isTopic, isThreadbox, dataE2E }: GifStickerEmojiButtonsProps) => {
 		const dispatch = useAppDispatch();
 		const { setSubPanelActive, subPanelActive } = useGifsStickersEmoji();
 		const { setShowCategories, setClickedTrendingGif, setButtonArrowBack } = useGifs();
@@ -89,7 +90,7 @@ const GifStickerEmojiButtons = memo(
 
 		return (
 			<div className="flex flex-row absolute h-11 items-center gap-2 top-0 right-3 z-20">
-				{!isTopic && (
+				{!isTopic && !isThreadbox && (
 					<div
 						{...voiceLongPress}
 						className={`w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
@@ -99,24 +100,31 @@ const GifStickerEmojiButtons = memo(
 					</div>
 				)}
 
-				<div
-					onClick={handleOpenGifs}
-					className={`block text-theme-primary-hover
+				{!isThreadbox && (
+					<div
+						onClick={handleOpenGifs}
+						className={`block text-theme-primary-hover
 						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-					data-e2e={dataE2E && generateE2eId(dataE2E.gif)}
-				>
-					<Icons.Gif className={`w-5 h-5 ${subPanelActive === SubPanelName.GIFS ? 'text-theme-primary-active' : 'text-theme-primary'}`} />
-				</div>
+						data-e2e={dataE2E && generateE2eId(dataE2E.gif)}
+					>
+						<Icons.Gif
+							className={`w-5 h-5 ${subPanelActive === SubPanelName.GIFS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
+						/>
+					</div>
+				)}
 
-				<div
-					onClick={handleOpenStickers}
-					className={`block text-theme-primary-hover  max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-					data-e2e={dataE2E && generateE2eId(dataE2E.sticker)}
-				>
-					<Icons.Sticker
-						className={`w-5 h-5 ${subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
-					/>
-				</div>
+				{!isThreadbox && (
+					<div
+						onClick={handleOpenStickers}
+						className={`block text-theme-primary-hover
+						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+						data-e2e={dataE2E && generateE2eId(dataE2E.sticker)}
+					>
+						<Icons.Sticker
+							className={`w-5 h-5 ${subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
+						/>
+					</div>
+				)}
 
 				<div
 					onClick={handleOpenEmoji}

@@ -18,7 +18,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ChannelStatusEnum } from '@mezon/utils';
+import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -246,6 +246,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 					onClick={onEditGroup}
 					className="inline-flex items-center gap-2 px-3 py-2 mt-2 bg-item-theme  text-theme-primary text-sm font-medium rounded-md transition-all duration-150 hover:shadow-lg hover:scale-[1.02] group w-fit"
 					title="Edit Group"
+					data-e2e={generateE2eId(`chat.direct_message.edit_group.button`)}
 				>
 					<svg
 						className="w-4 h-4 transition-transform group-hover:scale-110 "

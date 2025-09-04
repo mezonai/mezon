@@ -1,6 +1,6 @@
 import { checkDuplicateChannelInCategory, selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ValidateSpecialCharacters } from '@mezon/utils';
+import { ValidateSpecialCharacters, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
@@ -123,6 +123,7 @@ export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameM
 							onChange={handleInputChange}
 							placeholder={placeholder}
 							maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
+							data-e2e={generateE2eId('clan_page.modal.create_channel.input.channel_name')}
 						/>
 					</div>
 				</div>

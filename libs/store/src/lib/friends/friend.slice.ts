@@ -119,9 +119,10 @@ export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', asy
 export type requestAddFriendParam = {
 	ids?: string[];
 	usernames?: string[];
+	isAcceptingRequest?: boolean;
 };
 
-export const sendRequestAddFriend = createAsyncThunk('friends/requestFriends', async ({ ids, usernames }: requestAddFriendParam, thunkAPI) => {
+export const sendRequestAddFriend = createAsyncThunk('friends/requestFriends', async ({ ids, usernames, isAcceptingRequest }: requestAddFriendParam, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
 	await mezon.client
 		.addFriends(mezon.session, ids, usernames)
@@ -143,7 +144,9 @@ export const sendRequestAddFriend = createAsyncThunk('friends/requestFriends', a
 						isSuccess: true
 					})
 				);
-				toast.success('Friend request sent successfully!');
+				if (!isAcceptingRequest) {
+					toast.success('Friend request sent successfully!');
+				} 
 				thunkAPI.dispatch(friendsActions.fetchListFriends({ noCache: true }));
 			}
 		});

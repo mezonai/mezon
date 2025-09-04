@@ -1,6 +1,7 @@
 import {
 	AttachmentPreviewThumbnail,
 	ChannelMessageThread,
+	FileSelectionButton,
 	MentionReactInput,
 	PrivateThread,
 	ThreadNameTextField,
@@ -16,6 +17,7 @@ import {
 	referencesActions,
 	selectAllChannelMembers,
 	selectAllRolesClan,
+	selectCloseMenu,
 	selectComposeInputByChannelId,
 	selectCurrentChannel,
 	selectCurrentChannelId,
@@ -23,7 +25,7 @@ import {
 	selectMemberClanByUserId2,
 	selectOpenThreadMessageState,
 	selectSession,
-	selectTheme,
+	selectStatusMenu,
 	selectThreadCurrentChannel,
 	threadsActions,
 	useAppDispatch,
@@ -44,6 +46,7 @@ import {
 	UploadLimitReason,
 	adjustPos,
 	filterEmptyArrays,
+	generateE2eId,
 	parseHtmlAsFormattedText,
 	processFile,
 	processMarkdownEntities
@@ -69,8 +72,7 @@ const ThreadBox = () => {
 	const currentInputChannelId = threadCurrentChannel?.channel_id || CREATING_THREAD;
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(currentInputChannelId);
 	const { setOverUploadingState } = useDragAndDrop();
-	const appearanceTheme = useSelector(selectTheme);
-	const { messageThreadError, isPrivate, nameValueThread, valueThread } = useThreads();
+	const { messageThreadError, isPrivate, nameValueThread, valueThread, setNameValueThread } = useThreads();
 	const [undoHistory, setUndoHistory] = useState<HistoryItem[]>([]);
 	const [redoHistory, setRedoHistory] = useState<HistoryItem[]>([]);
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
@@ -81,6 +83,8 @@ const ThreadBox = () => {
 	const membersOfParent = useAppSelector((state) =>
 		threadCurrentChannel?.parent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parent_id as string) : null
 	);
+	const closeMenu = useSelector(selectCloseMenu);
+	const statusMenu = useSelector(selectStatusMenu);
 	const { mentionList, hashtagList, emojiList } = useMemo(() => {
 		return processMention(request?.mentionRaw, rolesClan, membersOfChild as ChannelMembersEntity[], membersOfParent as ChannelMembersEntity[]);
 	}, [request?.mentionRaw, rolesClan, membersOfChild, membersOfParent]);
@@ -90,7 +94,7 @@ const ThreadBox = () => {
 		} else {
 			return attachmentFilteredByChannelId.files;
 		}
-	}, [attachmentFilteredByChannelId?.files]);
+	}, [attachmentFilteredByChannelId]);
 
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
 		channelId: threadCurrentChannel?.id as string,
@@ -122,7 +126,7 @@ const ThreadBox = () => {
 			}
 
 			const timestamp = Date.now() / 1000;
-			const body: any = {
+			const body: Record<string, unknown> = {
 				clan_id: currentClanId?.toString(),
 				channel_label: value.nameValueThread,
 				channel_private: value.isPrivate,
@@ -136,7 +140,7 @@ const ThreadBox = () => {
 			const thread = await dispatch(createNewChannel(body));
 			return thread.payload;
 		},
-		[checkAttachment, currentChannel?.category_id, currentChannelId, currentClanId]
+		[checkAttachment, currentChannel?.category_id, currentChannelId, currentClanId, dispatch]
 	);
 
 	const handleSend = useCallback(
@@ -174,6 +178,7 @@ const ThreadBox = () => {
 							})
 						);
 						setRequestInput({ ...request, valueTextInput: '', content: '' }, true);
+						setNameValueThread('');
 					}
 				} else {
 					await sendMessageThread(content, mentions, attachments, references, threadCurrentChannel);
@@ -182,7 +187,18 @@ const ThreadBox = () => {
 				console.error('Session is not available');
 			}
 		},
-		[createThread, currentClanId, dispatch, sendMessageThread, threadCurrentChannel, sessionUser]
+		[
+			createThread,
+			currentClanId,
+			dispatch,
+			sendMessageThread,
+			threadCurrentChannel,
+			sessionUser,
+			setRequestInput,
+			currentInputChannelId,
+			request,
+			setNameValueThread
+		]
 	);
 	const handleSendWithLimitCheck = useCallback(
 		async (
@@ -207,6 +223,10 @@ const ThreadBox = () => {
 	}, [sendMessageTyping]);
 
 	const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
+
+	const handleChildContextMenu = (event: React.MouseEvent) => {
+		event.stopPropagation();
+	};
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
@@ -233,14 +253,14 @@ const ThreadBox = () => {
 				})
 			);
 		},
-		[currentChannelId, currentClanId, attachmentFilteredByChannelId?.files?.length]
+		[attachmentFilteredByChannelId?.files?.length, currentInputChannelId, dispatch, setOverUploadingState]
 	);
 
 	const handleChangeNameThread = useCallback(
 		(nameThread: string) => {
 			dispatch(threadsActions.setNameValueThread({ channelId: currentChannelId as string, nameValue: nameThread }));
 		},
-		[currentChannelId]
+		[currentChannelId, dispatch]
 	);
 
 	const onKeyDown = async (event: KeyboardEvent<HTMLTextAreaElement> | KeyboardEvent<HTMLInputElement>): Promise<void> => {
@@ -354,7 +374,7 @@ const ThreadBox = () => {
 				</div>
 			)}
 			{!threadCurrentChannel && (
-				<div className={`flex flex-col overflow-y-auto w-full px-3`}>
+				<div className={`flex flex-col overflow-y-auto }  ww-full px-3`} onPaste={onPastedFiles}>
 					<div className="flex flex-col justify-end flex-grow">
 						{!threadCurrentChannel && (
 							<div className="relative flex text-theme-primary-active items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
@@ -373,6 +393,7 @@ const ThreadBox = () => {
 							label="Thread Name"
 							placeholder={openThreadMessageState && valueThread?.content.t !== '' ? valueThread?.content.t : 'Enter Thread Name'}
 							className="h-10 p-[10px] bg-item-theme text-theme-message border-theme-primary text-base outline-none rounded-lg placeholder:text-sm"
+							dataE2E={generateE2eId('', 'thread_box')}
 						/>
 						{!openThreadMessageState && <PrivateThread title="Private Thread" label="Only people you invite and moderators can see" />}
 						{valueThread && openThreadMessageState && <ChannelMessageThread user={currentClanUser} message={valueThread} />}
@@ -410,17 +431,51 @@ const ThreadBox = () => {
 				<div
 					className={`h-fit w-full bg-transparent shadow-md rounded-lg min-h-[45px] ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
 				>
-					<MentionReactInput
-						currentChannelId={currentInputChannelId}
-						handlePaste={onPastedFiles}
-						onSend={handleSendWithLimitCheck}
-						onTyping={handleTypingDebounced}
-						listMentions={UserMentionList({
-							channelID: currentChannel?.channel_id as string,
-							channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
-						})}
-						isThread={true}
-					/>
+					{!threadCurrentChannel ? (
+						<div className={`w-full border-none rounded-r-lg gap-3 relative whitespace-pre-wrap`} onContextMenu={handleChildContextMenu}>
+							<MentionReactInput
+								currentChannelId={currentInputChannelId}
+								handlePaste={onPastedFiles}
+								onSend={handleSendWithLimitCheck}
+								onTyping={handleTypingDebounced}
+								listMentions={UserMentionList({
+									channelID: currentChannel?.channel_id as string,
+									channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
+								})}
+								isThread={true}
+								dataE2E={generateE2eId('', 'mention_thread')}
+							/>
+						</div>
+					) : (
+						<div
+							className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0 bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}
+						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
+						>
+							<FileSelectionButton
+								currentClanId={currentClanId || ''}
+								currentChannelId={currentInputChannelId}
+								hasPermissionEdit={true}
+							/>
+							<div className={`w-[calc(100%_-_58px)] bg-transparent gap-3 flex items-center rounded-e-md`}>
+								<div
+									className={`w-full border-none rounded-r-lg gap-3 relative whitespace-pre-wrap`}
+									onContextMenu={handleChildContextMenu}
+								>
+									<MentionReactInput
+										currentChannelId={currentInputChannelId}
+										handlePaste={onPastedFiles}
+										onSend={handleSend}
+										onTyping={handleTypingDebounced}
+										listMentions={UserMentionList({
+											channelID: currentChannel?.channel_id as string,
+											channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
+										})}
+										isThreadbox
+									/>
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

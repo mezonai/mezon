@@ -1,35 +1,40 @@
-import { useClans } from '@mezon/core';
-import { selectCurrentClan, selectCurrentClanId } from '@mezon/store';
-import React, { FormEvent, MouseEvent, useState } from 'react';
+import { selectCurrentClan } from '@mezon/store';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 
 interface DeleteClanModalProps {
 	onClose: () => void;
+	title: string;
+	buttonLabel: string;
+	onClick?: () => void;
 }
 
-const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose }) => {
-	const { deleteClan } = useClans();
-	const currentClanId = useSelector(selectCurrentClanId);
+const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose, title, buttonLabel, onClick }) => {
 	const currentClan = useSelector(selectCurrentClan);
 	const [inputValue, setInputValue] = useState('');
 	const [inputValueIsMatchClanName, setInputValueIsMatchClanName] = useState(true);
-	const navigate = useNavigate();
-	const handleDeleteCurrentClan = async (e: FormEvent<HTMLFormElement> | MouseEvent<HTMLDivElement>) => {
-		e.preventDefault();
-		if (inputValue === currentClan?.clan_name) {
-			await deleteClan({ clanId: currentClanId || '' });
-			navigate('/mezon');
-		} else {
+
+	const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setInputValue(e.target.value);
+		if (e.target.value === currentClan?.clan_name) {
+			setInputValueIsMatchClanName(true);
+		} else if ((currentClan?.clan_name || '').length < e.target.value.length && e.target.value !== currentClan?.clan_name) {
 			setInputValueIsMatchClanName(false);
 		}
+	};
+
+	const handleSubmit = (e: React.FormEvent) => {
+		if (inputValueIsMatchClanName && onClick) {
+			onClick();
+		}
+		onClose();
 	};
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 ">
 			<div className="fixed inset-0 bg-black opacity-80"></div>
-			<form className="relative z-10 bg-theme-setting-primary rounded-[5px]" onSubmit={handleDeleteCurrentClan}>
+			<form className="relative z-10 bg-theme-setting-primary rounded-[5px]" onSubmit={handleSubmit}>
 				<div className="top-block p-[16px]  flex flex-col gap-[15px]">
-					<div className="text-xl font-semibold text-theme-primary-active">Delete '{currentClan?.clan_name}'</div>
+					<div className="text-xl font-semibold text-theme-primary-active">{title}</div>
 					<div className="bg-[#f0b132] text-theme-message rounded-sm p-[10px]">
 						Are you sure you want to delete this clan? This action cannot be undone.
 					</div>
@@ -39,7 +44,7 @@ const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose }) => {
 							type="text"
 							className="w-full bg-input-secondary border-theme-primary text-theme-message rounded-lg outline-none p-[10px] my-[7px]"
 							value={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
+							onChange={handleOnchange}
 						/>
 						{!inputValueIsMatchClanName ? (
 							<div className="text-[#fa777c] text-xs font-semibold">You didn't enter the clan name correctly</div>
@@ -52,8 +57,8 @@ const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose }) => {
 					<div onClick={onClose} className="cursor-pointer hover:underline">
 						Cancel
 					</div>
-					<div onClick={handleDeleteCurrentClan} className="bg-[#da373c] text-white hover:bg-[#a12828] rounded-md px-4 py-2 cursor-pointer">
-						Delete clan
+					<div onClick={handleSubmit} className="bg-[#da373c] text-white hover:bg-[#a12828] rounded-md px-4 py-2 cursor-pointer">
+						{buttonLabel}
 					</div>
 				</div>
 			</form>

@@ -5,7 +5,8 @@ import { enableScreens } from 'react-native-screens';
 import App from './app/navigation';
 import CustomIncomingCall from './app/screens/customIncomingCall';
 import { isNotificationProcessed } from './app/utils/notificationCache';
-import { createLocalNotification } from './app/utils/pushNotificationHelpers';
+import { createLocalNotification, displayNativeCalling } from './app/utils/pushNotificationHelpers';
+
 const messaging = getMessaging(getApp());
 
 const isValidString = (value: unknown): value is string => {
@@ -19,6 +20,21 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
 		const offer = remoteMessage?.data?.offer;
 
 		if (offer) {
+			if (Platform.OS === 'android') {
+				if (remoteMessage?.sentTime) {
+					const currentTime = Date.now();
+					const messageTime = remoteMessage.sentTime;
+					const timeDifference = currentTime - messageTime;
+					if (timeDifference <= 20000) {
+						displayNativeCalling(remoteMessage?.data);
+					} else {
+						console.error('Ignoring outdated call notification, received', timeDifference / 1000, 'seconds ago');
+					}
+				} else {
+					// If no sentTime is available, process anyway
+					displayNativeCalling(remoteMessage?.data);
+				}
+			}
 			return;
 		}
 		// Safe handling of notification data

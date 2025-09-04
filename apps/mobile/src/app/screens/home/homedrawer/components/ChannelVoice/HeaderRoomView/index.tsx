@@ -145,6 +145,7 @@ const HeaderRoomView = memo(({ channelId, clanId, onPressMinimizeRoom, isGroupCa
 	const handleOpenEmojiPicker = () => {
 		const data = {
 			snapPoints: ['45%', '75%'],
+			disableScrollView: true,
 			children: (
 				<ContainerMessageActionModal
 					message={undefined}

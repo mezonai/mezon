@@ -179,6 +179,8 @@ const MessageItem = React.memo(
 				}
 				const data = {
 					snapPoints: ['55%', '85%'],
+					snapPointsWithFitContent: true,
+					maxHeightPercent: '90%',
 					children: <ContainerMessageActionModal message={targetMessage} mode={mode} senderDisplayName={senderDisplayName} />
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
@@ -230,6 +232,8 @@ const MessageItem = React.memo(
 			dispatch(setSelectedMessage(message));
 			const data = {
 				snapPoints: ['55%', '85%'],
+				snapPointsWithFitContent: true,
+				maxHeightPercent: '90%',
 				children: <ContainerMessageActionModal message={message} mode={mode} senderDisplayName={senderDisplayName} />
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
@@ -281,10 +285,10 @@ const MessageItem = React.memo(
 						isHighlight && styles.highlightMessageMention,
 						isEphemeralMessage && styles.ephemeralMessage,
 						Platform.OS === 'ios' &&
-							pressed && {
-								backgroundColor: themeValue.secondaryWeight,
-								opacity: 0.8
-							}
+						pressed && {
+							backgroundColor: themeValue.secondaryWeight,
+							opacity: 0.8
+						}
 					]}
 				>
 					{!isMessageSystem && !message?.content?.fwd && (
@@ -424,6 +428,7 @@ const MessageItem = React.memo(
 									openEmojiPicker={() => {
 										const data = {
 											snapPoints: ['75%'],
+											disableScrollView: true,
 											children: (
 												<ContainerMessageActionModal
 													message={message}
@@ -447,17 +452,17 @@ const MessageItem = React.memo(
 	(prevProps, nextProps) => {
 		return (
 			prevProps?.message?.id +
-				prevProps?.message?.update_time +
-				prevProps?.previousMessage?.id +
-				prevProps?.message?.code +
-				prevProps?.isHighlight +
-				prevProps?.message?.reactions ===
+			prevProps?.message?.update_time +
+			prevProps?.previousMessage?.id +
+			prevProps?.message?.code +
+			prevProps?.isHighlight +
+			prevProps?.message?.reactions ===
 			nextProps?.message?.id +
-				nextProps?.message?.update_time +
-				nextProps?.previousMessage?.id +
-				nextProps?.message?.code +
-				nextProps?.isHighlight +
-				nextProps?.message?.reactions
+			nextProps?.message?.update_time +
+			nextProps?.previousMessage?.id +
+			nextProps?.message?.code +
+			nextProps?.isHighlight +
+			nextProps?.message?.reactions
 		);
 	}
 );

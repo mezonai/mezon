@@ -6,6 +6,7 @@ interface ChannelTypeProps {
 	onChange: (value: number) => void;
 	error?: string;
 	disable?: boolean;
+	dataE2E?: string;
 }
 
 const labelMap: Partial<Record<ChannelType, string>> = {
@@ -34,7 +35,7 @@ const descriptionMap: Partial<Record<ChannelType, string>> = {
 	[ChannelType.CHANNEL_TYPE_GROUP]: ''
 };
 
-export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChange, error, disable }) => {
+export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChange, error, disable, dataE2E }) => {
 	const iconMap: Partial<Record<ChannelType, JSX.Element>> = {
 		[ChannelType.CHANNEL_TYPE_CHANNEL]: <Icons.Hashtag defaultSize="w-6 h-6" />,
 		[ChannelType.CHANNEL_TYPE_GMEET_VOICE]: <Icons.Speaker defaultSize="w-6 h-6" />,
@@ -56,6 +57,7 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChang
 		<label
 			className={`Frame403 self-stretch px-2 py-2 bg-item-theme rounded-lg justify-center items-center gap-4  inline-flex ${disable ? 'hover:bg-none hover:cursor-not-allowed' : 'bg-item-hover text-theme-primary-hover hover:cursor-pointer'}  ${error ? 'border border-red-500' : ' border border-none'}`}
 			htmlFor={type?.toString()}
+			data-e2e={dataE2E}
 		>
 			<div className={type === ChannelType.CHANNEL_TYPE_CHANNEL ? 'w-6 h-9' : 'w-6 h-6'}>{iconMap[type]}</div>
 			<div className="Frame402 grow shrink basis-0 flex-col justify-start items-start gap-1 inline-flex ">

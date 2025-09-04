@@ -9,7 +9,7 @@ import {
 	STORAGE_MY_USER_ID
 } from '@mezon/mobile-components';
 import { appActions, channelsActions, clansActions, directActions, getFirstMessageOfTopic, getStoreAsync, topicsActions } from '@mezon/store-mobile';
-import notifee, { AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
+import notifee, { AndroidLaunchActivityFlag, AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
 import {
 	AndroidBadgeIconType,
 	AndroidCategory,
@@ -28,6 +28,7 @@ import {
 	hasPermission,
 	requestPermission
 } from '@react-native-firebase/messaging';
+import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
@@ -552,5 +553,107 @@ export const getVoIPToken = async () => {
 		return await VoIPManager.getVoIPToken();
 	} catch (e) {
 		return '';
+	}
+};
+
+export const displayNativeCalling = async (data: any) => {
+	const notificationId = 'incoming-call';
+	try {
+		const dataObj = safeJSONParse(data?.offer || '{}');
+		if (dataObj?.offer === 'CANCEL_CALL' || !dataObj?.callerName) {
+			await notifee.cancelNotification(notificationId, notificationId);
+			return;
+		}
+		const channel = await notifee.createChannel({
+			id: 'calls',
+			name: 'Incoming Calls',
+			importance: AndroidImportance.HIGH,
+			visibility: AndroidVisibility.PUBLIC,
+			sound: 'ringing',
+			vibration: true,
+			bypassDnd: true
+		});
+		await notifee.displayNotification({
+			id: notificationId,
+			title: 'Incoming call',
+			body: `${dataObj?.callerName || 'Unknown'} is calling...`,
+			android: {
+				channelId: channel,
+				category: AndroidCategory.CALL,
+				visibility: AndroidVisibility.PUBLIC,
+				importance: AndroidImportance.HIGH,
+				smallIcon: 'ic_notification',
+				sound: 'ringing',
+				tag: notificationId,
+				largeIcon: `${dataObj?.callerAvatar || dataObj?.groupAvatar || process.env.NX_LOGO_MEZON}`,
+				timestamp: Date.now(),
+				showTimestamp: true,
+				ongoing: true,
+				autoCancel: true,
+				timeoutAfter: 30000,
+				loopSound: true,
+				groupSummary: false,
+				groupAlertBehavior: AndroidGroupAlertBehavior.ALL,
+				vibrationPattern: [300, 500, 300, 500],
+				lightUpScreen: true,
+				color: '#7029c1',
+				pressAction: {
+					id: 'default',
+					launchActivity: 'com.mezon.mobile.CallActivity',
+					launchActivityFlags: [
+						AndroidLaunchActivityFlag.SINGLE_TOP,
+						AndroidLaunchActivityFlag.NEW_TASK,
+						AndroidLaunchActivityFlag.CLEAR_TOP
+					],
+					mainComponent: 'ComingCallApp'
+				},
+				actions: [
+					{
+						title: 'Accept',
+						pressAction: {
+							id: 'accept',
+							launchActivity: 'com.mezon.mobile.CallActivity',
+							launchActivityFlags: [
+								AndroidLaunchActivityFlag.SINGLE_TOP,
+								AndroidLaunchActivityFlag.NEW_TASK,
+								AndroidLaunchActivityFlag.CLEAR_TASK,
+								AndroidLaunchActivityFlag.TASK_ON_HOME
+							],
+							mainComponent: 'ComingCallApp'
+						},
+						icon: 'ic_answer'
+					},
+					{
+						title: 'Decline',
+						pressAction: {
+							id: 'reject',
+							launchActivity: 'com.mezon.mobile.CallActivity',
+							launchActivityFlags: [
+								AndroidLaunchActivityFlag.SINGLE_TOP,
+								AndroidLaunchActivityFlag.NEW_TASK,
+								AndroidLaunchActivityFlag.CLEAR_TASK,
+								AndroidLaunchActivityFlag.TASK_ON_HOME
+							],
+							mainComponent: 'ComingCallApp'
+						},
+						icon: 'ic_decline'
+					}
+				],
+				fullScreenAction: {
+					id: `incoming_call_fullscreen`,
+					launchActivity: 'com.mezon.mobile.CallActivity',
+					launchActivityFlags: [
+						AndroidLaunchActivityFlag.SINGLE_TOP,
+						AndroidLaunchActivityFlag.NEW_TASK,
+						AndroidLaunchActivityFlag.CLEAR_TASK,
+						AndroidLaunchActivityFlag.TASK_ON_HOME
+					],
+					mainComponent: 'ComingCallApp'
+				}
+			}
+		});
+	} catch (e) {
+		await notifee.cancelNotification(notificationId, notificationId);
+		console.error('log => e displayCalling', e);
 	}
 };

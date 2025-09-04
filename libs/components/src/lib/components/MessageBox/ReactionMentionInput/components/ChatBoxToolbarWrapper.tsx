@@ -19,6 +19,7 @@ interface ChatBoxToolbarWrapperProps {
 	isRecording: boolean;
 	mode: ChannelStreamMode;
 	isTopic: boolean;
+	isThreadbox?: boolean;
 	onEmojiSelect?: (emojiId: string, emojiShortname: string) => void;
 	dataE2E?: EmojiActionToolbarE2E;
 }
@@ -30,6 +31,7 @@ const ChatBoxToolbarWrapper: React.FC<ChatBoxToolbarWrapperProps> = ({
 	isRecording = false,
 	mode = ChannelStreamMode.STREAM_MODE_CHANNEL,
 	isTopic = false,
+	isThreadbox = false,
 	onEmojiSelect,
 	dataE2E
 }) => {
@@ -57,6 +59,7 @@ const ChatBoxToolbarWrapper: React.FC<ChatBoxToolbarWrapperProps> = ({
 				onToggleEmojiPopup={toggleEmojiPopup}
 				isEmojiPopupVisible={isEmojiPopupVisible}
 				isTopic={isTopic}
+				isThreadbox={isThreadbox}
 				dataE2E={dataE2E}
 			/>
 		)

@@ -1,7 +1,7 @@
 import { directActions, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { ValidateSpecialCharacters } from '@mezon/utils';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface UseEditGroupModalProps {
 	channelId?: string;
@@ -14,21 +14,17 @@ export interface UseEditGroupModalReturn {
 	groupName: string;
 	imagePreview: string;
 	selectedFile: File | null;
-	
+
 	openEditModal: () => void;
 	closeEditModal: () => void;
 	setGroupName: (name: string) => void;
 	handleImageUpload: (file: File | null) => void;
 	handleSave: () => Promise<void>;
-	
+
 	hasChanges: boolean;
 }
 
-export const useEditGroupModal = ({
-	channelId,
-	currentGroupName = '',
-	currentAvatar = ''
-}: UseEditGroupModalProps): UseEditGroupModalReturn => {
+export const useEditGroupModal = ({ channelId, currentGroupName = '', currentAvatar = '' }: UseEditGroupModalProps): UseEditGroupModalReturn => {
 	const dispatch = useAppDispatch();
 	const { sessionRef, clientRef } = useMezon();
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -39,10 +35,7 @@ export const useEditGroupModal = ({
 		action: 'none' | 'upload' | 'remove';
 	} | null>(null);
 
-	const hasChanges = Boolean(isEditModalOpen && (
-		groupName.trim() !== currentGroupName || 
-		(avatarState && avatarState.action !== 'none')
-	));
+	const hasChanges = Boolean(isEditModalOpen && (groupName.trim() !== currentGroupName || (avatarState && avatarState.action !== 'none')));
 
 	const openEditModal = useCallback(() => {
 		setGroupName(currentGroupName);
@@ -58,31 +51,34 @@ export const useEditGroupModal = ({
 		setIsEditModalOpen(false);
 	}, []);
 
-	const handleImageUpload = useCallback((file: File | null) => {
-		if (!avatarState) return; 
-		
-		if (file === null) {
-			setAvatarState({
-				preview: '',
-				file: null,
-				action: 'remove'
-			});
-			return;
-		}
+	const handleImageUpload = useCallback(
+		(file: File | null) => {
+			if (!avatarState) return;
 
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const result = e.target?.result as string;
-			if (result) {
+			if (file === null) {
 				setAvatarState({
-					preview: result,
-					file: file,
-					action: 'upload'
+					preview: '',
+					file: null,
+					action: 'remove'
 				});
+				return;
 			}
-		};
-		reader.readAsDataURL(file);
-	}, [avatarState]);
+
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const result = e.target?.result as string;
+				if (result) {
+					setAvatarState({
+						preview: result,
+						file: file,
+						action: 'upload'
+					});
+				}
+			};
+			reader.readAsDataURL(file);
+		},
+		[avatarState]
+	);
 
 	const handleSave = useCallback(async () => {
 		const value = groupName.trim();
@@ -93,8 +89,8 @@ export const useEditGroupModal = ({
 			return;
 		}
 
-		if (!avatarState) return; 
-		
+		if (!avatarState) return;
+
 		const hasNameChanged = value !== currentGroupName;
 
 		if ((hasNameChanged || avatarState.action !== 'none') && channelId) {
@@ -132,25 +128,35 @@ export const useEditGroupModal = ({
 			const payload: { channel_id: string; channel_label?: string; topic?: string } = { channel_id: channelId };
 			if (hasNameChanged) payload.channel_label = value;
 			if (avatarState.action !== 'none') payload.topic = avatarUrl;
-			
+
 			dispatch(directActions.updateDmGroup(payload));
 		}
 
 		closeEditModal();
-	}, [groupName, avatarState, currentGroupName, currentAvatar, channelId, dispatch, closeEditModal]);
+	}, [groupName, avatarState, currentGroupName, currentAvatar, channelId, dispatch, closeEditModal, clientRef, sessionRef]);
+
+	useEffect(() => {
+		if (!isEditModalOpen) return;
+		setGroupName(currentGroupName);
+		setAvatarState((prev) => ({
+			preview: currentAvatar,
+			file: prev?.file ?? null,
+			action: prev?.action ?? 'none'
+		}));
+	}, [isEditModalOpen, currentGroupName, currentAvatar]);
 
 	return {
 		isEditModalOpen,
 		groupName,
 		imagePreview: avatarState?.preview || '',
 		selectedFile: avatarState?.file || null,
-		
+
 		openEditModal,
 		closeEditModal,
 		setGroupName,
 		handleImageUpload,
 		handleSave,
-		
+
 		hasChanges
 	};
 };

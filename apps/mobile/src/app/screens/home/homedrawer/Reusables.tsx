@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import Images from 'apps/mobile/src/assets/Images';
 import { ChannelType, User } from 'mezon-js';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import ImageNative from '../../../components/ImageNative';
@@ -24,15 +24,27 @@ export interface IFriendListItemProps {
 	dmGroup?: Receiver;
 	user?: Receiver;
 	isSent?: boolean;
+	actionType?: ActionType;
 	onPress: (directParamId?: string, type?: number, dmGroup?: Receiver) => void;
 }
 
+export enum ActionType {
+	INVITE = 'invite',
+	TRANSFER_CLAN = 'transfer_clan'
+}
+
 export const FriendListItem = React.memo((props: IFriendListItemProps) => {
-	const { dmGroup, user, isSent, onPress } = props;
+	const { dmGroup, user, isSent, actionType, onPress } = props;
 	const { themeValue } = useTheme();
 	const { t } = useTranslation();
 	const styles = style(themeValue);
 	const isGroupAvatar = !dmGroup?.topic?.includes('avatar-group.png');
+	const buttonTitle = useMemo(() => {
+		if (actionType === ActionType.TRANSFER_CLAN) {
+			return t('transferOwnership.btnTransfer', 'Transfer');
+		}
+		return isSent ? t('btnSent', 'Sent') : t('btnInvite', 'Invite');
+	}, [actionType]);
 
 	return (
 		<View>
@@ -93,7 +105,7 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 						onPress={() => {
 							onPress('', 0, user);
 						}}
-						title={isSent ? t('btnSent') : t('btnInvite')}
+						title={buttonTitle}
 					/>
 				</TouchableOpacity>
 			)}

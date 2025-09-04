@@ -156,11 +156,37 @@ export const MemberListStatus = React.memo(() => {
 			};
 		}
 		const users = new Map(userChannels.map((item) => [item.id, true]));
+		let onlineMembers = listMembersChannelGroupDM?.online?.filter((m) => users.has(m?.id)) || [];
+		let offlineMembers = listMembersChannelGroupDM?.offline?.filter((m) => users.has(m?.id)) || [];
+
+		// If all members are removed, keep the group owner in the online list
+		if (onlineMembers?.length === 0 && offlineMembers?.length === 0 && currentChannel?.creator_id) {
+			const store = getStore();
+			const allClanUsers = selectAllUserClans(store.getState() as any) as UsersClanEntity[];
+			const owner = allClanUsers?.find((u) => u?.user?.id === currentChannel?.creator_id);
+			if (owner) {
+				const inForStatusUserDM = getInfoUserOnlineStatus(owner?.user?.id);
+				const ownerWithMeta = {
+					...owner,
+					user: {
+						...owner.user,
+						online: inForStatusUserDM?.online ?? true,
+						is_mobile: inForStatusUserDM?.isMobile ?? false,
+						metadata: inForStatusUserDM?.status
+							? JSON.stringify({ user_status: inForStatusUserDM?.status })
+							: owner.user.metadata
+					}
+				} as UsersClanEntity;
+				onlineMembers = [ownerWithMeta];
+				offlineMembers = [];
+			}
+		}
+
 		return {
-			onlineMembers: listMembersChannelGroupDM?.online?.filter((m) => users.has(m?.id)),
-			offlineMembers: listMembersChannelGroupDM?.offline?.filter((m) => users.has(m?.id))
+			onlineMembers,
+			offlineMembers
 		};
-	}, [listMembersChannelGroupDM, userChannels]);
+	}, [listMembersChannelGroupDM, userChannels, currentChannel?.creator_id]);
 
 	const { onlineMembers, offlineMembers } = lisMembers;
 

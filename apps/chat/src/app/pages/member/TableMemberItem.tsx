@@ -1,8 +1,10 @@
-import { AvatarImage, Coords, ModalRemoveMemberClan, PanelMemberTable, UserProfileModalInner } from '@mezon/components';
+import { AvatarImage, Coords, DeleteClanModal, ModalRemoveMemberClan, PanelMemberTable, UserProfileModalInner } from '@mezon/components';
 import { useChannelMembersActions, useMemberContext, useOnClickOutside, usePermissionChecker, useRoles } from '@mezon/core';
 import {
 	RolesClanEntity,
+	clansActions,
 	selectCurrentChannelId,
+	selectCurrentClan,
 	selectCurrentClanId,
 	selectRolesClanEntities,
 	selectUserMaxPermissionLevel,
@@ -101,6 +103,21 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 			/>
 		);
 	}, [userId, username, avatar]);
+	const dispatch = useAppDispatch();
+	const handleTransferOwner = async () => {
+		dispatch(clansActions.transferClan({ clanId: currentClan?.clan_id || '', new_clan_owner: userId || '' }));
+	};
+
+	const [openConfirmTransfer, closeTransfer] = useModal(() => {
+		return (
+			<DeleteClanModal
+				onClose={closeTransfer}
+				buttonLabel="Transfer clan"
+				title={`Transfer '${currentClan?.clan_name}' to ${displayName || username}`}
+				onClick={handleTransferOwner}
+			/>
+		);
+	}, []);
 
 	const [openPanelMember, closePanelMember] = useModal(() => {
 		const member: ChannelMembersEntity = {
@@ -121,6 +138,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				onOpenProfile={openUserProfile}
 				kichMember={hasClanPermission}
 				handleRemoveMember={handleClickRemoveMember}
+				handleTransferOwner={openConfirmTransfer}
 			/>
 		);
 	}, [coords, openUserProfile, hasClanPermission]);
@@ -148,6 +166,8 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 	const [openModalRemoveMember, closeModalRemoveMember] = useModal(() => {
 		return <ModalRemoveMemberClan username={username} onClose={closeModalRemoveMember} onRemoveMember={handleRemoveMember} />;
 	}, [username, handleRemoveMember]);
+
+	const currentClan = useSelector(selectCurrentClan);
 
 	return (
 		<div

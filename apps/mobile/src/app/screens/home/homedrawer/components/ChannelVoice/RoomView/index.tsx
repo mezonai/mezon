@@ -90,8 +90,8 @@ const RoomView = ({
 	useEffect(() => {
 		const subscription = focusedScreenShare
 			? Dimensions.addEventListener('change', () => {
-					setIsHiddenControl((prevState) => !prevState);
-				})
+				setIsHiddenControl((prevState) => !prevState);
+			})
 			: null;
 
 		return () => subscription?.remove();
@@ -100,6 +100,7 @@ const RoomView = ({
 	const handleOpenEmojiPicker = () => {
 		const data = {
 			snapPoints: ['45%', '75%'],
+			disableScrollView: true,
 			children: (
 				<ContainerMessageActionModal
 					message={undefined}

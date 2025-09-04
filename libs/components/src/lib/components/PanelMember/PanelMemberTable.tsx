@@ -1,6 +1,8 @@
 import { useAppNavigation, useAuth, useDirect, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
+import { selectCurrentClan } from '@mezon/store';
 import { ChannelMembersEntity } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Coords } from '../ChannelLink';
 import GroupPanelMember from './GroupPanelMember';
@@ -14,13 +16,17 @@ type PanelMemberProps = {
 	onOpenProfile?: () => void;
 	kichMember?: boolean;
 	handleRemoveMember?: () => void;
+	handleTransferOwner?: () => void;
 };
 
-const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, handleRemoveMember }: PanelMemberProps) => {
+const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, handleRemoveMember, handleTransferOwner }: PanelMemberProps) => {
 	const { userProfile } = useAuth();
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [positionTop, setPositionTop] = useState<boolean>(false);
-
+	const currentClan = useSelector(selectCurrentClan);
+	const isClanOwner = useMemo(() => {
+		return currentClan?.creator_id === userProfile?.user?.id;
+	}, [currentClan?.creator_id, userProfile?.user?.id]);
 	useEffect(() => {
 		const heightPanel = panelRef.current?.clientHeight;
 		if (heightPanel && heightPanel > coords.distanceToBottom) {
@@ -76,7 +82,8 @@ const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, 
 				<ItemPanelMember children="Profile" onClick={handleOpenProfile} />
 
 				{!isSelf && <ItemPanelMember children="Message" onClick={handleDirectMessageWithUser} />}
-				{kichMember && <ItemPanelMember danger children="Remove Member" onClick={handleRemoveMember} />}
+				{isClanOwner && !isSelf && <ItemPanelMember danger children="Transfer Owner" onClick={handleTransferOwner} />}
+				{kichMember && !isSelf && !isClanOwner && <ItemPanelMember danger children="Remove Member" onClick={handleRemoveMember} />}
 			</GroupPanelMember>
 		</div>
 	);

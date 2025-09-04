@@ -1,0 +1,11 @@
+{
+    "title": "Onboarding progress",
+    "description": "Step {{step}} of {{total}}",
+    "action": {
+        "title": "Finish onboarding your clan",
+        "description": "You have finished {{step}} of {{total}} step",
+        "createChannel": "Create your channel",
+        "invite": "Invite your friends",
+        "sendMessage": "Send your first message"
+    }
+}

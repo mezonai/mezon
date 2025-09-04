@@ -10,13 +10,15 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 	disabled?: boolean;
 	variant?: ButtonVariant;
 	size?: ButtonSize;
+	dataE2E?: string;
 }
-const Button: React.FC<ButtonProps> = ({ variant, size, disabled, children, className, ...rest }) => {
+const Button: React.FC<ButtonProps> = ({ variant, size, disabled, children, className, dataE2E, ...rest }) => {
 	return (
 		<button
 			className={`font-[500] capitalize disabled:opacity-50 disabled:cursor-not-allowed ease-linear transition-all duration-150  ${className}`}
 			{...rest}
 			disabled={disabled}
+			data-e2e={dataE2E}
 		>
 			{children}
 		</button>

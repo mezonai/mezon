@@ -76,13 +76,13 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 	const handleAddMemberToGroupChat = async (listAdd: ApiCreateChannelDescRequest) => {
 		try {
 			dispatch(appActions.setLoadingMainMobile(true));
-			const listMembersAdd = listAdd?.user_ids?.filter((userId) => !directMessage?.user_id?.includes(userId)) ?? [];
+			const listMembersAdd = listAdd?.user_ids?.filter((userId) => !currentDirectMessage.current?.user_id?.includes(userId)) ?? [];
 			await dispatch(
 				channelUsersActions.addChannelUsers({
-					channelId: directMessage?.channel_id as string,
-					clanId: directMessage?.clan_id as string,
+					channelId: currentDirectMessage.current?.channel_id as string,
+					clanId: currentDirectMessage.current?.clan_id as string,
 					userIds: listMembersAdd,
-					channelType: directMessage?.type
+					channelType: currentDirectMessage.current?.type
 				})
 			);
 			handleMenuThreadBack();

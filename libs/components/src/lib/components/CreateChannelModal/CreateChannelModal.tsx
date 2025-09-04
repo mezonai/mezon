@@ -22,6 +22,7 @@ import { ChannelNameModalRef, ChannelNameTextField } from './ChannelNameTextFiel
 import { ChannelTypeComponent } from './ChannelType';
 import { CreateChannelButton } from './CreateChannelButton';
 
+import { generateE2eId } from '@mezon/utils';
 import { ChannelStatusModal } from './ChannelStatus';
 
 export const CreateNewChannelModal = () => {
@@ -200,18 +201,21 @@ export const CreateNewChannelModal = () => {
 										type={ChannelType.CHANNEL_TYPE_CHANNEL}
 										onChange={onChangeChannelType}
 										error={isErrorType}
+										dataE2E={generateE2eId('clan_page.modal.create_channel.type.text')}
 									/>
 									<ChannelTypeComponent
 										disable={false}
 										type={channelTypeVoice}
 										onChange={onChangeChannelType}
 										error={isErrorType}
+										dataE2E={generateE2eId('clan_page.modal.create_channel.type.voice')}
 									/>
 									<ChannelTypeComponent
 										disable={false}
 										type={ChannelType.CHANNEL_TYPE_STREAMING}
 										onChange={onChangeChannelType}
 										error={isErrorType}
+										dataE2E={generateE2eId('clan_page.modal.create_channel.type.stream')}
 									/>
 								</div>
 							</div>

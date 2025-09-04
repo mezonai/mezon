@@ -164,17 +164,34 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 				/>
 
 				<div className="h-full w-full">
-					<div className="flex flex-col gap-[2px] text-[12px] font-bold uppercase">
+					<div className="flex flex-col gap-[2px] text-[12px] font-bold ">
 						{category === NotificationCategory.MENTIONS ? (
 							clan?.clan_name ? (
-								<>
-									<span className="text-[13px]">
-										{isChannel ? `#${message.channel_label}` : `#${parentChannel.channel_label} > ${message.channel_label}`}
-									</span>
-									<span>
-										{clan.clan_name} {'>'} {isChannel ? `${message.category_name}` : `${parentChannel.category_name}`}
-									</span>
-								</>
+								<div className="flex flex-col text-sm min-w-0">
+									<div className="flex items-center gap-1 min-w-0">
+										<span className="uppercase truncate max-w-[120px] overflow-hidden whitespace-nowrap">
+											{clan.clan_name}
+										</span>
+										<span>{'>'}</span>
+										<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap uppercase">
+											{isChannel ? message.category_name : parentChannel.category_name}
+										</span>
+									</div>
+
+									<div className="flex items-center gap-1 min-w-0 text-[13px]">
+										<span className="truncate max-w-[120px] overflow-hidden whitespace-nowrap">
+											{isChannel ? `#${message.channel_label}` : `#${parentChannel.channel_label}`}
+										</span>
+										{!isChannel && (
+											<>
+												<span>{'>'}</span>
+												<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap">
+													{`${message.channel_label}`}
+												</span>
+											</>
+										)}
+									</div>
+								</div>
 							) : (
 								'direct message'
 							)

@@ -10,6 +10,7 @@ export interface ComunityClanState {
     communityBanner: string | null;
     about: string;
     description: string;
+    short_url: string;
 }
 
 export interface ComunityState {
@@ -73,12 +74,12 @@ export const comunitySlice = createSlice({
         },
         setCommunityBanner: (state, action: PayloadAction<{ clanId: string; banner: string | null }>) => {
             const { clanId, banner } = action.payload;
-            if (!state.byClanId[clanId]) state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "" };
+            if (!state.byClanId[clanId]) state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
             state.byClanId[clanId].communityBanner = banner;
         },
         setCommunityAbout: (state, action: PayloadAction<{ clanId: string; about: string; description?: string }>) => {
             const { clanId, about, description = "" } = action.payload;
-            if (!state.byClanId[clanId]) state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "" };
+            if (!state.byClanId[clanId]) state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
             state.byClanId[clanId].about = about;
             state.byClanId[clanId].description = description;
         },
@@ -91,7 +92,7 @@ export const comunitySlice = createSlice({
             })
             .addCase(updateCommunityStatus.fulfilled, (state, action) => {
                 const { clan_id, enabled } = action.payload;
-                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "" };
+                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
                 state.byClanId[clan_id].isCommunityEnabled = enabled;
                 state.isLoading = false;
             })
@@ -105,7 +106,7 @@ export const comunitySlice = createSlice({
             })
             .addCase(updateCommunityBanner.fulfilled, (state, action) => {
                 const { clan_id, bannerUrl } = action.payload;
-                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "" };
+                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
                 state.byClanId[clan_id].communityBanner = bannerUrl;
                 state.isLoading = false;
             })
@@ -119,7 +120,7 @@ export const comunitySlice = createSlice({
             })
             .addCase(updateCommunityAbout.fulfilled, (state, action) => {
                 const { clan_id, about } = action.payload;
-                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "" };
+                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
                 state.byClanId[clan_id].about = about;
                 state.isLoading = false;
             })
@@ -133,11 +134,25 @@ export const comunitySlice = createSlice({
             })
             .addCase(updateCommunityDescription.fulfilled, (state, action) => {
                 const { clan_id, description } = action.payload;
-                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "" };
+                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
                 state.byClanId[clan_id].description = description;
                 state.isLoading = false;
             })
             .addCase(updateCommunityDescription.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updateCommunityShortUrl.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updateCommunityShortUrl.fulfilled, (state, action) => {
+                const { clan_id, short_url } = action.payload;
+                if (!state.byClanId[clan_id]) state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: "", description: "", short_url: "" };
+                state.byClanId[clan_id].short_url = short_url;
+                state.isLoading = false;
+            })
+            .addCase(updateCommunityShortUrl.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             });
@@ -155,6 +170,7 @@ export const updateCommunityAbout = createAsyncThunk(
             const mezon = await ensureSession(getMezonCtx(thunkAPI));
             await mezon.client.updateClanDesc(mezon.session, clan_id, {
                 about,
+
             });
             return { clan_id, about };
         } catch (error) {
@@ -183,6 +199,26 @@ export const updateCommunityDescription = createAsyncThunk(
     }
 );
 
+export const updateCommunityShortUrl = createAsyncThunk(
+    'comunity/updateCommunityShortUrl',
+    async (
+        { clan_id, short_url }: { clan_id: string; short_url: string },
+        thunkAPI
+    ) => {
+        try {
+            const mezon = await ensureSession(getMezonCtx(thunkAPI));
+            await mezon.client.updateClanDesc(mezon.session, clan_id, {
+                short_url,
+                is_community: true,
+            });
+            return { clan_id, short_url };
+        } catch (error) {
+            captureSentryError(error, 'comunity/updateCommunityShortUrl');
+            return thunkAPI.rejectWithValue('Failed to update community short url');
+        }
+    }
+);
+
 export const comunityReducer = comunitySlice.reducer;
 
 export const comunityActions = {
@@ -191,6 +227,7 @@ export const comunityActions = {
     updateCommunityBanner,
     updateCommunityAbout,
     updateCommunityDescription,
+    updateCommunityShortUrl,
 };
 export const selectComunityDescription = createSelector(
     [(state: RootState, clanId: string) => selectComunityState(state).byClanId?.[clanId]?.description],
@@ -222,4 +259,9 @@ export const selectComunityLoading = createSelector(
 export const selectComunityError = createSelector(
     [selectComunityState],
     (state) => state.error
+);
+
+export const selectComunityShortUrl = createSelector(
+    [(state: RootState, clanId: string) => selectComunityState(state).byClanId?.[clanId]?.short_url],
+    (short_url) => short_url ?? ""
 );

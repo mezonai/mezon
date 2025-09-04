@@ -1,7 +1,6 @@
-
 import type React from "react"
 
-import { comunityActions, selectCommunityBanner, selectComunityAbout, selectComunityError, selectComunityLoading, selectIsCommunityEnabled, useAppDispatch, useAppSelector } from "@mezon/store"
+import { comunityActions, selectCommunityBanner, selectComunityAbout, selectComunityError, selectComunityLoading, selectIsCommunityEnabled, selectComunityShortUrl, useAppDispatch, useAppSelector } from "@mezon/store"
 import { handleUploadEmoticon, useMezon } from "@mezon/transport"
 import { Icons } from "@mezon/ui"
 import { useEffect, useRef, useState } from "react"
@@ -26,17 +25,20 @@ const SettingComunity = ({
   const [bannerPreview, setBannerPreview] = useState<string | null>(null)
   const [aboutText, setAboutText] = useState("")
   const [descriptionText, setDescriptionText] = useState("");
+  const [vanityUrl, setVanityUrl] = useState("");
   const [initialBanner, setInitialBanner] = useState<string | null>(null)
   const [initialAbout, setInitialAbout] = useState("")
   const [initialDescription, setInitialDescription] = useState("");
+  const [initialVanityUrl, setInitialVanityUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false)
   const [openSaveChange, setOpenSaveChange] = useState(false)
   const [aboutError, setAboutError] = useState(false);
   const [descError, setDescError] = useState(false);
   const [bannerError, setBannerError] = useState(false);
+  const [vanityUrlError, setVanityUrlError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { sessionRef, clientRef } = useMezon();
-  const isDirty = aboutText !== initialAbout || bannerPreview !== initialBanner || descriptionText !== initialDescription;
+  const isDirty = aboutText !== initialAbout || bannerPreview !== initialBanner || descriptionText !== initialDescription || vanityUrl !== initialVanityUrl;
 
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,8 +69,15 @@ const SettingComunity = ({
     }
   }
 
+
   const handleChangeDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescriptionText(e.target.value);
+    if (isEnabled) setOpenSaveChange(true);
+  }
+
+  const handleChangeVanityUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    setVanityUrl(value);
     if (isEnabled) setOpenSaveChange(true);
   }
   const handleBlurDescription = async () => {
@@ -85,6 +94,20 @@ const SettingComunity = ({
       }
     }
   }
+  const handleBlurVanityUrl = async () => {
+    if (isEnabled && vanityUrl !== initialVanityUrl) {
+      setIsSaving(true);
+      try {
+        await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
+        setInitialVanityUrl(vanityUrl);
+        toast.success("Vanity URL updated!");
+      } catch {
+        toast.error("Update vanity url failed!");
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  }
 
   const handleEnable = () => setIsInitialEditing(true)
 
@@ -93,6 +116,7 @@ const SettingComunity = ({
     setAboutError(false);
     setDescError(false);
     setBannerError(false);
+    setVanityUrlError(false);
     if (!aboutText.trim()) {
       setAboutError(true);
       hasError = true;
@@ -101,12 +125,16 @@ const SettingComunity = ({
       setDescError(true);
       hasError = true;
     }
+    if (!vanityUrl.trim()) {
+      setVanityUrlError(true);
+      hasError = true;
+    }
     if (!bannerFile && !bannerPreview) {
       setBannerError(true);
       hasError = true;
     }
     if (hasError) {
-      toast.error("please fill all required fields: Banner, About, Description!");
+      toast.error("please fill all required fields: Banner, About, Description, Vanity URL!");
       return;
     }
     setIsSaving(true);
@@ -130,8 +158,12 @@ const SettingComunity = ({
       if (descriptionText) {
         await dispatch(comunityActions.updateCommunityDescription({ clan_id: clanId, description: descriptionText })).unwrap();
       }
+      if (vanityUrl) {
+        await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
+      }
       setInitialAbout(aboutText);
       setInitialDescription(descriptionText);
+      setInitialVanityUrl(vanityUrl);
       setInitialBanner(bannerUrl);
       setIsInitialEditing(false);
       onCommunityEnabledChange?.(true);
@@ -149,6 +181,7 @@ const SettingComunity = ({
     setBannerPreview(initialBanner)
     setBannerFile(null)
     setOpenSaveChange(false)
+    setVanityUrl(initialVanityUrl)
   }
 
   const handleSaveChanges = async () => {
@@ -174,6 +207,10 @@ const SettingComunity = ({
         await dispatch(comunityActions.updateCommunityDescription({ clan_id: clanId, description: descriptionText })).unwrap();
         setInitialDescription(descriptionText);
       }
+      if (vanityUrl !== initialVanityUrl) {
+        await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
+        setInitialVanityUrl(vanityUrl);
+      }
       setInitialBanner(bannerUrl);
       setOpenSaveChange(false);
       setBannerFile(null);
@@ -191,10 +228,12 @@ const SettingComunity = ({
       await dispatch(comunityActions.updateCommunityStatus({ clan_id: clanId, enabled: false })).unwrap()
       setAboutText("")
       setDescriptionText("")
+      setVanityUrl("")
       setBannerFile(null)
       setBannerPreview(null)
       setInitialAbout("")
       setInitialDescription("")
+      setInitialVanityUrl("")
       setInitialBanner(null)
       setOpenSaveChange(false)
       onCommunityEnabledChange?.(false)
@@ -232,6 +271,12 @@ const SettingComunity = ({
     setDescriptionText(description);
     setInitialDescription(description);
   }, [description, clanId, isEnabled]);
+
+  const shortUrl = useAppSelector(state => selectComunityShortUrl(state, clanId));
+  useEffect(() => {
+    setVanityUrl(shortUrl);
+    setInitialVanityUrl(shortUrl);
+  }, [shortUrl, clanId, isEnabled]);
 
   if (!isEnabled && !isInitialEditing) {
     return <EnableComunity onEnable={handleEnable} />
@@ -365,17 +410,63 @@ const SettingComunity = ({
                   onChange={handleChangeAbout}
                   onBlur={handleBlurAbout}
                   placeholder="Tell us about your community... What makes it special?"
-                  maxLength={300}
+                  maxLength={100}
                 />
                 <div className="absolute bottom-3 right-3 text-sm  bg-theme-setting-primary text-theme-primary border border-theme-primary px-2 py-1 rounded-md">
                   <span
                     className={
-                      aboutText.length > 250 ? "text-orange-500" : aboutText.length > 280 ? "text-red-500" : "text-theme-primary-active"
+                      aboutText.length > 50 ? "text-orange-500" : aboutText.length > 80 ? "text-red-500" : "text-theme-primary-active"
                     }
                   >
                     {aboutText.length}
                   </span>
-                  <span className="text-theme-primary">/300</span>
+                  <span className="text-theme-primary">/100</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="flex items-center gap-2 text-lg font-semibold text-theme-primary">
+                <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                  />
+                </svg>
+                Vanity URL
+              </label>
+              <p className="text-sm text-theme-primary opacity-75 mb-3">
+                Create a custom URL for your community. Use only lowercase letters, numbers, and hyphens.
+              </p>
+              <div className="relative">
+                <div className={`flex items-center border-2 rounded-xl bg-theme-input focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/30 transition-all duration-200 ${vanityUrlError ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'}`}>
+                  <span className="px-4 py-3 text-theme-primary opacity-75 border-r border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded-l-xl">
+                    mezon.ai/clans/clan/
+                  </span>
+                  <input
+                    type="text"
+                    className="flex-1 px-4 py-3 bg-transparent text-theme-primary focus:outline-none rounded-r-xl"
+                    value={vanityUrl}
+                    onChange={handleChangeVanityUrl}
+                    placeholder="my-awesome-community"
+                    onBlur={handleBlurVanityUrl}
+                    maxLength={50}
+                  />
+                </div>
+                {vanityUrl && (
+                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                      <span className="font-medium">Preview URL:</span>
+                      <span className="truncate max-w-[300px] block">
+                        mezon.ai/clans/clan/{vanityUrl}
+                      </span>
+                    </p>
+                  </div>
+                )}
+                <div className="absolute -bottom-6 right-0 text-xs text-theme-primary opacity-60">
+                  {vanityUrl.length}/50
                 </div>
               </div>
             </div>
@@ -552,6 +643,52 @@ const SettingComunity = ({
                   {aboutText.length}
                 </span>
                 <span className="text-theme-primary">/300</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-lg font-semibold text-theme-primary">
+              <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                />
+              </svg>
+              Vanity URL
+            </label>
+            <p className="text-sm text-theme-primary opacity-75 mb-3">
+              Create a custom URL for your community. Use only lowercase letters, numbers, and hyphens.
+            </p>
+            <div className="relative">
+              <div className={`flex items-center border-2 rounded-xl bg-theme-input focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/30 transition-all duration-200 ${vanityUrlError ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'}`}>
+                <span className="px-4 py-3 text-theme-primary opacity-75 border-r border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded-l-xl">
+                  mezon.ai/clans/clan/
+                </span>
+                <input
+                  type="text"
+                  className="flex-1 px-4 py-3 bg-transparent text-theme-primary focus:outline-none rounded-r-xl"
+                  value={vanityUrl}
+                  onChange={handleChangeVanityUrl}
+                  placeholder="my-awesome-community"
+                  maxLength={50}
+                />
+              </div>
+              {vanityUrl && (
+                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                    <span className="font-medium">Preview URL:</span>
+                    <span className="truncate max-w-[300px] block">
+                      mezon.ai/clans/clan/{vanityUrl}
+                    </span>
+                  </p>
+                </div>
+
+              )}
+              <div className="absolute -bottom-6 right-0 text-xs text-theme-primary opacity-60">
+                {vanityUrl.length}/50
               </div>
             </div>
           </div>

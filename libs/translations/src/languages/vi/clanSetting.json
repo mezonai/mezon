@@ -27,7 +27,17 @@
             "members": "Thành viên",
             "role": "Vai trò",
             "invite": "Lời mời",
-            "bans": "Chặn"
+            "bans": "Chặn",
+            "transferOwnership": "Chuyển Quyền Sở Hữu"
         }
+    },
+    "transferOwnership": {
+        "title": "Chuyển Quyền Sở Hữu",
+        "searchPlaceholder": "Tìm kiếm thành viên",
+        "empty": "Không tìm thấy thành viên nào",
+        "confirmTitle": "Chuyển quyền sở hữu clan",
+        "confirm": "Chuyển",
+        "description": "Bạn có chắc chắn muốn chuyển quyền sở hữu clan cho {{newOwnerName}}?",
+        "btnTransfer": "Chuyển"
     }
 }

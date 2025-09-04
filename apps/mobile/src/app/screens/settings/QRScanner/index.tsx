@@ -30,7 +30,7 @@ export const QRScanner = () => {
 	const [isNavigating, setIsNavigating] = useState(false);
 	const [isSuccess, setIsSuccess] = useState<boolean>(false);
 	const { confirmLoginRequest } = useAuth();
-	const { themeValue, themeBasic } = useTheme();
+	const { themeValue } = useTheme();
 	const scanningRef = useRef(true);
 	const styles = style(themeValue);
 
@@ -157,25 +157,26 @@ export const QRScanner = () => {
 				}
 				return;
 			}
-			const valueObj = safeJSONParse(value || '{}');
-			// case Transfer funds
-			if (valueObj?.receiver_id) {
-				navigation.push(APP_SCREEN.WALLET, {
-					activeScreen: 'transfer',
-					formValue: value
-				});
-				// 	case login
-			} else if (value) {
-				try {
+			try {
+				const valueObj = safeJSONParse(value || '{}');
+				// case Transfer funds
+				if (valueObj?.receiver_id) {
+					navigation.push(APP_SCREEN.WALLET, {
+						activeScreen: 'transfer',
+						formValue: value
+					});
+					// 	case login
+				} else if (value) {
 					const decode = Snowflake.parse(value);
 					if (decode?.timestamp && Number.isInteger(Number(value))) {
 						setValueCode(value);
 					}
-				} catch {
-					//
+				} else {
+					// 	empty
 				}
-			} else {
-				// 	empty
+			} catch (e) {
+				setDoScanBarcode(true);
+				setIsNavigating(false);
 			}
 		} catch (error) {
 			store.dispatch(appActions.setLoadingMainMobile(false));

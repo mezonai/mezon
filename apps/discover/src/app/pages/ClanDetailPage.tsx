@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/ui';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import QRCode from "react-qr-code";
 import { useParams } from 'react-router-dom';
 import ImageWithSkeleton from '../components/common/ImageWithSkeleton';
@@ -7,16 +7,39 @@ import { FacebookIcon, LightBulbIcon, RedditIcon, TwitterIcon, UserGroupIcon } f
 import { DEFAULT_IMAGES } from '../constants/constants';
 import { useDiscover } from '../context/DiscoverContext';
 import { useNavigation } from '../hooks/useNavigation';
+import { ApiClanDiscover } from 'mezon-js/api.gen';
 
 
 export default function ClanDetailPage() {
 	const { id } = useParams();
-	const { clans } = useDiscover();
-	const clan = clans.find((c: any) => c.clan_id === id);
+	const { fetchSingleClan } = useDiscover();
+	const [clan, setClan] = useState<ApiClanDiscover | null>(null);
+	const [loading, setLoading] = useState(true);
 	const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 	const [isCopied, setIsCopied] = useState(false);
 	const [isJoinOptionsOpen, setIsJoinOptionsOpen] = useState(false);
 	const { toClanPage } = useNavigation();
+
+	useEffect(() => {
+		const loadClan = async () => {
+			if (!id) return;
+			
+			setLoading(true);
+			const clanData = await fetchSingleClan(id);
+			setClan(clanData);
+			setLoading(false);
+		};
+
+		loadClan();
+	}, [id, fetchSingleClan]);
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5865f2]"></div>
+			</div>
+		);
+	}
 
 	if (!clan) {
 		return <div className="text-center py-20">Clan not found.</div>;

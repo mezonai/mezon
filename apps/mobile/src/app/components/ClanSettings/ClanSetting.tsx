@@ -1,7 +1,10 @@
 import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { EPermission } from '@mezon/utils';
+import { ClansEntity } from '@mezon/store';
+import { selectAllMembersInClan, selectCurrentClan, useAppSelector } from '@mezon/store-mobile';
+import { EPermission, UsersClanEntity } from '@mezon/utils';
+import { User } from '@sentry/react';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, ScrollView, View } from 'react-native';
@@ -10,6 +13,7 @@ import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../co
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
+import TransferClanOwnership from '../../screens/home/homedrawer/components/TransferClanOwnership';
 import { LogoClanSelector } from './LogoClanSelector';
 import { style } from './styles';
 
@@ -19,6 +23,8 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['clanSetting']);
+	const currentClan = useAppSelector(selectCurrentClan) as ClansEntity | undefined;
+	const members = useAppSelector(selectAllMembersInClan as any) as UsersClanEntity[];
 	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
 		EPermission.administrator,
 		EPermission.manageClan,
@@ -121,13 +127,34 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			title: t('menu.userManagement.invite'),
 			onPress: () => {
 				const data = {
-					snapPoints: ['70%', '90%'],
+					snapPoints: ['90%'],
+					disableScrollView: true,
 					children: <InviteToChannel isUnknownChannel={false} />
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
+		},
+		{
+			title: t('menu.userManagement.transferOwnership', 'Transfer ownership'),
+			onPress: () => {
+				try {
+					const ownerUser = (members || [])
+						.find((m: User) => m?.user?.id === currentClan?.creator_id)?.user;
+					const data = {
+						snapPoints: ['90%'],
+						disableScrollView: true,
+						children: <TransferClanOwnership currentOwner={ownerUser} />
+					};
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+				} catch (error) {
+					console.error('Error:', error.message);
+				}
+			},
+			expandable: true,
+			icon: <MezonIconCDN icon={IconCDN.transferOwnershipIcon} color={themeValue.text} />,
+			isShow: isClanOwner
 		}
 	];
 

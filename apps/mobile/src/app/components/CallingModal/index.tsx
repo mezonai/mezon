@@ -2,7 +2,6 @@ import { ActionEmitEvent, load, STORAGE_MY_USER_ID } from '@mezon/mobile-compone
 import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { DMCallActions, selectAllUserClans, selectIsInCall, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { WebrtcSignalingType } from 'mezon-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -22,7 +21,6 @@ const CallingModal = () => {
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
 	const ringtoneRef = useRef<Sound | null>(null);
-	const navigation = useNavigation<any>();
 	const userId = useMemo(() => {
 		return load(STORAGE_MY_USER_ID);
 	}, []);
@@ -49,6 +47,18 @@ const CallingModal = () => {
 			ringtoneRef.current = null;
 		}
 	};
+
+	useEffect(() => {
+		if (isInCall || !isVisible) {
+			stopAndReleaseSound();
+			Vibration.cancel();
+		}
+
+		return () => {
+			stopAndReleaseSound();
+			Vibration.cancel();
+		};
+	}, [isInCall, isVisible]);
 
 	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
@@ -122,9 +132,7 @@ const CallingModal = () => {
 	};
 
 	const clearUpStorageCalling = async () => {
-		if (Platform.OS === 'android') {
-			await NotificationPreferences.clearValue('notificationDataCalling');
-		} else {
+		if (Platform.OS === 'ios') {
 			const VoIPManager = NativeModules?.VoIPManager;
 			if (VoIPManager) {
 				await VoIPManager.clearStoredNotificationData();

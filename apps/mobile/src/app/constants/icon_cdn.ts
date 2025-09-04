@@ -170,5 +170,11 @@ export enum IconCDN {
 	callInComingIcon = require('./iconPNG/callInComing.png'),
 	callMissIcon = require('./iconPNG/callMiss.png'),
 	logoMezon = require('./iconPNG/logoMezon.png'),
-	activityIcon = require('./iconPNG/activityIcon.png')
+	activityIcon = require('./iconPNG/activityIcon.png'),
+	fireworksIcon = require('./iconPNG/fireworksIcon.png'),
+	chatImage = require('./iconPNG/chatImage.png'),
+	addFriendImage = require('./iconPNG/addFriendImage.png'),
+	createImage = require('./iconPNG/createImage.png'),
+	magicIcon = require('./iconPNG/magicIcon.png'),
+	transferOwnershipIcon = require('./iconPNG/transferOwnerShipIcon.png')
 }

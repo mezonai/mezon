@@ -36,7 +36,8 @@ export function useFriends() {
 		(username: string, id: string) => {
 			const body = {
 				usernames: [username],
-				ids: [id]
+				ids: [id],
+				isAcceptingRequest: true
 			};
 			dispatch(friendsActions.sendRequestAddFriend(body));
 		},

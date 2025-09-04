@@ -1,6 +1,7 @@
 import { Client } from 'mezon-js';
 import { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../constants/constants';
 import { type Category } from '../services/api';
@@ -20,6 +21,7 @@ interface DiscoverContextType {
 	handlePageChange: (page: number) => void;
 	handleSearch: (term: string) => void;
 	handleCategorySelect: (category: string) => void;
+	fetchSingleClan: (clanId: string) => Promise<ApiClanDiscover | null>;
 }
 
 const DiscoverContext = createContext<DiscoverContextType | undefined>(undefined);
@@ -28,6 +30,7 @@ const STORAGE_KEY = 'discover_clans';
 const CATEGORIES_STORAGE_KEY = 'discover_categories';
 
 export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+	const location = useLocation();
 	const [clans, setClans] = useState<ApiClanDiscover[]>(() => {
 		const savedClans = localStorage.getItem(STORAGE_KEY);
 		return savedClans ? JSON.parse(savedClans) : [];
@@ -82,9 +85,41 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 		}
 	};
 
+	const fetchSingleClan = async (clanId: string): Promise<ApiClanDiscover | null> => {
+		try {
+			const mezon = new Client(
+				process.env.NX_CHAT_APP_API_KEY as string,
+				process.env.NX_CHAT_APP_API_GW_HOST as string,
+				process.env.NX_CHAT_APP_API_GW_PORT as string,
+				process.env.NX_CHAT_APP_API_SECURE === 'true'
+			);
+
+			const request: ApiClanDiscoverRequest = {
+				clan_id: clanId
+			};
+
+			const response = await mezon.listClanDiscover(
+				`https://${process.env.NX_CHAT_APP_API_GW_HOST}:${process.env.NX_CHAT_APP_API_GW_PORT}`,
+				request
+			);
+			if (!response) {
+				throw new Error('No response from API');
+			}
+
+			const clans = response.clan_discover || [];
+			return clans.length > 0 ? clans[0] : null;
+		} catch (err) {
+			console.error('Failed to fetch single clan:', err);
+			toast.error('Cannot fetch clan, please try again later');
+			return null;
+		}
+	};
+
 	useEffect(() => {
-		fetchClansDiscover(currentPage);
-	}, [currentPage]);
+		if (location.pathname === '/clans' || location.pathname === '/') {
+			fetchClansDiscover(currentPage);
+		}
+	}, [currentPage, location.pathname]);
 	const handlePageChange = (page: number) => {
 		if (page !== currentPage && page >= 1 && page <= totalPages) {
 			setCurrentPage(page);
@@ -115,7 +150,8 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 		setSelectedCategory,
 		handlePageChange,
 		handleSearch,
-		handleCategorySelect
+		handleCategorySelect,
+		fetchSingleClan
 	};
 
 	return <DiscoverContext.Provider value={value}>{children}</DiscoverContext.Provider>;

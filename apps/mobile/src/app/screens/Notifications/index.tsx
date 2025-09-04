@@ -26,7 +26,8 @@ import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, DeviceEventEmitter, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -323,6 +324,12 @@ const Notifications = () => {
 
 	return (
 		<View style={styles.notifications}>
+			<LinearGradient
+				start={{ x: 1, y: 0 }}
+				end={{ x: 0, y: 0 }}
+				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+				style={[StyleSheet.absoluteFillObject]}
+			/>
 			<View style={styles.notificationsHeader}>
 				{isTabletLandscape && (
 					<Pressable onPress={handleGoback}>

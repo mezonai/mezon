@@ -1,4 +1,12 @@
-import { MezonStoreProvider, initStore, selectIsLogin, setIsElectronDownloading, setIsElectronUpdateAvailable } from '@mezon/store';
+import {
+	MezonStoreProvider,
+	initStore,
+	selectCurrentLanguage,
+	selectIsLogin,
+	setIsElectronDownloading,
+	setIsElectronUpdateAvailable
+} from '@mezon/store';
+import i18n from '@mezon/translations';
 import { MezonContextProvider, clearSessionFromStorage, getMezonConfig, useMezon } from '@mezon/transport';
 
 import { PopupManagerProvider } from '@mezon/components';
@@ -8,6 +16,7 @@ import { ACTIVE_WINDOW, DOWNLOAD_PROGRESS, TRIGGER_SHORTCUT, UPDATE_AVAILABLE, U
 import isElectron from 'is-electron';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import 'react-contexify/ReactContexify.css';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -43,6 +52,19 @@ export const LoadingContext = createContext<{
 });
 
 export const useLoading = () => useContext(LoadingContext);
+
+const LanguageSyncProvider = () => {
+	const currentLanguage = useSelector(selectCurrentLanguage);
+	const { i18n } = useTranslation();
+
+	useEffect(() => {
+		if (i18n.language !== currentLanguage) {
+			i18n.changeLanguage(currentLanguage);
+		}
+	}, [currentLanguage, i18n]);
+
+	return null;
+};
 
 const AppInitializer = () => {
 	const isLogin = useSelector(selectIsLogin);
@@ -156,6 +178,7 @@ export function App() {
 		>
 			{showLoading && <LoadingFallbackWrapper />}
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
+				<LanguageSyncProvider />
 				<PopupManagerProvider>
 					<PermissionProvider>
 						<AppInitializer />
@@ -176,9 +199,11 @@ function AppWrapper() {
 	}, []);
 
 	return (
-		<MezonContextProvider mezon={mezon} connect={true}>
-			<App />
-		</MezonContextProvider>
+		<I18nextProvider i18n={i18n}>
+			<MezonContextProvider mezon={mezon} connect={true}>
+				<App />
+			</MezonContextProvider>
+		</I18nextProvider>
 	);
 }
 

@@ -20,7 +20,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ApiChannelAppResponseExtend, ChannelStatusEnum, ChannelThreads, IChannel, openVoiceChannel } from '@mezon/utils';
+import { ApiChannelAppResponseExtend, ChannelStatusEnum, ChannelThreads, IChannel, generateE2eId, openVoiceChannel } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { DragEvent, memo, useCallback, useMemo, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -268,9 +268,9 @@ const ChannelLinkComponent = ({
 					>
 						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
 
-						<div className={`relative`}>
+						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_GMEET_VOICE && (
-								<Icons.SpeakerLocked defaultSize="w-5 h-5 " />
+								<Icons.SpeakerLocked defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.voice')} />
 							)}
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 								<Icons.HashtagWarning className="w-5 h-5 " />
@@ -283,9 +283,11 @@ const ChannelLinkComponent = ({
 								<>{isPrivate ? <Icons.SpeakerLocked defaultSize="w-5 h-5 " /> : <Icons.Speaker defaultSize="w-5 h-5 " />}</>
 							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
-								<Icons.Hashtag defaultSize="w-5 h-5 " />
+								<Icons.Hashtag defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')} />
 							)}
-							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream defaultSize="w-5 h-5 " />}
+							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
+								<Icons.Stream defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')} />
+							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_APP && <Icons.AppChannelIcon className={'w-5 h-5'} />}
 							{isPrivate && channel.type === ChannelType.CHANNEL_TYPE_APP ? (
 								<Icons.PrivateAppChannelIcon className={'w-5 h-5'} />
@@ -295,6 +297,7 @@ const ChannelLinkComponent = ({
 						<p
 							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover`}
 							title={channel.channel_label && channel?.channel_label.length > 20 ? channel?.channel_label : undefined}
+							data-e2e={generateE2eId('clan_page.channel_list.item.name')}
 						>
 							{channel.channel_label && channel?.channel_label.length > 20
 								? `${channel?.channel_label.substring(0, 20)}...`

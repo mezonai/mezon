@@ -21,6 +21,10 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.MediaPlayer
+import java.io.IOException
 
 class AudioSessionModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     companion object {
@@ -33,6 +37,8 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
     private var audioReceiver: BroadcastReceiver? = null
     private var bluetoothReceiver: BroadcastReceiver? = null
     private var isBluetoothProfileInitialized: Boolean = false
+    private var mediaPlayer: MediaPlayer? = null
+    private var audioFocusRequest: AudioFocusRequest? = null
 
     init {
         setupAudioReceiver()
@@ -136,7 +142,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
 
             // Check for audio/video devices (headphones, headsets, speakers)
             val isAudioVideo = majorDeviceClass == BluetoothClass.Device.Major.AUDIO_VIDEO
-            
+
             // Check specific audio device types
             val isHeadphones = deviceClassCode == BluetoothClass.Device.AUDIO_VIDEO_HEADPHONES
             val isHandsfree = deviceClassCode == BluetoothClass.Device.AUDIO_VIDEO_HANDSFREE
@@ -144,9 +150,9 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
             val isSpeaker = deviceClassCode == BluetoothClass.Device.AUDIO_VIDEO_LOUDSPEAKER
             val isCarAudio = deviceClassCode == BluetoothClass.Device.AUDIO_VIDEO_CAR_AUDIO
             val isHiFiAudio = deviceClassCode == BluetoothClass.Device.AUDIO_VIDEO_HIFI_AUDIO
-            
+
             val isAudioDevice = isAudioVideo && (isHeadphones || isHandsfree || isHeadset || isSpeaker || isCarAudio || isHiFiAudio)
-            
+
             // Check if device supports A2DP or headset profiles
             val uuids = device.uuids
             val hasAudioProfile = uuids?.any { uuid ->
@@ -156,11 +162,11 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
             } ?: false
 
             val result = isAudioDevice || hasAudioProfile
-            
+
             Log.d(TAG, "Device: ${device.name} - Audio device: $result (MajorClass: $majorDeviceClass, DeviceClass: $deviceClassCode, HasAudioProfile: $hasAudioProfile)")
-            
+
             return result
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "Error checking if device is audio device: ${device.name}", e)
             false
@@ -176,7 +182,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
                             bluetoothHeadset = proxy as BluetoothHeadset
                             isBluetoothProfileInitialized = true
                             Log.d(TAG, "Bluetooth Headset profile connected")
-                            
+
                             // Emit initial state after profile is ready
                             val currentOutput = checkCurrentAudioOutput()
                             val isBluetoothConnected = isBluetoothHeadsetConnected()
@@ -193,7 +199,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
                         }
                     }
                 }
-                
+
                 adapter.getProfileProxy(reactContext, profileListener, BluetoothProfile.HEADSET)
             } catch (e: Exception) {
                 Log.e(TAG, "Error initializing Bluetooth profile", e)
@@ -205,7 +211,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
     fun startAudioSession(promise: Promise) {
         try {
             Log.d(TAG, "Starting audio session")
-            
+
             // Initialize audio session
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             audioManager.isSpeakerphoneOn = false
@@ -214,7 +220,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
             val currentOutput = checkCurrentAudioOutput()
             val isBluetoothConnected = isBluetoothHeadsetConnected()
             val hasHeadphones = audioManager.isWiredHeadsetOn
-            
+
             Log.d(TAG, "Initial audio state - Output: $currentOutput, Bluetooth: $isBluetoothConnected, Headphones: $hasHeadphones")
             // Keep the logic but remove event emission
 
@@ -229,14 +235,14 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
     fun stopAudioSession(promise: Promise) {
         try {
             Log.d(TAG, "Stopping audio session")
-            
+
             audioManager.mode = AudioManager.MODE_NORMAL
             audioManager.stopBluetoothSco()
 
             try {
                 audioReceiver?.let { reactContext.unregisterReceiver(it) }
                 bluetoothReceiver?.let { reactContext.unregisterReceiver(it) }
-                
+
                 // Close Bluetooth profile proxy
                 bluetoothHeadset?.let { headset ->
                     bluetoothAdapter?.closeProfileProxy(BluetoothProfile.HEADSET, headset)
@@ -320,6 +326,85 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
         }
     }
 
+    @ReactMethod
+    fun playDialTone(promise: Promise) {
+        try {
+            // Release any existing MediaPlayer
+            stopDialTone()
+
+            // Get resource ID for dialtone.mp3
+            val rawResourceId = reactApplicationContext.resources
+                .getIdentifier("dialtone", "raw", reactApplicationContext.packageName)
+
+            if (rawResourceId == 0) {
+                promise.reject("resource_not_found", "Dialtone audio resource not found")
+                return
+            }
+
+            // Create and configure MediaPlayer
+            mediaPlayer = MediaPlayer().apply {
+                val audioAttributes = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build()
+
+                setAudioAttributes(audioAttributes)
+                setDataSource(reactApplicationContext.resources.openRawResourceFd(rawResourceId))
+                isLooping = true
+                prepare()
+            }
+
+            // Request audio focus
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                    .setAudioAttributes(AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build())
+                    .build()
+                audioManager.requestAudioFocus(audioFocusRequest!!)
+            } else {
+                @Suppress("DEPRECATION")
+                audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+            }
+
+            // Force audio to internal speaker
+            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+            audioManager.isSpeakerphoneOn = false
+
+            // Play audio
+            mediaPlayer?.start()
+            promise.resolve(true)
+        } catch (e: IOException) {
+            promise.reject("playback_error", "Failed to play dialtone: ${e.message}")
+        }
+    }
+
+    @ReactMethod
+    fun stopDialTone(promise: Promise? = null) {
+        mediaPlayer?.let {
+            if (it.isPlaying) {
+                it.stop()
+            }
+            it.release()
+            mediaPlayer = null
+        }
+
+        // Release audio focus
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
+        } else {
+            @Suppress("DEPRECATION")
+            audioManager.abandonAudioFocus(null)
+        }
+
+        // Reset audio mode
+        audioManager.mode = AudioManager.MODE_NORMAL
+
+        promise?.resolve(true)
+    }
+
     private fun checkCurrentAudioOutput(): String {
         // First check if Bluetooth is actually connected and active
         val isBluetoothConnected = isBluetoothHeadsetConnected()
@@ -357,9 +442,9 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
             // Fallback: Check audio manager SCO state
             val isScoOn = audioManager.isBluetoothScoOn
             val isScoAvailable = audioManager.isBluetoothScoAvailableOffCall
-            
+
             Log.d(TAG, "Bluetooth SCO - On: $isScoOn, Available: $isScoAvailable")
-            
+
             if (isScoOn) {
                 return true
             }
@@ -371,7 +456,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
                     device.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
                     device.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
                 }
-                
+
                 if (bluetoothDevices.isNotEmpty()) {
                     Log.d(TAG, "Found ${bluetoothDevices.size} connected Bluetooth audio devices via AudioManager")
                     bluetoothDevices.forEach { device ->
@@ -386,7 +471,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
             val connectedAudioDevices = pairedDevices.filter { device ->
                 isBluetoothAudioDevice(device) && isDeviceConnected(device)
             }
-            
+
             if (connectedAudioDevices.isNotEmpty()) {
                 Log.d(TAG, "Found ${connectedAudioDevices.size} connected audio devices via paired devices check")
                 return true
@@ -394,7 +479,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
 
             Log.d(TAG, "No Bluetooth audio devices found connected")
             return false
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "Error checking Bluetooth headset connection", e)
             false
@@ -428,10 +513,10 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
                     true
                 }
             }
-            
+
             // For very old Android versions, assume connected if bonded
             return true
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "Error checking device connection status for: ${device.name}", e)
             false
@@ -459,7 +544,7 @@ class AudioSessionModule(private val reactContext: ReactApplicationContext) : Re
         try {
             audioReceiver?.let { reactContext.unregisterReceiver(it) }
             bluetoothReceiver?.let { reactContext.unregisterReceiver(it) }
-            
+
             // Close Bluetooth profile proxy
             bluetoothHeadset?.let { headset ->
                 bluetoothAdapter?.closeProfileProxy(BluetoothProfile.HEADSET, headset)

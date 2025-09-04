@@ -249,6 +249,26 @@ export const deleteClan = createAsyncThunk('clans/deleteClans', async (body: Cha
 	}
 });
 
+export const transferClan = createAsyncThunk('clans/transferClan', async (body: { clanId: string; new_clan_owner: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.transferOwnership(mezon.session, {
+			clan_id: body.clanId,
+			new_owner_id: body.new_clan_owner
+		});
+		if (response) {
+			return {
+				clanId: body.clanId,
+				new_clan_owner: body.new_clan_owner
+			};
+		}
+		return null;
+	} catch (error) {
+		captureSentryError(error, 'clans/deleteClans');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 type removeClanUsersPayload = {
 	clanId: string;
 	userIds: string[];
@@ -422,6 +442,12 @@ export const clansSlice = createSlice({
 		},
 		updateClansOrder: (state, action: PayloadAction<string[]>) => {
 			state.clansOrder = action.payload;
+		},
+		updateClanOwner: (state, action: PayloadAction<{ clanId: string; newOwnerId: string }>) => {
+			clansAdapter.updateOne(state, {
+				id: action.payload.clanId,
+				changes: { creator_id: action.payload.newOwnerId }
+			});
 		},
 
 		createClanGroup: (state, action: PayloadAction<{ clanIds: string[]; name?: string }>) => {
@@ -662,6 +688,14 @@ export const clansSlice = createSlice({
 			state.loadingStatus = 'error';
 			state.error = action.error.message;
 		});
+		builder.addCase(transferClan.fulfilled, (state: ClansState, action) => {
+			if (!action.payload) return;
+			const { clanId, new_clan_owner } = action.payload;
+			clansAdapter.updateOne(state, {
+				id: clanId,
+				changes: { creator_id: new_clan_owner }
+			});
+		});
 	}
 });
 
@@ -697,7 +731,8 @@ export const clansActions = {
 	changeCurrentClan,
 	updateUser,
 	deleteClan,
-	joinClan
+	joinClan,
+	transferClan
 };
 
 /*

@@ -339,46 +339,48 @@ const SidebarMenu = memo(
 						<DirectUnreadList />
 					</div>
 
-					<ClansList />
-					<div className="mt-3">
-						<NavLinkComponent>
-							<div className="flex items-center justify-between text-theme-primary group" onClick={openDiscoverPage} title="Discover">
-								<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
-									<svg
-										className="text-theme-primary-active size-5"
-										viewBox="0 0 16 16"
-										fill="currentColor"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-										<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-										<g id="SVGRepo_iconCarrier">
-											{' '}
-											<path d="M8 9C8.55229 9 9 8.55229 9 8C9 7.44772 8.55229 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55229 7.44772 9 8 9Z"></path>{' '}
-											<path
-												fillRule="evenodd"
-												clipRule="evenodd"
-												d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM6 6L4 11L5 12L10 10L12 5L11 4L6 6Z"
-											></path>{' '}
-										</g>
-									</svg>
+					<div className="pb-32">
+						<ClansList />
+						<div className="mt-3">
+							<NavLinkComponent>
+								<div className="flex items-center justify-between text-theme-primary group" onClick={openDiscoverPage} title="Discover">
+									<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
+										<svg
+											className="text-theme-primary-active size-5"
+											viewBox="0 0 16 16"
+											fill="currentColor"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+											<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+											<g id="SVGRepo_iconCarrier">
+												{' '}
+												<path d="M8 9C8.55229 9 9 8.55229 9 8C9 7.44772 8.55229 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55229 7.44772 9 8 9Z"></path>{' '}
+												<path
+													fillRule="evenodd"
+													clipRule="evenodd"
+													d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM6 6L4 11L5 12L10 10L12 5L11 4L6 6Z"
+												></path>{' '}
+											</g>
+										</svg>
+									</div>
 								</div>
-							</div>
-						</NavLinkComponent>
-					</div>
-					<div className="mt-3">
-						<NavLinkComponent>
-							<div
-								className="flex items-center justify-between text-theme-primary group"
-								onClick={openCreateClanModal}
-								title="Create CLans"
-								data-e2e={generateE2eId('clan_page.side_bar.button.add_clan')}
-							>
-								<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
-									<p className="text-2xl font-semibold ">+</p>
+							</NavLinkComponent>
+						</div>
+						<div className="mt-3">
+							<NavLinkComponent>
+								<div
+									className="flex items-center justify-between text-theme-primary group"
+									onClick={openCreateClanModal}
+									title="Create CLans"
+									data-e2e={generateE2eId('clan_page.side_bar.button.add_clan')}
+								>
+									<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
+										<p className="text-2xl font-semibold ">+</p>
+									</div>
 								</div>
-							</div>
-						</NavLinkComponent>
+							</NavLinkComponent>
+						</div>
 					</div>
 				</div>
 			</div>
