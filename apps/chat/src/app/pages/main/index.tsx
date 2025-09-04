@@ -36,6 +36,7 @@ import {
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectCurrentStreamInfo,
+	selectCurrentUserId,
 	selectDirectsUnreadlist,
 	selectHasKeyE2ee,
 	selectIsShowChatStream,
@@ -343,7 +344,11 @@ const SidebarMenu = memo(
 						<ClansList />
 						<div className="mt-3">
 							<NavLinkComponent>
-								<div className="flex items-center justify-between text-theme-primary group" onClick={openDiscoverPage} title="Discover">
+								<div
+									className="flex items-center justify-between text-theme-primary group"
+									onClick={openDiscoverPage}
+									title="Discover"
+								>
 									<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
 										<svg
 											className="text-theme-primary-active size-5"
@@ -391,17 +396,18 @@ const SidebarMenu = memo(
 
 const ClansList = memo(() => {
 	const dispatch = useAppDispatch();
-	const orderedClansWithGroups = useSelector(selectOrderedClansWithGroups);
+	const currentUserId = useSelector(selectCurrentUserId);
+	const orderedClansWithGroups = useSelector((state) => selectOrderedClansWithGroups(state, currentUserId));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
 	const allClansEntities = useSelector(selectClansEntities);
 
 	const [items, setItems] = useState<ClanGroupItem[]>([]);
-	const { draggingState, handleMouseDown, handleMouseEnter } = useClanGroupDragAndDrop(items, setItems);
+	const { draggingState, handleMouseDown, handleMouseEnter } = useClanGroupDragAndDrop(items, setItems, currentUserId);
 
 	useEffect(() => {
-		dispatch(clansActions.initializeClanGroupOrder());
-	}, [dispatch]);
+		dispatch(clansActions.initializeClanGroupOrder({ userId: currentUserId }));
+	}, [dispatch, currentUserId]);
 
 	useEffect(() => {
 		setItems(
@@ -523,6 +529,7 @@ const ClansList = memo(() => {
 											isGroupIntent={isGroupIntentTarget}
 											onMouseDown={(e) => handleMouseDown(e, item.id)}
 											onClanMouseDown={handleClanMouseDown}
+											userId={currentUserId}
 										/>
 									</div>
 								) : null}
@@ -596,7 +603,7 @@ const ClansList = memo(() => {
 							if (draggedItemData?.type === 'clan' && draggedItemData.clan) {
 								return <SidebarClanItem option={draggedItemData.clan} active={false} className="opacity-80" />;
 							} else if (draggedItemData?.type === 'group' && 'group' in draggedItemData && draggedItemData.group) {
-								return <ClanGroup group={draggedItemData.group} className="opacity-80" />;
+								return <ClanGroup group={draggedItemData.group} className="opacity-80" userId={currentUserId} />;
 							}
 						}
 						return null;

@@ -43,6 +43,7 @@ export interface ClanGroup {
 	clanIds: string[];
 	isExpanded: boolean;
 	createdAt: number;
+	userId?: string;
 }
 
 export interface ClanGroupItem {
@@ -50,6 +51,7 @@ export interface ClanGroupItem {
 	id: string;
 	clanId?: string;
 	groupId?: string;
+	userId?: string;
 }
 
 const clanMetaAdapter = createEntityAdapter<ClanMeta>();
@@ -73,7 +75,7 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	clansOrder?: string[];
 	// Add clan groups state
 	clanGroups: EntityState<ClanGroup, string>;
-	clanGroupOrder: ClanGroupItem[];
+	clanGroupOrder: { [userId: string]: ClanGroupItem[] };
 	cache?: CacheMetadata;
 }
 
@@ -419,7 +421,7 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	inviteClanId: undefined,
 	clansOrder: [],
 	clanGroups: clanGroupAdapter.getInitialState(),
-	clanGroupOrder: []
+	clanGroupOrder: {}
 });
 
 type UpdateClanBadgeCountPayload = {
@@ -450,8 +452,8 @@ export const clansSlice = createSlice({
 			});
 		},
 
-		createClanGroup: (state, action: PayloadAction<{ clanIds: string[]; name?: string }>) => {
-			const { clanIds, name } = action.payload;
+		createClanGroup: (state, action: PayloadAction<{ clanIds: string[]; name?: string; userId: string }>) => {
+			const { clanIds, name, userId } = action.payload;
 			const groupId = `group_${Date.now()}`;
 
 			const newGroup: ClanGroup = {
@@ -459,7 +461,8 @@ export const clansSlice = createSlice({
 				name,
 				clanIds,
 				isExpanded: false,
-				createdAt: Date.now()
+				createdAt: Date.now(),
+				userId
 			};
 
 			clanGroupAdapter.addOne(state.clanGroups, newGroup);
@@ -470,12 +473,13 @@ export const clansSlice = createSlice({
 			newOrder.push({
 				type: 'group',
 				id: groupId,
-				groupId
+				groupId,
+				userId
 			});
 
 			clanIds.forEach((id) => processedClanIds.add(id));
 
-			state.clanGroupOrder.forEach((item) => {
+			state.clanGroupOrder[userId].forEach((item) => {
 				if (item.type === 'clan' && item.clanId && !processedClanIds.has(item.clanId)) {
 					newOrder.push(item);
 				} else if (item.type === 'group') {
@@ -483,22 +487,24 @@ export const clansSlice = createSlice({
 				}
 			});
 
-			state.clanGroupOrder = newOrder;
+			state.clanGroupOrder[userId] = newOrder;
 		},
 
-		addClanToGroup: (state, action: PayloadAction<{ groupId: string; clanId: string }>) => {
-			const { groupId, clanId } = action.payload;
+		addClanToGroup: (state, action: PayloadAction<{ groupId: string; clanId: string; userId: string }>) => {
+			const { groupId, clanId, userId } = action.payload;
+			if (!state?.clanGroupOrder?.[userId]) return;
 			const group = state.clanGroups.entities[groupId];
 
 			if (group && !group.clanIds.includes(clanId)) {
 				group.clanIds.push(clanId);
 
-				state.clanGroupOrder = state.clanGroupOrder.filter((item) => !(item.type === 'clan' && item.clanId === clanId));
+				state.clanGroupOrder[userId] = state.clanGroupOrder[userId].filter((item) => !(item.type === 'clan' && item.clanId === clanId));
 			}
 		},
 
-		removeClanFromGroup: (state, action: PayloadAction<{ groupId: string; clanId: string }>) => {
-			const { groupId, clanId } = action.payload;
+		removeClanFromGroup: (state, action: PayloadAction<{ groupId: string; clanId: string; userId: string }>) => {
+			const { groupId, clanId, userId } = action.payload;
+			if (!state?.clanGroupOrder?.[userId]) return;
 			const group = state.clanGroups.entities[groupId];
 
 			if (group) {
@@ -506,15 +512,18 @@ export const clansSlice = createSlice({
 
 				if (group.clanIds.length === 0) {
 					clanGroupAdapter.removeOne(state.clanGroups, groupId);
-					state.clanGroupOrder = state.clanGroupOrder.filter((item) => !(item.type === 'group' && item.groupId === groupId));
+					state.clanGroupOrder[userId] = state.clanGroupOrder[userId].filter(
+						(item) => !(item.type === 'group' && item.groupId === groupId)
+					);
 				} else {
-					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
+					const groupIndex = state.clanGroupOrder[userId].findIndex((item) => item.type === 'group' && item.groupId === groupId);
 
 					if (groupIndex !== -1) {
-						state.clanGroupOrder.splice(groupIndex + 1, 0, {
+						state.clanGroupOrder[userId].splice(groupIndex + 1, 0, {
 							type: 'clan',
 							id: clanId,
-							clanId
+							clanId,
+							userId
 						});
 					}
 				}
@@ -547,17 +556,21 @@ export const clansSlice = createSlice({
 			});
 		},
 
-		updateClanGroupOrder: (state, action: PayloadAction<ClanGroupItem[]>) => {
-			state.clanGroupOrder = action.payload;
+		updateClanGroupOrder: (state, action: PayloadAction<{ userId: string; order: ClanGroupItem[] }>) => {
+			const { userId, order } = action.payload;
+			state.clanGroupOrder[userId] = order;
 		},
 
-		initializeClanGroupOrder: (state) => {
-			if (state.clanGroupOrder.length === 0) {
+		initializeClanGroupOrder: (state, action: PayloadAction<{ userId: string }>) => {
+			const { userId } = action.payload;
+
+			if (!state?.clanGroupOrder?.[userId]?.length) {
 				const order = state.clansOrder || state.ids;
-				state.clanGroupOrder = order.map((clanId) => ({
+				state.clanGroupOrder[userId] = order.map((clanId) => ({
 					type: 'clan' as const,
 					id: clanId,
-					clanId
+					clanId,
+					userId
 				}));
 			}
 		},
@@ -641,10 +654,6 @@ export const clansSlice = createSlice({
 			if (state.cache) {
 				state.cache = undefined;
 			}
-		},
-		clearClanGroups: (state) => {
-			state.clanGroups = clanGroupAdapter.getInitialState();
-			state.clanGroupOrder = [];
 		}
 	},
 	extraReducers: (builder) => {
@@ -803,58 +812,66 @@ export const selectWelcomeChannelByClanId = createSelector([getClansState, (stat
 	return selectById(state, clanId)?.welcome_channel_id || null;
 });
 
-export const selectClanGroups = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectAll(state.clanGroups));
+export const selectClanGroups = createSelector([getClansState, (state, userId: string) => userId], (state, userId) => {
+	const allGroups = clanGroupAdapter.getSelectors().selectAll(state.clanGroups);
+	return allGroups?.filter((group) => group?.userId === userId);
+});
 
 export const selectClanGroupEntities = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectEntities(state.clanGroups));
 
 export const selectClanGroupById = (groupId: string) => createSelector(selectClanGroupEntities, (entities) => entities[groupId]);
 
-export const selectClanGroupOrder = createSelector(getClansState, (state) => state?.clanGroupOrder || []);
-
-export const selectOrderedClansWithGroups = createSelector([selectAllClans, selectClanGroups, selectClanGroupOrder], (clans, groups, order) => {
-	if (!order || order.length === 0) {
-		return clans.map((clan) => ({
-			type: 'clan' as const,
-			id: clan.id,
-			clan
-		}));
-	}
-
-	const clanMap = Object.fromEntries(clans.map((clan) => [clan.id, clan]));
-	const groupMap = Object.fromEntries(groups.map((group) => [group.id, group]));
-
-	const clansInGroups = new Set<string>();
-	groups.forEach((group) => {
-		group.clanIds.forEach((clanId) => clansInGroups.add(clanId));
-	});
-
-	const orderedItems = order
-		.map((item) => {
-			if (item.type === 'clan' && item.clanId) {
-				const clan = clanMap[item.clanId];
-				return clan ? { type: 'clan' as const, id: item.id, clan } : null;
-			} else if (item.type === 'group' && item.groupId) {
-				const group = groupMap[item.groupId];
-				return group ? { type: 'group' as const, id: item.id, group } : null;
-			}
-			return null;
-		})
-		.filter(Boolean);
-
-	const orderedClanIds = new Set(
-		order
-			.filter((item) => item.type === 'clan')
-			.map((item) => item.clanId)
-			.filter(Boolean)
-	);
-
-	const remainingClans = clans
-		.filter((clan) => !clansInGroups.has(clan.id) && !orderedClanIds.has(clan.id))
-		.map((clan) => ({
-			type: 'clan' as const,
-			id: clan.id,
-			clan
-		}));
-
-	return [...orderedItems, ...remainingClans];
+export const selectClanGroupOrder = createSelector([getClansState, (state, userId: string) => userId], (state, userId) => {
+	return state?.clanGroupOrder?.[userId] || [];
 });
+
+export const selectOrderedClansWithGroups = createSelector(
+	[selectAllClans, (state, userId: string) => selectClanGroups(state, userId), (state, userId: string) => selectClanGroupOrder(state, userId)],
+	(clans, groups, order) => {
+		if (!order || order.length === 0) {
+			return clans.map((clan) => ({
+				type: 'clan' as const,
+				id: clan.id,
+				clan
+			}));
+		}
+
+		const clanMap = Object.fromEntries(clans.map((clan) => [clan.id, clan]));
+		const groupMap = Object.fromEntries(groups.map((group) => [group.id, group]));
+
+		const clansInGroups = new Set<string>();
+		groups.forEach((group) => {
+			group.clanIds.forEach((clanId) => clansInGroups.add(clanId));
+		});
+
+		const orderedItems = order
+			.map((item) => {
+				if (item.type === 'clan' && item.clanId) {
+					const clan = clanMap[item.clanId];
+					return clan ? { type: 'clan' as const, id: item.id, clan } : null;
+				} else if (item.type === 'group' && item.groupId) {
+					const group = groupMap[item.groupId];
+					return group ? { type: 'group' as const, id: item.id, group } : null;
+				}
+				return null;
+			})
+			.filter(Boolean);
+
+		const orderedClanIds = new Set(
+			order
+				.filter((item) => item.type === 'clan')
+				.map((item) => item.clanId)
+				.filter(Boolean)
+		);
+
+		const remainingClans = clans
+			.filter((clan) => !clansInGroups.has(clan.id) && !orderedClanIds.has(clan.id))
+			.map((clan) => ({
+				type: 'clan' as const,
+				id: clan.id,
+				clan
+			}));
+
+		return [...orderedItems, ...remainingClans];
+	}
+);

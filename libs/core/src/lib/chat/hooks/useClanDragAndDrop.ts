@@ -74,7 +74,7 @@ export function useClanDragAndDrop(clans: string[], setItems: (items: string[]) 
 	};
 }
 
-export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items: ClanGroupItem[]) => void) {
+export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items: ClanGroupItem[]) => void, userId: string) {
 	const dispatch = useDispatch();
 	const [potentialDrag, setPotentialDrag] = useState<string | null>(null);
 	const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
@@ -117,7 +117,8 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 						dispatch(
 							clansActions.removeClanFromGroup({
 								groupId: draggedFromGroup.groupId,
-								clanId: draggedFromGroup.clanId
+								clanId: draggedFromGroup.clanId,
+								userId
 							})
 						);
 
@@ -131,7 +132,7 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 						newItems.splice(gapIndex, 0, newClanItem);
 
 						setItems(newItems);
-						dispatch(clansActions.updateClanGroupOrder(newItems));
+						dispatch(clansActions.updateClanGroupOrder({ userId, order: newItems }));
 					} else {
 						const oldIndex = items.findIndex((item) => item.id === draggedItem);
 						if (oldIndex !== -1) {
@@ -142,7 +143,7 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 							newItems.splice(insertIndex, 0, movedItem);
 
 							setItems(newItems);
-							dispatch(clansActions.updateClanGroupOrder(newItems));
+							dispatch(clansActions.updateClanGroupOrder({ userId, order: newItems }));
 						}
 					}
 
@@ -162,7 +163,8 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 					dispatch(
 						clansActions.removeClanFromGroup({
 							groupId: draggedFromGroup.groupId,
-							clanId: draggedFromGroup.clanId
+							clanId: draggedFromGroup.clanId,
+							userId
 						})
 					);
 
@@ -170,14 +172,16 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 						if (overItemData?.type === 'clan' && overItemData.clanId) {
 							dispatch(
 								clansActions.createClanGroup({
-									clanIds: [overItemData.clanId, draggedFromGroup.clanId]
+									clanIds: [overItemData.clanId, draggedFromGroup.clanId],
+									userId
 								})
 							);
 						} else if (overItemData?.type === 'group' && overItemData.groupId) {
 							dispatch(
 								clansActions.addClanToGroup({
 									groupId: overItemData.groupId,
-									clanId: draggedFromGroup.clanId
+									clanId: draggedFromGroup.clanId,
+									userId
 								})
 							);
 						}
@@ -196,10 +200,10 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 							newItems.splice(insertIndex, 0, newClanItem);
 
 							setItems(newItems);
-							dispatch(clansActions.updateClanGroupOrder(newItems));
+							dispatch(clansActions.updateClanGroupOrder({ userId, order: newItems }));
 						}
 					} else {
-						dispatch(clansActions.initializeClanGroupOrder());
+						dispatch(clansActions.initializeClanGroupOrder({ userId }));
 					}
 				} else {
 					let isGroupingIntent = false;
@@ -214,7 +218,8 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 						if (draggedItemData?.type === 'clan' && overItemData?.type === 'clan' && draggedItemData.clanId && overItemData.clanId) {
 							dispatch(
 								clansActions.createClanGroup({
-									clanIds: [overItemData.clanId, draggedItemData.clanId]
+									clanIds: [overItemData.clanId, draggedItemData.clanId],
+									userId
 								})
 							);
 						} else if (
@@ -226,7 +231,8 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 							dispatch(
 								clansActions.addClanToGroup({
 									groupId: overItemData.groupId,
-									clanId: draggedItemData.clanId
+									clanId: draggedItemData.clanId,
+									userId
 								})
 							);
 						}
@@ -242,7 +248,7 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 							newItems.splice(insertIndex, 0, movedItem);
 
 							setItems(newItems);
-							dispatch(clansActions.updateClanGroupOrder(newItems));
+							dispatch(clansActions.updateClanGroupOrder({ userId, order: newItems }));
 						}
 					}
 				}
@@ -266,7 +272,7 @@ export function useClanGroupDragAndDrop(items: ClanGroupItem[], setItems: (items
 			window.removeEventListener('mousemove', onMove);
 			window.removeEventListener('mouseup', onUp);
 		};
-	}, [startPoint, potentialDrag, isDragging, draggedItem, overItem, dropZone, items, dispatch, setItems, draggedFromGroup]);
+	}, [startPoint, potentialDrag, isDragging, draggedItem, overItem, dropZone, items, dispatch, setItems, draggedFromGroup, userId]);
 
 	const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, id: string, fromGroup?: { groupId: string; clanId: string }) => {
 		setStartPoint({ x: e.clientX, y: e.clientY });

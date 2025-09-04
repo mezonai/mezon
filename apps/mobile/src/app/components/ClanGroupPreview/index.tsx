@@ -7,12 +7,13 @@ interface GroupPreviewProps {
 	targetItem: any;
 	dragItem: any;
 	clans: any[];
+	userId: string;
 }
 
 const CLAN = 'clan';
 const GROUP = 'group';
 
-export const ClanGroupPreview = memo(({ targetItem, dragItem, clans }: GroupPreviewProps) => {
+export const ClanGroupPreview = memo(({ targetItem, dragItem, clans, userId }: GroupPreviewProps) => {
 	const styles = style();
 
 	const previewGroupData = useMemo(() => {
@@ -44,7 +45,7 @@ export const ClanGroupPreview = memo(({ targetItem, dragItem, clans }: GroupPrev
 
 	return (
 		<View style={styles.previewGroupContainer}>
-			<ClanGroup group={previewGroupData} onClanPress={undefined} clans={clans} drag={undefined} isActive={false} />
+			<ClanGroup group={previewGroupData} onClanPress={undefined} clans={clans} drag={undefined} isActive={false} userId={userId} />
 		</View>
 	);
 });

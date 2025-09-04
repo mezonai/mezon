@@ -376,7 +376,6 @@ export const AuthenticationLoader = () => {
 		store.dispatch(clansActions.setCurrentClanId(''));
 		store.dispatch(clansActions.removeAll());
 		store.dispatch(clansActions.collapseAllGroups());
-		store.dispatch(clansActions.clearClanGroups());
 		store.dispatch(clansActions.refreshStatus());
 
 		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);

@@ -16,9 +16,10 @@ interface ClanGroupProps {
 	clans: any[];
 	drag: () => void;
 	isActive?: boolean;
+	userId: string;
 }
 
-export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: ClanGroupProps) => {
+export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive, userId }: ClanGroupProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
@@ -47,7 +48,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 
 	const handleRemoveClanFromGroup = (clanId: string) => {
 		if (group?.id && clanId) {
-			dispatch(clansActions.removeClanFromGroup({ groupId: group.id, clanId }));
+			dispatch(clansActions.removeClanFromGroup({ groupId: group.id, clanId, userId }));
 		}
 	};
 

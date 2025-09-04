@@ -39,9 +39,10 @@ export type ClanGroupProps = {
 	className?: string;
 	isGroupIntent?: boolean;
 	onClanMouseDown?: (e: React.MouseEvent<HTMLDivElement>, clanId: string, fromGroup: { groupId: string; clanId: string }) => void;
+	userId: string;
 };
 
-const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIntent, onClanMouseDown }: ClanGroupProps) => {
+const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIntent, onClanMouseDown, userId }: ClanGroupProps) => {
 	const dispatch = useDispatch();
 	const allClansEntities = useSelector(selectClansEntities);
 
@@ -100,7 +101,8 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 		dispatch(
 			clansActions.removeClanFromGroup({
 				groupId: group.id,
-				clanId: clanId
+				clanId: clanId,
+				userId: userId
 			})
 		);
 	};
