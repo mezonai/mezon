@@ -185,8 +185,8 @@ export const fetchDirectMessage = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const existingEntities = selectAllDirectMessages(state);
 
-			const channels = sorted.map(channelRes => {
-				const existingEntity = existingEntities.find(entity => entity.id === channelRes.channel_id);
+			const channels = sorted.map((channelRes) => {
+				const existingEntity = existingEntities.find((entity) => entity.id === channelRes.channel_id);
 				return mapDmGroupToEntity(channelRes, existingEntity);
 			});
 			thunkAPI.dispatch(directMetaActions.setDirectMetaEntities(channels));
@@ -212,45 +212,47 @@ export const getDmEntityByChannelId = createAsyncThunk('channels/getChannelEntit
 	}
 });
 
-export const updateDmGroup = createAsyncThunk('direct/updateDmGroup', async (body: { channel_id: string; channel_label?: string; topic?: string }, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+export const updateDmGroup = createAsyncThunk(
+	'direct/updateDmGroup',
+	async (body: { channel_id: string; channel_label?: string; topic?: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
+			const state = thunkAPI.getState() as RootState;
+			const current = state?.direct?.entities?.[body.channel_id];
+			const updatePayload: any = {};
+			if (typeof body.channel_label !== 'undefined') {
+				updatePayload.channel_label = body.channel_label;
+			} else if (typeof current?.channel_label !== 'undefined') {
+				updatePayload.channel_label = current.channel_label;
+			}
+			if (typeof body.topic !== 'undefined') {
+				updatePayload.topic = body.topic;
+			} else if (typeof current?.topic !== 'undefined') {
+				updatePayload.topic = current.topic;
+			}
 
-		const state = thunkAPI.getState() as RootState;
-		const current = state?.direct?.entities?.[body.channel_id];
-		const updatePayload: any = {};
-		if (typeof body.channel_label !== 'undefined') {
-			updatePayload.channel_label = body.channel_label;
-		} else if (typeof current?.channel_label !== 'undefined') {
-			updatePayload.channel_label = current.channel_label;
+			const response = await mezon.client.updateChannelDesc(mezon.session, body.channel_id, updatePayload);
+
+			if (response) {
+				thunkAPI.dispatch(
+					directActions.updateOne({
+						channel_id: body.channel_id,
+						...(typeof body.channel_label !== 'undefined' ? { channel_label: body.channel_label } : {}),
+						...(typeof body.topic !== 'undefined' ? { topic: body.topic } : {})
+					})
+				);
+
+				thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+			}
+
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'direct/updateDmGroup');
+			return thunkAPI.rejectWithValue(error);
 		}
-		if (typeof body.topic !== 'undefined') {
-			updatePayload.topic = body.topic;
-		} else if (typeof current?.topic !== 'undefined') {
-			updatePayload.topic = current.topic;
-		}
-
-		const response = await mezon.client.updateChannelDesc(mezon.session, body.channel_id, updatePayload);
-
-		if (response) {
-			thunkAPI.dispatch(
-				directActions.updateOne({
-					channel_id: body.channel_id,
-					...(typeof body.channel_label !== 'undefined' ? { channel_label: body.channel_label } : {}),
-					...(typeof body.topic !== 'undefined' ? { topic: body.topic } : {})
-				})
-			);
-
-			thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
-		}
-
-		return response;
-	} catch (error) {
-		captureSentryError(error, 'direct/updateDmGroup');
-		return thunkAPI.rejectWithValue(error);
 	}
-});
+);
 
 function mapChannelsToUsers(channels: any[]): IUserItemActivity[] {
 	return channels.reduce<IUserItemActivity[]>((acc, dm) => {
@@ -461,13 +463,14 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		}
 
 		const state = thunkAPI.getState() as RootState;
-		const existingEntity = selectAllDirectMessages(state).find(entity => entity.id === channel_desc.channel_id);
+		const existingEntity = selectAllDirectMessages(state).find((entity) => entity.id === channel_desc.channel_id);
 
 		const directEntity: DirectEntity = {
 			...channel_desc,
 			id: channel_desc.channel_id || '',
 			user_id: userIds,
 			usernames: usernames,
+			display_names: label,
 			channel_avatar: avatars,
 			is_online: isOnline,
 			metadata,
@@ -568,6 +571,7 @@ export const directSlice = createSlice({
 					directAdapter.removeOne(state, channelId);
 				} else {
 					const newUsernames = item.usernames?.filter((_, index) => index !== userIndex);
+					const newDisplayNames = item.display_names?.filter((_, index) => index !== userIndex);
 					const newChannelAvatars = item.channel_avatar?.filter((_, index) => index !== userIndex);
 					const newIsOnline = item.is_online?.filter((_, index) => index !== userIndex);
 					const newMetadata = item.metadata?.filter((_, index) => index !== userIndex);
@@ -577,6 +581,7 @@ export const directSlice = createSlice({
 						changes: {
 							user_id: newUserIds,
 							usernames: newUsernames,
+							display_names: newDisplayNames,
 							channel_avatar: newChannelAvatars,
 							is_online: newIsOnline,
 							metadata: newMetadata,
@@ -818,7 +823,8 @@ export const selectIsLoadDMData = createSelector(getDirectState, (state) => stat
 
 export const selectDmGroupCurrent = (dmId: string) => createSelector(selectDirectMessageEntities, (channelEntities) => channelEntities[dmId]);
 
-export const selectUpdateDmGroupLoading = (channelId: string) => createSelector(getDirectState, (state) => state.updateDmGroupLoading[channelId] || false);
+export const selectUpdateDmGroupLoading = (channelId: string) =>
+	createSelector(getDirectState, (state) => state.updateDmGroupLoading[channelId] || false);
 
 export const selectUpdateDmGroupError = (channelId: string) => createSelector(getDirectState, (state) => state.updateDmGroupError[channelId] || null);
 
@@ -876,7 +882,7 @@ export const selectAllUserDM = createSelector(selectAllDirectMessages, (directMe
 										case '\\"':
 											return '"';
 										default:
-											return match[1]; // 
+											return match[1]; //
 									}
 								});
 								return safeJSONParse(unescapedJSON);

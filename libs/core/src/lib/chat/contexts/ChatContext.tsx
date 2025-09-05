@@ -850,6 +850,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						users: [...users].filter((item) => item.user_id !== userId)
 					})
 				);
+				dispatch(
+					channelMembersActions.addNewMember({
+						channel_id: channel_desc.channel_id as string,
+						user_ids: userIds,
+						addedByUserId: caller?.user_id
+					})
+				);
 			}
 
 			if (currentClanId === clan_id) {
