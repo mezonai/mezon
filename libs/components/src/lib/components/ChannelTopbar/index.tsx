@@ -1,47 +1,49 @@
 import { toChannelPage, useChatSending, useCustomNavigate, useGifsStickersEmoji, useMenu, usePathMatch } from '@mezon/core';
 import {
-	DMCallActions,
-	DirectEntity,
-	RootState,
-	appActions,
-	audioCallActions,
-	canvasAPIActions,
-	channelsActions,
-	getStore,
-	getStoreAsync,
-	groupCallActions,
-	pinMessageActions,
-	searchMessagesActions,
-	selectAllAccount,
-	selectChannelById,
-	selectCloseMenu,
-	selectCurrentChannel,
-	selectCurrentChannelId,
-	selectCurrentClanId,
-	selectCurrentDM,
-	selectDefaultNotificationCategory,
-	selectDefaultNotificationClan,
-	selectIsInCall,
-	selectIsPinModalVisible,
-	selectIsShowChatStream,
-	selectIsShowCreateThread,
-	selectIsShowCreateTopic,
-	selectIsShowMemberList,
-	selectIsShowMemberListDM,
-	selectIsShowPinBadgeByChannelId,
-	selectIsThreadModalVisible,
-	selectIsUseProfileDM,
-	selectNotifiSettingsEntitiesById,
-	selectSession,
-	selectStatusMenu,
-	selectUpdateDmGroupError,
-	selectUpdateDmGroupLoading,
-	threadsActions,
-	toastActions,
-	topicsActions,
-	useAppDispatch,
-	useAppSelector,
-	voiceActions
+  DMCallActions,
+  DirectEntity,
+  RootState,
+  appActions,
+  attachmentActions,
+  audioCallActions,
+  canvasAPIActions,
+  channelsActions,
+  getStore,
+  getStoreAsync,
+  groupCallActions,
+  pinMessageActions,
+  searchMessagesActions,
+  selectAllAccount,
+  selectAllListAttachmentByChannel,
+  selectChannelById,
+  selectCloseMenu,
+  selectCurrentChannel,
+  selectCurrentChannelId,
+  selectCurrentClanId,
+  selectCurrentDM,
+  selectDefaultNotificationCategory,
+  selectDefaultNotificationClan,
+  selectIsInCall,
+  selectIsPinModalVisible,
+  selectIsShowChatStream,
+  selectIsShowCreateThread,
+  selectIsShowCreateTopic,
+  selectIsShowMemberList,
+  selectIsShowMemberListDM,
+  selectIsShowPinBadgeByChannelId,
+  selectIsThreadModalVisible,
+  selectIsUseProfileDM,
+  selectNotifiSettingsEntitiesById,
+  selectSession,
+  selectStatusMenu,
+  selectUpdateDmGroupError,
+  selectUpdateDmGroupLoading,
+  threadsActions,
+  toastActions,
+  topicsActions,
+  useAppDispatch,
+  useAppSelector,
+  voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMessageSendPayload, IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
@@ -54,6 +56,7 @@ import CreateMessageGroup from '../DmList/CreateMessageGroup';
 import ModalEditGroup from '../ModalEditGroup';
 import { NotificationTooltip } from '../NotificationList';
 import SearchMessageChannel from '../SearchMessageChannel';
+import { GalleryModal } from './GalleryModal';
 import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
@@ -192,33 +195,34 @@ const TopBarChannelText = memo(() => {
 					<div className="flex items-center gap-3 flex-1 overflow-hidden">
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
-								avatar={dmUserAvatar}
+							avatar={dmUserAvatar}
 							avatarName={currentDmGroup?.channel_label?.at(0)}
 						/>
 
-							<div
-								key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
-								className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area group ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
+						<div
+							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
+							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area group ${
+								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
 									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg px-2'
 									: 'pointer-events-none cursor-default'
-									} font-medium bg-transparent outline-none leading-10 text-theme-primary max-w-[250px] min-w-0`}
-								onClick={handleOpenEditModal}
-								title={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'Click to edit group' : channelDmGroupLabel}
-								data-e2e={generateE2eId(`chat.direct_message.chat_item.namegroup`)}
-							>
-								<span className="truncate">{channelDmGroupLabel}</span>
-								{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-									<svg
-										className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0"
-										viewBox="0 0 16 16"
-										fill="currentColor"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path d="M8.29289 3.70711L1 11V15H5L12.2929 7.70711L8.29289 3.70711Z" />
-										<path d="M9.70711 2.29289L13.7071 6.29289L15.1716 4.82843C15.702 4.29799 16 3.57857 16 2.82843C16 1.26633 14.7337 0 13.1716 0C12.4214 0 11.702 0.297995 11.1716 0.828428L9.70711 2.29289Z" />
-									</svg>
-								)}
-							</div>
+							} font-medium bg-transparent outline-none leading-10 text-theme-primary max-w-[250px] min-w-0`}
+							onClick={handleOpenEditModal}
+							title={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'Click to edit group' : channelDmGroupLabel}
+							data-e2e={generateE2eId(`chat.direct_message.chat_item.namegroup`)}
+						>
+							<span className="truncate">{channelDmGroupLabel}</span>
+							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
+								<svg
+									className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0"
+									viewBox="0 0 16 16"
+									fill="currentColor"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M8.29289 3.70711L1 11V15H5L12.2929 7.70711L8.29289 3.70711Z" />
+									<path d="M9.70711 2.29289L13.7071 6.29289L15.1716 4.82843C15.702 4.29799 16 3.57857 16 2.82843C16 1.26633 14.7337 0 13.1716 0C12.4214 0 11.702 0.297995 11.1716 0.828428L9.70711 2.29289Z" />
+								</svg>
+							)}
+						</div>
 					</div>
 				)}
 			</div>
@@ -370,6 +374,7 @@ const ChannelTopbarTools = memo(
 					<div className="items-center gap-2 flex">
 						<div className="relative items-center gap-4 hidden sbm:flex sbm:flex-row-reverse">
 							<FileButton />
+							<GalleryButton />
 							<MuteButton />
 							<InboxButton />
 							<PinButton mode={ChannelStreamMode.STREAM_MODE_CHANNEL} styleCss={'text-theme-primary text-theme-primary-hover'} />
@@ -926,5 +931,46 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 		</div>
 	);
 });
+
+function GalleryButton() {
+	const [isShowGallery, setIsShowGallery] = useState<boolean>(false);
+	const dispatch = useAppDispatch();
+	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
+	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, currentChannelId));
+
+	const galleryRef = useRef<HTMLDivElement | null>(null);
+
+	const handleShowGallery = async () => {
+		if (!isShowGallery && (!attachments || attachments.length === 0)) {
+			await dispatch(
+				attachmentActions.fetchChannelAttachments({
+					clanId: currentClanId,
+					channelId: currentChannelId
+				})
+			);
+		}
+		setIsShowGallery(!isShowGallery);
+	};
+
+	const handleClose = useCallback(() => {
+		setIsShowGallery(false);
+	}, []);
+
+	return (
+		<div className="relative leading-5 h-5" ref={galleryRef}>
+			<button
+				title="Gallery"
+				className="focus-visible:outline-none text-theme-primary text-theme-primary-hover"
+				onClick={handleShowGallery}
+				onContextMenu={(e) => e.preventDefault()}
+			>
+				<Icons.ImageThumbnail defaultSize="size-5" />
+			</button>
+			{isShowGallery && <GalleryModal onClose={handleClose} rootRef={galleryRef} />}
+		</div>
+	);
+}
+
 
 export default ChannelTopbar;

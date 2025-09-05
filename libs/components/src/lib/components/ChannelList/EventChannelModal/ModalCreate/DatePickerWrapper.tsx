@@ -7,6 +7,11 @@ type DatePickerWrapperProps = {
 	minDate?: Date;
 	className?: string;
 	wrapperClassName?: string;
+	open?: boolean;
+	onClickOutside?: () => void;
+	onCalendarClose?: () => void;
+	onCalendarOpen?: () => void;
+	onFocus?: () => void;
 };
 
 const DatePickerWrapper = (props: DatePickerWrapperProps) => {
