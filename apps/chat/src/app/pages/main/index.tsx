@@ -332,9 +332,9 @@ const SidebarMenu = memo(
 				id="menu"
 			>
 				<div
-					className={`top-0 left-0 right-0 flex flex-col items-center pt-4 md:pb-32 pb-4 overflow-y-auto hide-scrollbar ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : 'h-[calc(100dvh_-_56px)]'} `}
+					className={`top-0 left-0 right-0 flex flex-col items-center md:pb-32 pb-4 overflow-y-auto hide-scrollbar ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : 'h-[calc(100dvh_-_56px)]'} `}
 				>
-					<div className="flex flex-col items-center">
+					<div className="flex flex-col items-center sticky top-0 z-10 bg-theme-primary w-full px-2 pt-2 pb-2 ">
 						<SidebarLogoItem />
 						<DirectUnreadList />
 					</div>
@@ -343,7 +343,11 @@ const SidebarMenu = memo(
 						<ClansList />
 						<div className="mt-3">
 							<NavLinkComponent>
-								<div className="flex items-center justify-between text-theme-primary group" onClick={openDiscoverPage} title="Discover">
+								<div
+									className="flex items-center justify-between text-theme-primary group"
+									onClick={openDiscoverPage}
+									title="Discover"
+								>
 									<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
 										<svg
 											className="text-theme-primary-active size-5"
