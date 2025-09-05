@@ -385,6 +385,8 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createChannelDesc(mezon.session, body);
+		// test crash create channel
+		console.error('log  => response', responses);
 		if (response) {
 			thunkAPI.dispatch(
 				channelsActions.add({ channel: { id: response.channel_id as string, ...response }, clanId: response.clan_id as string })
