@@ -5,6 +5,7 @@ import {
 	selectCurrentClanId,
 	selectMemberClanByUserId,
 	settingClanStickerActions,
+	toastActions,
 	updateWebhookBySpecificId,
 	useAppDispatch,
 	useAppSelector
@@ -92,6 +93,12 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 
 	const handleCopyUrl = (url: string) => {
 		navigator.clipboard.writeText(url);
+		dispatch(
+			toastActions.addToast({
+				message: 'Webhook URL copied to clipboard',
+				type: 'success'
+			})
+		);
 	};
 	const { sessionRef, clientRef } = useMezon();
 	const currentClanId = useSelector(selectCurrentClanId);

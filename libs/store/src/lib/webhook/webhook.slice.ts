@@ -67,6 +67,7 @@ export const generateWebhook = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.generateWebhookLink(mezon.session, data.request);
 			if (response) {
+				thunkAPI.dispatch(fetchWebhooks({ channelId: data.channelId, clanId: data.clanId, noCache: true }));
 				toast.success(`Generated ${response.hook_name} successfully !`);
 			} else {
 				thunkAPI.rejectWithValue({});
@@ -88,10 +89,12 @@ export const deleteWebhookById = createAsyncThunk(
 				clan_id: data.clanId
 			};
 			const response = await mezon.client.deleteWebhookById(mezon.session, data.webhook.id as string, body);
-			thunkAPI.dispatch(webhookActions.removeOneWebhook({ clanId: data.webhook.clan_id || '', webhookId: data.webhook.id || '' }));
+
 			if (!response) {
-				thunkAPI.rejectWithValue({});
+				return thunkAPI.rejectWithValue({});
 			}
+			toast.success(`Deleted ${data.webhook.webhook_name} successfully !`);
+			thunkAPI.dispatch(webhookActions.removeOneWebhook({ clanId: data.clanId, webhookId: data.webhook.id || '' }));
 		} catch (error) {
 			captureSentryError(error, 'integration/deleteWebhook');
 			return thunkAPI.rejectWithValue(error);
