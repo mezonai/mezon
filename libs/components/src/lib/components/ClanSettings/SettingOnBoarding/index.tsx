@@ -1,7 +1,7 @@
 import { MemberProvider } from '@mezon/core';
 import { onboardingActions, selectCurrentClan, selectCurrentClanId, selectFormOnboarding, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
-import { Icons, Image } from '@mezon/ui';
+import { Icons } from '@mezon/ui';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiOnboardingContent } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useState } from 'react';
@@ -313,34 +313,11 @@ const MainIndex = ({ isEnableOnBoarding, toggleEnableStatus, handleGoToPage, onC
 				<div className="text-[20px] text-theme-primary-active font-semibold">Onboarding</div>
 				<div className="font-medium text-theme-primary">
 					Give your members a simple starting experience with custom channels, roles and first steps.
-				</div>
-				<div className="flex gap-2 items-center">
-					<div className="cursor-pointer text-blue-500 hover:underline">See examples</div>
-					<div className="w-1 h-1 rounded-full bg-item-theme" />
-					<div className="cursor-pointer text-blue-500 hover:underline" onClick={openOnboardingPreviewMode}>
+					<p className="ml-3 inline-block cursor-pointer text-blue-500 hover:underline" onClick={openOnboardingPreviewMode}>
 						Preview
-					</div>
-					<div className="w-1 h-1 rounded-full bg-item-theme" />
-					<div className="cursor-pointer text-blue-500 hover:underline">Switch to Advanced Mode</div>
+					</p>
 				</div>
 			</div>
-			<GuideItemLayout
-				icon={
-					<Image
-						src={`assets/images/wumpus_addbba.svg`}
-						width={40}
-						height={40}
-						className="aspect-square object-cover w-[40px] text-theme-primary bg-theme-setting-nav"
-					/>
-				}
-				title="Recent Updates"
-				description={
-					<div className="font-medium text-sm text-theme-primary">
-						<div>• You can now upload custom images for New-Member To-Dos and Resource Pages.</div>
-						<div>• Added a custom description option for Resource pages</div>
-					</div>
-				}
-			/>
 
 			<div className="text-theme-primary">
 				<GuideItemLayout
@@ -350,25 +327,13 @@ const MainIndex = ({ isEnableOnBoarding, toggleEnableStatus, handleGoToPage, onC
 					noNeedHover
 				/>
 
-				<GuideItemLayout
-					hightLightIcon
-					icon={<Icons.HashIcon className="w-6 text--theme-primary" />}
-					title="Default Channels"
-					description="You have 7 Default Channels"
-					className={` rounded-none ${showOnboardingHighlight ? 'border-2 border-red-500' : ''}`}
-					action={
-						<div className="w-[60px] h-[32px] flex justify-center items-center rounded-lg border-theme-primary bg-secondary-button-hover">
-							Edit
-						</div>
-					}
-				/>
 				<div className="mx-4 border-t border-theme-primary text-theme-primary-hover" />
 
 				<GuideItemLayout
 					hightLightIcon
 					icon={<Icons.People className="w-6 text-theme-primary" />}
 					title="Questions"
-					description="7 of 7 public channels are assignable through Questions and Default Channels."
+					description="Public channels are assignable through Questions."
 					className={` rounded-none ${showOnboardingHighlight ? 'border-2 border-red-500' : ''}`}
 					action={
 						<div

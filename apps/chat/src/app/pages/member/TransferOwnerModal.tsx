@@ -71,7 +71,7 @@ const TransferOwnerModal = ({ onClose, member, onClick }: TransferOwnerProps) =>
 						onChange={handleCheckInput}
 					/>
 					<label htmlFor="confirm-transfer" className="ml-2">
-						I acknowledge that by transferring ownership of this clan{' '}
+						I acknowledge that by transferring ownership of this clan to{' '}
 						{member?.clan_nick || member.user?.display_name || member?.user?.username}, it officially belongs to them.
 					</label>
 				</div>

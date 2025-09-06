@@ -12,7 +12,6 @@ import { ChannelStatusEnum } from '@mezon/utils';
 import { ApiOnboardingItem } from 'mezon-js/api.gen';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import GuideItemLayout from '../GuideItemLayout';
 import ModalControlRule, { ControlInput } from '../ModalControlRule';
 type TypeMission = {
 	id: number;
@@ -40,15 +39,25 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allChannel = useAppSelector(selectAllChannels);
 	const listMissionChannel = useMemo(() => {
-		return allChannel.filter((channel) => channel.channel_private !== ChannelStatusEnum.isPrivate);
+		return allChannel.filter((channel) => channel.channel_private !== ChannelStatusEnum.isPrivate && channel.id);
 	}, [allChannel]);
 
 	const [title, setTitle] = useState(missionEdit?.title || '');
 	const [missionChannel, setMissionChannel] = useState(missionEdit?.channel_id || listMissionChannel[0]?.id || '');
 	const [mission, setMission] = useState<ETypeMission>(missionEdit?.task_type || ETypeMission.SEND_MESSAGE);
+	const [error, setError] = useState('');
 	const dispatch = useAppDispatch();
 	const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
 		setTitle(e.target.value);
+		if (!e.target.value.length) {
+			setError('This field is required.');
+			return;
+		}
+		if (e.target.value.length < 7) {
+			setError('Actions must be at least 7 characters');
+		} else {
+			setError('');
+		}
 	};
 
 	const handleSetMission = (value: number) => {
@@ -59,7 +68,36 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 		setMissionChannel(e.target.value);
 	};
 
+	const hasChanges = useMemo(() => {
+		if (missionEdit?.id) {
+			if (title !== missionEdit?.title) {
+				return true;
+			}
+			if (missionChannel !== missionEdit?.channel_id) {
+				return true;
+			}
+			if (mission !== missionEdit?.task_type) {
+				return true;
+			}
+			return false;
+		}
+		return title.length >= 7;
+	}, [title, mission, missionChannel, missionEdit?.id, missionEdit]);
+
 	const handleAddTask = () => {
+		if (!title) {
+			setError('This field is required.');
+			return;
+		}
+		if (title.length < 7) {
+			setError('Actions must be at least 7 characters');
+			return;
+		}
+
+		if (!hasChanges) {
+			missionEdit?.id && onClose();
+			return;
+		}
 		if (missionEdit?.id) {
 			dispatch(
 				editOnboarding({
@@ -93,6 +131,9 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 
 	const handleRemoveTask = () => {
 		if (!missionEdit) {
+			setTitle('');
+			setMissionChannel(listMissionChannel[0]?.id || '');
+			setMission(ETypeMission.SEND_MESSAGE);
 			return;
 		}
 		if (tempId !== undefined) {
@@ -119,9 +160,9 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 			bottomLeftBtn={missionEdit ? 'Remove' : undefined}
 			bottomLeftBtnFunction={handleRemoveTask}
 		>
-			<div className="flex flex-col ">
+			<div className="flex flex-col pb-3">
 				<ControlInput
-					message="Actions must be at least 7 characters"
+					message={error}
 					placeholder="Ex. Post a photo of your pet"
 					title="What should the new member do?"
 					onChange={handleChangeTitle}
@@ -153,15 +194,6 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 
 				<div className="w-full h-[1px] my-6 bg-gray-300 dark:bg-channelTextLabel"></div>
 
-				<GuideItemLayout
-					className="!p-0"
-					background="bg-transparent hover:bg-transparent"
-					title="Upload a custom thumbnail"
-					description="72x72 minimum. 1:1 aspect ratio. PNG, JPG"
-				/>
-
-				<div className="w-full h-[1px] my-6 bg-gray-300 dark:bg-channelTextLabel"></div>
-
 				<div className="flex flex-col">
 					<h1 className="text-base font-semibold text-gray-800 dark:text-white">
 						This task is complete when: <span className="text-red-500">*</span>
@@ -177,7 +209,10 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 								name="mission"
 								checked={mission === missions.id}
 							/>
-							<label htmlFor={missions.name} className={`text-base font-medium ${mission === missions.id ? 'text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-400'}`}>
+							<label
+								htmlFor={missions.name}
+								className={`text-base font-medium ${mission === missions.id ? 'text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-400'}`}
+							>
 								{missions.description}
 							</label>
 						</div>

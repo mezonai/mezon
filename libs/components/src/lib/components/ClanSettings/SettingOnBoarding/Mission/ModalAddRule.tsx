@@ -1,6 +1,8 @@
 import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
+import { handleUploadEmoticon, useMezon } from '@mezon/transport';
+import { Snowflake } from '@theinternetfolks/snowflake';
 import { ApiOnboardingItem } from 'mezon-js/api.gen';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import ModalControlRule, { ControlInput } from '../ModalControlRule';
 
 const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; ruleEdit?: ApiOnboardingItem; tempId?: number }) => {
@@ -8,16 +10,65 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 	const [ruleDescription, setRuleDescription] = useState(ruleEdit?.content || '');
 	const [ruleImage, setRuleImage] = useState<null | string>(ruleEdit?.image_url || null);
 	const [file, setFile] = useState<null | File>(null);
+	const [error, setError] = useState('');
 	const dispatch = useAppDispatch();
 
 	const handleChangeRuleTitle = (e: ChangeEvent<HTMLInputElement>) => {
 		setRuleTitle(e.target.value);
+		if (!e.target.value.length) {
+			setError('This field is required.');
+			return;
+		}
+		if (e.target.value.length < 7) {
+			setError('Rule title must be at least 7 characters');
+		} else {
+			setError('');
+		}
 	};
 	const handleChangeRuleDescription = (e: ChangeEvent<HTMLInputElement>) => {
 		setRuleDescription(e.target.value);
 	};
-	const handleAddRules = () => {
+
+	const hasChanges = useMemo(() => {
 		if (ruleEdit?.id) {
+			if (ruleTitle !== ruleEdit?.title) {
+				return true;
+			}
+			if (ruleDescription !== ruleEdit?.content) {
+				return true;
+			}
+
+			return !!file;
+		}
+		return ruleTitle;
+	}, [ruleTitle, ruleDescription, ruleEdit?.id, ruleEdit, file]);
+	const { sessionRef, clientRef } = useMezon();
+
+	const handleAddRules = async () => {
+		if (!ruleTitle) {
+			setError('This field is required.');
+			return;
+		}
+		if (ruleTitle.length < 7) {
+			setError('Rule title must be at least 7 characters');
+			return;
+		}
+		if (!hasChanges) {
+			ruleEdit?.id && onClose();
+			return;
+		}
+		if (ruleEdit?.id) {
+			let image_url = ruleEdit?.image_url;
+			if (file) {
+				if (clientRef.current && sessionRef.current) {
+					const id = Snowflake.generate();
+					const path = 'onboarding/' + id + '.webp';
+					const uploadResponse = await handleUploadEmoticon(clientRef.current, sessionRef.current, path, file);
+					if (uploadResponse) {
+						image_url = uploadResponse?.url;
+					}
+				}
+			}
 			dispatch(
 				editOnboarding({
 					clan_id: ruleEdit?.clan_id as string,
@@ -25,7 +76,8 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 					content: {
 						title: ruleTitle,
 						content: ruleDescription,
-						guide_type: EGuideType.RULE
+						guide_type: EGuideType.RULE,
+						image_url
 					}
 				})
 			);
@@ -49,6 +101,10 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 
 	const handleRemoveRule = () => {
 		if (!ruleEdit) {
+			setRuleTitle('');
+			setRuleDescription('');
+			setRuleImage(null);
+			setFile(null);
 			return;
 		}
 		if (tempId !== undefined) {
@@ -91,6 +147,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 					onChange={handleChangeRuleTitle}
 					value={ruleTitle}
 					required
+					message={error}
 				/>
 
 				<div className="w-full h-[1px] my-6 bg-gray-300 dark:bg-channelTextLabel"></div>
@@ -100,7 +157,6 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 					title="Give this resource a description"
 					onChange={handleChangeRuleDescription}
 					value={ruleDescription}
-					required
 				/>
 				<div className="w-full h-[1px] my-6 bg-gray-300 dark:bg-channelTextLabel"></div>
 

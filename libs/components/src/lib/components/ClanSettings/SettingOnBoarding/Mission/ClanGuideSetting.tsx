@@ -100,9 +100,7 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 						gap={16}
 						icon={<Icons.RuleIcon className="text-theme-primary" />}
 						className="px-3"
-						description={
-							<div className="h-full flex items-center text-base text-theme-primary font-bold">Read the Rules </div>
-						}
+						description={<div className="h-full flex items-center text-base text-theme-primary font-bold">Read the Rules </div>}
 					/>
 
 					<button
@@ -147,11 +145,6 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 						<Icons.AddIcon className="w-4 h-4" /> Add a resource
 					</button>
 				</div>
-				<div className="w-full h-[1px] my-8 bg-gray-300 dark:bg-channelTextLabel"></div>
-				<SectionDescription
-					title="Clan Guide Banner"
-					description="The recommended minimum size is 1920x480 and recommended aspect ratio is 4:1."
-				/>
 			</div>
 		</div>
 	);
@@ -174,7 +167,7 @@ const OwnerGreeting = () => {
 				<div className="flex  gap-3">
 					<div className="w-12 relative">
 						<img
-							src={clanOwner?.clan_avatar ?? clanOwner.user?.avatar_url}
+							src={clanOwner?.clan_avatar || clanOwner.user?.avatar_url}
 							className="w-12 aspect-square rounded-full absolute bottom-0 left-0"
 						/>
 					</div>
@@ -210,7 +203,7 @@ const MissionItem = ({ mission, temp, setOpenModalSaveChanges }: MissionItemProp
 				tempId={temp}
 			/>
 		);
-	});
+	}, [mission]);
 
 	return (
 		<GuideItemLayout
@@ -258,7 +251,7 @@ const RuleItem = ({ rule, temp, setOpenModalSaveChanges }: RuleItemProps) => {
 				tempId={temp}
 			/>
 		);
-	});
+	}, [rule]);
 
 	return (
 		<GuideItemLayout
