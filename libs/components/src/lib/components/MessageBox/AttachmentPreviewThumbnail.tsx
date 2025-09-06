@@ -36,15 +36,6 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 				<div>{thumbnailAttachment}</div>
 				<div className=" flex flex-row w-21 top-[-1px] right-[-16px] bg-theme-contexify h-8 absolute rounded-lg shadow-shadowInbox">
 					<button
-						onClick={handleShowAttachment}
-						className="w-8 h-8 flex flex-row justify-center items-center text-theme-primary bg-item-hover text-theme-primary-hover"
-					>
-						{isHideAttachment ? <Icons.EyeClose className="w-5 h-5 " /> : <Icons.EyeOpen className="w-5 h-5 " />}
-					</button>
-					<button className="w-8 h-8 flex flex-row justify-center text-theme-primary items-center bg-item-hover text-theme-primary-hover">
-						<Icons.PenEdit className="w-5 h-5 " />
-					</button>
-					<button
 						onClick={handleRemove}
 						className="w-8 h-8 flex flex-row justify-center text-theme-primary items-center bg-item-hover text-theme-primary-hover"
 					>
