@@ -39,7 +39,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 					messagesActions.jumpToMessage({
 						clanId: message?.clan_id || '',
 						messageId: messageIdRef,
-						channelId: currentChannelId || '',
+						channelId: currentChannelId || message?.channel_id || '',
 						topicId: isTopic ? message?.channel_id || '' : undefined
 					})
 				);
