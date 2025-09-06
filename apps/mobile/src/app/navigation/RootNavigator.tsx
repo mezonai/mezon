@@ -135,7 +135,7 @@ const NavigationMain = memo(
 					animated
 					translucent
 					backgroundColor={themeValue.primary}
-					barStyle={themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content'}
+					barStyle={themeBasic === ThemeModeBase.LIGHT || themeBasic === ThemeModeBase.SUNRISE ? 'dark-content' : 'light-content'}
 				/>
 				<SafeAreaProvider>
 					<SafeAreaView

@@ -27,7 +27,7 @@ export function useFitContentSnapPoints(
     }, [maxHeightPercent]);
 
     const percentSnapPoints = useMemo(() => {
-        if (!snapPointsWithFitContent) return snapPoints.map((p) => `${p}%`);
+        if (!snapPointsWithFitContent)  return snapPoints.map((p) => p.includes('%') ? p : `${p}%`);
         let finalSnapPoints = [];
         const snapPointsNumber = convertPercentToNumber(snapPoints);
 

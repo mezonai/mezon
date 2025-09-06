@@ -4,9 +4,10 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
-			flex: 1,
-			padding: Metrics.size.xl,
-			backgroundColor: colors.primary
+			flex: 1
+		},
+		main: {
+			padding: Metrics.size.xl
 		},
 
 		box: {

@@ -30,13 +30,13 @@ export default function TopicDiscussion() {
 			if (Platform.OS === 'android') {
 				StatusBar.setBackgroundColor(themeValue.primary);
 			}
-			StatusBar.setBarStyle(themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content');
+			StatusBar.setBarStyle(themeBasic === ThemeModeBase.LIGHT || themeBasic === ThemeModeBase.SUNRISE ? 'dark-content' : 'light-content');
 		});
 		const blurListener = navigation.addListener('blur', () => {
 			if (Platform.OS === 'android') {
 				StatusBar.setBackgroundColor(themeValue.secondary);
 			}
-			StatusBar.setBarStyle(themeBasic === ThemeModeBase.DARK ? 'light-content' : 'dark-content');
+			StatusBar.setBarStyle(themeBasic === ThemeModeBase.LIGHT || themeBasic === ThemeModeBase.SUNRISE ? 'dark-content' : 'light-content');
 		});
 		return () => {
 			focusedListener();

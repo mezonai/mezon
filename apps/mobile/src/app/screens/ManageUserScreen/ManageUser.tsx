@@ -221,7 +221,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 	const renderCheckboxInnerStyle = useCallback(
 		(isSelected: boolean) => ({
 			borderWidth: 1.5,
-			borderColor: isSelected ? '#5865f2' : themeValue.tertiary,
+			borderColor: isSelected ? '#5865f2' : themeValue.textDisabled,
 			borderRadius: 5
 		}),
 		[themeValue.tertiary]

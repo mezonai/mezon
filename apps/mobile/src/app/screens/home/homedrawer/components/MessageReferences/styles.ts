@@ -66,7 +66,6 @@ export const style = (colors: Attributes) =>
 		},
 		tapToSeeAttachmentText: {
 			color: colors.text,
-			fontSize: size.small,
-			flex: 1
+			fontSize: size.small
 		}
 	});

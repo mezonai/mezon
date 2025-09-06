@@ -6,15 +6,14 @@ export const style = (colors: Attributes) =>
 		modalWrapper: {
 			paddingHorizontal: size.s_20,
 			height: '100%',
-			overflow: 'hidden',
-			backgroundColor: colors.primary
+			overflow: 'hidden'
 		},
 		headerRow: {
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			paddingTop: size.s_14,
-			paddingBottom: size.s_6
+			paddingBottom: size.s_20
 		},
 		leftClose: {
 			width: size.s_30,
@@ -48,7 +47,7 @@ export const style = (colors: Attributes) =>
 			textAlign: 'center',
 			fontSize: size.s_14,
 			fontWeight: '700',
-			color: '#d1323f',
+			color: '#d1323f'
 		},
 		description: {
 			marginTop: size.s_14,

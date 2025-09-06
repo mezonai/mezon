@@ -20,8 +20,9 @@ import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -249,9 +250,15 @@ const ForwardMessageScreen = () => {
 		<KeyboardAvoidingView
 			behavior="padding"
 			keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
-			style={{ flex: 1, backgroundColor: themeValue.primary, paddingHorizontal: size.s_16, paddingTop: size.s_16 }}
+			style={{ flex: 1, paddingHorizontal: size.s_16, paddingTop: size.s_16 }}
 		>
 			<StatusBarHeight />
+			<LinearGradient
+				start={{ x: 1, y: 0 }}
+				end={{ x: 0, y: 0 }}
+				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+				style={[StyleSheet.absoluteFillObject]}
+			/>
 			<View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: size.s_18 }}>
 				<View style={{ flex: 1 }}>
 					<TouchableOpacity onPress={onClose}>

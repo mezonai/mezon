@@ -68,7 +68,8 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			type: channelType,
 			channel_label: channelName?.trim(),
 			channel_private: isChannelPrivate ? 1 : 0,
-			category_id: categoryId
+			category_id: categoryId,
+			parent_id: '0'
 		};
 		dispatch(appActions.setLoadingMainMobile(true));
 		const newChannelCreatedId = await dispatch(createNewChannel(body));

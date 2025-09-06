@@ -556,14 +556,50 @@ export const getVoIPToken = async () => {
 	}
 };
 
+let pendingCallNotification: NodeJS.Timeout | null = null;
+let lastCallData: any = null;
+
 export const displayNativeCalling = async (data: any) => {
 	const notificationId = 'incoming-call';
 	try {
 		const dataObj = safeJSONParse(data?.offer || '{}');
-		if (dataObj?.offer === 'CANCEL_CALL' || !dataObj?.callerName) {
+		lastCallData = dataObj;
+
+		if (pendingCallNotification) {
+			clearTimeout(pendingCallNotification);
+			pendingCallNotification = null;
+		}
+
+		if (dataObj?.offer === 'CANCEL_CALL') {
 			await notifee.cancelNotification(notificationId, notificationId);
+			lastCallData = null;
 			return;
 		}
+
+		if (!dataObj?.callerName) {
+			await notifee.cancelNotification(notificationId, notificationId);
+			lastCallData = null;
+			return;
+		}
+
+		pendingCallNotification = setTimeout(async () => {
+			if (lastCallData?.offer === 'CANCEL_CALL' || !lastCallData?.callerName) {
+				await notifee.cancelNotification(notificationId, notificationId);
+				lastCallData = null;
+				return;
+			}
+
+			await displayCallNotification(lastCallData, notificationId);
+			lastCallData = null;
+		}, 500);
+	} catch (e) {
+		await notifee.cancelNotification(notificationId, notificationId);
+		console.error('log => e displayCalling', e);
+	}
+};
+
+const displayCallNotification = async (dataObj: any, notificationId: string) => {
+	try {
 		const channel = await notifee.createChannel({
 			id: 'calls',
 			name: 'Incoming Calls',
@@ -652,8 +688,7 @@ export const displayNativeCalling = async (data: any) => {
 				}
 			}
 		});
-	} catch (e) {
-		await notifee.cancelNotification(notificationId, notificationId);
-		console.error('log => e displayCalling', e);
+	} catch (error) {
+		console.error('Error displaying call notification:', error);
 	}
 };

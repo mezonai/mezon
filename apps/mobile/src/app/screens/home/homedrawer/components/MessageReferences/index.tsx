@@ -85,10 +85,10 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 						<FastImage />
 					</Text>
 					{messageReferences?.has_attachment || isEmbedMessage ? (
-						<Text>
+						<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 							<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')} </Text>
-							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={'#c7c7c7'} />
-						</Text>
+							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={themeValue.text} />
+						</View>
 					) : (
 						<DmListItemLastMessage
 							content={safeJSONParse(messageReferences?.content || '{}')}

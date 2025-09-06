@@ -6,6 +6,10 @@
         "midnight": "Midnight",
         "system": "Auto",
         "sunrise": "Sunrise",
-        "redDark": "Red Dark"
-    }
+        "redDark": "Red Dark",
+        "purpleHaze": "Purple Haze",
+        "abyssDark": "Abyss Dark",
+        "sunset": "Sunset"
+    },
+    "desc": "You can always change this later!"
 }

@@ -11,7 +11,6 @@ export const style = (colors: Attributes) =>
 		},
 		createChannelContent: {
 			flex: 1,
-			backgroundColor: colors.primary,
 			width: '100%'
 		},
 		createChannelIcon: {
@@ -80,8 +79,7 @@ export const style = (colors: Attributes) =>
 			borderTopWidth: 0.5,
 			borderBottomWidth: 0.5,
 			paddingTop: size.s_20,
-			paddingBottom: size.s_20,
-			backgroundColor: colors.primary
+			paddingBottom: size.s_20
 		},
 		errorMessage: { paddingRight: size.s_20 },
 		scrollview: {

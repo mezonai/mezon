@@ -190,7 +190,7 @@ const BottomSheetRootListener = () => {
 				disableScrollView ? (
 					<View onLayout={onContentLayout}>{children}</View>
 				) : (
-					<BottomSheetScrollView>
+					<BottomSheetScrollView bounces={false}>
 						<View onLayout={onContentLayout}>{children}</View>
 					</BottomSheetScrollView>
 				)

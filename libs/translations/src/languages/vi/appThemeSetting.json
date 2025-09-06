@@ -6,6 +6,10 @@
         "light": "Sáng",
         "system": "Hệ thống",
         "sunrise": "Sunrise",
-        "redDark": "Red Dark"
-    }
+        "redDark": "Red Dark",
+        "purpleHaze": "Purple Haze",
+        "abyssDark": "Abyss Dark",
+        "sunset": "Sunset"
+    },
+    "desc": "Bạn luôn có thể thay đổi điều này sau!"
 }

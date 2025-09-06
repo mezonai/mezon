@@ -9,9 +9,9 @@ import { Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 're
 import FastImage from 'react-native-fast-image';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import Images from '../../../../../assets/Images';
-import ImageNative from '../../../../components/ImageNative';
 import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import ImageNative from '../../../../components/ImageNative';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './styles';
 
@@ -261,7 +261,9 @@ export const RecentInteractiveSearch = React.memo(
 						)}
 
 						{selectedChannel ? (
-							<Text style={styles.textChannelSelected}>{selectedChannel?.channel_label}</Text>
+							<Text style={styles.textChannelSelected} numberOfLines={1}>
+								{selectedChannel?.channel_label}
+							</Text>
 						) : (
 							<TextInput
 								ref={inputSearchRef}

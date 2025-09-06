@@ -50,7 +50,7 @@ import { ChannelType, Session } from 'mezon-js';
 import { AppState, DeviceEventEmitter, Platform } from 'react-native';
 import { getVoIPToken, handleFCMToken } from '../utils/pushNotificationHelpers';
 const analytics = getAnalytics(getApp());
-const MAX_RETRIES_SESSION = 3;
+const MAX_RETRIES_SESSION = 5;
 const RootListener = () => {
 	const isLoggedIn = useSelector(selectIsLogin);
 	const { handleReconnect } = useContext(ChatContext);

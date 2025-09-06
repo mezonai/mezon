@@ -1,7 +1,9 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { sleep } from '@mezon/utils';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import ConversationCard from './ConversationCard';
 import { style } from './styles';
 
 export interface IMezonSlideOptionsData {
@@ -24,6 +26,7 @@ export default function MezonSlideOption({ data, onChange, height = 90, width = 
 	const [title, setTitle] = useState<string>(data?.[initialIndex >= 0 ? initialIndex : 0].title);
 	const styles = style(useTheme().themeValue);
 	const ref = useRef<ScrollView>(null);
+	const { t } = useTranslation(['appThemeSetting']);
 
 	const handleLayout = (event) => {
 		const { x } = event.nativeEvent.layout;
@@ -66,37 +69,41 @@ export default function MezonSlideOption({ data, onChange, height = 90, width = 
 
 	return (
 		<View>
-			<Text style={styles.title}>{title}</Text>
-			<View style={{ position: 'relative' }}>
-				<View style={[styles.boxSelect]}>
-					<View style={[styles.boxBorder, { height, width }]} onLayout={handleLayout}></View>
-				</View>
+			<ConversationCard />
+			<View>
+				<Text style={styles.title}>{title}</Text>
+				<View style={{ position: 'relative' }}>
+					<View style={[styles.boxSelect]}>
+						<View style={[styles.boxBorder, { height, width }]} onLayout={handleLayout}></View>
+					</View>
 
-				<ScrollView
-					ref={ref}
-					decelerationRate={'fast'}
-					snapToAlignment={'start'}
-					snapToInterval={width}
-					horizontal={true}
-					showsHorizontalScrollIndicator={false}
-					style={styles.selectListWrapper}
-					scrollEventThrottle={50}
-					onScroll={handleScroll}
-					contentContainerStyle={[
-						{
-							paddingLeft: padding + 5,
-							paddingRight: padding + 5
-						},
-						styles.selectList
-					]}
-				>
-					{data.map((item, index) => (
-						<View key={index.toString()}>
-							<Pressable onPress={() => handlePressItem(index)}>{item.element}</Pressable>
-						</View>
-					))}
-				</ScrollView>
+					<ScrollView
+						ref={ref}
+						decelerationRate={'fast'}
+						snapToAlignment={'start'}
+						snapToInterval={width}
+						horizontal={true}
+						showsHorizontalScrollIndicator={false}
+						style={styles.selectListWrapper}
+						scrollEventThrottle={50}
+						onScroll={handleScroll}
+						contentContainerStyle={[
+							{
+								paddingLeft: padding + 5,
+								paddingRight: padding + 5
+							},
+							styles.selectList
+						]}
+					>
+						{data.map((item, index) => (
+							<View key={index.toString()}>
+								<Pressable onPress={() => handlePressItem(index)}>{item.element}</Pressable>
+							</View>
+						))}
+					</ScrollView>
+				</View>
 			</View>
+			<Text style={styles.desc}>{t('desc')}</Text>
 		</View>
 	);
 }

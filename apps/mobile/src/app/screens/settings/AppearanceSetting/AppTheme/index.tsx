@@ -67,6 +67,39 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 					),
 					value: ThemeModeBase.REDDARK,
 					title: t('fields.redDark')
+				},
+				{
+					element: (
+						<BoxGradientSelector
+							color={themeColors.purpleHaze.primary}
+							colorSecond={themeColors.purpleHaze.secondary}
+							border={themeColors.purpleHaze.border}
+						/>
+					),
+					value: ThemeModeBase.PURPLE_HAZE,
+					title: t('fields.purpleHaze')
+				},
+				{
+					element: (
+						<BoxGradientSelector
+							color={themeColors.abyssDark.primary}
+							colorSecond={themeColors.abyssDark.secondary}
+							border={themeColors.abyssDark.border}
+						/>
+					),
+					value: ThemeModeBase.ABYSS_DARK,
+					title: t('fields.abyssDark')
+				},
+				{
+					element: (
+						<BoxGradientSelector
+							color={themeColors.sunset.primary}
+							colorSecond={themeColors.sunset.secondary}
+							border={themeColors.sunset.border}
+						/>
+					),
+					value: ThemeModeBase.SUNSET,
+					title: t('fields.sunset')
 				}
 			] satisfies IMezonSlideOptionsData[],
 		[]
@@ -82,7 +115,9 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 
 	return (
 		<LinearGradient colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]} style={styles.container}>
-			<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeIndex} />
+			<View style={styles.main}>
+				<MezonSlideOption data={themeOptions} onChange={handleThemeChange} initialIndex={themeIndex} />
+			</View>
 		</LinearGradient>
 	);
 }

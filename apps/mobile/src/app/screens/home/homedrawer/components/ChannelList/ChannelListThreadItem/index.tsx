@@ -52,7 +52,7 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 				<TouchableOpacity
 					style={[
 						styles.boxThread,
-						isActive && { backgroundColor: themeBasic === ThemeModeBase.DARK ? themeValue.secondaryLight : themeValue.secondaryWeight }
+						isActive && { backgroundColor: themeBasic === ThemeModeBase.LIGHT ? themeValue.secondaryWeight : themeValue.secondaryLight }
 					]}
 					activeOpacity={1}
 					onPress={onPressThreadItem}
@@ -63,7 +63,7 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 							styles.titleThread,
 							(isUnReadChannel || Number(numberNotification || 0) > 0) && styles.channelListItemTitleActive,
 							isActive && {
-								backgroundColor: themeBasic === ThemeModeBase.DARK ? themeValue.secondaryLight : themeValue.secondaryWeight
+								backgroundColor: themeBasic === ThemeModeBase.LIGHT ? themeValue.secondaryWeight : themeValue.secondaryLight
 							}
 						]}
 						numberOfLines={1}

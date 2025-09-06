@@ -36,12 +36,12 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 	const { t } = useTranslation(['common', 'message']);
 	const [currentImage, setCurrentImage] = useState<AttachmentEntity | null>(null);
 	const [visibleToolbarConfig, setVisibleToolbarConfig] = useState<IVisibleToolbarConfig>({ showHeader: true, showFooter: false });
-	const [currentScale, setCurrentScale] = useState(1);
 	const [showSavedImage, setShowSavedImage] = useState(false);
 	const [isLoadingSaveImage, setIsLoadingSaveImage] = useState(false);
 	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, channelId));
 	const ref = useRef<GalleryRef>(null);
 	const footerTimeoutRef = useRef<NodeJS.Timeout>(null);
+	const currentScaleRef = useRef<number>(1);
 	const imageSavedTimeoutRef = useRef<NodeJS.Timeout>(null);
 
 	const initialIndex = useMemo(() => {
@@ -67,7 +67,7 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 	}, [attachments, imageSelected]);
 
 	const onClose = () => {
-		if (currentScale === 1) DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		if (currentScaleRef?.current === 1) DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 
 	const updateToolbarConfig = useCallback(
@@ -125,7 +125,7 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 			setTimeoutHideFooter();
 			return;
 		}
-		if (!visibleToolbarConfig.showFooter && currentScale === 1) {
+		if (!visibleToolbarConfig.showFooter && currentScaleRef?.current === 1) {
 			updateToolbarConfig({ showFooter: true });
 			setTimeoutHideFooter();
 			return;
@@ -233,7 +233,9 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 		return () => sub.remove();
 	}, []);
 
-	const setScaleDebounced = useThrottledCallback(setCurrentScale, 300);
+	const setScaleDebounced = useThrottledCallback((scale: number) => {
+		currentScaleRef.current = scale;
+	}, 300);
 
 	return (
 		<View style={{ flex: 1 }}>
