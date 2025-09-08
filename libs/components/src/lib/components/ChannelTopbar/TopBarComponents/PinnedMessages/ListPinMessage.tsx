@@ -1,6 +1,7 @@
 import { useAppParams } from '@mezon/core';
-import { PinMessageEntity, selectClanView, selectCurrentChannelId, selectPinMessageByChannelId, useAppSelector } from '@mezon/store';
+import { PinMessageEntity, selectClanView, selectCurrentChannelId, selectMessagesByChannel, selectPinMessageByChannelId, useAppSelector } from '@mezon/store';
 import { safeJSONParse } from 'mezon-js';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { UnpinMessageObject } from '.';
 import EmptyPinMess from './EmptyPinMess';
@@ -31,13 +32,26 @@ const ListPinMessage = ({
 		listPinMessages = clanChannelId;
 	}
 
+	const channelId = !isClanView ? directId : currentChannelId;
+	const channelMessages = useAppSelector((state) => selectMessagesByChannel(state, channelId as string));
+	const validPinMessages = useMemo(() => {
+		if (!listPinMessages?.length || !channelMessages?.entities) {
+			return [];
+		}
+		
+		return listPinMessages.filter((pinMessage) => {
+			const originalMessage = channelMessages.entities[pinMessage.message_id as string];
+			return originalMessage && Object.keys(originalMessage).length > 0;
+		});
+	}, [listPinMessages, channelMessages?.entities]);
+
 	return (
 		<div className="min-h-36">
-			{!listPinMessages?.length ? (
+			{!validPinMessages?.length ? (
 				<EmptyPinMess />
 			) : (
 				<div className="flex flex-col items-center justify-center space-y-2 py-2">
-					{listPinMessages?.map((pinMessage) => {
+					{validPinMessages?.map((pinMessage) => {
 						// Parse content if it's a JSON string
 						let contentString = pinMessage.content;
 						if (typeof contentString === 'string') {
