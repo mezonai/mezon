@@ -112,7 +112,8 @@ export function MyVideoConference({
 			if (
 				reason === DisconnectReason.SERVER_SHUTDOWN ||
 				reason === DisconnectReason.DUPLICATE_IDENTITY ||
-				reason === DisconnectReason.CLIENT_INITIATED
+				reason === DisconnectReason.CLIENT_INITIATED ||
+				reason === DisconnectReason.PARTICIPANT_REMOVED
 			) {
 				onLeaveRoom();
 			} else {
@@ -191,7 +192,7 @@ export function MyVideoConference({
 					{!focusTrack ? (
 						<div className="lk-grid-layout-wrapper bg-gray-300 dark:bg-black !h-full !py-[68px]">
 							<GridLayout tracks={tracks}>
-								<ParticipantTile isExtCalling={isExternalCalling} activeSoundReactions={activeSoundReactions} />
+								<ParticipantTile roomName={room?.name} isExtCalling={isExternalCalling} activeSoundReactions={activeSoundReactions} />
 							</GridLayout>
 						</div>
 					) : (
@@ -200,7 +201,11 @@ export function MyVideoConference({
 								{focusTrack && <FocusLayout trackRef={focusTrack} isExtCalling={isExternalCalling} />}
 								{isShowMember && (
 									<CarouselLayout tracks={tracks}>
-										<ParticipantTile isExtCalling={isExternalCalling} activeSoundReactions={activeSoundReactions} />
+										<ParticipantTile
+											roomName={room?.name}
+											isExtCalling={isExternalCalling}
+											activeSoundReactions={activeSoundReactions}
+										/>
 									</CarouselLayout>
 								)}
 							</FocusLayoutContainer>

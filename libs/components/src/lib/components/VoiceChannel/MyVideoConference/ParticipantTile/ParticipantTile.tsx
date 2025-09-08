@@ -17,9 +17,10 @@ import {
 	useMaybeTrackRefContext,
 	useParticipantTile
 } from '@livekit/components-react';
-import { selectMemberClanByUserName, useAppSelector } from '@mezon/store';
+import { useAuth, usePermissionChecker } from '@mezon/core';
+import { selectMemberClanByUserName, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl } from '@mezon/utils';
+import { EPermission, createImgproxyUrl } from '@mezon/utils';
 import type { Participant } from 'livekit-client';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
@@ -61,12 +62,22 @@ export interface ParticipantTileProps extends React.HTMLAttributes<HTMLDivElemen
 	isExtCalling?: boolean;
 	isConnectingScreen?: boolean;
 	activeSoundReactions?: Map<string, ActiveSoundReaction>;
+	roomName?: string;
 }
 export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes<HTMLDivElement>) => React.ReactNode = forwardRef<
 	HTMLDivElement,
 	ParticipantTileProps
 >(function ParticipantTile(
-	{ trackRef, children, onParticipantClick, disableSpeakingIndicator, isExtCalling, activeSoundReactions, ...htmlProps }: ParticipantTileProps,
+	{
+		trackRef,
+		children,
+		roomName,
+		onParticipantClick,
+		disableSpeakingIndicator,
+		isExtCalling,
+		activeSoundReactions,
+		...htmlProps
+	}: ParticipantTileProps,
 	ref
 ) {
 	const trackReference = useEnsureTrackRef(trackRef);
@@ -141,6 +152,35 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		)
 	);
 
+	const dispatch = useAppDispatch();
+
+	const handleRemoveMember = useCallback(async () => {
+		if (!roomName) {
+			return;
+		}
+		dispatch(
+			voiceActions.kickVoiceMember({
+				room_name: roomName,
+				username: member?.user?.username
+			})
+		);
+	}, [roomName]);
+
+	const handleMuteMember = useCallback(async () => {
+		if (!roomName) {
+			return;
+		}
+		dispatch(
+			voiceActions.muteVoiceMember({
+				room_name: roomName,
+				username: member?.user?.username
+			})
+		);
+	}, [roomName]);
+
+	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
+	const { userProfile } = useAuth();
+
 	return (
 		<div ref={ref} style={{ position: 'relative' }} {...elementProps}>
 			<TrackRefContextIfNeeded trackRef={trackReference}>
@@ -199,7 +239,23 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 							</div>
 						</>
 					)}
-					<FocusToggle className="w-full h-full absolute top-0 right-0 bg-transparent" trackRef={trackReference} />
+					<FocusToggle className="peer w-full h-full absolute top-0 right-0 bg-transparent" trackRef={trackReference} />
+					{roomName && canMangeVoice && userProfile?.user?.id !== member?.id && (
+						<div className="hover:opacity-100 peer-hover:opacity-100 opacity-0 absolute top-2 right-2 gap-2 flex rounded-full items-center justify-center cursor-pointer">
+							<div
+								className="w-6 h-6 rounded-full hover:bg-bgSecondaryHover flex items-center justify-center"
+								onClick={handleMuteMember}
+							>
+								<Icons.VoiceMicDisabledIcon className="w-4 h-4" />
+							</div>
+							<div
+								className="w-6 h-6 rounded-full hover:bg-bgSecondaryHover flex items-center justify-center"
+								onClick={handleRemoveMember}
+							>
+								<Icons.CloseIcon className="w-4 h-4" />
+							</div>
+						</div>
+					)}
 				</ParticipantContextIfNeeded>
 			</TrackRefContextIfNeeded>
 		</div>
