@@ -27,7 +27,7 @@ const ListPinMessage = ({
 	let listPinMessages: PinMessageEntity[] = [];
 
 	if (!isClanView) {
-		listPinMessages = dmChannelId;
+		listPinMessages = dmChannelId; 
 	} else {
 		listPinMessages = clanChannelId;
 	}
@@ -35,16 +35,19 @@ const ListPinMessage = ({
 	const channelId = !isClanView ? directId : currentChannelId;
 	const channelMessages = useAppSelector((state) => selectMessagesByChannel(state, channelId as string));
 	const validPinMessages = useMemo(() => {
-		if (!listPinMessages?.length || !channelMessages?.entities) {
+		if (!listPinMessages?.length) {
 			return [];
+		}
+		if (!channelMessages?.entities || Object.keys(channelMessages.entities).length === 0) {
+			return listPinMessages;
 		}
 		
 		return listPinMessages.filter((pinMessage) => {
 			const originalMessage = channelMessages.entities[pinMessage.message_id as string];
+			
 			return originalMessage && Object.keys(originalMessage).length > 0;
 		});
-	}, [listPinMessages, channelMessages?.entities]);
-
+	}, [listPinMessages, channelMessages?.entities]);	
 	return (
 		<div className="min-h-36">
 			{!validPinMessages?.length ? (
@@ -52,12 +55,11 @@ const ListPinMessage = ({
 			) : (
 				<div className="flex flex-col items-center justify-center space-y-2 py-2">
 					{validPinMessages?.map((pinMessage) => {
-						// Parse content if it's a JSON string
 						let contentString = pinMessage.content;
 						if (typeof contentString === 'string') {
 							try {
 								const contentObject = safeJSONParse(contentString);
-								contentString = contentObject?.t;
+								contentString = contentObject?.t; 
 							} catch (e) {
 								console.error('Failed to parse content JSON:', e);
 							}

@@ -154,7 +154,7 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 								className={`w-full px-3 py-2.5 text-theme-primary  border-0 rounded bg-input-theme focus:outline-none transition-all duration-150 ${
 									validationError ? 'ring-2 ring-[#f23f42]' : 'focus:ring-2 focus:ring-[#5865f2] '
 								}`}
-								maxLength={100}
+								maxLength={64}
 								data-e2e={generateE2eId(`chat.direct_message.edit_group.input`)}
 							/>
 							{validationError && (
@@ -181,7 +181,7 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 									<span>{error}</span>
 								</div>
 							)}
-							<div className="text-xs text-theme-primary text-right font-medium">{groupName.length}/100</div>
+							<div className="text-xs text-theme-primary text-right font-medium">{groupName.length}/64</div>
 						</div>
 					</div>
 
