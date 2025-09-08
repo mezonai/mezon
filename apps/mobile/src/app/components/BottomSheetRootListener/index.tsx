@@ -184,10 +184,10 @@ const BottomSheetRootListener = () => {
 			{renderHeader()}
 			{children &&
 				(disableScrollView ? (
-					<View onLayout={onContentLayout}>{children}</View>
+					<View onLayout={snapPointsWithFitContent ? onContentLayout : null}>{children}</View>
 				) : (
 					<BottomSheetScrollView bounces={false}>
-						<View onLayout={onContentLayout}>{children}</View>
+						<View onLayout={snapPointsWithFitContent ? onContentLayout : null}>{children}</View>
 					</BottomSheetScrollView>
 				))}
 		</OriginalBottomSheet>

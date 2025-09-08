@@ -43,7 +43,7 @@ export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAc
 
 	const handleShowPicker = () => {
 		const data = {
-			snapPoints: ['75%'],
+			snapPoints: ['85%'],
 			disableScrollView: true,
 			children: (
 				<ContainerMessageActionModal
