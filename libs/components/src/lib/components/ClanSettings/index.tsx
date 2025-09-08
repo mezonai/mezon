@@ -97,7 +97,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	const handleDeleteCurrentClan = async () => {
-		await deleteClan({ clanId: currentClanId || '' });
+		dispatch(deleteClan({ clanId: currentClanId || '' }));
 		navigate('/mezon');
 	};
 	return (
