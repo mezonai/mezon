@@ -1,11 +1,11 @@
-import { ThreadError } from '../types';
+import type { ThreadError } from '../types';
 
 export const TIME_COMBINE = 120;
 export const TIME_OFFSET = 3;
 export const LIMIT_MESSAGE = 50;
 export const LIMIT_CLAN_ITEM = 50;
 export const SIZE_PAGE_SEARCH = 25;
-export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
+export const LIMIT_SIZE_UPLOAD_IMG = 50 * 1024 * 1024; // 50MB
 export const MAX_FILE_NAME_EMOJI = 62;
 export const MAX_FILE_ATTACHMENTS = 50; // 50 items
 export const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
@@ -113,7 +113,7 @@ export enum UploadLimitReason {
 	COUNT = 'count'
 }
 
-export const MAX_FILE_SIZE_1MB = 1 * 1024 * 1024; // 1MB
+export const MAX_FILE_SIZE_50MB = 50 * 1024 * 1024; // 50MB
 
 export enum MiniAppEventType {
 	PONG = 'PONG',

@@ -12,7 +12,7 @@
         "preview": "Preview"
     },
     "toast": {
-        "errorSizeLimit": "Image size limit exceeded 1MB",
+        "errorSizeLimit": "Image size limit exceeded 50MB",
         "errorFileType": "Invalid file type. Only .mp3, .mpeg and .wav files are allowed."
     }
 }

@@ -12,18 +12,21 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
-import { ImageSourceObject, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
+import type { ImageSourceObject } from '@mezon/utils';
+import { MAX_FILE_SIZE_50MB, createImgproxyUrl, fileTypeImage } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Coords } from '../../ChannelLink';
+import type { Coords } from '../../ChannelLink';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
 import PanelClan from '../../PanelClan';
 import ImageEditor from '../ImageEditor/ImageEditor';
-import PreviewSetting, { Profilesform } from '../SettingUserClanProfileCard';
+import type { Profilesform } from '../SettingUserClanProfileCard';
+import PreviewSetting from '../SettingUserClanProfileCard';
 import { processImage } from '../helper';
 
 const SettingRightUser = ({
@@ -85,12 +88,7 @@ const SettingRightUser = ({
 	const [openModalEditor, closeModalEditor] = useModal(
 		() =>
 			imageObject ? (
-				<ImageEditor
-					setImageCropped={setImageCropped}
-					setImageObject={setImageObject}
-					onClose={closeModalEditor}
-					imageSource={imageObject}
-				/>
+				<ImageEditor setImageCropped={setImageCropped} setImageObject={setImageObject} onClose={closeModalEditor} imageSource={imageObject} />
 			) : null,
 		[imageObject]
 	);
@@ -121,8 +119,8 @@ const SettingRightUser = ({
 			return;
 		}
 		if (file.type === fileTypeImage[2]) {
-			if (file.size > MAX_FILE_SIZE_1MB) {
-				toast.error('File size exceeds 1MB limit');
+			if (file.size > MAX_FILE_SIZE_50MB) {
+				toast.error('File size exceeds 50MB limit');
 				return;
 			}
 			if (!clientRef.current || !sessionRef.current) {
@@ -218,7 +216,7 @@ const SettingRightUser = ({
 						avatar_url: urlImage,
 						display_name: valueDisplayName,
 						about_me: editAboutUser,
-						dob: dob,
+						dob,
 						logo: attachment.url
 					})
 				);
@@ -268,41 +266,41 @@ const SettingRightUser = ({
 	}, [userProfile]);
 	return (
 		<>
-			<div className="flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col">
-				<div className="flex-1 ">
+			<div className='flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col'>
+				<div className='flex-1 '>
 					<div>
-						<label htmlFor="inputField" className="font-semibold tracking-wide text-sm">
+						<label htmlFor='inputField' className='font-semibold tracking-wide text-sm'>
 							DISPLAY NAME
 						</label>
 						<br />
 						<InputField
-							id="inputField"
+							id='inputField'
 							onChange={handleDisplayName}
-							type="text"
-							className="rounded-lg color-text-secondary bg-input-theme w-full px-4 py-2 mt-2 focus:outline-none font-normal text-sm tracking-wide border-theme-primary"
+							type='text'
+							className='rounded-lg color-text-secondary bg-input-theme w-full px-4 py-2 mt-2 focus:outline-none font-normal text-sm tracking-wide border-theme-primary'
 							placeholder={valueDisplayName || name}
 							value={valueDisplayName}
 							maxLength={32}
 						/>
 					</div>
 
-					<div className="mt-8">
-						<p className="font-semibold tracking-wide text-sm">AVATAR</p>
-						<div className="flex mt-[10px] gap-x-5">
+					<div className='mt-8'>
+						<p className='font-semibold tracking-wide text-sm'>AVATAR</p>
+						<div className='flex mt-[10px] gap-x-5'>
 							<label>
-								<div className="font-medium btn-primary btn-primary-hover rounded-lg p-[8px] pr-[10px] pl-[10px] cursor-pointer text-[14px]">
+								<div className='font-medium btn-primary btn-primary-hover rounded-lg p-[8px] pr-[10px] pl-[10px] cursor-pointer text-[14px]'>
 									Change avatar
 								</div>
-								<input type="file" onChange={(e) => handleFile(e)} className="w-full text-sm  hidden" />
+								<input type='file' onChange={(e) => handleFile(e)} className='w-full text-sm  hidden' />
 							</label>
 							<button
-								className="bg-theme-input text-theme-primary-hover bg-secondary-button-hover border-theme-primary  font-medium rounded-lg p-[8px] pr-[10px] pl-[10px] text-nowrap text-[14px]"
+								className='bg-theme-input text-theme-primary-hover bg-secondary-button-hover border-theme-primary  font-medium rounded-lg p-[8px] pr-[10px] pl-[10px] text-nowrap text-[14px]'
 								onClick={handleRemoveButtonClick}
 							>
 								Remove avatar
 							</button>
 						</div>
-						<div className="mt-[30px] w-full">
+						<div className='mt-[30px] w-full'>
 							<textarea
 								className={`rounded-lg bg-input-secondary p-[10px] border-theme-primary w-full outline-none min-h-[50px] max-h-[250px] ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
 								onChange={(e) => {
@@ -312,7 +310,7 @@ const SettingRightUser = ({
 								rows={4}
 								maxLength={128}
 							></textarea>
-							<div className="w-full flex justify-end">
+							<div className='w-full flex justify-end'>
 								<span className={`text-${editAboutUser.length > 128 ? '[#EF1515]' : '[#797878]'}`}>
 									{editAboutUser.length}/{128}
 								</span>
@@ -321,39 +319,39 @@ const SettingRightUser = ({
 					</div>
 
 					<div
-						className="mt-8 flex items-center  bg-theme-input border-theme-primary p-4 rounded-lg justify-between"
+						className='mt-8 flex items-center  bg-theme-input border-theme-primary p-4 rounded-lg justify-between'
 						onContextMenu={handleMouseClick}
 					>
-						<p className="font-semibold tracking-wide text-sm">Direct Message Icon</p>
-						<div className="flex gap-x-5  text-theme-primary text-theme-primary-hover bg-secondary-button-hover bg-button-secondary rounded-lg border-theme-primary">
+						<p className='font-semibold tracking-wide text-sm'>Direct Message Icon</p>
+						<div className='flex gap-x-5  text-theme-primary text-theme-primary-hover bg-secondary-button-hover bg-button-secondary rounded-lg border-theme-primary'>
 							<label
-								htmlFor="logo"
-								className=" relative  font-medium flex items-center w-11 aspect-square justify-center  rounded-lg cursor-pointer text-[14px]"
+								htmlFor='logo'
+								className=' relative  font-medium flex items-center w-11 aspect-square justify-center  rounded-lg cursor-pointer text-[14px]'
 							>
 								{logoCustom ? (
 									<img
 										src={createImgproxyUrl(logoCustom, { width: 44, height: 44, resizeType: 'fit' })}
-										className="w-11 aspect-square object-cover rounded"
+										className='w-11 aspect-square object-cover rounded'
 									/>
 								) : (
 									<Icons.AddIcon />
 								)}
 
 								<input
-									accept="image/*"
-									type="file"
-									name="logo"
-									id="logo"
+									accept='image/*'
+									type='file'
+									name='logo'
+									id='logo'
 									onChange={handleChangeLogo}
-									className="w-full absolute top-0 left-0 h-full text-sm hidden"
+									className='w-full absolute top-0 left-0 h-full text-sm hidden'
 								/>
 							</label>
 						</div>
 					</div>
-					<div className="mt-8">
-						<div className="flex mt-[10px] gap-x-5">
+					<div className='mt-8'>
+						<div className='flex mt-[10px] gap-x-5'>
 							<button
-								className="bg-[#ee4545] text-white hover:opacity-85 font-medium rounded-lg p-[8px] pr-[10px] pl-[10px] text-nowrap text-[14px]"
+								className='bg-[#ee4545] text-white hover:opacity-85 font-medium rounded-lg p-[8px] pr-[10px] pl-[10px] text-nowrap text-[14px]'
 								onClick={handleOpenModalDeleteAcc}
 							>
 								Delete account
@@ -361,14 +359,14 @@ const SettingRightUser = ({
 						</div>
 					</div>
 				</div>
-				<div className="flex-1 flex flex-col gap-2 relative">
-					<p className="font-semibold tracking-wide text-sm">PREVIEW</p>
+				<div className='flex-1 flex flex-col gap-2 relative'>
+					<p className='font-semibold tracking-wide text-sm'>PREVIEW</p>
 					<PreviewSetting
 						isLoading={isLoading}
 						profiles={editProfile}
 						qrProfile={
-							<div className="p-4 rounded-lg bg-white">
-								<QRCode level="H" value={qrCodeProfile} className="w-full h-full" />
+							<div className='p-4 rounded-lg bg-white'>
+								<QRCode level='H' value={qrCodeProfile} className='w-full h-full' />
 							</div>
 						}
 					/>
@@ -378,13 +376,13 @@ const SettingRightUser = ({
 			(valueDisplayName !== currentDisplayName && flags) ||
 			(flagsRemoveAvartar !== false && flags) ||
 			(editAboutUser !== aboutMe && flags) ? (
-				<div className="flex flex-row gap-2 border-theme-primary shadow-sm bg-modal-theme absolute max-w-[815px] w-full left-1/2 translate-x-[-50%] bottom-4 min-w-96 h-fit p-3 rounded-lg transform z-10">
-					<div className="flex-1 flex items-center text-nowrap">
-						<p className="text-theme-message">Careful - you have unsaved changes!</p>
+				<div className='flex flex-row gap-2 border-theme-primary shadow-sm bg-modal-theme absolute max-w-[815px] w-full left-1/2 translate-x-[-50%] bottom-4 min-w-96 h-fit p-3 rounded-lg transform z-10'>
+					<div className='flex-1 flex items-center text-nowrap'>
+						<p className='text-theme-message'>Careful - you have unsaved changes!</p>
 					</div>
-					<div className="flex flex-row justify-end gap-3">
+					<div className='flex flex-row justify-end gap-3'>
 						<button
-							className="rounded-[4px] px-2 hover:underline"
+							className='rounded-[4px] px-2 hover:underline'
 							onClick={() => {
 								handleClose();
 							}}
@@ -393,7 +391,7 @@ const SettingRightUser = ({
 						</button>
 
 						<button
-							className=" btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1  "
+							className=' btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1  '
 							onClick={() => {
 								handleUpdateUser();
 								handleSaveClose();

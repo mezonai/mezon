@@ -1,7 +1,7 @@
 import { toastActions } from '@mezon/store';
 import { handleUploadFile } from '@mezon/transport';
-import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
-import { ApiAccount } from 'mezon-js/api.gen';
+import { MAX_FILE_SIZE_50MB } from '@mezon/utils';
+import type { ApiAccount } from 'mezon-js/api.gen';
 import { toast } from 'react-toastify';
 
 export const processImage = async (
@@ -25,12 +25,12 @@ export const processImage = async (
 		return;
 	}
 
-	if (imageCropped.size > MAX_FILE_SIZE_1MB) {
+	if (imageCropped.size > MAX_FILE_SIZE_50MB) {
 		if (isMounted) {
 			setOpenModal(true);
 			setImageObject(null);
 			setImageCropped(null);
-			toast.error('File size exceeds 1MB limit');
+			toast.error('File size exceeds 50MB limit');
 		}
 		return;
 	}
