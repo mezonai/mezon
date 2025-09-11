@@ -8,3 +8,6 @@ export { default as VoicePopout } from './VoiceChannel/VoicePopout/VoicePopout';
 export * from './DmCall';
 export * from './GroupCall';
 export * from './PDFViewer';
+export * from './VoiceChannel/Transcript/TranscriptDock';
+export * from './VoiceChannel/Transcript/TranscriptPanel';
+export * from './VoiceChannel/Transcript/useTranscript';

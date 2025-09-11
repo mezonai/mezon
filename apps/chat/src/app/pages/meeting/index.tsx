@@ -1,5 +1,5 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { JoinForm, MyVideoConference, VideoPreview } from '@mezon/components';
+import { JoinForm, MyVideoConference, TranscriptDock, VideoPreview } from '@mezon/components';
 import {
 	authActions,
 	generateMeetTokenExternal,
@@ -67,6 +67,9 @@ export default function PreJoinCalling() {
 	const [username, setUsername] = useState('');
 	const [avatar, setAvatar] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	// Transcript UI state (default visible to verify UI)
+	const [showTranscript, setShowTranscript] = useState(true);
+	// Remove direct hook usage to avoid context outside of LiveKitRoom
 	// State for permissions
 	const [permissionsState, setPermissionsState] = useState({
 		camera: false,
@@ -222,14 +225,31 @@ export default function PreJoinCalling() {
 					data-lk-theme="default"
 					className="h-full flex-1 flex"
 				>
-					<MyVideoConference
-						token={getExternalToken}
-						url={serverUrl}
-						isExternalCalling={true}
-						channelLabel={'Private Room'}
-						onLeaveRoom={handleLeaveRoom}
-						onFullScreen={handleFullScreen}
-					/>
+					{/* Layout: video on the left, transcript sidebar on the right */}
+					<div className="flex w-full h-full">
+						<div className="flex-1 relative">
+							{/* Main conference area */}
+							<MyVideoConference
+								token={getExternalToken}
+								url={serverUrl}
+								isExternalCalling={true}
+								channelLabel={'Private Room'}
+								onLeaveRoom={handleLeaveRoom}
+								onFullScreen={handleFullScreen}
+							/>
+							{/* Toggle button pinned over video */}
+							<div className="absolute top-2 right-2 z-20 flex gap-2">
+								<button
+									className="px-3 py-1 text-xs rounded bg-zinc-800 text-white hover:bg-zinc-700"
+									onClick={() => setShowTranscript((v) => !v)}
+									title="Toggle transcript"
+								>
+									{showTranscript ? 'Ẩn transcript' : 'Hiện transcript'}
+								</button>
+							</div>
+						</div>
+						{showTranscript && <TranscriptDock onClose={() => setShowTranscript(false)} />}
+					</div>
 					<ChatStreamExternal />
 				</LiveKitRoom>
 			) : (
