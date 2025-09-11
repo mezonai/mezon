@@ -1422,7 +1422,15 @@ export const ViewRole: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', default
 
 export const ImageThumbnail: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5' }) => {
 	return (
-		<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" className={defaultSize}>
+		<svg
+			aria-hidden="true"
+			xmlns="http://www.w3.org/2000/svg"
+			width="20"
+			height="20"
+			fill="currentColor"
+			viewBox="0 0 24 24"
+			className={defaultSize}
+		>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4265,6 +4273,27 @@ export function Chat({ defaultFill, defaultSize = 'w-5 h-5' }: IconProps) {
 			className={` ${defaultSize} ${defaultFill ? defaultFill : 'dark:hover:text-white hover:text-black dark:text-channelTextLabel text-colorTextLightMode'}`}
 		>
 			<path fill="currentColor" d="M12 22a10 10 0 1 0-8.45-4.64c.13.19.11.44-.04.61l-2.06 2.37A1 1 0 0 0 2.2 22H12Z"></path>
+		</svg>
+	);
+}
+
+export function Transcript({ defaultFill, defaultSize = 'w-5 h-5' }: IconProps) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			width="24"
+			height="24"
+			fill="currentColor"
+			aria-hidden="true"
+			role="img"
+			className={`${defaultSize} ${
+				defaultFill ? defaultFill : 'dark:hover:text-white hover:text-black dark:text-channelTextLabel text-colorTextLightMode'
+			}`}
+		>
+			<path fill="currentColor" d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6z" />
+			<path fill="currentColor" d="M14 2v6h6" />
+			<path fill="currentColor" d="M8 11h8v1.5H8V11zm0 3h8v1.5H8V14zm0 3h5v1.5H8V17z" />
 		</svg>
 	);
 }

@@ -42,6 +42,10 @@ interface MyVideoConferenceProps {
 	isShowChatVoice?: boolean;
 	onToggleChat?: () => void;
 	currentChannel?: any;
+
+	//Transcription
+	isShowTranscript?: boolean;
+	onToggleTranscript?: () => void;
 }
 
 export function MyVideoConference({
@@ -54,6 +58,8 @@ export function MyVideoConference({
 	onToggleChat,
 	currentChannel,
 	onJoinRoom,
+	isShowTranscript,
+	onToggleTranscript,
 	url,
 	token
 }: MyVideoConferenceProps) {
@@ -294,6 +300,23 @@ export function MyVideoConference({
 												: 'text-gray-300 hover:text-white'
 										}
 										className={isShowChatVoice ? 'text-white' : 'text-white hover:text-gray-200'}
+									/>
+								</button>
+
+								<button
+									className="relative focus-visible:outline-none"
+									title="Transcript"
+									onClick={onToggleTranscript}
+									style={{ marginLeft: 8 }}
+								>
+									<Icons.Transcript
+										defaultSize="w-5 h-5"
+										defaultFill={
+											(isGridView && !isShowMember) || (isGridView && isShowMember) || (isShowMember && !isGridView)
+												? 'text-theme-primary text-theme-primary-hover'
+												: 'text-gray-300 hover:text-white'
+										}
+										className={isShowTranscript ? 'text-white' : 'text-white hover:text-gray-200'}
 									/>
 								</button>
 							</div>

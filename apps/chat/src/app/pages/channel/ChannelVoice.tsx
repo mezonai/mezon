@@ -166,17 +166,16 @@ const ChannelVoice = memo(
 									isShowChatVoice={isShowChatVoice}
 									onToggleChat={toggleChat}
 									currentChannel={currentChannel}
+									isShowTranscript={showTranscript}
+									onToggleTranscript={() => setShowTranscript((v) => !v)}
 								/>
-								<div className="absolute top-2 right-2 z-40 flex gap-2">
-									<button
-										className="px-3 py-1 text-xs rounded bg-zinc-800 text-white hover:bg-zinc-700"
-										onClick={() => setShowTranscript((v) => !v)}
-										title="Toggle transcript"
-									>
-										{showTranscript ? 'Ẩn transcript' : 'Hiện transcript'}
-									</button>
-								</div>
-								{showTranscript && <TranscriptDock onClose={() => setShowTranscript(false)} />}
+
+								{showTranscript && (
+									<div className="w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-theme-primary flex-shrink-0">
+										<TranscriptDock onClose={() => setShowTranscript(false)} />
+									</div>
+								)}
+
 								<EmojiSuggestionProvider>
 									{isShowChatVoice && (
 										<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
