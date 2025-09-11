@@ -5,7 +5,7 @@ import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useState
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { IUserProfileValue } from '..';
+import type { IUserProfileValue } from '..';
 import BannerAvatar from './components/Banner';
 import DetailInfo from './components/Info';
 import { DirectMessageLogo } from './components/Logo';
@@ -15,6 +15,7 @@ interface IUserProfile {
 	navigation: any;
 }
 
+const NX_LOGO_MEZON = 'https://cdn.mezon.ai/1775731152322039808/1820659489792069632/mezon_logo.png';
 const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile, ref) {
 	const { themeValue } = useTheme();
 	const { updateUser } = useAccount();
@@ -102,7 +103,7 @@ const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile
 				avatar={currentUserProfileValue?.imgUrl}
 				alt={currentUserProfileValue?.username}
 				onLoad={handleAvatarChange}
-				defaultAvatar={process.env.NX_LOGO_MEZON || ''}
+				defaultAvatar={process?.env?.NX_LOGO_MEZON || NX_LOGO_MEZON || ''}
 			/>
 
 			<DetailInfo

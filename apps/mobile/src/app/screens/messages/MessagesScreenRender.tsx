@@ -64,7 +64,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 				contentContainerStyle={{
 					paddingBottom: size.s_100
 				}}
-				keyExtractor={(dm) => dm + 'DM_MSG_ITEM'}
+				keyExtractor={(dm) => `${dm}DM_MSG_ITEM`}
 				showsVerticalScrollIndicator={true}
 				removeClippedSubviews={Platform.OS === 'android'}
 				initialNumToRender={10}

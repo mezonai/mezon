@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -62,7 +63,7 @@ export const style = (colors: Attributes) =>
 			paddingVertical: size.s_16
 		},
 		headerTitle: {
-			fontSize: size.s_20,
+			fontSize: size.s_18,
 			fontWeight: '700',
 			color: colors.text
 		},
@@ -71,7 +72,7 @@ export const style = (colors: Attributes) =>
 		},
 		conversationCard: {
 			paddingHorizontal: size.s_20,
-			paddingVertical: size.s_16,
+			paddingVertical: size.s_12,
 			flexDirection: 'row',
 			alignItems: 'center'
 		},
@@ -80,9 +81,9 @@ export const style = (colors: Attributes) =>
 			marginRight: size.s_16
 		},
 		avatar: {
-			width: size.s_50,
-			height: size.s_50,
-			borderRadius: size.s_50
+			width: size.s_48,
+			height: size.s_48,
+			borderRadius: size.s_48
 		},
 		onlineIndicator: {
 			position: 'absolute',
@@ -106,19 +107,19 @@ export const style = (colors: Attributes) =>
 			marginBottom: size.s_4
 		},
 		userName: {
-			fontSize: size.s_16,
+			fontSize: size.s_14,
 			fontWeight: '600',
 			color: colors.text,
 			flex: 1,
 			marginRight: size.s_8
 		},
 		timestamp: {
-			fontSize: size.s_12,
+			fontSize: size.s_10,
 			color: colors.textDisabled,
 			fontWeight: '500'
 		},
 		lastMessage: {
-			fontSize: size.s_14,
+			fontSize: size.s_12,
 			color: colors.textDisabled,
 			lineHeight: 20
 		}

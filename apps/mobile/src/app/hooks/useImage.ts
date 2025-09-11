@@ -19,7 +19,7 @@ export function useImage() {
 
 				if (imageUrl.startsWith('data:image/')) {
 					const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, '');
-					const extension = type === 'webp' ? 'png' : type || 'png';
+					const extension = type === 'webp' && Platform.OS === 'ios' ? 'png' : type || 'png';
 					filePath = `${RNFetchBlob.fs.dirs.CacheDir}/image_${Date.now()}.${extension}`;
 
 					await RNFetchBlob.fs.writeFile(filePath, base64Data, 'base64');
@@ -27,7 +27,7 @@ export function useImage() {
 				} else {
 					const response = await RNFetchBlob.config({
 						fileCache: true,
-						appendExt: type === 'webp' ? 'png' : type || 'png'
+						appendExt: type === 'webp' && Platform.OS === 'ios' ? 'png' : type || 'png'
 					}).fetch('GET', imageUrl);
 
 					if (response.info().status === 200) {

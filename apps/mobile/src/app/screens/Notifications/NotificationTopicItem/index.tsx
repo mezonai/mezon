@@ -1,14 +1,14 @@
 import { useAuth, useGetPriorityNameFromUserClan } from '@mezon/core';
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { TopicDiscussionsEntity, getStoreAsync, selectAllUserClans, selectMemberClanByUserId, topicsActions } from '@mezon/store-mobile';
-import { INotification } from '@mezon/utils';
+import type { TopicDiscussionsEntity } from '@mezon/store-mobile';
+import { getStoreAsync, selectAllUserClans, selectMemberClanByUserId, topicsActions } from '@mezon/store-mobile';
+import type { INotification } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -45,7 +45,7 @@ const NotificationTopicItem = React.memo(({ notify, onPressNotify }: NotifyProps
 		if (Array.isArray(usernames) && usernames.length > 0) {
 			setSubjectTopic(`${usernames[0]} ${t('andYou')}`);
 		} else {
-			setSubjectTopic(t('someoneAndYou'));
+			setSubjectTopic(t('topicAndYou'));
 		}
 	}, [usernames, userIds, t]);
 
@@ -55,7 +55,7 @@ const NotificationTopicItem = React.memo(({ notify, onPressNotify }: NotifyProps
 			clan_id: notify?.clan_id,
 			message_id: notify?.message_id
 		});
-		const notifytoJump = Object.assign({}, notify, { content: content });
+		const notifytoJump = Object.assign({}, notify, { content });
 		await onPressNotify(notifytoJump);
 		const store = await getStoreAsync();
 		const promises = [];

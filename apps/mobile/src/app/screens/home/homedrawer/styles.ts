@@ -1,4 +1,5 @@
-import { Attributes, Fonts, Metrics, baseColor, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Fonts, Metrics, baseColor, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 const width = Dimensions.get('window').width;
 const inputWidth = width * 0.6;
@@ -587,7 +588,7 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			alignSelf: 'center',
 			alignItems: 'center',
-			width: width,
+			width,
 			paddingBottom: verticalScale(60),
 			paddingTop: verticalScale(20),
 			backgroundColor: colors.secondary
@@ -677,7 +678,7 @@ export const style = (colors: Attributes) =>
 		},
 		messageDeleteReplyText: {
 			fontSize: size.small,
-			color: colors.tertiary,
+			color: colors.text,
 			overflow: 'hidden',
 			width: '80%',
 			fontStyle: 'italic'
@@ -776,7 +777,7 @@ export const style = (colors: Attributes) =>
 		},
 		messageTime: { fontSize: size.s_10, color: colors.textDisabled },
 		textMention: {
-			fontSize: size.small,
+			fontSize: size.medium,
 			color: colors.textLink,
 			backgroundColor: colors.midnightBlue,
 			fontWeight: 'bold'
@@ -878,7 +879,7 @@ export const style = (colors: Attributes) =>
 			color: 'white'
 		},
 		ephemeralMessage: {
-			backgroundColor: baseColor.blurple + '1A',
+			backgroundColor: `${baseColor.blurple}1A`,
 			borderLeftWidth: size.s_4,
 			borderColor: baseColor.blurple,
 			borderRadius: size.s_6

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { MessagesEntity, topicsActions, useAppDispatch } from '@mezon/store';
+import type { MessagesEntity } from '@mezon/store';
+import { topicsActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
 import {
 	HEIGHT_PANEL_PROFILE,
 	HEIGHT_PANEL_PROFILE_DM,
 	ID_MENTION_HERE,
-	ObserveFn,
 	TOPIC_MAX_WIDTH,
 	TypeMessage,
-	UsersClanEntity,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
 	convertDateString,
@@ -17,8 +17,9 @@ import {
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import { ApiMessageMention } from 'mezon-js/api.gen';
-import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import type { ApiMessageMention } from 'mezon-js/api.gen';
+import type { ReactNode } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
 import { EmbedMessageWrap } from '../EmbedMessage/EmbedMessageWrap';
@@ -95,7 +96,6 @@ function MessageWithUser({
 	const checkAnonymousOnReplied = message?.references && message?.references[0]?.message_sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	const showMessageHead = !(message?.references?.length === 0 && isCombine && !isShowFull);
 
-
 	const shouldShowForwardedText = useMemo(() => {
 		if (!message?.content?.fwd) return false;
 
@@ -105,7 +105,7 @@ function MessageWithUser({
 
 		const timeDiff = Date.parse(message.create_time) - Date.parse(previousMessage.create_time);
 		const isDifferentSender = message.sender_id !== previousMessage.sender_id;
-		const isTimeGap = timeDiff > 600000; 
+		const isTimeGap = timeDiff > 600000;
 
 		return isDifferentSender || isTimeGap;
 	}, [message, previousMessage]);

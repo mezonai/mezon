@@ -324,11 +324,13 @@ const SidebarMenu = memo(
 		const [hasUserToggled, setHasUserToggled] = useState(false);
 		const [previousUnreadCount, setPreviousUnreadCount] = useState(0);
 		const unreadList = useSelector(selectDirectsUnreadlist);
+		const [allwaysShowListUnread, setAllwaysShowListUnread] = useState(false);
+		const { currentURL } = useAppParams();
 
 		const handleClanClick = () => {
 			if (unreadList.length > 0) {
 				setShowDmUnreadList(true);
-				setHasUserToggled(false);
+				setHasUserToggled(true);
 			}
 		};
 
@@ -366,10 +368,23 @@ const SidebarMenu = memo(
 				setHasUserToggled(false);
 			} else if (currentUnreadCount === 0 && showDmUnreadList) {
 				setShowDmUnreadList(false);
+				if (allwaysShowListUnread) {
+					setAllwaysShowListUnread(false);
+				}
 			}
 
 			setPreviousUnreadCount(currentUnreadCount);
-		}, [unreadList.length, previousUnreadCount, showDmUnreadList]);
+		}, [unreadList.length, previousUnreadCount, showDmUnreadList, allwaysShowListUnread]);
+
+		useEffect(() => {
+			if (currentURL && currentURL.includes('/chat/direct/message/')) {
+				if (allwaysShowListUnread && unreadList.length > 0) {
+					setShowDmUnreadList(true);
+				} else if (showDmUnreadList && !hasUserToggled && !allwaysShowListUnread) {
+					setShowDmUnreadList(false);
+				}
+			}
+		}, [currentURL, showDmUnreadList, hasUserToggled, allwaysShowListUnread, unreadList.length]);
 
 		const handleMenu = (event: MouseEvent) => {
 			const elementClick = event.target as HTMLDivElement;
@@ -407,6 +422,9 @@ const SidebarMenu = memo(
 							onToggleUnreadList={() => {
 								setShowDmUnreadList((prev) => !prev);
 								setHasUserToggled(true);
+								if (currentURL && currentURL.includes('/chat/direct/message/')) {
+									setAllwaysShowListUnread((prev) => !prev);
+								}
 							}}
 							isUnreadListOpen={showDmUnreadList}
 						/>

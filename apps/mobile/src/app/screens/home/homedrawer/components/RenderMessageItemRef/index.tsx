@@ -1,5 +1,5 @@
-import { useTheme } from '@mezon/mobile-ui';
-import { MessagesEntity } from '@mezon/store-mobile';
+import { size, useTheme } from '@mezon/mobile-ui';
+import type { MessagesEntity } from '@mezon/store-mobile';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -38,10 +38,16 @@ export const RenderMessageItemRef = ({ channelId, message, preventAction, isSear
 			{isMessageReplyDeleted && !isSearchTab ? (
 				<View style={styles.aboveMessageDeleteReply}>
 					<View style={styles.iconReply}>
-						<MezonIconCDN icon={IconCDN.reply} width={34} height={30} customStyle={styles.deletedMessageReplyIcon} />
+						<MezonIconCDN
+							icon={IconCDN.reply}
+							width={size.s_34}
+							height={size.s_30}
+							color={themeValue.text}
+							customStyle={styles.deletedMessageReplyIcon}
+						/>
 					</View>
 					<View style={styles.iconMessageDeleteReply}>
-						<MezonIconCDN icon={IconCDN.replyDelete} width={12} height={12} />
+						<MezonIconCDN icon={IconCDN.replyDelete} width={size.s_12} height={size.s_12} />
 					</View>
 					<Text style={styles.messageDeleteReplyText}>{t('messageDeleteReply')}</Text>
 				</View>

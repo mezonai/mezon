@@ -5,11 +5,11 @@ import { selectChannelById, selectClanById, useAppSelector } from '@mezon/store-
 import { getNameForPrioritize } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Text, TouchableOpacity, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MessageNotification from '../MessageNotification';
-import { ENotifyBsToShow, NotifyProps } from '../types';
+import type { NotifyProps } from '../types';
+import { ENotifyBsToShow } from '../types';
 import { style } from './NotificationMentionItem.styles';
 
 export function parseObject(obj: any) {

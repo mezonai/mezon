@@ -4,7 +4,8 @@ import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps, reserve } from '../../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import MezonMenu from '../../../componentUI/MezonMenu';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './NotificationOption.styles';
 interface INotificationOptionProps {
@@ -35,7 +36,7 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 			[
 				{
 					title: t('tabNotify.forYou'),
-					icon: <MezonIconCDN icon={IconCDN.atIcon} color={themeValue.textStrong} />,
+					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.INDIVIDUAL),
 					component:
 						selectedTabs === InboxType.INDIVIDUAL ? (
@@ -44,7 +45,7 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 				},
 				{
 					title: t('tabNotify.mention'),
-					icon: <MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />,
+					icon: <MezonIconCDN icon={IconCDN.atIcon} color={themeValue.textStrong} />,
 					onPress: () => handleTabChange(InboxType.MENTIONS),
 					component:
 						selectedTabs === InboxType.MENTIONS ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.textStrong} /> : null
@@ -66,20 +67,6 @@ const NotificationOption = memo(({ selectedTabs, onChangeTab }: INotificationOpt
 			] satisfies IMezonMenuItemProps[],
 		[]
 	);
-
-	const settingMenu = useMemo(
-		() =>
-			[
-				{
-					title: t('tabNotify.notificationSettings'),
-					icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
-					expandable: true,
-					onPress: () => reserve()
-				}
-			] satisfies IMezonMenuItemProps[],
-		[]
-	);
-
 	const menu = useMemo(() => [{ items: notificationMenu }] satisfies IMezonMenuSectionProps[], [notificationMenu]);
 
 	return (

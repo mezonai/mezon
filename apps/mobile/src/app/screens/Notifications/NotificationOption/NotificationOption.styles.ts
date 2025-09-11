@@ -1,11 +1,13 @@
-import { Attributes, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		wrapperOption: {
 			paddingHorizontal: horizontalScale(10),
-			paddingVertical: verticalScale(10)
+			paddingVertical: verticalScale(10),
+			marginBottom: verticalScale(30)
 		},
 		optionContainer: {
 			backgroundColor: '#3e4247',

@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { getStore, selectAllActivities, selectAllFriends, selectAllUserDM } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, FlatList, Text, View } from 'react-native';
+import { Animated, Easing, FlatList, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import ImageNative from '../../components/ImageNative';
 import { style } from './styles';
@@ -75,16 +75,13 @@ function MessageActivity() {
 	}, [mergeListFriendAndListUserDM?.length, activityMap]);
 
 	useEffect(() => {
-		if (data.length > 0) {
-			Animated.timing(animatedHeight, {
-				toValue: size.s_60,
-				duration: 300,
-				useNativeDriver: false
-			}).start();
-		} else {
-			animatedHeight.setValue(0);
-		}
-	}, [animatedHeight, data?.length]);
+		Animated.timing(animatedHeight, {
+			toValue: data.length > 0 ? size.s_60 : 0,
+			duration: 400,
+			easing: Easing.bezier(0.25, 0.1, 0.25, 1), // Improved easing curve
+			useNativeDriver: false // Can't use native driver for height animations
+		}).start();
+	}, [data?.length]);
 
 	const renderItem = ({ item }) => {
 		return (

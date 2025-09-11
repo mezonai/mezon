@@ -153,7 +153,7 @@ jobs:
 
           # Run tests and capture exit code
           set +e  # Don't exit on error
-          yarn test
+          xvfb-run yarn test
           TEST_EXIT_CODE=$?
           set -e  # Re-enable exit on error
 

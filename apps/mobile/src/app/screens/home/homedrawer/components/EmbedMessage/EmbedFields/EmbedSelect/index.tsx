@@ -1,6 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { embedActions, useAppDispatch } from '@mezon/store-mobile';
-import { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
+import type { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
@@ -34,8 +34,8 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 			embedActions.addEmbedValue({
 				message_id: messageId,
 				data: {
-					id: id,
-					value: value
+					id,
+					value
 				},
 				multiple: checkMultipleSelect,
 				onlyChooseOne: !checkMultipleSelect
@@ -121,7 +121,8 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 			/>
 			{!!selectedOptions?.length && (
 				<View style={styles.selectGroup}>
-					{!!selectedOptions?.length && selectedOptions?.map((option) => <SelectOptionItem option={option} />)}
+					{!!selectedOptions?.length &&
+						selectedOptions?.map((option, index) => <SelectOptionItem key={`${option?.title}_${index}`} option={option} />)}
 				</View>
 			)}
 		</View>

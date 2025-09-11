@@ -1,49 +1,43 @@
 import { captureSentryError } from '@mezon/logger';
-import {
+import type {
 	ApiChannelMessageHeaderWithChannel,
 	ChannelDraftMessages,
-	Direction_Mode,
-	EMessageCode,
 	EmojiDataOptionals,
 	IMessageSendPayload,
 	IMessageWithUser,
-	LIMIT_MESSAGE,
 	LoadingStatus,
+	PublicKeyMaterial
+} from '@mezon/utils';
+import {
+	Direction_Mode,
+	EMessageCode,
+	LIMIT_MESSAGE,
 	MessageCrypt,
-	PublicKeyMaterial,
 	TypeMessage,
 	getMobileUploadedAttachments,
 	getPublicKeys,
 	getWebUploadedAttachments
 } from '@mezon/utils';
-import {
-	EntityState,
-	GetThunkAPI,
-	PayloadAction,
-	Update,
-	createAsyncThunk,
-	createEntityAdapter,
-	createSelector,
-	createSelectorCreator,
-	createSlice,
-	weakMapMemoize
-} from '@reduxjs/toolkit';
+import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import { ChannelMessage } from 'mezon-js';
-import { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import { MessageButtonClicked } from 'mezon-js/socket';
+import type { ChannelMessage } from 'mezon-js';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { resetChannelBadgeCount } from '../badge/badgeHelpers';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { selectLoadingStatus, selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectClanById, selectClansLoadingStatus } from '../clans/clans.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
-import { MezonValueContext, ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { pinMessageActions, selectPinMessageByChannelId } from '../pinMessages/pinMessage.slice';
-import { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
-import { RootState } from '../store';
+import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
+import type { AppDispatch, RootState } from '../store';
 import { referencesActions, selectDataReferences } from './references.slice';
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -488,20 +482,15 @@ export const loadMoreMessage = createAsyncThunk(
 			}
 
 			if (direction === Direction_Mode.BEFORE_TIMESTAMP) {
-				const lastScrollMessageId = state.channelViewPortMessageIds[channelId]?.[0];
-				// const firstChannelMessageId = selectFirstMessageIdByChannelId(chlId)(getMessagesRootState(thunkAPI));
-
-				// if (!lastScrollMessageId || lastScrollMessageId === firstChannelMessageId) {
-				// 	return;
-				// }
+				const lastScrollMessageId = state.channelViewPortMessageIds[chlId]?.[0];
 
 				if (topicId) {
 					return await thunkAPI.dispatch(
 						fetchMessages({
-							clanId: clanId,
-							channelId: channelId,
-							direction: direction,
-							topicId: topicId,
+							clanId,
+							channelId,
+							direction,
+							topicId,
 							messageId: lastScrollMessageId,
 							noCache: true
 						})
@@ -510,10 +499,10 @@ export const loadMoreMessage = createAsyncThunk(
 
 				return await thunkAPI.dispatch(
 					fetchMessages({
-						clanId: clanId,
-						channelId: channelId,
+						clanId,
+						channelId,
 						messageId: lastScrollMessageId,
-						direction: direction,
+						direction,
 						noCache: true
 					})
 				);
@@ -527,11 +516,11 @@ export const loadMoreMessage = createAsyncThunk(
 				if (topicId) {
 					return await thunkAPI.dispatch(
 						fetchMessages({
-							clanId: clanId,
-							channelId: channelId,
-							direction: direction,
+							clanId,
+							channelId,
+							direction,
 							messageId: firstScrollMessageId,
-							topicId: topicId,
+							topicId,
 							noCache: true
 						})
 					);
@@ -539,11 +528,11 @@ export const loadMoreMessage = createAsyncThunk(
 
 				return await thunkAPI.dispatch(
 					fetchMessages({
-						clanId: clanId,
-						channelId: channelId,
+						clanId,
+						channelId,
 						noCache: true,
 						messageId: firstScrollMessageId,
-						direction: direction
+						direction
 					})
 				);
 			}
@@ -589,15 +578,15 @@ export const jumpToMessage = createAsyncThunk(
 				const response = await thunkAPI
 					.dispatch(
 						fetchMessages({
-							clanId: clanId,
-							channelId: channelId,
-							noCache: noCache,
-							messageId: messageId,
+							clanId,
+							channelId,
+							noCache,
+							messageId,
 							direction: Direction_Mode.AROUND_TIMESTAMP,
 							isFetchingLatestMessages,
 							viewingOlder: true,
 							isClearMessage: true,
-							topicId: topicId 
+							topicId
 						})
 					)
 					.unwrap();
@@ -650,9 +639,6 @@ export const updateLastSeenMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
-
-			if (!mezon.socketRef.current?.isOpen()) return;
-
 			const state = thunkAPI.getState() as RootState;
 			const channelsLoadingStatus = selectLoadingStatus(state);
 			const clansLoadingStatus = selectClansLoadingStatus(state);
@@ -673,13 +659,17 @@ export const updateLastSeenMessage = createAsyncThunk(
 				return;
 			}
 
-			resetChannelBadgeCount(thunkAPI.dispatch, {
-				clanId,
-				channelId,
-				badgeCount: badge_count,
-				timestamp: message_time ?? now,
-				messageId
-			});
+			resetChannelBadgeCount(
+				thunkAPI.dispatch as AppDispatch,
+				{
+					clanId,
+					channelId,
+					badgeCount: badge_count,
+					timestamp: message_time ?? now,
+					messageId
+				},
+				{ getState: () => thunkAPI.getState() as RootState }
+			);
 		} catch (e) {
 			console.error(e, 'updateLastSeenMessage');
 			captureSentryError(e, 'messages/updateLastSeenMessage');
@@ -1025,7 +1015,7 @@ export const clickButtonMessage = createAsyncThunk(
 	async ({ message_id, channel_id, button_id, sender_id, user_id, extra_data }: MessageButtonClicked, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			const response = mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id, extra_data);
+			mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id, extra_data);
 		} catch (e) {
 			console.error(e);
 		}
@@ -1311,7 +1301,7 @@ export const messagesSlice = createSlice({
 			const user = {
 				id: userId,
 				timeAt: Date.now(),
-				typingName: typingName
+				typingName
 			};
 
 			if (!state.typingUsers) {
@@ -1436,6 +1426,8 @@ export const messagesSlice = createSlice({
 					const lastSentMessageId = state.lastMessageByChannel[channelId]?.id;
 					state.loadingStatus = 'loaded';
 					let direction = action.meta.arg.direction;
+
+					if (!action?.payload?.messages?.length) return;
 
 					const isNew = channelId && action.payload.messages.some(({ id }) => !state.channelMessages?.[channelId]?.entities?.[id]);
 					if (!direction && (!isNew || !channelId) && (!isClearMessage || (isClearMessage && fromCache)) && !foundE2ee) {
@@ -1856,7 +1848,7 @@ const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: M
 
 	const listReferencesUpdate: Update<MessagesEntity, string>[] = listMessageIds.map((id) => {
 		return {
-			id: id,
+			id,
 			changes: {
 				references: [
 					{

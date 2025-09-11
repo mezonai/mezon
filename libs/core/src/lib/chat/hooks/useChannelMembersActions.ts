@@ -1,5 +1,5 @@
-import { channelMembersActions, clansActions, directActions, selectCurrentClanId, useAppDispatch } from '@mezon/store';
-import { RemoveChannelUsers, RemoveClanUsers } from '@mezon/utils';
+import { channelMembersActions, clansActions, directActions, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
+import type { RemoveChannelUsers, RemoveClanUsers } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -22,9 +22,15 @@ export function useChannelMembersActions() {
 
 	const removeMemberClan = useCallback(
 		async ({ clanId, channelId, userIds }: RemoveClanUsers) => {
-			await dispatch(clansActions.removeClanUsers({ clanId, userIds }));
-
-			if (userIds.length <= 0) {
+			if (userIds.length > 0) {
+				await dispatch(clansActions.removeClanUsers({ clanId, userIds }));
+				dispatch(
+					toastActions.addToast({
+						message: 'Member removed successfully',
+						type: 'success'
+					})
+				);
+			} else {
 				await dispatch(clansActions.removeClanUsers({ clanId, userIds: [userId as string] }));
 			}
 			return currentClanId;

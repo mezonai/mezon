@@ -1,14 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { captureSentryError } from '@mezon/logger';
+import type { ActivitiesEntity, AttachmentEntity, ChannelsEntity, RootState, ThreadsEntity } from '@mezon/store';
 import {
-	ActivitiesEntity,
-	AttachmentEntity,
-	ChannelsEntity,
 	DMCallActions,
 	EMarkAsReadType,
 	EStateFriend,
-	RootState,
-	ThreadsEntity,
 	accountActions,
 	acitvitiesActions,
 	appActions,
@@ -93,6 +89,7 @@ import {
 	webhookActions
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
+import type { EOverriddenPermission, IMessageSendPayload, NotificationCategory } from '@mezon/utils';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
 	AMOUNT_TOKEN,
@@ -100,11 +97,8 @@ import {
 	EEventAction,
 	EEventStatus,
 	EMuteState,
-	EOverriddenPermission,
 	ERepeatType,
-	IMessageSendPayload,
 	IMessageTypeCallLog,
-	NotificationCategory,
 	NotificationCode,
 	TOKEN_TO_AMOUNT,
 	ThreadStatus,
@@ -114,7 +108,7 @@ import {
 	isLinuxDesktop
 } from '@mezon/utils';
 import isElectron from 'is-electron';
-import {
+import type {
 	AddClanUserEvent,
 	BlockFriend,
 	CategoryEvent,
@@ -122,8 +116,6 @@ import {
 	ChannelDeletedEvent,
 	ChannelMessage,
 	ChannelPresenceEvent,
-	ChannelStreamMode,
-	ChannelType,
 	ChannelUpdatedEvent,
 	ClanDeletedEvent,
 	ClanProfileUpdatedEvent,
@@ -158,12 +150,11 @@ import {
 	VoiceEndedEvent,
 	VoiceJoinedEvent,
 	VoiceLeavedEvent,
-	WebrtcSignalingFwd,
-	WebrtcSignalingType,
-	safeJSONParse
+	WebrtcSignalingFwd
 } from 'mezon-js';
-import { ApiChannelDescription, ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
-import {
+import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import type { ApiChannelDescription, ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
+import type {
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
 	ApiNotificationUserChannel,
@@ -172,7 +163,7 @@ import {
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook
 } from 'mezon-js/dist/api.gen';
-import { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
+import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
@@ -289,14 +280,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			dispatch(
 				channelsActions.setBuzzState({
 					clanId: currentClanId as string,
-					channelId: channelId,
+					channelId,
 					buzzState: { isReset: true, senderId, timestamp }
 				})
 			);
 		} else if (mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 			dispatch(
 				directActions.setBuzzStateDirect({
-					channelId: channelId,
+					channelId,
 					buzzState: { isReset: true, senderId, timestamp }
 				})
 			);
@@ -586,7 +577,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			if (currentChannel?.channel_id === (notification as any).channel_id) {
 				const timestamp = Date.now() / 1000;
-				dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: (notification as any).channel_id, timestamp: timestamp }));
+				dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: (notification as any).channel_id, timestamp }));
 			}
 
 			if (notification.code === NotificationCode.FRIEND_REQUEST || notification.code === NotificationCode.FRIEND_ACCEPT) {
@@ -678,12 +669,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				badge_count = channel?.count_mess_unread || 0;
 			}
 
-			resetChannelBadgeCount(dispatch, {
-				clanId: clan_id,
-				channelId: channel_id,
-				badgeCount: badge_count,
-				messageId: message_id
-			});
+			resetChannelBadgeCount(
+				dispatch,
+				{
+					clanId: clan_id,
+					channelId: channel_id,
+					badgeCount: badge_count,
+					messageId: message_id
+				},
+				store
+			);
 		},
 		[dispatch]
 	);
@@ -816,7 +811,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							dispatch(
 								threadsActions.addThreadToCached({
 									channelId: channel.parent_id || '',
-									thread: thread
+									thread
 								})
 							);
 						}
@@ -1181,7 +1176,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						clanId: channelCreated.clan_id,
 						channelId: channelCreated.channel_id,
 						channelType: channelCreated.channel_type,
-						isPublic: isPublic
+						isPublic
 					})
 				);
 				dispatch(
@@ -1336,7 +1331,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					const welcomeChannelId = selectWelcomeChannelByClanId(store.getState(), clanId);
 					const defaultChannelId = selectDefaultChannelIdByClanId(store.getState(), clanId);
 					const allChannels = selectAllChannels(store.getState());
-					const fallbackChannelId = allChannels.find(ch => ch.id !== channelDeleted.channel_id && !checkIsThread(ch))?.id;
+					const fallbackChannelId = allChannels.find((ch) => ch.id !== channelDeleted.channel_id && !checkIsThread(ch))?.id;
 
 					const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
 
@@ -2401,4 +2396,3 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider };
-

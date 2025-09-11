@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
-import { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -18,7 +18,8 @@ import FooterModal from './components/FooterModal';
 import HeaderModal from './components/HeaderModal';
 import ModalAsk from './components/ModalAsk';
 import ModalSuccess from './components/ModalSuccess';
-import SelectField, { SelectFieldConfig } from './components/SelectField';
+import type { SelectFieldConfig } from './components/SelectField';
+import SelectField from './components/SelectField';
 import TextField from './components/TextField';
 enum RequestStatusSuccess {
 	Fulfill = 'fulfilled'
@@ -143,7 +144,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 				</div>
 			)}
 			<HeaderModal name={appDetail?.appname || ''} username={account?.user?.username} />
-			<SelectField {...clanConfig} />
+			<SelectField className="uppercase" {...clanConfig} />
 			{clanValue && <SelectField {...categoryConfig} />}
 			<TextField label="Channel Name" value={labelValue} onChange={(v) => setLabelValue(v)} placeholder={appDetail?.appname || ''} />
 			<FooterModal name={appDetail?.appname || ''} />

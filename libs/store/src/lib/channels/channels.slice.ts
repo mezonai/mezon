@@ -44,7 +44,7 @@ import type { ChannelMetaEntity } from './channelmeta.slice';
 import { channelMetaActions, enableMute } from './channelmeta.slice';
 import { listChannelRenderAction, selectListChannelRenderByClanId } from './listChannelRender.slice';
 
-const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 60;
+const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 5;
 
 export const CHANNELS_FEATURE_KEY = 'channels';
 

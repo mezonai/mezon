@@ -1,11 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
-import { ICategoryChannel, IChannel } from '@mezon/utils';
-import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
-import { CategoriesEntity } from '../categories/categories.slice';
+import type { ICategoryChannel, IChannel } from '@mezon/utils';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { CategoriesEntity } from '../categories/categories.slice';
 import { clansActions } from '../clans/clans.slice';
-import { RootState } from '../store';
-import { ChannelsEntity, IUpdateChannelRequest } from './channels.slice';
+import type { RootState } from '../store';
+import type { ChannelsEntity, IUpdateChannelRequest } from './channels.slice';
 
 export const CHANNEL_LIST_RENDER = 'CHANNEL_LIST_RENDER';
 

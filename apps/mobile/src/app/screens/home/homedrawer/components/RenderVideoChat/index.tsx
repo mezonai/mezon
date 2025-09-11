@@ -103,7 +103,7 @@ export const RenderVideoChat = React.memo(
 			}
 		}, [dynamicImageSize.height, dynamicImageSize.width, heightThumbnail, isMultiple, isUploading, widthThumbnail]);
 
-		const styles = style(isUploading, videoSize.width, videoSize.height);
+		const styles = style(isUploading, videoSize.width, videoSize.height, isMultiple);
 
 		if (!videoURL) return null;
 

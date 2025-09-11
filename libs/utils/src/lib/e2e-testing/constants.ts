@@ -22,7 +22,7 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	mention: {
 		input: '',
-		selected_file: '',
+		selected_file: ''
 	},
 	discussion: {
 		box: {
@@ -253,7 +253,13 @@ export const DATA_E2E_IDENTIFIER = {
 			button_setting: '',
 			tab_profile: '',
 			user_profile: {
-				button: ''
+				input: {
+					display_name: ''
+				},
+				button: {
+					reset: '',
+					save_changes: ''
+				}
 			},
 			clan_profile: {
 				button: '',
@@ -263,7 +269,7 @@ export const DATA_E2E_IDENTIFIER = {
 				button_change_avatar: '',
 				button_reset: '',
 				button_save_changes: ''
-			},
+			}
 		}
 	},
 	common: {
@@ -280,8 +286,8 @@ export const DATA_E2E_IDENTIFIER = {
 };
 type DotNestedKeys<T> = T extends object
 	? {
-		[K in Extract<keyof T, string>]: T[K] extends object ? K | `${K}.${DotNestedKeys<T[K]>}` : K;
-	}[Extract<keyof T, string>]
+			[K in Extract<keyof T, string>]: T[K] extends object ? K | `${K}.${DotNestedKeys<T[K]>}` : K;
+		}[Extract<keyof T, string>]
 	: never;
 
 export type E2eKeyType = DotNestedKeys<typeof DATA_E2E_IDENTIFIER>;

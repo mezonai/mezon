@@ -87,26 +87,20 @@ const ChannelListHeader = () => {
 						</Text>
 						<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
 					</View>
-					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+					<View style={styles.row}>
 						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
 							{`${members} ${t('info.members')}`}
 						</Text>
-						<View
-							style={{
-								width: size.s_4,
-								height: size.s_4,
-								borderRadius: size.s_4,
-								backgroundColor: themeValue.textDisabled,
-								marginHorizontal: size.s_8
-							}}
-						/>
-						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
-							{t('common.community')}
-						</Text>
+						{currentClan?.is_community && <View style={styles.dot} />}
+						{currentClan?.is_community && (
+							<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
+								{t('common.community')}
+							</Text>
+						)}
 					</View>
 				</TouchableOpacity>
 			)}
-			<View style={{ marginTop: size.s_10, flexDirection: 'row', gap: size.s_8 }}>
+			<View style={styles.navigationBar}>
 				<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
 					<LinearGradient
 						start={{ x: 1, y: 0 }}

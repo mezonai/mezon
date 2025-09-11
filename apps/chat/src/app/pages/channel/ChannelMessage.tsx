@@ -1,6 +1,8 @@
-import { ChannelMessageOpt, ChatWelcome, MessageContextMenuProps, MessageWithSystem, MessageWithUser, OnBoardWelcome } from '@mezon/components';
-import { MessagesEntity } from '@mezon/store';
-import { FOR_10_MINUTES, ObserveFn, TypeMessage, UsersClanEntity } from '@mezon/utils';
+import type { MessageContextMenuProps } from '@mezon/components';
+import { ChannelMessageOpt, ChatWelcome, MessageWithSystem, MessageWithUser, OnBoardWelcome } from '@mezon/components';
+import type { MessagesEntity } from '@mezon/store';
+import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
+import { FOR_10_MINUTES, TypeMessage } from '@mezon/utils';
 import { isSameDay } from 'date-fns';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
@@ -150,7 +152,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 			observeIntersectionForLoading={observeIntersectionForLoading}
 			user={user}
 			isSelected={isSelected}
-						previousMessage={previousMessage}
+			previousMessage={previousMessage}
 		/>
 	);
 };

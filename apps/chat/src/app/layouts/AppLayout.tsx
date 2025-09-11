@@ -1,6 +1,6 @@
 import { ToastController } from '@mezon/components';
-import { useCustomNavigate } from '@mezon/core';
-import { fcmActions, handleTopicNotification, selectAllAccount, selectAllSession, selectIsLogin, useAppDispatch } from '@mezon/store';
+import { useCustomNavigate, useMezonNavigateEvent } from '@mezon/core';
+import { fcmActions, selectAllAccount, selectAllSession, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, MezonUiProvider } from '@mezon/ui';
 import {
 	CLOSE_APP,
@@ -19,7 +19,7 @@ import { Session } from 'mezon-js';
 import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
-import { IAppLoaderData } from '../loaders/appLoader';
+import type { IAppLoaderData } from '../loaders/appLoader';
 import { MacOSWindowControls } from './MacWindowsControl';
 
 type TitleBarProps = {
@@ -129,24 +129,9 @@ const AppLayout = () => {
 
 			await Promise.all(tasks.map((fn) => fn()));
 		}
-	}, [sessions, currentUserId]);
-	const navigate = useCustomNavigate();
-	useEffect(() => {
-		const handleCustomNavigation = (event: CustomEvent) => {
-			if (event.detail && event.detail.url) {
-				navigate(event.detail.url);
-				if (event.detail?.msg) {
-					dispatch(handleTopicNotification({ msg: event.detail?.msg }));
-				}
-			}
-		};
+	}, [sessions, dispatch]);
 
-		window.addEventListener('mezon:navigate', handleCustomNavigation as EventListener);
-
-		return () => {
-			window.removeEventListener('mezon:navigate', handleCustomNavigation as EventListener);
-		};
-	}, [navigate]);
+	useMezonNavigateEvent();
 
 	return (
 		<MezonUiProvider>

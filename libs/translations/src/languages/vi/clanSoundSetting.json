@@ -1,7 +1,8 @@
 {
     "button": {
         "upload": "Tải lên hiệu ứng âm thanh",
-        "delete": "Xoá"
+        "delete": "Xoá",
+        "uploadDetailScreen": "Tải lên"
     },
     "content": {
         "description": "•  Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. \n•  Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. \n•  Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
@@ -9,7 +10,8 @@
         "reqSize": "- Không lớn hơn 1024KB.",
         "audioFile": "Tệp âm thanh",
         "audioName": "Tên âm thanh",
-        "preview": "Xem trước"
+        "preview": "Xem trước",
+        "chooseAudioFile": "Chọn tệp âm thanh"
     },
     "toast": {
         "errorSizeLimit": "Vượt quá giới hạn kích thước 1MB",

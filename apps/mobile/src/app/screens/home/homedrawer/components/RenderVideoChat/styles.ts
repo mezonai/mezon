@@ -2,14 +2,13 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
-export const style = (isUploading: boolean, imageWidth: number, imageHeight: number) =>
+export const style = (isUploading: boolean, imageWidth: number, imageHeight: number, isMultiple: boolean) =>
     StyleSheet.create({
         container: {
-            marginTop: size.s_10,
-            marginBottom: size.s_6,
             opacity: isUploading ? 0.5 : 1,
             width: imageWidth,
-            height: imageHeight
+            height: imageHeight,
+            marginVertical: !isMultiple ? size.s_6 : 0
         },
 
         videoContainer: {

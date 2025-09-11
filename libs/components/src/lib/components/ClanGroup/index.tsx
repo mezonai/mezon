@@ -56,6 +56,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 
 	const handleToggle = () => {
 		dispatch(clansActions.toggleGroupExpanded(group.id));
+		onClanClick?.();
 	};
 
 	const maxDisplayClans = 4;

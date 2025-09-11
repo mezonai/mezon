@@ -12,7 +12,7 @@ import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../componentUI/MezonInput';
 import { IconCDN } from '../../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../../navigation/ScreenTypes';
+import type { APP_SCREEN, MenuClanScreenProps } from '../../../../navigation/ScreenTypes';
 import RenderAudioChat from '../../../../screens/home/homedrawer/components/RenderAudioChat/RenderAudioChat';
 import { style } from './styles';
 
@@ -80,7 +80,7 @@ export function CreateSoundScreen({ navigation }: MenuClanScreenProps<ClanSettin
 			}
 
 			const id = Snowflake.generate();
-			const path = 'sounds/' + id + '.' + audioFile.name.split('.').pop();
+			const path = `sounds/${id}.${audioFile.name.split('.').pop()}`;
 
 			const base64 = await RNFS.readFile(audioUrl, 'base64');
 			const arrayBuffer = BufferMobile.from(base64, 'base64');
@@ -89,7 +89,7 @@ export function CreateSoundScreen({ navigation }: MenuClanScreenProps<ClanSettin
 
 			if (attachment && attachment.url) {
 				const request = {
-					id: id,
+					id,
 					category: 'Among Us',
 					clan_id: currentClanId,
 					shortname: soundName.trim(),
@@ -120,7 +120,7 @@ export function CreateSoundScreen({ navigation }: MenuClanScreenProps<ClanSettin
 			)}
 			<View style={styles.audioFile}>
 				<View style={styles.inputContainer}>
-					<MezonInput label={t('content.audioFile')} disabled placeHolder="Choose an audio file" value={audioFile?.name || ''} />
+					<MezonInput label={t('content.audioFile')} disabled placeHolder={t('content.chooseAudioFile')} value={audioFile?.name || ''} />
 				</View>
 				<Pressable style={styles.uploadButton} onPress={onAudioPick} ref={buttonRef}>
 					<MezonIconCDN icon={IconCDN.shareIcon} height={Fonts.size.s_20} width={Fonts.size.s_20} color={themeValue.textStrong} />
@@ -128,7 +128,7 @@ export function CreateSoundScreen({ navigation }: MenuClanScreenProps<ClanSettin
 			</View>
 			<MezonInput label={t('content.audioName')} placeHolder="Ex.cathug" maxCharacter={30} onTextChange={setSoundName} />
 			<Pressable style={styles.button} onPress={uploadSound} ref={buttonRef}>
-				<Text style={styles.buttonTitle}>{'Upload'}</Text>
+				<Text style={styles.buttonTitle}>{t('button.uploadDetailScreen')}</Text>
 			</Pressable>
 		</View>
 	);

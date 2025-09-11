@@ -1,8 +1,8 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { attachmentActions, useAppDispatch } from '@mezon/store-mobile';
-import { fileTypeImage, notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { ImageListModal } from '../../../../../components/ImageListModal';
@@ -76,6 +76,10 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, cl
 		[channelId, clanId, dispatch]
 	);
 
+	const hasMultipleMedia = useMemo(() => {
+		return videos?.length > 0 && visibleImages?.length > 0;
+	}, [videos?.length, visibleImages?.length]);
+
 	const renderDocuments = () => {
 		return documents.map((document, index) => {
 			if (!document?.url) {
@@ -113,8 +117,8 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, cl
 	};
 
 	return (
-		<View style={{ gap: size.s_10 }}>
-			<View style={styles.gridContainer}>
+		<View>
+			<View style={[styles.gridContainer, hasMultipleMedia && { marginBottom: size.s_10 }]}>
 				{videos?.length > 0 &&
 					videos?.map((video, index) => (
 						<RenderVideoChat

@@ -1,5 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { ClansEntity, selectClanMemberWithStatusIds, selectMembersClanCount } from '@mezon/store-mobile';
+import type { ClansEntity } from '@mezon/store-mobile';
+import { selectClanMemberWithStatusIds, selectMembersClanCount } from '@mezon/store-mobile';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -19,7 +20,7 @@ export default function ClanMenuInfo({ clan }: ClanMenuInfoProps) {
 
 	return (
 		<View style={styles.info}>
-			<MezonBadge title="Community Clan" />
+			{clan?.is_community && <MezonBadge title={t('common.community')} />}
 			<View style={styles.inlineInfo}>
 				<MezonIconCDN icon={IconCDN.circleIcon} height={10} width={10} color="green" />
 				<Text style={styles.inlineText}>{`${onlineMembers} ${t('info.online')}`}</Text>

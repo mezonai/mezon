@@ -1,22 +1,26 @@
 import { captureSentryError } from '@mezon/logger';
-import { IClan, LIMIT_CLAN_ITEM, LoadingStatus, TypeCheck } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ChannelType, ClanUpdatedEvent } from 'mezon-js';
-import { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { IClan, LoadingStatus } from '@mezon/utils';
+import { LIMIT_CLAN_ITEM, TypeCheck } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ClanUpdatedEvent } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
+import type { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
-import { MezonValueContext, ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import type { MezonValueContext } from '../helpers';
+import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import { defaultNotificationCategoryActions } from '../notificationSetting/notificationSettingCategory.slice';
 import { defaultNotificationActions } from '../notificationSetting/notificationSettingClan.slice';
 import { policiesActions } from '../policies/policies.slice';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
-import { RootState } from '../store';
+import type { RootState } from '../store';
 import { usersStreamActions } from '../stream/usersStream.slice';
-import { toastActions } from '../toasts/toasts.slice';
 import { voiceActions } from '../voice/voice.slice';
 
 export const CLANS_FEATURE_KEY = 'clans';
@@ -89,6 +93,14 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 	'clans/changeCurrentClan',
 	async ({ clanId, noCache = false }: ChangeCurrentClanArgs, thunkAPI) => {
 		try {
+			const state = thunkAPI.getState() as RootState;
+			const targetClan = state.clans.entities[clanId];
+			const hasUnreadCount = (targetClan?.badge_count ?? 0) > 0;
+
+			if (hasUnreadCount && !noCache) {
+				thunkAPI.dispatch(fetchClans({ noCache: true }));
+			}
+
 			batch(() => {
 				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
@@ -100,7 +112,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 				thunkAPI.dispatch(policiesActions.fetchPermissionsUser({ clanId }));
 				thunkAPI.dispatch(policiesActions.fetchPermission({}));
 				thunkAPI.dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId }));
-				thunkAPI.dispatch(defaultNotificationActions.getDefaultNotificationClan({ clanId: clanId }));
+				thunkAPI.dispatch(defaultNotificationActions.getDefaultNotificationClan({ clanId }));
 				thunkAPI.dispatch(channelsActions.setStatusChannelFetch(clanId));
 				thunkAPI.dispatch(
 					voiceActions.fetchVoiceChannelMembers({
@@ -155,7 +167,7 @@ export const fetchClansCached = async (
 		{
 			api_name: 'ListClanDescs',
 			list_clan_req: {
-				limit: limit,
+				limit,
 				state: 1
 			}
 		},
@@ -207,7 +219,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const body = {
 			banner: '',
-			clan_name: clan_name,
+			clan_name,
 			creator_id: '',
 			logo: logo ?? ''
 		};
@@ -281,23 +293,8 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 		const response = await mezon.client.removeClanUsers(mezon.session, clanId, userIds);
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
-			thunkAPI.dispatch(
-				toastActions.addToast({
-					message: 'Failed to remove member',
-					type: 'error',
-					autoClose: 3000
-				})
-			);
 		}
 		thunkAPI.dispatch(fetchClans({ noCache: true }));
-
-		thunkAPI.dispatch(
-			toastActions.addToast({
-				message: 'Member removed successfully',
-				type: 'success',
-				autoClose: 3000
-			})
-		);
 
 		return response;
 	} catch (error) {
@@ -398,8 +395,8 @@ export const updateUser = createAsyncThunk(
 							location: '',
 							timezone: '',
 							username: user_name,
-							about_me: about_me,
-							dob: dob
+							about_me,
+							dob
 						}
 					})
 				);
@@ -606,12 +603,13 @@ export const clansSlice = createSlice({
 			const entity = state.entities[clanId];
 			if (entity) {
 				const newBadgeCount = !isReset ? (entity.badge_count ?? 0) + count : 0;
-				if (!entity.badge_count && newBadgeCount === 0) return;
-				if (entity.badge_count !== newBadgeCount) {
+				const finalBadgeCount = Math.max(0, newBadgeCount);
+				if (!entity.badge_count && finalBadgeCount === 0) return;
+				if (entity.badge_count !== finalBadgeCount) {
 					clansAdapter.updateOne(state, {
 						id: clanId,
 						changes: {
-							badge_count: newBadgeCount
+							badge_count: finalBadgeCount
 						}
 					});
 				}
