@@ -94,6 +94,22 @@ export const deleteAccount = createAsyncThunk('account/deleteaccount', async (_,
 	}
 });
 
+export const storeWalletKey = createAsyncThunk('account/storeWalletKey', async (metadata: any, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await mezon.client.storeWalletKey(mezon.session, {
+			address: metadata.address,
+			enc_privkey: metadata.encryptedPrivateKey
+		});
+		thunkAPI.dispatch(accountActions.setWalletMetadata(metadata));
+		return response;
+	} catch (error) {
+		toast.error('Error saving wallet metadata');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const accountSlice = createSlice({
 	name: ACCOUNT_FEATURE_KEY,
 	initialState: initialAccountState,
@@ -189,7 +205,7 @@ export const accountSlice = createSlice({
  */
 export const accountReducer = accountSlice.reducer;
 
-export const accountActions = { ...accountSlice.actions, getUserProfile, deleteAccount };
+export const accountActions = { ...accountSlice.actions, getUserProfile, deleteAccount, storeWalletKey };
 
 export const getAccountState = (rootState: { [ACCOUNT_FEATURE_KEY]: AccountState }): AccountState => rootState[ACCOUNT_FEATURE_KEY];
 

@@ -27,7 +27,7 @@ import HistoryTransaction from '../../HistoryTransaction';
 import ItemProfile from './ItemProfile';
 import ItemStatus from './ItemStatus';
 import ItemStatusUpdate from './ItemStatusUpdate';
-import WalletManagementModal from './WalletManagementModal';
+import WalletManagementModal, { WalletIcon } from './WalletModal';
 
 type StatusProfileProps = {
 	userById: ChannelMembersEntity | null;
@@ -61,6 +61,9 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	};
 	const handleCloseHistoryModal = () => {
 		setIsShowModalHistory(false);
+	};
+	const handleWalletManagement = () => {
+		setShowWalletModal(true);
 	};
 
 	const statusIcon = (status: string): ReactNode => {
@@ -193,6 +196,16 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 					onClick={handleOpenHistoryModal}
 					children="History Transaction"
 					startIcon={<Icons.History className="text-theme-primary" />}
+				/>
+				<ItemStatus
+					onClick={handleWalletManagement}
+					children="Manage Wallet"
+					startIcon={
+						<span className="w-5 h-5 flex items-center justify-center text-theme-primary">
+							{' '}
+							<WalletIcon />{' '}
+						</span>
+					}
 				/>
 				<ItemStatus
 					onClick={handleCustomStatus}
