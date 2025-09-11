@@ -1195,6 +1195,19 @@ export function getYouTubeEmbedSize(url: string, isSearchMessage?: boolean) {
 	return { width: '400px', height: '225px' };
 }
 
+export function isTikTokLink(url: string): boolean {
+	return /(?:tiktok\.com\/@[^/]+\/video\/\d+|vm\.tiktok\.com\/[a-zA-Z0-9]+|tiktok\.com\/t\/[a-zA-Z0-9]+)/.test(url);
+}
+
+export function getTikTokEmbedUrl(url: string): string {
+	const match = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/);
+	return match ? `https://www.tiktok.com/player/v1/${match[1]}` : '';
+}
+
+export function getTikTokEmbedSize() {
+	return { width: '253px', height: '450px' };
+}
+
 export const formatMoney = (number: number) => {
 	if (number === 0) {
 		return 0;
