@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export type TranscriptItem = {
 	id: string;
@@ -17,6 +17,33 @@ export interface TranscriptPanelProps {
 }
 
 export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], title = 'Transcript', onClose }) => {
+	const scrollRef = useRef<HTMLDivElement>(null);
+	const [isAtBottom, setIsAtBottom] = useState(true);
+
+	// Detect scroll position
+	const handleScroll = () => {
+		if (!scrollRef.current) return;
+		const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+		setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 50);
+	};
+
+	// Auto-scroll only if already at bottom
+	useEffect(() => {
+		if (isAtBottom && scrollRef.current) {
+			scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+		}
+	}, [items, isAtBottom]);
+
+	//button
+	const scrollToBottom = () => {
+		if (scrollRef.current) {
+			scrollRef.current.scrollTo({
+				top: scrollRef.current.scrollHeight,
+				behavior: 'smooth'
+			});
+		}
+	};
+
 	return (
 		<div className="w-full h-screen bg-theme-primary text-theme-primary flex flex-col">
 			<div className="flex items-center justify-between px-4 py-3 ">
@@ -27,7 +54,7 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], ti
 					</button>
 				)}
 			</div>
-			<div className="flex-1 overflow-auto p-3">
+			<div className="flex-1 overflow-auto p-3" ref={scrollRef} onScroll={handleScroll}>
 				{items.length === 0 ? (
 					<div className="text-theme-primary text-sm">No transcript yet. When speech is detected, it will appear here.</div>
 				) : (
@@ -42,6 +69,14 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], ti
 							</li>
 						))}
 					</ul>
+				)}
+				{!isAtBottom && (
+					<button
+						onClick={scrollToBottom}
+						className="absolute bottom-4 right-4  text-white px-3 py-1 rounded-full shadow-md bg-button-hover transition"
+					>
+						↓ Scroll to bottom
+					</button>
 				)}
 			</div>
 		</div>

@@ -110,7 +110,10 @@ export function MyVideoConference({
 		}
 	};
 
-	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
+	//filter out participant that is agent
+	const userTracks = tracks.filter(
+		(track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio' && track.participant.isAgent !== true
+	);
 	const room = useRoomContext();
 
 	useEffect(() => {
@@ -197,7 +200,8 @@ export function MyVideoConference({
 				<div className="lk-video-conference-inner relative bg-gray-100 dark:bg-black group">
 					{!focusTrack ? (
 						<div className="lk-grid-layout-wrapper bg-gray-300 dark:bg-black !h-full !py-[68px]">
-							<GridLayout tracks={tracks}>
+							{/* filter out participant that is agent */}
+							<GridLayout tracks={tracks.filter((track) => track.participant.isAgent !== true)}>
 								<ParticipantTile roomName={room?.name} isExtCalling={isExternalCalling} activeSoundReactions={activeSoundReactions} />
 							</GridLayout>
 						</div>
