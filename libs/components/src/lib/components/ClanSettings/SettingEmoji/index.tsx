@@ -1,9 +1,10 @@
 import { selectCurrentClanId, selectEmojiByClanId, settingClanStickerActions, useAppDispatch, useAppSelector } from '@mezon/store';
-import { ClanEmoji } from 'mezon-js';
-import { RefObject, useCallback, useState } from 'react';
+import type { ClanEmoji } from 'mezon-js';
+import type { RefObject } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ModalLayout } from '../../../components';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import ModalValidateFile, { ELimitSize } from '../../ModalValidateFile';
 import ModalSticker, { EGraphicType } from '../SettingSticker/ModalEditSticker';
 import SettingEmojiList from './SettingEmojiList';
 
@@ -61,9 +62,19 @@ const SettingEmoji = ({ parentRef }: { parentRef: RefObject<HTMLDivElement> }) =
 
 			<SettingEmojiList title={'Emoji'} emojiList={emojiList} onUpdateEmoji={handleOpenUpdateEmojiModal} />
 
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+			<ModalValidateFile
+				open={openModalType}
+				onClose={() => setOpenModalType(false)}
+				title={'Only image files are allowed'}
+				content={`Just upload type file images, please!`}
+			/>
 
+			<ModalValidateFile
+				open={openModal}
+				onClose={() => setOpenModal(false)}
+				title={'Your files are too powerful'}
+				content={`Max file size is ${ELimitSize.MB}, please!`}
+			/>
 			{isOpenEditModal && (
 				<ModalLayout onClose={handleCloseModal}>
 					<ModalSticker graphic={selectedEmoji} handleCloseModal={handleCloseModal} type={EGraphicType.EMOJI} />

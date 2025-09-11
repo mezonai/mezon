@@ -1,8 +1,8 @@
+import type { TrackReferenceOrPlaceholder } from '@livekit/components-react';
 import {
 	ConnectionStateToast,
 	LayoutContextProvider,
 	RoomAudioRenderer,
-	TrackReferenceOrPlaceholder,
 	isTrackReference,
 	useCreateLayoutContext,
 	usePinnedTracks,
@@ -11,15 +11,8 @@ import {
 } from '@livekit/components-react';
 import { useAppDispatch, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import {
-	DisconnectReason,
-	LocalParticipant,
-	LocalTrackPublication,
-	RemoteParticipant,
-	RemoteTrackPublication,
-	RoomEvent,
-	Track
-} from 'livekit-client';
+import type { LocalParticipant, LocalTrackPublication, RemoteParticipant, RemoteTrackPublication } from 'livekit-client';
+import { DisconnectReason, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import ControlBar from '../ControlBar/ControlBar';
@@ -33,7 +26,7 @@ import { useSoundReactions } from './Reaction/useSoundReactions';
 interface MyVideoConferenceProps {
 	channelLabel?: string;
 	url?: string;
-	token: string;
+	token?: string;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
 	onJoinRoom?: () => void;
@@ -116,7 +109,7 @@ export function MyVideoConference({
 				reason === DisconnectReason.PARTICIPANT_REMOVED
 			) {
 				onLeaveRoom();
-			} else {
+			} else if (token) {
 				if (!url) return;
 				const maxAttempts = 3;
 
@@ -132,6 +125,8 @@ export function MyVideoConference({
 						}
 					}
 				}
+			} else {
+				onLeaveRoom();
 			}
 		};
 		const handleLocalTrackUnpublished = (publication: LocalTrackPublication, participant: LocalParticipant) => {

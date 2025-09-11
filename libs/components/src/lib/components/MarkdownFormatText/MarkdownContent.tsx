@@ -58,9 +58,9 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const appearanceTheme = useSelector(selectTheme);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const origin = process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/';
-	const originClan = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/clans/';
-	const originDirect = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/direct/message/';
+	const origin = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/`;
+	const originClan = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/`;
+	const originDirect = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/direct/message/`;
 
 	const [isLoadingInvite, setIsLoadingInvite] = useState(false);
 	const [inviteError, setInviteError] = useState<string | null>(null);
@@ -227,7 +227,9 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 					</a>
 				)
 			)}
-			{!isReply && isLink && content && isYouTubeLink(content) && <YouTubeEmbed url={content} isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />}
+			{!isReply && isLink && content && isYouTubeLink(content) && (
+				<YouTubeEmbed url={content} isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
+			)}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
@@ -269,7 +271,7 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, i
 			<code
 				className={`w-full text-sm font-sans px-2 ${
 					posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
-					} ${posInPinOrNotification && ' text-theme-primary rounded-lg'}`}
+				} ${posInPinOrNotification && ' text-theme-primary rounded-lg'}`}
 				style={{
 					fontFamily: 'sans-serif',
 					wordWrap: 'break-word',
@@ -336,6 +338,7 @@ const YouTubeEmbed: React.FC<{ url: string; isSearchMessage?: boolean; isInPinMs
 					src={embedUrl}
 					style={{ width, height, border: 'none', maxWidth: '100%' }}
 					allowFullScreen
+					referrerPolicy={'strict-origin-when-cross-origin'}
 				></iframe>
 			</div>
 		</div>

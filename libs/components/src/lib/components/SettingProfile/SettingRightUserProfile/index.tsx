@@ -22,7 +22,7 @@ import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import type { Coords } from '../../ChannelLink';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import ModalValidateFile, { ELimitSize } from '../../ModalValidateFile';
 import PanelClan from '../../PanelClan';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import type { Profilesform } from '../SettingUserClanProfileCard';
@@ -404,8 +404,19 @@ const SettingRightUser = ({
 			) : null}
 			{openModalDeleteAcc && <DeleteAccountModal handleLogOut={handleDeleteAccount} onClose={handleCloseModal} isDeleting={isDeleting} />}
 
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+			<ModalValidateFile
+				open={openModalType}
+				onClose={() => setOpenModalType(false)}
+				title={'Only image files are allowed'}
+				content={`Just upload type file images, please!`}
+			/>
+
+			<ModalValidateFile
+				open={openModal}
+				onClose={() => setOpenModal(false)}
+				title={'Your files are too powerful'}
+				content={`Max file size is ${ELimitSize.MB}, please!`}
+			/>
 		</>
 	);
 };
