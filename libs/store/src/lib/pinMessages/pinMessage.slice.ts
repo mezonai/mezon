@@ -259,7 +259,7 @@ export const pinMessageSlice = createSlice({
 			if (!state.byChannels[channelId]) {
 				return;
 			}
-			const pinList = state.byChannels[channelId].pinMessages?.filter((pin) => pin.message_id !== pinId);
+			const pinList = state.byChannels[channelId].pinMessages?.filter((pin) => pin.id !== pinId);
 			state.byChannels[channelId].pinMessages = pinList;
 			state.byChannels[channelId].cache = createCacheMetadata(CHANNEL_PIN_MESSAGES_CACHED_TIME);
 		},

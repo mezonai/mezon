@@ -935,12 +935,14 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 	if (message.code === TypeMessage.ChatRemove) {
 		const replyData = selectDataReferences(state, channelId);
 		const pinList = selectPinMessageByChannelId(state, channelId);
-		if (replyData && replyData.message_ref_id === message.id) {
+		const deletedMessageId = message.referenced_message && message.referenced_message.length > 0 ? message.referenced_message[0] : message.id;
+
+		if (replyData && replyData.message_ref_id === deletedMessageId) {
 			thunkAPI.dispatch(referencesActions.resetAfterReply(message.channel_id));
 		}
 
 		if (pinList) {
-			const pinData = pinList.find((item) => item.message_id === message.id);
+			const pinData = pinList.find((item) => item.message_id === deletedMessageId);
 			if (pinData) {
 				thunkAPI.dispatch(
 					pinMessageActions.removePinMessage({
@@ -1221,7 +1223,13 @@ export const messagesSlice = createSlice({
 				}
 				case TypeMessage.ChatRemove: {
 					updateReferenceMessage({ state, channelId, listMessageIds: referenced_message as string[] });
-					handleRemoveOneMessage({ state, channelId, messageId });
+					if (referenced_message && referenced_message.length > 0) {
+						referenced_message.forEach((deletedMessageId) => {
+							handleRemoveOneMessage({ state, channelId, messageId: deletedMessageId });
+						});
+					} else {
+						handleRemoveOneMessage({ state, channelId, messageId });
+					}
 					break;
 				}
 				default:
