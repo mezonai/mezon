@@ -6,7 +6,7 @@ import type { ContenSubmitEventProps } from '@mezon/utils';
 import { ERepeatType, fileTypeImage } from '@mezon/utils';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import ModalValidateFile, { ELimitSize } from '../../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 import { checkError } from '../eventHelper';
 
 const DatePickerWrapper = lazy(() => import('./DatePickerWrapper'));
@@ -299,19 +299,9 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				{contentSubmit.logo && <img src={contentSubmit.logo} alt="logo" className="max-h-[180px] rounded w-full object-cover" />}
 			</div>
 
-			<ModalValidateFile
-				open={openModalType}
-				onClose={() => setOpenModalType(false)}
-				title={'Only image files are allowed'}
-				content={`Just upload type file images, please!`}
-			/>
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
 
-			<ModalValidateFile
-				open={openModal}
-				onClose={() => setOpenModal(false)}
-				title={'Your files are too powerful'}
-				content={`Max file size is ${ELimitSize.MB}, please!`}
-			/>
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 		</div>
 	);
 };

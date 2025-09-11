@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useDebouncedCallback } from 'use-debounce';
 import type { ModalSettingSave } from '../../ClanSettings/SettingRoleManagement';
-import ModalValidateFile, { ELimitSize } from '../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import PreviewSetting from '../SettingUserClanProfileCard';
 import { processImage } from '../helper';
@@ -260,19 +260,9 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 
 			<SettingUserClanProfileSave PropsSave={saveProfile} />
 
-			<ModalValidateFile
-				open={openModalType}
-				onClose={() => setOpenModalType(false)}
-				title={'Only image files are allowed'}
-				content={`Just upload type file images, please!`}
-			/>
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
 
-			<ModalValidateFile
-				open={openModal}
-				onClose={() => setOpenModal(false)}
-				title={'Your files are too powerful'}
-				content={`Max file size is ${ELimitSize.MB}, please!`}
-			/>
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 		</>
 	);
 };

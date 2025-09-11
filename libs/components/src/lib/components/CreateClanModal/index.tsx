@@ -15,9 +15,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
-import { ModalLayout } from '../../components';
-
-import ModalValidateFile, { ELimitSize } from '../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalLayout, ModalOverData } from '../../components';
 
 export type ModalCreateClansProps = {
 	open: boolean;
@@ -191,19 +189,12 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 							</span>
 						</div>
 					</div>
-					<ModalValidateFile
+					<ModalErrorTypeUpload
 						open={openModalError.errorType}
 						onClose={() => seOpenModalError((prev) => ({ ...prev, errorType: false }))}
-						title={'Only image files are allowed'}
-						content={`Just upload type file images, please!`}
 					/>
 
-					<ModalValidateFile
-						open={openModalError.errorSize}
-						onClose={() => seOpenModalError((prev) => ({ ...prev, errorSize: false }))}
-						title={'Your files are too powerful'}
-						content={`Max file size is ${ELimitSize.MB}, please!`}
-					/>
+					<ModalOverData open={openModalError.errorSize} onClose={() => seOpenModalError((prev) => ({ ...prev, errorSize: false }))} />
 					<div className="flex items-center border-t border-solid dark:border-borderDefault rounded-b justify-between pt-4">
 						<Button
 							className="text-contentBrandLight px-4 py-2 background-transparent font-semibold text-sm outline-none focus:outline-none rounded-lg"

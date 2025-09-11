@@ -3,8 +3,7 @@ import type { ClanEmoji } from 'mezon-js';
 import type { RefObject } from 'react';
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ModalLayout } from '../../../components';
-import ModalValidateFile, { ELimitSize } from '../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalLayout, ModalOverData } from '../../../components';
 import ModalSticker, { EGraphicType } from '../SettingSticker/ModalEditSticker';
 import SettingEmojiList from './SettingEmojiList';
 
@@ -62,19 +61,9 @@ const SettingEmoji = ({ parentRef }: { parentRef: RefObject<HTMLDivElement> }) =
 
 			<SettingEmojiList title={'Emoji'} emojiList={emojiList} onUpdateEmoji={handleOpenUpdateEmojiModal} />
 
-			<ModalValidateFile
-				open={openModalType}
-				onClose={() => setOpenModalType(false)}
-				title={'Only image files are allowed'}
-				content={`Just upload type file images, please!`}
-			/>
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
 
-			<ModalValidateFile
-				open={openModal}
-				onClose={() => setOpenModal(false)}
-				title={'Your files are too powerful'}
-				content={`Max file size is ${ELimitSize.MB}, please!`}
-			/>
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 			{isOpenEditModal && (
 				<ModalLayout onClose={handleCloseModal}>
 					<ModalSticker graphic={selectedEmoji} handleCloseModal={handleCloseModal} type={EGraphicType.EMOJI} />

@@ -4,7 +4,7 @@ import { Icons } from '@mezon/ui';
 import { fileTypeImage } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import ModalValidateFile from '../../../ModalValidateFile';
+import { ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 
 type ClanBannerBackgroundProps = {
 	onUpload: (urlImage: string) => void;
@@ -92,13 +92,8 @@ const ClanBannerBackground = ({ onUpload, urlImage }: ClanBannerBackgroundProps)
 					</button>
 				</div>
 			</div>
-			{openModal && (
-				<ModalValidateFile
-					onClose={() => setOpenModal(false)}
-					title="Only image files are allowed"
-					content="Just upload type file (JPEG, PNG), please!"
-				/>
-			)}
+
+			<ModalOverData onClose={() => setOpenModal(false)} open={openModal} />
 		</div>
 	);
 };

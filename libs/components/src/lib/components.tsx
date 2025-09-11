@@ -63,6 +63,7 @@ export { default as SidebarLogoItem } from './components/ModalListClans/SidebarL
 export { default as SidebarTooltip } from './components/ModalListClans/SidebarTooltip';
 export { default as SidebarClanItem } from './components/ModalListClans/index';
 export { default as ModalUserProfile } from './components/ModalUserProfile';
+export { ModalErrorTypeUpload, ModalOverData } from './components/ModalValidateFile/ModalOverData';
 export { default as NavLinkComponent } from './components/NavLink';
 export { default as ModalNotificationSetting } from './components/NotificationSetting';
 export { ReplyMessageBox } from './components/ReplyMessageBox';

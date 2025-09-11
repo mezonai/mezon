@@ -11,7 +11,8 @@ import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import ModalValidateFile, { ELimitSize } from '../../ModalValidateFile';
+import { ELimitSize } from '../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 
 export enum EGraphicType {
 	EMOJI = 'emoji',
@@ -336,19 +337,9 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				</div>
 			</div>
 
-			<ModalValidateFile
-				open={openModalType}
-				onClose={handleCloseTypeModal}
-				title={'Only image files are allowed'}
-				content={`Just upload type file images, please!`}
-			/>
+			<ModalErrorTypeUpload open={openModalType} onClose={handleCloseTypeModal} />
 
-			<ModalValidateFile
-				open={openModal}
-				onClose={handleCloseOverModal}
-				title={'Your files are too powerful'}
-				content={`Max file size is ${limitSizeDisplay}, please!`}
-			/>
+			<ModalOverData open={openModal} onClose={handleCloseOverModal} size={limitSizeDisplay} />
 		</>
 	);
 };
