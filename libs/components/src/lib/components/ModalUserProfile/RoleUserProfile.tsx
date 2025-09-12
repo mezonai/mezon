@@ -137,13 +137,17 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 				</div>
 			)}
 			<UserRestrictionZone policy={hasPermissionEditRole}>
-				<div className="relative flex items-center justify-center">
+				<div className="relative flex items-center justify-center border-theme-primary mt-1">
 					{isVisible ? (
-						<div className="absolute bottom-8 dark:bg-transparent bg-transparent p-0 max-h-60 w-[300px]">
+						<div className="absolute bottom-8 dark:bg-transparent bg-transparent p-0 max-h-60 w-full">
 							<AddRolesComp addRole={addRole} filteredListRoleBySearch={filteredListRoleBySearch} setSearchTerm={setSearchTerm} />
 						</div>
 					) : null}
-					<button title="Add roles" onClick={handleOpenAddRoleModal} className="flex gap-x-1 rounded p-1 items-center">
+					<button
+						title="Add roles"
+						onClick={handleOpenAddRoleModal}
+						className="flex gap-x-1 rounded p-1 items-center justify-center w-full"
+					>
 						<Icons.Plus className="size-5 select-none" />
 						<p className="text-xs m-0 font-medium select-none">Add Role</p>
 					</button>
@@ -239,7 +243,10 @@ const RoleClanItem = ({
 					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
 				</>
 			)}
-			<span className="text-xs font-medium">{role.title}</span>
+			<span className="text-xs font-medium truncate overflow-hidden max-w-[120px] whitespace-nowrap" title={role.title}>
+				{' '}
+				{role.title}{' '}
+			</span>
 		</span>
 	);
 };

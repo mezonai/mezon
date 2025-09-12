@@ -128,7 +128,7 @@ type ItemSelectProps = {
 
 const ItemSelect = ({ children, dropdown, startIcon, onClick, timeSetReset }: ItemSelectProps) => {
 	return (
-		<div onClick={onClick} className="flex w-full items-center justify-between px-3">
+		<div onClick={onClick} className="flex w-full items-center justify-between px-3 bg-item-hover cursor-pointer">
 			{startIcon && <div className="flex items-center justify-center h-[18px] w-[18px] mr-2">{startIcon}</div>}
 			<div>
 				<li className="text-[14px] w-full list-none leading-[44px] ">{children}</li>
