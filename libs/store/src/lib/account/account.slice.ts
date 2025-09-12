@@ -12,6 +12,12 @@ export interface IAccount {
 	email: string;
 	password: string;
 }
+export interface IWalletState {
+	account_nonce?: number;
+	address: string;
+	balance?: string;
+	last_balance_update?: number;
+}
 export interface AccountState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -19,6 +25,7 @@ export interface AccountState {
 	userProfile?: IUserAccount | null;
 	anonymousMode: boolean;
 	cache?: CacheMetadata;
+	wallet?: IWalletState;
 }
 
 export const initialAccountState: AccountState = {
@@ -177,6 +184,9 @@ export const accountSlice = createSlice({
 				user: { ...state.userProfile?.user, ...action.payload.user },
 				encrypt_private_key: action.payload.encrypt_private_key
 			};
+		},
+		setWalletData(state, action: PayloadAction<IWalletState | undefined>) {
+			state.wallet = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -222,3 +232,5 @@ export const selectAccountMetadata = createSelector(getAccountState, (state: Acc
 export const selectAccountCustomStatus = createSelector(selectAccountMetadata, (metadata) => metadata?.status || '');
 
 export const selectLogoCustom = createSelector(getAccountState, (state) => state?.userProfile?.logo);
+
+export const selectUserWallet = createSelector(getAccountState, (state) => state?.wallet);

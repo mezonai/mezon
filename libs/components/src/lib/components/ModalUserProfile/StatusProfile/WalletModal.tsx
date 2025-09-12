@@ -126,16 +126,17 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 				createdAt: new Date().toISOString()
 			};
 
-			const response = await dispatch(accountActions.storeWalletKey(publicWalletInfo));
+			await dispatch(accountActions.storeWalletKey(publicWalletInfo));
 
 			setWalletData((prev) => ({ ...prev, isEncrypted: true }));
+			dispatch(accountActions.setWalletData({ address: encryptedWallet.address }));
 		} catch (error) {
 			console.error('Error saving encrypted wallet:', error);
 		}
 	};
 
 	const restoreWallet = async (passcode: string) => {
-		if (!userProfile?.user?.id || !userProfile?.mmn_encrypt_private_key) return;
+		if (!userProfile?.user?.id || !userProfile?.mmn_encrypt_private_key || !userProfile.mmn_address) return;
 
 		try {
 			const { encryptedData, salt, iv } = JSON.parse(userProfile.mmn_encrypt_private_key);
@@ -166,6 +167,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 			};
 
 			dispatch(accountActions.setWalletMetadata(publicWalletInfo));
+			dispatch(accountActions.setWalletData({ address: encryptedWallet.address }));
 		} catch (error) {
 			console.error('Error saving encrypted wallet:', error);
 		}

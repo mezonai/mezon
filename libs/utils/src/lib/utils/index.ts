@@ -1306,3 +1306,36 @@ export const getParentChannelIdIfHas = (channel: IChannel) => {
 	const channelId = channel?.parent_id && channel?.parent_id !== '0' ? channel?.parent_id : channel?.channel_id;
 	return channelId;
 };
+
+export function formatBalanceToString(balance?: string, decimals = 6): string {
+	if (!balance) return '0';
+	try {
+		const big = BigInt(balance);
+		let divisor = BigInt(1);
+		for (let i = 0; i < decimals; i++) {
+			divisor *= BigInt(10);
+		}
+
+		const integerPart = big / divisor;
+		const fractionalPart = big % divisor;
+
+		if (fractionalPart === BigInt(0)) {
+			return integerPart.toString();
+		}
+
+		// Pad fractional part to ensure correct number of decimal places
+		const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+
+		// Remove trailing zeros
+		const fractionalTrimmed = fractionalStr.replace(/0+$/, '');
+
+		// If all fractional digits were zeros, return just the integer part
+		if (fractionalTrimmed === '') {
+			return integerPart.toString();
+		}
+
+		return `${integerPart.toString()}.${fractionalTrimmed}`;
+	} catch {
+		throw new Error(`Invalid balance string: ${balance}`);
+	}
+}
