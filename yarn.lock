@@ -13206,24 +13206,17 @@ metro@0.80.12:
     ws "^7.5.10"
     yargs "^17.6.2"
 
-mezon-active-windows@0.1.38:
-  version "0.1.38"
-  resolved "https://registry.yarnpkg.com/mezon-active-windows/-/mezon-active-windows-0.1.38.tgz#63241830b7f757caff3965869c8dcf620d2bddee"
-  integrity sha512-WTimM1m3jz4d0yS2edSqSdxxHPPceFAtI+Zxe1A7kBm1Px6TWB136GKNQSgn4OVRJ+ol9wHiwqRwjdHlSP+VMQ==
-  dependencies:
-    node-addon-api "^1.7.2"
-
-mezon-js-protobuf@1.8.26:
-  version "1.8.26"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.8.26.tgz#2ca8fca3b653b6387e90109ca4163afbebb77500"
-  integrity sha512-4AnJkolTIC4pQrSU6b5Cxfz0oYa6aOccBQv1iiSbA8NFk6c3vA7IvBQgyCQiNt9ZdYUAGLqVngYA54WKRz2I4Q==
+mezon-js-protobuf@1.8.32:
+  version "1.8.32"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.8.32.tgz#54831d8ddcef70d9e7e1cb8235a8120d18c5a4e7"
+  integrity sha512-ArMJrIDLw+VgHnMVMqKp6GP9Nwjub+M43lq0jegw/fN+PAYYGCVzePAhf/alUtj3ADZlE7pxz7Gcid8q22EMAg==
   dependencies:
     "@scarf/scarf" "^1.1.1"
 
-mezon-js@2.12.61:
-  version "2.12.61"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.12.61.tgz#b4e405ab76e1c1830152757513774aed568ef1fa"
-  integrity sha512-7bna3YNXHY0rNE89U7Q/iYjV0FpzaLQtIFcRdC6ENn44NyiBCFyNzRWw051pS0+5UBWTCjFkDmpTWtEHFntAbQ==
+mezon-js@2.12.78:
+  version "2.12.78"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.12.78.tgz#93cb2d741e1e52f5d508cef951f253bee8bbb92b"
+  integrity sha512-k5BAa46T0whfklMCRkoc0+57TXdOpMxJAKDemqOwu/b404zesJmmfiEDgtm7lraLJRWFWhrestbW3NM12SHr+g==
   dependencies:
     "@scarf/scarf" "^1.1.1"
     base64-arraybuffer "^1.0.2"
@@ -13607,7 +13600,7 @@ node-abort-controller@^3.0.1, node-abort-controller@^3.1.1:
   resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz#a94377e964a9a37ac3976d848cb5c765833b8548"
   integrity sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==
 
-node-addon-api@^1.6.3, node-addon-api@^1.7.2:
+node-addon-api@^1.6.3:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-1.7.2.tgz#3df30b95720b53c24e59948b49532b662444f54d"
   integrity sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==
