@@ -10,6 +10,13 @@ export const getMezonCtx = (thunkAPI: GetThunkAPI<any>) => {
 	return thunkAPI.extra.mezon;
 };
 
+export const getMmnClient = (thunkAPI: GetThunkAPI<any>) => {
+	if (!isMezonThunk(thunkAPI)) {
+		throw new Error('Not Mezon Thunk');
+	}
+	return thunkAPI.extra.mmnClient;
+};
+
 export type MezonValueContext = MezonContextValue & {
 	client: Client;
 	session: Session;
@@ -68,10 +75,10 @@ export function isMezonThunk(thunkAPI: GetThunkAPI<any>): thunkAPI is GetThunkAP
 	if ('extra' in thunkAPI === false || typeof thunkAPI.extra !== 'object' || thunkAPI.extra === null) {
 		return false;
 	}
-	if ('mezon' in thunkAPI.extra === false) {
+	if ('mezon' in thunkAPI.extra === false || 'mmnClient' in thunkAPI.extra === false) {
 		return false;
 	}
-	return typeof thunkAPI?.extra?.mezon !== 'undefined';
+	return typeof thunkAPI?.extra?.mezon !== 'undefined' && typeof thunkAPI?.extra?.mmnClient !== 'undefined';
 }
 
 export function sleep(ms: number) {

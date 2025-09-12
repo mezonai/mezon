@@ -1,6 +1,6 @@
 import { useAuth, useDirect, useSendInviteMessage, useSettingFooter } from '@mezon/core';
+import type { ChannelsEntity } from '@mezon/store';
 import {
-	ChannelsEntity,
 	TOKEN_FAILED_STATUS,
 	TOKEN_SUCCESS_STATUS,
 	authActions,
@@ -20,9 +20,10 @@ import {
 	userClanProfileActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ESummaryInfo, EUserStatus, ONE_MINUTE, TypeMessage, createImgproxyUrl, formatMoney, generateE2eId, saveParseUserStatus } from '@mezon/utils';
+import type { EUserStatus } from '@mezon/utils';
+import { ESummaryInfo, ONE_MINUTE, TypeMessage, createImgproxyUrl, formatMoney, generateE2eId, saveParseUserStatus } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -138,19 +139,19 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			sender_name: myProfile?.userProfile?.user?.username as string,
 			receiver_id: userId,
 			amount: token,
-			note: note,
+			note,
 			extra_attribute: infoSendToken?.extra_attribute ?? extraAttribute
 		};
 
 		setIsButtonDisabled(true);
 		try {
 			await dispatch(giveCoffeeActions.sendToken(tokenEvent)).unwrap();
-			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_SUCCESS_STATUS }));
+			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_SUCCESS_STATUS }));
 			if (id) {
 				await sendNotificationMessage(id, token, note ?? '', username, avatar, display_name);
 			}
 		} catch (err) {
-			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent: tokenEvent, status: TOKEN_FAILED_STATUS }));
+			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_FAILED_STATUS }));
 		}
 		handleCloseModalSendToken();
 	};

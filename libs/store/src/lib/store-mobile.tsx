@@ -1,4 +1,5 @@
 import { MezonContextValue } from '@mezon/transport';
+import { MmnClient } from '@mezonai/mmn-client-js';
 import { Middleware, ThunkDispatch, UnknownAction, configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTransform, persistReducer, persistStore } from 'redux-persist';
@@ -56,7 +57,6 @@ import { popupForwardReducer } from './forwardMessage/forwardMessage.slice';
 import { giveCoffeeReducer } from './giveCoffee/giveCoffee.slice';
 import { walletLedgerReducer } from './giveCoffee/historyTransaction.slice';
 import { EMBED_MESSAGE, embedReducer } from './messages/embedMessage.slice';
-import { notifiReactMessageReducer } from './notificationSetting/notificationReactMessage.slice';
 import { channelCategorySettingReducer, defaultNotificationCategoryReducer } from './notificationSetting/notificationSettingCategory.slice';
 import { notificationSettingReducer } from './notificationSetting/notificationSettingChannel.slice';
 import { defaultNotificationClanReducer } from './notificationSetting/notificationSettingClan.slice';
@@ -522,7 +522,7 @@ const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
 	return next(action);
 };
 
-export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRootState) => {
+export const initStore = (mezon: MezonContextValue, mmnClient: MmnClient, preloadedState?: PreloadedRootState) => {
 	const store = configureStore({
 		reducer,
 		preloadedState,
@@ -530,7 +530,8 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 			getDefaultMiddleware({
 				thunk: {
 					extraArgument: {
-						mezon
+						mezon,
+						mmnClient
 					}
 				},
 				immutableCheck: false,

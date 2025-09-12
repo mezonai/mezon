@@ -1,3 +1,4 @@
+import { MmnClient } from '@mezonai/mmn-client-js';
 import { Middleware, ThunkDispatch, UnknownAction, configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -439,7 +440,7 @@ const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
 	return next(action);
 };
 
-export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRootState) => {
+export const initStore = (mezon: MezonContextValue, mmnClient: MmnClient, preloadedState?: PreloadedRootState) => {
 	const store = configureStore({
 		reducer,
 		devTools: process.env.NODE_ENV !== 'production',
@@ -448,7 +449,8 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 			getDefaultMiddleware({
 				thunk: {
 					extraArgument: {
-						mezon
+						mezon,
+						mmnClient
 					}
 				},
 				immutableCheck: false,
