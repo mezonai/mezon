@@ -1,8 +1,8 @@
 import { useDragAndDrop } from '@mezon/core';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { DragEvent } from 'react';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { DragEvent } from 'react';
 import DragAndDropUI from './DragAndDropUI';
 
 type FileUploadByDnDOpt = {
@@ -43,10 +43,12 @@ function FileUploadByDnD({ currentId }: FileUploadByDnDOpt) {
 			return;
 		}
 
-		const oversizedFile = filesArray.find((file) => file.size > MAX_FILE_SIZE);
+		const getLimit = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
+		const oversizedFile = filesArray.find((file) => file.size > getLimit(file));
 
 		if (oversizedFile) {
-			setOverUploadingState(true, UploadLimitReason.SIZE);
+			const limit = getLimit(oversizedFile as File);
+			setOverUploadingState(true, UploadLimitReason.SIZE, limit);
 			return;
 		}
 

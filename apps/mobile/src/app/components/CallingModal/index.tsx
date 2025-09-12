@@ -5,6 +5,7 @@ import { useMezon } from '@mezon/transport';
 import LottieView from 'lottie-react-native';
 import { WebrtcSignalingType } from 'mezon-js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, NativeModules, Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ import { TYPING_DARK_MODE, TYPING_LIGHT_MODE } from '../../../assets/lottie';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import { DirectMessageCallMain } from '../../screens/messages/DirectMessageCall';
+import { decompress } from '../../utils/helpers';
 import { style } from './styles';
 
 const CallingModal = () => {
@@ -27,15 +29,40 @@ const CallingModal = () => {
 	const isInCall = useSelector(selectIsInCall);
 	const usersClan = useSelector(selectAllUserClans);
 	const mezon = useMezon();
+	const { t } = useTranslation('message');
+	const [callerInfo, setCallerInfo] = useState({});
 
-	const callerInfo = useMemo(() => {
+	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
+		const getCallerInfo = async () => {
+			const jsonData = latestSignalingEntry?.signalingData?.json_data;
 
-		if (latestSignalingEntry?.callerId) {
-			return usersClan.find((user) => user.id === latestSignalingEntry?.callerId);
-		} else {
-			return {};
-		}
+			if (jsonData) {
+				try {
+					const decompressedData = await decompress(jsonData);
+					const parsedData = JSON.parse(decompressedData);
+					if (parsedData?.callerName) {
+						setCallerInfo({
+							name: parsedData?.callerName || '',
+							avatar: parsedData?.callerAvatar || ''
+						});
+						return;
+					}
+				} catch (error) {
+					console.error('Error decompressing or parsing JSON data:', error);
+				}
+			}
+
+			// Find caller in user's clans
+			if (latestSignalingEntry?.callerId) {
+				const foundUser = usersClan.find((user) => user.id === latestSignalingEntry?.callerId);
+				setCallerInfo(foundUser || {});
+			} else {
+				setCallerInfo({});
+			}
+		};
+
+		latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && getCallerInfo();
 	}, [signalingData, usersClan]);
 
 	const stopAndReleaseSound = () => {
@@ -105,7 +132,7 @@ const CallingModal = () => {
 			receiverId: signalingData?.[signalingData?.length - 1]?.callerId,
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
-			receiverAvatar: callerInfo?.user?.avatar_url || '',
+			receiverAvatar: callerInfo?.avatar || callerInfo?.user?.avatar_url || '',
 			isAnswerCall: true
 		};
 		const data = {
@@ -150,7 +177,7 @@ const CallingModal = () => {
 			<View style={{ flex: 1, paddingRight: size.s_10 }}>
 				<View style={{ alignItems: 'center', flexDirection: 'row' }}>
 					<Text numberOfLines={1} style={styles.headerTitle}>
-						Mezon audio
+						{t('callLog.incomingCall')}
 					</Text>
 					<LottieView
 						source={themeBasic === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE}
@@ -163,7 +190,7 @@ const CallingModal = () => {
 				<Text numberOfLines={1} style={styles.username}>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-expect-error */}
-					{callerInfo?.user?.username || ''}
+					{callerInfo?.name || callerInfo?.user?.username || ''}
 				</Text>
 			</View>
 			<View style={{ gap: size.s_10, flexDirection: 'row' }}>

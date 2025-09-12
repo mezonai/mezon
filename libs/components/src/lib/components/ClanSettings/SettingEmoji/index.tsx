@@ -1,9 +1,9 @@
 import { selectCurrentClanId, selectEmojiByClanId, settingClanStickerActions, useAppDispatch, useAppSelector } from '@mezon/store';
-import { ClanEmoji } from 'mezon-js';
-import { RefObject, useCallback, useState } from 'react';
+import type { ClanEmoji } from 'mezon-js';
+import type { RefObject } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ModalLayout } from '../../../components';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import { ModalErrorTypeUpload, ModalLayout, ModalOverData } from '../../../components';
 import ModalSticker, { EGraphicType } from '../SettingSticker/ModalEditSticker';
 import SettingEmojiList from './SettingEmojiList';
 
@@ -61,9 +61,9 @@ const SettingEmoji = ({ parentRef }: { parentRef: RefObject<HTMLDivElement> }) =
 
 			<SettingEmojiList title={'Emoji'} emojiList={emojiList} onUpdateEmoji={handleOpenUpdateEmojiModal} />
 
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
 
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 			{isOpenEditModal && (
 				<ModalLayout onClose={handleCloseModal}>
 					<ModalSticker graphic={selectedEmoji} handleCloseModal={handleCloseModal} type={EGraphicType.EMOJI} />

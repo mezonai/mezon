@@ -432,7 +432,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					dispatch(listChannelsByUserActions.updateLastSentTime({ channelId: message.channel_id }));
 					dispatch(threadsActions.updateLastSentInThread({ channelId: message.channel_id, lastSentTime: timestamp }));
 				}
-
+				if (message?.code === TypeMessage.ChatRemove) {
+					if (message.message_id) {
+						pinMessageActions.removePinMessage({
+							pinId: message.message_id,
+							channelId: message.channel_id
+						});
+					}
+				}
 				if (message?.code === TypeMessage.ChatRemove && message.sender_id !== userId) {
 					decreaseChannelBadgeCount(dispatch, {
 						message,
@@ -2396,3 +2403,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider };
+

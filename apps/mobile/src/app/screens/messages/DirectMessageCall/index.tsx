@@ -34,7 +34,6 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 	const isAnswerCall = route.params?.isAnswerCall;
 	const isFromNative = route.params?.isFromNative;
 	const userProfile = useSelector(selectAllAccount);
-	const [isShowControl, setIsShowControl] = useState<boolean>(true);
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userProfile?.user?.id || ''));
 	const isRemoteVideo = useSelector(selectRemoteVideo);
 	const [isMirror, setIsMirror] = useState<boolean>(true);
@@ -91,10 +90,6 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 			InCallManager.setSpeakerphoneOn(false);
 			InCallManager.setForceSpeakerphoneOn(false);
 		}
-	};
-
-	const toggleControl = async () => {
-		setIsShowControl(!isShowControl);
 	};
 
 	const onCancelCall = async () => {
@@ -200,54 +195,52 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 		<View style={styles.container}>
 			{!isFromNative && <StatusBarHeight />}
 
-			{isShowControl && (
-				<View style={[styles.menuHeader]}>
-					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
-						<TouchableOpacity
-							onPress={() => {
-								Alert.alert('End Call', 'Are you sure you want to end the call?', [
-									{
-										text: 'Cancel',
-										style: 'cancel'
-									},
-									{
-										text: 'OK',
-										onPress: () => {
-											onCancelCall();
-										}
+			<View style={[styles.menuHeader]}>
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20 }}>
+					<TouchableOpacity
+						onPress={() => {
+							Alert.alert('End Call', 'Are you sure you want to end the call?', [
+								{
+									text: 'Cancel',
+									style: 'cancel'
+								},
+								{
+									text: 'OK',
+									onPress: () => {
+										onCancelCall();
 									}
-								]);
-							}}
-							style={styles.buttonCircle}
-						>
-							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} color={themeValue.white} />
-						</TouchableOpacity>
-					</View>
-					{isConnected !== null && <ConnectionState isConnected={isConnected} />}
-					<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
-						{callState.localStream && localMediaControl?.camera && (
-							<View>
-								<TouchableOpacity onPress={handleSwitchCamera} style={[styles.buttonCircle]}>
-									<MezonIconCDN icon={IconCDN.cameraFront} height={size.s_24} width={size.s_24} color={themeValue.white} />
-								</TouchableOpacity>
-							</View>
-						)}
+								}
+							]);
+						}}
+						style={styles.buttonCircle}
+					>
+						<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.white} />
+					</TouchableOpacity>
+				</View>
+				{isConnected !== null && <ConnectionState isConnected={isConnected} />}
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+					{callState.localStream && localMediaControl?.camera && (
 						<View>
-							<TouchableOpacity
-								onPress={toggleSpeaker}
-								style={[styles.buttonCircle, localMediaControl.speaker && styles.buttonCircleActive]}
-							>
-								<MezonIconCDN
-									icon={localMediaControl.speaker ? IconCDN.channelVoice : IconCDN.voiceLowIcon}
-									color={localMediaControl.speaker ? themeValue.border : themeValue.white}
-								/>
+							<TouchableOpacity onPress={handleSwitchCamera} style={[styles.buttonCircle]}>
+								<MezonIconCDN icon={IconCDN.cameraFront} height={size.s_24} width={size.s_24} color={themeValue.white} />
 							</TouchableOpacity>
 						</View>
+					)}
+					<View>
+						<TouchableOpacity
+							onPress={toggleSpeaker}
+							style={[styles.buttonCircle, localMediaControl.speaker && styles.buttonCircleActive]}
+						>
+							<MezonIconCDN
+								icon={localMediaControl.speaker ? IconCDN.channelVoice : IconCDN.voiceLowIcon}
+								color={localMediaControl.speaker ? themeValue.secondaryLight : themeValue.white}
+							/>
+						</TouchableOpacity>
 					</View>
 				</View>
-			)}
+			</View>
 
-			<TouchableOpacity activeOpacity={1} style={[styles.main, !isShowControl && { marginBottom: size.s_20 }]} onPress={toggleControl}>
+			<TouchableOpacity activeOpacity={1} style={[styles.main]}>
 				<View style={{ flex: 1 }}>
 					{callState.remoteStream && isRemoteVideo ? (
 						<View style={styles.card}>
@@ -269,43 +262,37 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 					)}
 				</View>
 			</TouchableOpacity>
-			{isShowControl && (
-				<View style={[styles.menuFooter]}>
-					<View style={{ borderRadius: size.s_40, backgroundColor: themeValue.primary }}>
-						<View
-							style={{
-								gap: size.s_30,
-								flexDirection: 'row',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								padding: size.s_14
-							}}
-						>
-							<TouchableOpacity onPress={toggleVideo} style={[styles.menuIcon, localMediaControl?.camera && styles.menuIconActive]}>
-								{localMediaControl?.camera ? (
-									<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
-								) : (
-									<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
-								)}
-							</TouchableOpacity>
-							<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
-								{localMediaControl?.mic ? (
-									<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
-								) : (
-									<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
-								)}
-							</TouchableOpacity>
-							<TouchableOpacity onPress={() => {}} style={styles.menuIcon}>
-								<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />
-							</TouchableOpacity>
-
-							<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
-								<MezonIconCDN icon={IconCDN.phoneCallIcon} />
-							</TouchableOpacity>
-						</View>
+			<View style={[styles.menuFooter]}>
+				<View style={{ borderRadius: size.s_40, backgroundColor: themeValue.primary }}>
+					<View
+						style={{
+							gap: size.s_30,
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'space-between',
+							padding: size.s_14
+						}}
+					>
+						<TouchableOpacity onPress={toggleVideo} style={[styles.menuIcon, localMediaControl?.camera && styles.menuIconActive]}>
+							{localMediaControl?.camera ? (
+								<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
+							) : (
+								<MezonIconCDN icon={IconCDN.videoSlashIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
+							)}
+						</TouchableOpacity>
+						<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
+							{localMediaControl?.mic ? (
+								<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
+							) : (
+								<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
+							)}
+						</TouchableOpacity>
+						<TouchableOpacity onPress={onCancelCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
+							<MezonIconCDN icon={IconCDN.phoneCallIcon} />
+						</TouchableOpacity>
 					</View>
 				</View>
-			)}
+			</View>
 		</View>
 	);
 });

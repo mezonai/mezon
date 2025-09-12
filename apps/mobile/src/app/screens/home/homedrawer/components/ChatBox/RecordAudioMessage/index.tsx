@@ -27,8 +27,6 @@ interface IRecordAudioMessageProps {
 	topicId?: string;
 }
 
-const audioRecorderPlayer = new AudioRecorderPlayer();
-
 export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '' }: IRecordAudioMessageProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -40,10 +38,20 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '' }: I
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
 	const [recordUrl, setRecordUrl] = useState<string>('');
-	const [durationRecord, setDurationRecord] = useState(0);
 	const [isPreviewRecord, setIsPreviewRecord] = useState<boolean>(false);
 	const meterSoundRef = useRef(null);
 	const [isConfirmRecordModalVisible, setIsConfirmRecordModalVisible] = useState<boolean>(false);
+	const audioRecorderPlayerRef = useRef<AudioRecorderPlayer | null>(null);
+
+	const getAudioRecorderPlayer = useCallback(() => {
+		if (!audioRecorderPlayerRef.current) {
+			audioRecorderPlayerRef.current = new AudioRecorderPlayer();
+		}
+		return audioRecorderPlayerRef.current;
+	}, []);
+
+	const audioRecorderPlayer = getAudioRecorderPlayer();
+
 	const currentChannelDM = useMemo(
 		() => (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup),
 		[mode, currentChannel, currentDmGroup]
@@ -55,6 +63,10 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '' }: I
 			startRecording();
 		}, 200);
 		return () => {
+			if (audioRecorderPlayer) {
+				audioRecorderPlayer.removeRecordBackListener();
+				audioRecorderPlayer.stopRecorder();
+			}
 			clearTimeout(timeout);
 		};
 	}, []);
@@ -92,9 +104,6 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '' }: I
 			await new Promise((resolve) => setTimeout(resolve, 300));
 			const result = await audioRecorderPlayer.startRecorder(path);
 			setRecordUrl(result);
-			audioRecorderPlayer.addRecordBackListener((e) => {
-				setDurationRecord(e.currentPosition);
-			});
 			recordingRef.current?.play();
 			recordingWaveRef.current?.play(0, 45);
 			meterSoundRef.current?.play();
@@ -220,7 +229,7 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '' }: I
 				{isPreviewRecord && recordUrl ? (
 					<RenderAudioChat audioURL={recordUrl} stylesContainerCustom={styles.containerAudioCustom} styleLottie={styles.customLottie} />
 				) : (
-					<RecordingAudioMessage durationRecord={durationRecord} ref={recordingWaveRef} />
+					<RecordingAudioMessage audioRecorderPlayer={audioRecorderPlayer} ref={recordingWaveRef} />
 				)}
 
 				<View style={{ marginTop: size.s_20 }}>

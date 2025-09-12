@@ -6,6 +6,7 @@ import { WEBRTC_SIGNALING_TYPES } from '@mezon/utils';
 import LottieView from 'lottie-react-native';
 import { safeJSONParse, WebrtcSignalingFwd } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, Vibration, View } from 'react-native';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
@@ -139,6 +140,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 	const ringtoneRef = useRef<Sound | null>(null);
 	const userId = useSelector(selectCurrentUserId);
 	const { sendSignalingToParticipants } = useSendSignaling();
+	const { t } = useTranslation('message');
 
 	const callData = useMemo(() => {
 		return parseSignalingData(dataCall?.json_data as string);
@@ -250,7 +252,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			<View style={{ flex: 1, paddingRight: size.s_10 }}>
 				<View style={{ alignItems: 'center', flexDirection: 'row' }}>
 					<Text numberOfLines={1} style={styles.headerTitle}>
-						Mezon audio
+						{t('callLog.incomingCall')}
 					</Text>
 					<LottieView
 						source={themeBasic === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE}

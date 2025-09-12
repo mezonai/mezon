@@ -1,8 +1,8 @@
-import { Dispatch } from '@reduxjs/toolkit';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { MentionItem } from 'react-mentions';
-import { MAX_FILE_SIZE, MAX_IMAGE_FILE_SIZE, fileTypeImage } from '../constant';
-import { IMentionOnMessage, IRolesClan, IStartEndIndex, MentionDataProps, MentionReactInputProps, RequestInput } from '../types';
+import type { Dispatch } from '@reduxjs/toolkit';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { MentionItem } from 'react-mentions';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, fileTypeImage } from '../constant';
+import type { IMentionOnMessage, IRolesClan, IStartEndIndex, MentionDataProps, MentionReactInputProps, RequestInput } from '../types';
 
 function createFileMetadata<T>(file: File): T {
 	return {
@@ -115,7 +115,7 @@ export function isImageFile(file: File): boolean {
 }
 
 export function getMaxFileSize(file: File): number {
-	return isImageFile(file) ? MAX_IMAGE_FILE_SIZE : MAX_FILE_SIZE;
+	return isImageFile(file) ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
 }
 
 export function isFileSizeExceeded(file: File): boolean {

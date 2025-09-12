@@ -54,6 +54,7 @@ export * from './audio';
 export * from './buildClassName';
 export * from './buildStyle';
 export * from './calculateAlbumLayout';
+export * from './call';
 export * from './callbacks';
 export * from './canvasLink';
 export * from './convertMessageToHtml';

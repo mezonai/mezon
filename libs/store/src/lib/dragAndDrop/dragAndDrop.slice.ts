@@ -1,4 +1,4 @@
-import { UploadLimitReason } from '@mezon/utils';
+import { MAX_FILE_SIZE, UploadLimitReason } from '@mezon/utils';
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 export const DRAG_AND_DROP_FEATURE_KEY = 'dragAndDrop';
@@ -9,6 +9,7 @@ export interface DragAndDropState {
 	draggingState: boolean;
 	isOverLimitUpload: boolean;
 	overLimitReason: UploadLimitReason;
+	limitSize: number;
 }
 
 export const initialDragAndDropState: DragAndDropState = {
@@ -16,7 +17,8 @@ export const initialDragAndDropState: DragAndDropState = {
 	error: null,
 	draggingState: false,
 	isOverLimitUpload: false,
-	overLimitReason: UploadLimitReason.COUNT
+	overLimitReason: UploadLimitReason.COUNT,
+	limitSize: MAX_FILE_SIZE
 };
 
 export const dragAndDropSlice = createSlice({
@@ -31,6 +33,9 @@ export const dragAndDropSlice = createSlice({
 		},
 		setOverLimitReasonState: (state, action) => {
 			state.overLimitReason = action.payload;
+		},
+		setLimitSizeState: (state, action) => {
+			state.limitSize = action.payload;
 		}
 	}
 });
@@ -45,3 +50,4 @@ export const getDragAndDropState = (rootState: { [DRAG_AND_DROP_FEATURE_KEY]: Dr
 export const selectDragAndDropState = createSelector(getDragAndDropState, (state) => state.draggingState);
 export const selectOverLimitUploadState = createSelector(getDragAndDropState, (state) => state.isOverLimitUpload);
 export const selectOverLimitReasonState = createSelector(getDragAndDropState, (state) => state.overLimitReason);
+export const selectLimitSizeState = createSelector(getDragAndDropState, (state) => state.limitSize);

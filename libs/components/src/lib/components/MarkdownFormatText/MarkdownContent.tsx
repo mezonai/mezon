@@ -66,9 +66,9 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const appearanceTheme = useSelector(selectTheme);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const origin = process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/';
-	const originClan = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/clans/';
-	const originDirect = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/direct/message/';
+	const origin = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/`;
+	const originClan = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/`;
+	const originDirect = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/direct/message/`;
 
 	const [isLoadingInvite, setIsLoadingInvite] = useState(false);
 	const [inviteError, setInviteError] = useState<string | null>(null);
@@ -235,6 +235,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 					</a>
 				)
 			)}
+
 			{!isReply && isLink && content && isYouTubeLink(content) && (
 				<SocialEmbed url={content} platform="youtube" isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
 			)}
@@ -379,6 +380,7 @@ const SocialEmbed: React.FC<{ url: string; platform: SocialPlatform; isSearchMes
 					src={embedUrl}
 					style={{ width, height, border: 'none', maxWidth: '100%' }}
 					allowFullScreen
+					referrerPolicy={'strict-origin-when-cross-origin'}
 				></iframe>
 			</div>
 		</div>

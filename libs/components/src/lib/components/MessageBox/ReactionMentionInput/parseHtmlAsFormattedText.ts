@@ -227,7 +227,7 @@ const LINK_TEMPLATE = /(?:\w+:)?\/\/[^\s<>]+/gi;
 
 export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks = true, skipMarkdown = false): ApiFormattedText {
 	const fragment = document.createElement('div');
-	fragment.innerHTML = withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
+	fragment.innerHTML = skipMarkdown ? html : withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
 	fixImageContent(fragment);
 	const text = fragment.innerText.trim().replace(/\u200b+/g, '');
 	const trimShift = fragment.innerText.indexOf(text[0]);

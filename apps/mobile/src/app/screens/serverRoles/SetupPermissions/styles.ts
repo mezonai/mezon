@@ -81,11 +81,20 @@ export const style = (colors: Attributes) =>
 		},
 		permissionItem: {
 			flexDirection: 'row',
-			alignItems: 'center',
+			alignItems: 'flex-start',
 			justifyContent: 'space-between',
 			backgroundColor: colors.secondary,
 			padding: size.s_12,
 			gap: size.s_10
+		},
+		permissionDescription: {
+			fontSize: size.s_10,
+			marginTop: size.s_4,
+			lineHeight: size.s_16,
+			color: colors.textDisabled
+		},
+		switchContainer: {
+			paddingTop: size.s_2
 		},
 		bottomButton: {
 			marginBottom: size.s_16,

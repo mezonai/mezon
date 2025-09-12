@@ -2,15 +2,16 @@ import { useAuth, useClanProfileSetting } from '@mezon/core';
 import { checkDuplicateClanNickName, selectUserClanProfileByClanID, toastActions, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { InputField } from '@mezon/ui';
-import { ImageSourceObject, MAX_FILE_SIZE_1MB, fileTypeImage, generateE2eId } from '@mezon/utils';
+import type { ImageSourceObject } from '@mezon/utils';
+import { MAX_FILE_SIZE_1MB, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useDebouncedCallback } from 'use-debounce';
-import { ModalSettingSave } from '../../ClanSettings/SettingRoleManagement';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import type { ModalSettingSave } from '../../ClanSettings/SettingRoleManagement';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import PreviewSetting from '../SettingUserClanProfileCard';
 import { processImage } from '../helper';
@@ -70,12 +71,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 	const [openModalEditor, closeModalEditor] = useModal(
 		() =>
 			imageObject ? (
-				<ImageEditor
-					setImageCropped={setImageCropped}
-					setImageObject={setImageObject}
-					onClose={closeModalEditor}
-					imageSource={imageObject}
-				/>
+				<ImageEditor setImageCropped={setImageCropped} setImageObject={setImageObject} onClose={closeModalEditor} imageSource={imageObject} />
 			) : null,
 		[imageObject]
 	);
@@ -203,7 +199,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 		setFlagOption(false);
 	};
 	const saveProfile: ModalSettingSave = {
-		flagOption: flagOption,
+		flagOption,
 		handleClose,
 		handleUpdateUser
 	};
@@ -263,8 +259,10 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			</div>
 
 			<SettingUserClanProfileSave PropsSave={saveProfile} />
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
+
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 		</>
 	);
 };

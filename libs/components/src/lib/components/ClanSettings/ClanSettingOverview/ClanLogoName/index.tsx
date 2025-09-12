@@ -4,7 +4,7 @@ import { Icons } from '@mezon/ui';
 import { ValidateSpecialCharacters, fileTypeImage } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import ModalValidateFile from '../../../ModalValidateFile';
+import { ModalErrorTypeUpload } from '../../../ModalValidateFile/ModalOverData';
 
 type ClanLogoNameProps = {
 	onUpload: (url: string) => void;
@@ -141,14 +141,7 @@ const ClanLogoName = ({ onUpload, onGetClanName }: ClanLogoNameProps) => {
 					</p>
 				)}
 			</div>
-			{openModal && (
-				<ModalValidateFile
-					onClose={() => setOpenModal(false)}
-					image="assets/images/qr-mezon.png"
-					title="Only image files are allowed"
-					content="Just upload type file (JPEG, PNG), please!"
-				/>
-			)}
+			<ModalErrorTypeUpload open={openModal} onClose={() => setOpenModal(false)} />
 		</div>
 	);
 };

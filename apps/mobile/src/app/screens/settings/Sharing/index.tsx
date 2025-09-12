@@ -23,16 +23,8 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
-import {
-	checkIsThread,
-	createImgproxyUrl,
-	EBacktickType,
-	ILinkOnMessage,
-	isPublicChannel,
-	isYouTubeLink,
-	MAX_FILE_SIZE,
-	MAX_IMAGE_FILE_SIZE
-} from '@mezon/utils';
+import type { ILinkOnMessage } from '@mezon/utils';
+import { checkIsThread, createImgproxyUrl, EBacktickType, IMAGE_MAX_FILE_SIZE, isPublicChannel, isYouTubeLink, MAX_FILE_SIZE } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -206,7 +198,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				clanId: channelSelected?.clan_id,
 				channelId: channelSelected?.channel_id,
 				channelType: channelSelected?.type,
-				isPublic: isPublic
+				isPublic
 			})
 		);
 
@@ -309,7 +301,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 						(media?.mimeType && media?.mimeType?.startsWith('image')) ||
 						isImage(media?.filePath?.toLowerCase());
 
-					const maxAllowedSize = checkIsImage ? MAX_IMAGE_FILE_SIZE : MAX_FILE_SIZE;
+					const maxAllowedSize = checkIsImage ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
 					if (fileSize > maxAllowedSize) {
 						const fileTypeText = checkIsImage ? t('common:image') : t('common:files');
 						const maxSizeMB = Math.round(maxAllowedSize / (1024 * 1024));

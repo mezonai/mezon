@@ -22,7 +22,7 @@ import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import type { Coords } from '../../ChannelLink';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import PanelClan from '../../PanelClan';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import type { Profilesform } from '../SettingUserClanProfileCard';
@@ -404,8 +404,9 @@ const SettingRightUser = ({
 			) : null}
 			{openModalDeleteAcc && <DeleteAccountModal handleLogOut={handleDeleteAccount} onClose={handleCloseModal} isDeleting={isDeleting} />}
 
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
+
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 		</>
 	);
 };

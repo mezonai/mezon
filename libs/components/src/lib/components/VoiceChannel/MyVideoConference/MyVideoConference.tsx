@@ -26,7 +26,7 @@ import { useSoundReactions } from './Reaction/useSoundReactions';
 interface MyVideoConferenceProps {
 	channelLabel?: string;
 	url?: string;
-	token: string;
+	token?: string;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
 	onJoinRoom?: () => void;
@@ -111,7 +111,7 @@ export function MyVideoConference({
 				reason === DisconnectReason.JOIN_FAILURE
 			) {
 				onLeaveRoom();
-			} else {
+			} else if (token) {
 				if (!url) return;
 				const maxAttempts = 3;
 
@@ -127,6 +127,8 @@ export function MyVideoConference({
 						}
 					}
 				}
+			} else {
+				onLeaveRoom();
 			}
 		};
 		const handleLocalTrackUnpublished = (publication: LocalTrackPublication, participant: LocalParticipant) => {

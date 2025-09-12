@@ -9,12 +9,12 @@ import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, BackHandler, DeviceEventEmitter, Linking, NativeModules, Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
-import { deflate, inflate } from 'react-native-gzip';
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import NotificationPreferences from '../utils/NotificationPreferences';
+import { compress, decompress } from '../utils/helpers';
 import { usePermission } from './useRequestPermission';
 
 const RTCConfig = {
@@ -33,14 +33,6 @@ interface CallState {
 	remoteStream: MediaStream | null;
 	storedIceCandidates?: RTCIceCandidate[] | null;
 }
-
-const compress = async (str: string) => {
-	return await deflate(str);
-};
-
-const decompress = async (compressedStr: string) => {
-	return await inflate(compressedStr);
-};
 
 type MediaControl = {
 	mic: boolean;
@@ -246,11 +238,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				});
 			}
 		}
-
-		setLocalMediaControl({
+		setLocalMediaControl((prev) => ({
+			...prev,
 			camera: haveCameraPermission && isVideoCall,
 			mic: true
-		});
+		}));
 		return {
 			audio: true,
 			video: haveCameraPermission && isVideoCall
@@ -317,7 +309,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 
 				const offer = await pc.createOffer(sessionConstraints);
 				await pc.setLocalDescription(offer);
-				const compressedOffer = await compress(JSON.stringify(offer));
+				const compressedOffer = await compress(JSON.stringify({ ...offer, callerName, callerAvatar }));
 				const bodyFCMMobile = {
 					offer: compressedOffer,
 					callerName,
@@ -339,6 +331,10 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 					localStream: stream,
 					remoteStream: null
 				});
+				setLocalMediaControl((prev) => ({
+					...prev,
+					camera: isVideoCall
+				}));
 				peerConnection.current = pc;
 			} else {
 				// if is answer call, need to cancel call native on mobile
@@ -351,12 +347,12 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	};
 
 	const handleOffer = async (signalingData: any) => {
-		const constraints = await getConstraintsLocal(isVideoCall);
+		const constraints = await getConstraintsLocal(localMediaControl.camera);
 		const stream = await mediaDevices.getUserMedia(constraints);
 
 		const pc = peerConnection?.current || initializePeerConnection();
 
-		if (isVideoCall) {
+		if (localMediaControl.camera || isVideoCall) {
 			await mezon.socketRef.current?.forwardWebrtcSignaling(
 				dmUserId,
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
@@ -493,7 +489,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				timeCall = `${diffMins} mins ${diffSecs} secs`;
 				await dispatch(
 					DMCallActions.updateCallLog({
-						channelId: channelId,
+						channelId,
 						content: {
 							t: timeCall,
 							callLog: {
