@@ -1,5 +1,5 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { JoinForm, MyVideoConference, VideoPreview } from '@mezon/components';
+import { JoinForm, TranscriptDock, VideoPreview } from '@mezon/components';
 import {
 	authActions,
 	generateMeetTokenExternal,
@@ -67,6 +67,9 @@ export default function PreJoinCalling() {
 	const [username, setUsername] = useState('');
 	const [avatar, setAvatar] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	// Transcript UI state (default visible to verify UI)
+	const [showTranscript, setShowTranscript] = useState(true);
+	// Remove direct hook usage to avoid context outside of LiveKitRoom
 	// State for permissions
 	const [permissionsState, setPermissionsState] = useState({
 		camera: false,
@@ -222,14 +225,7 @@ export default function PreJoinCalling() {
 					data-lk-theme="default"
 					className="h-full flex-1 flex"
 				>
-					<MyVideoConference
-						token={getExternalToken}
-						url={serverUrl}
-						isExternalCalling={true}
-						channelLabel={'Private Room'}
-						onLeaveRoom={handleLeaveRoom}
-						onFullScreen={handleFullScreen}
-					/>
+					<TranscriptDock />
 					<ChatStreamExternal />
 				</LiveKitRoom>
 			) : (

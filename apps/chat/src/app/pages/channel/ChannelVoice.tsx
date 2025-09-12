@@ -1,7 +1,7 @@
 import { LiveKitRoom } from '@livekit/components-react';
 import '@livekit/components-styles';
 
-import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
+import { MyVideoConference, PreJoinVoiceChannel, TranscriptDock } from '@mezon/components';
 import { EmojiSuggestionProvider, useAppParams, useAuth } from '@mezon/core';
 import {
 	appActions,
@@ -35,6 +35,7 @@ const ChannelVoice = memo(
 		const token = useSelector(selectTokenJoinVoice);
 		const voiceInfo = useSelector(selectVoiceInfo);
 		const [loading, setLoading] = useState<boolean>(false);
+		const [showTranscript, setShowTranscript] = useState<boolean>(false);
 		const dispatch = useAppDispatch();
 		const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
 		const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
@@ -166,7 +167,16 @@ const ChannelVoice = memo(
 									isShowChatVoice={isShowChatVoice}
 									onToggleChat={toggleChat}
 									currentChannel={currentChannel}
+									isShowTranscript={showTranscript}
+									onToggleTranscript={() => setShowTranscript((v) => !v)}
 								/>
+
+								{showTranscript && (
+									<div className="w-[400px] border-l border-border dark:border-bgTertiary z-40 bg-input-theme flex-shrink-0">
+										<TranscriptDock onClose={() => setShowTranscript(false)} />
+									</div>
+								)}
+
 								<EmojiSuggestionProvider>
 									{isShowChatVoice && (
 										<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">

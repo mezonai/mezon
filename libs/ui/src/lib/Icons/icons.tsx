@@ -4277,6 +4277,27 @@ export function Chat({ defaultFill, defaultSize = 'w-5 h-5' }: IconProps) {
 	);
 }
 
+export function Transcript({ defaultFill, defaultSize = 'w-5 h-5' }: IconProps) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			width="24"
+			height="24"
+			fill="currentColor"
+			aria-hidden="true"
+			role="img"
+			className={`${defaultSize} ${
+				defaultFill ? defaultFill : 'dark:hover:text-white hover:text-black dark:text-channelTextLabel text-colorTextLightMode'
+			}`}
+		>
+			<path fill="currentColor" d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6z" />
+			<path fill="currentColor" d="M14 2v6h6" />
+			<path fill="currentColor" d="M8 11h8v1.5H8V11zm0 3h8v1.5H8V14zm0 3h5v1.5H8V17z" />
+		</svg>
+	);
+}
+
 export function ParagraphIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
 		<svg data-315="true" data-qa="paragraph" aria-hidden="true" viewBox="0 0 20 20" className="is-inline" width="1em" height="1em" {...props}>
