@@ -171,7 +171,7 @@ const ChannelVoice = memo(
 								/>
 
 								{showTranscript && (
-									<div className="w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-theme-primary flex-shrink-0">
+									<div className="w-[400px] border-l border-border dark:border-bgTertiary z-40 bg-input-theme flex-shrink-0">
 										<TranscriptDock onClose={() => setShowTranscript(false)} />
 									</div>
 								)}

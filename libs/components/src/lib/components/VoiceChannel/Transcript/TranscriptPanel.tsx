@@ -1,3 +1,4 @@
+import { Icons } from '@mezon/ui';
 import React, { useEffect, useRef, useState } from 'react';
 
 export type TranscriptItem = {
@@ -46,21 +47,21 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], ti
 
 	return (
 		<div className="w-full h-screen bg-theme-primary text-theme-primary flex flex-col">
-			<div className="flex items-center justify-between px-4 py-3 ">
+			<div className="flex items-center justify-between px-4 h-[50px] ">
 				<h3 className="text-theme-primary font-semibold">{title}</h3>
 				{onClose && (
 					<button onClick={onClose} className="text-theme-primary text-xs">
-						Close
+						<Icons.Close defaultSize="w-5 h-5" />
 					</button>
 				)}
 			</div>
-			<div className="flex-1 overflow-auto p-3" ref={scrollRef} onScroll={handleScroll}>
+			<div className="flex-1 overflow-auto bg-input-theme" ref={scrollRef} onScroll={handleScroll}>
 				{items.length === 0 ? (
-					<div className="text-theme-primary text-sm">No transcript yet. When speech is detected, it will appear here.</div>
+					<div className="text-theme-primary text-sm p-5">No transcript yet. When speech is detected, it will appear here.</div>
 				) : (
-					<ul className="space-y-2">
+					<ul className="space-y-2 px-2 pt-2">
 						{items.map((it) => (
-							<li key={it.id} className="text-[15px] text-theme-message font-semibold">
+							<li key={it.id} className="text-[15px] text-theme-message font-semibold pl-1">
 								<div className="text-[11px]">
 									{it.timestamp}
 									{it.speaker ? ` • ${it.speaker}` : ''}
@@ -73,7 +74,7 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], ti
 				{!isAtBottom && (
 					<button
 						onClick={scrollToBottom}
-						className="absolute bottom-4 right-4  text-white px-3 py-1 rounded-full shadow-md bg-button-hover transition"
+						className="absolute bottom-4 right-4 text-theme-message px-3 py-1 rounded-full shadow-md bg-button-hover transition"
 					>
 						↓ Scroll to bottom
 					</button>
