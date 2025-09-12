@@ -1,6 +1,14 @@
 import { ActionEmitEvent, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { clansActions, directActions, getStoreAsync, selectOrderedClans, selectOrderedClansWithGroups, useAppDispatch } from '@mezon/store-mobile';
+import {
+	clansActions,
+	directActions,
+	getStoreAsync,
+	selectCurrentUserId,
+	selectOrderedClans,
+	selectOrderedClansWithGroups,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
@@ -28,6 +36,7 @@ export const ListClanPopup = React.memo(() => {
 	const navigation = useNavigation();
 	const isTabletLandscape = useTabletLandscape();
 	const dispatch = useAppDispatch();
+	const currentUserId = useSelector(selectCurrentUserId);
 	const orderedClansWithGroups = useSelector(selectOrderedClansWithGroups);
 	const clans = useSelector(selectOrderedClans);
 	const iconDimensionsRef = useRef<{ width: number; height: number } | null>(null);
@@ -45,7 +54,7 @@ export const ListClanPopup = React.memo(() => {
 	}, []);
 
 	useEffect(() => {
-		dispatch(clansActions.initializeClanGroupOrder());
+		dispatch(clansActions.initializeClanGroupOrder(currentUserId));
 	}, []);
 
 	useEffect(() => {
@@ -207,13 +216,15 @@ export const ListClanPopup = React.memo(() => {
 							return {
 								type: GROUP,
 								id: item?.id,
-								groupId: item?.group?.id
+								groupId: item?.group?.id,
+								userId: currentUserId
 							};
 						} else if (item?.type === CLAN) {
 							return {
 								type: CLAN,
 								id: item?.id,
-								clanId: item?.clan?.clan_id
+								clanId: item?.clan?.clan_id,
+								userId: currentUserId
 							};
 						}
 					});
@@ -225,13 +236,15 @@ export const ListClanPopup = React.memo(() => {
 							dispatch(
 								clansActions.addClanToGroup({
 									groupId: toItem?.group?.id,
-									clanId: fromItem?.clan?.clan_id
+									clanId: fromItem?.clan?.clan_id,
+									userId: currentUserId
 								})
 							);
 						} else if (toItem?.type === CLAN) {
 							dispatch(
 								clansActions.createClanGroup({
-									clanIds: [fromItem?.clan?.clan_id, toItem?.clan?.clan_id]
+									clanIds: [fromItem?.clan?.clan_id, toItem?.clan?.clan_id],
+									userId: currentUserId
 								})
 							);
 						}
@@ -243,7 +256,7 @@ export const ListClanPopup = React.memo(() => {
 				setGroupPreviewMap({});
 			}
 		},
-		[groupClans, groupPreviewMap]
+		[currentUserId, groupClans, groupPreviewMap]
 	);
 
 	const handleChangeClan = useCallback(
@@ -258,8 +271,8 @@ export const ListClanPopup = React.memo(() => {
 			store.dispatch(clansActions.setCurrentClanId(clanId));
 			requestAnimationFrame(async () => {
 				const promises = [];
-				promises.push(store.dispatch(clansActions.joinClan({ clanId: clanId })));
-				promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId: clanId })));
+				promises.push(store.dispatch(clansActions.joinClan({ clanId })));
+				promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId })));
 				await Promise.allSettled(promises);
 			});
 		},
@@ -277,6 +290,7 @@ export const ListClanPopup = React.memo(() => {
 						clans={clans}
 						drag={drag}
 						isActive={isActive}
+						currentUserId={currentUserId}
 					/>
 					{groupPreviewMap?.[item?.group?.id] !== undefined && (
 						<ClanGroupPreview targetItem={item} dragItem={groupClans[dragIndexRef.current]} clans={clans} />

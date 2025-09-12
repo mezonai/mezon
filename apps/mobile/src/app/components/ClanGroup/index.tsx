@@ -1,5 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ClanGroup as ClanGroupType, clansActions, useAppDispatch } from '@mezon/store-mobile';
+import type { ClanGroup as ClanGroupType } from '@mezon/store-mobile';
+import { clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -16,9 +17,10 @@ interface ClanGroupProps {
 	clans: any[];
 	drag: () => void;
 	isActive?: boolean;
+	currentUserId?: string;
 }
 
-export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: ClanGroupProps) => {
+export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive, currentUserId = '' }: ClanGroupProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
@@ -46,8 +48,8 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 	}, [groupClan]);
 
 	const handleRemoveClanFromGroup = (clanId: string) => {
-		if (group?.id && clanId) {
-			dispatch(clansActions.removeClanFromGroup({ groupId: group.id, clanId }));
+		if (group?.id && clanId && currentUserId) {
+			dispatch(clansActions.removeClanFromGroup({ groupId: group.id, clanId, userId: currentUserId }));
 		}
 	};
 
@@ -69,7 +71,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 						<ImageNative
 							url={createImgproxyUrl(clan?.logo, { width: 100, height: 100, resizeType: 'fit' })}
 							style={{ width: '100%', height: '100%' }}
-							resizeMode="cover"
+							resizeMode='cover'
 						/>
 					</View>
 				) : (
