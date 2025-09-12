@@ -210,7 +210,7 @@ export function MyVideoConference({
 							<FocusLayoutContainer isShowMember={isShowMember}>
 								{focusTrack && <FocusLayout trackRef={focusTrack} isExtCalling={isExternalCalling} />}
 								{isShowMember && (
-									<CarouselLayout tracks={tracks}>
+									<CarouselLayout tracks={tracks.filter((track) => track.participant.isAgent !== true)}>
 										<ParticipantTile
 											roomName={room?.name}
 											isExtCalling={isExternalCalling}
