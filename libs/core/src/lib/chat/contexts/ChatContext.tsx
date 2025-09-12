@@ -1045,6 +1045,30 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			const isReceiverGiveCoffee = tokenEvent.receiver_id === userId;
 			const isSenderGiveCoffee = tokenEvent.sender_id === userId;
 
+			if (tokenEvent.extra_attribute) {
+				try {
+					const parsedExtraAttribute = JSON.parse(tokenEvent.extra_attribute);
+					if (
+						'item_id' in parsedExtraAttribute &&
+						'source' in parsedExtraAttribute &&
+						parsedExtraAttribute.item_id &&
+						parsedExtraAttribute.source
+					) {
+						dispatch(
+							emojiSuggestionActions.update({
+								id: parsedExtraAttribute.item_id,
+								changes: {
+									src: parsedExtraAttribute.source
+								}
+							})
+						);
+						dispatch(emojiRecentActions.removePendingUnlock({ emojiId: parsedExtraAttribute.item_id }));
+					}
+				} catch (error) {
+					console.error('Error parsing extra attribute', error);
+				}
+			}
+
 			const updateAmount =
 				tokenEvent.amount !== undefined ? (isReceiverGiveCoffee ? tokenEvent.amount : isSenderGiveCoffee ? -tokenEvent.amount : 0) : 0;
 
