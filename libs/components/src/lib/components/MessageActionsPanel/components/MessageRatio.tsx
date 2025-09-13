@@ -41,7 +41,7 @@ export const MessageRatioButton: React.FC<MessageRatioButtonProps> = ({ name, on
 				className={`appearance-none w-3 h-3 text-white bg-transparent cursor-pointer relative rounded-full
 				 ${buttonColor}`}
 				onClick={onCheckRatio}
-				checked={checked}
+				defaultChecked={checked}
 			/>
 		</div>
 	);
