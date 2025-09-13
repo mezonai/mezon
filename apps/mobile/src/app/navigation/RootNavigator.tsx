@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { MezonStoreProvider, appActions, initStore, selectHiddenBottomTabMobile, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { extractAndSaveConfig, useMezon } from '@mezon/transport';
+import { extractAndSaveConfig, useMezon, useMmn } from '@mezon/transport';
 import { LinkingOptions, NavigationContainer, getStateFromPath } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -153,16 +153,18 @@ const NavigationMain = memo(
 
 const RootNavigation = (props) => {
 	const mezon = useMezon();
+	const mmn = useMmn();
 	const { store, persistor } = useMemo(() => {
-		if (!mezon) {
+		if (!mezon || !mmn) {
 			return { store: null, persistor: null };
 		}
 		if (mezon?.sessionRef) {
 			const config = extractAndSaveConfig(mezon?.sessionRef as unknown as Session, true);
 			if (config) saveMezonConfigToStorage(config.host, config.port, config.useSSL);
 		}
-		return initStore(mezon, undefined);
-	}, [mezon]);
+
+		return initStore(mezon, mmn.client, undefined);
+	}, [mezon, mmn]);
 
 	return (
 		<MezonStoreProvider store={store} loading={null} persistor={persistor}>

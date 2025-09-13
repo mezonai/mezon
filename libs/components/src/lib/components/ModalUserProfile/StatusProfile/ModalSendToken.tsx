@@ -1,4 +1,5 @@
-import { FriendsEntity, ISendTokenDetailType, selectAllFriends, selectAllUsersByUser, UsersEntity } from '@mezon/store';
+import type { FriendsEntity, ISendTokenDetailType, UsersEntity } from '@mezon/store';
+import { selectAllFriends, selectAllUsersByUser } from '@mezon/store';
 import { ButtonLoading, Icons } from '@mezon/ui';
 import { createImgproxyUrl, formatNumber } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -31,6 +32,7 @@ type User = {
 	avatar_url: string;
 	search_key?: string;
 	display_name?: string;
+	mmn_address?: string;
 };
 const ModalSendToken = ({
 	onClose,
@@ -112,7 +114,8 @@ const ModalSendToken = ({
 					username: itemUserClan?.username ?? '',
 					avatar_url: itemUserClan?.avatar_url ?? '',
 					search_key: itemUserClan.list_nick_names?.join('./'),
-					display_name: itemUserClan.display_name
+					display_name: itemUserClan.display_name,
+					mmn_address: itemUserClan?.mmn_address ?? ''
 				});
 			}
 		});
@@ -124,7 +127,8 @@ const ModalSendToken = ({
 					id: userId,
 					username: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
 					avatar_url: itemDM?.user?.avatar_url ?? '',
-					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? ''
+					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
+					mmn_address: itemDM?.user?.mmn_address ?? ''
 				});
 			}
 		});
@@ -159,9 +163,10 @@ const ModalSendToken = ({
 		setTokenNumber(formatNumber(Number(token), 'vi-VN'));
 	}, [token, selectedUserId]);
 
+	const selectedUser = mergedUsers.find((user) => user.id === selectedUserId);
+
 	const handleSendToken = () => {
-		const userData = mergedUsers.find((user) => user.id === selectedUserId);
-		handleSaveSendToken(userData?.id, userData?.username, userData?.avatar_url, userData?.display_name);
+		handleSaveSendToken(selectedUser?.id, selectedUser?.username, selectedUser?.avatar_url, selectedUser?.display_name);
 	};
 
 	const amountRef = useRef<HTMLInputElement | null>(null);
@@ -295,7 +300,7 @@ const ModalSendToken = ({
 					<ButtonLoading
 						className="flex-1 h-12 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 hover:text-white  text-white font-medium"
 						onClick={handleSendToken}
-						disabled={isButtonDisabled || !selectedUserId || token <= 0}
+						disabled={isButtonDisabled || !selectedUserId || token <= 0 || (selectedUser && !selectedUser.mmn_address)}
 						label="Send Tokens"
 					/>
 				</div>

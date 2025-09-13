@@ -1,5 +1,5 @@
 import i18n from '@mezon/translations';
-import { CreateMezonClientOptions, MezonContextProvider } from '@mezon/transport';
+import { CreateMezonClientOptions, MezonContextProvider, MmnContextProvider } from '@mezon/transport';
 import * as Sentry from '@sentry/react-native';
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
@@ -43,7 +43,9 @@ const App = (props) => {
 	return (
 		<I18nextProvider i18n={i18n}>
 			<MezonContextProvider mezon={mezon} connect={true} isFromMobile={true}>
-				<RootNavigation {...props} />
+				<MmnContextProvider>
+					<RootNavigation {...props} />
+				</MmnContextProvider>
 			</MezonContextProvider>
 		</I18nextProvider>
 	);

@@ -7,7 +7,7 @@ import {
 	setIsElectronUpdateAvailable
 } from '@mezon/store';
 import i18n from '@mezon/translations';
-import { MezonContextProvider, clearSessionFromStorage, getMezonConfig, useMezon } from '@mezon/transport';
+import { MezonContextProvider, MmnContextProvider, clearSessionFromStorage, getMezonConfig, useMezon, useMmn } from '@mezon/transport';
 
 import { PopupManagerProvider } from '@mezon/components';
 import { PermissionProvider, useActivities, useSettingFooter } from '@mezon/core';
@@ -149,17 +149,18 @@ const AppInitializer = () => {
 
 export function App() {
 	const mezon = useMezon();
+	const mmn = useMmn();
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [suspenseLoading, setSuspenseLoading] = useState(false);
 
 	const { store, persistor } = useMemo(() => {
-		if (!mezon) {
+		if (!mezon || !mmn) {
 			return { store: null, persistor: null };
 		}
 
-		return initStore(mezon, preloadedState);
-	}, [mezon]);
+		return initStore(mezon, mmn.client, preloadedState);
+	}, [mezon, mmn]);
 
 	if (!store) {
 		return <LoadingFallbackWrapper />;
@@ -201,7 +202,9 @@ function AppWrapper() {
 	return (
 		<I18nextProvider i18n={i18n}>
 			<MezonContextProvider mezon={mezon} connect={true}>
-				<App />
+				<MmnContextProvider>
+					<App />
+				</MmnContextProvider>
 			</MezonContextProvider>
 		</I18nextProvider>
 	);

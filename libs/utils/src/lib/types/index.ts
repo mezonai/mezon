@@ -622,6 +622,7 @@ export type IEmoji = {
 	clan_name?: string;
 	clan_id?: string;
 	is_for_sale?: boolean;
+	creator_mmn_address?: string;
 };
 
 export type IEmojiRecent = {

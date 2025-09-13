@@ -1,4 +1,5 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import { useAuth } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
@@ -19,6 +20,7 @@ export interface IProductDetail {
 	logo: string;
 	shortname: string;
 	type: 'emoji' | 'sticker';
+	creator_mmn_address?: string;
 }
 
 interface ProductDetailModalProps {
@@ -31,14 +33,22 @@ const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) 
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['token']);
+	const { userProfile } = useAuth();
 
 	const closeModal = () => DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 
 	const handleConfirmPurchase = async () => {
 		try {
-			if (product?.id) {
+			if (product?.id && product?.creator_mmn_address) {
 				const apiType = product?.type === 'emoji' ? 0 : 1;
-				const response = await dispatch(emojiRecentActions.buyItemForSale({ id: product?.id, type: apiType }));
+				const response = await dispatch(
+					emojiRecentActions.buyItemForSale({
+						id: product?.id,
+						type: apiType,
+						creatorMmnAddress: product.creator_mmn_address,
+						senderId: userProfile?.user?.id
+					})
+				);
 				if (!response?.type?.includes('rejected')) {
 					Toast.show({
 						type: 'success',

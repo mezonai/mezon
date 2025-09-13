@@ -1,4 +1,4 @@
-import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
+import { useAuth, useChatSending, useCurrentInbox, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
 import {
 	MediaType,
 	emojiRecentActions,
@@ -11,8 +11,8 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { FOR_SALE_CATE, SubPanelName, blankReferenceObj } from '@mezon/utils';
-import { ClanSticker } from 'mezon-js';
-import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ClanSticker } from 'mezon-js';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import ModalBuyItem from './ModalBuyItem';
@@ -54,6 +54,7 @@ type StickerPanel = {
 	forSale?: boolean;
 	clanName?: string;
 	clanId?: string;
+	creatorMmnAddress?: string;
 	shortname?: string;
 };
 
@@ -64,6 +65,7 @@ const searchStickers = (stickers: ClanSticker[], searchTerm: string) => {
 };
 
 function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessageBoxProps) {
+	const { userProfile } = useAuth();
 	const allStickers = useAppSelector(selectAllStickerSuggestion);
 	const clanStickers = useMemo(
 		() => allStickers.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER),
@@ -111,6 +113,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				clanName: sticker.category,
 				clanId: sticker.clan_id,
 				forSale: sticker.is_for_sale,
+				creatorMmnAddress: sticker.creator_mmn_address,
 				shortname: sticker.shortname || ''
 			}))
 		].filter(Boolean);
@@ -163,11 +166,18 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const [openModalListBuy, closeModalListBuy] = useModal(() => {
 		const handleConfirmBuyItem = async () => {
 			if (stickerBuy) {
-				await dispatch(emojiRecentActions.buyItemForSale({ id: stickerBuy.id, type: 1 }));
+				await dispatch(
+					emojiRecentActions.buyItemForSale({
+						id: stickerBuy.id,
+						type: 1,
+						creatorMmnAddress: stickerBuy.creatorMmnAddress,
+						senderId: userProfile?.user?.id
+					})
+				);
 			}
 		};
 		return <ModalBuyItem onConfirm={handleConfirmBuyItem} onCancel={closeModalListBuy} />;
-	}, [stickerBuy]);
+	}, [stickerBuy, userProfile?.user?.id]);
 
 	return (
 		<div ref={modalRef} tabIndex={-1} className="outline-none flex h-full w-full md:w-[500px] max-sm:ml-1 pt-3">
@@ -292,7 +302,7 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 								onMouseEnter={() => setPlaceHolderInput(sticker.shortname || '')}
 							>
 								<img
-									src={sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/` + sticker.id + `.webp`}
+									src={sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp`}
 									alt="sticker"
 									className={`w-full h-full aspect-square object-cover  hover:bg-bgLightModeButton ${sticker.id === '0' ? 'blur-sm' : ''}`}
 									onClick={() => (!sticker.forSale || sticker.url ? onClickSticker(sticker) : onOpenBuySticker(sticker))}

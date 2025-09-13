@@ -1,5 +1,5 @@
 import { initStore, MezonStoreProvider } from '@mezon/store';
-import { CreateMezonClientOptions, MezonContextProvider, useMezon } from '@mezon/transport';
+import { CreateMezonClientOptions, MezonContextProvider, MmnContextProvider, useMezon, useMmn } from '@mezon/transport';
 import { useMemo } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
@@ -51,9 +51,14 @@ export function App() {
 	]);
 
 	const mezon = useMezon();
+	const mmn = useMmn();
 	const { store, persistor } = useMemo(() => {
-		return initStore(mezon);
-	}, [mezon]);
+		if (!mezon || !mmn) {
+			return { store: null, persistor: null };
+		}
+
+		return initStore(mezon, mmn.client);
+	}, [mezon, mmn]);
 
 	if (!store) {
 		return <>loading...</>;
@@ -70,7 +75,9 @@ export function App() {
 function AppWrapper() {
 	return (
 		<MezonContextProvider mezon={mezon} connect={true}>
-			<App />
+			<MmnContextProvider>
+				<App />
+			</MmnContextProvider>
 		</MezonContextProvider>
 	);
 }

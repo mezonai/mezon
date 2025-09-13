@@ -12,6 +12,12 @@ export interface IAccount {
 	email: string;
 	password: string;
 }
+export interface IWalletState {
+	account_nonce?: number;
+	address: string;
+	balance?: string;
+	last_balance_update?: number;
+}
 export interface AccountState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -19,6 +25,7 @@ export interface AccountState {
 	userProfile?: IUserAccount | null;
 	anonymousMode: boolean;
 	cache?: CacheMetadata;
+	wallet?: IWalletState;
 }
 
 export const initialAccountState: AccountState = {
@@ -94,6 +101,22 @@ export const deleteAccount = createAsyncThunk('account/deleteaccount', async (_,
 	}
 });
 
+export const storeWalletKey = createAsyncThunk('account/storeWalletKey', async (metadata: any, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await mezon.client.storeWalletKey(mezon.session, {
+			address: metadata.address,
+			enc_privkey: metadata.encryptedPrivateKey
+		});
+		thunkAPI.dispatch(accountActions.setWalletMetadata(metadata));
+		return response;
+	} catch (error) {
+		toast.error('Error saving wallet metadata');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const accountSlice = createSlice({
 	name: ACCOUNT_FEATURE_KEY,
 	initialState: initialAccountState,
@@ -161,6 +184,9 @@ export const accountSlice = createSlice({
 				user: { ...state.userProfile?.user, ...action.payload.user },
 				encrypt_private_key: action.payload.encrypt_private_key
 			};
+		},
+		setWalletData(state, action: PayloadAction<IWalletState | undefined>) {
+			state.wallet = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -189,7 +215,7 @@ export const accountSlice = createSlice({
  */
 export const accountReducer = accountSlice.reducer;
 
-export const accountActions = { ...accountSlice.actions, getUserProfile, deleteAccount };
+export const accountActions = { ...accountSlice.actions, getUserProfile, deleteAccount, storeWalletKey };
 
 export const getAccountState = (rootState: { [ACCOUNT_FEATURE_KEY]: AccountState }): AccountState => rootState[ACCOUNT_FEATURE_KEY];
 
@@ -206,3 +232,5 @@ export const selectAccountMetadata = createSelector(getAccountState, (state: Acc
 export const selectAccountCustomStatus = createSelector(selectAccountMetadata, (metadata) => metadata?.status || '');
 
 export const selectLogoCustom = createSelector(getAccountState, (state) => state?.userProfile?.logo);
+
+export const selectUserWallet = createSelector(getAccountState, (state) => state?.wallet);

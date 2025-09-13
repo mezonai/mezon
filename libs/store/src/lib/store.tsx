@@ -1,3 +1,4 @@
+import { MmnClient } from '@mezonai/mmn-client-js';
 import { Middleware, ThunkDispatch, UnknownAction, configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -28,7 +29,6 @@ import { MezonContextValue } from '@mezon/transport';
 import { activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
-import { galleryReducer } from './gallery/gallery.slice';
 import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
 import { canvasReducer } from './canvas/canvas.slice';
@@ -56,6 +56,7 @@ import { ERRORS_FEATURE_KEY, errorsReducer } from './errors/errors.slice';
 import { eventManagementReducer } from './eventManagement/eventManagement.slice';
 import { fcmReducer } from './fcm/fcm.slice';
 import { popupForwardReducer } from './forwardMessage/forwardMessage.slice';
+import { galleryReducer } from './gallery/gallery.slice';
 import { giveCoffeeReducer } from './giveCoffee/giveCoffee.slice';
 import { walletLedgerReducer } from './giveCoffee/historyTransaction.slice';
 import { EMBED_MESSAGE, embedReducer } from './messages/embedMessage.slice';
@@ -80,6 +81,8 @@ import { TOASTS_FEATURE_KEY, toastsReducer } from './toasts/toasts.slice';
 import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { USER_STATUS_API_FEATURE_KEY, userStatusAPIReducer } from './userstatus/userstatusAPI.slice';
 import { voiceReducer } from './voice/voice.slice';
+import { TRANSACTION_HISTORY_FEATURE_KEY, transactionHistoryReducer } from './wallet/transactionHistory.slice';
+import { WALLET_FEATURE_KEY, walletReducer } from './wallet/wallet.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
 import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowControls/windowControls.slice';
 
@@ -407,7 +410,9 @@ const reducer = {
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
 	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
-	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer
+	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer,
+	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
+	[WALLET_FEATURE_KEY]: walletReducer
 };
 
 let storeInstance = configureStore({
@@ -439,7 +444,7 @@ const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
 	return next(action);
 };
 
-export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRootState) => {
+export const initStore = (mezon: MezonContextValue, mmnClient: MmnClient, preloadedState?: PreloadedRootState) => {
 	const store = configureStore({
 		reducer,
 		devTools: process.env.NODE_ENV !== 'production',
@@ -448,7 +453,8 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 			getDefaultMiddleware({
 				thunk: {
 					extraArgument: {
-						mezon
+						mezon,
+						mmnClient
 					}
 				},
 				immutableCheck: false,
