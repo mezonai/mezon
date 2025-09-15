@@ -3,13 +3,16 @@ import { createSticker, emojiSuggestionActions, selectCurrentClanId, updateStick
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 
 import { Button, ButtonLoading, Checkbox, Icons, InputField } from '@mezon/ui';
-import { LIMIT_SIZE_UPLOAD_IMG, resizeFileImage, sanitizeUrlSecure } from '@mezon/utils';
+import { LIMIT_SIZE_UPLOAD_IMG, fileTypeImage, resizeFileImage, sanitizeUrlSecure } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import { ClanEmoji, ClanSticker } from 'mezon-js';
-import { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
-import { ChangeEvent, KeyboardEvent, useMemo, useRef, useState } from 'react';
+import type { ClanEmoji, ClanSticker } from 'mezon-js';
+import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { ChangeEvent, KeyboardEvent } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ELimitSize, ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+
+import { ELimitSize } from '../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 
 export enum EGraphicType {
 	EMOJI = 'emoji',
@@ -59,6 +62,11 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
+			if (!fileTypeImage.includes(e.target.files[0].type)) {
+				setOpenModalType(true);
+				return;
+			}
+
 			if (e.target.files[0]?.size > limitSize) {
 				setOpenModal(true);
 				return;
@@ -87,7 +95,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 			const updateData: MezonUpdateClanEmojiByIdBody = {
 				source: graphicSource,
 				category: graphic?.category,
-				shortname: isSticker ? editingGraphic.shortname : ':' + editingGraphic.shortname + ':',
+				shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
 				clan_id: currentClanId || ''
 			};
 
@@ -126,7 +134,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 		const category = isSticker ? 'Among Us' : 'Custom';
 		const id = Snowflake.generate();
-		const path = (isSticker ? 'stickers/' : 'emojis/') + id + '.webp';
+		const path = `${(isSticker ? 'stickers/' : 'emojis/') + id}.webp`;
 		let resizeFile = file;
 		if (!file.name.endsWith('.gif')) {
 			resizeFile = (await resizeFileImage(file, dimension.maxWidth, dimension.maxHeight, 'file')) as File;
@@ -135,17 +143,17 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 		const realImage = await handleUploadEmoticon(client, session, path, resizeFile as File);
 
 		const request: ApiClanStickerAddRequest = {
-			id: id,
-			category: category,
+			id,
+			category,
 			clan_id: currentClanId,
 			source: realImage.url,
-			shortname: isSticker ? editingGraphic.shortname : ':' + editingGraphic.shortname + ':',
+			shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
 			is_for_sale: isForSale
 		};
 		if (isForSale) {
 			const idPreview = Snowflake.generate();
 			const fileBlur = await createBlurredWatermarkedImageFile(resizeFile, 'SOLD', 2);
-			const pathPreview = (isSticker ? 'stickers/' : 'emojis/') + idPreview + '.webp';
+			const pathPreview = `${(isSticker ? 'stickers/' : 'emojis/') + idPreview}.webp`;
 			await handleUploadEmoticon(client, session, pathPreview, fileBlur as File);
 			request.id = idPreview;
 		}
@@ -157,7 +165,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 		isSticker
 			? dispatch(createSticker({ request: requestData, clanId: currentClanId }))
-			: dispatch(emojiSuggestionActions.createEmojiSetting({ request: request, clanId: currentClanId }));
+			: dispatch(emojiSuggestionActions.createEmojiSetting({ request, clanId: currentClanId }));
 
 		handleCloseModal();
 	};
@@ -334,8 +342,9 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				</div>
 			</div>
 
-			<ModalOverData openModal={openModal} handleClose={handleCloseOverModal} sizeLimit={limitSizeDisplay} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={handleCloseTypeModal} />
+			<ModalErrorTypeUpload open={openModalType} onClose={handleCloseTypeModal} />
+
+			<ModalOverData open={openModal} onClose={handleCloseOverModal} size={limitSizeDisplay} />
 		</>
 	);
 };

@@ -1,6 +1,6 @@
 import { audioCallActions, DMCallActions, selectAudioBusyTone, selectIsShowMeetDM, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { IMessageTypeCallLog, requestMediaPermission } from '@mezon/utils';
+import { compress, decompress, IMessageTypeCallLog, requestMediaPermission } from '@mezon/utils';
 import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -31,33 +31,6 @@ interface ControlState {
 	micEnabled: boolean;
 }
 
-// Todo: move to utils
-const compress = async (str: string, encoding = 'gzip' as CompressionFormat) => {
-	const byteArray = new TextEncoder().encode(str);
-	const cs = new CompressionStream(encoding);
-	const writer = cs.writable.getWriter();
-	writer.write(byteArray);
-	writer.close();
-	const arrayBuffer = await new Response(cs.readable).arrayBuffer();
-	return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-};
-
-// Todo: move to utils
-const decompress = async (compressedStr: string, encoding = 'gzip' as CompressionFormat) => {
-	const binaryString = atob(compressedStr);
-	const byteArray = new Uint8Array(binaryString.length);
-	for (let i = 0; i < binaryString.length; i++) {
-		byteArray[i] = binaryString.charCodeAt(i);
-	}
-
-	const cs = new DecompressionStream(encoding);
-	const writer = cs.writable.getWriter();
-	writer.write(byteArray);
-	writer.close();
-
-	const arrayBuffer = await new Response(cs.readable).arrayBuffer();
-	return new TextDecoder().decode(arrayBuffer);
-};
 interface IWebRTCCallParams {
 	dmUserId: string;
 	channelId: string;
@@ -121,7 +94,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					remoteVideoRef.current.srcObject = remoteStream;
 					setCallState((prev) => ({
 						...prev,
-						remoteStream: remoteStream
+						remoteStream
 					}));
 				}
 			});
@@ -131,7 +104,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					remoteVideoRef.current.srcObject = remoteStream;
 					setCallState((prev) => ({
 						...prev,
-						remoteStream: remoteStream
+						remoteStream
 					}));
 				}
 			});
@@ -241,7 +214,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				});
 				await pc.setLocalDescription(new RTCSessionDescription(offer));
 				// Send offer through signaling server
-				const compressedOffer = await compress(JSON.stringify(offer));
+				const compressedOffer = await compress(JSON.stringify({ ...offer, callerName, callerAvatar }));
 				await mezon.socketRef.current?.forwardWebrtcSignaling(
 					dmUserId,
 					WebrtcSignalingType.WEBRTC_SDP_OFFER,
@@ -576,7 +549,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 				dispatch(
 					DMCallActions.updateCallLog({
-						channelId: channelId,
+						channelId,
 						content: {
 							t: `Call duration: ${timeCall}`,
 							callLog: {

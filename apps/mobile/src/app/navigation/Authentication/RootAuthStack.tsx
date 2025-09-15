@@ -167,13 +167,13 @@ export const RootAuthStack = memo(
 					<RootStack.Screen name={APP_SCREEN.SHOP.STACK} children={(props) => <ShopStack {...props} />} />
 					<RootStack.Screen name={APP_SCREEN.INVITE_CLAN} component={InviteClanScreen} />
 				</RootStack.Navigator>
+				<ModalRootListener />
 				<FCMNotificationLoader notifyInit={notifyInit} />
 				<AuthenticationLoader />
 				<CallingModalWrapper />
 				<CallingModalGroupWrapper />
 				<ChannelRouterListener />
 				<ListenerLoader />
-				<ModalRootListener />
 				<BadgeAppIconLoader />
 			</View>
 		);

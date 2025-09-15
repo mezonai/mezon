@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
 import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import type { DirectEntity, MessagesEntity } from '@mezon/store-mobile';
 import {
-	DirectEntity,
-	MessagesEntity,
 	getIsFowardAll,
 	getSelectedMessage,
 	getStore,
@@ -14,7 +13,8 @@ import {
 	selectMessageEntitiesByChannelId,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { ChannelThreads, IMessageWithUser, normalizeString } from '@mezon/utils';
+import type { ChannelThreads, IMessageWithUser } from '@mezon/utils';
+import { normalizeString } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -30,7 +30,7 @@ import MezonInput from '../../../../../componentUI/MezonInput';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';
-import { styles } from './styles';
+import { style } from './styles';
 
 export interface IForwardIObject {
 	channelId: string;
@@ -52,6 +52,7 @@ const ForwardMessageScreen = () => {
 	const { sendForwardMessage } = useSendForwardMessage();
 	const { t } = useTranslation('message');
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const store = getStore();
 	const isForwardAll = useSelector(getIsFowardAll);
 	const currentDmId = useSelector(selectDmGroupCurrentId);

@@ -273,6 +273,7 @@ const UserProfile = React.memo(
 					const params = {
 						receiverId: userId,
 						receiverAvatar: message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url,
+						receiverName: message?.display_name || user?.user?.display_name || user?.display_name || userById?.user?.display_name,
 						directMessageId: directMessage?.id
 					};
 					const data = {
@@ -292,6 +293,7 @@ const UserProfile = React.memo(
 					const params = {
 						receiverId: userId,
 						receiverAvatar: message?.avatar || user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url,
+						receiverName: message?.display_name || user?.user?.display_name || user?.display_name || userById?.user?.display_name,
 						directMessageId: response?.channel_id
 					};
 					const data = {

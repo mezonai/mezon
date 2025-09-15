@@ -34,7 +34,7 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 	const { width, height } = useWindowDimensions();
 	const { imageSelected, channelId } = props;
 	const { t } = useTranslation(['common', 'message']);
-	const [currentImage, setCurrentImage] = useState<AttachmentEntity | null>(null);
+	const [currentImage, setCurrentImage] = useState<AttachmentEntity | null>(imageSelected);
 	const [visibleToolbarConfig, setVisibleToolbarConfig] = useState<IVisibleToolbarConfig>({ showHeader: true, showFooter: false });
 	const [showSavedImage, setShowSavedImage] = useState(false);
 	const [isLoadingSaveImage, setIsLoadingSaveImage] = useState(false);
@@ -92,12 +92,12 @@ export const ImageListModal = React.memo((props: IImageListModalProps) => {
 
 	const onIndexChange = useCallback(
 		(newIndex: number) => {
-			if (formattedImageList?.[newIndex]?.id !== currentImage?.id && !!currentImage?.id) {
+			if (formattedImageList?.[newIndex]?.id !== currentImage?.id) {
 				setCurrentImage(formattedImageList[newIndex]);
 				ref.current?.reset();
 			}
 		},
-		[currentImage?.id, formattedImageList]
+		[currentImage, formattedImageList]
 	);
 
 	const setTimeoutHideFooter = useCallback(() => {

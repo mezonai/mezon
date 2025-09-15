@@ -1,23 +1,24 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import {
-  selectChannelMemberByUserIds,
-  selectCurrentChannel,
-  selectCurrentChannelId,
-  selectDmGroupCurrentId,
-  selectMemberByUsername,
-  useAppSelector
+	selectChannelMemberByUserIds,
+	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectDmGroupCurrentId,
+	selectMemberByUsername,
+	useAppSelector
 } from '@mezon/store';
 import {
-  HEIGHT_PANEL_PROFILE,
-  HEIGHT_PANEL_PROFILE_DM,
-  TITLE_MENTION_HERE,
-  WIDTH_CHANNEL_LIST_BOX,
-  WIDTH_CLAN_SIDE_BAR,
-  WIDTH_PANEL_PROFILE,
-  getNameForPrioritize
+	HEIGHT_PANEL_PROFILE,
+	HEIGHT_PANEL_PROFILE_DM,
+	TITLE_MENTION_HERE,
+	WIDTH_CHANNEL_LIST_BOX,
+	WIDTH_CLAN_SIDE_BAR,
+	WIDTH_PANEL_PROFILE,
+	getNameForPrioritize
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { RefObject, memo, useCallback, useMemo, useState } from 'react';
+import type { RefObject } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalUserProfile from '../ModalUserProfile';
@@ -164,14 +165,13 @@ const MentionUser = ({
 			)}
 			{displayToken?.type === MentionType.USER_EXIST && (
 				<a
-          contentEditable="false"
-          data-entity-type="MessageEntityMentionName"
-          data-user-id={tagUserId}
-					// eslint-disable-next-line @typescript-eslint/no-empty-function
+					contentEditable="false"
+					data-entity-type="MessageEntityMentionName"
+					data-user-id={tagUserId}
 					onMouseDown={!isJumMessageEnabled || isTokenClickAble ? (e) => handleOpenShortUser(e) : () => {}}
-					// eslint-disable-next-line @typescript-eslint/no-empty-function
 					style={{ textDecoration: 'none' }}
 					className={`select-all cursor-pointer outline-none font-medium px-0.1 rounded-sm whitespace-nowrap bg-mention color-mention hover-mention   ${isJumMessageEnabled ? '' : 'hover:none'}`}
+					suppressContentEditableWarning={true}
 				>
 					{displayToken.display}
 				</a>

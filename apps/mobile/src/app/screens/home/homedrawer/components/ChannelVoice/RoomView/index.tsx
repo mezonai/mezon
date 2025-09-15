@@ -43,7 +43,7 @@ const RoomViewListener = memo(
 	}) => {
 		const participants = useParticipants();
 		const dispatch = useAppDispatch();
-		const room = useRoomContext();
+		const room: any = useRoomContext();
 
 		useEffect(() => {
 			if (participants?.length > 1 && isShowPreCallInterface) {
@@ -64,8 +64,13 @@ const RoomViewListener = memo(
 		const handleDisconnected = useCallback(
 			async (reason?: DisconnectReason) => {
 				if (reason === DisconnectReason.PARTICIPANT_REMOVED) {
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, {
+						isEndCall: true,
+						clanId,
+						channelId,
+						roomId: room?.roomInfo?.sid as string
+					});
 					room.disconnect();
-					DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId: clanId, channelId: channelId });
 				}
 			},
 			[channelId, clanId, room]
@@ -198,6 +203,7 @@ const RoomView = ({
 					setFocusedScreenShare={setFocusedScreenShareProp}
 					activeSoundReactions={activeSoundReactions}
 					isGroupCall={isGroupCall}
+					clanId={clanId}
 				/>
 			)}
 			{isAnimationComplete && isGroupCall && isShowPreCallInterface && (

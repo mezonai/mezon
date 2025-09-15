@@ -1,12 +1,16 @@
 import { captureSentryError } from '@mezon/logger';
-import { EUserStatus, LoadingStatus, UsersClanEntity } from '@mezon/utils';
-import { EntityState, PayloadAction, Update, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { LoadingStatus, UsersClanEntity } from '@mezon/utils';
+import { EUserStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import { ClanUserListClanUser } from 'mezon-js/api.gen';
+import type { ClanUserListClanUser } from 'mezon-js/api.gen';
 import { selectAllAccount } from '../account/account.slice';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { MezonValueContext, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 import { clanMembersMetaActions, extracMeta, selectClanMembersMetaEntities } from './clan.members.meta';
 export const USERS_CLANS_FEATURE_KEY = 'usersClan';
 
@@ -76,7 +80,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 	markApiFirstCalled(apiKey);
 
 	return {
-		users: users,
+		users,
 		fromCache: false
 	};
 };
@@ -228,6 +232,24 @@ export const UsersClanSlice = createSlice({
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
 						changes: { role_id: updatedRoleIds }
+					});
+				}
+			}
+		},
+		updateUserDisplayName: (state, action: PayloadAction<{ clanId: string; userId: string; displayName: string; avatarUrl: string }>) => {
+			const { clanId, userId, displayName, avatarUrl } = action.payload;
+			if (state.byClans[clanId]) {
+				const existingMember = state.byClans[clanId].entities.entities[userId];
+				if (existingMember) {
+					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
+						id: userId,
+						changes: {
+							user: {
+								...existingMember.user,
+								display_name: displayName,
+								avatar_url: avatarUrl
+							}
+						}
 					});
 				}
 			}

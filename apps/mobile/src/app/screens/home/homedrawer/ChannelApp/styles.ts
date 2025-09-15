@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 
 const height = Dimensions.get('window').height;
@@ -60,7 +61,7 @@ export const style = (colors: Attributes) =>
 		},
 		buttonText: {
 			fontSize: size.s_12,
-			color: colors.white,
+			color: 'white',
 			marginRight: size.s_2,
 			fontWeight: 'bold'
 		},

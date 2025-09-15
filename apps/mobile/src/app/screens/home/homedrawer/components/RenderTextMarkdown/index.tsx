@@ -189,7 +189,9 @@ export const markdownStyles = (
 		threadIcon: { marginBottom: size.s_2 },
 		privateChannel: {
 			color: colors.text,
-			backgroundColor: colors.secondaryLight
+			backgroundColor: colors.secondaryLight,
+			fontWeight: '600',
+			fontSize: size.medium
 		},
 		boldText: {
 			fontSize: size.medium,
@@ -708,7 +710,7 @@ export const RenderTextMarkdownContent = ({
 
 	if (isEdited && textParts?.length > 0 && !markdownBlackParts?.length) {
 		textParts.push(
-			<Text key={`edited-${textParts}`} style={(themeValue ? markdownStyles(themeValue).editedText : {})}>
+			<Text key={`edited-${textParts}`} style={themeValue ? markdownStyles(themeValue).editedText : {}}>
 				{` ${translate('edited')}`}
 			</Text>
 		);
@@ -743,11 +745,8 @@ export const RenderTextMarkdownContent = ({
 			<View style={{ flexDirection: 'row', gap: size.s_6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
 				<View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
 					{textParts?.length > 0 && <Text key={`textParts${t}_${lastIndex}`}>{textParts}</Text>}
-					{markdownBlackParts?.length > 0 && markdownBlackParts.map((item, index) => (
-						<View key={`markdown-black-part-${index}`}>
-							{item}
-						</View>
-					))}
+					{markdownBlackParts?.length > 0 &&
+						markdownBlackParts.map((item, index) => <View key={`markdown-black-part-${index}`}>{item}</View>)}
 				</View>
 				{isEdited && markdownBlackParts?.length > 0 && (
 					<View>

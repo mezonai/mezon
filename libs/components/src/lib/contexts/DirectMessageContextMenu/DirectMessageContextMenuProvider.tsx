@@ -1,8 +1,7 @@
 import { useAppParams } from '@mezon/core';
+import type { ChannelMembersEntity, RootState } from '@mezon/store';
 import {
-	ChannelMembersEntity,
 	EStateFriend,
-	RootState,
 	directActions,
 	selectAllAccount,
 	selectFriendById,
@@ -15,7 +14,8 @@ import {
 } from '@mezon/store';
 import { EMuteState, FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import type { FC } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Menu, Submenu, useContextMenu } from 'react-contexify';
 import { useSelector } from 'react-redux';
 import ModalEditGroup from '../../components/ModalEditGroup';
@@ -23,13 +23,8 @@ import ItemPanelMember from '../../components/PanelMember/ItemPanelMember';
 import { useEditGroupModal } from '../../hooks/useEditGroupModal';
 import { MemberMenuItem } from '../MemberContextMenu';
 import { useModals } from '../MemberContextMenu/useModals';
-import {
-	DIRECT_MESSAGE_CONTEXT_MENU_ID,
-	DMCT_GROUP_CHAT_ID,
-	DirectMessageContextMenuContextType,
-	DirectMessageContextMenuHandlers,
-	DirectMessageContextMenuProps
-} from './types';
+import type { DirectMessageContextMenuContextType, DirectMessageContextMenuHandlers, DirectMessageContextMenuProps } from './types';
+import { DIRECT_MESSAGE_CONTEXT_MENU_ID, DMCT_GROUP_CHAT_ID } from './types';
 import { useContextMenuHandlers } from './useContextMenu';
 import { useDefaultHandlers } from './useDefaultHandlers';
 import { useMenuHandlers } from './useMenuHandlers';
@@ -295,7 +290,6 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 				groupName={editGroupModal.groupName}
 				onGroupNameChange={editGroupModal.setGroupName}
 				imagePreview={editGroupModal.imagePreview}
-				className="z-[200]"
 				isLoading={updateDmGroupLoading}
 				error={updateDmGroupError}
 			/>

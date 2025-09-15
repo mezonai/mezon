@@ -112,11 +112,17 @@ const GlobalEventListener = () => {
 
 const TooManyUploadWrapper = memo(
 	() => {
-		const { isOverUploading, setOverUploadingState, overLimitReason } = useDragAndDrop();
+		const { isOverUploading, setOverUploadingState, overLimitReason, limitSize } = useDragAndDrop();
 
 		if (!isOverUploading) return null;
 
-		return <TooManyUpload togglePopup={() => setOverUploadingState(false, UploadLimitReason.COUNT)} limitReason={overLimitReason} />;
+		return (
+			<TooManyUpload
+				togglePopup={() => setOverUploadingState(false, UploadLimitReason.COUNT, limitSize)}
+				limitReason={overLimitReason}
+				limitSize={limitSize}
+			/>
+		);
 	},
 	() => true
 );
@@ -131,7 +137,7 @@ const MainLayout = memo(
 
 		return (
 			<div
-				id='main-layout'
+				id="main-layout"
 				className={`${isWindowsDesktop || isLinuxDesktop ? 'top-[21px] fixed' : ''} w-full bg-theme-primary`}
 				onClick={handleClickingOutside}
 				onContextMenu={(event: React.MouseEvent) => {

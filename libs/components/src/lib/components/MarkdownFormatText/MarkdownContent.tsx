@@ -1,6 +1,14 @@
 import { channelsActions, getStore, inviteActions, selectAppChannelById, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EBacktickType, getYouTubeEmbedSize, getYouTubeEmbedUrl, isYouTubeLink } from '@mezon/utils';
+import {
+	EBacktickType,
+	getTikTokEmbedSize,
+	getTikTokEmbedUrl,
+	getYouTubeEmbedSize,
+	getYouTubeEmbedUrl,
+	isTikTokLink,
+	isYouTubeLink
+} from '@mezon/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -58,9 +66,9 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const appearanceTheme = useSelector(selectTheme);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const origin = process.env.NX_CHAT_APP_REDIRECT_URI + '/invite/';
-	const originClan = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/clans/';
-	const originDirect = process.env.NX_CHAT_APP_REDIRECT_URI + '/chat/direct/message/';
+	const origin = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/`;
+	const originClan = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/`;
+	const originDirect = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/direct/message/`;
 
 	const [isLoadingInvite, setIsLoadingInvite] = useState(false);
 	const [inviteError, setInviteError] = useState<string | null>(null);
@@ -227,7 +235,11 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 					</a>
 				)
 			)}
-			{!isReply && isLink && content && isYouTubeLink(content) && <YouTubeEmbed url={content} isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />}
+
+			{!isReply && isLink && content && isYouTubeLink(content) && (
+				<SocialEmbed url={content} platform="youtube" isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
+			)}
+			{!isReply && isLink && content && isTikTokLink(content) && <SocialEmbed url={content} platform="tiktok" isInPinMsg={isInPinMsg} />}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
@@ -269,7 +281,7 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, i
 			<code
 				className={`w-full text-sm font-sans px-2 ${
 					posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
-					} ${posInPinOrNotification && ' text-theme-primary rounded-lg'}`}
+				} ${posInPinOrNotification && ' text-theme-primary rounded-lg'}`}
 				style={{
 					fontFamily: 'sans-serif',
 					wordWrap: 'break-word',
@@ -322,20 +334,53 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 	);
 };
 
-const YouTubeEmbed: React.FC<{ url: string; isSearchMessage?: boolean; isInPinMsg?: boolean }> = ({ url, isSearchMessage, isInPinMsg }) => {
-	const embedUrl = getYouTubeEmbedUrl(url);
-	const { width, height } = getYouTubeEmbedSize(url, isSearchMessage);
+type SocialPlatform = 'youtube' | 'tiktok';
+
+const SocialEmbed: React.FC<{ url: string; platform: SocialPlatform; isSearchMessage?: boolean; isInPinMsg?: boolean }> = ({
+	url,
+	platform,
+	isSearchMessage,
+	isInPinMsg
+}) => {
+	const getEmbedData = () => {
+		switch (platform) {
+			case 'youtube':
+				return {
+					embedUrl: getYouTubeEmbedUrl(url),
+					size: getYouTubeEmbedSize(url, isSearchMessage),
+					borderColor: '#ff001f',
+					allowAttributes: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+				};
+			case 'tiktok':
+				return {
+					embedUrl: getTikTokEmbedUrl(url),
+					size: getTikTokEmbedSize(),
+					borderColor: '#ff0050',
+					allowAttributes: 'fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture'
+				};
+			default:
+				return null;
+		}
+	};
+
+	const embedData = getEmbedData();
+
+	if (!embedData || !embedData.embedUrl) return null;
+
+	const { embedUrl, size, borderColor, allowAttributes } = embedData;
+	const { width, height } = size;
 
 	return (
 		<div className={`flex ${isInPinMsg ? 'w-full' : ''}`}>
-			<div className="border-l-4 rounded-l border-[#ff001f]"></div>
+			<div className="border-l-4 rounded-l" style={{ borderColor }}></div>
 			<div className={`p-4 bg-[#2b2d31] rounded ${isInPinMsg ? 'flex-1 min-w-0' : ''}`}>
 				<iframe
-					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+					allow={allowAttributes}
 					title={url}
 					src={embedUrl}
 					style={{ width, height, border: 'none', maxWidth: '100%' }}
 					allowFullScreen
+					referrerPolicy={'strict-origin-when-cross-origin'}
 				></iframe>
 			</div>
 		</div>

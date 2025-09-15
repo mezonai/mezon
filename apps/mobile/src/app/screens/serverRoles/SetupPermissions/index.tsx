@@ -93,7 +93,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				[],
 				removePermissionList
 			);
-			if (response?.ok !== undefined && response?.ok === false) {
+			if ((response as any)?.ok !== undefined && (response as any)?.ok === false) {
 				throw new Error('failed');
 			} else {
 				Toast.show({
@@ -174,6 +174,15 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 		}
 	}, [clanRole]);
 
+	const getPermissionDescription = useCallback(
+		(slug: string) => {
+			const descriptionKey = `permissionDescriptions.${slug}`;
+			const description = t(descriptionKey);
+			return description !== descriptionKey ? description : t('permissionDescriptions.notAvailable');
+		},
+		[t]
+	);
+
 	const filteredPermissionList = useMemo(() => {
 		return permissionList.filter((it) => normalizeString(it?.title).includes(normalizeString(searchPermissionText)));
 	}, [searchPermissionText, permissionList]);
@@ -246,13 +255,16 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 													>
 														{item.title}
 													</Text>
+													<Text style={styles.permissionDescription}>{getPermissionDescription(item?.slug)}</Text>
 												</View>
 
-												<MezonSwitch
-													value={selectedPermissions?.includes(item?.id)}
-													onValueChange={(isSelect) => onSelectPermissionChange(isSelect, item?.id)}
-													disabled={item?.disabled}
-												/>
+												<View style={styles.switchContainer}>
+													<MezonSwitch
+														value={selectedPermissions?.includes(item?.id)}
+														onValueChange={(isSelect) => onSelectPermissionChange(isSelect, item?.id)}
+														disabled={item?.disabled}
+													/>
+												</View>
 											</View>
 										</TouchableOpacity>
 									);

@@ -2,10 +2,11 @@ import { useEscapeKeyClose } from '@mezon/core';
 import { selectCurrentChannelId, selectCurrentClanId, selectTheme } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { TextArea, TimePicker } from '@mezon/ui';
-import { ContenSubmitEventProps, ERepeatType, fileTypeImage } from '@mezon/utils';
+import type { ContenSubmitEventProps } from '@mezon/utils';
+import { ERepeatType, MAX_FILE_SIZE_1MB, fileTypeImage } from '@mezon/utils';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalError';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 import { checkError } from '../eventHelper';
 
 const DatePickerWrapper = lazy(() => import('./DatePickerWrapper'));
@@ -163,14 +164,14 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 		if (!client || !session) {
 			throw new Error('Client or file is not initialized');
 		}
-		const allowedTypes = fileTypeImage;
-		if (!allowedTypes.includes(file.type)) {
+
+		if (!fileTypeImage.includes(file.type)) {
 			setOpenModalType(true);
 			e.target.value = null;
 			return;
 		}
 
-		if (sizeImage > 1000000) {
+		if (sizeImage > MAX_FILE_SIZE_1MB) {
 			setOpenModal(true);
 			e.target.value = null;
 			return;
@@ -297,8 +298,10 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				</label>
 				{contentSubmit.logo && <img src={contentSubmit.logo} alt="logo" className="max-h-[180px] rounded w-full object-cover" />}
 			</div>
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
+
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} />
 		</div>
 	);
 };

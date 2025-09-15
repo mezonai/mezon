@@ -502,7 +502,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(
 			}
 			detectMentionTimeoutRef.current = setTimeout(() => {
 				detectMention();
-			}, 100);
+			}, 30);
 		}, [detectMention]);
 
 		const insertMentionDirectly = useCallback(
@@ -698,7 +698,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(
 			contenteditable="false"
 			class="text-entity-emoji"
 			dir="auto"
-		>:${emojiDisplay}:</span>&nbsp;`;
+		>${emojiDisplay}</span>&nbsp;`;
 
 				insertHtmlInSelection(htmlToInsert);
 
@@ -873,7 +873,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(
 					const cleanedHtml = preparePastedHtml(htmlContent);
 					contentToInsert = cleanedHtml;
 				} else if (htmlContent) {
-					const pastedFormattedText = parseHtmlAsFormattedText(preparePastedHtml(htmlContent), undefined, true);
+					const pastedFormattedText = parseHtmlAsFormattedText(preparePastedHtml(htmlContent), false, true);
 
 					if (pastedFormattedText?.entities?.length) {
 						contentToInsert = (renderText(pastedFormattedText.text, ['escape_html', 'br_html']) as string[])
@@ -1115,7 +1115,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(
 						refs.setFloating(node);
 						(popoverRef as any).current = node;
 					}}
-					className='mention-popover-container bg-ping-member mt-[-5px] z-[999]'
+					className="mention-popover-container bg-ping-member mt-[-5px] z-[999]"
 					style={{
 						...floatingStyles,
 						borderRadius: '8px',
@@ -1140,7 +1140,7 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(
 					}}
 					id={id}
 					contentEditable={!disabled}
-					className='mention-input-editor'
+					className="mention-input-editor"
 					onInput={handleInput}
 					onKeyDown={handleKeyDown}
 					onPaste={handlePaste}
@@ -1149,10 +1149,10 @@ const MentionsInput = forwardRef<MentionsInputHandle, MentionsInputProps>(
 					onKeyUp={saveCaretPosition}
 					data-placeholder={placeholder}
 					suppressContentEditableWarning={true}
-					role='textbox'
-					dir='auto'
+					role="textbox"
+					dir="auto"
 					tabIndex={0}
-					aria-label='Message'
+					aria-label="Message"
 					style={{
 						outline: 'none'
 					}}

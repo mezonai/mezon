@@ -1,6 +1,7 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, DeviceEventEmitter, Keyboard, TouchableOpacity } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 
@@ -31,9 +32,8 @@ function AttachmentSwitcher({ mode: _mode, onChange }: AttachmentPickerProps) {
 		}
 	};
 
-	useEffect(() => {
-		setMode(_mode);
-		if (_mode === 'attachment') {
+	const animatedSwitcher = useCallback((keyboardMode: string, rotation: Animated.Value | Animated.ValueXY) => {
+		if (keyboardMode === 'attachment') {
 			Animated.spring(rotation, {
 				toValue: 1, // Animate to 45deg
 				useNativeDriver: true
@@ -44,7 +44,23 @@ function AttachmentSwitcher({ mode: _mode, onChange }: AttachmentPickerProps) {
 				useNativeDriver: true
 			}).start();
 		}
-	}, [_mode]);
+	}, []);
+
+	useEffect(() => {
+		const eventListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, ({ isShow = false, mode = '' }) => {
+			if (!isShow) {
+				setMode('text');
+				animatedSwitcher('text', rotation);
+			} else {
+				setMode(mode);
+				animatedSwitcher(mode, rotation);
+			}
+		});
+
+		return () => {
+			eventListener.remove();
+		};
+	}, [animatedSwitcher, rotation]);
 
 	const rotate = rotation.interpolate({
 		inputRange: [0, 1],

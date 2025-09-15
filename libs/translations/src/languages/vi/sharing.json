@@ -6,5 +6,7 @@
     "selectChannelPlaceholder": "Chọn một kênh hoặc danh mục...",
     "share": "Chia sẻ",
     "suggestions": "Gợi ý",
-    "addCommentPlaceholder": "Thêm bình luận (Tùy chọn)"
+    "addCommentPlaceholder": "Thêm bình luận (Tùy chọn)",
+    "fileTooLarge": "Tệp quá lớn",
+    "fileSizeExceeded": "{{fileType}} không thể vượt quá {{maxSize}}MB!"
 }

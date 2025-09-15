@@ -48,7 +48,7 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList }:
 
 			{hasFileVideo && (
 				<div className={`w-35 h-32 flex flex-row justify-center items-center relative mt-[-10px]`}>
-					<MessageVideo attachmentData={attachment} />
+					<MessageVideo attachmentData={attachment} isPreview={true} />
 				</div>
 			)}
 

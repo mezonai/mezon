@@ -8,7 +8,7 @@ export const SIZE_PAGE_SEARCH = 25;
 export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
 export const MAX_FILE_NAME_EMOJI = 62;
 export const MAX_FILE_ATTACHMENTS = 50; // 50 items
-export const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+
 export const DEBOUNCE_TYPING_TIME = 700;
 export const TIME_OF_SHOWING_FIRST_POPUP = 1000 * 60 * 5;
 export const KEY_KEYBOARD = { BACKSPACE: 8, TAB: 9, ENTER: 13, ESC: 27, UP: 38, DOWN: 40, RIGHT: 39, LEFT: 27 };
@@ -114,7 +114,14 @@ export enum UploadLimitReason {
 	COUNT = 'count'
 }
 
+// SIZE MEMORY
 export const MAX_FILE_SIZE_1MB = 1 * 1024 * 1024; // 1MB
+export const MAX_FILE_SIZE_8MB = MAX_FILE_SIZE_1MB * 8; // 8MB
+export const MAX_FILE_SIZE_10MB = 10 * MAX_FILE_SIZE_1MB; // 10MB
+export const MAX_FILE_SIZE_256KB = MAX_FILE_SIZE_1MB / 4; // 256KB
+export const MAX_FILE_SIZE_512KB = MAX_FILE_SIZE_1MB / 2; // 512KB
+export const MAX_FILE_SIZE = 100 * MAX_FILE_SIZE_1MB; // 100MB
+export const IMAGE_MAX_FILE_SIZE = 50 * MAX_FILE_SIZE_1MB; // 50MB
 
 export enum MiniAppEventType {
 	PONG = 'PONG',

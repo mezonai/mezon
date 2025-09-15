@@ -1,8 +1,8 @@
 import { useDragAndDrop } from '@mezon/core';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 
 export type FileSelectionButtonProps = {
 	currentClanId: string;
@@ -22,10 +22,12 @@ function FileSelectionButton({ currentClanId, currentChannelId, hasPermissionEdi
 				return;
 			}
 
-			const oversizedFile = fileArr.find((file) => file.size > MAX_FILE_SIZE);
+			const getLimit = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
+			const oversizedFile = fileArr.find((file) => file.size > getLimit(file));
 
 			if (oversizedFile) {
-				setOverUploadingState(true, UploadLimitReason.SIZE);
+				const limit = getLimit(oversizedFile);
+				setOverUploadingState(true, UploadLimitReason.SIZE, limit);
 				return;
 			}
 			const updatedFiles = await Promise.all(fileArr.map(processFile<ApiMessageAttachment>));

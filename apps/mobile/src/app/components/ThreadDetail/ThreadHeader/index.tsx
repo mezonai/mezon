@@ -48,16 +48,11 @@ export const ThreadHeader = memo(() => {
 
 	const groupDMAvatar = useMemo(() => {
 		const avatar = currentDmGroup?.topic;
-		const isDefaultAvatar = currentDmGroup?.topic.includes('avatar-group.png');
+		const isDefaultAvatar = !avatar || avatar?.includes('avatar-group.png');
 		return !isDefaultAvatar ? (
 			<View style={styles.groupAvatarWrapper}>
-				<ImageNative
-					url={createImgproxyUrl(avatar)}
-					style={{ width: '100%', height: '100%' }}
-					resizeMode={'cover'}
-				/>
+				<ImageNative url={createImgproxyUrl(avatar)} style={{ width: '100%', height: '100%' }} resizeMode={'cover'} />
 			</View>
-
 		) : (
 			<View style={styles.groupAvatar}>
 				<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
@@ -140,13 +135,12 @@ export const ThreadHeader = memo(() => {
 						{channelLabel}
 					</Text>
 				</View>
-			)
-			}
+			)}
 			{isDMThread && (
 				<TouchableOpacity onPress={openMenu} style={styles.iconMenuHeader}>
 					<MezonIconCDN icon={IconCDN.moreHorizontalIcon} color={themeValue.white} />
 				</TouchableOpacity>
 			)}
-		</View >
+		</View>
 	);
 });

@@ -17,7 +17,8 @@ import { ChannelStreamMode } from 'mezon-js';
 
 import { EmojiSuggestionProvider } from '@mezon/core';
 import isElectron from 'is-electron';
-import { LocalTrackPublication, ScreenSharePresets, Track, VideoPresets } from 'livekit-client';
+import type { LocalTrackPublication } from 'livekit-client';
+import { ScreenSharePresets, Track, VideoPresets } from 'livekit-client';
 import Tooltip from 'rc-tooltip';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -26,7 +27,7 @@ import { toast } from 'react-toastify';
 import { GifStickerEmojiPopup } from '../../GifsStickersEmojis';
 import SoundSquare from '../../GifsStickersEmojis/SoundSquare';
 import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
-import { ReactionChannelInfo } from '../MyVideoConference/Reaction/types';
+import type { ReactionChannelInfo } from '../MyVideoConference/Reaction/types';
 import { useSendReaction } from '../MyVideoConference/Reaction/useSendReaction';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
 import { ScreenShareToggleButton } from './TrackToggle/ScreenShareToggleButton';
@@ -59,7 +60,7 @@ const ControlBar = ({
 
 	const isGroupCall = useSelector(selectGroupCallJoined);
 
-	const { sendEmojiReaction, sendSoundReaction } = useSendReaction({ currentChannel: currentChannel });
+	const { sendEmojiReaction, sendSoundReaction } = useSendReaction({ currentChannel });
 
 	const screenTrackRef = useRef<LocalTrackPublication | null>(null);
 	const isDesktop = isElectron();

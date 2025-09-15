@@ -23,7 +23,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import { ApiChannelAppResponseExtend, MiniAppEventType, ParticipantMeetState } from '@mezon/utils';
+import type { ApiChannelAppResponseExtend } from '@mezon/utils';
+import { MiniAppEventType, ParticipantMeetState } from '@mezon/utils';
 import { Track } from 'livekit-client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -108,7 +109,8 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 					clan_id: currentChannelAppClanId,
 					channel_id: currentChannelAppId,
 					display_name: userProfile?.user?.display_name ?? '',
-					state: ParticipantMeetState.LEAVE
+					state: ParticipantMeetState.LEAVE,
+					room_name: roomId as string
 				})
 			);
 		}
@@ -144,7 +146,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 	const getUserHashInfo = useCallback(
 		async (appId: string) => {
 			try {
-				const response = await dispatch(channelAppActions.generateAppUserHash({ appId: appId })).unwrap();
+				const response = await dispatch(channelAppActions.generateAppUserHash({ appId })).unwrap();
 
 				return response;
 			} catch (error) {
@@ -208,7 +210,8 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 						clan_id: appChannel.clan_id ?? '',
 						channel_id: channelId,
 						display_name: userProfile?.user?.display_name ?? '',
-						state
+						state,
+						room_name: roomId as string
 					})
 				);
 			} catch (err) {

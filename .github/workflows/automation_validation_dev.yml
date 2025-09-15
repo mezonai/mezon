@@ -136,7 +136,7 @@ jobs:
         working-directory: ./mezon-e2e
         run: |
           cat > .env << EOF
-          BASE_URL=http://127.0.0.1:4200/
+          BASE_URL=http://localhost:4200/
           SKIP_LOGIN=true
           WORKERS=6
           CI=true

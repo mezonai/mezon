@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useOnClickOutside, useRoles } from '@mezon/core';
+import type { RootState } from '@mezon/store';
 import {
-	RootState,
 	getNewAddPermissions,
 	getNewColorRole,
 	getNewNameRole,
@@ -14,10 +14,12 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { resizeFileImage } from '@mezon/utils';
+import { MAX_FILE_SIZE_256KB, fileTypeImage, resizeFileImage } from '@mezon/utils';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AttachmentLoader } from '../../../../MessageWithUser/MessageLinkFile';
+import { ELimitSize } from '../../../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 
 type ChooseIconModalProps = {
 	onClose: () => void;
@@ -35,6 +37,8 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { sessionRef, clientRef } = useMezon();
 	const appearanceTheme = useSelector(selectTheme);
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
 	const dispatch = useDispatch();
 	const { updateRole } = useRoles();
 
@@ -53,6 +57,16 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 		const file = e.target.files?.[0];
 
 		if (!clientRef?.current || !sessionRef?.current || !file) return;
+
+		if (file.size > MAX_FILE_SIZE_256KB) {
+			setOpenModal(true);
+			return;
+		}
+
+		if (!fileTypeImage.includes(file.type)) {
+			setOpenTypeModal(true);
+			return;
+		}
 
 		const store = await getStoreAsync();
 		const state = store.getState() as RootState;
@@ -132,6 +146,8 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 					<input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleChooseImage} />
 				</div>
 			</div>
+			<ModalOverData size={ELimitSize.KB_256} onClose={() => setOpenModal(false)} open={openModal} />
+			<ModalErrorTypeUpload onClose={() => setOpenTypeModal(false)} open={openTypeModal} />
 		</div>
 	);
 };

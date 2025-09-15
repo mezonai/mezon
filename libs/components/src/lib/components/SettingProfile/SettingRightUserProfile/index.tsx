@@ -8,21 +8,22 @@ import {
 	selectLogoCustom,
 	selectTheme,
 	toastActions,
-	useAppDispatch
+	useAppDispatch,
+	usersClanActions
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
 import type { ImageSourceObject } from '@mezon/utils';
-import { MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { MAX_FILE_SIZE_10MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import type { Coords } from '../../ChannelLink';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import { ELimitSize } from '../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import PanelClan from '../../PanelClan';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import type { Profilesform } from '../SettingUserClanProfileCard';
@@ -67,6 +68,16 @@ const SettingRightUser = ({
 	const handleUpdateUser = async () => {
 		if (name || urlImage || valueDisplayName || editAboutUser || dob) {
 			await updateUser(name, urlImage, valueDisplayName.trim(), editAboutUser, dob, userProfile?.logo || '');
+			if (currentClanId && userProfile?.user?.id) {
+				await dispatch(
+					usersClanActions.updateUserDisplayName({
+						clanId: currentClanId,
+						userId: userProfile.user.id,
+						displayName: valueDisplayName.trim(),
+						avatarUrl: urlImage
+					})
+				);
+			}
 			if (currentChannelId && currentClanId) {
 				await dispatch(
 					channelMembersActions.fetchChannelMembers({
@@ -118,11 +129,11 @@ const SettingRightUser = ({
 			setOpenModalType(true);
 			return;
 		}
+		if (file.size > MAX_FILE_SIZE_10MB) {
+			setOpenModal(true);
+			return;
+		}
 		if (file.type === fileTypeImage[2]) {
-			if (file.size > MAX_FILE_SIZE_1MB) {
-				toast.error('File size exceeds 1MB limit');
-				return;
-			}
 			if (!clientRef.current || !sessionRef.current) {
 				dispatch(toastActions.addToastError({ message: 'Client or session is not initialized' }));
 				return;
@@ -365,8 +376,11 @@ const SettingRightUser = ({
 						isLoading={isLoading}
 						profiles={editProfile}
 						qrProfile={
-							<div className="p-4 rounded-lg bg-white">
+							<div className="p-4 rounded-lg bg-white flex items-center justify-center relative">
 								<QRCode level="H" value={qrCodeProfile} className="w-full h-full" />
+								<div className="absolute p-2 rounded-md">
+									<img src="./assets/images/icon-logo-mezon.svg" />
+								</div>
 							</div>
 						}
 					/>
@@ -404,8 +418,8 @@ const SettingRightUser = ({
 			) : null}
 			{openModalDeleteAcc && <DeleteAccountModal handleLogOut={handleDeleteAccount} onClose={handleCloseModal} isDeleting={isDeleting} />}
 
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+			<ModalOverData size={ELimitSize.MB} open={openModal} onClose={() => setOpenModal(false)} />
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
 		</>
 	);
 };

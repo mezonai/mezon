@@ -1,8 +1,7 @@
 import { useAppParams, useFriends } from '@mezon/core';
+import type { ChannelsEntity, RootState } from '@mezon/store';
 import {
-	ChannelsEntity,
 	EStateFriend,
-	RootState,
 	directActions,
 	selectAllAccount,
 	selectCurrentChannel,
@@ -124,7 +123,6 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 				groupName={editGroupModal.groupName}
 				onGroupNameChange={editGroupModal.setGroupName}
 				imagePreview={editGroupModal.imagePreview}
-				className="z-[200]"
 				isLoading={updateDmGroupLoading}
 				error={updateDmGroupError}
 			/>

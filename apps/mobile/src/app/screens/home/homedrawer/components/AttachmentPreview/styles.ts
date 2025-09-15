@@ -5,7 +5,11 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
 			borderTopColor: colors.border,
-			padding: size.s_16
+			padding: size.s_16,
+			position: 'absolute',
+			width: '100%',
+			zIndex: 100,
+			bottom: verticalScale(70)
 		},
 		attachmentItem: {
 			marginRight: size.s_14,

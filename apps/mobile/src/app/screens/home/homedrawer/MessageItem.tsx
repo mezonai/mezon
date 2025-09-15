@@ -174,7 +174,7 @@ const MessageItem = React.memo(
 				if (preventAction) return;
 				dispatch(setSelectedMessage(message));
 				let targetMessage = message;
-				if (image) {
+				if (image?.filetype?.includes?.('image') && !!image) {
 					targetMessage = { ...message, attachments: [image] };
 				}
 				const data = {

@@ -1,11 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
 import { generateBasePath } from '@mezon/transport';
-import { IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ChannelType } from 'mezon-js';
-import { ApiGenerateMeetTokenResponse } from 'mezon-js/api.gen';
+import type { IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ChannelType } from 'mezon-js';
+import type { ApiGenerateMeetTokenResponse } from 'mezon-js/api.gen';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { RootState } from '../store';
 
 export const VOICE_FEATURE_KEY = 'voice';
 
@@ -125,7 +126,7 @@ export const kickVoiceMember = createAsyncThunk(
 			const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
 				clan_id: voiceInfor?.clanId as string,
 				channel_id: voiceInfor?.channelId,
-				room_name: room_name,
+				room_name,
 				username: username as string
 			});
 			return response;
@@ -146,7 +147,7 @@ export const muteVoiceMember = createAsyncThunk(
 			const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
 				clan_id: voiceInfor?.clanId as string,
 				channel_id: voiceInfor?.channelId,
-				room_name: room_name,
+				room_name,
 				username: username as string
 			});
 			return response;
@@ -211,6 +212,14 @@ export const voiceSlice = createSlice({
 		},
 		setVoiceInfo: (state, action: PayloadAction<IvoiceInfo>) => {
 			state.voiceInfo = action.payload;
+		},
+		setVoiceInfoId: (state, action: PayloadAction<string>) => {
+			if (state.voiceInfo) {
+				state.voiceInfo = {
+					...state.voiceInfo,
+					roomId: action.payload
+				};
+			}
 		},
 		setShowMicrophone: (state, action: PayloadAction<boolean>) => {
 			state.showMicrophone = action.payload;

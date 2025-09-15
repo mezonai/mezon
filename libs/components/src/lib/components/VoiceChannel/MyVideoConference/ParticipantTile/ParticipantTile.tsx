@@ -24,9 +24,10 @@ import { EPermission, createImgproxyUrl } from '@mezon/utils';
 import type { Participant } from 'livekit-client';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
-import React, { PropsWithChildren, forwardRef, useCallback, useMemo, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
-import { ActiveSoundReaction } from '../Reaction/types';
+import type { ActiveSoundReaction } from '../Reaction/types';
 import { FocusToggle } from './FocusToggle';
 
 export function ParticipantContextIfNeeded(

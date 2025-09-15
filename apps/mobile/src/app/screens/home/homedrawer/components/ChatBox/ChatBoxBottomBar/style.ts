@@ -6,6 +6,10 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_2,
 			overflow: 'visible'
 		},
+		wrapper: {
+			flexDirection: 'row',
+			zIndex: 10
+		},
 		btnIcon: {
 			width: size.s_40,
 			height: size.s_40,

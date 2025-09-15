@@ -29,10 +29,8 @@ export const useMezonNavigateEvent = () => {
 						return false;
 					}
 				}
-
-				navigate(url.replace(dmId, '123'));
 			}
-
+			navigate(url);
 			if (msg) {
 				dispatch(handleTopicNotification({ msg }));
 			}

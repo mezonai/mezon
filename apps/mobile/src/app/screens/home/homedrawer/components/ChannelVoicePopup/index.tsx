@@ -72,21 +72,22 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 		})
 	).current;
 
-	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string): Promise<void> => {
+	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string, roomId = ''): Promise<void> => {
 		if (!clanId || !channelId || !userProfile?.user?.id) return;
 		await dispatch(
 			handleParticipantVoiceState({
 				clan_id: clanId,
 				channel_id: channelId,
 				display_name: userProfile?.user?.display_name ?? '',
-				state
+				state,
+				room_name: roomId
 			})
 		);
 	};
 
-	const handleLeaveRoom = async (clanId: string, channelId: string) => {
+	const handleLeaveRoom = async (clanId: string, channelId: string, roomId: string) => {
 		if (channelId) {
-			await participantMeetState(ParticipantMeetState.LEAVE, clanId, channelId);
+			await participantMeetState(ParticipantMeetState.LEAVE, clanId, channelId, roomId);
 			dispatch(voiceActions.resetVoiceSettings());
 		}
 	};
@@ -177,7 +178,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 				}
 
 				if (isJoined && !data?.isEndCall && voiceInfo?.channelId !== data?.channelId) {
-					await handleLeaveRoom(voiceInfo?.clanId || '', voiceInfo?.channelId || '');
+					await handleLeaveRoom(voiceInfo?.clanId || '', voiceInfo?.channelId || '', data?.roomId);
 					setToken('');
 					setVoicePlay(false);
 					dispatch(appActions.setLoadingMainMobile(true));
@@ -185,7 +186,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 				}
 
 				if (data?.isEndCall) {
-					await handleLeaveRoom(data?.clanId, data?.channelId);
+					await handleLeaveRoom(data?.clanId, data?.channelId, data?.roomId);
 					setIsGroupCall(false);
 					setVoicePlay(false);
 					if (isFromNativeCall) {

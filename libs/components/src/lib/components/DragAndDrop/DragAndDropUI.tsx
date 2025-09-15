@@ -1,6 +1,6 @@
 import { useCurrentInbox, useDragAndDrop } from '@mezon/core';
-import { DragEvent } from 'react';
-import DocumentThumbnail from './DocumentThumbnail';
+import { Icons } from '@mezon/ui';
+import type { DragEvent } from 'react';
 
 type DragAndDropUIProps = {
 	channelID?: string;
@@ -47,9 +47,8 @@ function DragAndDropUI({ onDrop }: DragAndDropUIProps) {
 				onDrop={onDrop}
 				className="w-[25rem] h-[15rem] bg-[#5865F2] flex flex-row justify-center  items-center rounded-lg z-50 relative"
 			>
-				<div className=" absolute z-50 -top-12">
-					<DocumentThumbnail />
-				</div>
+				<Icons.FileAndFolder />
+
 				<div className="border-2 border-white w-[90%] h-[86%] rounded-lg border-dashed">
 					<div className="flex flex-col justify-center mt-14">
 						<div className=" w-full flex flex-row justify-center">

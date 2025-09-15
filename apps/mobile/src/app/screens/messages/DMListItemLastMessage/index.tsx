@@ -28,8 +28,9 @@ const EmojiMarkup = ({ shortname, emojiid }: IEmojiMarkup) => {
 
 const isHeadingText = (text?: string) => {
 	if (!text) return false;
+	const firstLine = text?.trimStart().split('\n')?.[0];
 	const headingMatchRegex = /^(#{1,6})\s+(.+)$/;
-	return headingMatchRegex?.test(text?.trim());
+	return headingMatchRegex?.test(firstLine?.trim());
 };
 
 const EMOJI_KEY = '[ICON_EMOJI]';
@@ -91,11 +92,7 @@ export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleT
 			const textPart = formatEmojiInText.slice(startIndex, endIndex);
 			if (textPart) {
 				parts.push(
-					<Text
-						numberOfLines={1}
-						key={`${endIndex}_${textPart}`}
-						style={[styles.message, props?.styleText && props?.styleText]}
-					>
+					<Text numberOfLines={1} key={`${endIndex}_${textPart}`} style={[styles.message, props?.styleText && props?.styleText]}>
 						{startIndex === 0 ? textPart?.trimStart() : textPart}
 					</Text>
 				);

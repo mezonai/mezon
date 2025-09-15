@@ -1,6 +1,7 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import React, { memo, useEffect, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 
@@ -24,8 +25,18 @@ function EmojiSwitcher({ mode: _mode, onChange }: IProps) {
 	};
 
 	useEffect(() => {
-		setMode(_mode);
-	}, [_mode]);
+		const eventListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, ({ isShow = false, mode = '' }) => {
+			if (!isShow) {
+				setMode('text');
+			} else {
+				setMode(mode);
+			}
+		});
+
+		return () => {
+			eventListener.remove();
+		};
+	}, []);
 
 	return (
 		<View>

@@ -1,8 +1,12 @@
 import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
+import { fileTypeImage, MAX_FILE_SIZE_10MB } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import { ApiOnboardingItem } from 'mezon-js/api.gen';
-import { ChangeEvent, useMemo, useState } from 'react';
+import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ChangeEvent } from 'react';
+import { useMemo, useState } from 'react';
+import { ELimitSize } from '../../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 import ModalControlRule, { ControlInput } from '../ModalControlRule';
 
 const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; ruleEdit?: ApiOnboardingItem; tempId?: number }) => {
@@ -11,6 +15,8 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 	const [ruleImage, setRuleImage] = useState<null | string>(ruleEdit?.image_url || null);
 	const [file, setFile] = useState<null | File>(null);
 	const [error, setError] = useState('');
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
 
 	const handleChangeRuleTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +68,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 			if (file) {
 				if (clientRef.current && sessionRef.current) {
 					const id = Snowflake.generate();
-					const path = 'onboarding/' + id + '.webp';
+					const path = `onboarding/${id}.webp`;
 					const uploadResponse = await handleUploadEmoticon(clientRef.current, sessionRef.current, path, file);
 					if (uploadResponse) {
 						image_url = uploadResponse?.url;
@@ -128,6 +134,17 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 
 	const handleAddImage = (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files) {
+			const file = event.target.files[0];
+			if (!fileTypeImage.includes(file.type)) {
+				setOpenTypeModal(true);
+				return;
+			}
+
+			if (file.size > MAX_FILE_SIZE_10MB) {
+				setOpenModal(true);
+				return;
+			}
+
 			setRuleImage(URL.createObjectURL(event.target.files[0]));
 			setFile(event.target.files[0]);
 		}
@@ -180,6 +197,8 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 						</div>
 					</div>
 				</div>
+				<ModalOverData size={ELimitSize.MB_10} onClose={() => setOpenModal(false)} open={openModal} />
+				<ModalErrorTypeUpload onClose={() => setOpenTypeModal(false)} open={openTypeModal} />
 			</div>
 		</ModalControlRule>
 	);

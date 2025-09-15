@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/dist/api.gen';
+import type { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/dist/api.gen';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -58,7 +58,7 @@ function TopicNotificationItem({ topic }: TopicProps) {
 		subject: subjectTopic,
 		senderId: topic?.last_sent_message?.sender_id,
 		lastMessageTopic: topic?.last_sent_message,
-		topic: topic
+		topic
 	};
 
 	return (
@@ -76,7 +76,7 @@ function TopicNotificationItem({ topic }: TopicProps) {
 
 export default TopicNotificationItem;
 
-interface IMentionTabContent {
+interface ITopicTabContent {
 	messageReplied?: ApiChannelMessageHeader;
 	subject?: string;
 	senderId?: string;
@@ -84,7 +84,7 @@ interface IMentionTabContent {
 	topic?: ApiSdTopic;
 }
 
-function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: IMentionTabContent) {
+function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITopicTabContent) {
 	const messageRl = useMemo(() => {
 		return messageReplied?.content ? safeJSONParse(messageReplied?.content) : null;
 	}, [messageReplied]);

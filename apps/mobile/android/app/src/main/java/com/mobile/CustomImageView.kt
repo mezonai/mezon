@@ -70,22 +70,22 @@ class CustomImageView(context: Context) : RelativeLayout(context) {
             .transition(DrawableTransitionOptions.withCrossFade(500))
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
+					e: GlideException?,
+					model: Any?,
+					target: Target<Drawable>,
+					isFirstResource: Boolean
+				): Boolean {
                     loadingIcon.visibility = View.GONE
                     return false
                 }
 
                 override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
+					resource: Drawable,
+					model: Any,
+					target: Target<Drawable>?,
+					dataSource: DataSource,
+					isFirstResource: Boolean
+				): Boolean {
                     loadingIcon.visibility = View.GONE
                     imageView.alpha = 1f
                     return false

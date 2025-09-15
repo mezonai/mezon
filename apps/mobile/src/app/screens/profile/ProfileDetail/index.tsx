@@ -156,6 +156,7 @@ export const ProfileDetail = memo(() => {
 			const params = {
 				receiverId: profileData.user_id,
 				receiverAvatar: profileData.avatar_url,
+				receiverName: profileData.display_name || profileData.username,
 				directMessageId: directMessage?.id
 			};
 			const data = {
@@ -177,6 +178,7 @@ export const ProfileDetail = memo(() => {
 			const params = {
 				receiverId: profileData.user_id,
 				receiverAvatar: profileData.avatar_url,
+				receiverName: profileData.display_name || profileData.username,
 				directMessageId: response?.channel_id
 			};
 			const data = {

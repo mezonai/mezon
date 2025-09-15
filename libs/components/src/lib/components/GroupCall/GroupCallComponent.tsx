@@ -28,8 +28,8 @@ import { memo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PreCallInterface from './PreCallInterface';
 import { useGroupCall } from './hooks/useGroupCall';
+import type { CallSignalingData } from './utils/callDataUtils';
 import {
-	CallSignalingData,
 	createCallSignalingData,
 	createCancelData,
 	createParticipantJoinedData,

@@ -1,4 +1,12 @@
-const EnableComunity = ({ onEnable }: { onEnable: () => void }) => {
+import { selectIsCommunityEnabled, useAppSelector } from "@mezon/store";
+
+const EnableComunity = ({ onEnable, clanId }: { onEnable: () => void; clanId?: string }) => {
+  const isEnabled = useAppSelector(state => clanId ? selectIsCommunityEnabled(state, clanId) : false);
+
+  if (isEnabled) {
+    return null;
+  }
+
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[500px] bg-gradient-to-br from-[#5865F2] via-[#4752C4] to-[#3C45A5] rounded-2xl p-8 overflow-hidden shadow-2xl">
       <div className="absolute top-0 left-0 w-32 h-32 bg-white/5 rounded-full -translate-x-16 -translate-y-16"></div>

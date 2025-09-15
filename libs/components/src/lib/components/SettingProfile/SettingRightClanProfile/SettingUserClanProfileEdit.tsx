@@ -2,15 +2,16 @@ import { useAuth, useClanProfileSetting } from '@mezon/core';
 import { checkDuplicateClanNickName, selectUserClanProfileByClanID, toastActions, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { InputField } from '@mezon/ui';
-import { ImageSourceObject, MAX_FILE_SIZE_1MB, fileTypeImage, generateE2eId } from '@mezon/utils';
+import type { ImageSourceObject } from '@mezon/utils';
+import { MAX_FILE_SIZE_10MB, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { useDebouncedCallback } from 'use-debounce';
-import { ModalSettingSave } from '../../ClanSettings/SettingRoleManagement';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalError';
+import type { ModalSettingSave } from '../../ClanSettings/SettingRoleManagement';
+import { ELimitSize } from '../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import PreviewSetting from '../SettingUserClanProfileCard';
 import { processImage } from '../helper';
@@ -70,12 +71,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 	const [openModalEditor, closeModalEditor] = useModal(
 		() =>
 			imageObject ? (
-				<ImageEditor
-					setImageCropped={setImageCropped}
-					setImageObject={setImageObject}
-					onClose={closeModalEditor}
-					imageSource={imageObject}
-				/>
+				<ImageEditor setImageCropped={setImageCropped} setImageObject={setImageObject} onClose={closeModalEditor} imageSource={imageObject} />
 			) : null,
 		[imageObject]
 	);
@@ -105,20 +101,17 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			setOpenModalType(true);
 			return;
 		}
+		if (file.size > MAX_FILE_SIZE_10MB) {
+			setOpenModal(true);
+			return;
+		}
 		if (file.type === fileTypeImage[2]) {
-			if (file.size > MAX_FILE_SIZE_1MB) {
-				toast.error('File size exceeds 1MB limit');
-				return;
-			}
 			if (!clientRef.current || !sessionRef.current) {
 				dispatch(toastActions.addToastError({ message: 'Client or session is not initialized' }));
 				return;
 			}
 			setIsLoading(true);
-			// let imageAvatarResize = file;
-			// if (!file.name.endsWith('.gif')) {
-			// 	imageAvatarResize = (await resizeFileImage(file, 120, 120, 'file', 80, 80)) as File;
-			// }
+
 			const attachment = await handleUploadFile(
 				clientRef.current,
 				sessionRef.current,
@@ -203,7 +196,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 		setFlagOption(false);
 	};
 	const saveProfile: ModalSettingSave = {
-		flagOption: flagOption,
+		flagOption,
 		handleClose,
 		handleUpdateUser
 	};
@@ -263,8 +256,8 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			</div>
 
 			<SettingUserClanProfileSave PropsSave={saveProfile} />
-			<ModalOverData openModal={openModal} handleClose={() => setOpenModal(false)} />
-			<ModalErrorTypeUpload openModal={openModalType} handleClose={() => setOpenModalType(false)} />
+			<ModalOverData size={ELimitSize.MB_10} open={openModal} onClose={() => setOpenModal(false)} />
+			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
 		</>
 	);
 };

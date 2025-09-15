@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { AgeRestricted, Canvas, FileUploadByDnD, MemberList, SearchMessageChannelRender } from '@mezon/components';
 import { useAppNavigation, useAuth, useDragAndDrop, usePermissionChecker, useSearchMessages, useSeenMessagePool } from '@mezon/core';
+import type { ChannelsEntity } from '@mezon/store';
 import {
-	ChannelsEntity,
 	ETypeMission,
 	channelAppActions,
 	channelsActions,
@@ -34,8 +34,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import type { ApiChannelAppResponseExtend } from '@mezon/utils';
 import {
-	ApiChannelAppResponseExtend,
 	DONE_ONBOARDING_STATUS,
 	EOverriddenPermission,
 	ParticipantMeetState,
@@ -48,8 +48,9 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import { ApiOnboardingItem } from 'mezon-js/api.gen';
-import { DragEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { DragEvent } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChannelMedia } from './ChannelMedia';
@@ -279,11 +280,12 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					clan_id: currentChannelAppClanId,
 					channel_id: currentChannelAppId,
 					display_name: userProfile?.user?.display_name ?? '',
-					state: ParticipantMeetState.LEAVE
+					state: ParticipantMeetState.LEAVE,
+					room_name: currentChannelAppId
 				})
 			);
 		}
-		dispatch(channelAppActions.setRoomId({ channelId: channelId, roomId: null }));
+		dispatch(channelAppActions.setRoomId({ channelId, roomId: null }));
 
 		if (isChannelApp) {
 			dispatch(channelAppActions.setChannelId(channelId));

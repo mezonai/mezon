@@ -96,6 +96,7 @@ export const style = (colors: Attributes) =>
 		iconHeader: {
 			width: size.s_34,
 			height: size.s_34,
+			marginLeft: size.s_6,
 			borderRadius: size.s_30,
 			backgroundColor: colors.secondaryLight,
 			alignItems: 'center',
