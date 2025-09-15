@@ -18,12 +18,11 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import type { IMessageWithUser, MenuBuilder } from '@mezon/utils';
 import {
 	AMOUNT_TOKEN,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
-	IMessageWithUser,
-	MenuBuilder,
 	SYSTEM_NAME,
 	SYSTEM_SENDER_ID,
 	SubPanelName,
@@ -242,7 +241,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 					message_ref_id: message.id,
 					receiver_id: message.sender_id,
 					sender_id: userId,
-					token_count: AMOUNT_TOKEN.TEN_TOKENS
+					token_count: AMOUNT_TOKEN.TEN_THOUSAND_TOKENS
 				})
 			).unwrap();
 			if (checkSendCoffee === true) {
@@ -285,7 +284,6 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 		);
 	});
 }
-
 
 // Menu items plugins
 // maybe should be moved to separate files

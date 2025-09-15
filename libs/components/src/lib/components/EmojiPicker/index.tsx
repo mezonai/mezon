@@ -438,8 +438,9 @@ const EmojisPanel = React.memo(function EmojisPanel({
 				emojiRecentActions.buyItemForSale({
 					id: itemUnlock.id || '',
 					type: 0,
-					creatorMmnAddress: itemUnlock.creator_mmn_address,
-					senderId: userProfile?.user?.id
+					creatorId: itemUnlock.creator_id,
+					senderId: userProfile?.user?.id,
+					username: userProfile?.user?.username
 				})
 			);
 		}

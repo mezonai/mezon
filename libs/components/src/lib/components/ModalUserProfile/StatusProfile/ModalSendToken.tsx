@@ -114,8 +114,7 @@ const ModalSendToken = ({
 					username: itemUserClan?.username ?? '',
 					avatar_url: itemUserClan?.avatar_url ?? '',
 					search_key: itemUserClan.list_nick_names?.join('./'),
-					display_name: itemUserClan.display_name,
-					mmn_address: itemUserClan?.mmn_address ?? ''
+					display_name: itemUserClan.display_name
 				});
 			}
 		});
@@ -127,8 +126,7 @@ const ModalSendToken = ({
 					id: userId,
 					username: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
 					avatar_url: itemDM?.user?.avatar_url ?? '',
-					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
-					mmn_address: itemDM?.user?.mmn_address ?? ''
+					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? ''
 				});
 			}
 		});
@@ -300,7 +298,7 @@ const ModalSendToken = ({
 					<ButtonLoading
 						className="flex-1 h-12 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 hover:text-white  text-white font-medium"
 						onClick={handleSendToken}
-						disabled={isButtonDisabled || !selectedUserId || token <= 0 || (selectedUser && !selectedUser.mmn_address)}
+						disabled={isButtonDisabled || !selectedUserId || token <= 0}
 						label="Send Tokens"
 					/>
 				</div>
