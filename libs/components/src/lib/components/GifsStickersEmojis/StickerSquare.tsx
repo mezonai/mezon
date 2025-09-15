@@ -54,7 +54,7 @@ type StickerPanel = {
 	forSale?: boolean;
 	clanName?: string;
 	clanId?: string;
-	creatorMmnAddress?: string;
+	creatorId?: string;
 	shortname?: string;
 };
 
@@ -113,7 +113,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				clanName: sticker.category,
 				clanId: sticker.clan_id,
 				forSale: sticker.is_for_sale,
-				creatorMmnAddress: sticker.creator_mmn_address,
+				creatorId: sticker.creator_id,
 				shortname: sticker.shortname || ''
 			}))
 		].filter(Boolean);
@@ -170,7 +170,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 					emojiRecentActions.buyItemForSale({
 						id: stickerBuy.id,
 						type: 1,
-						creatorMmnAddress: stickerBuy.creatorMmnAddress,
+						creatorId: stickerBuy.creatorId,
 						senderId: userProfile?.user?.id
 					})
 				);

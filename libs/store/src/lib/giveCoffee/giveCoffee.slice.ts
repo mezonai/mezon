@@ -6,7 +6,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
-import { fetchListUsersByUserCached, mapUsersToEntity } from '../channels/listUsers.slice';
+import { selectUserById } from '../channels/listUsers.slice';
 import { ensureSession, getMezonCtx, getMmnClient } from '../helpers';
 import type { RootState } from '../store';
 import { toastActions } from '../toasts/toasts.slice';
@@ -55,16 +55,11 @@ export const updateGiveCoffee = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const mmnClient = getMmnClient(thunkAPI);
 
-			// Resolve recipient address from v2/users/clans
+			// Resolve recipient address from store
 			let recipientAddress: string | null = null;
 			if (receiver_id) {
-				try {
-					const response = await fetchListUsersByUserCached(thunkAPI.getState as () => RootState, mezon);
-					recipientAddress = response?.users?.map(mapUsersToEntity).find((user) => user.id === receiver_id)?.mmn_address || null;
-				} catch (error) {
-					captureSentryError(error, 'usersByUser/fetchListUsersByUser');
-					return thunkAPI.rejectWithValue(error);
-				}
+				const state = thunkAPI.getState() as RootState;
+				recipientAddress = selectUserById(state, receiver_id)?.wallet_address || null;
 			}
 
 			if (!recipientAddress) {
@@ -135,13 +130,8 @@ export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: 
 
 		let recipientAddress: string | null = null;
 		if (tokenEvent.receiver_id) {
-			try {
-				const response = await fetchListUsersByUserCached(thunkAPI.getState as () => RootState, mezon);
-				recipientAddress = response?.users?.map(mapUsersToEntity).find((user) => user.id === tokenEvent.receiver_id)?.mmn_address || null;
-			} catch (error) {
-				captureSentryError(error, 'usersByUser/fetchListUsersByUser');
-				return thunkAPI.rejectWithValue(error);
-			}
+			const state = thunkAPI.getState() as RootState;
+			recipientAddress = selectUserById(state, tokenEvent.receiver_id)?.wallet_address || null;
 		}
 
 		if (!recipientAddress) {

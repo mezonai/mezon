@@ -1,8 +1,10 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
-import { IEmoji, getSrcEmoji } from '@mezon/utils';
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import type { IEmoji } from '@mezon/utils';
+import { getSrcEmoji } from '@mezon/utils';
+import type { FC } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -45,7 +47,7 @@ const EmojisPanel: FC<EmojisPanelProps> = ({ emojisData, onEmojiSelect }) => {
 		async (emoji: IEmoji) => {
 			try {
 				if (emoji.id) {
-					const resp = await dispatch(emojiRecentActions.buyItemForSale({ id: emoji?.id, type: 0 }));
+					const resp = await dispatch(emojiRecentActions.buyItemForSale({ id: emoji?.id, type: 0, creatorId: emoji?.creator_id }));
 					if (!resp?.type?.includes('rejected')) {
 						Toast.show({
 							type: 'success',

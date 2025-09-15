@@ -5,7 +5,8 @@ import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_SALE_CATE } from '@mezon/utils';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import type { ListRenderItem } from 'react-native';
+import { DeviceEventEmitter, FlatList, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
 import MezonConfirm from '../../../../../../componentUI/MezonConfirm';
@@ -93,7 +94,7 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 		async (sticker: any) => {
 			try {
 				if (sticker.id) {
-					const resp = await dispatch(emojiRecentActions.buyItemForSale({ id: sticker?.id, type: 1 }));
+					const resp = await dispatch(emojiRecentActions.buyItemForSale({ id: sticker?.id, type: 1, creatorId: sticker?.creator_id }));
 					if (!resp?.type?.includes('rejected')) {
 						Toast.show({
 							type: 'success',

@@ -20,7 +20,7 @@ interface EmojiSuggestionProps {
 const filterEmojiData = (emojis: IEmoji[]) => {
 	return emojis
 		.filter((emoji) => emoji.id && emoji.shortname)
-		.map(({ id, src, shortname, category, is_for_sale, creator_mmn_address }) => {
+		.map(({ id, src, shortname, category, is_for_sale, creator_id }) => {
 			if (is_for_sale && src) {
 				const idSale = getIdSaleItemFromSource(src);
 				return {
@@ -30,7 +30,7 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 					category,
 					shortname,
 					is_for_sale,
-					creator_mmn_address
+					creator_id
 				};
 			}
 			return {
@@ -40,7 +40,7 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 				category,
 				shortname,
 				is_for_sale,
-				creator_mmn_address
+				creator_id
 			};
 		});
 };

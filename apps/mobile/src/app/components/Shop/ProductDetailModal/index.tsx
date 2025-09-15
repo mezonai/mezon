@@ -21,6 +21,7 @@ export interface IProductDetail {
 	shortname: string;
 	type: 'emoji' | 'sticker';
 	creator_mmn_address?: string;
+	creator_id?: string;
 }
 
 interface ProductDetailModalProps {
@@ -39,13 +40,13 @@ const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) 
 
 	const handleConfirmPurchase = async () => {
 		try {
-			if (product?.id && product?.creator_mmn_address) {
+			if (product?.id && product?.creator_id) {
 				const apiType = product?.type === 'emoji' ? 0 : 1;
 				const response = await dispatch(
 					emojiRecentActions.buyItemForSale({
 						id: product?.id,
 						type: apiType,
-						creatorMmnAddress: product.creator_mmn_address,
+						creatorId: product.creator_id,
 						senderId: userProfile?.user?.id
 					})
 				);

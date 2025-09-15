@@ -1,4 +1,4 @@
-import { ThreadError } from '../types';
+import type { ThreadError } from '../types';
 
 export const TIME_COMBINE = 120;
 export const TIME_OFFSET = 3;
@@ -98,7 +98,8 @@ export const DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR = '#17ac86';
 export const CHANNEL_INPUT_ID = 'editorReactMentionChannel';
 export const GENERAL_INPUT_ID = 'editorReactMention';
 export const AMOUNT_TOKEN = {
-	TEN_TOKENS: 10
+	TEN_TOKENS: 10,
+	TEN_THOUSAND_TOKENS: 10000
 };
 
 export const TOKEN_TO_AMOUNT = {

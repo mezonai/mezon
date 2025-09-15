@@ -7,6 +7,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 import type { ApiClanEmoji } from 'mezon-js/dist/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { selectUserById } from '../channels/listUsers.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, getMmnClient } from '../helpers';
 import type { RootState } from '../store';
@@ -93,7 +94,7 @@ export const fetchEmojiRecent = createAsyncThunk('emoji/fetchEmojiRecent', async
 
 const buyItemForSale = createAsyncThunk(
 	'emoji/buyItemForSale',
-	async ({ id, type, creatorMmnAddress, senderId }: { id?: string; type?: number; creatorMmnAddress?: string; senderId?: string }, thunkAPI) => {
+	async ({ id, type, creatorId, senderId }: { id?: string; type?: number; creatorId?: string; senderId?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const mmnClient = getMmnClient(thunkAPI);
@@ -110,6 +111,14 @@ const buyItemForSale = createAsyncThunk(
 			}
 
 			const senderWalletAccount = await mmnClient.getAccountByAddress(encryptedWallet.address);
+
+			// Get creator wallet address from store using creator ID
+			let creatorMmnAddress: string | null = null;
+			if (creatorId) {
+				const state = thunkAPI.getState() as RootState;
+				const creator = selectUserById(state, creatorId);
+				creatorMmnAddress = creator?.wallet_address || null;
+			}
 
 			if (!creatorMmnAddress) {
 				thunkAPI.dispatch(
@@ -129,8 +138,8 @@ const buyItemForSale = createAsyncThunk(
 				privateKey: encryptedWallet.privateKey,
 				extraInfo: {
 					type: ETransferType.UnlockItem,
-					UserReceiverId: creatorMmnAddress,
-					UserSenderId: mezon.session.user_id || '',
+					UserReceiverId: creatorId || '',
+					UserSenderId: `${mezon.session.user_id}` || '',
 					UserSenderUsername: mezon.session.username || '',
 					ItemType: type?.toString() ?? '',
 					ItemId: id
