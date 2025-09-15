@@ -53,6 +53,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 	const [showWalletModal, setShowWalletModal] = useState<boolean>(false);
+	const [isEnableWallet, setIsEnableWallet] = useState<boolean>(false);
 
 	const fetchWallet = useCallback(async () => {
 		if (!userProfile?.user?.wallet_address || !userProfile?.user?.id) return;
@@ -60,6 +61,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 			const encryptedWallet = await WalletStorage.getEncryptedWallet(userProfile?.user?.id);
 
 			if (encryptedWallet) {
+				setIsEnableWallet(true);
 				await dispatch(fetchWalletDetail({ address: encryptedWallet.address })).unwrap();
 			}
 		} catch (error) {
@@ -206,7 +208,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	return (
 		<>
 			<div className="max-md:relative">
-				{walletDetail?.address && (
+				{isEnableWallet && (
 					<>
 						<ItemStatus
 							children={`Balance: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
