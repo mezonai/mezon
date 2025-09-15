@@ -439,7 +439,8 @@ const EmojisPanel = React.memo(function EmojisPanel({
 					id: itemUnlock.id || '',
 					type: 0,
 					creatorId: itemUnlock.creator_id,
-					senderId: userProfile?.user?.id
+					senderId: userProfile?.user?.id,
+					username: userProfile?.user?.username
 				})
 			);
 		}

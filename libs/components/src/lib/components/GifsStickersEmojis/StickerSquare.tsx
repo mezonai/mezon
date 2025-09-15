@@ -171,7 +171,8 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 						id: stickerBuy.id,
 						type: 1,
 						creatorId: stickerBuy.creatorId,
-						senderId: userProfile?.user?.id
+						senderId: userProfile?.user?.id,
+						username: userProfile?.user?.username
 					})
 				);
 			}

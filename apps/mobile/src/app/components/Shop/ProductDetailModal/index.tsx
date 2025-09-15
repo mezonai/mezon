@@ -47,7 +47,8 @@ const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) 
 						id: product?.id,
 						type: apiType,
 						creatorId: product.creator_id,
-						senderId: userProfile?.user?.id
+						senderId: userProfile?.user?.id,
+						username: userProfile?.user?.username
 					})
 				);
 				if (!response?.type?.includes('rejected')) {

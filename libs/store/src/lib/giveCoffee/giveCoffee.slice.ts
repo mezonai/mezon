@@ -55,7 +55,6 @@ export const updateGiveCoffee = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const mmnClient = getMmnClient(thunkAPI);
 
-			// Resolve recipient address from store
 			let recipientAddress: string | null = null;
 			if (receiver_id) {
 				const state = thunkAPI.getState() as RootState;

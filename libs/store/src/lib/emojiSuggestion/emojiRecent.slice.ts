@@ -94,7 +94,10 @@ export const fetchEmojiRecent = createAsyncThunk('emoji/fetchEmojiRecent', async
 
 const buyItemForSale = createAsyncThunk(
 	'emoji/buyItemForSale',
-	async ({ id, type, creatorId, senderId }: { id?: string; type?: number; creatorId?: string; senderId?: string }, thunkAPI) => {
+	async (
+		{ id, type, creatorId, senderId, username }: { id?: string; type?: number; creatorId?: string; senderId?: string; username?: string },
+		thunkAPI
+	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const mmnClient = getMmnClient(thunkAPI);
@@ -112,7 +115,6 @@ const buyItemForSale = createAsyncThunk(
 
 			const senderWalletAccount = await mmnClient.getAccountByAddress(encryptedWallet.address);
 
-			// Get creator wallet address from store using creator ID
 			let creatorMmnAddress: string | null = null;
 			if (creatorId) {
 				const state = thunkAPI.getState() as RootState;
@@ -139,8 +141,8 @@ const buyItemForSale = createAsyncThunk(
 				extraInfo: {
 					type: ETransferType.UnlockItem,
 					UserReceiverId: creatorId || '',
-					UserSenderId: `${mezon.session.user_id}` || '',
-					UserSenderUsername: mezon.session.username || '',
+					UserSenderId: senderId ?? '',
+					UserSenderUsername: username || '',
 					ItemType: type?.toString() ?? '',
 					ItemId: id
 				}
