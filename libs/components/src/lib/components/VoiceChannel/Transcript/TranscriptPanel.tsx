@@ -74,9 +74,9 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], ti
 				{!isAtBottom && (
 					<button
 						onClick={scrollToBottom}
-						className="absolute bottom-4 right-4 text-theme-message px-3 py-1 rounded-full shadow-md bg-button-hover transition"
+						className="absolute bottom-4 right-4 text-theme-message px-3 py-1 rounded-full shadow-md bg-input-theme bg-button-hover transition"
 					>
-						↓ Scroll to bottom
+						<Icons.ArrowDown defaultSize="w-5 h-5" />
 					</button>
 				)}
 			</div>

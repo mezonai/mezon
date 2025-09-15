@@ -39,23 +39,14 @@ function normalizeText(text: string): string {
 	return text.trim().toLowerCase();
 }
 
-/**
- * Subscribe to LiveKit data channel topic "transcript" and build a display list.
- * Rules without cross-speaker finalization:
- * - Với mỗi participant: luôn cập nhật đè text in-place cho đến khi isFinal=true thì chốt dòng của participant đó.
- * - Người khác chen ngang sẽ không ảnh hưởng; không chốt dòng cũ trừ khi nhận isFinal từ participant tương ứng.
- */
 export function useTranscript(maxItems = 500) {
 	const room = useRoomContext();
 	const [items, setItems] = useState<TranscriptListItem[]>([]);
-	// Track active utterance metadata and the index of its display item in items array
 	const activeMetaByParticipant = useRef<Map<string, ActiveUtterance>>(new Map());
 	const activeIndexByParticipant = useRef<Map<string, number>>(new Map());
-	// Keep recent normalized texts to avoid duplicate cross-attribution
 	const recentTextWindow = useRef<Map<string, { pid: string; ts: number }>>(new Map());
 	const DEDUP_WINDOW_MS = 3000;
 
-	// Append a new item and atomically record its index for active updates
 	const appendItemAndTrack = (participantId: string, entry: ActiveUtterance, finalizeImmediately: boolean) => {
 		setItems((prev) => {
 			const newIndex = prev.length;
@@ -77,8 +68,8 @@ export function useTranscript(maxItems = 500) {
 			}
 			while (next.length > maxItems) {
 				const removeIdx = 0;
-				const isActive0 = Array.from(activeIndexByParticipant.current.values()).includes(removeIdx);
-				if (isActive0) break;
+				const isActive = Array.from(activeIndexByParticipant.current.values()).includes(removeIdx);
+				if (isActive) break;
 				next = next.slice(1);
 				activeIndexByParticipant.current.forEach((idx, pid) => {
 					activeIndexByParticipant.current.set(pid, idx - 1);
@@ -98,15 +89,15 @@ export function useTranscript(maxItems = 500) {
 				const data = JSON.parse(json) as { type?: string; entry?: IncomingTranscriptEntry };
 				if (data?.type !== 'transcript' || !data.entry) return;
 
-				const e = data.entry;
-				const participantKey = e.participantIdentity;
+				const entry = data.entry;
+				const participantKey = entry.participantIdentity;
 				const now = Date.now();
-				const norm = normalizeText(e.text);
-				const prev = recentTextWindow.current.get(norm);
+				const normalizedText = normalizeText(entry.text);
+				const prev = recentTextWindow.current.get(normalizedText);
 				if (prev && prev.pid !== participantKey && now - prev.ts < DEDUP_WINDOW_MS) {
 					return;
 				}
-				recentTextWindow.current.set(norm, { pid: participantKey, ts: now });
+				recentTextWindow.current.set(normalizedText, { pid: participantKey, ts: now });
 
 				const existingMeta = activeMetaByParticipant.current.get(participantKey);
 				const existingIndex = activeIndexByParticipant.current.get(participantKey);
@@ -117,27 +108,27 @@ export function useTranscript(maxItems = 500) {
 						const copy = prev.slice();
 						copy[existingIndex] = {
 							...copy[existingIndex],
-							text: e.text,
-							speaker: e.participantName
+							text: entry.text,
+							speaker: entry.participantName
 						};
 						return copy;
 					});
-					existingMeta.text = e.text;
-					existingMeta.participantName = e.participantName;
+					existingMeta.text = entry.text;
+					existingMeta.participantName = entry.participantName;
 
-					if (e.isFinal) {
+					if (entry.isFinal) {
 						activeMetaByParticipant.current.delete(participantKey);
 						activeIndexByParticipant.current.delete(participantKey);
 					}
 				} else {
 					const newActive: ActiveUtterance = {
-						seq: e.seq,
-						text: e.text,
+						seq: entry.seq,
+						text: entry.text,
 						startedAt: Date.now(),
-						participantIdentity: e.participantIdentity,
-						participantName: e.participantName
+						participantIdentity: entry.participantIdentity,
+						participantName: entry.participantName
 					};
-					appendItemAndTrack(participantKey, newActive, e.isFinal);
+					appendItemAndTrack(participantKey, newActive, entry.isFinal);
 				}
 			} catch (error) {
 				// ignore malformed payloads
