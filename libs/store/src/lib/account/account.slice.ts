@@ -12,12 +12,7 @@ export interface IAccount {
 	email: string;
 	password: string;
 }
-export interface IWalletState {
-	account_nonce?: number;
-	address: string;
-	balance?: string;
-	last_balance_update?: number;
-}
+
 export interface AccountState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -105,7 +100,7 @@ export const storeWalletKey = createAsyncThunk('account/storeWalletKey', async (
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.storeWalletKey(mezon.session, {
+		const response = await mezon.client.createMmnWallet(mezon.session, {
 			address: metadata.address,
 			enc_privkey: metadata.encryptedPrivateKey
 		});
@@ -232,5 +227,3 @@ export const selectAccountMetadata = createSelector(getAccountState, (state: Acc
 export const selectAccountCustomStatus = createSelector(selectAccountMetadata, (metadata) => metadata?.status || '');
 
 export const selectLogoCustom = createSelector(getAccountState, (state) => state?.userProfile?.logo);
-
-export const selectUserWallet = createSelector(getAccountState, (state) => state?.wallet);

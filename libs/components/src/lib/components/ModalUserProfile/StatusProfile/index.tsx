@@ -10,7 +10,6 @@ import {
 	giveCoffeeActions,
 	selectOthersSession,
 	selectUserStatus,
-	selectUserWallet,
 	selectWalletDetail,
 	useAppDispatch,
 	userClanProfileActions,
@@ -18,7 +17,7 @@ import {
 } from '@mezon/store';
 import { createClient as createMezonClient, useMezon } from '@mezon/transport';
 import { Icons, Menu } from '@mezon/ui';
-import { EUserStatus, formatBalanceToString } from '@mezon/utils';
+import { EUserStatus, WalletStorage, formatBalanceToString } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { Session } from 'mezon-js';
 import { ReactElement, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
@@ -48,7 +47,6 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	};
 	const userCustomStatus = useMemberCustomStatus(user?.id || '', isDM);
 	const userStatus = useSelector(selectUserStatus);
-	const userWallet = useSelector(selectUserWallet);
 	const walletDetail = useSelector(selectWalletDetail);
 	const status = userStatus?.status || 'Online';
 	const { userProfile } = useAuth();
@@ -56,17 +54,22 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 	const [showWalletModal, setShowWalletModal] = useState<boolean>(false);
 
-	useEffect(() => {
-		const fetchWalletData = async () => {
-			if (!userWallet?.address) return;
-			try {
-				await dispatch(fetchWalletDetail(userWallet));
-			} catch (error) {
-				console.error(`Error loading wallet detail:`, error);
+	const fetchWallet = useCallback(async () => {
+		if (!userProfile?.user?.wallet_address || !userProfile?.user?.id) return;
+		try {
+			const encryptedWallet = await WalletStorage.getEncryptedWallet(userProfile?.user?.id);
+
+			if (encryptedWallet) {
+				await dispatch(fetchWalletDetail({ address: encryptedWallet.address })).unwrap();
 			}
-		};
-		fetchWalletData();
-	}, [userWallet]);
+		} catch (error) {
+			console.error(`Error loading wallet detail:`, error);
+		}
+	}, [userProfile]);
+
+	useEffect(() => {
+		fetchWallet();
+	}, [fetchWallet]);
 
 	const handleSendToken = () => {
 		dispatch(giveCoffeeActions.setShowModalSendToken(true));
@@ -203,7 +206,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	return (
 		<>
 			<div className="max-md:relative">
-				{userWallet?.address && (
+				{walletDetail?.address && (
 					<>
 						<ItemStatus
 							children={`Balance: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}

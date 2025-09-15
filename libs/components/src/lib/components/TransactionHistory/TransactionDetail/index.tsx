@@ -60,8 +60,8 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 	const { FIELDS } = TRANSACTION_DETAIL;
 
 	const detailFields = useMemo(() => {
-		const sender = usersClan.find((user) => user.mmn_address === detailLedger.from_address);
-		const receiver = usersClan.find((user) => user.mmn_address === detailLedger.to_address);
+		const sender = usersClan.find((user) => user.wallet_address === detailLedger.from_address);
+		const receiver = usersClan.find((user) => user.wallet_address === detailLedger.to_address);
 		return [
 			{ label: FIELDS.TRANSACTION_ID, value: detailLedger.hash, icon: Icons.Transaction },
 			{ label: FIELDS.SENDER, value: sender?.username, icon: Icons.UserIcon },
@@ -74,7 +74,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 			{ label: FIELDS.NOTE, value: detailLedger.text_data || TRANSACTION_DETAIL.DEFAULT_NOTE, icon: Icons.PenEdit },
 			{
 				label: FIELDS.CREATED,
-				value: formatDate(new Date(detailLedger.transaction_timestamp ?? '').toDateString()),
+				value: formatDate(new Date((detailLedger.transaction_timestamp ?? 0) * 1000).toISOString()),
 				icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" />
 			}
 		];

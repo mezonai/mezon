@@ -1,10 +1,10 @@
 import {
 	fetchListTransactionHistory,
 	fetchTransactionDetail,
+	selectAllAccount,
 	selectCountWalletLedger,
 	selectDetailTransaction,
 	selectTransactionHistory,
-	selectUserWallet,
 	useAppDispatch,
 	useAppSelector,
 	walletLedgerActions
@@ -37,7 +37,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 	const walletLedger = useAppSelector((state) => selectTransactionHistory(state));
 	const detailLedger = useAppSelector((state) => selectDetailTransaction(state));
 	const count = useAppSelector((state) => selectCountWalletLedger(state));
-	const userWallet = useSelector(selectUserWallet);
+	const userProfile = useSelector(selectAllAccount);
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const [activeFilter, setActiveFilter] = useState<FilterType>(TRANSACTION_FILTERS.ALL);
@@ -55,7 +55,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 			try {
 				await dispatch(
 					fetchListTransactionHistory({
-						address: userWallet?.address || '',
+						address: userProfile?.user?.wallet_address || '',
 						page,
 						filter: API_FILTER_PARAMS[filter]
 					})
@@ -120,7 +120,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 
 	const renderAmount = (amount: string, transactionId: string, fromAddress: string) => {
 		const isOpened = openedTransactionId === transactionId;
-		const isSender = userWallet?.address === fromAddress;
+		const isSender = userProfile?.user?.wallet_address === fromAddress;
 
 		const formattedAmount = formatBalanceToString(amount);
 		if (isSender) {
@@ -365,7 +365,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 																</p>
 															</div>
 															<p className="dark:text-gray-400 text-gray-500 text-xs mt-1">
-																{formatDate(new Date(item.transaction_timestamp ?? '').toDateString())}
+																{formatDate(new Date((item.transaction_timestamp ?? 0) * 1000).toISOString())}
 															</p>
 														</div>
 													</div>

@@ -14,7 +14,7 @@ import {
 	selectVoiceOpenPopOut,
 	usersClanActions
 } from '@mezon/store';
-import { IWithError, WalletStorage } from '@mezon/utils';
+import { IWithError } from '@mezon/utils';
 import { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
@@ -131,10 +131,6 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 			} else {
 				const profileResponse = await dispatch(accountActions.getUserProfile());
 				if (!(profileResponse as unknown as IWithError).error) {
-					const encryptedWallet = await WalletStorage.getEncryptedWallet((profileResponse?.payload as any)?.user.id);
-					if (encryptedWallet) {
-						dispatch(accountActions.setWalletData({ address: encryptedWallet.address }));
-					}
 					return { isLogin: true } as IAuthLoaderData;
 				}
 				throw new Error('Session expired');

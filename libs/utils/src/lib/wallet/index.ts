@@ -1,7 +1,3 @@
-import * as bip39 from 'bip39';
-import bs58 from 'bs58';
-import nacl from 'tweetnacl';
-
 type TEncryptedKey = { encryptedData: string; salt: string; iv: string };
 
 type TEncryptedWallet = {
@@ -69,72 +65,6 @@ export class WalletCrypto {
 
 		const decoder = new TextDecoder();
 		return decoder.decode(decryptedBuffer);
-	}
-
-	static rawEd25519ToPkcs8Hex(raw: Buffer): string {
-		// Helpers: DER building
-		const concat = (...parts: Uint8Array[]): Uint8Array => {
-			const total = parts.reduce((s, p) => s + p.length, 0);
-			const out = new Uint8Array(total);
-			let offset = 0;
-			for (const p of parts) {
-				out.set(p, offset);
-				offset += p.length;
-			}
-			return out;
-		};
-
-		const derLen = (n: number): Uint8Array => {
-			if (n < 0x80) return Uint8Array.of(n);
-			// support up to 4 bytes length which is plenty here
-			const bytes: number[] = [];
-			let x = n;
-			while (x > 0) {
-				bytes.unshift(x & 0xff);
-				x >>= 8;
-			}
-			return Uint8Array.of(0x80 | bytes.length, ...bytes);
-		};
-
-		const derIntegerZero = Uint8Array.of(0x02, 0x01, 0x00); // INTEGER 0
-
-		// AlgorithmIdentifier = SEQUENCE { OID 1.3.101.112 (ed25519), parameters ABSENT }
-		const oidEd25519 = Uint8Array.of(0x06, 0x03, 0x2b, 0x65, 0x70);
-		const algId = concat(Uint8Array.of(0x30), derLen(oidEd25519.length), oidEd25519);
-
-		// privateKey = OCTET STRING of inner OCTET STRING (RFC8410 commonly seen form)
-		const innerOctet = concat(Uint8Array.of(0x04, 0x20), new Uint8Array(raw)); // 0x04, len=0x20, 32 bytes
-		const privateKeyField = concat(Uint8Array.of(0x04), derLen(innerOctet.length), innerOctet);
-
-		// PrivateKeyInfo = SEQUENCE { version, algId, privateKey }
-		const body = concat(derIntegerZero, algId, privateKeyField);
-		const pkcs8 = concat(Uint8Array.of(0x30), derLen(body.length), body);
-
-		return Buffer.from(pkcs8).toString('hex');
-	}
-
-	static generateWallet(): TWalletData {
-		const mnemonic = bip39.generateMnemonic(128);
-
-		if (!bip39.validateMnemonic(mnemonic)) {
-			throw new Error('Generated mnemonic failed validation');
-		}
-
-		const recoveryPhrase = mnemonic;
-		const seed = bip39.mnemonicToSeedSync(mnemonic);
-		const privateKey = seed.slice(0, 32);
-
-		const kp = nacl.sign.keyPair.fromSeed(privateKey);
-		const publicKeyBytes = kp.publicKey;
-
-		const publicKeyBase58 = bs58.encode(publicKeyBytes);
-		const privateKeyHex = WalletCrypto.rawEd25519ToPkcs8Hex(privateKey);
-
-		return {
-			address: publicKeyBase58,
-			privateKey: privateKeyHex,
-			recoveryPhrase
-		};
 	}
 }
 

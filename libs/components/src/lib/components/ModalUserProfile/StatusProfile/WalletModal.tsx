@@ -1,5 +1,6 @@
 import { ButtonCopy } from '@mezon/components';
 import { accountActions, selectAllAccount, useAppDispatch } from '@mezon/store';
+import { useMmn } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { TWalletData, WalletCrypto, WalletStorage } from '@mezon/utils';
 import React, { useEffect, useState } from 'react';
@@ -46,6 +47,8 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 	const [confirmPin, setConfirmPin] = useState('');
 	const [isSettingUpPin, setIsSettingUpPin] = useState(false);
 
+	const mmn = useMmn();
+
 	useEffect(() => {
 		loadWalletData();
 	}, [userProfile]);
@@ -87,7 +90,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 
 	const generateWallet = (): TWalletData | undefined => {
 		try {
-			const newWallet = WalletCrypto.generateWallet();
+			const newWallet = mmn.client.createWallet();
 
 			setIsSettingUpPin(true);
 			setShowPinModal({ isOpen: true, type: 'setup' });
@@ -136,7 +139,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 	};
 
 	const restoreWallet = async (passcode: string) => {
-		if (!userProfile?.user?.id || !userProfile?.mmn_encrypt_private_key || !userProfile.mmn_address) return;
+		if (!userProfile?.user?.id || !userProfile?.mmn_encrypt_private_key || !userProfile?.user?.wallet_address) return;
 
 		try {
 			const { encryptedData, salt, iv } = JSON.parse(userProfile.mmn_encrypt_private_key);
@@ -144,14 +147,14 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 
 			setWalletData((prev) => ({
 				...prev,
-				address: userProfile.mmn_address || '',
+				address: userProfile.user.wallet_address || '',
 				privateKey: decryptedPrivateKey || '',
 				recoveryPhrase: '',
 				isEncrypted: false
 			}));
 
 			const encryptedWallet = {
-				address: userProfile.mmn_address,
+				address: userProfile.user.wallet_address,
 				encryptedPrivateKey: userProfile.mmn_encrypt_private_key,
 				encryptedRecoveryPhrase: '',
 				privateKey: decryptedPrivateKey,
