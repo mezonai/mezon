@@ -1,21 +1,6 @@
 import { Icons } from '@mezon/ui';
 import React, { useEffect, useRef, useState } from 'react';
-
-export type TranscriptItem = {
-	id: string;
-	// ISO timestamp or readable time string
-	timestamp: string;
-	// Display name of the speaker
-	speaker?: string;
-	// Content of the transcript line
-	text: string;
-};
-
-export interface TranscriptPanelProps {
-	items?: TranscriptItem[];
-	title?: string;
-	onClose?: () => void;
-}
+import { TranscriptPanelProps } from './types';
 
 export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], title = 'Transcript', onClose }) => {
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -59,7 +44,7 @@ export const TranscriptPanel: React.FC<TranscriptPanelProps> = ({ items = [], ti
 				{items.length === 0 ? (
 					<div className="text-theme-primary text-sm p-5">No transcript yet. When speech is detected, it will appear here.</div>
 				) : (
-					<ul className="space-y-2 px-2 pt-2">
+					<ul className="space-y-2 px-2 pt-2 mb-[15rem]">
 						{items.map((it) => (
 							<li key={it.id} className="text-[15px] text-theme-message font-semibold pl-1">
 								<div className="text-[11px]">

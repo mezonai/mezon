@@ -1,31 +1,7 @@
 import { useRoomContext } from '@livekit/components-react';
 import { DataPacket_Kind, Participant, RoomEvent } from 'livekit-client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-
-export type IncomingTranscriptEntry = {
-	participantIdentity: string;
-	participantName: string;
-	seq: number;
-	isFinal: boolean;
-	language?: string | null;
-	text: string;
-	timestamp: number; // ms
-};
-
-export type TranscriptListItem = {
-	id: string;
-	timestamp: string;
-	speaker?: string;
-	text: string;
-};
-
-type ActiveUtterance = {
-	seq: number;
-	text: string;
-	startedAt: number;
-	participantIdentity: string;
-	participantName: string;
-};
+import { ActiveUtterance, IncomingTranscriptEntry, TranscriptItem } from './types';
 
 function formatTime(ms: number): string {
 	const d = new Date(ms);
@@ -41,7 +17,7 @@ function normalizeText(text: string): string {
 
 export function useTranscript(maxItems = 500) {
 	const room = useRoomContext();
-	const [items, setItems] = useState<TranscriptListItem[]>([]);
+	const [items, setItems] = useState<TranscriptItem[]>([]);
 	const activeMetaByParticipant = useRef<Map<string, ActiveUtterance>>(new Map());
 	const activeIndexByParticipant = useRef<Map<string, number>>(new Map());
 	const recentTextWindow = useRef<Map<string, { pid: string; ts: number }>>(new Map());
@@ -50,7 +26,7 @@ export function useTranscript(maxItems = 500) {
 	const appendItemAndTrack = (participantId: string, entry: ActiveUtterance, finalizeImmediately: boolean) => {
 		setItems((prev) => {
 			const newIndex = prev.length;
-			let next: TranscriptListItem[] = [
+			let next: TranscriptItem[] = [
 				...prev,
 				{
 					id: `${entry.participantIdentity}-${entry.seq}-${entry.startedAt}`,
