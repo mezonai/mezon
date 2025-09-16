@@ -29,16 +29,16 @@ import { useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
 import { useMezon } from '@mezon/transport';
 import Clipboard from '@react-native-clipboard/clipboard';
+import PasteInput, { PasteImageEvent, PasteInputRef } from 'apps/mobile/src/app/components/PasteInput/PasteInput';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Image, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, Image, NativeSyntheticEvent, Platform, StyleSheet, TextInput, View } from 'react-native';
 import { TriggersConfig, useMentions } from 'react-native-controlled-mentions';
 import RNFS from 'react-native-fs';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
-import { ClipboardImagePreview } from '../../../../../../components/ClipboardImagePreview';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { SlashCommandSuggestions } from '../../../../../../components/Suggestions/SlashCommandSuggestions';
 import { SlashCommandMessage } from '../../../../../../components/Suggestions/SlashCommandSuggestions/SlashCommandMessage';
@@ -135,7 +135,8 @@ export const ChatBoxBottomBar = memo(
 
 		const anonymousMode = useSelector(selectAnonymousMode);
 
-		const inputRef = useRef<TextInput>(null);
+		const pasteInputRef = useRef<PasteInputRef>(null);
+		const textDisplayRef = useRef<TextInput>(null);
 		const cursorPositionRef = useRef(0);
 		const convertRef = useRef(false);
 		const textValueInputRef = useRef<string>('');
@@ -214,38 +215,101 @@ export const ChatBoxBottomBar = memo(
 				);
 			});
 		};
-
-		const handlePasteImage = async (imageBase64: string) => {
+		const handlePasteImageEvent = async (e: NativeSyntheticEvent<PasteImageEvent>) => {
 			try {
-				if (imageBase64) {
-					const now = Date.now();
-					const mimeType = imageBase64.split(';')?.[0]?.split(':')?.[1] || 'image/jpeg';
-					const extension = mimeType?.split('/')?.[1]?.replace('jpeg', 'jpg')?.replace('svg+xml', 'svg') || 'jpg';
+				const { uri } = e.nativeEvent;
+				console.log('uri', uri);
+				await handlePasteImage(uri);
+			} catch (error) {
+				console.error('Error handling paste image event:', error);
+			}
+		};
+		const handlePasteImage = async (uri: string) => {
+			console.log('handlePasteImage', uri);
+			try {
+				if (!uri) return;
 
-					const fileName = `paste_image_${now}.${extension}`;
-					const destPath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+				const now = Date.now();
 
-					await RNFS.writeFile(destPath, imageBase64.split(',')?.[1], 'base64');
-					const fileInfo = await RNFS.stat(destPath);
-					const filePath = `file://${fileInfo?.path}`;
-					const { width, height } = await getImageDimension(filePath);
+				const isDataUri = uri.startsWith('data:image/');
+				const isFileUri = uri.startsWith('file://');
+				const isContentUri = uri.startsWith('content://');
 
-					const imageFile = {
-						filename: fileName,
-						filetype: mimeType,
-						url: filePath,
-						size: fileInfo?.size,
-						width: width ?? 250,
-						height: height ?? 250
-					};
+				let mimeType = 'image/jpeg';
+				let extension = 'jpg';
 
-					dispatch(
-						referencesActions.setAtachmentAfterUpload({
-							channelId: topicChannelId || channelId,
-							files: [imageFile]
-						})
-					);
+				if (isDataUri) {
+					mimeType = uri.split(';')?.[0]?.split(':')?.[1] || 'image/jpeg';
+					extension = mimeType?.split('/')?.[1]?.replace('jpeg', 'jpg')?.replace('svg+xml', 'svg') || 'jpg';
+				} else {
+					// Try to infer extension from path
+					const lower = uri.toLowerCase();
+					if (lower.includes('.png')) {
+						mimeType = 'image/png';
+						extension = 'png';
+					} else if (lower.includes('.webp')) {
+						mimeType = 'image/webp';
+						extension = 'webp';
+					} else if (lower.includes('.gif')) {
+						mimeType = 'image/gif';
+						extension = 'gif';
+					} else if (lower.includes('.svg')) {
+						mimeType = 'image/svg+xml';
+						extension = 'svg';
+					} else if (lower.includes('.jpg') || lower.includes('.jpeg')) {
+						mimeType = 'image/jpeg';
+						extension = 'jpg';
+					}
 				}
+
+				const fileName = `paste_image_${now}.${extension}`;
+				const destPath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+
+				if (isDataUri) {
+					await RNFS.writeFile(destPath, uri.split(',')?.[1], 'base64');
+				} else if (isFileUri) {
+					await RNFS.copyFile(uri, destPath);
+				} else if (isContentUri) {
+					// Try copy; fallback to readFile base64 if copy not supported
+					try {
+						await RNFS.copyFile(uri, destPath);
+					} catch (copyErr) {
+						try {
+							const base64 = await RNFS.readFile(uri, 'base64');
+							await RNFS.writeFile(destPath, base64, 'base64');
+						} catch (readErr) {
+							console.error('Failed to handle content URI for paste image:', readErr);
+							return;
+						}
+					}
+				} else {
+					// Unknown scheme; attempt to treat as file path
+					try {
+						await RNFS.copyFile(uri, destPath);
+					} catch (_) {
+						return;
+					}
+				}
+
+				const fileInfo = await RNFS.stat(destPath);
+				const filePath = `file://${fileInfo?.path}`;
+				const { width, height } = await getImageDimension(filePath);
+
+				const imageFile = {
+					filename: fileName,
+					filetype: mimeType,
+					url: filePath,
+					size: fileInfo?.size,
+					width: width ?? 250,
+					height: height ?? 250
+				};
+
+				dispatch(
+					referencesActions.setAtachmentAfterUpload({
+						channelId: topicChannelId || channelId,
+						files: [imageFile]
+					})
+				);
 			} catch (error) {
 				console.error('Error pasting image:', error);
 			}
@@ -283,7 +347,7 @@ export const ChatBoxBottomBar = memo(
 					mode
 				});
 			} else {
-				inputRef && inputRef.current && inputRef.current.focus();
+				pasteInputRef && pasteInputRef.current && pasteInputRef.current.focus();
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 					isShow: false,
 					mode: ''
@@ -506,7 +570,8 @@ export const ChatBoxBottomBar = memo(
 
 		const resetInput = () => {
 			setIsFocus(false);
-			inputRef.current?.blur();
+			pasteInputRef.current?.blur();
+			textDisplayRef.current?.blur();
 			if (timeoutRef) {
 				clearTimeout(timeoutRef.current);
 			}
@@ -514,7 +579,7 @@ export const ChatBoxBottomBar = memo(
 
 		const openKeyBoard = () => {
 			timeoutRef.current = setTimeout(() => {
-				inputRef.current?.focus();
+				pasteInputRef.current?.focus();
 				setIsFocus(true);
 			}, 300);
 		};
@@ -676,32 +741,37 @@ export const ChatBoxBottomBar = memo(
 							/>
 						)}
 
-						{imageBase64 && (
-							<Pressable style={{ position: 'absolute', bottom: '100%' }} onPress={handlePasteImageFromClipboard}>
-								<ClipboardImagePreview imageBase64={imageBase64} message={t('pasteImage')} onCancel={cancelPasteImage} />
-							</Pressable>
-						)}
-
 						<View style={styles.input}>
 							<TextInput
-								ref={inputRef}
+								ref={textDisplayRef}
 								multiline
+								editable={false}
+								autoFocus={isFocus}
+								placeholder={t('messageInputPlaceHolder')}
+								placeholderTextColor={themeValue.textDisabled}
+								spellCheck={false}
+								numberOfLines={4}
+								textBreakStrategy="simple"
+								style={[styles.inputStyle, styles.textDisplayStyle, !textValueInputRef?.current && { height: size.s_40 }]}
+								children={RenderTextContent({ text: textValueInputRef?.current })}
+							/>
+							<PasteInput
+								ref={pasteInputRef}
+								multiline
+								autoFocus={isFocus}
+								onFocus={handleInputFocus}
+								onBlur={handleInputBlur}
 								onChangeText={
 									mentionsOnMessage?.current?.length || hashtagsOnMessage?.current?.length
 										? textInputProps?.onChangeText
 										: handleTextInputChange
 								}
-								autoFocus={isFocus}
-								placeholder={t('messageInputPlaceHolder')}
-								placeholderTextColor={themeValue.textDisabled}
-								onFocus={handleInputFocus}
-								onBlur={handleInputBlur}
-								spellCheck={false}
-								numberOfLines={4}
-								textBreakStrategy="simple"
-								style={[styles.inputStyle, !textValueInputRef?.current && { height: size.s_40 }]}
-								children={RenderTextContent({ text: textValueInputRef?.current })}
 								onSelectionChange={textInputProps?.onSelectionChange}
+								textBreakStrategy="simple"
+								onPasteImage={handlePasteImageEvent}
+								underlineColorAndroid="transparent"
+								spellCheck={false}
+								style={[StyleSheet.absoluteFillObject, styles.inputStyle, styles.pasteInputStyle]}
 							/>
 							<View style={styles.iconEmoji}>
 								<EmojiSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />

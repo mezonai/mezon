@@ -55,24 +55,33 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_6
 		},
 		input: {
-			alignItems: 'center',
 			flex: 1,
+			alignItems: 'center',
 			justifyContent: 'center'
 		},
 		inputStyle: {
+			flex: 1,
 			maxHeight: size.s_40 * 3,
 			width: '100%',
 			borderBottomWidth: 0,
 			borderRadius: size.s_20,
-			paddingLeft: Platform.OS === 'ios' ? size.s_16 : size.s_20,
 			paddingRight: size.s_40,
 			fontSize: size.medium,
-			paddingTop: Platform.OS === 'ios' ? size.s_10 : size.s_8,
+			lineHeight: size.medium,
+			textAlignVertical: 'center',
 			paddingBottom: size.s_12,
-			backgroundColor: colors.tertiary,
-			color: colors.textStrong,
-			textAlignVertical: 'center'
+			paddingLeft: Platform.OS === 'ios' ? size.s_16 : size.s_20,
+			paddingTop: Platform.OS === 'ios' ? size.s_10 : size.s_10
 		},
+		textDisplayStyle: {
+			color: colors.textStrong,
+			backgroundColor: colors.tertiary
+		},
+		pasteInputStyle: {
+			color: 'transparent',
+			opacity: 1
+		},
+
 		suggestions: {
 			position: 'absolute',
 			bottom: size.s_70 + size.s_4,

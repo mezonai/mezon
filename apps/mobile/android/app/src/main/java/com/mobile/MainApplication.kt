@@ -45,12 +45,13 @@ class MainApplication : Application(), ReactApplication {
               add(DeviceUtilsPackage())
               add(NavigationBarPackage())
               add(NotificationPreferencesPackage())
-              add(ReactNativeFirebaseAnalyticsPackage())
+             add(ReactNativeFirebaseAnalyticsPackage())
               add(AudioSessionPackage())
               add(CallStatePackage())
               add(RNScreensPackage())
               add(ImageClipboardPackage())
               add(BadgePackage())
+              add(PasteInputPackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"
