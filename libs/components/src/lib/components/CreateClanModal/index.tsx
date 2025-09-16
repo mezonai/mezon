@@ -15,8 +15,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
-import { ModalLayout } from '../../components';
-import { ModalErrorTypeUpload, ModalOverData } from '../ModalError';
+import { ModalErrorTypeUpload, ModalLayout, ModalOverData } from '../../components';
 
 export type ModalCreateClansProps = {
 	open: boolean;
@@ -140,67 +139,65 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 
 	return (
 		<ModalLayout onClose={handleClose}>
-			<div className='bg-theme-setting-primary rounded-xl flex flex-col' data-e2e={generateE2eId('clan_page.modal.create_clan')}>
-				<div className='flex-1 flex items-center justify-end border-b-theme-primary rounded-t p-4'>
+			<div className="bg-theme-setting-primary rounded-xl flex flex-col" data-e2e={generateE2eId('clan_page.modal.create_clan')}>
+				<div className="flex-1 flex items-center justify-end border-b-theme-primary rounded-t p-4">
 					<Button
-						className='rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover'
+						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"
 						onClick={handleClose}
 					>
 						×
 					</Button>
 				</div>
-				<div className='flex flex-col px-5 py-4 max-w-[684px]'>
-					<div className='flex items-center flex-col justify-center '>
-						<span className=' text-[24px] pb-4 font-[700] leading-8'>Customize Your Clan</span>
-						<p className='  text-center text-[20px] leading-6 font-[400]'>
+				<div className="flex flex-col px-5 py-4 max-w-[684px]">
+					<div className="flex items-center flex-col justify-center ">
+						<span className=" text-[24px] pb-4 font-[700] leading-8">Customize Your Clan</span>
+						<p className="  text-center text-[20px] leading-6 font-[400]">
 							Give your new clan a personality with a name and an icon. You can always change it later.
 						</p>
-						<label className='block mt-8 mb-4'>
+						<label className="block mt-8 mb-4">
 							{urlImage ? (
-								<img id='preview_img' className='h-[81px] w-[81px] object-cover rounded-full' src={urlImage} alt='Current profile' />
+								<img id="preview_img" className="h-[81px] w-[81px] object-cover rounded-full" src={urlImage} alt="Current profile" />
 							) : (
 								<div
-									id='preview_img'
-									className='h-[81px] w-[81px] flex justify-center bg-item-theme items-center flex-col  border-white relative border-[1px] border-dashed rounded-full cursor-pointer transform hover:scale-105 transition duration-300 ease-in-out'
+									id="preview_img"
+									className="h-[81px] w-[81px] flex justify-center bg-item-theme items-center flex-col  border-white relative border-[1px] border-dashed rounded-full cursor-pointer transform hover:scale-105 transition duration-300 ease-in-out"
 								>
-									<div className='absolute right-0 top-[-3px] left-[54px]'>
+									<div className="absolute right-0 top-[-3px] left-[54px]">
 										<Icons.AddIcon />
 									</div>
-									<Icons.UploadImage className='' />
-									<span className='text-[14px]'>Upload</span>
+									<Icons.UploadImage className="" />
+									<span className="text-[14px]">Upload</span>
 								</div>
 							)}
-							<input id='preview_img' type='file' onChange={(e) => handleFile(e)} className='w-full text-sm hidden' />
+							<input id="preview_img" type="file" onChange={(e) => handleFile(e)} className="w-full text-sm hidden" />
 						</label>
-						<div className='w-full'>
-							<span className='font-[700] text-[16px] leading-6'>CLAN NAME</span>
+						<div className="w-full">
+							<span className="font-[700] text-[16px] leading-6">CLAN NAME</span>
 							<InputField
 								onChange={handleInputChange}
-								type='text'
-								className='mb-2 mt-4 py-2'
+								type="text"
+								className="mb-2 mt-4 py-2"
 								placeholder={`Enter the clan name`}
 								maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
 								data-e2e={generateE2eId('clan_page.modal.create_clan.input.clan_name')}
 							/>
 							{checkvalidate !== EValidateListMessage.VALIDATED && (
-								<p className='text-[#e44141] text-xs italic font-thin'>{checkvalidate}</p>
+								<p className="text-[#e44141] text-xs italic font-thin">{checkvalidate}</p>
 							)}
-							<span className='text-[14px] '>
-								By creating a clan, you agree to Mezon's <span className='text-contentBrandLight'>Community Guidelines</span>.
+							<span className="text-[14px] ">
+								By creating a clan, you agree to Mezon's <span className="text-contentBrandLight">Community Guidelines</span>.
 							</span>
 						</div>
 					</div>
 					<ModalErrorTypeUpload
-						openModal={openModalError.errorType}
-						handleClose={() => seOpenModalError((prev) => ({ ...prev, errorType: false }))}
+						open={openModalError.errorType}
+						onClose={() => seOpenModalError((prev) => ({ ...prev, errorType: false }))}
 					/>
-					<ModalOverData
-						openModal={openModalError.errorSize}
-						handleClose={() => seOpenModalError((prev) => ({ ...prev, errorSize: false }))}
-					/>
-					<div className='flex items-center border-t border-solid dark:border-borderDefault rounded-b justify-between pt-4'>
+
+					<ModalOverData open={openModalError.errorSize} onClose={() => seOpenModalError((prev) => ({ ...prev, errorSize: false }))} />
+					<div className="flex items-center border-t border-solid dark:border-borderDefault rounded-b justify-between pt-4">
 						<Button
-							className='text-contentBrandLight px-4 py-2 background-transparent font-semibold text-sm outline-none focus:outline-none rounded-lg'
+							className="text-contentBrandLight px-4 py-2 background-transparent font-semibold text-sm outline-none focus:outline-none rounded-lg"
 							onClick={onClose}
 						>
 							Back
@@ -208,7 +205,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						<ButtonLoading
 							className={`font-semibold btn-primary btn-primary-hover text-sm px-4 py-2 shadow hover:shadow-lg rounded-lg ${checkvalidate !== EValidateListMessage.VALIDATED ? 'opacity-50 cursor-not-allowed' : ''}`}
 							onClick={handleCreateClan}
-							label='Create'
+							label="Create"
 							disabled={checkvalidate !== EValidateListMessage.VALIDATED}
 						/>
 					</div>

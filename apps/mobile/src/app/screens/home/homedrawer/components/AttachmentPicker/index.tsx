@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { ChannelsEntity, appActions, getStoreAsync, referencesActions, selectChannelById, selectDmGroupCurrentId } from '@mezon/store-mobile';
-import { MAX_FILE_SIZE, checkIsThread } from '@mezon/utils';
+import { checkIsThread, getMaxFileSize, isFileSizeExceeded, isImageFile } from '@mezon/utils';
 import Geolocation from '@react-native-community/geolocation';
 import { errorCodes, pick, types } from '@react-native-documents/picker';
 import { ChannelStreamMode } from 'mezon-js';
@@ -27,7 +27,7 @@ export type AttachmentPickerProps = {
 function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: AttachmentPickerProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { t } = useTranslation(['message']);
+	const { t } = useTranslation(['message', 'sharing', 'common']);
 	const timeRef = useRef<any>(null);
 	const dispatch = useDispatch();
 
@@ -46,10 +46,16 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 				type: [types.allFiles]
 			});
 			const file = res?.[0];
-			if (file?.size >= MAX_FILE_SIZE) {
+			if (file && isFileSizeExceeded(file as any)) {
+				const maxSize = getMaxFileSize(file as any);
+				const maxSizeMB = Math.round(maxSize / 1024 / 1024);
+				const isImage = isImageFile(file as any);
+				const fileTypeText = isImage ? t('common:image') : t('common:files');
+				
 				Toast.show({
 					type: 'error',
-					text1: `Maximum allowed size is ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`
+					text1: t('sharing:fileTooLarge'),
+					text2: t('sharing:fileSizeExceeded', { fileType: fileTypeText, maxSize: maxSizeMB })
 				});
 				return;
 			}
@@ -60,7 +66,7 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 					files: [
 						{
 							filename: file?.name || file?.uri,
-							url: file?.uri || file?.fileCopyUri,
+							url: file?.uri || (file as any)?.fileCopyUri,
 							filetype: file?.type,
 							size: file.size as number
 						}
@@ -236,8 +242,32 @@ function AttachmentPicker({ mode, currentChannelId, currentClanId, onCancel }: A
 				size: asset?.fileSize || 0
 			}));
 
-			// Batch process all attachments instead of individual loops
-			(convertedFiles as IFile[]).forEach(handleSelectedAttachments);
+			// Validate size for each selected file before processing
+			const validFiles: IFile[] = [];
+			let hasShownError = false;
+			for (const file of convertedFiles as IFile[]) {
+				if (file && isFileSizeExceeded(file as any)) {
+					const isImage = isImageFile({ type: (file as any)?.type } as any);
+					const maxAllowedSize = getMaxFileSize({ type: (file as any)?.type } as any);
+					if (!hasShownError) {
+						const fileTypeText = isImage ? t('common:image') : t('common:files');
+						const maxSizeMB = Math.round(maxAllowedSize / 1024 / 1024);
+						Toast.show({
+							type: 'error',
+							text1: t('sharing:fileTooLarge'),
+							text2: t('sharing:fileSizeExceeded', { fileType: fileTypeText, maxSize: maxSizeMB })
+						});
+						hasShownError = true;
+					}
+					continue;
+				}
+				validFiles.push(file);
+			}
+
+			if (!validFiles.length) return;
+
+			// Batch process all valid attachments
+			validFiles.forEach(handleSelectedAttachments);
 		} catch (error) {
 			console.error('Failed to select images from library:', error);
 			Toast.show({

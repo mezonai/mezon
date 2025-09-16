@@ -6,10 +6,10 @@ import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import FastImage from 'react-native-fast-image';
-import { IForwardIObject } from '..';
+import type { IForwardIObject } from '..';
 import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
-import { styles } from '../styles';
+import { style } from '../styles';
 
 function ForwardMessageItem({
 	item,
@@ -21,6 +21,7 @@ function ForwardMessageItem({
 	isItemChecked: boolean;
 }) {
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const [isChecked, setIsChecked] = useState<boolean>(isItemChecked);
 
 	const renderAvatar = (item: IForwardIObject) => {
@@ -38,44 +39,24 @@ function ForwardMessageItem({
 					);
 				}
 				return (
-					<View
-						style={{
-							height: size.s_34,
-							width: size.s_34,
-							justifyContent: 'center',
-							borderRadius: 50,
-							backgroundColor: themeValue.colorAvatarDefault
-						}}
-					>
-						<Text
-							style={{
-								textAlign: 'center'
-							}}
-						>
-							{item?.name?.charAt(0)?.toUpperCase()}
-						</Text>
+					<View style={styles.memberAvatarDefaultContainer}>
+						<Text style={styles.memberAvatarDefaultText}>{item?.name?.charAt(0)?.toUpperCase()}</Text>
 					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_GROUP:
 				const isAvatar = item?.avatar && !item?.avatar?.includes('avatar-group.png');
-				return (
-					isAvatar ? (
-						<View style={{ width: size.s_24, height: size.s_24, borderRadius: size.s_12, overflow: 'hidden' }}>
-							<ImageNative
-								url={createImgproxyUrl(item?.avatar ?? '')}
-								style={{ width: '100%', height: '100%' }}
-								resizeMode={'cover'}
-							/>
-						</View>
-					) : (
-						<View style={styles.groupAvatar}>
-							<MezonIconCDN icon={IconCDN.userGroupIcon} width={size.s_12} height={size.s_12} color={themeValue.white} />
-						</View>
-					)
+				return isAvatar ? (
+					<View style={styles.groupAvatarContainer}>
+						<ImageNative url={createImgproxyUrl(item?.avatar ?? '')} style={{ width: '100%', height: '100%' }} resizeMode={'cover'} />
+					</View>
+				) : (
+					<View style={styles.groupAvatarDefaultContainer}>
+						<MezonIconCDN icon={IconCDN.userGroupIcon} width={size.s_16} height={size.s_16} color={themeValue.white} />
+					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return (
-					<View style={{ width: size.s_16, height: size.s_34, justifyContent: 'center' }}>
+					<View style={styles.iconTextContainer}>
 						<Text
 							style={{
 								fontSize: verticalScale(20),
@@ -89,7 +70,7 @@ function ForwardMessageItem({
 				);
 			case ChannelType.CHANNEL_TYPE_THREAD:
 				return (
-					<View style={{ width: size.s_16, height: size.s_34, justifyContent: 'center' }}>
+					<View style={styles.iconTextContainer}>
 						<MezonIconCDN icon={IconCDN.threadIcon} width={16} height={16} color={themeValue.white} />
 					</View>
 				);
@@ -109,7 +90,7 @@ function ForwardMessageItem({
 				handleSelectChange(!isChecked);
 			}}
 		>
-			<View style={{ flexDirection: 'row', padding: size.s_10, gap: size.s_6, justifyContent: 'center' }}>
+			<View style={styles.renderContentContainer}>
 				<View>{renderAvatar(item)}</View>
 				<View style={{ flex: 1, justifyContent: 'center' }}>
 					{item.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (

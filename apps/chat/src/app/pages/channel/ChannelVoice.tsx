@@ -52,7 +52,8 @@ const ChannelVoice = memo(
 					clan_id: clanId,
 					channel_id: channelId,
 					display_name: userProfile?.user?.display_name ?? '',
-					state
+					state,
+					room_name: voiceInfo?.roomId || ''
 				})
 			);
 		};
@@ -100,7 +101,7 @@ const ChannelVoice = memo(
 			if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
 			dispatch(voiceActions.resetVoiceSettings());
 			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId);
-		}, [voiceInfo]);
+		}, [voiceInfo, voiceInfo?.roomId]);
 
 		const handleFullScreen = useCallback(() => {
 			dispatch(voiceActions.setFullScreen(!isVoiceFullScreen));

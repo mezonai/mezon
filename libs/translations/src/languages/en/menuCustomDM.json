@@ -6,5 +6,6 @@
   "groupName": "Group name",
   "save": "Save",
   "removeAvatar": "Remove avatar",
-  "invalidGroupName": "Invalid group name"
+  "invalidGroupName": "Invalid group name",
+  "uploadImage": "Upload an Image"
 }

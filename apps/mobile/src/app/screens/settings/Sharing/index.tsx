@@ -1,12 +1,13 @@
 import { ChatContext } from '@mezon/core';
 import {
+	ActionEmitEvent,
 	getAttachmentUnique,
 	getUpdateOrAddClanChannelCache,
 	save,
 	STORAGE_CLAN_ID,
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectDirectsOpenlist } from '@mezon/store';
 import {
 	channelMetaActions,
@@ -23,12 +24,13 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
-import { checkIsThread, createImgproxyUrl, EBacktickType, ILinkOnMessage, isPublicChannel, isYouTubeLink } from '@mezon/utils';
+import type { ILinkOnMessage } from '@mezon/utils';
+import { checkIsThread, createImgproxyUrl, EBacktickType, IMAGE_MAX_FILE_SIZE, isPublicChannel, isYouTubeLink, MAX_FILE_SIZE } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-	ActivityIndicator,
+	ActivityIndicator, DeviceEventEmitter,
 	FlatList,
 	Image as ImageRN,
 	Platform,
@@ -44,6 +46,7 @@ import { Image, Video } from 'react-native-compressor';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -71,6 +74,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [channelSelected, setChannelSelected] = useState<any>();
 	const [attachmentUpload, setAttachmentUpload] = useState<any>([]);
+	const [attachmentPreview, setAttachmentPreview] = useState<any[]>([]);
 
 	const listDM = useSelector(selectDirectsOpenlist);
 	const topUserSuggestion = useRef(useSelector((state: any) => selectDirectById(state, topUserSuggestionId)));
@@ -81,6 +85,11 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	useEffect(() => {
 		handleReconnect('Initial reconnect attempt');
 	}, [handleReconnect]);
+
+	const onCloseSharing = (isSend = false) => {
+		onClose && onClose(isSend);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+	};
 
 	useEffect(() => {
 		if (!listDM?.length) dispatch(directActions.fetchDirectMessage({ noCache: true }));
@@ -117,7 +126,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	}, [listChannelsText, listDMText]);
 
 	const dataMedia = useMemo(() => {
-		return data?.filter((data: { contentUri: string; filePath: string }) => !!data?.contentUri || !!data?.filePath);
+		return data?.filter?.((data: { contentUri: string; filePath: string }) => !!data?.contentUri || !!data?.filePath);
 	}, [data]);
 
 	const handleSearchResults = useCallback((results: any[]) => {
@@ -195,7 +204,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				clanId: channelSelected?.clan_id,
 				channelId: channelSelected?.channel_id,
 				channelType: channelSelected?.type,
-				isPublic: isPublic
+				isPublic
 			})
 		);
 
@@ -261,7 +270,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			await sendToGroup(dataSend);
 		}
 		setIsLoading(false);
-		onClose(true);
+		onCloseSharing(true);
 	};
 
 	const getSizeImage = async (media: any) => {
@@ -278,9 +287,15 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				dataMedia.map(async (media) => {
 					if (!media?.filePath && !media?.contentUri) return null;
 					const fileName = media?.fileName || media?.contentUri || media?.filePath;
-					setAttachmentUpload((prev) => [
+					// Add to preview immediately
+					setAttachmentPreview((prev) => [
 						...prev,
-						{ url: media?.contentUri || media?.filePath, filename: fileName?.originalFilename || fileName }
+						{
+							url: media?.contentUri || media?.filePath,
+							filename: fileName?.originalFilename || fileName,
+							isUploaded: false,
+							error: false
+						}
 					]);
 					const fileSize = await getSizeImage(media);
 					const checkIsVideo =
@@ -291,6 +306,26 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 						(media?.filetype && media?.filetype?.startsWith('image')) ||
 						(media?.mimeType && media?.mimeType?.startsWith('image')) ||
 						isImage(media?.filePath?.toLowerCase());
+
+					const maxAllowedSize = checkIsImage ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
+					if (fileSize > maxAllowedSize) {
+						const fileTypeText = checkIsImage ? t('common:image') : t('common:files');
+						const maxSizeMB = Math.round(maxAllowedSize / (1024 * 1024));
+
+						Toast.show({
+							type: 'error',
+							text1: t('fileTooLarge'),
+							text2: t('fileSizeExceeded', { fileType: fileTypeText, maxSize: maxSizeMB })
+						});
+
+						setAttachmentPreview((prev) =>
+							prev.map((p) => (p.url === (media?.contentUri || media?.filePath) ? { ...p, error: true, isUploaded: false } : p))
+						);
+
+						if (media?.filePath?.includes('/cache/')) await RNFS.unlink(media?.filePath);
+						return null;
+					}
+
 					const pathCompressed = checkIsVideo
 						? await compressVideo(media?.filePath || media?.contentUri)
 						: checkIsImage
@@ -326,7 +361,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 					};
 				})
 			);
-			handleFiles(fileFormats);
+			handleFiles(fileFormats.filter((file) => !!file));
 		} catch (e) {
 			console.error(e);
 		}
@@ -375,6 +410,12 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 
 				const response = await Promise.all(promises);
 				setAttachmentUpload(response);
+				setAttachmentPreview((prev) =>
+					prev.map((p) => {
+						const matched = response.find((r: any) => r?.filename === p?.filename || r?.name === p?.filename || r?.url === p?.url);
+						return matched ? { ...p, isUploaded: true, url: matched?.url || p.url } : p;
+					})
+				);
 				break;
 			} catch (error) {
 				if (attempt === maxRetries) {
@@ -389,13 +430,13 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 
 	function removeAttachmentByUrl(urlToRemove: string) {
 		setAttachmentUpload((prevAttachments) => prevAttachments.filter((attachment) => attachment.url !== urlToRemove));
+		setAttachmentPreview((prev) => prev.filter((attachment) => attachment.url !== urlToRemove));
 	}
 
 	const isAttachmentUploaded = useMemo(() => {
-		if (!attachmentUpload) return true;
-
-		return attachmentUpload.every((attachment: any) => attachment?.url?.includes('http'));
-	}, [attachmentUpload]);
+		if (!attachmentPreview?.length) return true;
+		return attachmentPreview.every((item) => item.isUploaded || item.error);
+	}, [attachmentPreview]);
 
 	const renderItemSuggest = useCallback(({ item, index }) => {
 		return (
@@ -417,7 +458,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			>
 				<StatusBarHeight />
 				<View style={styles.header}>
-					<TouchableOpacity onPress={() => onClose()}>
+					<TouchableOpacity onPress={() => onCloseSharing()}>
 						<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_28} height={size.s_28} color={themeValue.white} />
 					</TouchableOpacity>
 					<Text style={styles.titleHeader}>{t('share')}</Text>
@@ -459,15 +500,15 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 					</View>
 				</View>
 				<View style={styles.chatArea}>
-					{!!getAttachmentUnique(attachmentUpload)?.length && (
+					{!!attachmentPreview?.length && (
 						<View style={[styles.attachmentRow]}>
 							<ScrollView horizontal keyboardShouldPersistTaps={'always'}>
-								{getAttachmentUnique(attachmentUpload)?.map((media: any, index) => {
+								{attachmentPreview?.map((media: any, index) => {
 									const isFile =
 										Platform.OS === 'android'
 											? !isImage(media?.filename?.toLowerCase()) && !isVideo(media?.filename?.toLowerCase())
 											: !isImage(media?.url?.toLowerCase()) && !isVideo(media?.url?.toLowerCase());
-									const isUploaded = media?.url?.includes('http');
+									const isUploaded = media?.isUploaded;
 
 									return (
 										<View
@@ -489,7 +530,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 													style={styles.itemMedia}
 												/>
 											)}
-											{isUploaded && (
+											{(isUploaded || media?.error) && (
 												<TouchableOpacity
 													style={styles.iconRemoveMedia}
 													onPress={() => removeAttachmentByUrl(media.url ?? '')}
@@ -498,9 +539,21 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 												</TouchableOpacity>
 											)}
 
-											{!isUploaded && (
+											{!isUploaded && !media?.error && (
 												<View style={styles.videoOverlay}>
 													<ActivityIndicator size={'small'} color={'white'} />
+												</View>
+											)}
+											{media?.error && (
+												<View style={styles.videoOverlay}>
+													<View style={styles.errorIconWrapper}>
+														<MezonIconCDN
+															icon={IconCDN.circleExlaimionIcon}
+															width={size.s_14}
+															height={size.s_14}
+															color={baseColor.redStrong}
+														/>
+													</View>
 												</View>
 											)}
 										</View>

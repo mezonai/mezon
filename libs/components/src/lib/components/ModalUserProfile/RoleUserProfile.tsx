@@ -14,7 +14,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_ID } from '@mezon/utils';
-import Tooltip from 'rc-tooltip';
 import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -87,6 +86,7 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 	const appearanceTheme = useSelector(selectTheme);
 	const isLightMode = appearanceTheme === 'light';
 	const [isVisible, setIsVisible] = useState(false);
+	const [showAllRoles, setShowAllRoles] = useState(false);
 
 	const handleOpenAddRoleModal = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.stopPropagation();
@@ -95,11 +95,15 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 	const handleCloseAddRoleModal = () => {
 		setIsVisible(false);
 	};
+	const handleShowAllRoles = (e: React.MouseEvent<HTMLSpanElement>) => {
+		e.stopPropagation();
+		setShowAllRoles(!showAllRoles);
+	};
 	return (
 		<div className="flex flex-col" onClick={handleCloseAddRoleModal}>
 			{/* {userRolesClan.length > 0 && <div className="font-bold tracking-wider text-sm pt-2">ROLES</div>} */}
-			<div className="mt-2 flex flex-wrap gap-2">
-				{userRolesClan.slice(0, 6).map((role, index) => (
+			<div className={`mt-2 flex flex-wrap gap-2 ${showAllRoles ? 'max-h-[100px] thread-scroll overflow-y-auto' : ''}`}>
+				{(showAllRoles ? userRolesClan : userRolesClan.slice(0, 6)).map((role, index) => (
 					<RoleClanItem
 						key={`${role.id}_${index}`}
 						appearanceTheme={appearanceTheme}
@@ -109,44 +113,42 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 						hasPermissionEditRole={hasPermissionEditRole}
 					/>
 				))}
-				{userRolesClan.length > 6 && (
-					<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-theme-input-primary hoverIconBlackImportant ml-1">
-						<Tooltip
-							overlay={
-								<div className={'flex flex-col items-start gap-1 rounded-md '}>
-									{userRolesClan.slice(6, userRolesClan.length).map((userRole, index) => (
-										<RoleClanItem
-											key={`${userRole.id}_role`}
-											appearanceTheme={appearanceTheme}
-											deleteRole={deleteRole}
-											role={userRole}
-											index={index}
-											hasPermissionEditRole={hasPermissionEditRole}
-										/>
-									))}
-								</div>
-							}
-						>
-							<span className="text-xs font-medium px-1 cursor-pointer" style={{ lineHeight: '15px' }}>
-								+ {userRolesClan.length - 6}
-							</span>
-						</Tooltip>
+				{userRolesClan.length > 6 && !showAllRoles && (
+					<span
+						className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-theme-input-primary hoverIconBlackImportant ml-1 cursor-pointer"
+						onClick={handleShowAllRoles}
+					>
+						<span className="text-xs font-medium px-1" style={{ lineHeight: '15px' }}>
+							+ {userRolesClan.length - 6}
+						</span>
 					</span>
 				)}
-				<UserRestrictionZone policy={hasPermissionEditRole}>
-					<div className="relative flex items-center justify-center">
-						{isVisible ? (
-							<div className="absolute bottom-8 dark:bg-transparent bg-transparent p-0 max-h-60 w-[300px]">
-								<AddRolesComp addRole={addRole} filteredListRoleBySearch={filteredListRoleBySearch} setSearchTerm={setSearchTerm} />
-							</div>
-						) : null}
-						<button title="Add roles" onClick={handleOpenAddRoleModal} className="flex gap-x-1 rounded p-1 items-center">
-							<Icons.Plus className="size-5 select-none" />
-							<p className="text-xs m-0 font-medium select-none">Add Role</p>
-						</button>
-					</div>
-				</UserRestrictionZone>
 			</div>
+			{showAllRoles && userRolesClan.length > 6 && (
+				<div className="mt-1 flex justify-start">
+					<span
+						className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-theme-input-primary hoverIconBlackImportant cursor-pointer"
+						onClick={handleShowAllRoles}
+					>
+						<span className="text-xs font-medium px-1" style={{ lineHeight: '15px' }}>
+							Show less
+						</span>
+					</span>
+				</div>
+			)}
+			<UserRestrictionZone policy={hasPermissionEditRole}>
+				<div className="relative flex items-center justify-center">
+					{isVisible ? (
+						<div className="absolute bottom-8 dark:bg-transparent bg-transparent p-0 max-h-60 w-[300px]">
+							<AddRolesComp addRole={addRole} filteredListRoleBySearch={filteredListRoleBySearch} setSearchTerm={setSearchTerm} />
+						</div>
+					) : null}
+					<button title="Add roles" onClick={handleOpenAddRoleModal} className="flex gap-x-1 rounded p-1 items-center">
+						<Icons.Plus className="size-5 select-none" />
+						<p className="text-xs m-0 font-medium select-none">Add Role</p>
+					</button>
+				</div>
+			</UserRestrictionZone>
 		</div>
 	);
 };

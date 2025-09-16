@@ -233,7 +233,7 @@ function MessageWithUser({
 					create_time={message.create_time}
 					showMessageHead={showMessageHead}
 				>
-					{checkMessageHasReply && !isEphemeralMessage && (
+					{checkMessageHasReply && !isEphemeralMessage && message?.references?.[0]?.message_sender_id !== '0' && (
 						<MessageReply
 							message={message}
 							mode={mode}

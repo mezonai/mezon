@@ -1,5 +1,5 @@
+import type { ChannelsEntity } from '@mezon/store';
 import {
-	ChannelsEntity,
 	selectAllChannels,
 	selectChannelById,
 	selectCurrentClanId,
@@ -12,10 +12,14 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, Menu } from '@mezon/ui';
-import { ChannelIsNotThread, IChannel } from '@mezon/utils';
-import { ApiMessageAttachment, ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
-import { ChangeEvent, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { IChannel } from '@mezon/utils';
+import { ChannelIsNotThread, MAX_FILE_SIZE_8MB, fileTypeImage } from '@mezon/utils';
+import type { ApiMessageAttachment, ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ELimitSize } from '../../../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
 import DeleteWebhookPopup from './DeleteWebhookPopup';
 
@@ -80,6 +84,8 @@ interface IDataForUpdate {
 const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IExpendedWebhookModal) => {
 	const dispatch = useAppDispatch();
 	const [isShowPopup, setIsShowPopup] = useState(false);
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
 	const openShowPopup = () => {
 		dispatch(settingClanStickerActions.openModalInChild());
 		setIsShowPopup(true);
@@ -135,6 +141,16 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
+			const file = e.target.files[0];
+			if (!file) return;
+			if (file.size > MAX_FILE_SIZE_8MB) {
+				setOpenModal(true);
+				return;
+			}
+			if (!fileTypeImage.includes(file.type)) {
+				setOpenTypeModal(true);
+				return;
+			}
 			const client = clientRef.current;
 			const session = sessionRef.current;
 			if (!client || !session) {
@@ -161,11 +177,11 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 		};
 		await dispatch(
 			updateWebhookBySpecificId({
-				request: request,
+				request,
 				webhookId: webhookItem.id,
 				channelId: currentChannel?.channel_id || '',
-				clanId: clanId,
-				isClanSetting: isClanSetting
+				clanId,
+				isClanSetting
 			})
 		);
 		setHasChange(false);
@@ -279,6 +295,9 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 					isClanSetting={isClanSetting}
 				/>
 			)}
+			<ModalErrorTypeUpload open={openTypeModal} onClose={() => setOpenTypeModal(false)} />
+
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} size={ELimitSize.MB_8} />
 		</>
 	);
 };

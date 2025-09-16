@@ -6,5 +6,6 @@
   "groupName": "Tên nhóm",
   "save": "Lưu",
   "removeAvatar": "Xóa ảnh",
-  "invalidGroupName": "Tên nhóm không hợp lệ"
+  "invalidGroupName": "Tên nhóm không hợp lệ",
+  "uploadImage": "Tải lên hình ảnh"
 }

@@ -113,11 +113,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 			<View style={styles.contentMessage}>
 				{renderLastMessageContent && (
 					<Text
-						style={[
-							styles.defaultText,
-							styles.lastMessage,
-							{ color: isUnReadChannel && !isYourAccount ? themeValue.textStrong : themeValue.textDisabled }
-						]}
+						style={[styles.defaultText, styles.lastMessage, { color: isUnReadChannel ? themeValue.textStrong : themeValue.textDisabled }]}
 					>
 						{renderLastMessageContent}
 					</Text>
@@ -125,7 +121,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 				{!!content && (
 					<DmListItemLastMessage
 						content={typeof content === 'object' ? content : safeJSONParse(content || '{}')}
-						styleText={{ color: isUnReadChannel && !isYourAccount ? themeValue.textStrong : themeValue.textDisabled }}
+						styleText={{ color: isUnReadChannel ? themeValue.textStrong : themeValue.textDisabled }}
 					/>
 				)}
 			</View>
@@ -198,11 +194,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 				<View style={styles.messageContent}>
 					<Text
 						numberOfLines={1}
-						style={[
-							styles.defaultText,
-							styles.channelLabel,
-							{ color: isUnReadChannel && !isYourAccount ? themeValue.white : themeValue.textDisabled }
-						]}
+						style={[styles.defaultText, styles.channelLabel, { color: isUnReadChannel ? themeValue.white : themeValue.textDisabled }]}
 					>
 						{(directMessage?.channel_label || directMessage?.usernames) ??
 							(directMessage?.creator_name ? `${directMessage.creator_name}'s Group` : '')}
@@ -221,7 +213,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 							style={[
 								styles.defaultText,
 								styles.dateTime,
-								{ color: isUnReadChannel && !isYourAccount ? themeValue.textStrong : themeValue.textDisabled }
+								{ color: isUnReadChannel ? themeValue.textStrong : themeValue.textDisabled }
 							]}
 						>
 							{lastMessageTime}

@@ -10,16 +10,18 @@ import { style } from './styles';
 
 interface GalleryItemProps {
 	item: any;
+	index: number;
 	themeValue: any;
 	isDisableSelectAttachment: boolean;
 	attachmentFilteredByChannelId: PreSendAttachment;
 	onOpenCamera: () => void;
-	handleGalleryPress: (file: PhotoIdentifier) => Promise<void>;
+	handleGalleryPress: (file: PhotoIdentifier, index: number) => Promise<void>;
 	handleRemove: (filename: string) => void;
 }
 
 const GalleryItem = ({
 	item,
+	index,
 	themeValue,
 	isDisableSelectAttachment,
 	attachmentFilteredByChannelId,
@@ -28,19 +30,14 @@ const GalleryItem = ({
 	handleRemove
 }: GalleryItemProps) => {
 	const styles = style(themeValue);
-	const fileName = item?.node?.image?.filename;
+	const fileName = item?.node?.image?.filename + index;
 	const isVideo = item?.node?.type?.startsWith?.('video');
 	const isSelected = attachmentFilteredByChannelId?.files.some((file) => file.filename === fileName);
 	const disabled = isDisableSelectAttachment && !isSelected;
 	const [isLoadingImage, setIsLoadingImage] = useState(true);
 
 	const getDurationSec = (): number | undefined => {
-		return (
-			item?.node?.image?.playableDuration ??
-			item?.node?.image?.duration ??
-			item?.node?.playableDuration ??
-			undefined
-		);
+		return item?.node?.image?.playableDuration ?? item?.node?.image?.duration ?? item?.node?.playableDuration ?? undefined;
 	};
 
 	useEffect(() => {
@@ -64,14 +61,14 @@ const GalleryItem = ({
 				if (isSelected) {
 					handleRemove(fileName);
 				} else {
-					handleGalleryPress(item);
+					handleGalleryPress(item, index);
 				}
 			}}
 			disabled={disabled}
 		>
 			{Platform.OS === 'android' ? (
 				<FastImage
-					source={{ uri: item?.node?.image?.uri + '?thumbnail=true&quality=low', cache: FastImage.cacheControl.immutable }}
+					source={{ uri: `${item?.node?.image?.uri}?thumbnail=true&quality=low`, cache: FastImage.cacheControl.immutable }}
 					style={styles.imageGallery}
 					onLoadEnd={() => setIsLoadingImage(false)}
 				/>

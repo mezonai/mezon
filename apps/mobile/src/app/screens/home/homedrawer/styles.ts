@@ -780,7 +780,7 @@ export const style = (colors: Attributes) =>
 			fontSize: size.medium,
 			color: colors.textLink,
 			backgroundColor: colors.midnightBlue,
-			fontWeight: 'bold'
+			fontWeight: '600'
 		},
 		textPinMessage: {
 			fontSize: size.small,

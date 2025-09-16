@@ -1,4 +1,5 @@
-import { LiveKitRoom, TrackReferenceOrPlaceholder } from '@livekit/components-react';
+import type { TrackReferenceOrPlaceholder } from '@livekit/components-react';
+import { LiveKitRoom } from '@livekit/components-react';
 import { useAuth } from '@mezon/core';
 import { handleParticipantVoiceState, selectVoiceInfo, useAppDispatch, voiceActions } from '@mezon/store';
 import { ParticipantMeetState } from '@mezon/utils';
@@ -25,7 +26,8 @@ const VoicePopout: React.FC<{
 				clan_id: clanId,
 				channel_id: channelId,
 				display_name: userProfile?.user?.display_name ?? '',
-				state
+				state,
+				room_name: voiceInfo?.roomId || ''
 			})
 		);
 	};
@@ -80,6 +82,7 @@ const VoicePopout: React.FC<{
 						clan_id: voiceInfo?.clanId || '',
 						channelPrivate: voiceInfo?.channelPrivate || 0
 					}}
+					token={''}
 				/>
 			</LiveKitRoom>
 		</div>

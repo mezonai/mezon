@@ -25,6 +25,34 @@ export const initialComunityState: ComunityState = {
     error: null,
 };
 
+export const getCommunityInfo = createAsyncThunk(
+    'comunity/getCommunityInfo',
+    async (
+        { clan_id }: { clan_id: string },
+        thunkAPI
+    ) => {
+        try {
+            const mezon = await ensureSession(getMezonCtx(thunkAPI));
+            const response = await mezon.client.listClanDescs(mezon.session);
+            const clan = response.clandesc?.find(c => c.clan_id === clan_id);
+            if (!clan) {
+                return thunkAPI.rejectWithValue('Clan not found');
+            }
+            return {
+                clan_id,
+                isCommunityEnabled: clan.is_community || false,
+                communityBanner: clan.community_banner || null,
+                about: clan.about || "",
+                description: clan.description || "",
+                short_url: clan.short_url || "",
+            };
+        } catch (error) {
+            captureSentryError(error, 'comunity/getCommunityInfo');
+            return thunkAPI.rejectWithValue('Failed to get community info');
+        }
+    }
+);
+
 export const updateCommunityStatus = createAsyncThunk(
     'comunity/updateCommunityStatus',
     async (
@@ -86,6 +114,25 @@ export const comunitySlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(getCommunityInfo.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(getCommunityInfo.fulfilled, (state, action) => {
+                const { clan_id, isCommunityEnabled, communityBanner, about, description, short_url } = action.payload;
+                state.byClanId[clan_id] = {
+                    isCommunityEnabled,
+                    communityBanner,
+                    about,
+                    description,
+                    short_url,
+                };
+                state.isLoading = false;
+            })
+            .addCase(getCommunityInfo.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
             .addCase(updateCommunityStatus.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -223,6 +270,7 @@ export const comunityReducer = comunitySlice.reducer;
 
 export const comunityActions = {
     ...comunitySlice.actions,
+    getCommunityInfo,
     updateCommunityStatus,
     updateCommunityBanner,
     updateCommunityAbout,

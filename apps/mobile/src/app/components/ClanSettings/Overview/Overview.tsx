@@ -1,8 +1,8 @@
 import { useClans, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, optionNotification } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
-	ChannelsEntity,
 	appActions,
 	checkDuplicateNameClan,
 	createSystemMessage,
@@ -17,7 +17,7 @@ import {
 import { EPermission } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
-import { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -26,11 +26,12 @@ import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../componentUI/MezonMenu';
+import MezonMenu from '../../../componentUI/MezonMenu';
 import MezonOption from '../../../componentUI/MezonOption';
 import MezonSwitch from '../../../componentUI/MezonSwitch';
 import { IconCDN } from '../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import type { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { validInput } from '../../../utils/validate';
 import DeleteClanModal from '../../DeleteClanModal';
 import { ErrorInput } from '../../ErrorInput';
@@ -191,7 +192,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			await updateClan({
 				clan_id: currentClan?.clan_id ?? '',
 				request: {
-					banner: banner,
+					banner,
 					clan_name: clanName?.trim() || (currentClan?.clan_name ?? ''),
 					creator_id: currentClan?.creator_id ?? '',
 					is_onboarding: currentClan?.is_onboarding,
@@ -296,9 +297,9 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		{
 			title: t('menu.systemMessage.channel'),
 			expandable: true,
-			component: <Text style={{ color: 'white', fontSize: 11 }}>{selectedChannelMessage?.channel_label}</Text>,
+			component: <Text style={{ color: themeValue.text, fontSize: size.s_12 }}>{selectedChannelMessage?.channel_label}</Text>,
 			onPress: openBottomSheetSystemChannel,
-			disabled: disabled
+			disabled
 		},
 		{
 			title: t('menu.systemMessage.welcomeRandom'),
@@ -314,7 +315,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					}
 				/>
 			),
-			disabled: disabled
+			disabled
 		},
 		{
 			title: t('menu.systemMessage.welcomeSticker'),
@@ -330,7 +331,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					}
 				/>
 			),
-			disabled: disabled
+			disabled
 		},
 		{
 			title: t('menu.systemMessage.boostMessage'),
@@ -346,7 +347,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					}
 				/>
 			),
-			disabled: disabled
+			disabled
 		},
 		{
 			title: t('menu.systemMessage.setupTips'),
@@ -362,7 +363,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					}
 				/>
 			),
-			disabled: disabled
+			disabled
 		},
 		{
 			title: t('menu.systemMessage.hideAuditLog'),
@@ -378,7 +379,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					}
 				/>
 			),
-			disabled: disabled
+			disabled
 		}
 	];
 

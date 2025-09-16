@@ -1,6 +1,5 @@
 import { debounce } from '@mezon/utils';
-import type React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface MentionData {
 	id: string;
@@ -92,7 +91,6 @@ export default function Mention({
 				abortControllerRef.current.abort();
 			}
 
-
 			if (Array.isArray(data)) {
 				const queryLower = query.toLowerCase();
 				const matchedItems: MentionData[] = [];
@@ -125,14 +123,14 @@ export default function Mention({
 					const result = data(query);
 					if (result instanceof Promise) {
 						const resolved = await result;
-							const prioritizedResults = prioritizeAndLimitResults(resolved);
+						const prioritizedResults = prioritizeAndLimitResults(resolved);
 
-							setSuggestions(prioritizedResults);
-							onSuggestionsChange?.(prioritizedResults.length, false);
+						setSuggestions(prioritizedResults);
+						onSuggestionsChange?.(prioritizedResults.length, false);
 					} else {
-							const prioritizedResults = prioritizeAndLimitResults(result);
-							setSuggestions(prioritizedResults);
-							onSuggestionsChange?.(prioritizedResults.length, false);
+						const prioritizedResults = prioritizeAndLimitResults(result);
+						setSuggestions(prioritizedResults);
+						onSuggestionsChange?.(prioritizedResults.length, false);
 					}
 				} catch (error) {
 					if (error instanceof Error && error.name !== 'AbortError') {
@@ -161,7 +159,7 @@ export default function Mention({
 	const debouncedLoadSuggestions = useCallback(
 		debounce((query: string) => {
 			loadSuggestions(query);
-		}, 150),
+		}, 50),
 		[loadSuggestions]
 	);
 
@@ -194,12 +192,11 @@ export default function Mention({
 		}
 	}, [triggerSelection, mentionState?.isActive, mentionState?.selectedIndex, suggestions, handleSelect, onSelectionTriggered]);
 
+	if (suggestions.length <= 0) {
+		return null;
+	}
 
-    if (suggestions.length <= 0) {
-      return null;
-    }
-
-  	return (
+	return (
 		<div className={`mention-dropdown thread-scroll ${className} ${suggestionsClassName}`} style={{ ...style, ...suggestionStyle }}>
 			<div className="flex items-center justify-between p-2 h-10">
 				<h3 className="text-xs font-bold text-theme-primary uppercase">{title}</h3>
@@ -219,13 +216,7 @@ export default function Mention({
 							}}
 							onMouseEnter={() => onMouseEnter?.(index)}
 						>
-							{renderSuggestion(
-								suggestion,
-								query,
-								<span>{suggestion.display}</span>,
-								index,
-								focused
-							)}
+							{renderSuggestion(suggestion, query, <span>{suggestion.display}</span>, index, focused)}
 						</div>
 					);
 				}
@@ -233,7 +224,7 @@ export default function Mention({
 				return (
 					<div
 						key={suggestion.id}
-						className={`mention-item ${focused ? "selected" : ""}`}
+						className={`mention-item ${focused ? 'selected' : ''}`}
 						onClick={() => handleSelect(suggestion)}
 						onTouchEnd={(e) => {
 							e.preventDefault();

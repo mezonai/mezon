@@ -34,7 +34,7 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 		>
 			<div className="cursor-pointer rounded-md flex flex-row justify-center items-center mb-2">
 				<div>{thumbnailAttachment}</div>
-				<div className=" flex flex-row w-21 top-[-1px] right-[-16px] bg-theme-contexify h-8 absolute rounded-lg shadow-shadowInbox">
+				<div className=" flex flex-row w-21 top-[-1px] right-[-16px] bg-theme-contexify h-8 absolute  shadow-shadowInbox rounded-lg">
 					<button
 						onClick={handleRemove}
 						className="w-8 h-8 flex flex-row justify-center text-theme-primary items-center bg-item-hover text-theme-primary-hover"

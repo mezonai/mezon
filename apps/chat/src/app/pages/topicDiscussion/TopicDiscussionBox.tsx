@@ -19,6 +19,7 @@ import {
 import {
 	CREATING_TOPIC,
 	EOverriddenPermission,
+	IMAGE_MAX_FILE_SIZE,
 	IMessageSendPayload,
 	MAX_FILE_ATTACHMENTS,
 	MAX_FILE_SIZE,
@@ -28,8 +29,9 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
-import React, { DragEvent, Fragment, useCallback, useEffect, useState } from 'react';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { DragEvent } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import MemoizedChannelMessages from '../channel/ChannelMessages';
@@ -196,9 +198,11 @@ const TopicDiscussionBox = () => {
 			return;
 		}
 
-		const oversizedFile = filesArray.find((file) => file.size > MAX_FILE_SIZE);
+		const getLimit = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
+		const oversizedFile = filesArray.find((file) => file.size > getLimit(file));
 		if (oversizedFile) {
-			setOverUploadingState(true, UploadLimitReason.SIZE);
+			const limit = getLimit(oversizedFile);
+			setOverUploadingState(true, UploadLimitReason.SIZE, limit);
 			return;
 		}
 

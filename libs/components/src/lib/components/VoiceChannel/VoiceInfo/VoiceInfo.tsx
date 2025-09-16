@@ -15,7 +15,8 @@ import { ParticipantMeetState, useMediaPermissions } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
-import React, { ReactNode, memo, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';
 import { useGroupCallSignaling, useGroupCallState } from '../../GroupCall';
@@ -47,13 +48,14 @@ const VoiceInfo = React.memo(() => {
 		}
 	};
 
-	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string): Promise<void> => {
+	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string, roomId: string): Promise<void> => {
 		await dispatch(
 			handleParticipantVoiceState({
 				clan_id: clanId,
 				channel_id: channelId,
 				display_name: userProfile?.user?.display_name ?? '',
-				state
+				state,
+				room_name: roomId || ''
 			})
 		);
 	};
@@ -85,8 +87,12 @@ const VoiceInfo = React.memo(() => {
 			} else {
 				dispatch(voiceActions.resetVoiceSettings());
 			}
-
-			await participantMeetState(ParticipantMeetState.LEAVE, currentVoiceInfo.clanId, currentVoiceInfo.channelId);
+			await participantMeetState(
+				ParticipantMeetState.LEAVE,
+				currentVoiceInfo.clanId,
+				currentVoiceInfo.channelId,
+				currentVoiceInfo.roomId || ''
+			);
 		}
 	};
 

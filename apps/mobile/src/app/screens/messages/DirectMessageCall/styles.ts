@@ -23,9 +23,9 @@ export const style = (colors: Attributes) =>
 			zIndex: 10
 		},
 		buttonCircle: {
-			backgroundColor: colors.primary,
-			padding: size.s_8,
-			borderRadius: size.s_22
+			backgroundColor: colors.badgeHighlight,
+			padding: size.s_12,
+			borderRadius: size.s_100
 		},
 		buttonCircleActive: {
 			backgroundColor: colors.text
@@ -45,26 +45,29 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center'
 		},
 		menuFooter: {
-			position: 'absolute',
-			bottom: size.s_30,
-			width: '100%',
+			marginBottom: size.s_40,
+			width: '75%',
+			alignSelf: 'center',
 			padding: size.s_20,
-			gap: size.s_10,
 			alignItems: 'center',
-			justifyContent: 'center',
-			zIndex: 10
+			zIndex: 10,
+			gap: size.s_30,
+			flexDirection: 'row',
+			justifyContent: 'space-around'
 		},
 		menuIcon: {
 			justifyContent: 'center',
 			alignItems: 'center',
 			position: 'relative',
-			width: size.s_50,
-			height: size.s_50,
+			width: size.s_50 + size.s_4,
+			height: size.s_50 + size.s_4,
 			backgroundColor: colors.badgeHighlight,
-			borderRadius: size.s_30
+			opacity: 0.5,
+			borderRadius: size.s_100
 		},
 		menuIconActive: {
-			backgroundColor: colors.white
+			backgroundColor: colors.white,
+			opacity: 1
 		},
 		avatar: {
 			width: size.s_70,
@@ -93,5 +96,23 @@ export const style = (colors: Attributes) =>
 			color: '#fabf2b',
 			fontSize: size.s_16,
 			textAlign: 'center'
+		},
+		textDescControl: {
+			color: colors.text,
+			fontSize: size.s_12,
+			textAlign: 'center',
+			fontWeight: '600',
+			marginTop: size.s_10
+		},
+		cardMyVideoCall: {
+			position: 'absolute',
+			width: size.s_140,
+			height: size.s_165,
+			top: size.s_10,
+			right: size.s_10,
+			borderRadius: size.s_10,
+			overflow: 'hidden',
+			borderWidth: 1,
+			borderColor: colors.border
 		}
 	});

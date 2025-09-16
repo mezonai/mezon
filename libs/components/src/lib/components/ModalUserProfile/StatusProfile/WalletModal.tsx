@@ -132,7 +132,6 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 			await dispatch(accountActions.storeWalletKey(publicWalletInfo));
 
 			setWalletData((prev) => ({ ...prev, isEncrypted: true }));
-			dispatch(accountActions.setWalletData({ address: encryptedWallet.address }));
 		} catch (error) {
 			console.error('Error saving encrypted wallet:', error);
 		}
@@ -170,7 +169,6 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
 			};
 
 			dispatch(accountActions.setWalletMetadata(publicWalletInfo));
-			dispatch(accountActions.setWalletData({ address: encryptedWallet.address }));
 		} catch (error) {
 			console.error('Error saving encrypted wallet:', error);
 		}

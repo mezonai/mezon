@@ -97,6 +97,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				const params = {
 					receiverId: user?.user?.id,
 					receiverAvatar: user?.user?.avatar_url,
+					receiverName: user?.user?.display_name || user?.user?.username,
 					directMessageId: directMessage?.id
 				};
 				const dataModal = {
@@ -116,6 +117,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				const params = {
 					receiverId: user?.user?.id,
 					receiverAvatar: user?.user?.avatar_url,
+					receiverName: user?.user?.display_name || user?.user?.username,
 					directMessageId: response?.channel_id
 				};
 				const dataModal = {

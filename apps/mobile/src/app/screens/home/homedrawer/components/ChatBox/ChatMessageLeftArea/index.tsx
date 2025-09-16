@@ -35,13 +35,15 @@ export const ChatMessageLeftArea = memo(
 				}
 			}));
 
+			const handleCreateThread = () => {
+				handleKeyboardBottomSheetMode('');
+				navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, {
+					screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD
+				});
+			};
+
 			return (
-				<View
-					style={{
-						flexDirection: 'row',
-						zIndex: 10
-					}}
-				>
+				<View style={styles.wrapper}>
 					{isAvailableSending && !isShowAttachControl ? (
 						<TouchableOpacity style={[styles.btnIcon]} onPress={() => setIsShowAttachControl(!isShowAttachControl)}>
 							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
@@ -50,14 +52,7 @@ export const ChatMessageLeftArea = memo(
 						<Fragment>
 							<AttachmentSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 							{isShowCreateThread && (
-								<TouchableOpacity
-									style={[styles.btnIcon, { marginLeft: size.s_6 }]}
-									onPress={() =>
-										navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, {
-											screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD
-										})
-									}
-								>
+								<TouchableOpacity style={[styles.btnIcon, { marginLeft: size.s_6 }]} onPress={handleCreateThread}>
 									<MezonIconCDN icon={IconCDN.threadPlusIcon} width={size.s_22} height={size.s_22} color={themeValue.textStrong} />
 								</TouchableOpacity>
 							)}

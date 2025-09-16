@@ -1,10 +1,11 @@
 import { selectCurrentChannelId, selectCurrentClan, selectCurrentClanId } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { ValidateSpecialCharacters, fileTypeImage } from '@mezon/utils';
+import { MAX_FILE_SIZE_1MB, ValidateSpecialCharacters, fileTypeImage } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import ModalValidateFile from '../../../ModalValidateFile';
+import { ELimitSize } from '../../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 
 type ClanLogoNameProps = {
 	onUpload: (url: string) => void;
@@ -22,6 +23,8 @@ const ClanLogoName = ({ onUpload, onGetClanName }: ClanLogoNameProps) => {
 	const [clanName, setClanName] = useState<string | undefined>(currentClan?.clan_name ?? '');
 	const [checkValidate, setCheckValidate] = useState(!ValidateSpecialCharacters().test(currentClan?.clan_name || ''));
 	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openSizeModal, setOpenSizeModal] = useState<boolean>(false);
+
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFile = (e: any) => {
@@ -30,7 +33,10 @@ const ClanLogoName = ({ onUpload, onGetClanName }: ClanLogoNameProps) => {
 		const client = clientRef.current;
 
 		if (!file) return;
-
+		if (file.size > MAX_FILE_SIZE_1MB) {
+			setOpenSizeModal(true);
+			return;
+		}
 		if (!client || !session) {
 			throw new Error('Client or file is not initialized');
 		}
@@ -94,7 +100,15 @@ const ClanLogoName = ({ onUpload, onGetClanName }: ClanLogoNameProps) => {
 									style={{ backgroundImage: `url(${urlLogo})` }}
 									className={`flex items-center justify-center bg-cover bg-no-repeat bg-center w-[100px] h-[100px] bg-transparent rounded-full relative cursor-pointer overflow-hidden`}
 								>
-									{!urlLogo && <span className={'max-w-[70px] overflow-hidden text-theme-primary-active whitespace-nowrap text-lg max-h-[100px]'}>{currentClan?.clan_name}</span>}
+									{!urlLogo && (
+										<span
+											className={
+												'max-w-[70px] overflow-hidden text-theme-primary-active whitespace-nowrap text-lg max-h-[100px]'
+											}
+										>
+											{currentClan?.clan_name}
+										</span>
+									)}
 								</div>
 								<input ref={fileInputRef} id="upload_logo" onChange={(e) => handleFile(e)} type="file" className="hidden" />
 							</label>
@@ -133,14 +147,8 @@ const ClanLogoName = ({ onUpload, onGetClanName }: ClanLogoNameProps) => {
 					</p>
 				)}
 			</div>
-			{openModal && (
-				<ModalValidateFile
-					onClose={() => setOpenModal(false)}
-					image="assets/images/file-and-folder.png"
-					title="Only image files are allowed"
-					content="Just upload type file (JPEG, PNG), please!"
-				/>
-			)}
+			<ModalErrorTypeUpload open={openModal} onClose={() => setOpenModal(false)} />
+			<ModalOverData size={ELimitSize.MB} open={openSizeModal} onClose={() => setOpenSizeModal(false)} />
 		</div>
 	);
 };

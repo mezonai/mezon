@@ -59,11 +59,11 @@ export { default as MessageReaction } from './components/MessageWithUser/Message
 export { default as ReactionBottom } from './components/MessageWithUser/MessageReaction/ReactionBottom';
 export { default as UserReactionPanel } from './components/MessageWithUser/MessageReaction/UserReactionPanel';
 export { default as MessageVideo } from './components/MessageWithUser/MessageVideo';
-export { ModalErrorTypeUpload, ModalOverData } from './components/ModalError';
 export { default as SidebarLogoItem } from './components/ModalListClans/SidebarLogoItem';
 export { default as SidebarTooltip } from './components/ModalListClans/SidebarTooltip';
 export { default as SidebarClanItem } from './components/ModalListClans/index';
 export { default as ModalUserProfile } from './components/ModalUserProfile';
+export { ModalErrorTypeUpload, ModalOverData } from './components/ModalValidateFile/ModalOverData';
 export { default as NavLinkComponent } from './components/NavLink';
 export { default as ModalNotificationSetting } from './components/NotificationSetting';
 export { ReplyMessageBox } from './components/ReplyMessageBox';

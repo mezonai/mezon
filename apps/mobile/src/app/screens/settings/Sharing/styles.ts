@@ -78,7 +78,8 @@ export const style = (colors: Attributes) =>
 			height: size.s_24,
 			borderRadius: size.s_50,
 			alignItems: 'center',
-			justifyContent: 'center'
+			justifyContent: 'center',
+			zIndex: 2
 		},
 		videoOverlay: {
 			position: 'absolute',
@@ -89,6 +90,14 @@ export const style = (colors: Attributes) =>
 			height: '100%',
 			width: '100%',
 			borderRadius: size.s_6
+		},
+		errorIconWrapper: {
+			alignItems: 'center',
+			justifyContent: 'center',
+			backgroundColor: baseColor.white,
+			width: size.s_16,
+			height: size.s_16,
+			borderRadius: size.s_50
 		},
 
 		// Chat input area

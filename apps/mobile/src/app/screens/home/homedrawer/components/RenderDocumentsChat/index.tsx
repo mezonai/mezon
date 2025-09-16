@@ -33,7 +33,7 @@ export const RenderDocumentsChat = React.memo(({ document, onLongPress, onPressI
 	const isUploading = !document?.url?.includes('http');
 
 	return (
-		<TouchableOpacity activeOpacity={0.8} onPress={() => Linking.openURL(document.url)} onLongPress={onLongPress} disabled={isUploading}>
+		<TouchableOpacity activeOpacity={0.8} onPress={() => Linking.openURL(document.url)} onLongPress={() => onLongPress()} disabled={isUploading}>
 			<View style={styles.fileViewer}>
 				<MezonIconCDN icon={IconCDN.fileIcon} width={verticalScale(30)} height={verticalScale(30)} color={themeValue.bgViolet} />
 				<View style={{ maxWidth: '75%' }}>

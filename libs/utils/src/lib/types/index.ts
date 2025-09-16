@@ -1504,6 +1504,7 @@ export type IvoiceInfo = {
 	channelId: string;
 	channelLabel: string;
 	channelPrivate: number;
+	roomId?: string;
 };
 
 export type ImageSourceObject = {

@@ -127,7 +127,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		navigation.goBack();
 	}, [from, navigation]);
 
-	const goToCall = () => {
+	const goToCall = (isVideo = false) => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 			isShow: false
 		});
@@ -196,7 +196,9 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		const params = {
 			receiverId: currentDmGroup?.user_id?.[0],
 			receiverAvatar: dmAvatar,
-			directMessageId
+			receiverName: dmLabel,
+			directMessageId,
+			isVideoCall: isVideo
 		};
 		const dataModal = {
 			children: <DirectMessageCallMain route={{ params }} />
@@ -230,15 +232,6 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 	const handleBuzzMessage = (text: string) => {
 		sendMessage({ t: text || 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
-	};
-
-	const navigateToSearch = () => {
-		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
-			screen: APP_SCREEN.MENU_CHANNEL.SEARCH_MESSAGE_DM,
-			params: {
-				currentChannel: currentDmGroup
-			}
-		});
 	};
 
 	return (
@@ -290,15 +283,16 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 					{dmLabel}
 				</Text>
 				<View style={styles.iconWrapper}>
-					<TouchableOpacity style={[styles.iconHeader, { marginRight: size.s_6 }]} onPress={navigateToSearch}>
-						<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
-					</TouchableOpacity>
 					{((!isTypeDMGroup && !!currentDmGroup?.user_id?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
-						<TouchableOpacity style={styles.iconHeader} onPress={goToCall}>
+						<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
 							<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 						</TouchableOpacity>
 					)}
-
+					{!isTypeDMGroup && (
+						<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall(true)}>
+							<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+						</TouchableOpacity>
+					)}
 					<View style={styles.iconOption}>
 						<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
 					</View>

@@ -1,10 +1,14 @@
 import { selectCurrentClanId, selectMemberClanByUserId, settingClanStickerActions, updateClanWebhookById, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { MAX_FILE_SIZE_8MB, fileTypeImage } from '@mezon/utils';
+import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ChangeEvent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ELimitSize } from '../../../../ModalValidateFile';
+import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
 import DeleteClanWebhookPopup from './DeleteWebhookPopup';
 
@@ -69,6 +73,9 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		setIsShowPopup(true);
 	};
 
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
+
 	const handleCloseDeletePopup = useCallback(() => {
 		setIsShowPopup(false);
 		modalRef?.current?.focus();
@@ -113,6 +120,16 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
+			const file = e.target.files[0];
+			if (!file) return;
+			if (file.size > MAX_FILE_SIZE_8MB) {
+				setOpenModal(true);
+				return;
+			}
+			if (!fileTypeImage.includes(file.type)) {
+				setOpenTypeModal(true);
+				return;
+			}
 			const client = clientRef.current;
 			const session = sessionRef.current;
 			if (!client || !session) {
@@ -137,9 +154,9 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		};
 		await dispatch(
 			updateClanWebhookById({
-				request: request,
+				request,
 				webhookId: webhookItem.id,
-				clanId: clanId
+				clanId
 			})
 		);
 		setHasChange(false);
@@ -156,9 +173,9 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		try {
 			await dispatch(
 				updateClanWebhookById({
-					request: request,
+					request,
 					webhookId: webhookItem.id,
-					clanId: clanId
+					clanId
 				})
 			);
 
@@ -262,6 +279,9 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 			</div>
 			{hasChange && <ModalSaveChanges onSave={handleEditWebhook} onReset={handleResetChange} />}
 			{isShowPopup && <DeleteClanWebhookPopup webhookItem={webhookItem} closeShowPopup={handleCloseDeletePopup} />}
+			<ModalErrorTypeUpload open={openTypeModal} onClose={() => setOpenTypeModal(false)} />
+
+			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} size={ELimitSize.MB_8} />
 		</>
 	);
 };

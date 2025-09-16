@@ -5,7 +5,7 @@ import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, DimensionValue, StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { openPicker } from 'react-native-image-crop-picker';
+import { openCropper, openPicker } from 'react-native-image-crop-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
 import MezonClanAvatar from '../MezonClanAvatar';
@@ -139,25 +139,43 @@ export default memo(
 
 		async function handleImage() {
 			try {
-				const croppedFile = await openPicker({
+				// First, let user select an image without cropping to check if it's a GIF
+				const selectedFile = await openPicker({
 					mediaType: 'photo',
 					includeBase64: true,
-					cropping: true,
-					compressImageQuality: QUALITY_IMAGE_UPLOAD,
-					...(typeof width === 'number' && { width: imageWidth || width * SCALE }),
-					...(typeof height === 'number' && { height: imageWidth || height * SCALE })
+					cropping: false
 				});
-				setImage(croppedFile.path);
-				onChange && onChange(croppedFile);
+
+				const isGif = selectedFile.mime === 'image/gif';
+
+				let finalFile;
+				if (isGif) {
+					// For GIFs, don't crop to preserve animation
+					finalFile = selectedFile;
+				} else {
+					// For other images, apply cropping and compression
+					finalFile = await openCropper({
+						path: selectedFile.path,
+						mediaType: 'photo',
+						includeBase64: true,
+						cropping: true,
+						compressImageQuality: QUALITY_IMAGE_UPLOAD,
+						...(typeof width === 'number' && { width: imageWidth || width * SCALE }),
+						...(typeof height === 'number' && { height: imageWidth || height * SCALE })
+					});
+				}
+
+				setImage(finalFile.path);
+				onChange && onChange(finalFile);
 				if (autoUpload) {
 					const uploadImagePayload = {
-						fileData: croppedFile?.data,
-						name: croppedFile?.filename || croppedFile?.path?.split?.('/')?.pop?.().trim() || 'image',
-						uri: croppedFile.path,
-						size: croppedFile.size,
-						type: croppedFile.mime,
-						height: croppedFile.height,
-						width: croppedFile.width
+						fileData: finalFile?.data,
+						name: finalFile?.filename || finalFile?.path?.split?.('/')?.pop?.().trim() || 'image',
+						uri: finalFile.path,
+						size: finalFile.size,
+						type: finalFile.mime,
+						height: finalFile.height,
+						width: finalFile.width
 					} as IFile;
 					const url = await handleUploadImage(uploadImagePayload);
 					if (url) {

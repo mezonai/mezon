@@ -95,6 +95,7 @@ const CallingModalWrapper = () => {
 					const params = {
 						receiverId: data?.callerId,
 						receiverAvatar: data?.callerAvatar,
+						receiverName: data?.callerName,
 						directMessageId: data?.channelId,
 						isAnswerCall: true
 					};

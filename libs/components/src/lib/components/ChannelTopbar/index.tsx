@@ -280,7 +280,6 @@ const TopBarChannelText = memo(() => {
 					groupName={editGroupModal.groupName}
 					onGroupNameChange={editGroupModal.setGroupName}
 					imagePreview={editGroupModal.imagePreview}
-					className="z-[200]"
 					isLoading={updateDmGroupLoading}
 					error={updateDmGroupError}
 				/>

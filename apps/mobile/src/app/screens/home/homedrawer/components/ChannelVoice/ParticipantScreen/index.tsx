@@ -2,7 +2,15 @@ import { useParticipants, useRoomContext, useTracks, VideoTrack } from '@livekit
 import { useAuth, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { getStore, selectIsPiPMode, selectMemberClanByUserName, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store-mobile';
+import {
+	getStore,
+	selectCurrentClanId,
+	selectIsPiPMode,
+	selectMemberClanByUserName,
+	useAppDispatch,
+	useAppSelector,
+	voiceActions
+} from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { Participant, RoomEvent, Track } from 'livekit-client';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
@@ -240,7 +248,7 @@ const ParticipantItem = memo(
 	}
 );
 
-const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGroupCall }) => {
+const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGroupCall, clanId }) => {
 	const participants = useParticipants();
 	const tracks = useTracks(
 		[
@@ -252,7 +260,14 @@ const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGrou
 		{ updateOnlyOn: [RoomEvent.ActiveSpeakersChanged], onlySubscribed: false }
 	);
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
+	const currentClanId = useAppSelector(selectCurrentClanId);
 	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
+	const userCanManageVoice = useMemo(() => {
+		if (clanId === currentClanId) {
+			return canMangeVoice;
+		}
+		return false;
+	}, [clanId, currentClanId, canMangeVoice]);
 	const { userProfile } = useAuth();
 	const { name } = useRoomContext();
 
@@ -338,7 +353,7 @@ const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGrou
 								activeSoundReactions={activeSoundReactions}
 								room={name}
 								isGroupCall={isGroupCall}
-								canMangeVoice={canMangeVoice}
+								canMangeVoice={userCanManageVoice}
 								currentUsername={currentUsername}
 							/>
 						);

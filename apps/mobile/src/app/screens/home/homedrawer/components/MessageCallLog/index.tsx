@@ -1,7 +1,8 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { DMCallActions, selectAllAccount, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
-import { IMessageCallLog, IMessageTypeCallLog } from '@mezon/utils';
+import type { IMessageCallLog } from '@mezon/utils';
+import { IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,8 +36,10 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 		const receiverId = currentDmGroup?.user_id?.[0];
 		if (receiverId) {
 			const receiverAvatar = currentDmGroup?.channel_avatar?.[0];
+			const receiverName = currentDmGroup?.channel_label;
 			const params = {
 				receiverId: receiverId as string,
+				receiverName: receiverName as string,
 				receiverAvatar: receiverAvatar as string,
 				directMessageId: channelId as string
 			};
@@ -59,10 +62,10 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 				return isMe ? t('callLog.outGoingCall') : t('callLog.incomingCall');
 			case IMessageTypeCallLog.STARTCALL:
 				return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
-					? t('callLog.startGroupCall', { username: username })
+					? t('callLog.startGroupCall', { username })
 					: isVideo
-						? t('callLog.startVideoCall', { username: username })
-						: t('callLog.startAudioCall', { username: username });
+						? t('callLog.startVideoCall', { username })
+						: t('callLog.startAudioCall', { username });
 			default:
 				return '';
 		}
@@ -101,7 +104,7 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 
 	const shouldShowCallBackButton = () => {
 		const noCallBackTypes = [IMessageTypeCallLog.TIMEOUTCALL, IMessageTypeCallLog.STARTCALL, IMessageTypeCallLog.FINISHCALL];
-		return !noCallBackTypes.includes(callLogType) || !isMe;
+		return (!noCallBackTypes.includes(callLogType) || !isMe) && callLogType !== IMessageTypeCallLog.STARTCALL;
 	};
 	return (
 		<View style={{ flexDirection: 'row' }}>

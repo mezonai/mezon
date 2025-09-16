@@ -25,7 +25,7 @@ export const RenderVideoChat = React.memo(
 	({ videoURL, onLongPress, isMultiple = false, thumbnailPreview = '', widthThumbnail = 0, heightThumbnail = 0 }: IRenderVideoChatProps) => {
 		const { resolution } = useImageResolution({ uri: thumbnailPreview });
 		const [thumbPath, setThumbPath] = useState('');
-		const isUploading = !videoURL.startsWith('http');
+		const isUploading = !videoURL?.startsWith?.('http');
 
 		const handlePlayVideo = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {

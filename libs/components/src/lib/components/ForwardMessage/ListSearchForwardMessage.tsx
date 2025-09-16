@@ -35,7 +35,7 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 							searchText={searchText}
 							checked={selectedObjectIdSends.some((selectedItem: any) => selectedItem.id === item.idDM)}
 							handleToggle={() => handleToggle(item.idDM, item.typeChat || 0, false)}
-							username={item.username}
+							username={item.name}
 							hiddenSubText={item.typeChat === ChannelType.CHANNEL_TYPE_GROUP}
 						/>
 					) : (
@@ -70,6 +70,7 @@ type ItemDmProps = {
 
 const ItemDm = (props: ItemDmProps) => {
 	const { id, name, avatar, searchText, checked, handleToggle, username, hiddenSubText } = props;
+
 	return (
 		<>
 			<div className="flex-1 mr-1" onClick={handleToggle}>

@@ -130,7 +130,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 
 	const handleOpenEmojiPicker = () => {
 		const data = {
-			snapPoints: ['45%', '75%'],
+			snapPoints: ['75%'],
 			children: (
 				<ContainerMessageActionModal
 					message={undefined}

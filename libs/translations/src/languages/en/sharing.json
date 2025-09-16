@@ -6,5 +6,7 @@
     "selectChannelPlaceholder": "Select a channel or category...",
     "share": "Share",
     "suggestions": "Suggestions",
-    "addCommentPlaceholder": "Add a Comment (Optional)"
+    "addCommentPlaceholder": "Add a Comment (Optional)",
+    "fileTooLarge": "File too large",
+    "fileSizeExceeded": "{{fileType}} size cannot exceed {{maxSize}}MB!"
 }

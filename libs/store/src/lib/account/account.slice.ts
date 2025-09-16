@@ -20,7 +20,6 @@ export interface AccountState {
 	userProfile?: IUserAccount | null;
 	anonymousMode: boolean;
 	cache?: CacheMetadata;
-	wallet?: IWalletState;
 }
 
 export const initialAccountState: AccountState = {
@@ -104,7 +103,7 @@ export const storeWalletKey = createAsyncThunk('account/storeWalletKey', async (
 			address: metadata.address,
 			enc_privkey: metadata.encryptedPrivateKey
 		});
-		thunkAPI.dispatch(accountActions.setWalletMetadata(metadata));
+		thunkAPI.dispatch(accountActions.setWalletData(metadata));
 		return response;
 	} catch (error) {
 		toast.error('Error saving wallet metadata');
@@ -134,6 +133,12 @@ export const accountSlice = createSlice({
 				const userMetadata = safeJSONParse(state.userProfile.user.metadata || '{}');
 				const updatedUserMetadata = { ...userMetadata, wallet: action.payload };
 				state.userProfile.user.metadata = JSON.stringify(updatedUserMetadata);
+			}
+		},
+		setWalletData(state, action: PayloadAction<{ address: string; encryptedPrivateKey: string }>) {
+			if (state?.userProfile?.user) {
+				state.userProfile.user.wallet_address = action.payload.address;
+				state.userProfile.mmn_encrypt_private_key = action.payload.encryptedPrivateKey;
 			}
 		},
 		setLogoCustom(state, action: PayloadAction<string | undefined>) {
@@ -179,9 +184,6 @@ export const accountSlice = createSlice({
 				user: { ...state.userProfile?.user, ...action.payload.user },
 				encrypt_private_key: action.payload.encrypt_private_key
 			};
-		},
-		setWalletData(state, action: PayloadAction<IWalletState | undefined>) {
-			state.wallet = action.payload;
 		}
 	},
 	extraReducers: (builder) => {

@@ -27,7 +27,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 	const styles = style(themeValue);
 	const isShowPreCallInterface = useSelector(selectIsShowPreCallInterface);
 	const { sendSignalingToParticipants } = useSendSignaling();
-	const room = useRoomContext();
+	const room: any = useRoomContext();
 
 	const handleGroupCallEnd = (type: 'cancel' | 'quit') => {
 		dispatch(groupCallActions.endGroupCall());
@@ -113,7 +113,12 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 				})
 			);
 		}
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId: '', channelId: currentDmGroup?.channel_id });
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, {
+			isEndCall: true,
+			clanId: '',
+			channelId: currentDmGroup?.channel_id,
+			roomId: room?.roomInfo?.sid
+		});
 	};
 
 	const handleEndCall = () => {
@@ -122,7 +127,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 		}
 		room.disconnect();
 		if (!isGroupCall) {
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId: clanId, channelId: channelId });
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, { isEndCall: true, clanId, channelId, roomId: room?.roomInfo?.sid });
 		}
 	};
 

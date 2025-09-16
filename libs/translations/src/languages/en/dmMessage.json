@@ -36,5 +36,7 @@
         }
     },
     "waveWelcome": "Wave to say hi!",
-    "members": "members"
+    "members": "members",
+    "speaker": "Speaker",
+    "end": "End"
 }
