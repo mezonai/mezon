@@ -523,7 +523,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			dispatch(audioCallActions.setIsRemoteVideo(false));
 			dispatch(DMCallActions.setIsShowMeetDM(false));
 			dispatch(DMCallActions.setIsShowShareScreen(false));
-			dispatch(audioCallActions.startDmCall({}));
+			dispatch(audioCallActions.startDmCall(null));
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(DMCallActions.removeAll());
 			setCallState({

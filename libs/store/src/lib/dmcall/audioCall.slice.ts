@@ -1,5 +1,6 @@
-import { IDmCallInfo } from '@mezon/utils';
-import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { IDmCallInfo } from '@mezon/utils';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 export const AUDIO_CALL_FEATURE_KEY = 'audiocall';
 
@@ -14,6 +15,12 @@ export interface DmCallState {
 	isJoinedCall: boolean;
 	groupCallId: string;
 	userCallId: string;
+	openCall?: {
+		open?: boolean;
+		hasVideo?: boolean;
+		channelId?: string;
+		userId?: string;
+	};
 }
 
 const initialState: DmCallState = {
@@ -26,15 +33,19 @@ const initialState: DmCallState = {
 	isRemoteVideo: false,
 	isJoinedCall: false,
 	groupCallId: '',
-	userCallId: ''
+	userCallId: '',
+	openCall: {}
 };
 
 const audioCallSlice = createSlice({
 	name: 'stream',
 	initialState,
 	reducers: {
-		startDmCall(state, action: PayloadAction<IDmCallInfo>) {
+		startDmCall(state, action: PayloadAction<IDmCallInfo | null>) {
 			state.dmCallInfo = action.payload;
+			if (action.payload === null) {
+				state.openCall = {};
+			}
 		},
 		setIsDialTone(state, action) {
 			state.isDialTone = action.payload;
@@ -62,6 +73,18 @@ const audioCallSlice = createSlice({
 		},
 		setUserCallId(state, action) {
 			state.userCallId = action.payload;
+		},
+		setOpenVoiceCall(state, action: PayloadAction<{ hasVideo?: boolean; channelId?: string; userId?: string }>) {
+			const { hasVideo, channelId, userId } = action.payload;
+			state.openCall = {
+				open: true,
+				hasVideo,
+				channelId,
+				userId
+			};
+		},
+		setCloseVoiceCall(state) {
+			state.openCall = {};
 		}
 	}
 });
@@ -93,3 +116,5 @@ export const selectJoinedCall = createSelector(getAudioCallState, (state) => sta
 export const selectGroupCallId = createSelector(getAudioCallState, (state) => state.groupCallId);
 
 export const selectUserCallId = createSelector(getAudioCallState, (state) => state.userCallId);
+
+export const selectOpenVoiceCall = createSelector(getAudioCallState, (state) => state.openCall);

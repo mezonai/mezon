@@ -81,7 +81,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			dispatch(DMCallActions.setIsInCall(false));
 			dispatch(DMCallActions.removeAll());
 			muteSound();
-			dispatch(audioCallActions.startDmCall({}));
+			dispatch(audioCallActions.startDmCall(null));
 			dispatch(audioCallActions.setUserCallId(''));
 		} else if (type === ESummaryInfo.STREAM && currentStreamInfo) {
 			disconnect();

@@ -28,7 +28,8 @@ import { AvatarImage } from '@mezon/components';
 import { useWebRTCCall } from '@mezon/core';
 import { IMessageTypeCallLog, createImgproxyUrl, sleep } from '@mezon/utils';
 import { WebrtcSignalingType } from 'mezon-js';
-import { ReactElement, forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import DeviceSelector from './DeviceSelector';
 
@@ -167,7 +168,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		dispatch(DMCallActions.setIsInCall(false));
 		dispatch(DMCallActions.removeAll());
 		handleMuteSound();
-		dispatch(audioCallActions.startDmCall({}));
+		dispatch(audioCallActions.startDmCall(null));
 		dispatch(audioCallActions.setUserCallId(''));
 	};
 

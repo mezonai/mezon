@@ -78,7 +78,7 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 		dispatch(audioCallActions.setIsBusyTone(false));
 
 		dispatch(DMCallActions.removeAll());
-		dispatch(audioCallActions.startDmCall({}));
+		dispatch(audioCallActions.startDmCall(null));
 		dispatch(audioCallActions.setGroupCallId(''));
 		dispatch(audioCallActions.setUserCallId(''));
 	}, [dispatch]);

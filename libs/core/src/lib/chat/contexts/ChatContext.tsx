@@ -1833,7 +1833,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		}
 		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT) {
 			dispatch(DMCallActions.cancelCall({}));
-			dispatch(audioCallActions.startDmCall({}));
+			dispatch(audioCallActions.startDmCall(null));
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));

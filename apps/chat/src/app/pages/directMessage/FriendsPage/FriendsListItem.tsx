@@ -1,11 +1,14 @@
 import { BaseProfile } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends } from '@mezon/core';
-import { FriendsEntity, selectCurrentTabStatus } from '@mezon/store';
+import type { FriendsEntity } from '@mezon/store';
+import { audioCallActions, selectCurrentTabStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ETabUserStatus, EUserStatus, MetaDateStatusUser, generateE2eId } from '@mezon/utils';
+import type { MetaDateStatusUser } from '@mezon/utils';
+import { ETabUserStatus, EUserStatus, generateE2eId } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 type FriendProps = {
@@ -24,11 +27,12 @@ type FriendMenuProps = {
 	onClose: () => void;
 	onDeleteFriend: (username: string, id: string) => void;
 	onBlockFriend: (username: string, id: string) => void;
+	handleCreateDm: () => Promise<string | undefined>;
 };
 
-const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: FriendMenuProps) => {
+const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend, handleCreateDm }: FriendMenuProps) => {
 	const menuRef = useRef<HTMLDivElement>(null);
-
+	const dispatch = useDispatch();
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -49,13 +53,33 @@ const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend }: 
 		boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px'
 	};
 
+	const { toDmGroupPageFromFriendPage, navigate } = useAppNavigation();
+
+	const handleCallFriend = useCallback(
+		async (hasVideo: boolean) => {
+			const response = await handleCreateDm();
+			if (response) {
+				dispatch(
+					audioCallActions.setOpenVoiceCall({
+						hasVideo,
+						channelId: response,
+						userId: friend?.user?.id
+					})
+				);
+				const directChat = toDmGroupPageFromFriendPage(response, ChannelType.CHANNEL_TYPE_DM);
+				navigate(directChat);
+			}
+		},
+		[friend]
+	);
+
 	return (
 		<div ref={menuRef} className="bg-theme-contexify p-2 w-[150px] text-[14px] font-medium absolute z-50" style={menuStyle}>
 			<div className="flex flex-col gap-1">
-				<button className="text-theme-primary bg-item-hover p-2 rounded-[5px] w-full flex" onClick={onClose}>
+				<button className="text-theme-primary bg-item-hover p-2 rounded-[5px] w-full flex" onClick={() => handleCallFriend(true)}>
 					Start Video Call
 				</button>
-				<button className="text-theme-primary bg-item-hover p-2 rounded-[5px] w-full flex" onClick={onClose}>
+				<button className="text-theme-primary bg-item-hover p-2 rounded-[5px] w-full flex" onClick={() => handleCallFriend(false)}>
 					Start Voice Call
 				</button>
 				<button
@@ -101,9 +125,9 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 
 		const response = await createDirectMessageWithUser(userID, name, friend.user?.username, avatar);
 		if (response.channel_id) {
-			const directChat = toDmGroupPageFromFriendPage(response.channel_id, Number(response.type));
-			navigate(directChat);
+			return response.channel_id;
 		}
+		return;
 	}, [friend]);
 
 	const handleAcceptFriend = (username: string, id: string) => {
@@ -155,10 +179,19 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 				onClose={closeFriendMenu}
 				onDeleteFriend={handleDeleteFriend}
 				onBlockFriend={handleBlockFriend}
+				handleCreateDm={directMessageWithUser}
 			/>
 		),
 		[friend]
 	);
+
+	const handleNavigateDM = async () => {
+		const response = await directMessageWithUser();
+		if (response) {
+			const directChat = toDmGroupPageFromFriendPage(response, ChannelType.CHANNEL_TYPE_DM);
+			navigate(directChat);
+		}
+	};
 
 	return (
 		<div
@@ -167,7 +200,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		>
 			<div
 				key={friend?.user?.id}
-				onClick={directMessageWithUser}
+				onClick={handleNavigateDM}
 				className="py-2 flex justify-between group flex-1 items-center px-3 cursor-pointer rounded-lg bg-item-hover"
 			>
 				<div key={friend?.user?.id} className={'flex-1'}>
@@ -192,7 +225,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 				<div className="w-20" onClick={(e) => e.stopPropagation()}>
 					{friend?.state === 0 && (
 						<div className="flex gap-3 items-center">
-							<button onClick={directMessageWithUser} className=" bg-button-secondary rounded-full p-2 text-theme-primary-hover">
+							<button onClick={handleNavigateDM} className=" bg-button-secondary rounded-full p-2 text-theme-primary-hover">
 								<Icons.IconChat />
 							</button>
 							<button onClick={handleMenuClick} className="bg-button-secondary rounded-full p-2 text-theme-primary-hover">
