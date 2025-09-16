@@ -99,7 +99,6 @@ const buyItemForSale = createAsyncThunk(
 		thunkAPI
 	) => {
 		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const mmnClient = getMmnClient(thunkAPI);
 
 			const encryptedWallet = await WalletStorage.getEncryptedWallet(senderId || '');
