@@ -1,6 +1,7 @@
-import { IndexerClient, Transaction } from '@mezonai/mmn-client-js';
-import { LoadingStatus } from '@mezon/utils';
+import type { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Transaction } from 'mmn-client-js';
+import { IndexerClient } from 'mmn-client-js';
 
 export const TRANSACTION_HISTORY_FEATURE_KEY = 'transactionHistory';
 

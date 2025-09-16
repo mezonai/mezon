@@ -1,6 +1,7 @@
-import { LoadingStatus } from '@mezon/utils';
-import { IndexerClient, WalletDetail } from '@mezonai/mmn-client-js';
+import type { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { WalletDetail } from 'mmn-client-js';
+import { IndexerClient } from 'mmn-client-js';
 
 export const WALLET_FEATURE_KEY = 'wallet';
 

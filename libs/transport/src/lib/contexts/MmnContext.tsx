@@ -1,5 +1,5 @@
-import type { MmnClient, MmnClientConfig } from '@mezonai/mmn-client-js';
-import { createMmnClient } from '@mezonai/mmn-client-js';
+import type { MmnClient, MmnClientConfig } from 'mmn-client-js';
+import { createMmnClient } from 'mmn-client-js';
 import React, { createContext, useContext, useMemo } from 'react';
 
 export interface MmnContextProviderProps {
@@ -48,4 +48,3 @@ export const useMmn = (): MmnContextValue => {
 };
 
 export { MmnContext };
-

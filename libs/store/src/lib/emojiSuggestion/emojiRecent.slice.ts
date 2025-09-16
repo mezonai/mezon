@@ -1,10 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IEmojiRecent } from '@mezon/utils';
 import { RECENT_EMOJI_CATEGORY, WalletStorage } from '@mezon/utils';
-import { ETransferType } from '@mezonai/mmn-client-js';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiClanEmoji } from 'mezon-js/dist/api.gen';
+import { ETransferType } from 'mmn-client-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { selectUserById } from '../channels/listUsers.slice';

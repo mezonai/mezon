@@ -1,11 +1,11 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
 import { WalletStorage } from '@mezon/utils';
-import { ETransferType } from '@mezonai/mmn-client-js';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import { ETransferType } from 'mmn-client-js';
 import { selectUserById } from '../channels/listUsers.slice';
 import { ensureSession, getMezonCtx, getMmnClient } from '../helpers';
 import type { RootState } from '../store';
@@ -124,7 +124,6 @@ export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: 
 			);
 			return thunkAPI.rejectWithValue('Wallet not available');
 		}
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const mmnClient = getMmnClient(thunkAPI);
 
 		let recipientAddress: string | null = null;

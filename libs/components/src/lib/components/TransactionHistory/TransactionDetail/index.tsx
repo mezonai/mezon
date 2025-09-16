@@ -1,7 +1,7 @@
 import { selectAllUsersByUser } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { formatBalanceToString } from '@mezon/utils';
-import { Transaction } from '@mezonai/mmn-client-js';
+import type { Transaction } from 'mmn-client-js';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';

@@ -1,5 +1,6 @@
-import { MmnClient } from '@mezonai/mmn-client-js';
-import { Middleware, ThunkDispatch, UnknownAction, configureStore } from '@reduxjs/toolkit';
+import type { Middleware, ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
+import type { MmnClient } from 'mmn-client-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -25,7 +26,7 @@ import { notificationReducer } from './notification/notify.slice';
 import { POLICIES_FEATURE_KEY, policiesDefaultReducer, policiesReducer } from './policies/policies.slice';
 import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
-import { MezonContextValue } from '@mezon/transport';
+import type { MezonContextValue } from '@mezon/transport';
 import { activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';

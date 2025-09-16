@@ -1,6 +1,6 @@
-import { MezonContextValue } from '@mezon/transport';
-import { MmnClient } from '@mezonai/mmn-client-js';
-import { GetThunkAPI } from '@reduxjs/toolkit';
+import type { MezonContextValue } from '@mezon/transport';
+import type { GetThunkAPI } from '@reduxjs/toolkit';
+import type { MmnClient } from 'mmn-client-js';
 
 export type AsyncThunkConfigWithMezon = {
 	extra: {
