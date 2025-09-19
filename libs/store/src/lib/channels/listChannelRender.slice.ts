@@ -111,6 +111,12 @@ export const listChannelRenderSlice = createSlice({
 					return;
 				}
 				state.listChannelRender[clanId].splice(indexInsert + 1, 0, channelData);
+				
+				const category = state.listChannelRender[clanId][indexInsert] as ICategoryChannel;
+				if (category.channels) {
+					category.channels = [...(category.channels as string[]), channelData.id];
+				}
+				
 				state.listChannelRender[clanId].join();
 			}
 		},
@@ -119,9 +125,22 @@ export const listChannelRenderSlice = createSlice({
 			if (!state.listChannelRender[clanId]) {
 				return;
 			}
+
+			const channelToDelete = state.listChannelRender[clanId].find((channel) => channel.id === channelId) as IChannel;
+
 			state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
 				(channel) => channel.id !== channelId && (channel as IChannel).parent_id !== channelId
 			);
+
+			if (channelToDelete?.category_id) {
+				const indexInsert = state.listChannelRender[clanId].findIndex((item) => item.id === channelToDelete.category_id);
+				if (indexInsert !== -1) {
+					const category = state.listChannelRender[clanId][indexInsert] as ICategoryChannel;
+					if (category.channels) {
+						category.channels = (category.channels as string[]).filter((id) => id !== channelId);
+					}
+				}
+			}
 		},
 		updateChannelInListRender: (state, action: PayloadAction<{ channelId: string; clanId: string; dataUpdate: IUpdateChannelRequest }>) => {
 			const { channelId, clanId, dataUpdate } = action.payload;
