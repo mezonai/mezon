@@ -134,7 +134,6 @@ const MediaChannel = memo(({ channelId }: { channelId: string }) => {
 	useEffect(() => {
 		if (!currentClanId || !currentChannelId) return;
 		if (paginationState?.isLoading) return;
-		if (attachments && attachments.length > 0) return;
 
 		dispatch(
 			galleryActions.fetchGalleryAttachments({

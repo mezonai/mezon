@@ -26,7 +26,7 @@ export const style = (colors: Attributes, widthImage: number) =>
 		wrapper: { height: '100%' },
 		contentContainer: {
 			paddingBottom: size.s_50,
-			justifyContent: 'center',
+			justifyContent: 'flex-start',
 			alignItems: 'center',
 			flexGrow: 1
 		},
