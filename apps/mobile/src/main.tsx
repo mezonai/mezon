@@ -25,7 +25,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
 					const currentTime = Date.now();
 					const messageTime = remoteMessage.sentTime;
 					const timeDifference = currentTime - messageTime;
-					if (timeDifference <= 20000) {
+					if (Math.floor(timeDifference) <= 60000) {
 						displayNativeCalling(remoteMessage?.data);
 					} else {
 						console.error('Ignoring outdated call notification, received', timeDifference / 1000, 'seconds ago');

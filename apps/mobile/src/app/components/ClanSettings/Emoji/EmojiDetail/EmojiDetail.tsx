@@ -2,13 +2,15 @@ import { usePermissionChecker } from '@mezon/core';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EPermission, getSrcEmoji } from '@mezon/utils';
-import { ClanEmoji } from 'mezon-js';
-import { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
-import React, { Ref, forwardRef, useMemo, useRef, useState } from 'react';
+import type { ClanEmoji } from 'mezon-js';
+import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { Ref } from 'react';
+import React, { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Toast from 'react-native-toast-message';
 import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
@@ -63,9 +65,9 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 		}
 	};
 
-	const handleSwipableWillOpen = () => {
+	const handleSwipableWillOpen = useCallback(() => {
 		onSwipeOpen(item);
-	};
+	}, []);
 
 	const handleBlur = () => {
 		setIsFocused(false);
@@ -122,7 +124,7 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 				</View>
 				<View style={styles.user}>
 					<Text numberOfLines={1} style={styles.title}>
-						{dataAuthor?.user?.username}
+						{dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username}
 					</Text>
 					<View style={styles.imgWrapper}>
 						<MezonClanAvatar alt={dataAuthor?.user?.username} image={dataAuthor?.user?.avatar_url} imageHeight={30} imageWidth={30} />

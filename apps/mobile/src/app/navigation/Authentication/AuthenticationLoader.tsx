@@ -26,8 +26,9 @@ import { TypeMessage } from '@mezon/utils';
 import { getApp } from '@react-native-firebase/app';
 import { getMessaging, onMessage } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
-import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import React, { useEffect, useRef } from 'react';
+import type { WebrtcSignalingFwd } from 'mezon-js';
+import { WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Linking, Platform, StatusBar } from 'react-native';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
@@ -220,6 +221,21 @@ export const AuthenticationLoader = () => {
 		};
 	}, [dispatch, navigation, userProfile?.user?.id]);
 
+	const getTopRoute = useCallback(() => {
+		try {
+			const navigationState = navigation?.getState?.();
+			const routes = navigationState?.routes || [];
+			const activeScreenIndex = routes[navigationState?.index]?.state?.index || 0;
+			const activeState = routes[navigationState?.index]?.state || {};
+			const currentRoute = activeState?.routes[activeScreenIndex]?.name || '';
+
+			return currentRoute;
+		} catch (error) {
+			console.warn('Error getting top route:', error);
+			return '';
+		}
+	}, [navigation]);
+
 	const initFirebaseMessaging = () => {
 		const unsubscribe = onMessage(messaging, (remoteMessage) => {
 			try {
@@ -235,7 +251,18 @@ export const AuthenticationLoader = () => {
 					}
 				}
 
-				if (isShowNotification(currentChannelRef.current?.id, currentDmGroupIdRef.current, remoteMessage)) {
+				const topRoute = getTopRoute();
+
+				// Determine current view state for suppression decision
+				const isViewingChannel = topRoute === APP_SCREEN.HOME_DEFAULT;
+				const isViewingDirectMessage = topRoute === APP_SCREEN.MESSAGES.MESSAGE_DETAIL || topRoute === APP_SCREEN.MESSAGES.HOME;
+
+				if (
+					isShowNotification(currentChannelRef.current?.id, currentDmGroupIdRef.current, remoteMessage, {
+						isViewingChannel,
+						isViewingDirectMessage
+					})
+				) {
 					// Case: FCM start call
 					const title = remoteMessage?.notification?.title || remoteMessage?.data?.title;
 					const body: any = remoteMessage?.notification?.body || remoteMessage?.data?.body;

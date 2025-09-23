@@ -1,10 +1,10 @@
 import { useAuth } from '@mezon/core';
+import type { IUpdateChannelRequest } from '@mezon/store';
 import {
 	channelsActions,
 	clansActions,
 	clearApiCallTracker,
 	e2eeActions,
-	IUpdateChannelRequest,
 	messagesActions,
 	selectDirectById,
 	selectDirectMesIdE2ee,
@@ -16,7 +16,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
-import { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
+import type { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -160,7 +160,12 @@ const ModalCreatePin = ({ onNext, onBack, onClose, setPin }: ModalProps & { setP
 	);
 };
 
-const ModalConfirmPin = ({ onClose, onBack, pin, userProfile }: ModalProps & { pin: string[]; userProfile: ApiAccount | null | undefined }) => {
+export const ModalConfirmPin = ({
+	onClose,
+	onBack,
+	pin,
+	userProfile
+}: ModalProps & { pin: string[]; userProfile: ApiAccount | null | undefined }) => {
 	const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [errorMessage, setErrorMessage] = useState<string>('');

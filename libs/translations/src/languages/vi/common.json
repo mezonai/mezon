@@ -18,7 +18,7 @@
 	"copyImage": "Đã sao chép ảnh",
 	"copyImageFailed": "Sao chép không thành công: {{error}}",
 	"enable": "Bật",
-    "poorConnection": "Bạn đang ngoại tuyến.",
+	"poorConnection": "Bạn đang ngoại tuyến.",
 	"cancel": "Hủy",
 	"delete": "Xóa",
 	"areYouSureYouWantTo": "Bạn có chắc chắn muốn {{action}} <0>{{name}}</0>?",
@@ -118,7 +118,35 @@
 		"qr": {
 			"signIn": "Đăng nhập bằng mã QR",
 			"useMobile": "Sử dụng Mezon trên di động để quét QR"
-		}
+		},
+		"loginToMezon": "Đăng nhập vào tài khoản Mezon",
+		"emailAddress": "Địa chỉ email",
+		"loginWithSMS": "Đăng nhập bằng SMS OTP",
+		"loginWithPassword": "Đăng nhập bằng mật khẩu",
+		"send": "Gửi OTP",
+		"cannotAccessYourEmail": "Không thể truy cập hộp thư email của bạn?",
+		"or": "hoặc",
+		"showPassword": "Hiện mật khẩu",
+		"enterEmailToLogin": "Nhập email của bạn để đăng nhập",
+		"passwordNotSet": "Mật khẩu chưa được đặt?",
+		"loginWithOTP": "Đăng nhập bằng OTP",
+		"login": "Đăng nhập",
+		"enterPhoneToLogin": "Nhập số điện thoại của bạn để đăng nhập",
+		"phone": "Số điện thoại",
+		"invalidPhone": "Số điện thoại không hợp lệ",
+		"sendToPhone": "Gửi OTP đến số điện thoại của bạn"
+	},
+	"otpVerify": {
+		"loginToMezon": "Đăng nhập tài khoản Mezon",
+		"gladToMeetAgain": "Rất vui được gặp lại bạn!",
+		"enterCodeFrom": "Nhập mã từ",
+		"otpPlaceholder": "OTP",
+		"verifyOTP": "Xác thực OTP",
+		"didNotReceiveCode": "Không nhận được mã?",
+		"changeEmail": "Đổi Email",
+		"getHelp": "Nhận trợ giúp",
+		"or": "hoặc",
+		"resendOTP": "Gửi lại OTP"
 	},
 	"invite": {
 		"canChatNow": "Bạn có thể trò chuyện ngay bây giờ !!",

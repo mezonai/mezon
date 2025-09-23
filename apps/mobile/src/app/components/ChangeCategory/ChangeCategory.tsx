@@ -1,14 +1,16 @@
 import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
-import { CategoriesEntity, channelsActions, getStore, selectAllCategories, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
+import type { CategoriesEntity } from '@mezon/store-mobile';
+import { channelsActions, getStore, selectAllCategories, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
+import type { APP_SCREEN, MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 
 type ChangeCategory = typeof APP_SCREEN.MENU_CHANNEL.CHANGE_CATEGORY;
 export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<ChangeCategory>) => {
@@ -28,6 +30,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			}
 		}
 		const updateChannel = {
+			clan_id: channel?.clan_id,
 			category_id: category.id,
 			channel_id: channel?.channel_id ?? '',
 			channel_label: channel?.channel_label,

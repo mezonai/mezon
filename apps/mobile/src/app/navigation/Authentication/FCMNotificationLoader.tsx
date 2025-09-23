@@ -5,10 +5,11 @@ import notifee, { EventType } from '@notifee/react-native';
 import { getApp } from '@react-native-firebase/app';
 import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelMessage, safeJSONParse } from 'mezon-js';
+import type { ChannelMessage } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 import moment from 'moment/moment';
 import { useCallback, useContext, useEffect, useRef } from 'react';
-import { AppState, Platform } from 'react-native';
+import { AppState, NativeModules, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import NotificationPreferences from '../../utils/NotificationPreferences';
 import { checkNotificationPermission, processNotification } from '../../utils/pushNotificationHelpers';
@@ -196,9 +197,15 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 				});
 				mapMessageNotificationToSlice(notificationDataPushedParse?.length ? notificationDataPushedParse.slice(0, 10) : []);
 			}
+			if (Platform.OS === 'android') {
+				NativeModules?.BadgeModule?.clearAllNotifications();
+			}
 			await notifee.cancelAllNotifications();
 			await notifee.cancelDisplayedNotifications();
 		} catch (error) {
+			if (Platform.OS === 'android') {
+				NativeModules?.BadgeModule?.clearAllNotifications();
+			}
 			await deleteAllChannelGroupsNotifee();
 			await notifee.cancelAllNotifications();
 			await notifee.cancelDisplayedNotifications();

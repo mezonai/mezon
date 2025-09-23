@@ -2,12 +2,14 @@ import { useClanRestriction } from '@mezon/core';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { deleteSticker, selectCurrentUserId, selectMemberClanByUserId, updateSticker, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
-import { ClanSticker } from 'mezon-js';
-import React, { Ref, forwardRef, useCallback, useMemo, useState } from 'react';
+import type { ClanSticker } from 'mezon-js';
+import type { Ref } from 'react';
+import React, { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
@@ -53,9 +55,9 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 		);
 	};
 
-	const handleSwipeOpen = () => {
+	const handleSwipeOpen = useCallback(() => {
 		onSwipeOpen(data);
-	};
+	}, []);
 
 	const handleDeleteSticker = useCallback(async () => {
 		if (data.id) {
@@ -103,16 +105,11 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 	}, [sticker, stickerName]);
 
 	return (
-		<Swipeable
-			ref={ref}
-			renderRightActions={renderRightAction}
-			onSwipeableWillOpen={handleSwipeOpen}
-			enabled={hasDeleteOrEditPermission}
-		>
+		<Swipeable ref={ref} renderRightActions={renderRightAction} onSwipeableWillOpen={handleSwipeOpen} enabled={hasDeleteOrEditPermission}>
 			<View style={styles.container}>
 				<View style={styles.flexRow}>
 					<FastImage
-						source={{ uri: sticker.source ? sticker.source : `${process.env.NX_BASE_IMG_URL}/stickers/` + sticker.id + `.webp` }}
+						source={{ uri: sticker.source ? sticker.source : `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp` }}
 						style={{ height: size.s_36, width: size.s_36 }}
 					/>
 
@@ -129,7 +126,7 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 
 				<View style={[styles.flexRow, { justifyContent: 'flex-end' }]}>
 					<Text style={styles.text} numberOfLines={1}>
-						{user?.user?.username}
+						{user?.clan_nick || user?.user?.display_name || user?.user?.username}
 					</Text>
 					<MezonAvatar height={size.s_30} width={size.s_30} avatarUrl={user?.user?.avatar_url} username={user?.user?.username} />
 				</View>

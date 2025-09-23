@@ -27,7 +27,9 @@ const MainIntegrations = ({ setIsOpenWebhooks, allWebhooks }: IIntegrationProps)
 					<Icons.WebhooksIcon />
 					<div>
 						<div className="pb-[3px] font-semibold break-all text-theme-primary">{t('webhooks')}</div>
-						<div className="text-[12px] text-theme-primary">{t('webhook', { count: allWebhooks?.length || 0 })}</div>
+						<div className="text-[12px] text-theme-primary">
+							{allWebhooks?.length ? t('webhook_other', { count: allWebhooks?.length }) : t('webhookCount', { count: 0 })}
+						</div>
 					</div>
 				</div>
 				{allWebhooks && allWebhooks?.length === 0 ? (

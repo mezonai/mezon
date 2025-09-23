@@ -15,10 +15,11 @@ export type PermissionsChannelProps = {
 	channel: IChannel;
 	openModalAdd: MutableRefObject<boolean>;
 	parentRef: RefObject<HTMLDivElement>;
+	clanId?: string;
 };
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
-	const { channel, openModalAdd, parentRef } = props;
+	const { channel, openModalAdd, parentRef, clanId } = props;
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
 	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
@@ -43,12 +44,12 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			resetTriggerRef.current();
 		}
 	}, [valueToggleInit]);
-
 	const handleSaveChannelPrivateChanged = useCallback(async () => {
 		setValueToggleInit(valueToggle);
 		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
 		await dispatch(
 			channelsActions.updateChannelPrivate({
+				clan_id: clanId,
 				channel_id: channel.id,
 				channel_private: channel.channel_private || 0,
 				user_ids: updatedUserIds,

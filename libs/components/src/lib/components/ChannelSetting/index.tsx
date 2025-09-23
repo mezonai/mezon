@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { fetchUserChannels, selectChannelById, selectCloseMenu, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IChannel } from '@mezon/utils';
+import type { IChannel } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -37,17 +37,20 @@ const SettingChannel = (props: ModalSettingProps) => {
 	const [menu, setMenu] = useState(true);
 	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channel_label || '');
 
-	const getTabTranslation = useCallback((tabKey: string) => {
-		const translations: Record<string, string> = {
-			[EChannelSettingTab.OVERVIEW]: t('tabs.overview'),
-			[EChannelSettingTab.PREMISSIONS]: t('tabs.permissions'),
-			[EChannelSettingTab.INVITES]: t('tabs.invites'),
-			[EChannelSettingTab.INTEGRATIONS]: t('tabs.integrations'),
-			[EChannelSettingTab.CATEGORY]: t('tabs.category'),
-			[EChannelSettingTab.QUICK_MENU]: t('tabs.quickMenu')
-		};
-		return translations[tabKey] || tabKey;
-	}, [t]);
+	const getTabTranslation = useCallback(
+		(tabKey: string) => {
+			const translations: Record<string, string> = {
+				[EChannelSettingTab.OVERVIEW]: t('tabs.overview'),
+				[EChannelSettingTab.PREMISSIONS]: t('tabs.permissions'),
+				[EChannelSettingTab.INVITES]: t('tabs.invites'),
+				[EChannelSettingTab.INTEGRATIONS]: t('tabs.integrations'),
+				[EChannelSettingTab.CATEGORY]: t('tabs.category'),
+				[EChannelSettingTab.QUICK_MENU]: t('tabs.quickMenu')
+			};
+			return translations[tabKey] || tabKey;
+		},
+		[t]
+	);
 
 	const handleSettingItemClick = (settingName: string) => {
 		setCurrentSetting(settingName);
@@ -118,7 +121,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 					<OverviewChannel channel={channel} onDisplayLabelChange={setDisplayChannelLabel} />
 				)}
 				{currentSetting === EChannelSettingTab.PREMISSIONS && (
-					<PermissionsChannel channel={channel} openModalAdd={openModalAdd} parentRef={modalRef} />
+					<PermissionsChannel channel={channel} openModalAdd={openModalAdd} parentRef={modalRef} clanId={channel.clan_id} />
 				)}
 				{currentSetting === EChannelSettingTab.INVITES && <InvitesChannel />}
 				{currentSetting === EChannelSettingTab.INTEGRATIONS && <IntegrationsChannel currentChannel={channel} />}

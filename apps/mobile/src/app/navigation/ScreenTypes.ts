@@ -1,16 +1,24 @@
-import { ETypeSearch, ICategoryChannelOption } from '@mezon/mobile-components';
-import { ChannelMembersEntity, ChannelsEntity, DirectEntity, EventManagementEntity, NotiChannelCategorySettingEntity, RolesClanEntity } from '@mezon/store-mobile';
-import { ChannelThreads, ICategoryChannel, IChannel, IMessageWithUser, OptionEvent } from '@mezon/utils';
-import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StackScreenProps } from '@react-navigation/stack';
-import { ApiWebhook } from 'mezon-js/api.gen';
+import type { ETypeSearch, ICategoryChannelOption } from '@mezon/mobile-components';
+import type {
+	ChannelMembersEntity,
+	ChannelsEntity,
+	DirectEntity,
+	EventManagementEntity,
+	NotiChannelCategorySettingEntity,
+	RolesClanEntity
+} from '@mezon/store-mobile';
+import type { ChannelThreads, ICategoryChannel, IChannel, IMessageWithUser, OptionEvent } from '@mezon/utils';
+import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { StackScreenProps } from '@react-navigation/stack';
+import type { ApiWebhook } from 'mezon-js/api.gen';
 
 export const APP_SCREEN = {
 	UN_AUTHORIZE: 'UN_AUTHORIZE',
 	LOGIN: 'LOGIN',
 	REGISTER: 'REGISTER',
 	APP_BROWSER: 'APP_BROWSER',
+	VERIFY_OTP: 'VERIFY_OTP',
 
 	AUTHORIZE: 'AUTHORIZE',
 	BOTTOM_BAR: 'BOTTOM_BAR',
@@ -321,6 +329,7 @@ type ChannelAppParamList = {
 export type AppStackParamList = {
 	[APP_SCREEN.UN_AUTHORIZE]: undefined;
 	[APP_SCREEN.LOGIN]: undefined;
+	[APP_SCREEN.VERIFY_OTP]: undefined;
 	[APP_SCREEN.REGISTER]: undefined;
 	[APP_SCREEN.APP_BROWSER]: { url: string; title?: string };
 	[APP_SCREEN.AUTHORIZE]: undefined;

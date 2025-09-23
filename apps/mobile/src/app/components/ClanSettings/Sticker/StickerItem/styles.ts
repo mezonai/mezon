@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { width } from 'libs/mobile-ui/src/lib/themes/Metrics';
 import { StyleSheet } from 'react-native';
 
@@ -19,7 +20,8 @@ export const style = (colors: Attributes) =>
 		flexRow: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_10
+			gap: size.s_10,
+			maxWidth: '50%'
 		},
 		stickerName: {
 			maxWidth: width * 0.3,
@@ -30,7 +32,7 @@ export const style = (colors: Attributes) =>
 		text: {
 			color: colors.borderRadio,
 			fontSize: size.s_12,
-			maxWidth: '75%'
+			maxWidth: '70%'
 		},
 		lightTitle: {
 			color: colors.white,

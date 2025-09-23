@@ -12,24 +12,18 @@ import {
 import { appActions, channelsActions, clansActions, directActions, getFirstMessageOfTopic, getStoreAsync, topicsActions } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import notifee, { AndroidLaunchActivityFlag, AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
+import type { NotificationAndroid } from '@notifee/react-native/src/types/NotificationAndroid';
 import {
 	AndroidBadgeIconType,
 	AndroidCategory,
 	AndroidGroupAlertBehavior,
 	AndroidImportance,
 	AndroidStyle,
-	AndroidVisibility,
-	NotificationAndroid
+	AndroidVisibility
 } from '@notifee/react-native/src/types/NotificationAndroid';
 import { getApp } from '@react-native-firebase/app';
-import {
-	AuthorizationStatus,
-	FirebaseMessagingTypes,
-	getMessaging,
-	getToken,
-	hasPermission,
-	requestPermission
-} from '@react-native-firebase/messaging';
+import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { AuthorizationStatus, getMessaging, getToken, hasPermission, requestPermission } from '@react-native-firebase/messaging';
 import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
@@ -377,7 +371,8 @@ export const handleFCMToken = async (): Promise<string | undefined> => {
 export const isShowNotification = (
 	currentChannelId: string | undefined,
 	currentDmId: string | undefined,
-	remoteMessage: FirebaseMessagingTypes.RemoteMessage
+	remoteMessage: FirebaseMessagingTypes.RemoteMessage,
+	options?: { isViewingChannel?: boolean; isViewingDirectMessage?: boolean }
 ): boolean => {
 	try {
 		if (!validateNotificationData(remoteMessage?.data)) {
@@ -397,14 +392,15 @@ export const isShowNotification = (
 
 		const areOnChannel = currentChannelId === channelMessageId;
 		const areOnDirectMessage = currentDmId === directMessageId;
+		const isViewingChannel = !!options?.isViewingChannel;
+		const isViewingDirectMessage = !!options?.isViewingDirectMessage;
 
-		if (areOnChannel && currentDmId) {
-			return true;
-		}
+		// If currently viewing DM but notification is for a channel the user has open in background
+		if (areOnChannel && currentDmId) return true;
 
-		if ((channelMessageId && areOnChannel) || (directMessageId && areOnDirectMessage)) {
-			return false;
-		}
+		// Suppress only when user is actively on the same destination screen
+		if (channelMessageId && areOnChannel && isViewingChannel) return false;
+		if (directMessageId && areOnDirectMessage && isViewingDirectMessage) return false;
 
 		return true;
 	} catch (error) {

@@ -1,3 +1,4 @@
+import { captureSentryError } from '@mezon/logger';
 import type { IUserAccount, LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -106,8 +107,8 @@ export const addPhoneNumber = createAsyncThunk('account/addPhoneNumber', async (
 
 		return response;
 	} catch (error) {
-		toast.error('Error: Something wrong try later.');
-		throw error;
+		captureSentryError(error, 'account/addPhoneNumber');
+		return thunkAPI.rejectWithValue(error);
 	}
 });
 
@@ -119,8 +120,8 @@ export const verifyPhone = createAsyncThunk('account/verifyPhone', async (data: 
 
 		return response;
 	} catch (error) {
-		toast.error('Error: Something wrong try later.');
-		throw error;
+		captureSentryError(error, 'account/verifyPhone');
+		return thunkAPI.rejectWithValue(error);
 	}
 });
 

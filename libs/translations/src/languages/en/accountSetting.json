@@ -4,6 +4,7 @@
 	"noDisplayName": "You haven't added a display name yet.",
 	"edit": "Edit",
 	"password": "Password",
+	"phoneNumber": "Phone number",
 	"username": "Username",
 	"displayName": "Display Name",
 	"users": "Users",
@@ -14,6 +15,7 @@
 	"accountInformation": "Account Information",
 	"doNotHaveBlockedUser": "You don't have any blocked users",
 	"setPassword": "Set Password",
+	"setPhoneNumber": "Set Phone Number",
 	"disableAccountAlert": {
 		"title": "Disable account",
 		"description": "Are you sure you want to disable your account?",
@@ -30,7 +32,6 @@
 		"title": "Set Password",
 		"email": "Email",
 		"password": "Password",
-		"currentPassword": "Current Password",
 		"confirmPassword": "Confirm Password",
 		"confirm": "Confirm",
 		"description": "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., !@#$%^&*).",
@@ -40,8 +41,7 @@
 			"lowercase": "Password must contain at least 1 lowercase letter",
 			"number": "Password must contain at least 1 number",
 			"symbol": "Password must contain at least 1 special character",
-			"notEqual": "Confirmation password doesn't match",
-			"samePass": "The new password cannot be the same as the old password"
+			"notEqual": "Confirmation password doesn't match"
 		},
 		"notification": "Password set successfully"
 	},
@@ -51,6 +51,23 @@
 		"emailPlaceholder": "your.email@example.com",
 		"loading": "Loading...",
 		"close": "Close"
+	},
+	"setPhoneModal": {
+		"title": "Set Password",
+		"phoneNumber": "Phone Number",
+		"description": "Please create a new password for your account",
+		"emailPlaceholder": "your.email@example.com",
+		"loading": "Loading...",
+		"close": "Close",
+		"sendOTP": "Send OTP",
+		"otp": "Verify your number",
+		"countryCode": "Country code",
+		"confirmOtp": "Confirm OTP",
+		"invalidPhone": "Invalid phone number",
+		"updatePhoneSuccess": "Update phone number success",
+		"updatePhoneFail": "Something's wrong. Try later!",
+		"emptyOtp": "OTP invalid!",
+		"resendOtp": "Resend OTP!"
 	},
 	"toast": {
 		"deleteAccount": {

@@ -4,6 +4,7 @@
 	"noDisplayName": "Bạn chưa thêm tên hiển thị nào.",
 	"edit": "Chỉnh sửa",
 	"password": "Mật khẩu",
+	"phoneNumber": "Số điện thoại",
 	"username": "Tên đăng nhập",
 	"displayName": "Tên hiển thị",
 	"users": "Người dùng",
@@ -14,6 +15,7 @@
 	"accountInformation": "Thông tin tài khoản",
 	"doNotHaveBlockedUser": "Không có người dùng nào bị chặn",
 	"setPassword": "Đặt mật khẩu",
+	"setPhoneNumber": "Đặt số điện thoại",
 	"disableAccountAlert": {
 		"title": "Vô hiệu hoá tài khoản",
 		"description": "Bạn có chắc chắn muốn vô hiệu hoá tài khoản?",
@@ -30,7 +32,6 @@
 		"title": "Đặt mật khẩu",
 		"email": "Email",
 		"password": "Mật khẩu",
-		"currentPassword": "Mật khẩu cũ",
 		"confirmPassword": "Xác nhận mật khẩu",
 		"confirm": "Xác nhận",
 		"description": "Mật khẩu của bạn phải có ít nhất 8 ký tự và bao gồm ít nhất một chữ cái viết hoa, một chữ cái viết thường, một chữ số và một ký tự đặc biệt (ví dụ: !@#$%^&*).",
@@ -40,8 +41,7 @@
 			"lowercase": "Mật khẩu phải chứa ít nhất 1 chữ cái viết thường",
 			"number": "Mật khẩu phải chứa ít nhất 1 chữ số",
 			"symbol": "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt",
-			"notEqual": "Mật khẩu xác nhận không khớp",
-			"samePass": "Mật khẩu mới không thể giống mật khẩu cũ"
+			"notEqual": "Mật khẩu xác nhận không khớp"
 		},
 		"notification": "Đặt mật khẩu thành công"
 	},
@@ -51,6 +51,22 @@
 		"emailPlaceholder": "email.cua.ban@example.com",
 		"loading": "Đang tải...",
 		"close": "Đóng"
+	},
+	"setPhoneModal": {
+		"title": "Đặt số điện thoại",
+		"phoneNumber": "Số điện thoại",
+		"description": "Nhập số điện thoại muốn đặt của ban",
+		"phonePlaceholder": "+84-999...999",
+		"loading": "Loading...",
+		"close": "Close",
+		"sendOTP": "Gửi mã OTP",
+		"countryCode": "Mã quốc gia",
+		"confirmOtp": "Xác nhận mã OTP",
+		"invalidPhone": "Số điện thoại không hợp lệ",
+		"updatePhoneSuccess": "Cập nhật số điện thoại thành công",
+		"updatePhoneFail": "Có lỗi xảy ra. Thử lại sau",
+		"emptyOtp": "Mã OTP không hợp lệ!",
+		"resendOtp": "Gửi lại mã OTP!"
 	},
 	"toast": {
 		"deleteAccount": {

@@ -58,7 +58,7 @@ const FriendsPage = () => {
 	}, []);
 
 	const handleChange = (key: string, value: string) => {
-		const isValidInput = /^[a-zA-Z0-9_.]*$/.test(value);
+		const isValidInput = /^[\p{L}0-9+\-_.]+$/u.test(value);
 
 		setIsInvalidInput(!isValidInput && value !== '');
 

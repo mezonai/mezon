@@ -233,15 +233,26 @@ const ControlBar = ({
 		};
 	}, [stream]);
 
-	const handleOpenScreenSelection = useCallback(() => {
+	const handleOpenScreenSelection = useCallback(async () => {
 		if (isDesktop) {
+			if (typeof document !== 'undefined' && document.fullscreenElement) {
+				try {
+					await document.exitFullscreen();
+				} catch (_e) {
+					void 0;
+				}
+				dispatch(voiceActions.setFullScreen(false));
+			} else if (isFullScreen) {
+				onFullScreen?.();
+			}
+
 			if (!showScreen) {
 				dispatch(voiceActions.setShowSelectScreenModal(true));
 			} else {
 				dispatch(voiceActions.setShowScreen(false));
 			}
 		}
-	}, [isDesktop, openScreenSelection, showScreen]);
+	}, [dispatch, isDesktop, isFullScreen, onFullScreen, showScreen]);
 
 	const onScreenShare = useCallback(
 		async (enabled: boolean, isUserInitiated: boolean) => {

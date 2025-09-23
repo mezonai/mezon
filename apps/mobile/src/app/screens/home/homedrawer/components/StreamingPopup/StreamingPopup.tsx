@@ -1,3 +1,4 @@
+import { size } from '@mezon/mobile-ui';
 import {
 	appActions,
 	selectAllAccount,
@@ -9,10 +10,13 @@ import {
 } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, PanResponder } from 'react-native';
+import { Animated, Dimensions, PanResponder } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
 import StreamingRoom from '../StreamingRoom';
+
+const MINIMIZED_WIDTH = size.s_80 * 2;
+const MINIMIZED_HEIGHT = size.s_100;
 
 const StreamingPopup = () => {
 	const pan = useRef(new Animated.ValueXY()).current;
@@ -25,6 +29,21 @@ const StreamingPopup = () => {
 	const userProfile = useSelector(selectAllAccount);
 	const sessionUser = useSelector(selectSession);
 	const dispatch = useAppDispatch();
+
+	const resetPosition = useCallback(() => {
+		if (!isFullScreen.current) {
+			pan.setValue({ x: 0, y: 0 });
+		}
+	}, [pan]);
+
+	useEffect(() => {
+		const subscription = Dimensions.addEventListener('change', () => {
+			resetPosition();
+		});
+		return () => {
+			subscription && subscription.remove();
+		};
+	}, [resetPosition]);
 
 	const panResponder = useRef(
 		PanResponder.create({
@@ -44,7 +63,19 @@ const StreamingPopup = () => {
 					if (Math.abs(gestureState?.dx) > 10 || Math.abs(gestureState?.dy) > 10) {
 						isDragging.current = true;
 					}
-					Animated.event([null, { dx: pan?.x, dy: pan?.y }], { useNativeDriver: false })(e, gestureState);
+					const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+					const offsetX = (pan?.x as any)?._offset || 0;
+					const offsetY = (pan?.y as any)?._offset || 0;
+
+					const dx = Math.max(-offsetX, Math.min(screenWidth - MINIMIZED_WIDTH - offsetX, gestureState?.dx));
+					const dy = Math.max(-offsetY, Math.min(screenHeight - MINIMIZED_HEIGHT - offsetY, gestureState?.dy));
+
+					Animated.event([null, { dx: pan?.x, dy: pan?.y }], { useNativeDriver: false })(e, {
+						...gestureState,
+						dx,
+						dy
+					});
 				}
 			},
 			onPanResponderRelease: (e, gestureState) => {
@@ -99,7 +130,7 @@ const StreamingPopup = () => {
 			Animated.timing(pan, {
 				toValue: { x: 0, y: 0 },
 				duration: 300,
-				useNativeDriver: false
+				useNativeDriver: true
 			}).start(() => {
 				setIsAnimationComplete(true);
 			});
@@ -108,7 +139,7 @@ const StreamingPopup = () => {
 			Animated.timing(pan, {
 				toValue: { x: 0, y: 0 },
 				duration: 300,
-				useNativeDriver: false
+				useNativeDriver: true
 			}).start(() => {
 				setIsAnimationComplete(false);
 			});
@@ -124,10 +155,12 @@ const StreamingPopup = () => {
 		<Animated.View
 			{...panResponder.panHandlers}
 			style={[
-				pan?.getLayout(),
 				{
-					zIndex: 999999,
-					position: 'absolute'
+					transform: [{ translateX: pan?.x }, { translateY: pan?.y }],
+					zIndex: 99,
+					position: 'absolute',
+					width: isAnimationComplete ? '100%' : MINIMIZED_WIDTH,
+					height: isAnimationComplete ? '100%' : MINIMIZED_HEIGHT
 				}
 			]}
 		>

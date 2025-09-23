@@ -28,7 +28,9 @@ const MainClanIntegrations = ({ setIsOpenClanWebhooks, allClanWebhooks }: IClanI
 						<Icons.WebhooksIcon />
 						<div>
 							<div className="pb-[3px] font-semibold break-all text-theme-primary">{t('clanWebhooks')}</div>
-							<div className="text-[12px] text-theme-primary">{t('webhook', { count: allClanWebhooks?.length || 0 })}</div>
+							<div className="text-[12px] text-theme-primary">
+								{allClanWebhooks?.length ? t('webhook_other', { count: allClanWebhooks?.length }) : t('webhookCount', { count: 0 })}
+							</div>
 						</div>
 					</div>
 

@@ -1,8 +1,8 @@
 import { size } from '@mezon/mobile-ui';
-import { ClanEmoji } from 'mezon-js';
-import { memo, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FlatList, ListRenderItem } from 'react-native';
+import type { ClanEmoji } from 'mezon-js';
+import { memo, useCallback, useRef } from 'react';
+import type { ListRenderItem } from 'react-native';
+import { FlatList } from 'react-native';
 import { EmojiDetail } from '../EmojiDetail';
 
 type EmojiListProps = {
@@ -15,8 +15,7 @@ type ListItem = ClanEmoji | { id: string; clan_id?: string };
 const MemoizedEmojiDetail = memo(EmojiDetail);
 
 export const EmojiList = ({ emojiList, ListHeaderComponent }: EmojiListProps) => {
-	const { t } = useTranslation(['clanEmojiSetting']);
-	const row: Array<any> = [];
+	const row = useRef<{ [key: string]: { close: () => void } }>({}).current;
 	let prevOpenedRow: { close: () => void };
 	const ITEM_HEIGHT = size.s_60;
 

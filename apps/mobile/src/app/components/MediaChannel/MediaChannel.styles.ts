@@ -1,7 +1,8 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { Dimensions, StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (colors: Attributes, widthImage: number) =>
 	StyleSheet.create({
 		container: {
 			width: Dimensions.get('screen').width,
@@ -26,9 +27,34 @@ export const style = (colors: Attributes) =>
 		wrapper: { height: '100%' },
 		contentContainer: {
 			paddingBottom: size.s_50,
-			justifyContent: 'flex-start',
-			alignItems: 'flex-start',
-			paddingHorizontal: size.s_8,
+			justifyContent: 'center',
+			alignItems: 'center',
 			flexGrow: 1
+		},
+		sectionHeader: {
+			padding: size.s_10,
+			backgroundColor: colors.primary,
+			width: Dimensions.get('screen').width
+		},
+		sectionYearHeaderTitle: {
+			color: colors.textStrong,
+			fontSize: 16,
+			fontWeight: '700',
+			marginBottom: size.s_4
+		},
+		sectionDayHeaderTitle: {
+			color: colors.text,
+			fontSize: 14,
+			fontWeight: '600'
+		},
+		rowContainer: {
+			flexDirection: 'row',
+			width: Dimensions.get('screen').width,
+			paddingHorizontal: size.s_8
+		},
+		rowItem: {
+			height: widthImage,
+			width: widthImage,
+			margin: size.s_4
 		}
 	});

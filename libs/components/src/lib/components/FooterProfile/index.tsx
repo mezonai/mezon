@@ -263,9 +263,10 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 				sendTokenInputsState={sendTokenInputsState}
 				infoSendToken={infoSendToken}
 				isButtonDisabled={isButtonDisabled}
+				tokenInWallet={tokenInWallet}
 			/>
 		);
-	}, [token, selectedUserId, note, infoSendToken, isButtonDisabled, sendTokenInputsState, myProfile.userId]);
+	}, [token, selectedUserId, note, infoSendToken, isButtonDisabled, sendTokenInputsState, myProfile.userId, tokenInWallet]);
 
 	useEffect(() => {
 		if (showModalCustomStatus) {

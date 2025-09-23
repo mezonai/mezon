@@ -6,8 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
-import SetPassword from '../Setting Password';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
+import SetPassword from './SettingPassword';
+import SettingPhone from './SettingPhone';
 
 type SettingAccountProps = {
 	onSettingProfile: (value: string) => void;
@@ -53,6 +54,10 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 			/>
 		);
 	}, [isLoadingUpdatePassword, userProfile?.password_setted]);
+
+	const [openSetPhoneModal, closeSetPhoneModal] = useModal(() => {
+		return <SettingPhone onClose={closeSetPhoneModal} />;
+	}, [isLoadingUpdatePassword]);
 
 	const handleOpenSetPassword = () => {
 		openSetPassWordModal();
@@ -131,6 +136,21 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 							data-e2e={generateE2eId(`user_setting.account.set_password`)}
 						>
 							{t('setPassword')}
+						</div>
+					</div>
+				</div>
+
+				<div className="rounded-md bg-theme-setting-primary shadow  m-4 p-4">
+					<div className="flex justify-between items-center">
+						<div>
+							<h4 className="uppercase font-bold text-xs mb-1">{t('phoneNumber')}</h4>
+							<p>{t('phoneNumber')}</p>
+						</div>
+						<div
+							className=" h-fit rounded-lg px-6 py-1 cursor-pointer border-theme-primary bg-theme-input text-theme-primary-hover bg-secondary-button-hover "
+							onClick={openSetPhoneModal}
+						>
+							{t('setPhoneNumber')}
 						</div>
 					</div>
 				</div>
