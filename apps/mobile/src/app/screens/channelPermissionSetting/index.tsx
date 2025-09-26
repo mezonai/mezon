@@ -1,6 +1,6 @@
 import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { selectChannelById, useAppSelector } from '@mezon/store-mobile';
-import { useEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -39,7 +39,7 @@ export const ChannelPermissionSetting = ({ navigation, route }: MenuChannelScree
 		];
 	}, [t]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (

@@ -258,7 +258,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({ navigatio
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} bounces={false} keyboardShouldPersistTaps={'handled'}>
-			<LinearGradient colors={['#ffffff', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
+			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
 			<KeyboardAvoidingView
 				style={{ flex: 1 }}
 				behavior={'padding'}
@@ -272,52 +272,53 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({ navigatio
 						<Text style={styles.emailText}>{email}</Text>
 					</View>
 
-					<View style={styles.inputSection}>
-						{otp.map((digit, index) => (
-							<TextInput
-								key={index}
-								ref={(ref) => (inputRefs.current[index] = ref)}
-								style={[
-									styles.input,
-									digit !== '' ? styles.inputFilled : styles.inputEmpty,
-									index === 0 ? styles.inputFirst : {},
-									isError && styles.inputError
-								]}
-								value={digit}
-								onChangeText={(value) => handleOtpChange(value, index)}
-								onKeyPress={(e) => handleKeyPress(e, index)}
-								keyboardType="number-pad"
-								maxLength={6}
-								autoFocus={index === 0}
-								autoComplete={'sms-otp'}
-								textContentType={'oneTimeCode'}
-								selectTextOnFocus={true}
-							/>
-						))}
+					<View style={{ alignSelf: 'center' }}>
+						<View style={styles.inputSection}>
+							{otp.map((digit, index) => (
+								<TextInput
+									key={index}
+									ref={(ref) => (inputRefs.current[index] = ref)}
+									style={[
+										styles.input,
+										digit !== '' ? styles.inputFilled : styles.inputEmpty,
+										index === 0 ? styles.inputFirst : {},
+										isError && styles.inputError
+									]}
+									value={digit}
+									onChangeText={(value) => handleOtpChange(value, index)}
+									onKeyPress={(e) => handleKeyPress(e, index)}
+									keyboardType="number-pad"
+									maxLength={6}
+									autoFocus={index === 0}
+									// autoComplete={'sms-otp'}
+									// textContentType={'oneTimeCode'}
+									selectTextOnFocus={true}
+								/>
+							))}
+						</View>
+						<TouchableOpacity
+							style={[styles.verifyButton, !isValidOTP && styles.verifyButtonDisabled]}
+							onPress={isResendEnabled ? () => handleResendOTP() : () => handleVerifyOTP(otp?.join?.(''))}
+							disabled={(!isValidOTP && !isResendEnabled) || isLoading}
+						>
+							{isLoading ? (
+								<ActivityIndicator size="small" color="#FFFFFF" style={{ zIndex: 10 }} />
+							) : (
+								<Text style={[styles.verifyButtonText]}>
+									{isResendEnabled ? t('otpVerify.resendOTP') : `${t('otpVerify.verifyOTP')} (${countdown})`}
+								</Text>
+							)}
+
+							{(isValidOTP || isResendEnabled) && (
+								<LinearGradient
+									start={{ x: 0, y: 0 }}
+									end={{ x: 1, y: 0 }}
+									colors={['#501794', '#3E70A1']}
+									style={[StyleSheet.absoluteFillObject]}
+								/>
+							)}
+						</TouchableOpacity>
 					</View>
-
-					<TouchableOpacity
-						style={[styles.verifyButton, !isValidOTP && styles.verifyButtonDisabled]}
-						onPress={isResendEnabled ? () => handleResendOTP() : () => handleVerifyOTP(otp?.join?.(''))}
-						disabled={(!isValidOTP && !isResendEnabled) || isLoading}
-					>
-						{isLoading ? (
-							<ActivityIndicator size="small" color="#FFFFFF" style={{ zIndex: 10 }} />
-						) : (
-							<Text style={[styles.verifyButtonText]}>
-								{isResendEnabled ? t('otpVerify.resendOTP') : `${t('otpVerify.verifyOTP')} (${countdown})`}
-							</Text>
-						)}
-
-						{(isValidOTP || isResendEnabled) && (
-							<LinearGradient
-								start={{ x: 0, y: 0 }}
-								end={{ x: 1, y: 0 }}
-								colors={['#501794', '#3E70A1']}
-								style={[StyleSheet.absoluteFillObject]}
-							/>
-						)}
-					</TouchableOpacity>
 
 					<View style={styles.alternativeSection}>
 						<Text style={styles.alternativeText}>{t('otpVerify.didNotReceiveCode')}</Text>

@@ -18,7 +18,7 @@ import { EPermission, MAX_FILE_SIZE_10MB } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -122,21 +122,6 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		return !(hasAdminPermission || hasManageClanPermission || clanOwnerPermission);
 	}, [clanOwnerPermission, hasAdminPermission, hasManageClanPermission]);
 
-	useEffect(() => {
-		navigation.setOptions({
-			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
-			headerBackTitleVisible: false,
-			headerRight: () => {
-				if (disabled) return <View />;
-				return (
-					<Pressable onPress={handleSave} disabled={loading || !isCheckValid}>
-						<Text style={{ ...styles.headerActionTitle, opacity: loading || !isCheckValid ? 0.5 : 1 }}>{t('header.save')}</Text>
-					</Pressable>
-				);
-			}
-		});
-	}, [navigation, disabled, loading, isCheckValid, styles.headerActionTitle, t]);
-
 	const handleUpdateSystemMessage = async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clan_id && updateSystemMessageRequest) {
 			const cachedMessageUpdate: ApiSystemMessage = {
@@ -222,6 +207,21 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
 	}
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
+			headerBackTitleVisible: false,
+			headerRight: () => {
+				if (disabled) return <View />;
+				return (
+					<Pressable onPress={handleSave} disabled={loading || !isCheckValid}>
+						<Text style={{ ...styles.headerActionTitle, opacity: loading || !isCheckValid ? 0.5 : 1 }}>{t('header.save')}</Text>
+					</Pressable>
+				);
+			}
+		});
+	}, [navigation, disabled, loading, isCheckValid, styles.headerActionTitle, t, handleSave]);
 
 	function handleLoad(url: string) {
 		if (hasAdminPermission || clanOwnerPermission) {

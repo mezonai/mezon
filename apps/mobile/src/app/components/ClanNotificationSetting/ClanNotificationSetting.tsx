@@ -1,7 +1,7 @@
 import { optionNotification } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { defaultNotificationActions, selectCurrentClanId, selectDefaultNotificationClan, useAppDispatch } from '@mezon/store-mobile';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -22,20 +22,16 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { t } = useTranslation(['clanNotificationsSetting']);
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerLeft: () => (
-				<Pressable style={{ padding: 20 }} onPress={handleClose}>
+				<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
 					<MezonIconCDN icon={IconCDN.closeSmallBold} height={20} width={20} color={themeValue.textStrong} />
 				</Pressable>
 			)
 		});
 	}, [navigation, themeValue.textStrong]);
-
-	const handleClose = () => {
-		navigation.goBack();
-	};
 
 	const suppressMenu: IMezonMenuItemProps[] = [
 		{

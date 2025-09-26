@@ -58,7 +58,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		store.dispatch(appActions.setIsShowWelcomeMobile(true));
+		store.dispatch(appActions.setIsShowWelcomeMobile(false));
 		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
 		store.dispatch(appActions.setLoadingMainMobile(false));
 		setLinkRedirectLogout('');

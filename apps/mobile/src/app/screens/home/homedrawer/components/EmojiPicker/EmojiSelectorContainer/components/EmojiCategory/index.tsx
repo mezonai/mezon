@@ -22,6 +22,9 @@ const EmojiCategory: FC<EmojiCategoryProps> = ({ emojisData, categoryName, onEmo
 		setIsExpanded(!isExpanded);
 	};
 
+	if (emojisData?.length === 0) {
+		return null;
+	}
 	return (
 		<View style={styles.displayByCategories}>
 			<TouchableOpacity onPress={toggleExpand} style={styles.categoryHeader}>

@@ -13,7 +13,7 @@ import {
 import { ActionLog, UserAuditLog } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import { MezonapiListAuditLog } from 'mezon-js/api.gen';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -31,7 +31,6 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const [auditLogData, setAuditLogData] = useState<MezonapiListAuditLog>();
-	const filterBSRef = useRef(null);
 	const { dismiss } = useBottomSheetModal();
 	const actionAuditLog = useSelector(selectActionAuditLog);
 	const userAuditLog = useSelector(selectUserAuditLog);
@@ -60,7 +59,43 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 		return actionAuditLog && actionAuditLog !== ActionLog.ALL_ACTION_AUDIT ? actionAuditLog : ActionLog.ALL_ACTION_AUDIT;
 	}, [actionAuditLog]);
 
-	useEffect(() => {
+	const menu = useMemo(
+		() =>
+			[
+				{
+					items: [
+						{
+							title: t('auditLogComponent.filterByUser'),
+							onPress: () => {
+								navigation.navigate(APP_SCREEN.MENU_CLAN.FILTER_BY_USER);
+								dismiss();
+							}
+						},
+						{
+							title: t('auditLogComponent.filterByAction'),
+							onPress: () => {
+								navigation.navigate(APP_SCREEN.MENU_CLAN.FILTER_BY_ACTION);
+								dismiss();
+							}
+						}
+					]
+				}
+			] as IMezonMenuSectionProps[],
+		[dismiss, navigation, t]
+	);
+
+	const handleOnPressFilter = useCallback(() => {
+		const data = {
+			children: (
+				<View style={{ paddingHorizontal: size.s_20 }}>
+					<MezonMenu menu={menu} />
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, [menu]);
+
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: t('auditLogComponent.title'),
@@ -75,7 +110,7 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 				</TouchableOpacity>
 			)
 		});
-	}, []);
+	}, [handleOnPressFilter, navigation, styles, t, themeValue.textStrong]);
 
 	useEffect(() => {
 		return () => {
@@ -111,47 +146,15 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 		if (currentClanId) {
 			fetchAudiLogList();
 		}
-	}, [actionAuditLog, userAuditLog, selectDate]);
+	}, [actionAuditLog, userAuditLog, selectDate, currentClanId]);
 
-	const menu = useMemo(
-		() =>
-			[
-				{
-					items: [
-						{
-							title: t('auditLogComponent.filterByUser'),
-							onPress: () => {
-								navigation.navigate(APP_SCREEN.MENU_CLAN.FILTER_BY_USER);
-								dismiss();
-							}
-						},
-						{
-							title: t('auditLogComponent.filterByAction'),
-							onPress: () => {
-								navigation.navigate(APP_SCREEN.MENU_CLAN.FILTER_BY_ACTION);
-								dismiss();
-							}
-						}
-					]
-				}
-			] as IMezonMenuSectionProps[],
-		[]
+	const handleDatePicked = useCallback(
+		(date) => {
+			setSelectDate(date);
+			dismiss();
+		},
+		[dismiss]
 	);
-	const handleOnPressFilter = () => {
-		const data = {
-			children: (
-				<View style={{ paddingHorizontal: size.s_20 }}>
-					<MezonMenu menu={menu} />
-				</View>
-			)
-		};
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-	};
-
-	const handleDatePicked = useCallback((date) => {
-		setSelectDate(date);
-		dismiss();
-	}, []);
 
 	const renderAditLogItem = ({ item }) => <AuditLogItem data={item} />;
 	return (

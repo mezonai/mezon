@@ -6,7 +6,7 @@ import { LIMIT_SIZE_UPLOAD_IMG } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { Buffer as BufferMobile } from 'buffer';
 import { ApiClanEmojiCreateRequest } from 'mezon-js/api.gen';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, Text, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -31,39 +31,42 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 	const { t } = useTranslation(['clanEmojiSetting']);
 	const emojiList = useAppSelector((state) => selectEmojiByClanId(state, currentClanId || ''));
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerBackTitleVisible: false
 		});
 	}, [navigation]);
 
-	const handleUploadImage = useCallback(async (file: IFile) => {
-		if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 4)) {
-			Toast.show({
-				type: 'error',
-				text1: t('toast.errorSizeLimit')
-			});
-			return;
-		}
+	const handleUploadImage = useCallback(
+		async (file: IFile) => {
+			if (Number(file.size) > Number(LIMIT_SIZE_UPLOAD_IMG / 4)) {
+				Toast.show({
+					type: 'error',
+					text1: t('toast.errorSizeLimit')
+				});
+				return;
+			}
 
-		const session = sessionRef.current;
-		const client = clientRef.current;
-		if (!client || !session) {
-			throw new Error('Client or file is not initialized');
-		}
+			const session = sessionRef.current;
+			const client = clientRef.current;
+			if (!client || !session) {
+				throw new Error('Client or file is not initialized');
+			}
 
-		const arrayBuffer = BufferMobile.from(file?.fileData, 'base64');
+			const arrayBuffer = BufferMobile.from(file?.fileData, 'base64');
 
-		const id = Snowflake.generate();
-		const path = 'emojis/' + id + '.webp';
-		const attachment = await handleUploadEmoticon(client, session, path, file as unknown as File, true, arrayBuffer);
+			const id = Snowflake.generate();
+			const path = `emojis/${id}.webp`;
+			const attachment = await handleUploadEmoticon(client, session, path, file as unknown as File, true, arrayBuffer);
 
-		return {
-			id,
-			url: attachment.url
-		};
-	}, []);
+			return {
+				id,
+				url: attachment.url
+			};
+		},
+		[clientRef, sessionRef, t]
+	);
 
 	const handleAddEmoji = async () => {
 		try {
@@ -124,10 +127,10 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 				type: croppedFile?.mime
 			});
 			const request: ApiClanEmojiCreateRequest = {
-				id: id,
+				id,
 				category: 'Custom',
 				clan_id: currentClanId,
-				shortname: shortname,
+				shortname,
 				source: url,
 				is_for_sale: isForSale
 			};
@@ -142,7 +145,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 
 				const fileData = await RNFS.readFile(pathCompressed?.replace?.('%20', ' ') || '', 'base64');
 				const { id } = await handleUploadImage({
-					fileData: fileData,
+					fileData,
 					name: croppedFile?.filename,
 					uri: croppedFile?.path,
 					size: croppedFile?.size,
@@ -151,7 +154,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 				request.id = id;
 			}
 
-			dispatch(createEmojiSetting({ request: request, clanId: currentClanId }));
+			dispatch(createEmojiSetting({ request, clanId: currentClanId }));
 		} catch (e) {
 			Toast.show({
 				type: 'error',

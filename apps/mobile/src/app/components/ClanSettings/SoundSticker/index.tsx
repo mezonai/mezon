@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { selectAudioByClanId, selectCurrentClanId, useAppSelector } from '@mezon/store-mobile';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, Platform, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ export function SoundBoardSetting({ navigation }: MenuClanScreenProps<ClanSettin
 	const { t } = useTranslation(['clanSoundSetting']);
 	const soundList = useAppSelector((state) => selectAudioByClanId(state, currentClanId));
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerBackTitleVisible: false

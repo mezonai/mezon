@@ -16,7 +16,7 @@ import {
 import { ChannelIsNotThread, MAX_FILE_SIZE_8MB } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ApiWebhook, MezonUpdateClanWebhookByIdBody, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -162,7 +162,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		isClanSetting
 	]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerRight: () =>

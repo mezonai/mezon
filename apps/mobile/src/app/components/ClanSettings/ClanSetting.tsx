@@ -2,7 +2,7 @@ import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
-import { useEffect, useMemo } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, ScrollView, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -29,20 +29,16 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 		return hasAdminPermission || isClanOwner || hasManageClanPermission;
 	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerLeft: () => (
-				<Pressable style={{ padding: 20 }} onPress={handleClose}>
+				<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
 					<MezonIconCDN icon={IconCDN.closeSmallBold} color={themeValue.textStrong} />
 				</Pressable>
 			)
 		});
 	}, [navigation, themeValue.textStrong]);
-
-	function handleClose() {
-		navigation.goBack();
-	}
 
 	const settingsMenu: IMezonMenuItemProps[] = [
 		{

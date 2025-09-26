@@ -36,14 +36,13 @@ export const style = (colors: Attributes) =>
 		},
 		saveButton: {
 			backgroundColor: baseColor.blurple,
-			borderRadius: size.s_100,
-			paddingVertical: size.s_8,
-			paddingHorizontal: size.s_8,
+			borderRadius: size.s_8,
+			paddingVertical: size.s_10,
 			alignItems: 'center',
 			marginTop: size.s_20
 		},
 		saveText: {
-			color: colors.white,
+			color: baseColor.white,
 			fontSize: size.s_14,
 			fontWeight: '600',
 			letterSpacing: 0.5

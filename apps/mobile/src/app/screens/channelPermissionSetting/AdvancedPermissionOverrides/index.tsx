@@ -3,7 +3,7 @@ import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
 import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { permissionRoleChannelActions, selectAllPermissionRoleChannel, selectPermissionChannel, useAppDispatch } from '@mezon/store-mobile';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -37,7 +37,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 		return EOverridePermissionType.Role === type;
 	}, [type]);
 
-	const saveChannelPermission = async () => {
+	const saveChannelPermission = useCallback(async () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		const permissionValueList = channelPermissionList?.reduce((acc, permission) => {
 			const { slug, id } = permission;
@@ -55,7 +55,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			permission: permissionValueList,
 			roleId: isOverrideRole ? id : '',
 			userId: isOverrideRole ? '' : id,
-			clanId: clanId
+			clanId
 		};
 		const response = await dispatch(permissionRoleChannelActions.setPermissionRoleChannel(updatePermissionPayload));
 
@@ -71,7 +71,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 				)
 			}
 		});
-	};
+	}, [channelId, channelPermissionList, clanId, currentChannelPermissionValues, dispatch, id, isOverrideRole, maxPermissionId, t]);
 
 	const handleBack = useCallback(() => {
 		if (isSettingNotChange) {
@@ -92,9 +92,9 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 			)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	}, [navigation, isSettingNotChange]);
+	}, [isSettingNotChange, saveChannelPermission, t, navigation]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
@@ -141,7 +141,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 				);
 			}
 		});
-	}, [isSettingNotChange, navigation, saveChannelPermission, t, themeValue.white]);
+	}, [handleBack, isSettingNotChange, navigation, saveChannelPermission, t, themeValue.bgViolet, themeValue.white]);
 
 	const onPermissionStatusChange = useCallback(
 		(permissionId: string, status: EPermissionStatus) => {

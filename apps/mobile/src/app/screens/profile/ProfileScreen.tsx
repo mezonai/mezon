@@ -288,17 +288,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={styles.buttonListLandscape}>
 					<MezonButton
 						containerStyle={styles.button}
-						onPress={() => {
-							navigation.push(APP_SCREEN.WALLET, {
-								activeScreen: 'manage'
-							});
-						}}
-						icon={<MezonIconCDN icon={IconCDN.wallet} height={size.s_20} width={size.s_20} color={'white'} />}
-						title={t('manageWallet')}
-						titleStyle={styles.whiteText}
-					/>
-					<MezonButton
-						containerStyle={styles.button}
 						onPress={() => navigateToProfileSetting()}
 						icon={<MezonIconCDN icon={IconCDN.pencilIcon} height={size.s_18} width={size.s_18} color={'white'} />}
 						title={t('editStatus')}
@@ -352,17 +341,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					</TouchableOpacity>
 					{!isTabletLandscape && (
 						<View style={styles.buttonList}>
-							<MezonButton
-								containerStyle={styles.button}
-								onPress={() => {
-									navigation.push(APP_SCREEN.WALLET, {
-										activeScreen: 'manage'
-									});
-								}}
-								icon={<MezonIconCDN icon={IconCDN.wallet} height={size.s_20} width={size.s_20} color={'white'} />}
-								title={t('manageWallet')}
-								titleStyle={styles.whiteText}
-							/>
 							<MezonButton
 								containerStyle={styles.button}
 								onPress={() => navigateToProfileSetting()}

@@ -1,4 +1,3 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -13,7 +12,7 @@ import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, ICh
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { ChannelType } from 'mezon-js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -89,7 +88,6 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 
 	const navigation = useNavigation<any>();
 	const [timeMuted, setTimeMuted] = useState('');
-	const bottomSheetRef = useRef<BottomSheetModal>(null);
 	const [isChannel, setIsChannel] = useState<boolean>();
 	const { currentChannel, isCurrentChannel } = route?.params || {};
 	const isDMThread = useMemo(() => {
@@ -100,7 +98,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parent_id));
 	}, [currentChannel]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerShown: true,

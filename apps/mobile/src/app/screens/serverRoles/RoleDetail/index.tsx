@@ -3,7 +3,7 @@ import { ActionEmitEvent, isEqual } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { rolesClanActions, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, DeviceEventEmitter, FlatList, Keyboard, Platform, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -53,6 +53,29 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 		return clanRole?.slug === `everyone-${clanRole?.clan_id}`;
 	}, [clanRole?.clan_id, clanRole.slug]);
 
+	const handleSave = useCallback(async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		const response = await updateRole(clanRole.clan_id, clanRole.id, currentRoleName, clanRole?.color || '', [], [], [], []);
+		if (response) {
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('roleDetail.changesSaved'),
+					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
+				}
+			});
+			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
+		} else {
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: t('failed'),
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
+				}
+			});
+		}
+	}, [clanRole.clan_id, clanRole?.color, clanRole.id, currentRoleName, navigation, t, updateRole]);
+
 	const handleBack = useCallback(() => {
 		if (isNotChange) {
 			navigation?.goBack();
@@ -70,9 +93,9 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 			)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	}, [isNotChange, navigation, currentRoleName]);
+	}, [isNotChange, t, navigation, handleSave]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
@@ -101,30 +124,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 				);
 			}
 		});
-	}, [clanRole?.title, isNotChange, navigation, t, themeValue?.text, themeValue.white, currentRoleName]);
-
-	const handleSave = useCallback(async () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-		const response = await updateRole(clanRole.clan_id, clanRole.id, currentRoleName, clanRole?.color || '', [], [], [], []);
-		if (response) {
-			Toast.show({
-				type: 'success',
-				props: {
-					text2: t('roleDetail.changesSaved'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-				}
-			});
-			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
-		} else {
-			Toast.show({
-				type: 'success',
-				props: {
-					text2: t('failed'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
-				}
-			});
-		}
-	}, [clanRole.clan_id, clanRole?.color, clanRole.id, currentRoleName, navigation, t, updateRole]);
+	}, [clanRole?.title, isNotChange, navigation, t, themeValue.text, themeValue.white, currentRoleName, styles, handleSave, handleBack]);
 
 	const deleteRole = async () => {
 		Alert.alert('Delete Role', 'Are you sure you want to delete this role?', [

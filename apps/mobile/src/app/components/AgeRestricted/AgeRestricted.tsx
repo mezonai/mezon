@@ -40,7 +40,7 @@ const AgeRestricted = ({ onClose }: { onClose: () => void }) => {
 			</View>
 			<View>
 				<Text style={styles.title}>{t('title')}</Text>
-				<Text style={styles.description}>{t('des')}</Text>
+				<Text style={styles.description}>{t('description')}</Text>
 			</View>
 			<View style={{ marginTop: size.s_20, flexDirection: 'row', justifyContent: 'center', gap: size.s_30 }}>
 				<TouchableOpacity style={styles.buttonNope} onPress={handleNode}>

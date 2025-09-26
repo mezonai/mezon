@@ -1,7 +1,7 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
-import { useEffect, useState } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -20,8 +20,20 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { t } = useTranslation(['categoryCreator']);
+	const handleCreateCategory = useCallback(async () => {
+		if (!validInput(categoryName)) return;
 
-	useEffect(() => {
+		const body: ApiCreateCategoryDescRequest = {
+			clan_id: currentClanId?.toString(),
+			category_name: categoryName?.trim()
+		};
+		await dispatch(categoriesActions.createNewCategory(body));
+		setCategoryName('');
+
+		navigation.navigate(APP_SCREEN.HOME);
+	}, [categoryName, currentClanId, dispatch, navigation]);
+
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerRight: () => (
@@ -41,29 +53,12 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 			),
 
 			headerLeft: () => (
-				<Pressable style={{ padding: 20 }} onPress={handleClose}>
+				<Pressable style={{ padding: 20 }} onPress={() => navigation.goBack()}>
 					<MezonIconCDN icon={IconCDN.closeSmallBold} height={size.s_20} width={size.s_20} color={themeValue.text} />
 				</Pressable>
 			)
 		});
-	}, [navigation, categoryName, t, themeValue.text]);
-
-	const handleCreateCategory = async () => {
-		if (!validInput(categoryName)) return;
-
-		const body: ApiCreateCategoryDescRequest = {
-			clan_id: currentClanId?.toString(),
-			category_name: categoryName?.trim()
-		};
-		await dispatch(categoriesActions.createNewCategory(body));
-		setCategoryName('');
-
-		navigation.navigate(APP_SCREEN.HOME);
-	};
-
-	function handleClose() {
-		navigation.goBack();
-	}
+	}, [navigation, categoryName, t, themeValue.text, handleCreateCategory]);
 
 	return (
 		<View style={styles.container}>

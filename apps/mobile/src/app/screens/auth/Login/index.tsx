@@ -43,7 +43,7 @@ const LoginScreen = ({ navigation }) => {
 	const { clientRef } = useMezon();
 	const isEmailValid = isValidEmail(email);
 	const isPhoneValid = isValidPhone(phone);
-	const isPasswordValid = password.length >= 8;
+	const isPasswordValid = password.length >= 1;
 	const isFormValid = loginMode === 'otp' ? isEmailValid : loginMode === 'sms' ? isPhoneValid : isEmailValid && isPasswordValid;
 
 	const clearBadgeCount = () => {
@@ -256,7 +256,7 @@ const LoginScreen = ({ navigation }) => {
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} bounces={false} keyboardShouldPersistTaps={'handled'}>
-			<LinearGradient colors={['#ffffff', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
+			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
 
 			<KeyboardAvoidingView
 				style={{ flex: 1 }}

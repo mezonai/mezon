@@ -12,7 +12,7 @@ import {
 import { ChannelStatusEnum, OptionEvent } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, Platform, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -40,7 +40,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const currentEvent = useAppSelector((state) => selectEventById(state, currentClanId ?? '', eventId ?? ''));
 	const currentEventChannel = useSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : ''));
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: t('screens.eventType.headerTitle'),
@@ -50,17 +50,18 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 			},
 			headerLeft: () => <View />,
 			headerRight: () => (
-				<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
+				<TouchableOpacity
+					style={{ marginRight: 20 }}
+					onPress={() => {
+						onGoBack?.();
+						navigation.navigate(APP_SCREEN.HOME);
+					}}
+				>
 					<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 				</TouchableOpacity>
 			)
 		});
-	}, [navigation, t, themeValue.textDisabled, themeValue.textStrong]);
-
-	function handleClose() {
-		onGoBack?.();
-		navigation.navigate(APP_SCREEN.HOME);
-	}
+	}, [navigation, onGoBack, t, themeValue.textDisabled, themeValue.textStrong]);
 
 	useEffect(() => {
 		return onGoBack?.();

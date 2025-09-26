@@ -2,7 +2,7 @@ import { usePermissionChecker } from '@mezon/core';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { RolesClanEntity, selectAllRolesClan } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
-import { useEffect, useMemo } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -33,7 +33,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 		return rolesClan?.find((role) => role?.slug === `everyone-${role?.clan_id}`);
 	}, [rolesClan]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerRight: () => (
@@ -42,7 +42,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				</Pressable>
 			)
 		});
-	}, [navigation, t, themeValue.textStrong]);
+	}, [navigation, styles, t, themeValue.textStrong]);
 
 	const navigateToRoleEveryone = () => {
 		navigation.navigate(APP_SCREEN.MENU_CLAN.SETUP_PERMISSIONS, { roleId: everyoneRole?.id });

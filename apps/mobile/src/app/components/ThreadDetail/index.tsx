@@ -11,7 +11,7 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { LIMIT, checkIsThread } from '@mezon/utils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -92,19 +92,6 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 		fetchThreads(page);
 	}, [fetchThreads, page]);
 
-	useEffect(() => {
-		navigation.setOptions({
-			headerShown: true,
-			headerTitle: t('threads'),
-			headerTitleAlign: 'center',
-			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
-			headerStyle: {
-				backgroundColor: themeValue.primary
-			},
-			headerRight: () => <ThreadAddButton onPress={handleNavigateCreateForm} />
-		});
-	}, []);
-
 	const handleNavigateCreateForm = useCallback(() => {
 		dispatch(threadsActions.setOpenThreadMessageState(false));
 		setValueThread(null);
@@ -115,6 +102,19 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 			}
 		});
 	}, [channelThreads, dispatch, navigation, setValueThread]);
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerShown: true,
+			headerTitle: t('threads'),
+			headerTitleAlign: 'center',
+			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
+			headerStyle: {
+				backgroundColor: themeValue.primary
+			},
+			headerRight: () => <ThreadAddButton onPress={handleNavigateCreateForm} />
+		});
+	}, [handleNavigateCreateForm, navigation, t, themeValue.primary]);
 
 	const debouncedSetSearchText = useCallback(
 		(value) => {

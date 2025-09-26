@@ -1,7 +1,7 @@
 import { size } from '@mezon/mobile-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -25,10 +25,10 @@ const WelcomeScreen = ({ navigation }) => {
 				alignItems: 'center',
 				paddingTop: size.s_40,
 				paddingHorizontal: size.s_20,
-				paddingBottom: size.s_50
+				paddingBottom: Platform.OS === 'android' ? size.s_20 : size.s_50
 			}}
 		>
-			<LinearGradient colors={['#ffffff', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
+			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
 			<View />
 			<View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}>
 				<Text style={styles.title}>{t('login.welcomeToMezon')}</Text>

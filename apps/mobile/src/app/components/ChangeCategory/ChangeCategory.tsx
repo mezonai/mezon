@@ -1,7 +1,7 @@
 import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
 import { CategoriesEntity, channelsActions, getStore, selectAllCategories, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
-import { useEffect, useMemo } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -73,7 +73,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 		}
 	];
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (

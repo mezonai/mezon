@@ -5,7 +5,6 @@ export const style = () =>
 	StyleSheet.create({
 		container: {
 			flex: 1,
-			paddingHorizontal: size.s_16,
 			backgroundColor: '#ffffff'
 		},
 		content: {
@@ -37,11 +36,12 @@ export const style = () =>
 		},
 		inputSection: {
 			marginBottom: size.s_24,
-			width: '100%',
-			gap: size.s_4,
+			gap: size.s_8,
 			flexDirection: 'row',
-			justifyContent: 'space-between',
-			alignItems: 'center'
+			flexWrap: 'wrap',
+			alignSelf: 'center',
+			alignItems: 'center',
+			justifyContent: 'center'
 		},
 		otpInput: {
 			width: '100%',
@@ -58,7 +58,6 @@ export const style = () =>
 			color: '#6b7280'
 		},
 		verifyButton: {
-			width: '100%',
 			height: size.s_50,
 			borderRadius: size.s_10,
 			justifyContent: 'center',

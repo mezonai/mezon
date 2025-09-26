@@ -2,7 +2,7 @@ import { useAuth, useClans, useEventManagement } from '@mezon/core';
 import { Fonts, useTheme } from '@mezon/mobile-ui';
 import { eventManagementActions, useAppDispatch } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton';
@@ -24,7 +24,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 		route.params || {};
 	const dispatch = useAppDispatch();
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: t('screens.eventPreview.headerTitle'),
@@ -38,17 +38,18 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				</TouchableOpacity>
 			),
 			headerRight: () => (
-				<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
+				<TouchableOpacity
+					style={{ marginRight: 20 }}
+					onPress={() => {
+						onGoBack?.();
+						navigation.navigate(APP_SCREEN.HOME);
+					}}
+				>
 					<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 				</TouchableOpacity>
 			)
 		});
-	}, [navigation, t, themeValue.textDisabled, themeValue.textStrong]);
-
-	function handleClose() {
-		onGoBack?.();
-		navigation.navigate(APP_SCREEN.HOME);
-	}
+	}, [navigation, onGoBack, t, themeValue.textDisabled, themeValue.textStrong]);
 
 	async function handleCreate() {
 		const timeValueStart = startTime.toISOString();

@@ -2,7 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { directActions, useAppDispatch } from '@mezon/store-mobile';
 import { MAX_FILE_SIZE_8MB, ValidateSpecialCharacters } from '@mezon/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -61,8 +61,18 @@ const CustomGroupDm = ({ dmGroupId, channelLabel, currentAvatar }: { dmGroupId: 
 		if (hasNameChanged) payload.channel_label = trimmedName;
 		if (hasImageChanged) payload.topic = avatarUrl;
 
-		await dispatch(directActions.updateDmGroup(payload));
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		const resp = await dispatch(directActions.updateDmGroup(payload));
+		if (resp?.meta?.requestStatus === 'fulfilled') {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		} else {
+			Toast.show({
+				type: 'success',
+				props: {
+					text2: 'Update group failed',
+					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.red} />
+				}
+			});
+		}
 	};
 
 	const onPressSaveGroup = () => {

@@ -168,7 +168,11 @@ const BottomSheetRootListener = () => {
 			onChange={handleSheetPositionChange}
 		>
 			{renderHeader()}
-			{children && <BottomSheetScrollView bounces={false}>{children}</BottomSheetScrollView>}
+			{children && (
+				<BottomSheetScrollView bounces={false} keyboardShouldPersistTaps={'handled'}>
+					{children}
+				</BottomSheetScrollView>
+			)}
 		</OriginalBottomSheet>
 	);
 };

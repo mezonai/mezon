@@ -17,7 +17,7 @@ import {
 } from '@mezon/store-mobile';
 import { EOverriddenPermission, EPermission, checkIsThread } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -76,40 +76,10 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		dispatch(fetchSystemMessageByClanId({ clanId: channel?.clan_id }));
 	}, []);
 
-	useEffect(() => {
-		navigation.setOptions({
-			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
-			headerTitle: isChannel ? t1('menuChannelStack.channelSetting') : t1('menuChannelStack.threadSetting'),
-			headerRight: () => (
-				<Pressable onPress={() => handleSaveChannelSetting()}>
-					<Text style={[styles.saveChangeButton, !isNotChanged ? styles.changed : styles.notChange]}>{t('confirm.save')}</Text>
-				</Pressable>
-			)
-		});
-	}, [navigation, isNotChanged, styles.saveChangeButton, styles.changed, styles.notChange, t, isChannel, t1]);
-
-	const handleUpdateValue = (value: Partial<IChannelSettingValue>) => {
-		setCurrentSettingValue({ ...currentSettingValue, ...value });
-	};
-
-	useEffect(() => {
-		if (channel?.channel_id) {
-			const initialChannelSettingValue: IChannelSettingValue = {
-				channelName: channel?.channel_label,
-				channelTopic: ''
-			};
-			setOriginSettingValue(initialChannelSettingValue);
-			setCurrentSettingValue(initialChannelSettingValue);
-		}
-	}, [channel]);
-
-	useEffect(() => {
-		setIsCheckValid(validInput(currentSettingValue?.channelName));
-	}, [currentSettingValue?.channelName]);
-
-	const handleSaveChannelSetting = async () => {
+	const handleSaveChannelSetting = useCallback(async () => {
 		const isCheckNameChannelValue =
-			!!channelsClan?.length && channelsClan?.some((channel) => channel?.channel_id !== channelId && channel?.channel_label === currentSettingValue?.channelName);
+			!!channelsClan?.length &&
+			channelsClan?.some((channel) => channel?.channel_id !== channelId && channel?.channel_label === currentSettingValue?.channelName);
 		setIsCheckDuplicateNameChannel(isCheckNameChannelValue);
 		const updateChannel = {
 			clan_id: channel?.clan_id,
@@ -120,7 +90,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			app_id: channel?.app_id || '',
 			age_restricted: channel?.age_restricted,
 			e2ee: channel?.e2ee,
-			topic: channel?.topic,
+			topic: currentSettingValue?.channelTopic || channel?.topic,
 			parent_id: channel?.parent_id,
 			channel_private: channel?.channel_private
 		};
@@ -134,7 +104,38 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 			}
 		});
+	}, [channel, channelId, channelsClan, currentSettingValue?.channelName, dispatch, isCheckValid, navigation, t]);
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
+			headerTitle: isChannel ? t1('menuChannelStack.channelSetting') : t1('menuChannelStack.threadSetting'),
+			headerRight: () => (
+				<Pressable onPress={() => handleSaveChannelSetting()}>
+					<Text style={[styles.saveChangeButton, !isNotChanged ? styles.changed : styles.notChange]}>{t('confirm.save')}</Text>
+				</Pressable>
+			)
+		});
+	}, [navigation, isNotChanged, styles, t, isChannel, t1, handleSaveChannelSetting]);
+
+	const handleUpdateValue = (value: Partial<IChannelSettingValue>) => {
+		setCurrentSettingValue({ ...currentSettingValue, ...value });
 	};
+
+	useEffect(() => {
+		if (channel?.channel_id) {
+			const initialChannelSettingValue: IChannelSettingValue = {
+				channelName: channel?.channel_label,
+				channelTopic: channel?.topic || ''
+			};
+			setOriginSettingValue(initialChannelSettingValue);
+			setCurrentSettingValue(initialChannelSettingValue);
+		}
+	}, [channel]);
+
+	useEffect(() => {
+		setIsCheckValid(validInput(currentSettingValue?.channelName));
+	}, [currentSettingValue?.channelName]);
 
 	const permissionMenu = useMemo(
 		() =>

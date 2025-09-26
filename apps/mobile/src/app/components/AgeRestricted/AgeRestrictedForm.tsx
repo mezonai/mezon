@@ -34,7 +34,7 @@ const AgeRestrictedForm = ({ onClose }: { onClose: () => void }) => {
 		onClose();
 	};
 	return (
-		<View style={{ backgroundColor: themeValue.secondary, borderRadius: size.s_10, padding: size.s_20 }}>
+		<View style={{ backgroundColor: themeValue.primary, borderRadius: size.s_10, padding: size.s_20, margin: size.s_10 }}>
 			<View>
 				<Text style={styles.title}>{t('ageRestrictedForm.title')}</Text>
 				<Text style={styles.description}>{t('ageRestrictedForm.description')}</Text>

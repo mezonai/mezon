@@ -1,7 +1,7 @@
 import { ActionEmitEvent, getDayName, getDayWeekName, getDayYearName, getNearTime } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { ERepeatType, MAX_FILE_SIZE_1MB, OptionEvent } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton';
@@ -24,7 +24,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	const language = useMemo(() => (i18n.language === 'vi' ? 'vi' : 'en'), [i18n]);
 	const today = new Date();
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: t('screens.eventDetails.headerTitle'),
@@ -38,17 +38,18 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 				</TouchableOpacity>
 			),
 			headerRight: () => (
-				<TouchableOpacity style={{ marginRight: 20 }} onPress={handleClose}>
+				<TouchableOpacity
+					style={{ marginRight: 20 }}
+					onPress={() => {
+						onGoBack?.();
+						navigation.navigate(APP_SCREEN.HOME);
+					}}
+				>
 					<MezonIconCDN icon={IconCDN.closeLargeIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 				</TouchableOpacity>
 			)
 		});
-	}, [navigation, t, themeValue.textDisabled, themeValue.textStrong]);
-
-	function handleClose() {
-		onGoBack?.();
-		navigation.navigate(APP_SCREEN.HOME);
-	}
+	}, [navigation, onGoBack, t, themeValue.textDisabled, themeValue.textStrong]);
 
 	const currentStartDate = currentEvent?.start_time ? new Date(currentEvent?.start_time) : undefined;
 	const currentEndDate = currentEvent?.end_time ? new Date(currentEvent?.end_time) : undefined;

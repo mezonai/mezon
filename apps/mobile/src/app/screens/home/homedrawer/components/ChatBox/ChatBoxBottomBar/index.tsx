@@ -111,6 +111,8 @@ interface IFile {
 	size: number | string;
 	fileData: any;
 }
+const DOUBLE_TAP_DELAY = 1000;
+const LONG_PRESS_DELAY = 300;
 
 export const ChatBoxBottomBar = memo(
 	({
@@ -140,6 +142,7 @@ export const ChatBoxBottomBar = memo(
 			id: '',
 			display: ''
 		});
+		const [isShowOptionPaste, setIsShowOptionPaste] = useState(false);
 		const anonymousMode = useSelector(selectAnonymousMode);
 
 		const inputRef = useRef<TextInput>(null);
@@ -150,6 +153,10 @@ export const ChatBoxBottomBar = memo(
 		const mentionsOnMessage = useRef<IMentionOnMessage[]>([]);
 		const hashtagsOnMessage = useRef<IHashtagOnMessage[]>([]);
 		const chatMessageLeftAreaRef = useRef<IChatMessageLeftAreaRef>(null);
+		const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+		const isLongPressed = useRef(false);
+		const isDoublePressed = useRef(false);
+		const lastTap = useRef<number>(0);
 
 		const inputTriggersConfig = useMemo(() => {
 			const isDM = [ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
@@ -577,15 +584,15 @@ export const ChatBoxBottomBar = memo(
 			}
 		};
 
-		const handleInputFocus = async () => {
+		const handleInputFocus = useCallback(async () => {
 			setModeKeyBoardBottomSheet('text');
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 				isShow: false,
 				mode: ''
 			});
-		};
+		}, []);
 
-		const handleInputBlur = () => {
+		const handleInputBlur = useCallback(() => {
 			chatMessageLeftAreaRef.current?.setAttachControlVisibility(false);
 			setIsShowOptionPaste(false);
 			if (modeKeyBoardBottomSheet === 'text') {
@@ -594,7 +601,7 @@ export const ChatBoxBottomBar = memo(
 					mode: ''
 				});
 			}
-		};
+		}, []);
 
 		const cancelEphemeralMode = useCallback(() => {
 			setIsEphemeralMode(false);
@@ -639,60 +646,7 @@ export const ChatBoxBottomBar = memo(
 			};
 		}, [channelId, handleEventAfterEmojiPicked, topicChannelId]);
 
-		const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-		const isLongPressed = useRef(false);
-		const isDoublePressed = useRef(false);
-		const [isShowOptionPaste, setIsShowOptionPaste] = useState(false);
-		const lastTap = useRef<number>(0);
-		const DOUBLE_TAP_DELAY = 1000;
-		const LONG_PRESS_DELAY = 400;
-
-		const handlePressIn = () => {
-			isLongPressed.current = false;
-			const now = Date.now();
-
-			if (now - lastTap.current < DOUBLE_TAP_DELAY && Platform.OS === 'ios') {
-				isDoublePressed.current = true;
-				lastTap.current = 0;
-			}
-
-			longPressTimer.current = setTimeout(() => {
-				isLongPressed.current = true;
-				onLongPress();
-			}, LONG_PRESS_DELAY);
-		};
-
-		const handlePressOut = () => {
-			if (longPressTimer.current) {
-				clearTimeout(longPressTimer.current);
-				longPressTimer.current = null;
-			}
-
-			if (!isLongPressed.current) {
-				onRegularPress();
-			}
-
-			if (isDoublePressed.current) {
-				handleDoubleTap();
-				isDoublePressed.current = false;
-				lastTap.current = 0;
-			} else {
-				lastTap.current = Date.now();
-			}
-
-			isLongPressed.current = false;
-		};
-
-		const onLongPress = async () => {
-			const isHasImage = await checkClipboardForImage();
-			setIsShowOptionPaste(isHasImage);
-		};
-
-		const onRegularPress = () => {
-			setIsShowOptionPaste(false);
-		};
-
-		const checkClipboardForImage = async (): Promise<boolean> => {
+		const checkClipboardForImage = useCallback(async (): Promise<boolean> => {
 			try {
 				if (Platform.OS === 'ios') {
 					const isHasImage = await Clipboard.hasImage();
@@ -717,9 +671,29 @@ export const ChatBoxBottomBar = memo(
 				console.error('Error checking clipboard for images:', error);
 				return false;
 			}
-		};
+		}, []);
 
-		const handleDoubleTap = async () => {
+		const onLongPress = useCallback(async () => {
+			const isHasImage = await checkClipboardForImage();
+			setIsShowOptionPaste(isHasImage);
+		}, [checkClipboardForImage]);
+
+		const handlePressIn = useCallback(() => {
+			isLongPressed.current = false;
+			const now = Date.now();
+
+			if (now - lastTap.current < DOUBLE_TAP_DELAY && Platform.OS === 'ios') {
+				isDoublePressed.current = true;
+				lastTap.current = 0;
+			}
+
+			longPressTimer.current = setTimeout(() => {
+				isLongPressed.current = true;
+				onLongPress();
+			}, LONG_PRESS_DELAY);
+		}, [onLongPress]);
+
+		const handleDoubleTap = useCallback(async () => {
 			try {
 				const hasImage = await checkClipboardForImage();
 				if (hasImage && Platform.OS === 'ios') {
@@ -728,7 +702,32 @@ export const ChatBoxBottomBar = memo(
 			} catch (error) {
 				console.error('Error handling double tap:', error);
 			}
-		};
+		}, [checkClipboardForImage]);
+
+		const onRegularPress = useCallback(() => {
+			setIsShowOptionPaste(false);
+		}, []);
+
+		const handlePressOut = useCallback(() => {
+			if (longPressTimer.current) {
+				clearTimeout(longPressTimer.current);
+				longPressTimer.current = null;
+			}
+
+			if (!isLongPressed.current) {
+				onRegularPress();
+			}
+
+			if (isDoublePressed.current) {
+				handleDoubleTap();
+				isDoublePressed.current = false;
+				lastTap.current = 0;
+			} else {
+				lastTap.current = Date.now();
+			}
+
+			isLongPressed.current = false;
+		}, [handleDoubleTap, onRegularPress]);
 
 		return (
 			<View style={styles.container}>

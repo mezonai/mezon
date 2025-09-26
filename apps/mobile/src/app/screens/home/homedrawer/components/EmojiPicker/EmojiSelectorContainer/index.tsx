@@ -31,6 +31,7 @@ export default function EmojiSelectorContainer({
 }: EmojiSelectorContainerProps) {
 	const store = getStore();
 	const { categoryEmoji, categoriesEmoji, emojis } = useEmojiSuggestionContext();
+	console.log("log => categoryEmoji: ", categoryEmoji);
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue);
 	const [emojisSearch, setEmojiSearch] = useState<IEmoji[]>();
@@ -167,7 +168,7 @@ export default function EmojiSelectorContainer({
 		return (
 			<View style={{ backgroundColor: themeValue.primary }}>
 				<View style={styles.textInputWrapper}>
-					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={18} width={18} color={themeValue.text} />
+					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					<TextInput
 						onFocus={handleBottomSheetExpand}
 						placeholder={t('findThePerfectReaction')}

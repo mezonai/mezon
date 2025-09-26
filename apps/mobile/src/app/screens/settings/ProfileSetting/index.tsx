@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { RouteProp } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -50,7 +50,17 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 		if (profileTab >= 0) setTab(profileTab);
 	}, []);
 
-	useEffect(() => {
+	const saveCurrentTab = useCallback(() => {
+		if (tab === EProfileTab.UserProfile) {
+			userProfileRef?.current?.triggerSave?.();
+		}
+
+		if (tab === EProfileTab.ClanProfile) {
+			clanProfileRef?.current?.triggerSave?.();
+		}
+	}, [tab]);
+
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerRight: () => (
@@ -64,20 +74,10 @@ export const ProfileSetting = ({ navigation, route }: { navigation: any; route: 
 				</TouchableOpacity>
 			)
 		});
-	}, [navigation, styles.backArrow, styles.changed, styles.saveChangeButton, t, themeValue.text]);
+	}, [navigation, saveCurrentTab, styles.backArrow, styles.changed, styles.saveChangeButton, t, themeValue.text]);
 
 	const handleTabChange = (index: number) => {
 		setTab(index);
-	};
-
-	const saveCurrentTab = () => {
-		if (tab === EProfileTab.UserProfile) {
-			userProfileRef?.current?.triggerSave?.();
-		}
-
-		if (tab === EProfileTab.ClanProfile) {
-			clanProfileRef?.current?.triggerSave?.();
-		}
 	};
 
 	return (

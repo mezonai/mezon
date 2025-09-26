@@ -35,7 +35,7 @@ export const style = (colors: Attributes) =>
 		},
 		btnText: {
 			fontSize: size.s_16,
-			color: colors.text,
+			color: 'white',
 			textAlign: 'center',
 			fontWeight: 'bold'
 		},

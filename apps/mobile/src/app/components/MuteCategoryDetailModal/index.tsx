@@ -1,10 +1,16 @@
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { defaultNotificationCategoryActions, selectCurrentClanId, selectDefaultNotificationCategory, useAppDispatch } from '@mezon/store-mobile';
+import {
+	defaultNotificationCategoryActions,
+	selectCurrentClanId,
+	selectDefaultNotificationCategory,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, ICategoryChannel } from '@mezon/utils';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -81,7 +87,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const [timeMuted, setTimeMuted] = useState('');
 	const { currentCategory } = route?.params || {};
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerShown: true,
@@ -98,7 +104,9 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		});
 	}, [currentCategory.category_name, navigation, t, themeValue.text, themeValue.textStrong]);
 
-	const defaultCategoryNotificationSetting = useSelector(selectDefaultNotificationCategory);
+	const defaultCategoryNotificationSetting = useAppSelector((state) =>
+		selectDefaultNotificationCategory(state, currentCategory?.category_id as string)
+	);
 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
