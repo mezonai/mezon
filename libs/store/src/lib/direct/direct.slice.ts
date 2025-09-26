@@ -692,8 +692,11 @@ export const directSlice = createSlice({
 				}
 			}
 		},
-		updateMenberDMGroup: (state, action: PayloadAction<{ dmId: string; user_id: string; avatar: string; display_name: string }>) => {
-			const { dmId, user_id, avatar, display_name } = action.payload;
+		updateMenberDMGroup: (
+			state,
+			action: PayloadAction<{ dmId: string; user_id: string; avatar: string; display_name: string; about_me?: string }>
+		) => {
+			const { dmId, user_id, avatar, display_name, about_me } = action.payload;
 			const dmGroup = state.entities?.[dmId];
 
 			if (!dmGroup || !user_id) return;
@@ -710,6 +713,9 @@ export const directSlice = createSlice({
 					dmGroup.channel_label = labels.join(',');
 				}
 				dmGroup.display_names[index] = display_name;
+			}
+			if (about_me && dmGroup.about_me) {
+				dmGroup.about_me[index] = about_me;
 			}
 		},
 		setDmActiveStatus: (state, action: PayloadAction<{ dmId: string; isActive: boolean }>) => {

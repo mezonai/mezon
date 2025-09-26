@@ -64,7 +64,9 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 
 				<div className="flex flex-col font-medium">
 					<ClanUserName userId={user?.id} name={username} isOwner={!!isOwner} />
-					<p className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 ">{userStatus}</p>
+					<p className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px] ">
+						{userStatus}
+					</p>
 				</div>
 			</div>
 		</div>

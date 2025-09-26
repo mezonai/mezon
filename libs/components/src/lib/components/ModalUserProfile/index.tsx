@@ -272,7 +272,10 @@ const ModalUserProfile = ({
 					{checkAddFriend === EStateFriend.MY_PENDING && !showPopupLeft && <PendingFriend user={userById as ChannelMembersEntity} />}
 
 					{mode !== 4 && mode !== 3 && !isFooterProfile && (
-						<UserDescription title={t(`labels.${ETileDetail.AboutMe}`)} detail={userById?.user?.about_me as string} />
+						<UserDescription
+							title={t(`labels.${ETileDetail.AboutMe}`)}
+							detail={checkUser ? (userProfile?.user?.about_me as string) : (userById?.user?.about_me as string)}
+						/>
 					)}
 					{mode !== 4 && mode !== 3 && !isFooterProfile && (
 						<UserDescription title={t(`labels.${ETileDetail.MemberSince}`)} detail={timeFormatted} />

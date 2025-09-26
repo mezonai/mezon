@@ -395,7 +395,7 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				// thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
+				thunkAPI.dispatch(accountActions.getUserProfile());
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,

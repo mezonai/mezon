@@ -1416,12 +1416,23 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			if (userUpdated.user_id === userId) {
 				dispatch(accountActions.setUpdateAccount({ encrypt_private_key: userUpdated?.encrypt_private_key }));
 			} else {
+				if (userUpdated.channel_id) {
+					dispatch(
+						directActions.updateMenberDMGroup({
+							dmId: userUpdated.channel_id,
+							user_id: userUpdated.user_id,
+							avatar: userUpdated.avatar,
+							display_name: userUpdated.display_name,
+							about_me: userUpdated.about_me
+						})
+					);
+				}
 				dispatch(
-					directActions.updateMenberDMGroup({
-						dmId: userUpdated.channel_id,
-						user_id: userUpdated.user_id,
+					usersClanActions.updateUserProfileAcrossClans({
+						userId: userUpdated.user_id,
 						avatar: userUpdated.avatar,
-						display_name: userUpdated.display_name
+						display_name: userUpdated.display_name,
+						about_me: userUpdated.about_me
 					})
 				);
 			}
@@ -2478,3 +2489,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider };
+

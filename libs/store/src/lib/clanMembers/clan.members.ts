@@ -253,6 +253,36 @@ export const UsersClanSlice = createSlice({
 					});
 				}
 			}
+		},
+		updateUserProfileAcrossClans: (state, action: PayloadAction<{ userId: string; avatar?: string; display_name?: string; about_me?: string }>) => {
+			const { userId, avatar, display_name, about_me } = action.payload;
+			Object.keys(state.byClans).forEach((clanId) => {
+				const existingMember = state.byClans[clanId].entities.entities[userId];
+				if (existingMember) {
+					const updates: Partial<UsersClanEntity> = {
+						user: {
+							...existingMember.user
+						}
+					};
+
+					if (avatar !== undefined) {
+						updates.user!.avatar_url = avatar;
+					}
+
+					if (display_name !== undefined) {
+						updates.user!.display_name = display_name;
+					}
+
+					if (about_me !== undefined) {
+						updates.user!.about_me = about_me;
+					}
+
+					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
+						id: userId,
+						changes: updates
+					});
+				}
+			});
 		}
 	},
 	extraReducers: (builder) => {
