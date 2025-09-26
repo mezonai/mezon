@@ -1,4 +1,17 @@
-import { channelsActions, getStore, selectAllChannels, selectChannelById, selectCurrentChannelId, selectCurrentClanId, selectDefaultChannelIdByClanId, selectThreadsByParentChannelId, selectWelcomeChannelByClanId, threadsActions, useAppDispatch } from '@mezon/store';
+import {
+	channelsActions,
+	defaultNotificationCategoryActions,
+	getStore,
+	selectAllChannels,
+	selectChannelById,
+	selectCurrentChannelId,
+	selectCurrentClanId,
+	selectDefaultChannelIdByClanId,
+	selectThreadsByParentChannelId,
+	selectWelcomeChannelByClanId,
+	threadsActions,
+	useAppDispatch
+} from '@mezon/store';
 import { checkIsThread } from '@mezon/utils';
 import { useSelector } from 'react-redux';
 import { useAppNavigation } from '../../app/hooks/useAppNavigation';
@@ -25,26 +38,34 @@ export function useChannels() {
 			if (isUserInChildThread) {
 				const welcomeChannelId = selectWelcomeChannelByClanId(state, clanId);
 				const defaultChannelId = selectDefaultChannelIdByClanId(state, clanId);
-				const fallbackChannelId = channels.find(ch => ch.id !== channelId && !checkIsThread(ch))?.id;
+				const fallbackChannelId = channels.find((ch) => ch.id !== channelId && !checkIsThread(ch))?.id;
 
 				const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
 
 				if (redirectChannelId) {
 					const channelPath = toChannelPage(redirectChannelId, clanId);
 					navigate(channelPath);
-					await new Promise(resolve => setTimeout(resolve, 100));
+					await new Promise((resolve) => setTimeout(resolve, 100));
 				}
 			}
 		}
 
 		await dispatch(channelsActions.deleteChannel({ channelId, clanId: clanId as string }));
+		dispatch(
+			defaultNotificationCategoryActions.fetchChannelCategorySetting({
+				clanId: clanId as string,
+				noCache: true
+			})
+		);
 
 		if (isThread && channelToDelete?.parent_id) {
 			await dispatch(threadsActions.remove(channelId));
-			await dispatch(threadsActions.removeThreadFromCache({
-				channelId: channelToDelete.parent_id,
-				threadId: channelId
-			}));
+			await dispatch(
+				threadsActions.removeThreadFromCache({
+					channelId: channelToDelete.parent_id,
+					threadId: channelId
+				})
+			);
 		}
 
 		navigateAfterDeleteChannel(channelId);

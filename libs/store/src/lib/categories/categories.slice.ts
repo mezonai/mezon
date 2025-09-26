@@ -1,10 +1,15 @@
 import { captureSentryError } from '@mezon/logger';
-import { ICategory, LoadingStatus, SortChannel, TypeCheck } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js/api.gen';
-import { CacheMetadata, clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { MezonValueContext, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { ICategory, LoadingStatus, SortChannel } from '@mezon/utils';
+import { TypeCheck } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js/api.gen';
+import type { CacheMetadata } from '../cache-metadata';
+import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { channelsActions } from '../channels/channels.slice';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 
 export const CATEGORIES_FEATURE_KEY = 'categories';
 
@@ -111,12 +116,12 @@ export const fetchCategories = createAsyncThunk('categories/fetchCategories', as
 		const response = await fetchCategoriesCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
 
 		if (!response.categorydesc) {
-			return { categories: [], clanId: clanId };
+			return { categories: [], clanId };
 		}
 
 		const payload: FetchCategoriesPayload = {
 			categories: response.categorydesc.map(mapCategoryToEntity),
-			clanId: clanId,
+			clanId,
 			fromCache: response.fromCache
 		};
 		return payload;
@@ -168,6 +173,8 @@ export const deleteCategory = createAsyncThunk(
 			// Clear API call tracker to force fresh data on next fetch
 			const apiKey = createApiKey('fetchCategories', clanId);
 			clearApiCallTracker(apiKey);
+			thunkAPI.dispatch(categoriesActions.deleteOne({ clanId, categoryId }));
+			thunkAPI.dispatch(channelsActions.removeByCategory({ clanId, categoryId }));
 		} catch (error) {
 			captureSentryError(error, 'categories/deleteCategory');
 			return thunkAPI.rejectWithValue(error);
@@ -182,8 +189,8 @@ export const updateCategoriesOrder = createAsyncThunk(
 			if (!categories?.length || !clan_id) return;
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateCategoryOrder(mezon.session, {
-				clan_id: clan_id,
-				categories: categories
+				clan_id,
+				categories
 			});
 
 			const state = thunkAPI.getState() as RootState;
