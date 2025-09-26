@@ -160,7 +160,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: t('fields.channelPermission.permission'),
 					expandable: true,
 					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
-					isShow: isChannel && channel?.type !== ChannelType.CHANNEL_TYPE_APP,
+					isShow: isChannel && channel?.type !== ChannelType.CHANNEL_TYPE_APP && currentSystemMessage?.channel_id !== channel?.channel_id,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 							screen: APP_SCREEN.MENU_CHANNEL.CHANNEL_PERMISSION,
@@ -196,7 +196,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					}
 				}
 			] satisfies IMezonMenuItemProps[],
-		[channel, channelId, isChannel, navigation, t, themeValue.text]
+		[channel, channelId, currentSystemMessage?.channel_id, isChannel, navigation, t, themeValue.text]
 	);
 
 	const webhookMenu = useMemo(
