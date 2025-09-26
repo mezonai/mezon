@@ -1284,22 +1284,57 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			);
 		} else if (categoryEvent.status === EEventAction.DELETE) {
 			const store = await getStoreAsync();
-			const currentChannel = selectCurrentChannel(store.getState() as unknown as RootState);
-			dispatch(categoriesActions.deleteOne({ clanId: categoryEvent.clan_id, categoryId: categoryEvent.id }));
-			dispatch(channelsActions.setCurrentChannelId({ clanId: categoryEvent.clan_id, channelId: '' }));
-			dispatch(channelsActions.removeRememberChannel({ clanId: categoryEvent.clan_id }));
-			dispatch(
-				listChannelRenderAction.removeCategoryFromListRender({
+			const currentChannelId = selectCurrentChannelId(store.getState() as unknown as RootState);
+			const clanId = selectCurrentClanId(store.getState());
+			
+			if (categoryEvent) {
+				const currentChannel = currentChannelId ? selectChannelById(store.getState(), currentChannelId) : null;
+				const isUserInCategoryChannel = currentChannel && currentChannel.category_id === categoryEvent.id;
+				const allChannels = selectAllChannels(store.getState());
+				const allThreads = selectAllThreads(store.getState());
+				
+				const channelsInCategory = allChannels.filter(ch => ch.category_id === categoryEvent.id);
+				
+				
+				
+				if (isUserInCategoryChannel) {
+					if (!clanId) {
+						navigate(`/chat/direct/friends`);
+						return;
+					}
+
+					const defaultChannelId = selectDefaultChannelIdByClanId(store.getState(), clanId);
+
+					const redirectChannelId = defaultChannelId;
+
+					if (redirectChannelId) {
+						navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+					} else {
+						navigate(`/chat/clans/${clanId}/member-safety`);
+					}
+				}
+				
+				channelsInCategory.forEach(channel => {
+					const channelDeleteEvent = {
+						channel_id: channel.id,
+						clan_id: channel.clan_id || '',
+						deletor: userId || '',
+						channel_type: channel.type || 0,
+						channel_label: channel.channel_label || '',
+						category_id: channel.category_id || '',
+						parent_id: channel.parent_id || ''
+					};
+					dispatch(channelsActions.deleteChannelSocket(channelDeleteEvent));
+					dispatch(listChannelsByUserActions.remove(channel.id));
+					dispatch(listChannelRenderAction.updateClanBadgeRender({ channelId: channel.id, clanId: channel.clan_id || '' }));
+					dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: channel.id, clanId: channel.clan_id || '' }));
+				});
+				
+				dispatch(categoriesActions.deleteOne({ clanId: categoryEvent.clan_id, categoryId: categoryEvent.id }));
+				dispatch(listChannelRenderAction.removeCategoryFromListRender({
 					clanId: categoryEvent?.clan_id || '',
 					categoryId: categoryEvent.id
-				})
-			);
-			const toMembersPage = (clanId: string) => {
-				return `/chat/clans/${clanId}/member-safety`;
-			};
-			if (currentChannel?.category_id === categoryEvent.id) {
-				const linkPageMember = toMembersPage(categoryEvent?.clan_id || '');
-				navigate(linkPageMember);
+				}));
 			}
 		} else {
 			const request: ApiUpdateCategoryDescRequest = {
@@ -2468,3 +2503,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider };
+
