@@ -198,7 +198,8 @@ export const MenuClanStacks = ({ }: any) => {
 				name={APP_SCREEN.MENU_CLAN.ROLE_DETAIL}
 				component={RoleDetail}
 				options={{
-					headerLeftLabelVisible: false
+					headerLeftLabelVisible: false,
+					headerShown: false
 				}}
 			/>
 

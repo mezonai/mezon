@@ -5,13 +5,14 @@ import { rolesClanActions, selectUserMaxPermissionLevel, useAppDispatch } from '
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, DeviceEventEmitter, FlatList, Keyboard, Platform, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, DeviceEventEmitter, FlatList, Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../components/Common';
+import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import RoleCoLourComponent from '../RoleCoLourComponent/RoleCoLourComponent';
@@ -71,37 +72,6 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, [isNotChange, navigation, currentRoleName]);
-
-	useEffect(() => {
-		navigation.setOptions({
-			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
-			headerTitle: () => (
-				<View style={styles.center}>
-					<Text style={styles.headerTitle} numberOfLines={1}>
-						{clanRole?.title}
-					</Text>
-					<Text style={styles.headerText}>{t('roleDetail.role')}</Text>
-				</View>
-			),
-			headerRight: () => {
-				if (isNotChange) return null;
-				return (
-					<TouchableOpacity onPress={async () => handleSave()}>
-						<View style={styles.saveButton}>
-							<Text style={styles.saveText}>{t('roleDetail.save')}</Text>
-						</View>
-					</TouchableOpacity>
-				);
-			},
-			headerLeft: () => {
-				return (
-					<TouchableOpacity style={styles.backButton} onPress={handleBack}>
-						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
-					</TouchableOpacity>
-				);
-			}
-		});
-	}, [clanRole?.title, isNotChange, navigation, t, themeValue?.text, themeValue.white, currentRoleName]);
 
 	const handleSave = useCallback(async () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
@@ -192,6 +162,25 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	return (
 		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
 			<View style={styles.container}>
+				<StatusBarHeight />
+				<View style={styles.header}>
+					<TouchableOpacity style={styles.saveButton} onPress={handleBack}>
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
+					</TouchableOpacity>
+					<View style={styles.center}>
+						<Text style={styles.headerTitle} numberOfLines={1}>
+							{clanRole?.title}
+						</Text>
+						<Text style={styles.headerText}>{t('roleDetail.role')}</Text>
+					</View>
+					{!isNotChange && (
+						<TouchableOpacity onPress={async () => handleSave()}>
+							<View style={styles.saveButton}>
+								<Text style={styles.saveText}>{t('roleDetail.save')}</Text>
+							</View>
+						</TouchableOpacity>
+					)}
+				</View>
 				<View style={styles.nameInput}>
 					<MezonInput
 						value={currentRoleName}
