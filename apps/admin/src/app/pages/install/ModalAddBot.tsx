@@ -100,7 +100,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 				</div>
 			)}
 			<HeaderModal name={appDetail?.appname || ''} username={account?.user?.username} />
-			<SelectField className="uppercase" {...clanConfig} />
+			<SelectField uppercase={true} {...clanConfig} />
 			<FooterModal name={appDetail?.appname || ''} />
 			<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleAdd} />
 		</div>

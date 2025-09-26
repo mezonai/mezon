@@ -1,5 +1,5 @@
 import { Icons, Menu } from '@mezon/ui';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export type SelectFieldConfig<T> = {
 	label: string;
@@ -8,9 +8,12 @@ export type SelectFieldConfig<T> = {
 	errorMessage?: string;
 	options?: any[];
 	className?: string;
+	uppercase?: boolean;
 };
 
-const SelectField = <T,>({ label, options, value, onChange, errorMessage, className }: SelectFieldConfig<T>) => {
+const SelectField = <T,>({ label, options, value, onChange, errorMessage, className, uppercase }: SelectFieldConfig<T>) => {
+	const [visible, setVisible] = useState(false);
+	const uppercaseClass = uppercase ? 'uppercase' : '';
 	const selectedOption = useMemo(() => {
 		return options?.find((option) => option.value === value)?.label || '-- Select --';
 	}, [options, value]);
@@ -18,18 +21,25 @@ const SelectField = <T,>({ label, options, value, onChange, errorMessage, classN
 	const handleOptionClick = useCallback(
 		(optionValue: string) => {
 			onChange(optionValue);
+			setVisible(false);
 		},
 		[onChange]
 	);
 
+	const handleVisibleChange = useCallback((isVisible: boolean) => {
+		setVisible(isVisible);
+	}, []);
+
 	const menu = useMemo(
 		() => (
-			<div className="border-none py-[6px] px-[8px] max-h-[200px] overflow-y-scroll thread-scroll z-20 bg-white dark:bg-[#2b2d31]  rounded-lg shadow-lg">
+			<div
+				className={`border-none py-[6px] px-[8px] max-h-[200px] overflow-y-scroll thread-scroll z-20 bg-white dark:bg-[#2b2d31]  rounded-lg shadow-lg`}
+			>
 				{options?.map((option, index) => (
 					<Menu.Item
 						key={index}
 						onClick={() => handleOptionClick(option.value)}
-						className={`truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 ${className} ${
+						className={`truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150  ${uppercaseClass} ${
 							value === option.value
 								? 'bg-[#e5e7eb] dark:bg-[#313338] text-[#1f2937] dark:text-white font-medium'
 								: 'text-[#374151] dark:text-[#d1d5db]'
@@ -40,7 +50,7 @@ const SelectField = <T,>({ label, options, value, onChange, errorMessage, classN
 				))}
 			</div>
 		),
-		[options, value, handleOptionClick]
+		[options, value, handleOptionClick, className]
 	);
 
 	return (
@@ -51,10 +61,12 @@ const SelectField = <T,>({ label, options, value, onChange, errorMessage, classN
 				trigger="click"
 				menu={menu}
 				placement="bottomLeft"
+				visible={visible}
+				onVisibleChange={handleVisibleChange}
 				className="border-none py-[6px] px-[8px]   z-20 bg-white dark:bg-[#2b2d31]  rounded-lg shadow-lg"
 			>
 				<div className="w-full h-[40px] rounded-md flex flex-row px-3 justify-between items-center cursor-pointer bg-white text-[#111827] border border-[#4b5563] dark:bg-[#2d2f33] dark:text-[#d1d5db]">
-					<p className="truncate">{selectedOption}</p>
+					<p className={`truncate ${uppercaseClass}`}>{selectedOption}</p>
 					<Icons.ArrowDownFill />
 				</div>
 			</Menu>
