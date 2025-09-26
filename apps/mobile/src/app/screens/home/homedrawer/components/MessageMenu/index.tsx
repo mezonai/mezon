@@ -52,6 +52,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const navigation = useNavigation<any>();
 	const currentClan = useSelector(selectCurrentClan);
 	const { userProfile } = useAuth();
+	const currentUserId = useAppSelector(selectCurrentUserId);
 	const infoFriend = useAppSelector((state) => selectFriendById(state, messageInfo?.user_id?.[0] || ''));
 	const didIBlockUser = useMemo(() => {
 		return (
@@ -89,8 +90,19 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	}, [messageInfo?.type]);
 
 	const lastOne = useMemo(() => {
-		return !messageInfo?.user_id?.length;
-	}, [messageInfo?.user_id]);
+		const userIds = messageInfo?.user_id || [];
+		const userIdLength = userIds?.length || 0;
+
+		if (messageInfo?.creator_id === currentUserId) {
+			return userIdLength === 0;
+		}
+
+		if (userIds.includes(currentUserId)) {
+			return userIdLength === 1;
+		}
+
+		return false;
+	}, [currentUserId, messageInfo?.creator_id, messageInfo?.user_id]);
 
 	const leaveGroupMenu: IMezonMenuItemProps[] = [
 		{
@@ -317,11 +329,10 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			items: optionsMenu
 		}
 	];
-	const currentUserId = useAppSelector(selectCurrentUserId);
 
 	const handleLeaveGroupConfirm = async () => {
 		const isLeaveOrDeleteGroup = lastOne
-			? await dispatch(deleteChannel({ clanId: '', channelId: messageInfo?.channel_id ?? '', isDmGroup: true }))
+			? await dispatch(deleteChannel({ clanId: '0', channelId: messageInfo?.channel_id ?? '', isDmGroup: true }))
 			: await dispatch(removeMemberChannel({ channelId: messageInfo?.channel_id || '', userIds: [currentUserId], kickMember: false }));
 		if (!isLeaveOrDeleteGroup) {
 			return;
@@ -370,7 +381,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					</Text>
 					{isGroup && (
 						<Text style={styles.memberText}>
-							{messageInfo?.user_id?.length + 1} {t('members')}
+							{(messageInfo?.user_id?.length || 0) + 1} {t('members')}
 						</Text>
 					)}
 				</View>

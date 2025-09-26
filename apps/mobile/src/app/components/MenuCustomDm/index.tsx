@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
+import type { DirectEntity } from '@mezon/store-mobile';
 import {
-	DirectEntity,
 	deleteChannel,
 	directActions,
 	fetchDirectMessage,
@@ -11,7 +11,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IChannel, sleep } from '@mezon/utils';
+import type { IChannel } from '@mezon/utils';
+import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
@@ -19,7 +20,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
 import MezonConfirm from '../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import CustomGroupDm from './CustomGroupDm';
@@ -31,12 +33,24 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
-	const lastOne = useMemo(() => {
-		return !currentChannel?.user_id?.length;
-	}, [currentChannel?.user_id]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentDMGroup = useAppSelector(selectDmGroupCurrent(currentChannel?.id));
 	const currentAvatar = currentDMGroup?.topic;
+
+	const lastOne = useMemo(() => {
+		const userIds = currentChannel?.user_id || [];
+		const userIdLength = userIds?.length || 0;
+
+		if (currentChannel?.creator_id === currentUserId) {
+			return userIdLength === 0;
+		}
+
+		if (userIds.includes(currentUserId)) {
+			return userIdLength === 1;
+		}
+
+		return false;
+	}, [currentChannel?.creator_id, currentChannel?.user_id, currentUserId]);
 
 	const menuSetting: IMezonMenuItemProps[] = [
 		{
@@ -108,7 +122,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 
 	const handleLeaveGroupConfirm = async () => {
 		const isLeaveOrDeleteGroup = lastOne
-			? await dispatch(deleteChannel({ clanId: '', channelId: currentChannel?.channel_id ?? '', isDmGroup: true }))
+			? await dispatch(deleteChannel({ clanId: '0', channelId: currentChannel?.channel_id ?? '', isDmGroup: true }))
 			: await dispatch(removeMemberChannel({ channelId: currentChannel?.channel_id || '', userIds: [currentUserId], kickMember: false }));
 		if (!isLeaveOrDeleteGroup) {
 			return;
