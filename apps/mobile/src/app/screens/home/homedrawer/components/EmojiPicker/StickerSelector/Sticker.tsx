@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-no-useless-fragment */
+import { useAuth } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
-import { FOR_SALE_CATE } from '@mezon/utils';
+import { FOR_SALE_CATE, ITEM_TYPE } from '@mezon/utils';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
@@ -66,6 +67,7 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 	const styles = style(themeValue, widthScreen);
 	const { t } = useTranslation(['token']);
 	const dispatch = useAppDispatch();
+	const { userProfile } = useAuth();
 	const [isExpanded, setIsExpanded] = useState(!(categoryName === FOR_SALE_CATE && forSale));
 
 	const stickersListByCategoryName = useMemo(() => {
@@ -93,7 +95,15 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 		async (sticker: any) => {
 			try {
 				if (sticker.id) {
-					const resp = await dispatch(emojiRecentActions.buyItemForSale({ id: sticker?.id, type: 1 }));
+					const resp = await dispatch(
+						emojiRecentActions.buyItemForSale({
+							id: sticker?.id,
+							type: ITEM_TYPE.STICKER,
+							creatorId: sticker?.creator_id,
+							username: userProfile?.user?.username,
+							senderId: userProfile?.user?.id
+						})
+					);
 					if (!resp?.type?.includes('rejected')) {
 						Toast.show({
 							type: 'success',
@@ -112,7 +122,7 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 				Toast.show({ type: 'error', text1: 'Failed to buy item.' });
 			}
 		},
-		[dispatch]
+		[dispatch, userProfile?.user?.id, userProfile?.user?.username]
 	);
 
 	const onPress = useCallback(

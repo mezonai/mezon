@@ -1,4 +1,4 @@
-import { useChatReaction, useEmojiSuggestionContext, useEscapeKeyClose, useGifsStickersEmoji, usePermissionChecker } from '@mezon/core';
+import { useAuth, useChatReaction, useEmojiSuggestionContext, useEscapeKeyClose, useGifsStickersEmoji, usePermissionChecker } from '@mezon/core';
 import {
 	emojiRecentActions,
 	emojiSuggestionActions,
@@ -7,17 +7,19 @@ import {
 	selectCurrentChannel,
 	selectMessageByMessageId,
 	selectModeResponsive,
+	selectPendingUnlockMap,
 	selectThreadCurrentChannel,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { IEmoji, MentionItem, RequestInput } from '@mezon/utils';
+import type { IEmoji, RequestInput } from '@mezon/utils';
 import {
 	EEmojiCategory,
 	EPermission,
 	EmojiPlaces,
 	FOR_SALE_CATE,
+	ITEM_TYPE,
 	MAX_LENGTH_MESSAGE_BUZZ,
 	ModeResponsive,
 	RECENT_EMOJI_CATEGORY,
@@ -27,6 +29,7 @@ import {
 	isPublicChannel
 } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { MentionItem } from 'react-mentions';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import ModalBuyItem from '../GifsStickersEmojis/ModalBuyItem';
@@ -416,6 +419,7 @@ const EmojisPanel = React.memo(function EmojisPanel({
 	onClickAddButton,
 	showAddButton
 }: DisplayByCategoriesProps) {
+	const { userProfile } = useAuth();
 	const { valueInputToCheckHandleSearch } = useGifsStickersEmoji();
 	const { shiftPressedState } = useEmojiSuggestionContext();
 	const [hasClanPermission] = usePermissionChecker([EPermission.manageClan]);
@@ -431,7 +435,15 @@ const EmojisPanel = React.memo(function EmojisPanel({
 	const dispatch = useAppDispatch();
 	const handleConfirmBuyItem = async () => {
 		if (itemUnlock) {
-			await dispatch(emojiRecentActions.buyItemForSale({ id: itemUnlock.id || '', type: 0 }));
+			await dispatch(
+				emojiRecentActions.buyItemForSale({
+					id: itemUnlock.id || '',
+					type: ITEM_TYPE.EMOJI,
+					creatorId: itemUnlock.creator_id,
+					senderId: userProfile?.user?.id,
+					username: userProfile?.user?.username
+				})
+			);
 		}
 	};
 	const [openModalBuy, closeModalBuy] = useModal(() => {
@@ -449,30 +461,44 @@ const EmojisPanel = React.memo(function EmojisPanel({
 		onEmojiSelect(id, shortname);
 	}, []);
 
+	const pendingUnlockItemMap = useAppSelector(selectPendingUnlockMap);
+
 	return (
 		<div
 			className={`  grid grid-cols-9 ml-1 gap-1   ${valueInputToCheckHandleSearch !== '' ? 'overflow-y-scroll overflow-x-hidden hide-scrollbar max-h-[352px]' : ''}`}
 		>
-			{emojisData.map((item, index) => (
-				<button
-					key={index}
-					className={` relative ${shiftPressedState ? 'border-none outline-none' : ''} text-2xl  emoji-button  rounded-md bg-item-hover hover:rounded-md  p-1 flex items-center justify-center w-full aspect-square`}
-					onClick={() => onClickEmoji(item)}
-					onMouseEnter={() => onEmojiHover(item)}
-				>
-					<img
-						draggable="false"
-						src={!item.src ? getSrcEmoji(item?.id || '') : item.src}
-						alt={item.shortname}
-						className={'max-h-full max-w-full'}
-					/>
-					{item.is_for_sale && !item.src && (
-						<div className="absolute left-3 flex items-center justify-center aspect-square pointer-events-none">
-							<Icons.LockIcon defaultSize="w-4 h-4 text-white block group-hover:hidden" defaultFill="white" />
-						</div>
-					)}
-				</button>
-			))}
+			{emojisData.map((item, index) => {
+				const isItemPendingUnlock = !!(item.id && pendingUnlockItemMap[item.id]);
+				return (
+					<button
+						key={index}
+						className={` relative ${shiftPressedState ? 'border-none outline-none' : ''} text-2xl  emoji-button  rounded-md bg-item-hover hover:rounded-md  p-1 flex items-center justify-center w-full aspect-square`}
+						onClick={() => {
+							if (!isItemPendingUnlock) onClickEmoji(item);
+						}}
+						onMouseEnter={() => {
+							if (!isItemPendingUnlock) onEmojiHover(item);
+						}}
+						disabled={isItemPendingUnlock}
+					>
+						<img
+							draggable="false"
+							src={!item.src ? getSrcEmoji(item?.id || '') : item.src}
+							alt={item.shortname}
+							className={'max-h-full max-w-full'}
+						/>
+						{item.is_for_sale && !item.src && (
+							<div className="absolute left-3 flex items-center justify-center aspect-square pointer-events-none">
+								{isItemPendingUnlock ? (
+									<Icons.LoadingSpinner className="w-4 h-4 text-white block group-hover:hidden" />
+								) : (
+									<Icons.LockIcon defaultSize="w-4 h-4 text-white block group-hover:hidden" defaultFill="white" />
+								)}
+							</div>
+						)}
+					</button>
+				);
+			})}
 			{isShowAddButton && (
 				<button
 					className={`${shiftPressedState ? 'border-none outline-none' : ''} text-2xl  emoji-button  rounded-md  bg-item-hover hover:rounded-md  p-1 flex items-center justify-center w-full`}

@@ -20,7 +20,7 @@ import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';
 import { REQUEST_PERMISSION_CAMERA, REQUEST_PERMISSION_MICROPHONE } from '../bridge/electron/constants';
-import { EVERYONE_ROLE_ID, ID_MENTION_HERE, TIME_COMBINE } from '../constant';
+import { CURRENCY, EVERYONE_ROLE_ID, ID_MENTION_HERE, TIME_COMBINE } from '../constant';
 import { Platform } from '../hooks/platform';
 import type {
 	ChannelMembersEntity,
@@ -1326,3 +1326,69 @@ export const searchNormalizeText = (string?: string, search?: string) => {
 	}
 	return string.toLocaleLowerCase()?.includes(search?.toLocaleLowerCase());
 };
+
+export function formatBalanceToString(balance?: string, decimals = 6): string {
+	if (!balance) return '0';
+	try {
+		const big = BigInt(balance);
+		let divisor = BigInt(1);
+		for (let i = 0; i < decimals; i++) {
+			divisor *= BigInt(10);
+		}
+
+		const integerPart = big / divisor;
+		const fractionalPart = big % divisor;
+
+		if (integerPart !== BigInt(0)) {
+			return formatNumber(Number(integerPart), CURRENCY.CODE);
+		}
+
+		if (fractionalPart === BigInt(0)) {
+			return integerPart.toString();
+		}
+
+		// Pad fractional part to ensure correct number of decimal places
+		const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+
+		// Remove trailing zeros
+		const fractionalTrimmed = fractionalStr.replace(/0+$/, '');
+
+		// If all fractional digits were zeros, return just the integer part
+		if (fractionalTrimmed === '') {
+			return integerPart.toString();
+		}
+
+		return `${integerPart.toString()},${fractionalTrimmed}`;
+	} catch {
+		throw new Error(`Invalid balance string: ${balance}`);
+	}
+}
+
+export function compareBigInt(a: string, b: string): -1 | 0 | 1 {
+	const bigA = BigInt(a);
+	const bigB = BigInt(b);
+
+	if (bigA < bigB) return -1;
+	if (bigA > bigB) return 1;
+	return 0;
+}
+
+export function addBigInt(a: string, b: string): string {
+	const bigA = BigInt(a);
+	const bigB = BigInt(b);
+	return (bigA + bigB).toString();
+}
+
+export function subBigInt(a: string, b: string): string {
+	const bigA = BigInt(a);
+	const bigB = BigInt(b);
+	return (bigA - bigB).toString();
+}
+
+export function scaleAmountToDecimals(originalAmount: string | number, decimals = 6): string {
+	let scaledAmount = BigInt(originalAmount);
+	for (let i = 0; i < decimals; i++) {
+		scaledAmount = scaledAmount * BigInt(10);
+	}
+	return scaledAmount.toString();
+}

@@ -1,6 +1,7 @@
 import { MezonContextValue } from '@mezon/transport';
+import { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import { GetThunkAPI } from '@reduxjs/toolkit';
-import { Client, Friend, safeJSONParse, Session } from 'mezon-js';
+import { Client, Friend, Session, safeJSONParse } from 'mezon-js';
 import { GetThunkAPIWithMezon } from './typings';
 
 export const getMezonCtx = (thunkAPI: GetThunkAPI<any>) => {
@@ -13,6 +14,9 @@ export const getMezonCtx = (thunkAPI: GetThunkAPI<any>) => {
 export type MezonValueContext = MezonContextValue & {
 	client: Client;
 	session: Session;
+	zkClient: ZkClient | null;
+	mmnClient: MmnClient | null;
+	indexerClient: IndexerClient | null;
 };
 
 export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
@@ -57,7 +61,10 @@ export function ensureClient(mezon: MezonContextValue): MezonValueContext {
 	return {
 		...mezon,
 		client: mezon?.clientRef?.current,
-		session: mezon.sessionRef.current
+		session: mezon.sessionRef.current,
+		zkClient: mezon.zkRef.current,
+		mmnClient: mezon.mmnRef?.current || null,
+		indexerClient: mezon.indexerRef?.current || null
 	} as MezonValueContext;
 }
 

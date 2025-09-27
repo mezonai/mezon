@@ -1,8 +1,9 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import { useAuth } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, useAppDispatch } from '@mezon/store-mobile';
-import { getSrcEmoji } from '@mezon/utils';
+import { ITEM_TYPE, getSrcEmoji } from '@mezon/utils';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Image, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
@@ -19,6 +20,7 @@ export interface IProductDetail {
 	logo: string;
 	shortname: string;
 	type: 'emoji' | 'sticker';
+	creator_id?: string;
 }
 
 interface ProductDetailModalProps {
@@ -31,14 +33,23 @@ const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) 
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['token']);
+	const { userProfile } = useAuth();
 
 	const closeModal = () => DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 
 	const handleConfirmPurchase = async () => {
 		try {
-			if (product?.id) {
-				const apiType = product?.type === 'emoji' ? 0 : 1;
-				const response = await dispatch(emojiRecentActions.buyItemForSale({ id: product?.id, type: apiType }));
+			if (product?.id && product?.creator_id) {
+				const apiType = product?.type === 'emoji' ? ITEM_TYPE.EMOJI : ITEM_TYPE.STICKER;
+				const response = await dispatch(
+					emojiRecentActions.buyItemForSale({
+						id: product?.id,
+						type: apiType,
+						creatorId: product.creator_id,
+						senderId: userProfile?.user?.id,
+						username: userProfile?.user?.username
+					})
+				);
 				if (!response?.type?.includes('rejected')) {
 					Toast.show({
 						type: 'success',

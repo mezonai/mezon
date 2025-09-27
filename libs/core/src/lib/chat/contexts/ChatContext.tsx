@@ -88,6 +88,7 @@ import {
 	usersClanActions,
 	usersStreamActions,
 	voiceActions,
+	walletActions,
 	webhookActions
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
@@ -101,13 +102,17 @@ import {
 	EMuteState,
 	ERepeatType,
 	IMessageTypeCallLog,
+	ITEM_TYPE,
 	NotificationCode,
 	TOKEN_TO_AMOUNT,
 	ThreadStatus,
 	TypeMessage,
+	addBigInt,
 	checkIsThread,
 	isBackgroundModeActive,
-	isLinuxDesktop
+	isLinuxDesktop,
+	scaleAmountToDecimals,
+	subBigInt
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type {
@@ -1100,14 +1105,54 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			const isReceiverGiveCoffee = tokenEvent.receiver_id === userId;
 			const isSenderGiveCoffee = tokenEvent.sender_id === userId;
 
-			const updateAmount =
-				tokenEvent.amount !== undefined ? (isReceiverGiveCoffee ? tokenEvent.amount : isSenderGiveCoffee ? -tokenEvent.amount : 0) : 0;
-
-			dispatch(
-				accountActions.updateWalletByAction((currentValue) => {
-					return Number(currentValue) + Number(updateAmount);
-				})
-			);
+			if (tokenEvent.extra_attribute) {
+				try {
+					const parsedExtraAttribute = JSON.parse(tokenEvent.extra_attribute);
+					if (
+						'item_id' in parsedExtraAttribute &&
+						'item_type' in parsedExtraAttribute &&
+						'source' in parsedExtraAttribute &&
+						parsedExtraAttribute.item_id &&
+						parsedExtraAttribute.source
+					) {
+						if (parsedExtraAttribute.item_type === ITEM_TYPE.EMOJI) {
+							dispatch(
+								emojiSuggestionActions.update({
+									id: parsedExtraAttribute.item_id,
+									changes: {
+										src: parsedExtraAttribute.source
+									}
+								})
+							);
+						} else {
+							dispatch(
+								stickerSettingActions.update({
+									id: parsedExtraAttribute.item_id,
+									changes: {
+										source: parsedExtraAttribute.source
+									}
+								})
+							);
+						}
+						dispatch(emojiRecentActions.removePendingUnlock({ emojiId: parsedExtraAttribute.item_id }));
+					}
+				} catch (error) {
+					console.error('Error parsing extra attribute', error);
+				}
+			}
+			if (tokenEvent.amount) {
+				const updateAmount = scaleAmountToDecimals(tokenEvent.amount);
+				dispatch(
+					walletActions.updateWalletByAction((currentValue) => {
+						if (isReceiverGiveCoffee) {
+							return addBigInt(currentValue, updateAmount);
+						} else if (isSenderGiveCoffee) {
+							return subBigInt(currentValue, updateAmount);
+						}
+						return currentValue;
+					})
+				);
+			}
 			if (isReceiverGiveCoffee) {
 				const joinSoundElement = document.createElement('audio');
 				joinSoundElement.src = 'assets/audio/bankSound.mp3';

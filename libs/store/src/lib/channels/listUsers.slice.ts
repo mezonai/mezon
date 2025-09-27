@@ -164,7 +164,7 @@ import { mess } from '@mezon/store';
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = listUsersAdapter.getSelectors();
+const { selectAll, selectEntities, selectById } = listUsersAdapter.getSelectors();
 
 export const getUsersByUserState = (rootState: { [LIST_USERS_BY_USER_FEATURE_KEY]: ListUsersState }): ListUsersState =>
 	rootState[LIST_USERS_BY_USER_FEATURE_KEY];
@@ -172,3 +172,7 @@ export const getUsersByUserState = (rootState: { [LIST_USERS_BY_USER_FEATURE_KEY
 export const selectAllUsersByUser = createSelector(getUsersByUserState, selectAll);
 
 export const selectAllUsesInAllClansEntities = createSelector(getUsersByUserState, selectEntities);
+
+export const selectUserById = createSelector([getUsersByUserState, (_: RootState, userId: string) => userId], (state, userId) =>
+	selectById(state, userId)
+);

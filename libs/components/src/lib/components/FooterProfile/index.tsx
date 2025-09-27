@@ -16,12 +16,23 @@ import {
 	selectShowModalSendToken,
 	selectStatusMenu,
 	selectVoiceJoined,
+	selectWalletDetail,
 	useAppDispatch,
 	userClanProfileActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { EUserStatus } from '@mezon/utils';
-import { ESummaryInfo, ONE_MINUTE, TypeMessage, createImgproxyUrl, formatMoney, generateE2eId, saveParseUserStatus } from '@mezon/utils';
+import {
+	ESummaryInfo,
+	ONE_MINUTE,
+	TypeMessage,
+	compareBigInt,
+	createImgproxyUrl,
+	formatBalanceToString,
+	formatMoney,
+	generateE2eId,
+	saveParseUserStatus
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -53,6 +64,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const infoSendToken = useSelector(selectInfoSendToken);
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const statusMenu = useSelector(selectStatusMenu);
+	const userWallet = useSelector(selectWalletDetail);
 	const myProfile = useAuth();
 	const { t } = useTranslation(['setting']);
 	const userCustomStatus: { status: string; user_status: EUserStatus } = useMemo(() => {
@@ -76,10 +88,6 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
-
-	const tokenInWallet = useMemo(() => {
-		return myProfile?.userProfile?.wallet ? myProfile?.userProfile?.wallet : 0;
-	}, [myProfile?.userProfile?.wallet]);
 
 	const handleCloseModalCustomStatus = () => {
 		dispatch(userClanProfileActions.setShowModalCustomStatus(false));
@@ -130,11 +138,11 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			setError('Your amount must be greater than zero');
 			return;
 		}
-
-		if (token > Number(tokenInWallet)) {
-			setError('Your amount exceeds wallet balance');
+		if (compareBigInt(userWallet?.balance || '', BigInt(token).toString()) < 0) {
+			setError(`Your amount exceeds wallet balance (${formatBalanceToString(userWallet?.balance)} tokens)`);
 			return;
 		}
+
 		const tokenEvent: ApiTokenSentEvent = {
 			sender_id: myProfile.userId as string,
 			sender_name: myProfile?.userProfile?.user?.username as string,
@@ -263,10 +271,9 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 				sendTokenInputsState={sendTokenInputsState}
 				infoSendToken={infoSendToken}
 				isButtonDisabled={isButtonDisabled}
-				tokenInWallet={tokenInWallet}
 			/>
 		);
-	}, [token, selectedUserId, note, infoSendToken, isButtonDisabled, sendTokenInputsState, myProfile.userId, tokenInWallet]);
+	}, [token, selectedUserId, error, note, infoSendToken, isButtonDisabled, sendTokenInputsState, myProfile.userId]);
 
 	useEffect(() => {
 		if (showModalCustomStatus) {

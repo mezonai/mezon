@@ -15,17 +15,17 @@ import {
 } from '@mezon/store';
 import { createClient as createMezonClient, useMezon } from '@mezon/transport';
 import { Icons, Menu } from '@mezon/ui';
-import { EUserStatus, formatNumber } from '@mezon/utils';
+import { CURRENCY, EUserStatus, formatBalanceToString, useWallet } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { Session } from 'mezon-js';
 import type { ReactElement, ReactNode } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ButtonCopy } from '../../../components';
-import HistoryTransaction from '../../HistoryTransaction';
+import TransactionHistory from '../../TransactionHistory';
 import ItemProfile from './ItemProfile';
 import ItemStatus from './ItemStatus';
 import ItemStatusUpdate from './ItemStatusUpdate';
@@ -48,11 +48,13 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	const userStatus = useSelector(selectUserStatus);
 	const status = userStatus?.status || 'Online';
 	const { userProfile } = useAuth();
-	const tokenInWallet = useMemo(() => {
-		return userProfile?.wallet || 0;
-	}, [userProfile?.wallet]);
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
-	const [showWalletModal, setShowWalletModal] = useState<boolean>(false);
+
+	const { isEnableWallet, walletDetail, enableWallet, fetchWalletData } = useWallet();
+
+	useEffect(() => {
+		fetchWalletData();
+	}, [fetchWalletData]);
 
 	const handleSendToken = () => {
 		dispatch(giveCoffeeActions.setShowModalSendToken(true));
@@ -63,6 +65,10 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	};
 	const handleCloseHistoryModal = () => {
 		setIsShowModalHistory(false);
+	};
+
+	const handleEnableWallet = () => {
+		enableWallet();
 	};
 
 	const statusIcon = (status: string): ReactNode => {
@@ -196,21 +202,36 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	return (
 		<>
 			<div className="max-md:relative">
-				<ItemStatus
-					children={`${t('statusProfile.balance')}: ${formatNumber(Number(tokenInWallet), 'vi-VN', 'VND')}`}
-					startIcon={<Icons.Check className="text-theme-primary" />}
-					disabled={true}
-				/>
-				<ItemStatus
-					onClick={handleSendToken}
-					children={t('statusProfile.transferFunds')}
-					startIcon={<Icons.SendMoney className="text-theme-primary" />}
-				/>
-				<ItemStatus
-					onClick={handleOpenHistoryModal}
-					children={t('statusProfile.historyTransaction.title')}
-					startIcon={<Icons.History className="text-theme-primary" />}
-				/>
+				{isEnableWallet ? (
+					<>
+						<ItemStatus
+							children={`Balance: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
+							startIcon={<Icons.Check className="text-theme-primary" />}
+							disabled={true}
+						/>
+						<ItemStatus
+							onClick={handleSendToken}
+							children="Transfer Funds"
+							startIcon={<Icons.SendMoney className="text-theme-primary" />}
+						/>
+						<ItemStatus
+							onClick={handleOpenHistoryModal}
+							children="History Transaction"
+							startIcon={<Icons.History className="text-theme-primary" />}
+						/>
+					</>
+				) : (
+					<ItemStatus
+						onClick={handleEnableWallet}
+						children="Enable Wallet"
+						startIcon={
+							<span className="w-5 h-5 flex items-center justify-center text-theme-primary">
+								<WalletIcon />
+							</span>
+						}
+					/>
+				)}
+
 				<ItemStatus
 					onClick={handleCustomStatus}
 					children={userCustomStatus ? t('statusProfile.editCustomStatus') : t('statusProfile.setCustomStatus')}
@@ -254,10 +275,17 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 				title={t('statusProfile.copyUserId')}
 				className=" px-2 py-[6px] text-theme-primary-hover bg-item-theme-hover"
 			/>
-			{isShowModalHistory && <HistoryTransaction onClose={handleCloseHistoryModal} />}
+			{isShowModalHistory && <TransactionHistory onClose={handleCloseHistoryModal} />}
 		</>
 	);
 };
+
+const WalletIcon = () => (
+	<svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+		<path d="M17 7H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3zM6 9h11a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zm11-2H7V6a2 2 0 0 1 4 0h2a4 4 0 0 0-8 0v1H5a1 1 0 0 0 0 2h12a1 1 0 0 0 0-2z" />
+		<circle cx="15" cy="13" r="1" />
+	</svg>
+);
 
 const AddAccountModal = ({
 	handleSetAccount,

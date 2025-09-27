@@ -620,8 +620,7 @@ function MessageContextMenu({
 										clan_id: message.clan_id,
 										message_ref_id: message.id,
 										receiver_id: message.sender_id,
-										sender_id: userId,
-										token_count: AMOUNT_TOKEN.TEN_TOKENS
+										sender_id: userId
 									})
 								).unwrap();
 								await reactionMessageDispatch({

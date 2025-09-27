@@ -81,8 +81,10 @@ import { TOASTS_FEATURE_KEY, toastsReducer } from './toasts/toasts.slice';
 import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { USER_STATUS_API_FEATURE_KEY, userStatusAPIReducer } from './userstatus/userstatusAPI.slice';
 import { voiceReducer } from './voice/voice.slice';
+import { WALLET_FEATURE_KEY, walletReducer } from './wallet/wallet.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
 import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowControls/windowControls.slice';
+import { TRANSACTION_HISTORY_FEATURE_KEY, transactionHistoryReducer } from './wallet/transactionHistory.slice';
 
 const persistedReducer = persistReducer(
 	{
@@ -329,6 +331,14 @@ const persistedCompose = persistReducer(
 	composeReducer
 );
 
+const persistedWalletStore = persistReducer(
+	{
+		key: WALLET_FEATURE_KEY,
+		storage
+	},
+	walletReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	account: accountReducer,
@@ -409,7 +419,9 @@ const reducer = {
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
 	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
-	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer
+	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer,
+	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
+	[WALLET_FEATURE_KEY]: persistedWalletStore
 };
 
 let storeInstance = configureStore({

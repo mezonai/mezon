@@ -1,7 +1,7 @@
 import { MessagesEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useModal } from 'react-modal-hook';
-import HistoryTransaction from '../HistoryTransaction';
+import TransactionHistory from '../TransactionHistory';
 
 interface ITokenTransactionMessageProps {
 	message: MessagesEntity;
@@ -12,7 +12,7 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 	const [title, ...rest] = transactionData.split(' | ');
 	const description = rest.join(' | ');
 	const [openModalHistory, closeModalHistory] = useModal(() => {
-		return <HistoryTransaction onClose={closeModalHistory} />;
+		return <TransactionHistory onClose={closeModalHistory} />;
 	});
 	return (
 		<div className="py-2 w-full">
@@ -32,7 +32,6 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 								{description}
 							</span>
 						</div>
-
 					</div>
 				</div>
 				<div className="p-3 flex justify-center">

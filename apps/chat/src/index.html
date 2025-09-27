@@ -115,6 +115,7 @@
       const mezonSession = localStorage.getItem('mezon_session');
       const hideNotificationContent = localStorage.getItem('hideNotificationContent');
       const themeName = localStorage.getItem('current-theme');
+      const walletData = localStorage.getItem('persist:wallet');
       localStorage.clear();
 
       mezonSession && localStorage.setItem('mezon_session', mezonSession);
@@ -125,7 +126,8 @@
       themeName && localStorage.setItem('current-theme', themeName);
       categoriesData && localStorage.setItem('persist:categories', categoriesData);
       communityData && localStorage.setItem('persist:COMUNITY_FEATURE_KEY', communityData);
-      rememberChannelData && localStorage.setItem('remember_channel', rememberChannelData)
+      rememberChannelData && localStorage.setItem('remember_channel', rememberChannelData);
+      walletData && localStorage.setItem('persist:wallet', walletData);
 
       const isCrashScreen = document.getElementById('error-crash');
       if (isCrashScreen) {

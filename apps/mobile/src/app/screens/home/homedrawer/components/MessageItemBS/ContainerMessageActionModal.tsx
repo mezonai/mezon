@@ -29,7 +29,6 @@ import {
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import {
-	AMOUNT_TOKEN,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	EPermission,
@@ -202,8 +201,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					clan_id: message.clan_id,
 					message_ref_id: message.id,
 					receiver_id: message.sender_id,
-					sender_id: userId,
-					token_count: AMOUNT_TOKEN.TEN_TOKENS
+					sender_id: userId
 				};
 				const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
 				if (res?.meta?.requestStatus === 'rejected' || !res) {

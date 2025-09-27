@@ -83,5 +83,7 @@ export * from './lib/toasts/toasts.slice';
 export * from './lib/topicDiscussion/topicDiscussions.slice';
 export * from './lib/userstatus/userstatusAPI.slice';
 export * from './lib/voice/voice.slice';
+export * from './lib/wallet/transactionHistory.slice';
+export * from './lib/wallet/wallet.slice';
 export * from './lib/webhook/webhook.slice';
 export * from './lib/windowControls/windowControls.slice';

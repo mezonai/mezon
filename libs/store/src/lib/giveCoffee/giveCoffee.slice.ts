@@ -1,10 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
-import { LoadingStatus } from '@mezon/utils';
+import { AMOUNT_TOKEN, LoadingStatus } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
 import { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import { ETransferType } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { toastActions } from '../toasts/toasts.slice';
+import { selectEphemeralKeyPair, selectZkProofs } from '../wallet/wallet.slice';
 
 export const GIVE_COFEE = 'giveCoffee';
 export const TOKEN_SUCCESS_STATUS = 'SUCCESS';
@@ -28,31 +30,79 @@ export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {
 		tokenEvent: ApiTokenSentEvent;
 		status: string;
 	} | null;
+	pendingGiveCoffee: boolean;
 }
 
 export const giveCoffeeAdapter = createEntityAdapter<GiveCoffeeEntity>();
 
 export const updateGiveCoffee = createAsyncThunk(
 	'giveCoffee/updateGiveCoffee',
-	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id, token_count }: ApiGiveCoffeeEvent, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id }: ApiGiveCoffeeEvent, thunkAPI) => {
+		const state = thunkAPI.getState() as any;
+		if (!state.giveCoffee.pendingGiveCoffee) {
+			try {
+				thunkAPI.dispatch(giveCoffeeActions.setPendingGiveCoffee(true));
+				const zkProofs = selectZkProofs(state);
+				const ephemeralKeyPair = selectEphemeralKeyPair(state);
+				if (!sender_id || !zkProofs || !ephemeralKeyPair) {
+					thunkAPI.dispatch(
+						toastActions.addToast({
+							message: 'Wallet not available. Please enable wallet.',
+							type: 'error'
+						})
+					);
+					return thunkAPI.rejectWithValue('Wallet not available');
+				}
 
-			const response = await mezon.client.givecoffee(mezon.session, {
-				channel_id,
-				clan_id,
-				message_ref_id,
-				receiver_id,
-				sender_id,
-				token_count
-			});
-			if (!response) {
-				return thunkAPI.rejectWithValue([]);
+				if (!receiver_id) {
+					thunkAPI.dispatch(toastActions.addToast({ message: 'Recipient wallet not found', type: 'error' }));
+					return thunkAPI.rejectWithValue('Recipient wallet not found');
+				}
+
+				const mezon = await ensureSession(getMezonCtx(thunkAPI));
+				if (!mezon.mmnClient) {
+					return thunkAPI.rejectWithValue('MmnClient not initialized');
+				}
+
+				const currentNonce = await mezon.mmnClient.getCurrentNonce(sender_id, 'pending');
+
+				const response = await mezon.mmnClient.sendTransaction({
+					sender: sender_id,
+					recipient: receiver_id,
+					amount: mezon.mmnClient.scaleAmountToDecimals(AMOUNT_TOKEN.TEN_THOUSAND_TOKENS),
+					nonce: currentNonce.nonce + 1,
+					textData: 'givecoffee',
+					extraInfo: {
+						type: ETransferType.GiveCoffee,
+						ChannelId: channel_id || '',
+						ClanId: clan_id || '',
+						MessageRefId: message_ref_id || '',
+						UserReceiverId: receiver_id || '',
+						UserSenderId: sender_id || '',
+						UserSenderUsername: mezon.session.username || ''
+					},
+					publicKey: ephemeralKeyPair.publicKey,
+					privateKey: ephemeralKeyPair.privateKey,
+					zkProof: zkProofs.proof,
+					zkPub: zkProofs.public_input
+				});
+
+				if (response?.ok) {
+					thunkAPI.dispatch(toastActions.addToast({ message: 'Coffee sent', type: 'success' }));
+					return response?.ok;
+				} else {
+					const errorMessage = response?.error || 'An error occurred, please try again';
+					thunkAPI.dispatch(toastActions.addToast({ message: errorMessage, type: 'error' }));
+					return thunkAPI.rejectWithValue(errorMessage);
+				}
+			} catch (error) {
+				captureSentryError(error, 'giveCoffee/updateGiveCoffee');
+				return thunkAPI.rejectWithValue(error);
+			} finally {
+				setTimeout(() => {
+					thunkAPI.dispatch(giveCoffeeActions.setPendingGiveCoffee(false));
+				}, 300);
 			}
-			return response;
-		} catch (error) {
-			captureSentryError(error, 'giveCoffee/updateGiveCoffee');
-			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );
@@ -65,28 +115,71 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 	tokenSocket: {},
 	tokenUpdate: {},
 	infoSendToken: null,
-	sendTokenEvent: null
+	sendTokenEvent: null,
+	pendingGiveCoffee: false
 });
 
 export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: ApiTokenSentEvent, thunkAPI) => {
 	try {
+		const state = thunkAPI.getState() as any;
+		const zkProofs = selectZkProofs(state);
+		const ephemeralKeyPair = selectEphemeralKeyPair(state);
+		if (!tokenEvent.sender_id || !zkProofs || !ephemeralKeyPair) {
+			thunkAPI.dispatch(
+				toastActions.addToast({
+					message: 'Wallet not available. Please enable wallet.',
+					type: 'error'
+				})
+			);
+			return thunkAPI.rejectWithValue('Wallet not available');
+		}
+
+		if (!tokenEvent.receiver_id) {
+			thunkAPI.dispatch(toastActions.addToast({ message: 'Recipient wallet not found', type: 'error' }));
+			return thunkAPI.rejectWithValue('Recipient wallet not found');
+		}
+
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.sendToken(mezon.session, {
-			receiver_id: tokenEvent.receiver_id,
-			amount: tokenEvent.amount,
-			note: tokenEvent.note,
-			extra_attribute: tokenEvent.extra_attribute
+		if (!mezon.mmnClient) {
+			return thunkAPI.rejectWithValue('MmnClient not initialized');
+		}
+
+		const currentNonce = await mezon.mmnClient.getCurrentNonce(tokenEvent.sender_id, 'pending');
+
+		const response = await mezon.mmnClient.sendTransaction({
+			sender: tokenEvent.sender_id,
+			recipient: tokenEvent.receiver_id,
+			amount: mezon.mmnClient.scaleAmountToDecimals(tokenEvent.amount ?? 0),
+			nonce: currentNonce.nonce + 1,
+			textData: tokenEvent.note,
+			extraInfo: {
+				type: ETransferType.TransferToken,
+				UserReceiverId: tokenEvent.receiver_id || '',
+				UserSenderId: tokenEvent.sender_id || '',
+				UserSenderUsername: mezon.session.username || ''
+			},
+			publicKey: ephemeralKeyPair.publicKey,
+			privateKey: ephemeralKeyPair.privateKey,
+			zkProof: zkProofs.proof,
+			zkPub: zkProofs.public_input
 		});
 
-		if (response) {
+		if (response.ok) {
 			thunkAPI.dispatch(toastActions.addToast({ message: 'Funds Transferred', type: 'success' }));
 			thunkAPI.dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
-			return response;
+			return { ...response, tx_hash: response.tx_hash };
 		} else {
-			thunkAPI.dispatch(toastActions.addToast({ message: 'An error occurred, please try again', type: 'error' }));
+			thunkAPI.dispatch(toastActions.addToast({ message: response.error || 'An error occurred, please try again', type: 'error' }));
+			return thunkAPI.rejectWithValue(response.error);
 		}
 	} catch (error) {
 		captureSentryError(error, 'token/sendToken');
+		thunkAPI.dispatch(
+			toastActions.addToast({
+				message: error instanceof Error ? error.message : 'Transaction failed',
+				type: 'error'
+			})
+		);
 		return thunkAPI.rejectWithValue(error);
 	}
 });
@@ -128,6 +221,9 @@ export const giveCoffeeSlice = createSlice({
 			if (currentUserId === tokenEvent.receiver_id) {
 				state.tokenUpdate[currentUserId] += tokenEvent.amount || 0;
 			}
+		},
+		setPendingGiveCoffee: (state, action: PayloadAction<boolean>) => {
+			state.pendingGiveCoffee = action.payload;
 		}
 	}
 });
