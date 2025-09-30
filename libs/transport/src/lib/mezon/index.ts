@@ -63,6 +63,7 @@ export function createClient(options: CreateMezonClientOptions) {
 	const client = new Client(key, host, port, ssl);
 
 	client.onRefreshSession = (session: ApiSession) => {
+		console.warn('log => session onRefreshSession from callback: ', session);
 		try {
 			localStorage.setItem(SESSION_REFRESH_KEY, JSON.stringify(session));
 		} catch (e) {

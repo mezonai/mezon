@@ -419,6 +419,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 
 			const localRefresh = await getLocalRefreshToken();
+			console.warn('log => refreshSession localRefresh: ', localRefresh);
 			const sessionObj = new Session(
 				localRefresh?.token || session?.token,
 				localRefresh?.refresh_token || session?.refresh_token,
@@ -443,7 +444,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				await logOutMezon();
 				return;
 			}
-
+			console.warn('log => localRefresh?.refresh_token call to sessionRefresh: ', localRefresh?.refresh_token);
 			const newSession = await clientRef.current.sessionRefresh(
 				new Session(
 					localRefresh?.token || session?.token,
