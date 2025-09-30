@@ -228,7 +228,7 @@ function MessageWithUser({
 						{ 'pointer-events-none': message.isSending },
 						{ 'is-error pointer-events-none': message.isError },
 						{
-							'max-w-[37rem] bg-[#2f3136] border border-[#40444b] rounded-lg mx-2 my-1 p-3': message.content?.isCard
+							'max-w-[37rem] bg-tertiary border-theme-primary rounded-lg mx-2 my-1 p-3': message.content?.isCard
 						}
 					)}
 					create_time={message.create_time}
@@ -378,14 +378,14 @@ function MessageWithUser({
 
 					{!isTopic && message?.content?.isCard && !isEphemeralMessage && message?.code !== TypeMessage.Topic && (
 						<div
-							className="border-t border-[#40444b] mt-3 pt-3 flex items-center justify-between cursor-pointer hover:bg-[#36393f] transition-colors duration-150 rounded-b-lg -mx-3 -mb-3 px-3 py-2"
+							className="border-t-theme-primary border-divider mt-3 pt-3 flex items-center justify-between cursor-pointer hover:bg-accent transition-colors duration-150 rounded-b-lg -mx-3 -mb-3 px-3 py-2"
 							onClick={handleLeaveComment}
 						>
-							<div className="flex items-center gap-2 text-sm text-[#b9bbbe]">
+							<div className="flex items-center gap-2 text-sm text-theme-primary opacity-75">
 								<Icons.MessageSquareIcon className="w-5 h-5" />
 								<span>Go to Topic</span>
 							</div>
-							<Icons.ArrowRight className="w-4 h-4 text-[#72767d]" />
+							<Icons.ArrowRight className="w-4 h-4 text-theme-primary opacity-50" />
 						</div>
 					)}
 				</HoverStateWrapper>

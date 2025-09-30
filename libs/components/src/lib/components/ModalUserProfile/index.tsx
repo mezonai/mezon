@@ -257,14 +257,14 @@ const ModalUserProfile = ({
 			<div className="px-[16px]">
 				<div className=" w-full border-theme-primary p-2 my-[16px] text-theme-primary shadow rounded-[10px] flex flex-col text-justify bg-item-theme">
 					<div>
-						<p className="font-semibold tracking-wider text-xl one-line text-theme-primary-active my-0">
+						<p className="font-semibold tracking-wider text-xl one-line text-theme-primary-active my-0 truncate">
 							{isUserRemoved
 								? t('labels.unknownUser')
 								: checkAnonymous
 									? t('labels.anonymous')
 									: userById?.clan_nick || userById?.user?.display_name || userById?.user?.username}
 						</p>
-						<p className="text-lg font-semibold tracking-wide text-theme-primary my-0">
+						<p className="text-lg font-semibold tracking-wide text-theme-primary my-0 truncate">
 							{isUserRemoved ? t('labels.unknownUser') : usernameShow}
 						</p>
 					</div>
