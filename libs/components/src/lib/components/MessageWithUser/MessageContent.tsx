@@ -18,9 +18,10 @@ type IMessageContentProps = {
 	isSearchMessage?: boolean;
 	isInTopic?: boolean;
 	isEphemeral?: boolean;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending }: IMessageContentProps) => {
+const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
@@ -45,6 +46,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 			onCopy={handleCopyMessage}
 			isEphemeral={isEphemeral}
 			isSending={isSending}
+			onContextMenu={onContextMenu}
 		/>
 	);
 };
@@ -102,7 +104,8 @@ const MessageText = ({
 	isSearchMessage,
 	onCopy,
 	isEphemeral,
-	isSending
+	isSending,
+	onContextMenu
 }: {
 	message: IMessageWithUser;
 	lines: string;
@@ -113,6 +116,7 @@ const MessageText = ({
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
 	isEphemeral?: boolean;
 	isSending?: boolean;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
 	let patchedContent = content;
 	if ((!content?.mk || content.mk.length === 0) && Array.isArray(content?.lk) && content.lk.length > 0) {
@@ -164,6 +168,7 @@ const MessageText = ({
 					messageId={message.id}
 					isEphemeral={isEphemeral}
 					isSending={isSending}
+					onContextMenu={onContextMenu}
 				/>
 			) : null}
 		</>

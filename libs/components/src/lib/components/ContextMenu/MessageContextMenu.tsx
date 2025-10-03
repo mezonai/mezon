@@ -50,7 +50,6 @@ import {
 import { Icons } from '@mezon/ui';
 import type { ContextMenuItem, IMessageWithUser } from '@mezon/utils';
 import {
-	AMOUNT_TOKEN,
 	EEventAction,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
@@ -87,6 +86,8 @@ type MessageContextMenuProps = {
 	isTopic: boolean;
 	openDeleteMessageModal: () => void;
 	openPinMessageModal: () => void;
+	linkContent?: string;
+	isLinkContent?: boolean;
 };
 
 type JsonObject = {
@@ -115,7 +116,9 @@ function MessageContextMenu({
 	activeMode,
 	isTopic,
 	openPinMessageModal,
-	openDeleteMessageModal
+	openDeleteMessageModal,
+	linkContent,
+	isLinkContent
 }: MessageContextMenuProps) {
 	const { t } = useTranslation('contextMenu');
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
@@ -535,6 +538,7 @@ function MessageContextMenu({
 	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
+	const checkElementIsLink = elementTarget instanceof HTMLAnchorElement;
 
 	const urlImage = useMemo(() => {
 		if (imageSrc) {
@@ -563,13 +567,20 @@ function MessageContextMenu({
 			setEnableCopyImageItem(true);
 			setEnableSaveImageItem(true);
 			return;
+		}
+		if (isLinkContent && linkContent) {
+			setEnableCopyLinkItem(true);
+			setEnableOpenLinkItem(true);
+			setEnableCopyImageItem(false);
+			setEnableSaveImageItem(false);
+			return;
 		} else {
 			setEnableCopyLinkItem(false);
 			setEnableOpenLinkItem(false);
 			setEnableCopyImageItem(false);
 			setEnableSaveImageItem(false);
 		}
-	}, [checkElementIsImage, isClickedEmoji, isClickedSticker]);
+	}, [checkElementIsImage, checkElementIsLink, isClickedEmoji, isClickedSticker, isLinkContent, linkContent]);
 
 	const sendTransactionMessage = useCallback(
 		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
@@ -800,7 +811,8 @@ function MessageContextMenu({
 		builder.when(enableCopyLinkItem, (builder) => {
 			builder.addMenuItem('copyLink', t('copyLink'), async () => {
 				try {
-					await handleCopyLink(urlImage);
+					const contentToCopy = isLinkContent && linkContent ? linkContent : checkElementIsImage ? urlImage : (message?.content?.t ?? '');
+					await handleCopyLink(contentToCopy);
 				} catch (error) {
 					console.error(t('errors.failedToCopyLink'), error);
 				}
@@ -810,7 +822,8 @@ function MessageContextMenu({
 		builder.when(enableOpenLinkItem, (builder) => {
 			builder.addMenuItem('openLink', t('openLink'), async () => {
 				try {
-					await handleOpenLink(urlImage);
+					const contentToOpen = isLinkContent && linkContent ? linkContent : checkElementIsImage ? urlImage : (message?.content?.t ?? '');
+					await handleOpenLink(contentToOpen);
 				} catch (error) {
 					console.error(t('errors.failedToCopyImage'), error);
 				}
@@ -872,7 +885,9 @@ function MessageContextMenu({
 		urlImage,
 		handleItemClick,
 		handleCreateTopic,
+
 		handleSlashCommands,
+		handleAddToNote,
 		isTopic
 	]);
 	/* eslint-disable no-console */

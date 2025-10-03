@@ -1,10 +1,10 @@
 import { useIdleRender } from '@mezon/core';
+import type { RootState, UpdatePinMessage } from '@mezon/store';
 import {
 	getActiveMode,
 	getCurrentChannelAndDm,
 	getStore,
 	pinMessageActions,
-	RootState,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectCurrentChannel,
@@ -12,14 +12,14 @@ import {
 	selectCurrentTopicId,
 	selectMessageByMessageId,
 	selectThreadCurrentChannel,
-	UpdatePinMessage,
 	useAppDispatch
 } from '@mezon/store';
 import { isValidUrl } from '@mezon/transport';
 import { SHOW_POSITION } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ShowContextMenuParams, useContextMenu } from 'react-contexify';
+import type { ShowContextMenuParams } from 'react-contexify';
+import { useContextMenu } from 'react-contexify';
 import { useModal } from 'react-modal-hook';
 import ModalDeleteMess from '../DeleteMessageModal/ModalDeleteMess';
 import { ModalAddPinMess } from '../PinMessModal';
@@ -57,6 +57,8 @@ type MessageContextMenuContextValue = {
 export type MessageContextMenuProps = {
 	messageId: string;
 	position?: ShowContextMenuParams['position'];
+	linkContent?: string;
+	isLinkContent?: boolean;
 };
 
 export const MessageContextMenuContext = createContext<MessageContextMenuContextValue>({
@@ -115,6 +117,8 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 	const [posShortProfile, setPosShortProfile] = useState<posShortProfileOpt>({});
 	const [isTopic, setIsTopic] = useState<boolean>(false);
 	const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+	const [linkContent, setLinkContent] = useState<string | undefined>(undefined);
+	const [isLinkContent, setIsLinkContent] = useState<boolean>(false);
 
 	const [openDeleteMessageModal, closeDeleteMessageModal] = useModal(() => {
 		const store = getStore();
@@ -155,7 +159,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 				clan_id: currentClanId ?? '',
 				channel_id: message?.channel_id,
 				message_id: message?.id,
-				message: message
+				message
 			})
 		);
 		const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
@@ -198,15 +202,17 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 		return (
 			<MessageContextMenu
 				id={MESSAGE_CONTEXT_MENU_ID}
-				messageId={messageIdRef.current}
+				messageId={selectedMessageId || ''}
 				elementTarget={elementTarget}
 				activeMode={mode}
 				isTopic={isTopic}
 				openDeleteMessageModal={openDeleteMessageModal}
 				openPinMessageModal={openPinMessageModal}
+				linkContent={linkContent}
+				isLinkContent={isLinkContent}
 			/>
 		);
-	}, [elementTarget, isMenuVisible, isTopic]);
+	}, [elementTarget, isMenuVisible, isTopic, linkContent, isLinkContent, openDeleteMessageModal, openPinMessageModal, selectedMessageId]);
 
 	const setPositionShow = useCallback((pos: string) => {
 		setPosShowMenu(pos);
@@ -254,6 +260,8 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			setElementTarget(event.target as HTMLElement);
 			setIsTopic(isTopic);
 			setSelectedMessageId(messageId);
+			setLinkContent(props?.linkContent);
+			setIsLinkContent(props?.isLinkContent || false);
 
 			const niceProps = {
 				messageId,
@@ -261,7 +269,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			};
 			showContextMenu(event, niceProps);
 		},
-		[]
+		[showContextMenu]
 	);
 
 	const value = useMemo(

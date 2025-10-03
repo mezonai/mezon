@@ -9,10 +9,12 @@ import {
 	isTikTokLink,
 	isYouTubeLink
 } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useMessageContextMenu } from '../ContextMenu';
 import InviteAcceptModal from '../InviteAcceptModal';
 
 type MarkdownContentOpt = {
@@ -25,6 +27,8 @@ type MarkdownContentOpt = {
 	typeOfBacktick?: EBacktickType;
 	isReply?: boolean;
 	isSearchMessage?: boolean;
+	messageId?: string;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const extractChannelParams = (url: string) => {
@@ -61,14 +65,34 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	isBacktick,
 	typeOfBacktick,
 	isReply,
-	isSearchMessage
+	isSearchMessage,
+	messageId,
+	onContextMenu
 }) => {
 	const appearanceTheme = useSelector(selectTheme);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
+	const { showMessageContextMenu } = useMessageContextMenu();
 	const origin = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/`;
 	const originClan = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/`;
 	const originDirect = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/direct/message/`;
+
+	const handleContextMenu = useCallback(
+		(event: React.MouseEvent<HTMLElement>) => {
+			event.preventDefault();
+			event.stopPropagation();
+
+			if (isLink && content && messageId) {
+				showMessageContextMenu(event, messageId, ChannelStreamMode.STREAM_MODE_CHANNEL, false, {
+					linkContent: content,
+					isLinkContent: true
+				});
+			} else if (onContextMenu) {
+				onContextMenu(event);
+			}
+		},
+		[isLink, content, messageId, showMessageContextMenu, onContextMenu]
+	);
 
 	const [isLoadingInvite, setIsLoadingInvite] = useState(false);
 	const [inviteError, setInviteError] = useState<string | null>(null);
@@ -213,10 +237,17 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const posInReply = isJumMessageEnabled && !isTokenClickAble;
 
 	return (
-		<div className={` inline${!isLink ? ' bg-item-theme rounded-lg' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}>
+		<div
+			onContextMenu={handleContextMenu}
+			className={` inline${!isLink ? ' bg-item-theme rounded-lg' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}
+		>
 			{isLink && content && isGoogleMapsLink(content) ? (
 				<a
-					onClick={() => onClickLink(content)}
+					href={content}
+					onClick={(e) => {
+						e.preventDefault();
+						onClickLink(content);
+					}}
 					rel="noopener noreferrer"
 					className="text-blue-500 cursor-pointer break-words underline tagLink"
 					target="_blank"
@@ -226,7 +257,11 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 			) : (
 				isLink && (
 					<a
-						onClick={() => onClickLink(content ?? '')}
+						href={content ?? '#'}
+						onClick={(e) => {
+							e.preventDefault();
+							onClickLink(content ?? '');
+						}}
 						rel="noopener noreferrer"
 						className="text-blue-500 cursor-pointer break-words underline tagLink"
 						target="_blank"

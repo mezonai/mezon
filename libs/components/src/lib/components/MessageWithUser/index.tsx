@@ -51,7 +51,7 @@ export type MessageWithUserProps = {
 	isShowFull?: boolean;
 	isHighlight?: boolean;
 	editor?: JSX.Element;
-	onContextMenu?: (event: React.MouseEvent<HTMLParagraphElement>) => void;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	popup?: () => ReactNode;
 	isSearchMessage?: boolean;
 	allowDisplayShortProfile: boolean;
@@ -316,6 +316,7 @@ function MessageWithUser({
 									isSearchMessage={isSearchMessage}
 									isInTopic={isTopic}
 									isEphemeral={isEphemeralMessage}
+									onContextMenu={onContextMenu}
 								/>
 								{isEphemeralMessage && (
 									<div className="flex items-center gap-1 mt-1 mb-1 text-xs italic text-theme-primary opacity-60">
@@ -408,7 +409,7 @@ interface HoverStateWrapperProps {
 	children: ReactNode;
 	popup?: () => ReactNode;
 	isSearchMessage?: boolean;
-	onContextMenu?: (event: React.MouseEvent<HTMLParagraphElement>) => void;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	messageId?: string;
 	className?: string;
 	create_time?: string;

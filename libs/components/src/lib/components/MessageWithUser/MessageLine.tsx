@@ -26,6 +26,7 @@ interface RenderContentProps {
 	className?: string;
 	isEphemeral?: boolean;
 	isSending?: boolean;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export interface ElementToken {
@@ -200,7 +201,8 @@ export const MessageLine = ({
 	isReply,
 	onClickToMessage,
 	isEphemeral,
-	isSending
+	isSending,
+	onContextMenu
 }: RenderContentProps) => {
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
 	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], lky = [] } = content || {};
@@ -311,6 +313,8 @@ export const MessageLine = ({
 						index={index}
 						s={s}
 						contentInElement={contentInElement}
+						messageId={messageId}
+						onContextMenu={onContextMenu}
 					/>
 				);
 			} else if (element.kindOf === ETokenMessage.MARKDOWNS) {
@@ -372,6 +376,8 @@ export const MessageLine = ({
 									content={contentInElement}
 									isReply={isReply}
 									isSearchMessage={isSearchMessage}
+									messageId={messageId}
+									onContextMenu={onContextMenu}
 								/>
 							)
 						);
@@ -386,6 +392,8 @@ export const MessageLine = ({
 									content={contentInElement}
 									isReply={isReply}
 									isSearchMessage={isSearchMessage}
+									messageId={messageId}
+									onContextMenu={onContextMenu}
 								/>
 							)
 						);
@@ -403,6 +411,8 @@ export const MessageLine = ({
 							index={index}
 							s={s}
 							contentInElement={contentInElement}
+							messageId={messageId}
+							onContextMenu={onContextMenu}
 						/>
 					);
 				} else {
@@ -428,6 +438,8 @@ export const MessageLine = ({
 							content={content}
 							isInPinMsg={isInPinMsg}
 							typeOfBacktick={element.type}
+							messageId={messageId}
+							onContextMenu={onContextMenu}
 						/>
 					);
 				}
@@ -514,10 +526,30 @@ interface VoiceLinkContentProps {
 	index: number;
 	s: number;
 	contentInElement: string | undefined;
+	messageId?: string;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-export const VoiceLinkContent = ({ meetingCode, isTokenClickAble, isJumMessageEnabled, index, s, contentInElement }: VoiceLinkContentProps) => {
-	return <MarkdownContent isLink={true} isTokenClickAble={isTokenClickAble} isJumMessageEnabled={isJumMessageEnabled} content={contentInElement} />;
+export const VoiceLinkContent = ({
+	meetingCode,
+	isTokenClickAble,
+	isJumMessageEnabled,
+	index,
+	s,
+	contentInElement,
+	messageId,
+	onContextMenu
+}: VoiceLinkContentProps) => {
+	return (
+		<MarkdownContent
+			isLink={true}
+			isTokenClickAble={isTokenClickAble}
+			isJumMessageEnabled={isJumMessageEnabled}
+			content={contentInElement}
+			messageId={messageId}
+			onContextMenu={onContextMenu}
+		/>
+	);
 };
 
 interface MentionContentProps {
