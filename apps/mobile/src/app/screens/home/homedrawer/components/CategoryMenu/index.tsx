@@ -48,7 +48,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	const styles = style(themeValue);
 	const currentClan = useSelector(selectCurrentClan);
 	const currentChanelId = useSelector(selectCurrentChannelId);
-	const [isCanManageChannel] = usePermissionChecker([EPermission.manageChannel], currentChanelId ?? '');
+	const [isCanManageChannel, isCanManageClan] = usePermissionChecker([EPermission.manageChannel, EPermission.manageClan], currentChanelId ?? '');
 	const navigation = useNavigation<AppStackScreenProps<StackMenuClanScreen>['navigation']>();
 	const { handleMarkAsReadCategory, statusMarkAsReadCategory } = useMarkAsRead();
 	const { dismiss } = useBottomSheetModal();
@@ -175,7 +175,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 				});
 			},
 			icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
-			isShow: isCanManageChannel
+			isShow: isCanManageClan
 		},
 		{
 			title: t('menu.organizationMenu.createChannel'),
@@ -195,7 +195,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 			title: t('menu.organizationMenu.delete'),
 			onPress: handleDelete,
 			icon: <MezonIconCDN icon={IconCDN.closeLargeIcon} color={baseColor.redStrong} />,
-			isShow: isCanManageChannel,
+			isShow: isCanManageClan,
 			textStyle: {
 				color: baseColor.redStrong
 			}
