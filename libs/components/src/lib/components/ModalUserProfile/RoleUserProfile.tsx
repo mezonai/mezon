@@ -171,11 +171,11 @@ const AddRolesComp = ({
 	};
 
 	return (
-		<div className="w-[300px] max-h-60 dark:bg-[#323232] bg-white p-2 dark:text-white text-black overflow-y: auto rounded border border-slate-300 dark:border-slate-700 flex flex-col gap-3">
+		<div className="w-[300px] max-h-60 bg-theme-setting-primary rounded-lg text-theme-primary flex flex-col gap-3">
 			<div className="relative w-full h-9">
 				<input
 					type="text"
-					className="w-full border-[#1d1c1c] rounded-[5px] dark:bg-[#1d1c1c] bg-bgLightModeSecond p-2 mb-2"
+					className="w-full bg-theme-setting-nav rounded-tl-lg rounded-tr-lg p-2 mb-2"
 					placeholder={t('labels.role')}
 					onChange={handleInputChange}
 					onClick={(e) => e.stopPropagation()}
@@ -187,7 +187,7 @@ const AddRolesComp = ({
 					filteredListRoleBySearch.map((role, index) => (
 						<div
 							key={index}
-							className="text-base w-full rounded-[10px] p-2 bg-transparent mr-2 dark:hover:bg-gray-800 hover:bg-bgLightModeButton flex gap-2 items-center text-theme-primary"
+							className="text-base w-full  p-2 bg-transparent mr-2 bg-item-hover flex gap-2 items-center text-theme-primary"
 							onClick={() => addRole(role.id)}
 						>
 							<div className="size-3 min-w-3 rounded-full" style={{ backgroundColor: role.color || DEFAULT_ROLE_COLOR }}></div>
@@ -197,8 +197,8 @@ const AddRolesComp = ({
 					))
 				) : (
 					<div className="flex flex-col py-4 gap-y-4 items-center">
-						<p className="font-medium dark:text-white text-black">{t('labels.nope')}</p>
-						<p className="font-normal dark:text-zinc-400 text-colorTextLightMode">{t('labels.typoError')}</p>
+						<p className="font-medium text-theme-primary-active">{t('labels.nope')}</p>
+						<p className="font-normal text-theme-primary-active">{t('labels.typoError')}</p>
 					</div>
 				)}
 			</div>

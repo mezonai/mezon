@@ -1936,6 +1936,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						}
 					}
 				}
+				if (status === EEventAction.UPDATE) {
+					dispatch(policiesActions.fetchPermissionsUser({ clanId: role.clan_id as string }));
+				}
 
 				dispatch(rolesClanActions.update({ role, clanId: role.clan_id as string }));
 				return;
