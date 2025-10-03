@@ -1,6 +1,7 @@
 import { usePermissionChecker } from '@mezon/core';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { RolesClanEntity, selectAllRolesClan } from '@mezon/store-mobile';
+import type { RolesClanEntity } from '@mezon/store-mobile';
+import { selectAllRolesClan } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,8 @@ import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { SeparatorWithLine } from '../../components/Common';
 import ImageNative from '../../components/ImageNative';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
 type ClanSettingsScreen = typeof APP_SCREEN.MENU_CLAN.ROLE_SETTING;

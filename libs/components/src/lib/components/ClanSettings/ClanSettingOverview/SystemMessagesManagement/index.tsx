@@ -1,11 +1,20 @@
-import { selectAllChannels, selectCurrentClanId, useAppSelector } from '@mezon/store';
+import { fetchChannels, selectAllChannels, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+enum ETypeUpdateSystemMessage {
+	WELCOME_RANDOM = 1,
+	WELCOME_STICKER = 2,
+	BOOTS_MESSAGE = 3,
+	SETUP_TIPS = 4,
+	HIDE_AUDIT_LOG = 5,
+	CHANNEL = 6
+}
 
 type SystemMessagesManagementProps = {
 	updateSystem: ApiSystemMessage | null;
@@ -15,11 +24,23 @@ type SystemMessagesManagementProps = {
 
 const SystemMessagesManagement = ({ updateSystem, setUpdateSystemMessageRequest, channelSelectedId }: SystemMessagesManagementProps) => {
 	const { t } = useTranslation('clanSettings');
+	const dispatch = useAppDispatch();
 	const channelsList = useAppSelector(selectAllChannels);
 	const currentClanId = useAppSelector(selectCurrentClanId);
+
+	useEffect(() => {
+		if (currentClanId) {
+			dispatch(
+				fetchChannels({
+					clanId: currentClanId,
+					channelType: ChannelType.CHANNEL_TYPE_CHANNEL
+				})
+			);
+		}
+	}, [currentClanId]);
 	const selectedChannel = useMemo(() => {
 		return channelsList.find((channel) => channel.id === channelSelectedId);
-	}, [channelSelectedId]);
+	}, [channelsList, channelSelectedId]);
 
 	const handleToggleSetting = (checked: boolean, type: ETypeUpdateSystemMessage, channelId?: string) => {
 		if (channelId && channelId !== channelSelectedId && type === ETypeUpdateSystemMessage.CHANNEL) {
@@ -74,7 +95,7 @@ const SystemMessagesManagement = ({ updateSystem, setUpdateSystemMessageRequest,
 		<div className={'border-t-theme-primary mt-10 pt-10 flex flex-col '}>
 			<h3 className="text-sm font-bold uppercase mb-2">{t('systemMessages.title')}</h3>
 			<Menu menu={menu} className={'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode bg-theme-input px-2 z-20'}>
-				<div className="w-full h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm border border-theme-primary bg-theme-input ">
+				<div className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm border border-theme-primary bg-theme-input ">
 					<div className={' flex flex-row items-center'}>
 						<Icons.Hashtag defaultSize="w-4 h-4 " />
 						<p>{selectedChannel?.channel_label}</p>
@@ -106,15 +127,6 @@ const SystemMessagesManagement = ({ updateSystem, setUpdateSystemMessageRequest,
 };
 
 export default SystemMessagesManagement;
-
-enum ETypeUpdateSystemMessage {
-	WELCOME_RANDOM = 1,
-	WELCOME_STICKER = 2,
-	BOOTS_MESSAGE = 3,
-	SETUP_TIPS = 4,
-	HIDE_AUDIT_LOG = 5,
-	CHANNEL = 6
-}
 
 type ToggleItemProps = {
 	label: string;
