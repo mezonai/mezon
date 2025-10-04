@@ -1,12 +1,15 @@
 import { captureSentryError } from '@mezon/logger';
-import { IUserChannel, LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { IUserChannel, LoadingStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { selectAllUserClans, selectEntitesUserClans } from '../clanMembers/clan.members';
-import { MezonValueContext, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
-import { ChannelMembersEntity } from './channel.members';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
+import type { ChannelMembersEntity } from './channel.members';
 
 export const ALL_USERS_BY_ADD_CHANNEL = 'allUsersByAddChannel';
 
@@ -78,13 +81,13 @@ export const fetchUserChannels = createAsyncThunk(
 
 			if (response.fromCache || Date.now() - response.time > 1000) {
 				return {
-					channelId: channelId,
+					channelId,
 					user_ids: response,
 					fromCache: response.fromCache || true
 				};
 			}
 			return {
-				channelId: channelId,
+				channelId,
 				user_ids: response,
 				fromCache: false
 			};
@@ -186,9 +189,13 @@ export const userChannelsReducer = userChannelsSlice.reducer;
 
 export const getUserChannelsState = (rootState: { [ALL_USERS_BY_ADD_CHANNEL]: UsersByAddChannelState }): UsersByAddChannelState =>
 	rootState[ALL_USERS_BY_ADD_CHANNEL];
-const { selectEntities } = UserChannelAdapter.getSelectors();
+const { selectEntities, selectAll, selectById } = UserChannelAdapter.getSelectors();
 
 export const selectUserChannelUCEntities = createSelector(getUserChannelsState, selectEntities);
+export const selectMemberByGroupId = createSelector([getUserChannelsState, (state, channelId: string) => channelId], (state, channelId) =>
+	selectById(state, channelId)
+);
+
 export const selectAllUserChannel = (channelId: string) =>
 	createSelector([selectUserChannelUCEntities, selectAllUserClans, selectEntitesUserClans], (channelMembers, allUserClans, usersClanEntities) => {
 		let membersOfChannel: ChannelMembersEntity[] = [];
