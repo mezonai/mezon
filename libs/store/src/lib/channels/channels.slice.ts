@@ -24,8 +24,7 @@ import type {
 } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import type { FetchCategoriesPayload } from '../categories/categories.slice';
-import { categoriesActions } from '../categories/categories.slice';
+import { categoriesActions, type FetchCategoriesPayload } from '../categories/categories.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import type { MezonValueContext } from '../helpers';
@@ -1009,6 +1008,20 @@ export const channelsSlice = createSlice({
 			}
 		},
 
+		removeByCategory: (state, action: PayloadAction<{ clanId: string; categoryId: string }>) => {
+			const { clanId, categoryId } = action.payload;
+			const clanState = state.byClans[clanId];
+			if (!clanState) return;
+			const entityState = clanState.entities;
+			const idsToRemove = (entityState.ids as string[]).filter((id) => {
+				const entity = entityState.entities[id];
+				return (entity?.category_id as string) === categoryId;
+			});
+			if (idsToRemove.length > 0) {
+				channelsAdapter.removeMany(entityState, idsToRemove);
+			}
+		},
+
 		update: (state, action: PayloadAction<{ clanId: string; update: Update<ChannelsEntity, string> }>) => {
 			const { clanId, update } = action.payload;
 			if (!state.byClans[clanId]) {
@@ -1416,6 +1429,14 @@ export const channelsSlice = createSlice({
 			}
 			state.showScrollDownButton[channelId] = isVisible;
 		},
+		invalidateCache: (state, action: PayloadAction<{ clanId: string; channelsCache?: CacheMetadata }>) => {
+			const { clanId, channelsCache } = action.payload;
+			if (!state.byClans[clanId]) {
+				state.byClans[clanId] = getInitialClanState();
+			}
+
+			state.byClans[clanId].channelsCache = channelsCache;
+		},
 
 		bulkDeleteChannels: (state, action: PayloadAction<{ clanId: string; channelIds: string[] }>) => {
 			const { clanId, channelIds } = action.payload;
@@ -1593,8 +1614,11 @@ const { selectAll } = channelsAdapter.getSelectors();
 
 export const getChannelsState = (rootState: { [CHANNELS_FEATURE_KEY]: ChannelsState }): ChannelsState => rootState[CHANNELS_FEATURE_KEY];
 
-export const selectAllChannels = createSelector([getChannelsState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) =>
-	selectAll(state.byClans[clanId]?.entities ?? channelsAdapter.getInitialState())
+export const selectAllChannels = createSelector(
+	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
+	(channelsState, clanId) => {
+		return selectAll(channelsState.byClans[clanId]?.entities ?? channelsAdapter.getInitialState());
+	}
 );
 
 export const selectChannelsEntities = createSelector(

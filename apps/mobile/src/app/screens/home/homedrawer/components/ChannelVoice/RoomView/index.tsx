@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { DisconnectReason, RoomEvent } from 'livekit-client';
+import { DisconnectReason, Participant, RoomEvent, Track, TrackPublication } from 'livekit-client';
 import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useState } from 'react';
@@ -55,16 +55,6 @@ const RoomViewListener = memo(
 			}
 		}, [dispatch, isShowPreCallInterface, participants?.length]);
 
-		useEffect(() => {
-			if (focusedScreenShare && participants?.length > 1) {
-				const focusedParticipant = participants.find((p) => p.identity === focusedScreenShare?.participant?.identity);
-
-				if (!focusedParticipant?.isScreenShareEnabled) {
-					setFocusedScreenShare(null);
-				}
-			}
-		}, [participants, focusedScreenShare]);
-
 		const getReasonContent = (reason: DisconnectReason) => {
 			switch (reason) {
 				case DisconnectReason.PARTICIPANT_REMOVED:
@@ -102,14 +92,36 @@ const RoomViewListener = memo(
 			[channelId, clanId, room, t]
 		);
 
+		const handleParticipantDisconnected = useCallback(
+			(participant: Participant) => {
+				if (focusedScreenShare?.participant?.identity === participant.identity) {
+					setFocusedScreenShare(null);
+				}
+			},
+			[focusedScreenShare?.participant?.identity, setFocusedScreenShare]
+		);
+
+		const handleTrackUnpublished = useCallback(
+			(publication: TrackPublication) => {
+				if (publication.source === Track.Source.ScreenShare && publication.trackSid === focusedScreenShare?.publication?.trackSid) {
+					setFocusedScreenShare(null);
+				}
+			},
+			[focusedScreenShare?.publication?.trackSid, setFocusedScreenShare]
+		);
+
 		useEffect(() => {
 			room?.on(RoomEvent.Disconnected, handleDisconnected);
+			room?.on(RoomEvent.ParticipantDisconnected, handleParticipantDisconnected);
+			room?.on(RoomEvent.TrackUnpublished, handleTrackUnpublished);
 			return () => {
 				if (room) {
 					room.off(RoomEvent.Disconnected, handleDisconnected);
+					room.off(RoomEvent.ParticipantDisconnected, handleParticipantDisconnected);
+					room.off(RoomEvent.TrackUnpublished, handleTrackUnpublished);
 				}
 			};
-		}, [handleDisconnected, room]);
+		}, [handleDisconnected, handleParticipantDisconnected, handleTrackUnpublished, room]);
 		return null;
 	}
 );

@@ -2,6 +2,7 @@ import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/
 import {
 	categoriesActions,
 	clansActions,
+	defaultNotificationCategoryActions,
 	emojiSuggestionSlice,
 	hasGrandchildModal,
 	selectCurrentClan,
@@ -67,6 +68,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const [openNotiSettingModal, closeNotiSettingModal] = useModal(() => <ModalNotificationSetting onClose={closeNotiSettingModal} open={true} />);
 
 	const handleShowNotificationSetting = () => {
+		dispatch(defaultNotificationCategoryActions.fetchChannelCategorySetting({ clanId: currentClanId || '' }));
 		openNotiSettingModal();
 		setIsShowModalPanelClan(false);
 	};

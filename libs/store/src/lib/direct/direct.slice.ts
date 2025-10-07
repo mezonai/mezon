@@ -453,10 +453,6 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		thunkAPI.dispatch(directActions.upsertOne(directEntity));
 		thunkAPI.dispatch(directMetaActions.upsertOne(directEntity as DMMetaEntity));
 
-		if (!existingEntity) {
-			thunkAPI.dispatch(directActions.fetchDirectMessage({}));
-		}
-
 		return directEntity;
 	} catch (error) {
 		captureSentryError(error, 'direct/addGroupUserWS');

@@ -89,6 +89,7 @@ export const CreateNewChannelModal = () => {
 		};
 
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
+		dispatch(channelsActions.invalidateCache({ clanId: currentClan?.clan_id as string }));
 		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
 		const channelID = payload.channel_id;
 		const typeChannel = payload.type;

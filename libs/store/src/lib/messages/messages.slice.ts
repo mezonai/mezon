@@ -762,6 +762,17 @@ export const updateLastSeenMessage = createAsyncThunk(
 				timestamp: message_time ?? now,
 				messageId
 			});
+
+			if (clanId && clanId !== '0') {
+				const state = thunkAPI.getState() as RootState;
+				const clan = selectClanById(clanId)(state);
+
+				if (clan?.has_unread_message) {
+					requestIdleCallback(() => {
+						thunkAPI.dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId }));
+					});
+				}
+			}
 		} catch (e) {
 			console.error(e, 'updateLastSeenMessage');
 			captureSentryError(e, 'messages/updateLastSeenMessage');

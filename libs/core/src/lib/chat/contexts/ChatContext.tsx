@@ -439,6 +439,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 								isReset: true
 							})
 						);
+					} else {
+						if (message.clan_id) {
+							const currentClanId = selectCurrentClanId(store.getState());
+							if (currentClanId !== message.clan_id) {
+								dispatch(clansActions.setHasUnreadMessage({ clanId: message.clan_id, hasUnread: true }));
+							}
+						}
 					}
 					if (message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove) {
 						dispatch(

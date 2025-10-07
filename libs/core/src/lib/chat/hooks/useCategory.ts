@@ -1,5 +1,6 @@
 import {
 	categoriesActions,
+	channelCategorySettingActions,
 	channelsActions,
 	getStore,
 	selectAllCategories,
@@ -12,8 +13,7 @@ import {
 	selectWelcomeChannelByClanId,
 	useAppDispatch
 } from '@mezon/store';
-import type { ICategoryChannel, IChannel } from '@mezon/utils';
-import { checkIsThread } from '@mezon/utils';
+import { checkIsThread, type ICategoryChannel, type IChannel } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -90,6 +90,7 @@ export function useCategory() {
 				})
 			);
 
+			dispatch(channelCategorySettingActions.invalidateCache({ clanId: category.clan_id || '', cache: null }));
 			navigateAfterDeleteCategory(category.id);
 		},
 		[currentChannelId, currentClanId, navigate, toChannelPage, dispatch, navigateAfterDeleteCategory]

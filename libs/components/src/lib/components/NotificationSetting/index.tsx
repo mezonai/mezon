@@ -105,14 +105,18 @@ const ModalNotificationSetting = (props: ModalParam) => {
 	};
 	const categorizedChannels = useCategorizedAllChannels();
 	const options = categorizedChannels.reduce<Array<{ id: string; label: string; title: string }>>((acc, category) => {
-		acc.push({
-			id: category.id,
-			label: (category as IChannel).channel_label || category.category_name || '',
-			title: (category as ICategoryChannel).channels ? 'category' : 'channel'
-		});
+		const isAlreadySelected = sortedChannelCategorySettings.some((setting) => setting.id === category.id);
+		if (!isAlreadySelected) {
+			acc.push({
+				id: category.id,
+				label: (category as IChannel).channel_label || category.category_name || '',
+				title: (category as ICategoryChannel).channels ? 'category' : 'channel'
+			});
+		}
 
 		return acc;
 	}, []);
+
 	const [selectedOption, setSelectedOption] = useState(null);
 	const handleChange = (newValue: any) => {
 		setSelectedOption(newValue);

@@ -443,6 +443,42 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 	}
 });
 
+export const updateHasUnreadBasedOnChannels = createAsyncThunk<void, { clanId: string }>(
+	'clans/updateHasUnreadBasedOnChannels',
+	async ({ clanId }, thunkAPI) => {
+		try {
+			const state = thunkAPI.getState() as RootState;
+			const channelMeta = state.channelmeta.entities;
+
+			const clanChannelState = state.channels.byClans?.[clanId];
+			if (!clanChannelState?.entities) {
+				thunkAPI.dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread: false }));
+				return;
+			}
+
+			const channelEntities = clanChannelState.entities.entities;
+			const channelIds = clanChannelState.entities.ids;
+
+			let hasUnread = false;
+			for (const channelId of channelIds) {
+				const channel = channelEntities[channelId];
+				if (channel?.id) {
+					const meta = channelMeta[channel.id];
+					if (meta && meta.lastSentTimestamp > meta.lastSeenTimestamp) {
+						hasUnread = true;
+						break;
+					}
+				}
+			}
+
+			thunkAPI.dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread }));
+		} catch (error) {
+			captureSentryError(error, 'clans/updateHasUnreadBasedOnChannels');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const initialClansState: ClansState = clansAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	clans: [],
@@ -629,7 +665,8 @@ export const clansSlice = createSlice({
 					clansAdapter.updateOne(state, {
 						id: clanId,
 						changes: {
-							badge_count: finalBadgeCount
+							badge_count: finalBadgeCount,
+							has_unread_message: finalBadgeCount === 0 ? false : entity.has_unread_message
 						}
 					});
 				}
@@ -642,6 +679,19 @@ export const clansSlice = createSlice({
 			if (clan) {
 				const totalCount = channels.reduce((sum, { count }) => sum + count, 0);
 				clan.badge_count = Math.max(0, (clan.badge_count ?? 0) + totalCount);
+			}
+		},
+		setHasUnreadMessage: (state, action: PayloadAction<{ clanId: string; hasUnread: boolean }>) => {
+			const { clanId, hasUnread } = action.payload;
+			const clan = state.entities[clanId];
+
+			if (clan && clan.has_unread_message !== hasUnread) {
+				clansAdapter.updateOne(state, {
+					id: clanId,
+					changes: {
+						has_unread_message: hasUnread
+					}
+				});
 			}
 		},
 		refreshStatus(state) {
@@ -767,7 +817,8 @@ export const clansActions = {
 	updateUser,
 	deleteClan,
 	joinClan,
-	transferClan
+	transferClan,
+	updateHasUnreadBasedOnChannels
 };
 
 /*

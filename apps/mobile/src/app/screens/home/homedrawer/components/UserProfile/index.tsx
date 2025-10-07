@@ -1,12 +1,10 @@
 import { useDirect, useMemberStatus } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
 import {
-	ChannelsEntity,
 	DMCallActions,
 	EStateFriend,
-	RolesClanEntity,
-	RootState,
 	directActions,
 	friendsActions,
 	getStore,

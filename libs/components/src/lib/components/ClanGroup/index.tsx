@@ -52,6 +52,13 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 		}, 0);
 	});
 
+	const hasUnreadInGroup = useSelector(() => {
+		return group.clanIds.some((clanId) => {
+			const clan = allClansEntities[clanId];
+			return clan?.has_unread_message === true;
+		});
+	});
+
 	const expandedGroupDragAndDrop = useExpandedGroupDragAndDrop(group.id, group.clanIds);
 
 	const handleToggle = () => {
@@ -279,6 +286,10 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 				>
 					{totalBadgeCount >= 100 ? '99+' : totalBadgeCount}
 				</div>
+			)}
+
+			{hasUnreadInGroup && totalBadgeCount === 0 && (
+				<div className="before:content-[''] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute before:top-3 before:left-[-14px] before:bg-white"></div>
 			)}
 		</div>
 	);

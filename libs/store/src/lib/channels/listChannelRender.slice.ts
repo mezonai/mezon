@@ -240,7 +240,9 @@ export const listChannelRenderSlice = createSlice({
 			const { clanId, categoryId } = action.payload;
 
 			if (state.listChannelRender[clanId]) {
-				state.listChannelRender[clanId] = state.listChannelRender[clanId].filter((item) => item.id !== categoryId);
+				state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
+					(item) => item.id !== categoryId && (item as IChannel).category_id !== categoryId
+				);
 			}
 		},
 		updateCategory: (state, action: PayloadAction<{ clanId: string; cate: ApiUpdateCategoryDescRequest }>) => {

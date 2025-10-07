@@ -102,6 +102,10 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 					{badgeCountClan >= 100 ? '99+' : badgeCountClan}
 				</div>
 			)}
+
+			{option?.has_unread_message && badgeCountClan === 0 && !active && (
+				<div className="before:content-[''] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute before:top-3 before:left-[-14px] before:bg-white"></div>
+			)}
 		</div>
 	);
 };

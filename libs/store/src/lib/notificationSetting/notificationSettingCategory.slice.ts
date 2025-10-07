@@ -1,11 +1,14 @@
 import { captureSentryError } from '@mezon/logger';
-import { IChannelCategorySetting, IDefaultNotificationCategory, LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiNotificationChannelCategorySetting } from 'mezon-js/dist/api.gen';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { IChannelCategorySetting, IDefaultNotificationCategory, LoadingStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiNotificationChannelCategorySetting } from 'mezon-js/dist/api.gen';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
-import { MezonValueContext, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 
 export const DEFAULT_NOTIFICATION_CATEGORY_FEATURE_KEY = 'defaultnotificationcategory';
 
@@ -136,9 +139,9 @@ export const setDefaultNotificationCategory = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
 				channel_category_id: category_id,
-				notification_type: notification_type,
-				time_mute: time_mute,
-				clan_id: clan_id
+				notification_type,
+				time_mute,
+				clan_id
 			};
 			const response = await mezon.client.setNotificationCategory(mezon.session, body);
 			if (!response) {
@@ -187,8 +190,8 @@ export const setMuteCategory = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.setMuteNotificationCategory(mezon.session, {
-				active: active,
-				notification_type: notification_type,
+				active,
+				notification_type,
 				id: category_id
 			});
 			if (!response) {
@@ -370,6 +373,13 @@ export const channelCategorySettingSlice = createSlice({
 				state.byClans[clanId] = { loadingStatus: 'not loaded' };
 			}
 			state.byClans[clanId].cache = createCacheMetadata(CHANNEL_CATEGORY_SETTING_CACHE_TIME);
+		},
+
+		invalidateCache: (state, action: PayloadAction<{ clanId: string; cache: CacheMetadata | null }>) => {
+			const { clanId, cache } = action.payload;
+			if (state.byClans[clanId]) {
+				state.byClans[clanId].cache = cache || undefined;
+			}
 		}
 	},
 	extraReducers: (builder) => {
@@ -464,10 +474,7 @@ export const selectAllchannelCategorySetting = createSelector(getchannelCategory
 export const selectEntiteschannelCategorySetting = createSelector(getchannelCategorySettingListState, selectEntities);
 
 export const selectChannelCategorySettingsByCurrentClan = createSelector(
-	[
-		getchannelCategorySettingListState,
-		(state: RootState) => state.clans.currentClanId as string
-	],
+	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],
 	(state, clanId) => {
 		const list = state.byClans[clanId]?.list;
 		if (list && list.length > 0) return list;
