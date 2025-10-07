@@ -6057,7 +6057,7 @@ axe-core@=4.7.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.7.0.tgz#34ba5a48a8b564f67e103f0aa5768d76e15bbbbf"
   integrity sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==
 
-axios@^1.6.0, axios@^1.6.2, axios@^1.7.4, axios@^1.8.2, axios@^1.8.3:
+axios@^1.6.0, axios@^1.7.4, axios@^1.8.2, axios@^1.8.3:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
   integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
@@ -12654,17 +12654,17 @@ mezon-active-windows@0.1.38:
   dependencies:
     node-addon-api "^1.7.2"
 
-mezon-js-protobuf@1.8.41:
-  version "1.8.41"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.8.41.tgz#754bf3aa0e2f8160eae6ef27712b8373e5d86d9c"
-  integrity sha512-5MKPFeH488kpuuVrHRRHjX4mzkR1K21dsoCBEw6TzzbKLKS5yj8AIa9qBw9OQb+o4iU6vb99dR2tQ1htZEe0Mg==
+mezon-js-protobuf@1.8.43:
+  version "1.8.43"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.8.43.tgz#1f9fe0f4f5b5c533b67c720e6c3bb577bbaf1c4f"
+  integrity sha512-aCuNeW43mwP615UVNDjAqazwkEURhBIGSdvy9nCzBYtNT4leV+Nwx1B+m8jtrGfdgukbUfZxpTHTxi045C2aIQ==
   dependencies:
     "@scarf/scarf" "^1.1.1"
 
-mezon-js@2.13.4:
-  version "2.13.4"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.13.4.tgz#1f7322c881a9396a5c54e856438ec49309dcca6a"
-  integrity sha512-GJmltCqLhMnq0ZgUzJ6QPkY6JfOaIpu46kuACxtmh66yiD3n2d8VfDuJE23NWyFqaifRMI4SMUAvWxv+D3yaVw==
+mezon-js@2.13.10:
+  version "2.13.10"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.13.10.tgz#e4e2d591de871371c1b802c0c6d49f7c7f22c3e6"
+  integrity sha512-aaQNQyRL7qKotp3191AYDd3ge7J+hGR0HiPQP8Pc+hb3SF8YlF8rVUYim01piPldNQy1FLY3P9TL3sd2R8FD9A==
   dependencies:
     "@scarf/scarf" "^1.1.1"
     base64-arraybuffer "^1.0.2"
@@ -12943,12 +12943,11 @@ mkdirp@^3.0.1:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-3.0.1.tgz#e44e4c5607fb279c168241713cc6e0fea9adcb50"
   integrity sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==
 
-mmn-client-js@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/mmn-client-js/-/mmn-client-js-1.0.5.tgz#83ea8bb48b74d228b387f9db5425ba29d0195928"
-  integrity sha512-oMcVXMcAc5KugUIfIQBoS3zcPre+Si3hvYD7fzCGfzrM/Fr8uhwpvfJjTHH9NgjTTaCGKn/rnqDmdd3vXzIIig==
+mmn-client-js@1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/mmn-client-js/-/mmn-client-js-1.0.7.tgz#decafda19df93edf0059e3c0bb0f10f3ab20d2c7"
+  integrity sha512-Ql2HLJBlJWiToiiGA91vOFAaFlxu+6Mf+qZRXyGhiYXyr05/h2jKXQzBDaELotcLZjRuVzJ8Wx+H7RMOm8T54w==
   dependencies:
-    axios "^1.6.2"
     bip39 "^3.1.0"
     bs58 "^5.0.0"
     crypto-js "^4.2.0"
