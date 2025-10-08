@@ -332,6 +332,10 @@ export function compareObjects(a: any, b: any, searchText: string, prioritizePro
 	}
 }
 
+export function normalizeSearchString(str: string): string {
+	return normalizeString(str).replace('-', ' ').replace('_', ' ');
+}
+
 export function normalizeString(str: string): string {
 	if (str?.length)
 		return str
@@ -449,11 +453,11 @@ export function addAttributesSearchList(data: SearchItemProps[], dataUserClan: C
 export function filterListByName(listSearch: SearchItemProps[], searchText: string, isSearchByUsername: boolean): SearchItemProps[] {
 	const result = listSearch.filter((item: SearchItemProps) => {
 		if (isSearchByUsername) {
-			const searchName = normalizeString(searchText.slice(1));
-			const itemDisplayName = item.displayName ? normalizeString(item.displayName) : '';
-			const itemName = item.name ? normalizeString(item.name) : '';
-			const itemPrioritizeName = item.prioritizeName ? normalizeString(item.prioritizeName) : '';
-			const searchNameAllClan = item.searchName ? normalizeString(item.searchName) : '';
+			const searchName = normalizeSearchString(searchText.slice(1));
+			const itemDisplayName = item.displayName ? normalizeSearchString(item.displayName) : '';
+			const itemName = item.name ? normalizeSearchString(item.name) : '';
+			const itemPrioritizeName = item.prioritizeName ? normalizeSearchString(item.prioritizeName) : '';
+			const searchNameAllClan = item.searchName ? normalizeSearchString(item.searchName) : '';
 			return (
 				itemName.includes(searchName) ||
 				itemDisplayName.includes(searchName) ||
@@ -461,11 +465,11 @@ export function filterListByName(listSearch: SearchItemProps[], searchText: stri
 				searchNameAllClan.includes(searchName)
 			);
 		} else {
-			const searchUpper = normalizeString(searchText.startsWith('#') ? searchText.substring(1) : searchText);
-			const prioritizeName = item.prioritizeName ? normalizeString(item.prioritizeName) : '';
-			const itemName = item.name ? normalizeString(item.name) : '';
-			const itemDisplayName = item.displayName ? normalizeString(item.displayName) : '';
-			const searchNameAllClan = item.searchName ? normalizeString(item.searchName) : '';
+			const searchUpper = normalizeSearchString(searchText.startsWith('#') ? searchText.substring(1) : searchText);
+			const prioritizeName = item.prioritizeName ? normalizeSearchString(item.prioritizeName) : '';
+			const itemName = item.name ? normalizeSearchString(item.name) : '';
+			const itemDisplayName = item.displayName ? normalizeSearchString(item.displayName) : '';
+			const searchNameAllClan = item.searchName ? normalizeSearchString(item.searchName) : '';
 
 			return (
 				prioritizeName.includes(searchUpper) ||
