@@ -1,0 +1,5 @@
+{
+	"permissions": {
+		"deny": ["Shell(git push)", "Shell(gh pr create)", "Write(**)"]
+	}
+}
