@@ -133,6 +133,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 					/>
 				)}
 				{canEditChannelPermissions &&
+					channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 					channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
 					channel.type !== ChannelType.CHANNEL_TYPE_APP && (
 						<ChannelSettingItemButton
