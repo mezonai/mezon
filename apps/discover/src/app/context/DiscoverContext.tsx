@@ -1,10 +1,10 @@
 import { Client } from 'mezon-js';
-import { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
+import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../constants/constants';
-import { type Category } from '../services/api';
+import type { Category } from '../services/api';
 
 interface DiscoverContextType {
 	clans: ApiClanDiscover[];
@@ -116,7 +116,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 	};
 
 	useEffect(() => {
-		if (location.pathname === '/clans' || location.pathname === '/') {
+		if (location.pathname === '/clans' || location.pathname === '/clans/' || location.pathname === '/') {
 			fetchClansDiscover(currentPage);
 		}
 	}, [currentPage, location.pathname]);
