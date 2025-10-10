@@ -1,4 +1,5 @@
-import { PermissionUserEntity, selectAllPermissionRoleChannel, useAppSelector } from '@mezon/store';
+import type { PermissionUserEntity } from '@mezon/store';
+import { selectAllPermissionRoleChannel, useAppSelector } from '@mezon/store';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import ItemPermission from './ItemPermission';
@@ -11,12 +12,20 @@ type ItemListPermissionProps = {
 	onSelect: (id: string, option: number, active?: boolean) => void;
 	listPermission: PermissionUserEntity[];
 	channelId: string;
+	currentRoleId?: { id: string; type: number };
 };
 
 const ListPermission = forwardRef<ListPermissionHandle, ItemListPermissionProps>((props, ref) => {
-	const { onSelect, listPermission } = props;
+	const { onSelect, listPermission, currentRoleId } = props;
 	const { t } = useTranslation('channelSetting');
-	const listPermissionRoleChannel = useAppSelector((state) => selectAllPermissionRoleChannel(state, props.channelId));
+	const listPermissionRoleChannel = useAppSelector((state) =>
+		selectAllPermissionRoleChannel(
+			state,
+			props.channelId,
+			currentRoleId?.type === 0 ? currentRoleId.id : undefined,
+			currentRoleId?.type === 1 ? currentRoleId.id : undefined
+		)
+	);
 	const itemRefs = useRef<{ [key: string]: { reset: () => void } }>({});
 
 	useImperativeHandle(ref, () => ({

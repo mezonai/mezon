@@ -11,11 +11,12 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { ApiPermissionUpdate } from 'mezon-js/api.gen';
+import type { ApiPermissionUpdate } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { TypeChoose } from './ItemPermission';
-import ListPermission, { ListPermissionHandle } from './ListPermission';
+import type { ListPermissionHandle } from './ListPermission';
+import ListPermission from './ListPermission';
 import ListRoleMember from './ListRoleMember';
 
 type MainPermissionManageProps = {
@@ -39,7 +40,14 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 	}, [permissions]);
 	const [currentRoleId, setCurrentRoleId] = useState<{ id: string; type: number }>();
 	const listPermission = useSelector(selectPermissionChannel);
-	const listPermissionRoleChannel = useAppSelector((state) => selectAllPermissionRoleChannel(state, channelId));
+	const listPermissionRoleChannel = useAppSelector((state) =>
+		selectAllPermissionRoleChannel(
+			state,
+			channelId,
+			currentRoleId?.type === 0 ? currentRoleId.id : undefined,
+			currentRoleId?.type === 1 ? currentRoleId.id : undefined
+		)
+	);
 	const rolesClan = useSelector(selectAllRolesClan);
 	const rolesInChannel = useSelector(selectRolesByChannelId(channelId));
 	const rawMembers = useSelector(selectAllUserChannel(channelId));
@@ -102,7 +110,7 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 
 	const handleSelectRole = useCallback(
 		(id: string, type: number) => {
-			setCurrentRoleId({ id: id, type: type });
+			setCurrentRoleId({ id, type });
 		},
 		[setCurrentRoleId]
 	);
@@ -130,10 +138,10 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 		if (type === 0) {
 			await dispatch(
 				permissionRoleChannelActions.setPermissionRoleChannel({
-					channelId: channelId,
+					channelId,
 					roleId: id || '',
 					permission: permissionsArray,
-					maxPermissionId: maxPermissionId,
+					maxPermissionId,
 					userId: '',
 					clanId: currentClanId || ''
 				})
@@ -141,10 +149,10 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 		} else {
 			await dispatch(
 				permissionRoleChannelActions.setPermissionRoleChannel({
-					channelId: channelId,
+					channelId,
 					roleId: '',
 					permission: permissionsArray,
-					maxPermissionId: maxPermissionId,
+					maxPermissionId,
 					userId: id || '',
 					clanId: currentClanId || ''
 				})
@@ -182,7 +190,13 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 					onSelect={handleSelectRole}
 					canChange={permissionsLength === 0}
 				/>
-				<ListPermission channelId={channelId} listPermission={listPermission} onSelect={handleSelect} ref={listPermissionRef} />
+				<ListPermission
+					channelId={channelId}
+					listPermission={listPermission}
+					onSelect={handleSelect}
+					currentRoleId={currentRoleId}
+					ref={listPermissionRef}
+				/>
 			</div>
 		)
 	);

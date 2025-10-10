@@ -1443,7 +1443,6 @@ export const messagesSlice = createSlice({
 
 		markAsSent: (state, action: PayloadAction<MarkAsSentArgs>) => {
 			const channelId = action.payload.mess.channel_id;
-			if (state?.unreadMessagesEntries?.[channelId] === action.payload.mess.message_id) return;
 			if (channelId) {
 				state.unreadMessagesEntries = {
 					...state.unreadMessagesEntries,
