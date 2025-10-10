@@ -58,6 +58,16 @@
 	"notifyEveryone": "Notify everyone who has permission to see this channel.",
 	"removeImage": "Remove",
 	"allMembers": "All Members",
+	"permissionTitles": {
+		"administrator": "Administrator",
+		"view-channel": "View Channels",
+		"manage-channel": "Manage Channels",
+		"manage-clan": "Manage Clan",
+		"manage-thread": "Manage Threads",
+		"send-message": "Send Messages",
+		"delete-message": "Delete Messages",
+		"clan-owner": "Clan Owner"
+	},
 	"permissionDescriptions": {
 		"administrator": "Allows members to manage entire clan (just lower than owner permission).",
 		"view-channel": "Allows members to view public channels.",

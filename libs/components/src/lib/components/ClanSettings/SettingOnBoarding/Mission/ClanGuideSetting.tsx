@@ -11,6 +11,7 @@ import { Icons } from '@mezon/ui';
 import { generateE2eId, titleMission } from '@mezon/utils';
 import { ApiOnboardingItem } from 'mezon-js/api.gen';
 import { ReactNode, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import GuideItemLayout from '../GuideItemLayout';
@@ -23,6 +24,7 @@ interface ClanGuideSettingProps {
 }
 
 function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {}) {
+	const { t } = useTranslation('onBoardingClan');
 	const [openModalAddTask, closeModalAddTask] = useModal(() => {
 		return (
 			<ModalAddMission
@@ -59,30 +61,23 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 	return (
 		<div className="h-full flex gap-8 text-gray-700 dark:text-channelTextLabel w-[660px] text-sm font-medium">
 			<div className="flex flex-col">
-				<SectionDescription
-					title="Welcome Sign"
-					description="Tell new members what's special about your community and why you're excited to see them!"
-				/>
+				<SectionDescription title={t('clanGuideSetting.welcomeSign.title')} description={t('clanGuideSetting.welcomeSign.description')} />
 
 				<OwnerGreeting />
 				<div className="w-full h-[1px] my-8 text-theme-primary"></div>
 				<SectionDescription
-					title="New Member To Do's"
-					description={
-						<>
-							Set 3-5 tasks for your new members to do. Get them to <strong>talk and engage in your channels.</strong>
-						</>
-					}
+					title={t('clanGuideSetting.newMemberToDos.title')}
+					description={<div dangerouslySetInnerHTML={{ __html: t('clanGuideSetting.newMemberToDos.description') }} />}
 				/>
 
 				<div className="flex flex-col gap-2 pb-8">
-					<div className="uppercase font-bold text-gray-700 dark:text-channelTextLabel">Don't do this : too general</div>
+					<div className="uppercase font-bold text-gray-700 dark:text-channelTextLabel">{t('clanGuideSetting.dontDoThis')}</div>
 					<GuideItemLayout
 						hightLightIcon={true}
 						icon={<Icons.IconRemove fill="red" />}
 						className="px-3 py-[10px] bg-item-theme hover:bg-item-theme-hover-status-hover border-2 border-gray-300 dark:border-channelTextarea rounded-md"
-						title="chat with the community"
-						description="in #general"
+						title={t('clanGuideSetting.exampleTask.title')}
+						description={t('clanGuideSetting.exampleTask.description')}
 					/>
 				</div>
 
@@ -100,30 +95,31 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 						gap={16}
 						icon={<Icons.RuleIcon className="text-theme-primary" />}
 						className="px-3"
-						description={<div className="h-full flex items-center text-base text-theme-primary font-bold">Read the Rules </div>}
+						description={
+							<div className="h-full flex items-center text-base text-theme-primary font-bold">
+								{t('clanGuideSetting.readTheRules')}
+							</div>
+						}
 					/>
 
 					<button
 						onClick={openModalAddTask}
-						className="flex items-center justify-center p-4 text-primary text-base gap-1 border-dashed border-2 border-gray-400 dark:border-channelTextLabel rounded-md hover:bg-gray-100 dark:hover:bg-bgSecondaryHover transition-colors"
+						className="flex items-center justify-center p-4 text-primary text-base gap-1 border-dashed border-2 border-gray-400 dark:border-channelTextLabel rounded-md bg-item-theme-hover transition-colors"
 					>
-						<Icons.AddIcon className="w-4 h-4" /> Add a task
+						<Icons.AddIcon className="w-4 h-4" /> {t('clanGuideSetting.addTask')}
 					</button>
 				</div>
 
 				<div className="w-full h-[1px] my-8 bg-gray-300 dark:bg-channelTextLabel"></div>
 				<SectionDescription
-					title="Resource Pages"
+					title={t('clanGuideSetting.resourcePages.title')}
 					description={
 						<div className="flex flex-col gap-2">
+							<div>{t('clanGuideSetting.resourcePages.description')}</div>
 							<div>
-								Turn read-only channels into fancy resource pages in your Server Guide. They will no longer appear on the channel list
-								unless you enable All Channels. Resources come with some perks:
-							</div>
-							<div>
-								<li> Members start at the top of pages instead of the bottom of a message thread </li>
-								<li> Chat bars and avatars are removed so it looks cleaner </li>
-								<li> All the content, embeds, media, and formatting will stay the same </li>
+								<li>{t('clanGuideSetting.resourcePages.perk1')}</li>
+								<li>{t('clanGuideSetting.resourcePages.perk2')}</li>
+								<li>{t('clanGuideSetting.resourcePages.perk3')}</li>
 							</div>
 						</div>
 					}
@@ -139,11 +135,11 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 					))}
 
 					<button
-						className="flex items-center justify-center p-4 text-primary text-base gap-1 border-dashed border-2 border-gray-400 dark:border-channelTextLabel rounded-md hover:bg-gray-100 dark:hover:bg-bgSecondaryHover transition-colors"
+						className="flex items-center justify-center p-4 text-primary text-base gap-1 border-dashed border-2 border-gray-400 dark:border-channelTextLabel rounded-md bg-item-theme-hover transition-colors"
 						onClick={openModalAddRules}
 						data-e2e={generateE2eId('clan_page.settings.onboarding.button.add_resources')}
 					>
-						<Icons.AddIcon className="w-4 h-4" /> Add a resource
+						<Icons.AddIcon className="w-4 h-4" /> {t('clanGuideSetting.addResource')}
 					</button>
 				</div>
 			</div>
@@ -160,6 +156,7 @@ const SectionDescription = ({ title, description }: { title: string; description
 	);
 };
 const OwnerGreeting = () => {
+	const { t } = useTranslation('onBoardingClan');
 	const currenClan = useSelector(selectCurrentClan);
 	const clanOwner = useAppSelector((state) => selectMemberClanByUserId(state, currenClan?.creator_id as string));
 	return (
@@ -176,9 +173,7 @@ const OwnerGreeting = () => {
 						{clanOwner?.clan_nick ?? clanOwner.user?.display_name ?? clanOwner.user?.username} <Icons.OwnerIcon />
 					</div>
 				</div>
-				<div className="text-base text-indigo-700 dark:text-white">
-					Hi, this my onwner clan's greeting. You will see this message in the first time you join clan!
-				</div>
+				<div className="text-base text-indigo-700 dark:text-white">{t('clanGuideSetting.ownerGreeting')}</div>
 			</div>
 		</div>
 	);

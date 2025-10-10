@@ -175,12 +175,12 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 				<div className="w-full h-[1px] my-6 bg-gray-300 dark:bg-channelTextLabel"></div>
 
 				<div className="flex flex-col gap-2">
-					<h1 className="text-base font-semibold text-gray-800 dark:text-white">
+					<h1 className="text-base font-semibold text-theme-primary-active">
 						{t('form.channelTitle')} <span className="text-red-500">*</span>
 					</h1>
 					<div className="flex flex-col">
 						<select
-							className="w-full p-[10px] outline-none rounded bg-gray-100 dark:bg-borderDefault text-gray-800 dark:text-white border border-gray-200 dark:border-transparent"
+							className="w-full p-[10px] outline-none rounded text-theme-primary bg-theme-input"
 							onChange={handleSetChannelMission}
 							value={missionChannel}
 						>
@@ -191,14 +191,14 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 							))}
 						</select>
 
-						<span className="text-xs mt-1 text-gray-500 dark:text-gray-400">{t('form.channelNote')}</span>
+						<span className="text-xs mt-1 text-theme-primary">{t('form.channelNote')}</span>
 					</div>
 				</div>
 
 				<div className="w-full h-[1px] my-6 bg-gray-300 dark:bg-channelTextLabel"></div>
 
 				<div className="flex flex-col">
-					<h1 className="text-base font-semibold text-gray-800 dark:text-white">
+					<h1 className="text-base font-semibold text-theme-primary-active">
 						{t('form.completeWhen')} <span className="text-red-500">*</span>
 					</h1>
 
@@ -208,13 +208,13 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 								id={missions.name}
 								onChange={(e) => handleSetMission(missions.id)}
 								type="radio"
-								className={`appearance-none w-5 h-5 bg-transparent relative rounded-full accent-indigo-500 border-2 border-gray-400 dark:border-channelTextLabel checked:after:absolute checked:after:w-3 checked:after:h-3 checked:after:top-[2.4px] checked:after:left-[2.4px] checked:after:bg-indigo-500 dark:checked:after:bg-white checked:after:content-[""] checked:after:rounded-full ${mission === missions.id ? 'border-indigo-500 dark:border-white' : ''} `}
+								className={`appearance-none w-5 h-5 bg-transparent relative rounded-full accent-indigo-500 border-2 border-gray-400 dark:border-channelTextLabel checked:after:absolute checked:after:w-3 checked:after:h-3 checked:after:top-[2.4px] checked:after:left-[2.4px] checked:after:bg-indigo-500 checked:after:content-[""] checked:after:rounded-full ${mission === missions.id ? 'border-indigo-500' : ''} `}
 								name="mission"
 								checked={mission === missions.id}
 							/>
 							<label
 								htmlFor={missions.name}
-								className={`text-base font-medium ${mission === missions.id ? 'text-indigo-600 dark:text-white' : 'text-gray-700 dark:text-gray-400'}`}
+								className={`text-base font-medium ${mission === missions.id ? 'text-indigo-600 text-theme-primary-active' : 'text-theme-primary'}`}
 							>
 								{missions.description}
 							</label>

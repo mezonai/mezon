@@ -192,7 +192,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	};
 
 	const showContextMenu = useCallback(
-		async (event: React.MouseEvent, user?: ChannelMembersEntity) => {
+		async (event: React.MouseEvent, channelId: string, user?: ChannelMembersEntity) => {
 			event.preventDefault();
 
 			if (user) {

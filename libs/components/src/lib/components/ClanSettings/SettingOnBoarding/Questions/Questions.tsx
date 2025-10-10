@@ -58,19 +58,19 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 	return (
 		<div className="flex flex-col gap-8">
 			<div onClick={() => handleGoToPage(EOnboardingStep.MAIN)} className="flex gap-3 cursor-pointer">
-				<Icons.LongArrowRight className="rotate-180 w-3 text-gray-700 dark:text-white" />
-				<div className="font-semibold text-gray-700 dark:text-white">{t('buttons.back').toUpperCase()}</div>
+				<Icons.LongArrowRight className="rotate-180 w-3 text-theme-primary" />
+				<div className="font-semibold text-theme-primary">{t('buttons.back').toUpperCase()}</div>
 			</div>
 			<div className="flex flex-col gap-6">
 				<div className="flex flex-col gap-2">
-					<div className="text-[20px] text-gray-800 dark:text-white font-semibold">{t('questionsPage.title')}</div>
-					<div className="font-medium text-gray-700 dark:text-channelTextLabel">{t('questionsPage.description')}</div>
+					<div className="text-[20px] text-theme-primary font-semibold">{t('questionsPage.title')}</div>
+					<div className="font-medium text-theme-primary">{t('questionsPage.description')}</div>
 				</div>
 				<div>
 					<div
-						className={`flex items-center justify-between gap-2 bg-indigo-100 dark:bg-bgTertiary py-3 px-4 ${showChannelNotAssigned ? 'rounded-t-xl' : 'rounded-xl'}`}
+						className={`flex items-center justify-between gap-2 bg-theme-setting-nav py-3 px-4 ${showChannelNotAssigned ? 'rounded-t-xl' : 'rounded-xl'}`}
 					>
-						<div className="text-[12px] font-semibold text-gray-700 dark:text-white">{t('questionsPage.noChannelsMissing')}</div>
+						<div className="text-[12px] font-semibold text-theme-primary-active">{t('questionsPage.noChannelsMissing')}</div>
 						<div className="flex items-center gap-3">
 							<div className="w-[120px] h-[6px] bg-gray-200 dark:bg-[#3b3d44] rounded-lg flex justify-start">
 								<div className="w-[70%] h-full rounded-lg bg-green-600" />
@@ -81,16 +81,16 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 						</div>
 					</div>
 					{showChannelNotAssigned && (
-						<div className="bg-white dark:bg-bgSecondary px-4 py-3 rounded-b-xl flex flex-col gap-5 duration-200 border border-gray-200 dark:border-transparent border-t-0">
-							<div className="uppercase font-semibold text-gray-700 dark:text-white">{t('questionsPage.channelNotAssigned')}</div>
+						<div className="bg-theme-setting-primary px-4 py-3 rounded-b-xl flex flex-col gap-5 duration-200 border border-gray-200 dark:border-transparent border-t-0">
+							<div className="uppercase font-semibold text-theme-primary-active">{t('questionsPage.channelNotAssigned')}</div>
 							<div className="tex-[12px] font-medium text-gray-600 dark:text-channelTextLabel">{t('questionsPage.noChannelsHere')}</div>
 						</div>
 					)}
 				</div>
 				<div className="flex flex-col gap-5">
 					<div className="flex flex-col gap-2 cursor-pointer">
-						<div className="text-[16px] text-gray-800 dark:text-white font-bold">{t('questionsPage.preJoinQuestions.title')}</div>
-						<div className="text-gray-700 dark:text-channelTextLabel">{t('questionsPage.preJoinQuestions.description')}</div>
+						<div className="text-[16px] text-theme-primary-active font-bold">{t('questionsPage.preJoinQuestions.title')}</div>
+						<div className="text-theme-primary">{t('questionsPage.preJoinQuestions.description')}</div>
 						{onboardingByClan.question.map((question, index) => (
 							<QuestionItem key={question.id} question={question} index={index} />
 						))}

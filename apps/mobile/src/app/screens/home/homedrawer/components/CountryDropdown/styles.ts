@@ -37,7 +37,7 @@ export const style = (themeValue: Attributes) =>
 			display: 'flex',
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_4
+			gap: size.s_2
 		},
 		dropdownText: {
 			fontSize: size.s_14,

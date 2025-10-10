@@ -113,22 +113,18 @@ const SearchActionAuditLogModal = ({
 	const filteredActions = actions.filter((action) => action.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
 	return (
-		<div className="absolute border sm:left-0 max-sm:right-0 max-sm:left-[unset] top-8 pb-3 rounded border-solid dark:border-borderDefault border-borderLightTabs dark:bg-bgPrimary bg-bgLightPrimary z-[9999] shadow w-72">
-			<div className="dark:bg-bgPrimary bg-bgLightPrimary rounded-lg w-full max-w-xs">
+		<div className="absolute border sm:left-0 max-sm:right-0 max-sm:left-[unset] top-8 pb-3 rounded border-solid border-theme-primary bg-theme-setting-nav z-[9999] shadow w-72">
+			<div className="bg-theme-setting-primary rounded-lg w-full max-w-xs">
 				<div className="relative m-2">
 					<input
 						type="text"
 						placeholder={t('searchActions')}
-						className={`w-full p-2 pr-10 dark:bg-bgTertiary bg-[#F0F0F0] dark:text-white text-black rounded focus:outline-none ${appearanceTheme === 'light' ? 'lightEventInputAutoFill' : ''}`}
+						className={`w-full p-2 pr-10 bg-theme-input text-theme-primary-active rounded focus:outline-none ${appearanceTheme === 'light' ? 'lightEventInputAutoFill' : ''}`}
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 					<span className="absolute right-3 top-3 text-gray-400 cursor-pointer" onClick={searchTerm ? handleClearSearch : undefined}>
-						{searchTerm ? (
-							<Icons.Close defaultSize="size-4" />
-						) : (
-								<Icons.Search className="w-4 h-4 text-theme-primary" />
-						)}
+						{searchTerm ? <Icons.Close defaultSize="size-4" /> : <Icons.Search className="w-4 h-4 text-theme-primary" />}
 					</span>
 				</div>
 
@@ -137,7 +133,7 @@ const SearchActionAuditLogModal = ({
 						filteredActions.map((action, index) => (
 							<div
 								key={index}
-								className={`flex items-center px-2 py-[10px] mb-1 dark:text-textPrimary text-buttonProfile font-medium rounded cursor-pointer transition-colors dark:hover:bg-bgHover hover:bg-bgModifierHoverLight ${
+								className={`flex items-center px-2 py-[10px] mb-1 text-theme-primary font-medium rounded cursor-pointer transition-colors bg-item-theme-hover ${
 									selectedAction === action.name ? 'bg-[#5865F2] text-white hover:text-buttonProfile' : ''
 								}`}
 								onClick={() => handleActionClick(action)}
@@ -153,7 +149,7 @@ const SearchActionAuditLogModal = ({
 						))
 					) : (
 						<div className="w-full h-full text-center text-gray-400 flex flex-col justify-center items-center">
-								<div className="text-theme-primary font-medium text-xl">{t('noResults.title')}</div>
+							<div className="text-theme-primary font-medium text-xl">{t('noResults.title')}</div>
 							<div>{t('noResults.description')}</div>
 						</div>
 					)}

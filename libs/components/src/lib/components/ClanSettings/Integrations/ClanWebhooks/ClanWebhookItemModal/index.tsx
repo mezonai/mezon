@@ -42,12 +42,12 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 		<div className="bg-theme-setting-nav border-theme-primary p-[20px] border  rounded-md mb-[20px]">
 			<div className="flex gap-[20px] items-center">
 				<img src={webhookItem.avatar} alt="Webhook avatar" className="aspect-square w-[50px] rounded-full" />
-				<div className="flex w-full justify-between items-center dark:text-textDarkTheme text-textLightTheme">
+				<div className="flex w-full justify-between items-center text-theme-primary-active">
 					<div className="">
 						<div>{webhookItem.webhook_name}</div>
 						<div className="flex gap-1 items-center">
-							<Icons.ClockIcon className="dark:text-[#b5bac1] text-textLightTheme" />
-							<div className="dark:text-[#b5bac1] text-textLightTheme text-[13px]">
+							<Icons.ClockIcon className="text-theme-primary" />
+							<div className="text-theme-primary text-[13px]">
 								{t('webhooksItem.createdBy', {
 									webhookCreateTime: convertDate(webhookItem.create_time || ''),
 									webhookUserOwnerName: webhookOwner?.user?.username

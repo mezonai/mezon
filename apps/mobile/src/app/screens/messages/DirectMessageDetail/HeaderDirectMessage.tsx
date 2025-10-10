@@ -11,6 +11,7 @@ import {
 	groupCallActions,
 	messagesActions,
 	selectAllAccount,
+	selectBlockedUsersForMessage,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
 	selectLastSeenMessageStateByChannelId,
@@ -216,6 +217,14 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data: dataModal });
 	};
 
+	const isBlocked = useMemo(() => {
+		if (currentDmGroup.type !== ChannelType.CHANNEL_TYPE_DM) return false;
+		const store = getStore();
+		const listBlockedUser = selectBlockedUsersForMessage(store.getState());
+		const blockedUser = listBlockedUser.some((user) => user?.user && user?.user?.id === currentDmGroup?.user_ids?.[0]);
+		return blockedUser;
+	}, [currentDmGroup]);
+
 	const headerOptions: IOption[] = [
 		{
 			title: 'buzz',
@@ -288,21 +297,23 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				<Text style={styles.titleText} numberOfLines={1}>
 					{dmLabel}
 				</Text>
-				<View style={styles.iconWrapper}>
-					{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
-						<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
-							<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
-						</TouchableOpacity>
-					)}
-					{!isTypeDMGroup && (
-						<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall(true)}>
-							<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
-						</TouchableOpacity>
-					)}
-					<View style={styles.iconOption}>
-						<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
+				{!isBlocked && (
+					<View style={styles.iconWrapper}>
+						{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
+							<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
+								<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+							</TouchableOpacity>
+						)}
+						{!isTypeDMGroup && (
+							<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall(true)}>
+								<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+							</TouchableOpacity>
+						)}
+						<View style={styles.iconOption}>
+							<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
+						</View>
 					</View>
-				</View>
+				)}
 			</Pressable>
 		</View>
 	);

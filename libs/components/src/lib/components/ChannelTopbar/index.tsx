@@ -439,22 +439,27 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 		if (avatar) {
 			return (
 				<div className="flex items-center justify-center">
-					<img className="w-8 h-8 rounded-full object-cover" src={avatar} alt="" />
+					<img className="w-8 h-8 flex-shrink-0 rounded-full object-cover" src={avatar} alt="" />
 				</div>
 			);
 		}
 		return (
 			<div className="flex items-center justify-center">
-				<img className="w-8 h-8 rounded-full object-cover" src="assets/images/avatar-group.png" alt="" />
+				<img className="w-8 h-8 flex-shrink-0 rounded-full object-cover" src="assets/images/avatar-group.png" alt="" />
 			</div>
 		);
 	}
 	return (
 		<div className="flex items-center justify-center ">
 			{avatar ? (
-				<img className="w-8 h-8 rounded-full object-cover " src={createImgproxyUrl(avatar)} alt="" data-e2e={generateE2eId(`avatar.image`)} />
+				<img
+					className="w-8 h-8 flex-shrink-0 rounded-full object-cover "
+					src={createImgproxyUrl(avatar)}
+					alt=""
+					data-e2e={generateE2eId(`avatar.image`)}
+				/>
 			) : (
-				<div className="w-8 h-8 rounded-full uppercase flex items-center justify-center font-semibold dark:bg-bgAvatarLight dark:text-bgAvatarDark text-bgAvatarLight">
+				<div className="w-8 h-8 flex-shrink-0 rounded-full uppercase flex items-center justify-center font-semibold dark:bg-bgAvatarLight dark:text-bgAvatarDark text-bgAvatarLight">
 					{avatarName}
 				</div>
 			)}

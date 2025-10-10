@@ -8,7 +8,7 @@ import {
 	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectDirectsOpenlist } from '@mezon/store';
+import { selectBlockedUsersForMessage, selectDirectsOpenlist } from '@mezon/store';
 import {
 	channelMetaActions,
 	channelsActions,
@@ -81,6 +81,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const topUserSuggestion = useRef(useSelector((state: any) => selectDirectById(state, topUserSuggestionId)));
 	const listChannels = useRef(useSelector(selectAllChannelsByUser));
 	const clans = useRef(useSelector(selectClansEntities));
+	const listBlockUsers = useSelector(selectBlockedUsersForMessage);
 	const { handleReconnect } = useContext(ChatContext);
 
 	useEffect(() => {
@@ -110,7 +111,14 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 
 	const listDMText = useMemo(() => {
 		try {
-			const data = (listDM?.filter?.((channel) => !!channel?.channel_label && channel?.id !== topUserSuggestionId) || []).sort((a, b) => {
+			const data = (
+				listDM?.filter?.(
+					(channel) =>
+						!!channel?.channel_label &&
+						channel?.id !== topUserSuggestionId &&
+						!listBlockUsers?.some((user) => user?.id === channel?.user_ids?.[0])
+				) || []
+			).sort((a, b) => {
 				const aLastSeen = a?.last_seen_message?.timestamp_seconds || 0;
 				const bLastSeen = b?.last_seen_message?.timestamp_seconds || 0;
 				return bLastSeen - aLastSeen;

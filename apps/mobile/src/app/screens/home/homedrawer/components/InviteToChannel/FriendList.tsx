@@ -10,6 +10,7 @@ import {
 	getStore,
 	selectAllFriends,
 	selectAllUserClans,
+	selectBlockedUsersForMessage,
 	selectCurrentClanId,
 	selectDirectsOpenlist,
 	useAppDispatch
@@ -69,6 +70,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 	const userListInvite = useMemo(() => {
 		const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
 		const usersClan = selectAllUserClans(store.getState() as any);
+		const listBlockUser = selectBlockedUsersForMessage(store.getState() as any);
 		const userMap = new Map<string, Receiver>();
 		const userIdInClanArray = usersClan.map((user) => user.id);
 		friendList.forEach((itemFriend: FriendsEntity) => {
@@ -84,13 +86,17 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 
 		dmGroupChatList.forEach((itemDM: DirectEntity) => {
 			const userId = itemDM?.user_ids?.[0] ?? '';
-			if (
-				(userId && !userIdInClanArray.includes(userId) && itemDM?.type === ChannelType.CHANNEL_TYPE_DM) ||
-				itemDM?.type === ChannelType.CHANNEL_TYPE_GROUP
-			) {
-				userMap.set(itemDM?.type === ChannelType.CHANNEL_TYPE_DM ? userId : itemDM?.channel_id, {
+			const isDM = itemDM?.type === ChannelType.CHANNEL_TYPE_DM;
+			const isGroup = itemDM?.type === ChannelType.CHANNEL_TYPE_GROUP;
+			const isUserBlocked = listBlockUser?.some((user) => user?.id === userId);
+
+			if ((userId && !userIdInClanArray.includes(userId) && isDM && !isUserBlocked) || isGroup) {
+				const channelId = isDM ? userId : itemDM?.channel_id;
+				const channelLabel = itemDM?.channel_label ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`;
+
+				userMap.set(channelId, {
 					channel_id: itemDM?.channel_id,
-					channel_label: itemDM?.channel_label ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`,
+					channel_label: channelLabel,
 					channel_avatar: itemDM?.channel_avatar,
 					type: itemDM?.type,
 					id: itemDM?.channel_id,

@@ -3,6 +3,7 @@ import { baseColor, size } from '@mezon/mobile-ui';
 import { authActions } from '@mezon/store';
 import { useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
+import { useFocusEffect } from '@react-navigation/native';
 import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +49,18 @@ const LoginScreen = ({ navigation }) => {
 	const [lastOTPSentTime, setLastOTPSentTime] = useState<{ [email: string]: number }>({});
 	const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
 	const isTabletLandscape = useTabletLandscape();
+
+	useFocusEffect(
+		useCallback(() => {
+			setIsShowDropdown(false);
+		}, [])
+	);
+
+	useEffect(() => {
+		if (loginMode !== 'sms') {
+			setIsShowDropdown(false);
+		}
+	}, [loginMode]);
 
 	const { t } = useTranslation(['common']);
 	const dispatch = useAppDispatch();
@@ -349,7 +362,7 @@ const LoginScreen = ({ navigation }) => {
 				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
 			>
 				<View style={[styles.content, isLandscape && !isTabletLandscape && { paddingTop: size.s_10 }]}>
-					<Text style={styles.title}>{t('login.enterEmail')}</Text>
+					<Text style={styles.title}>{loginMode === 'sms' ? t('login.enterPhone') : t('login.enterEmail')}</Text>
 					<Text style={styles.subtitle}>{t('login.chooseAnotherOption')}</Text>
 
 					<View style={styles.inputSection}>
@@ -471,13 +484,18 @@ const LoginScreen = ({ navigation }) => {
 
 					<View style={styles.alternativeSection}>
 						<Text style={styles.alternativeText}>
-							{loginMode === 'otp' ? t('login.cannotAccessYourEmail') : t('login.passwordNotSet')}
+							{loginMode === 'otp'
+								? t('login.cannotAccessYourEmail')
+								: loginMode === 'sms'
+									? t('login.cannotAccessYourPhone')
+									: t('login.passwordNotSet')}
 						</Text>
 						<View style={styles.alternativeOptions}>
 							<TouchableOpacity onPress={loginMode === 'otp' ? () => handleSMSLogin() : () => switchToOTPMode()}>
 								<Text style={styles.linkText}>{loginMode === 'otp' ? t('login.loginWithSMS') : t('login.loginWithEmailOTP')}</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={switchToPasswordMode}>
+							<Text style={styles.orText}>{t('login.or')}</Text>
+							<TouchableOpacity onPress={loginMode !== 'password' ? switchToPasswordMode : handleSMSLogin}>
 								<Text style={styles.linkText}>
 									{loginMode !== 'password' ? t('login.loginWithPassword') : t('login.loginWithSMS')}
 								</Text>

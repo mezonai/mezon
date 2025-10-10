@@ -24,6 +24,7 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_13,
 			fontWeight: 'bold',
 			color: colors.text,
+			marginRight: size.s_16,
 			flexShrink: 1
 		}
 	});

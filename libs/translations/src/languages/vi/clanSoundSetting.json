@@ -1,29 +1,47 @@
 {
-    "button": {
-        "upload": "Tải lên hiệu ứng âm thanh",
-        "delete": "Xoá",
-        "uploadDetailScreen": "Tải lên"
-    },
-    "content": {
-        "description": "•  Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. \n•  Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. \n•  Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
-        "requirements": "YÊU CẦU TẢI LÊN",
-        "reqSize": "- Không lớn hơn 1024KB.",
-        "audioFile": "Tệp âm thanh",
-        "audioName": "Tên âm thanh",
-        "preview": "Xem trước",
-        "chooseAudioFile": "Chọn tệp âm thanh"
-    },
-    "toast": {
-        "errorSizeLimit": "Vượt quá giới hạn kích thước 1MB",
-        "errorFileType": "Định dạng tệp không hợp lệ. Chỉ chấp nhận các tệp .mp3, .mpeg và .wav."
-    },
-    "main": {
-        "uploadInstructions": "HƯỚNG DẪN TẢI LÊN",
-        "fileRequirements": "Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
-        "uploadHere": "Tải lên tại đây!",
-        "personalizeDescription": "Cá nhân hóa hiệu ứng âm thanh cho clan của bạn!",
-        "uploadSound": "Tải lên âm thanh",
-        "soundEffectList": "Danh sách hiệu ứng âm thanh",
-        "noSoundEffects": "Chưa có hiệu ứng âm thanh nào. Nhấp \"Tải lên âm thanh\" để thêm!"
-    }
+	"button": {
+		"upload": "Tải lên hiệu ứng âm thanh",
+		"delete": "Xoá",
+		"uploadDetailScreen": "Tải lên"
+	},
+	"content": {
+		"description": "•  Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. \n•  Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. \n•  Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
+		"requirements": "YÊU CẦU TẢI LÊN",
+		"reqSize": "- Không lớn hơn 1024KB.",
+		"audioFile": "Tệp âm thanh",
+		"audioName": "Tên âm thanh",
+		"preview": "Xem trước",
+		"chooseAudioFile": "Chọn tệp âm thanh"
+	},
+	"toast": {
+		"errorSizeLimit": "Vượt quá giới hạn kích thước 1MB",
+		"errorFileType": "Định dạng tệp không hợp lệ. Chỉ chấp nhận các tệp .mp3, .mpeg và .wav."
+	},
+	"main": {
+		"uploadInstructions": "HƯỚNG DẪN TẢI LÊN",
+		"fileRequirements": "Chỉ chấp nhận các tệp .mp3, .wav, dung lượng tối đa 1MB. Hãy đặt tên dễ nhớ cho hiệu ứng âm thanh. Hiệu ứng âm thanh sẽ được sử dụng trong thông báo hoặc sự kiện của clan.",
+		"uploadHere": "Tải lên tại đây!",
+		"personalizeDescription": "Cá nhân hóa hiệu ứng âm thanh cho clan của bạn!",
+		"uploadSound": "Tải lên âm thanh",
+		"soundEffectList": "Danh sách hiệu ứng âm thanh",
+		"noSoundEffects": "Chưa có hiệu ứng âm thanh nào. Nhấp \"Tải lên âm thanh\" để thêm!"
+	},
+	"modal": {
+		"titleEdit": "Chỉnh sửa hiệu ứng âm thanh",
+		"titleUpload": "Tải lên hiệu ứng âm thanh",
+		"subtitle": "Hỗ trợ định dạng MP3, WAV • Tối đa 1MB",
+		"preview": "Xem trước",
+		"audioFile": "Tệp âm thanh",
+		"soundName": "Tên âm thanh",
+		"chooseOrDrop": "Chọn hoặc kéo thả tệp",
+		"browse": "Duyệt",
+		"placeholder": "Ví dụ: tiếng mèo kêu",
+		"cancel": "Hủy",
+		"uploading": "Đang tải lên...",
+		"update": "Cập nhật",
+		"upload": "Tải lên",
+		"errorFileType": "Hỗ trợ file .mp3 hoặc .wav",
+		"errorFileSize": "File quá lớn, tối đa 1MB",
+		"errorUploadFailed": "Không thể tải lên âm thanh"
+	}
 }

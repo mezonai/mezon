@@ -82,7 +82,10 @@
 		"updatePhoneSuccess": "Update phone number success",
 		"updatePhoneFail": "Something's wrong. Try later!",
 		"emptyOtp": "OTP invalid!",
-		"resendOtp": "Resend OTP!"
+		"resendOtp": "Resend OTP!",
+		"tooFast": "Too fast. Please wait {{seconds}} seconds before sending OTP again.",
+		"alreadyLinked": "Phone number is already linked to your account",
+		"alreadyLinkedToAnother": "Phone number is already linked to another account"
 	},
 	"toast": {
 		"deleteAccount": {

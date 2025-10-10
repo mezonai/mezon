@@ -577,39 +577,14 @@ export const directSlice = createSlice({
 				}
 			});
 		},
-		removeByUserId: (state, action: PayloadAction<{ userId: string; currentUserId: string; channelId: string }>) => {
-			const { userId, currentUserId, channelId } = action.payload;
-			const { ids, entities } = state;
-
-			const item = entities[channelId];
-			if (!item || !item.user_ids) return;
-
-			const userIndex = item.user_ids.indexOf(userId);
-
-			if (userIndex !== -1) {
-				const newUserIds = item.user_ids.filter((_, index) => index !== userIndex);
-
-				if (newUserIds.length === 1 && newUserIds.includes(currentUserId)) {
-					directAdapter.removeOne(state, channelId);
-				} else {
-					const newUsernames = item.usernames?.filter((_, index) => index !== userIndex);
-					const newDisplayNames = item.display_names?.filter((_, index) => index !== userIndex);
-					const newAvatars = item.avatars?.filter((_, index) => index !== userIndex);
-					const newChannelAvatars = item.channel_avatar;
-					const newIsOnline = item.onlines?.filter((_, index) => index !== userIndex);
-					directAdapter.updateOne(state, {
-						id: channelId,
-						changes: {
-							user_ids: newUserIds,
-							usernames: newUsernames,
-							avatars: newAvatars,
-							display_names: newDisplayNames,
-							channel_avatar: newChannelAvatars,
-							onlines: newIsOnline
-						}
-					});
+		removeGroupMember: (state, action: PayloadAction<{ userId: string; currentUserId: string; channelId: string }>) => {
+			const currentDirect = state.entities[action.payload.channelId];
+			directAdapter.updateOne(state, {
+				id: action.payload.channelId,
+				changes: {
+					member_count: (currentDirect.member_count || 0) > 0 ? (currentDirect.member_count || 1) - 1 : 0
 				}
-			}
+			});
 		},
 		changeE2EE: (state, action: PayloadAction<Partial<ChannelUpdatedEvent>>) => {
 			if (!action.payload?.channel_id) return;

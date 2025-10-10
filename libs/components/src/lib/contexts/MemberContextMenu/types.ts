@@ -1,6 +1,6 @@
-import { ChannelMembersEntity } from '@mezon/store';
-import { ReactNode } from 'react';
-import { directMessageValueProps } from '../../components/DmList/DMListItem';
+import type { ChannelMembersEntity } from '@mezon/store';
+import type { ReactNode } from 'react';
+import type { directMessageValueProps } from '../../components/DmList/DMListItem';
 
 export enum ExtendedMemberProfileType {
 	MEMBER_LIST = 'MEMBER_LIST',
@@ -51,6 +51,7 @@ export interface MemberContextMenuContextType {
 	setCurrentUser: (user: ChannelMembersEntity | null) => void;
 	showContextMenu: (
 		event: React.MouseEvent,
+		channelId: string,
 		user?: ChannelMembersEntity,
 		directMessageValue?: directMessageValueProps,
 		isThread?: boolean

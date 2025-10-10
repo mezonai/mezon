@@ -58,6 +58,16 @@
 	"notifyEveryone": "Thông báo cho tất cả những người có quyền xem kênh này.",
 	"removeImage": "Xoá",
 	"allMembers": "Tất cả thành viên",
+	"permissionTitles": {
+		"administrator": "Quản trị viên",
+		"view-channel": "Xem kênh",
+		"manage-channel": "Quản lý kênh",
+		"manage-clan": "Quản lý Clan",
+		"manage-thread": "Quản lý luồng",
+		"send-message": "Gửi tin nhắn",
+		"delete-message": "Xóa tin nhắn",
+		"clan-owner": "Chủ sở hữu Clan"
+	},
 	"permissionDescriptions": {
 		"administrator": "Cho phép thành viên quản lý toàn bộ clan (quyền chỉ thấp hơn chủ sở hữu).",
 		"view-channel": "Cho phép thành viên xem các kênh công khai.",

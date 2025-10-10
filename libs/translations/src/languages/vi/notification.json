@@ -1,44 +1,44 @@
 {
-  "headerTitle": "Thông báo",
-  "tabNotify": {
-    "forYou": "Dành cho bạn",
-    "mention": "Nhắc đến",
-    "messages": "Tin nhắn",
-    "topics": "Chủ đề",
-    "notificationSettings": "Cài đặt thông báo"
-  },
-  "removeNotification": "Xóa thông báo",
-  "nothingHere": "Chưa có gì ở đây",
-  "comeBackNotify": "Quay lại để nhận thông báo về sự kiện và nhiều hơn thế nữa",
-  "repliedTo": "Trả lời: ",
-  "sender": "Người gửi: ",
-  "seeWhenAnswersAppear": "Xem khi nào câu trả lời xuất hiện",
-  "enablePushNotifications": "Bật thông báo đẩy",
-  "permissionAlert": {
-    "turnOnNotifications": "Bật thông báo",
-    "permissionDescription": "Vui lòng cho phép Mezon gửi thông báo để giữ liên lạc với bạn bè và gia đình.",
-    "openSettings": "Mở Cài đặt",
-    "features": {
-      "newMessages": {
-        "title": "Nhận thông báo về tin nhắn mới",
-        "description": "Cập nhật khi bạn bè gửi tin nhắn cho bạn"
-      },
-      "mentions": {
-        "title": "Biết khi bạn được nhắc đến trong nhóm",
-        "description": "Không bao giờ bỏ lỡ khi ai đó nhắc đến bạn"
-      },
-      "muteControl": {
-        "title": "Tắt tiếng các cuộc trò chuyện cụ thể và loại cuộc trò chuyện",
-        "description": "Kiểm soát thông báo nào bạn nhận được"
-      }
-    }
-  },
-  "permissionRequest": {
-    "title": "Quyền thông báo",
-    "permissionDenied": "Quyền thông báo bị từ chối.",
-    "cancel": "Hủy",
-    "ok": "OK"
-  },
-  "andYou": "và bạn",
-  "topicAndYou": "Topic và bạn"
+	"headerTitle": "Thông báo",
+	"tabNotify": {
+		"forYou": "Dành cho bạn",
+		"mention": "Nhắc đến",
+		"messages": "Tin nhắn",
+		"topics": "Thảo luận ngắn",
+		"notificationSettings": "Cài đặt thông báo"
+	},
+	"removeNotification": "Xóa thông báo",
+	"nothingHere": "Chưa có gì ở đây",
+	"comeBackNotify": "Quay lại để nhận thông báo về sự kiện và nhiều hơn thế nữa",
+	"repliedTo": "Trả lời: ",
+	"sender": "Người gửi: ",
+	"seeWhenAnswersAppear": "Xem khi nào câu trả lời xuất hiện",
+	"enablePushNotifications": "Bật thông báo đẩy",
+	"permissionAlert": {
+		"turnOnNotifications": "Bật thông báo",
+		"permissionDescription": "Vui lòng cho phép Mezon gửi thông báo để giữ liên lạc với bạn bè và gia đình.",
+		"openSettings": "Mở Cài đặt",
+		"features": {
+			"newMessages": {
+				"title": "Nhận thông báo về tin nhắn mới",
+				"description": "Cập nhật khi bạn bè gửi tin nhắn cho bạn"
+			},
+			"mentions": {
+				"title": "Biết khi bạn được nhắc đến trong nhóm",
+				"description": "Không bao giờ bỏ lỡ khi ai đó nhắc đến bạn"
+			},
+			"muteControl": {
+				"title": "Tắt tiếng các cuộc trò chuyện cụ thể và loại cuộc trò chuyện",
+				"description": "Kiểm soát thông báo nào bạn nhận được"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Quyền thông báo",
+		"permissionDenied": "Quyền thông báo bị từ chối.",
+		"cancel": "Hủy",
+		"ok": "OK"
+	},
+	"andYou": "và bạn",
+	"topicAndYou": "Thảo luận ngắn và bạn"
 }

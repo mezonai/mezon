@@ -96,8 +96,8 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 					<div className="rounded-md overflow-hidden mt-4">
 						<div className="bg-theme-setting-nav flex justify-between items-start p-4 border-theme-primary border-2 rounded-lg">
 							<div>
-								<div className="inline-flex mb-2">
-									<Icons.LockIcon className="text-[var(--text-theme-primary)]" />
+								<div className="inline-flex mb-2 text-theme-primary-active">
+									<Icons.LockIcon />
 									<p className="ml-2 font-bold text-theme-primary">{t('channelPermission.privateChannel')}</p>
 								</div>
 								<p className="text-xs text-theme-primary">{t('channelPermission.basicViewDescription')}</p>

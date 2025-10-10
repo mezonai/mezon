@@ -131,5 +131,31 @@
 			"disableFailed": "Tắt thất bại!",
 			"bannerRemoved": "Đã xóa banner!"
 		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Chào mừng",
+			"description": "Hãy cho các thành viên mới biết điều gì đặc biệt về cộng đồng của bạn và tại sao bạn vui mừng khi gặp họ!"
+		},
+		"newMemberToDos": {
+			"title": "Việc cần làm của Thành viên Mới",
+			"description": "Đặt 3-5 nhiệm vụ để các thành viên mới của bạn thực hiện. Khiến họ <strong>trò chuyện và tham gia vào các kênh của bạn.</strong>"
+		},
+		"dontDoThis": "Đừng làm như này: quá chung chung",
+		"exampleTask": {
+			"title": "trò chuyện với cộng đồng",
+			"description": "trong #general"
+		},
+		"readTheRules": "Đọc Quy tắc",
+		"addTask": "Thêm nhiệm vụ",
+		"resourcePages": {
+			"title": "Trang Tài nguyên",
+			"description": "Biến các kênh chỉ đọc thành các trang tài nguyên đẹp mắt trong Hướng dẫn Máy chủ của bạn. Chúng sẽ không còn xuất hiện trong danh sách kênh trừ khi bạn bật Tất cả Kênh. Tài nguyên đi kèm với một số lợi ích:",
+			"perk1": "Thành viên bắt đầu ở đầu trang thay vì cuối chuỗi tin nhắn",
+			"perk2": "Thanh trò chuyện và avatar được xóa để trông gọn gàng hơn",
+			"perk3": "Tất cả nội dung, nhúng, phương tiện và định dạng sẽ giữ nguyên"
+		},
+		"addResource": "Thêm tài nguyên",
+		"ownerGreeting": "Xin chào, đây là lời chào từ chủ clan. Bạn sẽ thấy tin nhắn này lần đầu tiên tham gia clan!"
 	}
 }

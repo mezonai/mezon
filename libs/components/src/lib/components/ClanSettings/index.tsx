@@ -36,11 +36,25 @@ export type ModalSettingProps = {
 	initialSetting?: string;
 };
 
+const allSettings: ItemObjProps[] = [
+	{ id: ItemSetting.OVERVIEW, name: 'Overview' },
+	{ id: ItemSetting.ROLES, name: 'Roles' },
+	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' },
+	{ id: ItemSetting.EMOJI, name: 'Emoji' },
+	{ id: ItemSetting.IMAGE_STICKERS, name: 'Image Stickers' },
+	{ id: ItemSetting.VOIDE_STICKERS, name: 'Voice Stickers' },
+	{ id: ItemSetting.INTEGRATIONS, name: 'Integrations' },
+	{ id: ItemSetting.AUDIT_LOG, name: 'Audit Log' },
+	{ id: ItemSetting.ON_BOARDING, name: 'Onboarding' },
+	{ id: ItemSetting.ON_COMUNITY, name: 'Enable Community' }
+];
+
 const ClanSetting = (props: ModalSettingProps) => {
 	const { onClose, initialSetting } = props;
+
 	const [currentSettingId, setCurrentSettingId] = useState<string>(() => (initialSetting ? initialSetting : listItemSetting[0].id));
 	const currentSetting = useMemo(() => {
-		return listItemSetting.find((item) => item.id === currentSettingId);
+		return allSettings.find((item) => item.id === currentSettingId);
 	}, [currentSettingId]);
 
 	const dispatch = useAppDispatch();
@@ -65,7 +79,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const currentClanId = useSelector(selectCurrentClanId) as string;
 	const currentClan = useSelector(selectCurrentClan);
 	const navigate = useNavigate();
-	const [isCommunityEnabled, setIsCommunityEnabled] = useState(false);
+	const [_isCommunityEnabled, setIsCommunityEnabled] = useState(false);
 
 	const currentSettingPage = () => {
 		switch (currentSettingId) {
@@ -101,7 +115,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 		if (currentSettingId === ItemSetting.ON_BOARDING) {
 			dispatch(onboardingActions.closeToOnboard());
 		}
-	}, [currentSettingId]);
+	}, [currentSettingId, dispatch]);
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);

@@ -501,7 +501,7 @@ const SettingComunity = ({
 								<div
 									className={`flex items-center border-2 rounded-xl bg-theme-input focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/30 transition-all duration-200 ${vanityUrlError ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'}`}
 								>
-									<span className="px-4 py-3 text-theme-primary opacity-75 border-r border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded-l-xl">
+									<span className="px-4 py-3 text-theme-primary opacity-75 border-r bg-item-theme rounded-l-xl">
 										mezon.ai/clans/clan/
 									</span>
 									<input
@@ -515,8 +515,8 @@ const SettingComunity = ({
 									/>
 								</div>
 								{vanityUrl && (
-									<div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-										<p className="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-1">
+									<div className="mt-2 p-3 border border-blue-200 rounded-lg">
+										<p className="text-sm text-blue-700  flex items-center gap-1">
 											<span className="font-medium">{t('communitySettings.vanityUrl.previewLabel')}</span>
 											<span className="truncate max-w-[300px] block">mezon.ai/clans/clan/{vanityUrl}</span>
 										</p>
@@ -721,7 +721,7 @@ const SettingComunity = ({
 							<div
 								className={`flex items-center border-2 rounded-xl bg-theme-input focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/30 transition-all duration-200 ${vanityUrlError ? 'border-red-500' : 'border-gray-200 dark:border-gray-600'}`}
 							>
-								<span className="px-4 py-3 text-theme-primary opacity-75 border-r border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded-l-xl">
+								<span className="px-4 py-3 text-theme-primary opacity-75 border-r border-gray-300 bg-item-theme rounded-l-xl">
 									mezon.ai/clans/clan/
 								</span>
 								<input
@@ -734,8 +734,8 @@ const SettingComunity = ({
 								/>
 							</div>
 							{vanityUrl && (
-								<div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-									<p className="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-1">
+								<div className="mt-2 p-3  border border-blue-200 rounded-lg">
+									<p className="text-sm text-blue-700 flex items-center gap-1">
 										<span className="font-medium">{t('communitySettings.vanityUrl.previewLabel')}</span>
 										<span className="truncate max-w-[300px] block">mezon.ai/clans/clan/{vanityUrl}</span>
 									</p>

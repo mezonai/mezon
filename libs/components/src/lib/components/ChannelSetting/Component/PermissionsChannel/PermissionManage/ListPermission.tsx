@@ -1,5 +1,6 @@
 import { PermissionUserEntity, selectAllPermissionRoleChannel, useAppSelector } from '@mezon/store';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import ItemPermission from './ItemPermission';
 
 export type ListPermissionHandle = {
@@ -14,6 +15,7 @@ type ItemListPermissionProps = {
 
 const ListPermission = forwardRef<ListPermissionHandle, ItemListPermissionProps>((props, ref) => {
 	const { onSelect, listPermission } = props;
+	const { t } = useTranslation('channelSetting');
 	const listPermissionRoleChannel = useAppSelector((state) => selectAllPermissionRoleChannel(state, props.channelId));
 	const itemRefs = useRef<{ [key: string]: { reset: () => void } }>({});
 
@@ -29,7 +31,7 @@ const ListPermission = forwardRef<ListPermissionHandle, ItemListPermissionProps>
 
 	return (
 		<div className="basis-2/3 text-theme-primary">
-			<h4 className="uppercase font-bold text-xs text-theme-primary-active mb-2">General Channel Permissions</h4>
+			<h4 className="uppercase font-bold text-xs text-theme-primary-active mb-2">{t('channelPermission.generalChannelPermission')}</h4>
 			<div className="space-y-2">
 				{listPermission.map((item, index) => {
 					const matchingRoleChannel = listPermissionRoleChannel?.permission_role_channel?.find(

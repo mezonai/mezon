@@ -78,6 +78,10 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 		return slug === SlugPermission.Admin && hasPermissionEdit;
 	};
 
+	const getPermissionTitle = (slug: string) => {
+		return t(`permissionTitles.${slug}`, { defaultValue: '' });
+	};
+
 	const getPermissionDescription = (slug: string) => {
 		return t(`permissionDescriptions.${slug}`, { defaultValue: '' });
 	};
@@ -103,7 +107,9 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 							className={`flex items-start justify-between p-3 rounded-lg border border-color-theme ${hasPermissionEdit && clickRole !== EVERYONE_ROLE_ID ? 'cursor-pointer bg-item-hover' : 'cursor-not-allowed bg-item-hover'}`}
 						>
 							<div className="flex-1 pr-4">
-								<div className="font-medium text-theme-primary-active mb-1">{permission.title}</div>
+								<div className="font-medium text-theme-primary-active mb-1">
+									{permission.slug ? getPermissionTitle(permission.slug) || permission.title : permission.title}
+								</div>
 								<div className="text-xs text-theme-primary">
 									{permission.slug
 										? getPermissionDescription(permission.slug)

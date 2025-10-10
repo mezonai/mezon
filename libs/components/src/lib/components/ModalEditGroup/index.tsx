@@ -1,3 +1,4 @@
+import { useAppParams } from '@mezon/core';
 import { Button } from '@mezon/ui';
 import { fileTypeImage, generateE2eId, MAX_FILE_SIZE_8MB, ValidateSpecialCharacters } from '@mezon/utils';
 import React, { useEffect, useRef, useState } from 'react';
@@ -39,11 +40,19 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 	error = null
 }) => {
 	const { t } = useTranslation('directMessage');
+	const { currentURL } = useAppParams();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const groupNameInputRef = useRef<HTMLInputElement>(null);
 	const [validationError, setValidationError] = useState<string | null>(null);
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
+	const previousURLRef = useRef<string | undefined>(currentURL);
+	useEffect(() => {
+		if (isOpen && previousURLRef.current !== undefined && previousURLRef.current !== currentURL) {
+			onClose();
+		}
+		previousURLRef.current = currentURL;
+	}, [currentURL, isOpen, onClose]);
 	useEffect(() => {
 		if (groupName.trim()) {
 			const regex = ValidateSpecialCharacters();
@@ -142,7 +151,14 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 									</div>
 								</div>
 							</div>
-							<input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" data-e2e={generateE2eId('chat.direct_message.edit_group.upload.avatar_group_input')} />
+							<input
+								ref={fileInputRef}
+								type="file"
+								accept="image/*"
+								onChange={handleImageChange}
+								className="hidden"
+								data-e2e={generateE2eId('chat.direct_message.edit_group.upload.avatar_group_input')}
+							/>
 							<p className="text-xs text-theme-primary font-medium">{t('editGroup.uploadImageText')}</p>
 							{imagePreview && !imagePreview.includes('assets/images/avatar-group.png') && (
 								<button

@@ -141,11 +141,30 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const updatedUserIds = (existingChannel?.user_ids || []).filter((userId) => !userRemoves.includes(userId));
+				const user_ids = existingChannel.user_ids;
+				const display_names = existingChannel.display_names;
+				const usernames = existingChannel.usernames;
+				const onlines = existingChannel.onlines;
+				const avatars = existingChannel.avatars;
+				userRemoves.forEach((user) => {
+					const indexRemove = user_ids?.indexOf(user);
+					if (indexRemove !== -1 && indexRemove !== undefined) {
+						user_ids?.splice(indexRemove, 1);
+						display_names?.splice(indexRemove, 1);
+						usernames?.splice(indexRemove, 1);
+						onlines?.splice(indexRemove, 1);
+						avatars?.splice(indexRemove, 1);
+					}
+				});
+
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						user_ids: updatedUserIds
+						user_ids,
+						display_names,
+						avatars,
+						onlines,
+						usernames
 					}
 				});
 			}

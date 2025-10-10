@@ -39,7 +39,7 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 			className={`overflow-y-auto flex flex-col flex-1 shrink w-1/2 pt-[94px] pb-7 pr-[10px] sbm:pl-[40px] pl-[10px] overflow-x-hidden ${menuIsOpen ? 'min-w-[700px]' : ''} 2xl:min-w-[900px] max-w-[740px] hide-scrollbar text-theme-primary text-sm`}
 		>
 			<h1 className="text-xl font-semibold tracking-wider mb-8 text-theme-primary-active">{t('setting:language.title')}</h1>
-			<div className="rounded-lg bg-theme-setting-nav my-4 p-4">
+			<div className="rounded-lg bg-theme-setting-nav p-4">
 				<p className="text-sm font-medium mb-4">{t('setting:language.description')}</p>
 
 				<div className="flex flex-col gap-3 mb-6">

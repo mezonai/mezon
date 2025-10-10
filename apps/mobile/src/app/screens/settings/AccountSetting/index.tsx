@@ -65,6 +65,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 		store.dispatch(clansActions.removeAll());
 		store.dispatch(clansActions.collapseAllGroups());
 		store.dispatch(clansActions.clearClanGroups());
+		store.dispatch(accountActions.setPasswordSetted(false));
 		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
@@ -176,7 +177,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			},
 			{
 				title: t('phoneNumberSetting.title'),
-				description: userProfile?.user?.phone_number,
+				description: userProfile?.user?.phone_number || '',
 				type: EAccountSettingType.PhoneNumber
 			}
 		];

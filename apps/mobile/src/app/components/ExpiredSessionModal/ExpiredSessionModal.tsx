@@ -6,7 +6,16 @@ import {
 	STORAGE_KEY_TEMPORARY_ATTACHMENT,
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
 } from '@mezon/mobile-components';
-import { appActions, authActions, channelsActions, clansActions, messagesActions, selectAllAccount, selectHasInternetMobile } from '@mezon/store';
+import {
+	accountActions,
+	appActions,
+	authActions,
+	channelsActions,
+	clansActions,
+	messagesActions,
+	selectAllAccount,
+	selectHasInternetMobile
+} from '@mezon/store';
 import { getStoreAsync } from '@mezon/store-mobile';
 import React, { useCallback, useEffect } from 'react';
 import { DeviceEventEmitter, Platform } from 'react-native';
@@ -26,6 +35,7 @@ const ExpiredSessionModal = () => {
 		store.dispatch(clansActions.collapseAllGroups());
 		store.dispatch(clansActions.clearClanGroups());
 		store.dispatch(clansActions.refreshStatus());
+		store.dispatch(accountActions.setPasswordSetted(false));
 
 		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);

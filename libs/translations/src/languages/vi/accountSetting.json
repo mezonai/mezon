@@ -80,7 +80,10 @@
 		"updatePhoneSuccess": "Cập nhật số điện thoại thành công",
 		"updatePhoneFail": "Có lỗi xảy ra. Thử lại sau",
 		"emptyOtp": "Mã OTP không hợp lệ!",
-		"resendOtp": "Gửi lại mã OTP!"
+		"resendOtp": "Gửi lại mã OTP!",
+		"tooFast": "Quá nhanh. Vui lòng chờ {{seconds}} giây trước khi gửi mã OTP lại.",
+		"alreadyLinked": "Số này đã liên kết với tài khoản của bạn",
+		"alreadyLinkedToAnother": "Số này đã liên kết với tài khoản khác"
 	},
 	"toast": {
 		"deleteAccount": {
@@ -101,7 +104,7 @@
 			"description": "Nhập mã 6 chữ số mà chúng tôi đã gửi đến",
 			"verifyButton": "Xác nhận",
 			"success": "Cập nhật số điện thoại thành công",
-			"failed": "Mã OTP không đúng"
+			"failed": "Mã OTP không hợp lệ"
 		}
 	}
 }

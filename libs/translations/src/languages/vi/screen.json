@@ -1,19 +1,19 @@
 {
     "headerTitle": {
-        "settings": "Cài đặt",
-        "Friends": "Bạn bè",
-        "addFriends": "Thêm bạn bè",
-        "requestFriend": "Yêu cầu kết bạn",
-        "friendRequestSettings": "Cài đặt yêu cầu kết bạn",
-        "language": "Ngôn ngữ",
-        "profile": "Hồ sơ",
-        "newMessage": "Tin nhắn mới",
-        "newGroup": "Nhóm mới",
-        "addMembers": "Thêm thành viên",
-        "appearance": "Giao diện",
-        "topic": "Chủ đề",
-        "chat": "Trò chuyện"
-    },
+		"settings": "Cài đặt",
+		"Friends": "Bạn bè",
+		"addFriends": "Thêm bạn bè",
+		"requestFriend": "Yêu cầu kết bạn",
+		"friendRequestSettings": "Cài đặt yêu cầu kết bạn",
+		"language": "Ngôn ngữ",
+		"profile": "Hồ sơ",
+		"newMessage": "Tin nhắn mới",
+		"newGroup": "Nhóm mới",
+		"addMembers": "Thêm thành viên",
+		"appearance": "Giao diện",
+		"topic": "Thảo luận ngắn",
+		"chat": "Trò chuyện"
+	},
     "headerRight": {
         "addFriends": "Thêm bạn bè"
     },

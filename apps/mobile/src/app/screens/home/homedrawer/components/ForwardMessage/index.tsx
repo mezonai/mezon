@@ -7,6 +7,7 @@ import {
 	getSelectedMessage,
 	getStore,
 	selectAllChannelsByUser,
+	selectBlockedUsersForMessage,
 	selectCurrentChannelId,
 	selectDirectsOpenlist,
 	selectDmGroupCurrentId,
@@ -100,8 +101,12 @@ const ForwardMessageScreen = () => {
 	const allForwardObject = useMemo(() => {
 		const listChannels = selectAllChannelsByUser(store.getState() as any);
 		const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
+		const listBlockUsers = selectBlockedUsersForMessage(store.getState() as any);
 		const listDMForward = dmGroupChatList
-			?.filter((dm) => dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channel_label)
+			?.filter(
+				(dm) =>
+					dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channel_label && !listBlockUsers?.some((user) => user?.id === dm?.user_ids?.[0])
+			)
 			.map(mapDirectMessageToForwardObject);
 
 		const listGroupForward = dmGroupChatList

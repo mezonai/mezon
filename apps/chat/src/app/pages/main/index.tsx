@@ -618,14 +618,14 @@ const PreviewOnboardingMode = () => {
 		dispatch(onboardingActions.closeOnboardingPreviewMode());
 	};
 	return (
-		<div className="fixed z-50 top-0 left-0 w-screen  bg-black flex px-4 py-2 h-12 items-center justify-center ">
-			<div className="absolute cursor-pointer hover:bg-slate-950 left-6 px-2 flex gap-1 border-2 py-1 items-center justify-center  border-white rounded bg-transparent">
-				<Icons.LeftArrowIcon className="fill-white text-white" />
-				<p className="text-white text-xs font-medium" onClick={handleClosePreview}>
+		<div className="fixed z-50 top-0 left-0 w-screen  bg-theme-setting-primary flex px-4 py-2 h-12 items-center justify-center ">
+			<div className="absolute cursor-pointer bg-item-theme-hover left-6 px-2 flex gap-1 border-2 py-1 items-center justify-center  border-theme-primary rounded bg-transparent">
+				<Icons.LeftArrowIcon className="fill-theme-primary-active text-theme-primary-active" />
+				<p className="text-theme-primary-active text-xs font-medium" onClick={handleClosePreview}>
 					Close preview mode
 				</p>
 			</div>
-			<div className="text-base text-white font-semibold">You are viewing the clan as a new member. You have no roles.</div>
+			<div className="text-base text-theme-primary-active font-semibold">You are viewing the clan as a new member. You have no roles.</div>
 		</div>
 	);
 };

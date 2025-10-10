@@ -1,5 +1,6 @@
 import { ActionEmitEvent, load, save, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
+import { getStore, selectBlockedUsersForMessage, selectDirectById } from '@mezon/store-mobile';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,15 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 	const isDM = useMemo(() => {
 		return [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(props?.mode);
 	}, [props?.mode]);
+
+	const isBlocked = useMemo(() => {
+		if (props?.mode !== ChannelStreamMode.STREAM_MODE_DM) return false;
+		const store = getStore();
+		const directMessage = selectDirectById(store.getState(), props.channelId);
+		const listBlockedUser = selectBlockedUsersForMessage(store.getState());
+		const blockedUser = listBlockedUser.some((user) => user?.user && user?.user?.id === (directMessage?.user_ids?.[0] || ''));
+		return blockedUser;
+	}, [props?.channelId]);
 
 	useEffect(() => {
 		if (props?.channelId && messageActionNeedToResolve) {
@@ -84,7 +94,7 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 			{messageActionNeedToResolve && (props?.canSendMessage || isDM) && (
 				<ActionMessageSelected messageActionNeedToResolve={messageActionNeedToResolve} onClose={deleteMessageActionNeedToResolve} />
 			)}
-			{!props?.canSendMessage && !isDM ? (
+			{(!props?.canSendMessage && !isDM) || isBlocked ? (
 				<View
 					style={{
 						zIndex: 10,

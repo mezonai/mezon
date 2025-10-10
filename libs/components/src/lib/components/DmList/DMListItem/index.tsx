@@ -76,7 +76,9 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const ref = useRef<HTMLDivElement>(null);
 	const { showContextMenu } = useDirectMessageContextMenu();
 	const handleContextMenu = (event: React.MouseEvent) => {
-		showContextMenu(event, directMessage as ChannelMembersEntity);
+		if (directMessage.channel_id) {
+			showContextMenu(event, directMessage.channel_id, directMessage as ChannelMembersEntity);
+		}
 	};
 
 	const handleClickDM = useCallback(async () => {

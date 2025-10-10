@@ -158,8 +158,8 @@ function GuideBody() {
 									hightLightIcon={true}
 									description={rule.content}
 									icon={<Icons.RuleIcon />}
-									background="bg-white dark:bg-gray-800"
-									className="shadow-sm dark:shadow-none text-white"
+									background=""
+									className="shadow-sm dark:shadow-none text-theme-primary bg-theme-setting-nav"
 									action={<div className="w-[72px] aspect-square  rounded-lg"></div>}
 								/>
 							))}
@@ -213,15 +213,15 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 		<GuideItemLayout
 			key={mission.id}
 			title={mission.title}
-			className="cursor-pointer shadow-sm dark:shadow-none"
+			className="cursor-pointer shadow-sm dark:shadow-none text-theme-primary bg-item-theme"
 			hightLightIcon={true}
-			icon={<Icons.TargetIcon defaultSize="w-6 h-6 " defaultFill="#e4e4e4" />}
+			icon={<Icons.TargetIcon defaultSize="w-6 h-6 " />}
 			onClick={onClick}
-			background="bg-white dark:bg-gray-800"
+			background=""
 			description={
 				<span className="">
 					{titleMission[mission.task_type ? mission.task_type - 1 : 0] || ''}{' '}
-					<span className="font-semibold text-blue-600 dark:text-channelActiveColor"> #{channelById?.channel_label} </span>{' '}
+					<span className="font-semibold text-theme-primary-active"> #{channelById?.channel_label} </span>{' '}
 				</span>
 			}
 			action={

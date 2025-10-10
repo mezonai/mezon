@@ -62,7 +62,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 				>
 					<span className={` ${clickRole === EVERYONE_ROLE_ID ? ' cursor-not-allowed' : ''}`}>
 						<button
-							className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectDisplayTab ? 'dark:text-white text-black' : 'text-contentTertiary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
+							className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectDisplayTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
 							onClick={() => {
 								if (isSelectDisplayTab) return;
 								handleButtonClick('Display');
@@ -76,7 +76,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 						</button>
 					</span>
 					<button
-						className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectPermissionTab ? 'dark:text-white text-black' : 'text-contentTertiary'}`}
+						className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectPermissionTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'}`}
 						onClick={() => {
 							if (isSelectPermissionTab) return;
 							handleButtonClick('Permissions');
@@ -91,7 +91,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 					{activeRole?.slug !== `everyone-${activeRole?.clan_id}` && (
 						<span className={` ${clickRole === EVERYONE_ROLE_ID ? ' cursor-not-allowed' : ''}`}>
 							<button
-								className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectManageTab ? 'dark:text-white text-black' : 'text-contentTertiary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
+								className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectManageTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} ${clickRole === EVERYONE_ROLE_ID ? 'pointer-events-none select-none' : ''}`}
 								onClick={() => {
 									if (isSelectManageTab) return;
 									handleButtonClick('Manage Members');

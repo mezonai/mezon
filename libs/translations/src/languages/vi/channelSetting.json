@@ -156,7 +156,9 @@
 			"addMembersOrRoles": "Thêm thành viên hoặc vai trò",
 			"add": "Thêm",
 			"roles": "VAI TRÒ",
-			"members": "THÀNH VIÊN"
+			"members": "THÀNH VIÊN",
+			"rolesMembers": "Vai trò/Thành viên",
+			"roleMemberPlaceholder": "Vai trò/Thành viên"
 		},
 		"toast": {
 			"success": "Lưu thành công",

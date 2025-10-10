@@ -1,6 +1,6 @@
 import { useDMInvite } from '@mezon/core';
 import type { DirectEntity, FriendsEntity } from '@mezon/store';
-import { selectAllDirectMessages, selectAllFriends, selectAllMembersInClan, useAppSelector } from '@mezon/store';
+import { selectAllDirectMessages, selectAllFriends, selectAllMembersInClan, selectBlockedUsers, useAppSelector } from '@mezon/store';
 import type { UsersClanEntity } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -20,6 +20,8 @@ const ListMemberInvite = (props: ModalParam) => {
 	const { listDMInvite } = useDMInvite(props.channelID);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [sendIds, setSendIds] = useState<Record<string, boolean>>({});
+	const blockedUsers = useSelector(selectBlockedUsers);
+
 	const [filteredListDMBySearch, setFilterListSearch] = useState<DirectEntity[] | undefined>(listDMInvite);
 
 	const handleFilterListSearch = useCallback(() => {
@@ -69,11 +71,11 @@ const ListMemberInvite = (props: ModalParam) => {
 	const dmGroupChatList = dmGroupChatListRef.current;
 	const friends = useSelector(selectAllFriends);
 
-	const dataUserToInvite = useMemo(
-		() => processUserData(membersClan as UsersClanEntity[], dmGroupChatList as DirectEntity[], friends as FriendsEntity[]),
-		[membersClan, dmGroupChatList, friends]
-	);
-
+	const dataUserToInvite = useMemo(() => {
+		const userData = processUserData(membersClan as UsersClanEntity[], dmGroupChatList as DirectEntity[], friends as FriendsEntity[]);
+		const blockedUserIds = new Set(blockedUsers?.map((user) => user.id).filter(Boolean));
+		return userData.filter((user) => user?.id && !blockedUserIds.has(user.id));
+	}, [membersClan, dmGroupChatList, friends, blockedUsers]);
 	const filteredDataToInvite = useMemo(() => {
 		if (!searchTerm) {
 			return dataUserToInvite;

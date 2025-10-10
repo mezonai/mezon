@@ -17,7 +17,7 @@ type BaseMemberProfileProps = {
 	avatar: string;
 	isOwner?: boolean;
 	userStatus?: ReactNode;
-	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, user: UsersClanEntity) => void;
+	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
 	onClick: (event: React.MouseEvent) => void;
 };
 
@@ -37,7 +37,7 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 				avatar_url: user?.user?.avatar_url
 			}
 		};
-		onContextMenu(event, userTemplate);
+		onContextMenu(event, currentDmGroup?.channel_id || '', userTemplate);
 	};
 
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;

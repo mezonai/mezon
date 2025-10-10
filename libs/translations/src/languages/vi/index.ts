@@ -57,6 +57,7 @@ import notificationSetting from './notificationSetting.json';
 import notifications from './notifications.json';
 import onBoardingClan from './onBoardingClan.json';
 import onboardingMissions from './onboardingMissions.json';
+import onboardingRules from './onboardingRules.json';
 import pinMessage from './pinMessage.json';
 import profile from './profile.json';
 import profileSetting from './profileSetting.json';
@@ -142,6 +143,7 @@ export default {
 	sharing,
 	onBoardingClan,
 	onboardingMissions,
+	onboardingRules,
 	modalControls,
 	memberTable,
 	transferOwner,

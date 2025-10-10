@@ -11,6 +11,7 @@ import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize, searchNormalizeText } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../../AvatarImage/AvatarImage';
 
@@ -100,6 +101,7 @@ type HeaderAddRoleMemberProps = {
 
 const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 	const { listManageNotInChannel, usersClan, channelId } = props;
+	const { t } = useTranslation('channelSetting');
 	const [showPopup, setShowPopup] = useState(false);
 
 	const channel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
@@ -150,7 +152,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 
 	return (
 		<div ref={panelRef} className="flex justify-between items-center relative" onClick={() => setShowPopup(!showPopup)}>
-			<h4 className="uppercase font-bold text-xs text-theme-primary-active">Roles/Members</h4>
+			<h4 className="uppercase font-bold text-xs text-theme-primary-active">{t('channelPermission.bottomSheet.rolesMembers')}</h4>
 			{channel?.channel_private === 1 && <Icons.PlusIcon defaultSize="size-4  cursor-pointer" />}
 			{showPopup && (
 				<div
@@ -158,11 +160,11 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className=" flex gap-x-1 p-4 text-sm bg-theme-setting-nav">
-						<p className="font-bold text-theme-primary-active">ADD:</p>
+						<p className="font-bold text-theme-primary-active">{t('channelPermission.bottomSheet.add')}:</p>
 						<input
 							type="text"
 							className="bg-transparent outline-none font-medium"
-							placeholder="Role/Member"
+							placeholder={t('channelPermission.bottomSheet.roleMemberPlaceholder')}
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 						/>
@@ -173,7 +175,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 					>
 						{Boolean(listRoleCanAdd.length) && (
 							<div>
-								<p className="px-3 py-2 uppercase text-[11px] font-bold">Role</p>
+								<p className="px-3 py-2 uppercase text-[11px] font-bold">{t('channelPermission.bottomSheet.roles')}</p>
 								{listRoleCanAdd.map((item) => (
 									<div key={item.id} className="rounded px-3 py-2 font-semibold bg-item-hover" onClick={() => addRole(item.id)}>
 										{item.title}
@@ -183,7 +185,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 						)}
 						{Boolean(listMemberCanAdd.length) && (
 							<div>
-								<p className="px-3 py-2 uppercase text-[11px] font-bold">Member</p>
+								<p className="px-3 py-2 uppercase text-[11px] font-bold">{t('channelPermission.bottomSheet.members')}</p>
 								{listMemberCanAdd.map((item) => (
 									<div key={item.id} onClick={() => addUser(item.id)}>
 										<ItemUser

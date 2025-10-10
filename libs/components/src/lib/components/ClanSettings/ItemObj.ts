@@ -26,11 +26,7 @@ export const ItemSetting = {
 export const listItemSetting: ItemObjProps[] = [
 	{ id: ItemSetting.OVERVIEW, name: 'Overview' },
 	{ id: ItemSetting.ROLES, name: 'Roles' },
-	{ id: ItemSetting.EMOJI, name: 'Emoji' },
-	{ id: ItemSetting.IMAGE_STICKERS, name: 'Image Stickers' },
-	{ id: ItemSetting.VOIDE_STICKERS, name: 'Voice Stickers' },
 	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' }
-	// { id: ItemSetting.NOTIFICATION_SOUND, name: 'Notification Sound' }
 ];
 
 export const listItemSettingApp: ItemObjProps[] = [{ id: ItemSetting.INTEGRATIONS, name: 'Integrations' }];
@@ -41,10 +37,20 @@ export const communitySettingsList: ItemObjProps[] = [
 	{ id: ItemSetting.ON_COMUNITY, name: 'Enable Community' }
 ];
 
+export const listItemEmotions: ItemObjProps[] = [
+	{ id: ItemSetting.EMOJI, name: 'Emoji' },
+	{ id: ItemSetting.IMAGE_STICKERS, name: 'Image Stickers' },
+	{ id: ItemSetting.VOIDE_STICKERS, name: 'Voice Stickers' }
+];
+
 export const sideBarListItem: ListSideBarProps[] = [
 	{
 		title: '',
 		listItem: listItemSetting
+	},
+	{
+		title: 'Emotions',
+		listItem: listItemEmotions
 	},
 	{
 		title: 'Apps',

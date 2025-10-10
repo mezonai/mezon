@@ -36,7 +36,7 @@ export function useDefaultHandlers({
 	openLeaveGroupModal
 }: UseDefaultHandlersParams) {
 	const createDefaultHandlers = useCallback(
-		(user?: any): DirectMessageContextMenuHandlers => {
+		(channelId: string, user?: any): DirectMessageContextMenuHandlers => {
 			return {
 				handleViewProfile: () => {
 					if (user) {
@@ -67,21 +67,17 @@ export function useDefaultHandlers({
 					deleteFriend(usernames[0], ids[0]);
 				},
 				handleMarkAsRead: () => {
-					const channelId = (user as any)?.channelId || (user as any)?.channel_id;
 					if (channelId) {
 						handleMarkAsRead(channelId);
 					}
 				},
 				handleMute: (duration = Infinity) => {
-					const channelId = user?.channelId || user?.channel_id;
 					handleScheduleMute(channelId, user?.type, duration);
 				},
 				handleUnmute: () => {
-					const channelId = user?.channelId || user?.channel_id;
 					muteOrUnMuteChannel(channelId, EMuteState.UN_MUTE, user?.type);
 				},
 				handleEnableE2EE: () => {
-					const channelId = user?.channelId || user?.channel_id;
 					const e2ee = user?.e2ee;
 					if (channelId) {
 						handleEnableE2ee(channelId, e2ee);
@@ -89,7 +85,6 @@ export function useDefaultHandlers({
 				},
 				handleRemoveFromGroup: () => {
 					const userId = user?.id;
-					const channelId = user?.channelId || user.channel_id;
 					if (userId && channelId) {
 						handleRemoveMemberFromGroup(userId, channelId);
 					}

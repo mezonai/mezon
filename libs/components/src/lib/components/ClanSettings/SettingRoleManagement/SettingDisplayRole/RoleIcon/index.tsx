@@ -76,8 +76,8 @@ const RoleIcon = () => {
 				<button
 					className={
 						'flex justify-center items-center px-3 py-1 rounded border-[1px] ' +
-						'dark:border-textSecondary border-textSecondary800 ' +
-						'dark:hover:text-white dark:hover:border-white hover:text-black hover:border-black'
+						'border-theme-primary ' +
+						'text-theme-primary-active bg-item-theme-hover'
 					}
 					onClick={handleChooseIconModal}
 				>

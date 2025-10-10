@@ -94,11 +94,11 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 			<div className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden sbm:pt-[-60px] pt-[10px]">
 				<SettingListRole handleClose={props.handleClose} RolesClan={rolesClan} handleUpdateUser={() => handleUpdateUser(true)} />
 				<div className="w-2/3">
-					<div className="font-semibold pl-3 dark:text-white text-black">
+					<div className="font-semibold pl-3 text-theme-primary-active">
 						{isCreateNewRole ? (
-							<div className="tracking-wide text-base mb-4 pr-5">{t('roleManagement.newRole')}</div>
+							<div className="tracking-wide text-theme-primary-active mb-4 pr-5">{t('roleManagement.newRole')}</div>
 						) : (
-							<div className="tracking-wide mb-4 text-base uppercase pr-5">
+							<div className="tracking-wide mb-4 text-theme-primary-active uppercase pr-5">
 								{t('roleManagement.editRole')} - {nameRole}
 							</div>
 						)}

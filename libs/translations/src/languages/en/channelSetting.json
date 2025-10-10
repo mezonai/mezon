@@ -158,7 +158,9 @@
 			"addMembersOrRoles": "Add members or roles",
 			"add": "Add",
 			"roles": "ROLES",
-			"members": "MEMBERS"
+			"members": "MEMBERS",
+			"rolesMembers": "Roles/Members",
+			"roleMemberPlaceholder": "Role/Member"
 		},
 		"toast": {
 			"success": "Save Successfully",

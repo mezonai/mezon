@@ -261,7 +261,7 @@ export const UpdatePhoneNumber = memo(({ navigation, route }: { navigation: any;
 				Toast.show({
 					type: 'success',
 					props: {
-						text2: `Too fast. Please wait ${remainingSeconds} seconds before sending OTP again.`,
+						text2: t('setPhoneModal.tooFast', { seconds: remainingSeconds }),
 						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.red} />
 					}
 				});
@@ -288,7 +288,7 @@ export const UpdatePhoneNumber = memo(({ navigation, route }: { navigation: any;
 			Toast.show({
 				type: 'success',
 				props: {
-					text2: `This phone number is already linked to your account`,
+					text2: t('setPhoneModal.alreadyLinked'),
 					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.red} />
 				}
 			});
@@ -303,7 +303,7 @@ export const UpdatePhoneNumber = memo(({ navigation, route }: { navigation: any;
 				Toast.show({
 					type: 'success',
 					props: {
-						text2: `This phone number is already linked to your account`,
+						text2: t('setPhoneModal.alreadyLinkedToAnother'),
 						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.red} />
 					}
 				});
