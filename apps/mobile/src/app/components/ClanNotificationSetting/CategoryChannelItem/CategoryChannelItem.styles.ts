@@ -11,21 +11,36 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			borderBottomColor: colors.border,
-			borderBottomWidth: 1
+			borderBottomWidth: 1,
+			gap: size.s_10
 		},
 		categoryLabel: {
-			fontSize: size.label,
+			fontSize: size.medium,
 			color: colors.white,
-			fontWeight: '600'
+			fontWeight: '600',
+			flexShrink: 1
 		},
 		categorySubtext: {
-			fontSize: size.label,
+			fontSize: size.medium,
 			color: colors.textDisabled,
 			fontWeight: '400'
 		},
 		customStatus: {
-			fontSize: size.label,
+			fontSize: size.medium,
 			color: colors.textDisabled,
 			fontWeight: '600'
+		},
+		channelTitle: {
+			flexDirection: 'row',
+			gap: size.s_10,
+			alignItems: 'center',
+			flexShrink: 1,
+			width: '60%',
+			minWidth: 0
+		},
+		notificationType: {
+			flexDirection: 'row',
+			gap: size.s_10,
+			alignItems: 'center'
 		}
 	});

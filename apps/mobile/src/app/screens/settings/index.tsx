@@ -8,7 +8,6 @@ import {
 } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
-	accountActions,
 	appActions,
 	authActions,
 	channelsActions,
@@ -55,7 +54,6 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		store.dispatch(clansActions.collapseAllGroups());
 		store.dispatch(clansActions.clearClanGroups());
 		store.dispatch(clansActions.refreshStatus());
-		store.dispatch(accountActions.setPasswordSetted(false));
 
 		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);

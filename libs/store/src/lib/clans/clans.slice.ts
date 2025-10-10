@@ -209,6 +209,11 @@ export const fetchClans = createAsyncThunk('clans/fetchClans', async ({ noCache 
 			thunkAPI.dispatch(processQueuedLastSeenMessages());
 		}
 
+		if (!response.fromCache && clans.length > 0) {
+			const clanIds = clans.map((clan) => clan.id);
+			thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
+		}
+
 		const payload: FetchClansPayload = {
 			clans,
 			fromCache: response.fromCache
@@ -474,6 +479,46 @@ export const updateHasUnreadBasedOnChannels = createAsyncThunk<void, { clanId: s
 			thunkAPI.dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread }));
 		} catch (error) {
 			captureSentryError(error, 'clans/updateHasUnreadBasedOnChannels');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: string[] }>(
+	'clans/listClanUnreadMsgIndicator',
+	async ({ clanIds }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+			for (const clanId of clanIds) {
+				try {
+					const response = await fetchDataWithSocketFallback(
+						mezon,
+						{
+							api_name: 'ListClanUnreadMsgIndicator',
+							list_unread_msg_indicator_req: {
+								clan_id: clanId
+							}
+						},
+						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
+						'unread_msg_indicator'
+					);
+
+					if (response && response.has_unread_message !== undefined) {
+						const hasUnread = response.has_unread_message || false;
+						thunkAPI.dispatch(
+							clansActions.setHasUnreadMessage({
+								clanId,
+								hasUnread
+							})
+						);
+					}
+				} catch (error) {
+					console.warn(`Failed to get unread indicator for clan ${clanId}:`, error);
+				}
+			}
+		} catch (error) {
+			captureSentryError(error, 'clans/listClanUnreadMsgIndicator');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -818,7 +863,8 @@ export const clansActions = {
 	deleteClan,
 	joinClan,
 	transferClan,
-	updateHasUnreadBasedOnChannels
+	updateHasUnreadBasedOnChannels,
+	listClanUnreadMsgIndicator
 };
 
 /*

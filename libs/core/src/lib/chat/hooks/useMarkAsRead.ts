@@ -1,21 +1,20 @@
+import type { ChannelsEntity, RootState } from '@mezon/store';
 import {
+	EMarkAsReadType,
 	channelMetaActions,
 	channelsActions,
-	ChannelsEntity,
 	clansActions,
-	EMarkAsReadType,
 	getStore,
 	listChannelRenderAction,
 	listChannelsByUserActions,
 	markAsReadProcessing,
-	RootState,
 	selectAllChannels,
 	selectChannelThreads,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { ChannelThreads, ICategoryChannel } from '@mezon/utils';
-import { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ChannelThreads, ICategoryChannel } from '@mezon/utils';
+import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useState } from 'react';
 
 export function useMarkAsRead() {
@@ -142,6 +141,12 @@ export function useMarkAsRead() {
 					})
 				);
 				dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
+
+				dispatch(
+					clansActions.updateHasUnreadBasedOnChannels({
+						clanId: category.clan_id as string
+					})
+				);
 			} catch (error) {
 				console.error('Failed to mark as read:', error);
 				setStatusMarkAsReadCategory('error');
@@ -157,6 +162,13 @@ export function useMarkAsRead() {
 			setStatusMarkAsReadClan('pending');
 			try {
 				await actionMarkAsRead(body);
+				dispatch(
+					clansActions.setHasUnreadMessage({
+						clanId,
+						hasUnread: false
+					})
+				);
+
 				setStatusMarkAsReadClan('success');
 			} catch (error) {
 				console.error('Failed to mark as read:', error);

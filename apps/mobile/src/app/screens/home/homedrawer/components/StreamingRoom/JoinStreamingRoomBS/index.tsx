@@ -17,7 +17,7 @@ import {
 	useAppDispatch,
 	videoStreamActions
 } from '@mezon/store-mobile';
-import { IChannel } from '@mezon/utils';
+import type { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
@@ -149,7 +149,6 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 						flexDirection: 'row',
 						alignItems: 'center',
 						justifyContent: 'space-between',
-						paddingHorizontal: size.s_16,
 						paddingBottom: size.s_16
 					}}
 				>

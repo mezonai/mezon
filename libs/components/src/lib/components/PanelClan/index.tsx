@@ -70,10 +70,16 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	});
 	const { handleMarkAsReadClan, statusMarkAsReadClan } = useMarkAsRead();
 	useEffect(() => {
-		if (statusMarkAsReadClan === 'success' || statusMarkAsReadClan === 'error') {
+		if (statusMarkAsReadClan === 'success') {
+			const clanId = clan?.id ?? clan?.clan_id;
+			if (clanId) {
+				dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread: false }));
+			}
+			handClosePannel();
+		} else if (statusMarkAsReadClan === 'error') {
 			handClosePannel();
 		}
-	}, [statusMarkAsReadClan]);
+	}, [statusMarkAsReadClan, handClosePannel, dispatch, clan]);
 
 	const handleChangeSettingType = (notificationType: number) => {
 		const targetClanId = clan?.clan_id ?? clan?.id;

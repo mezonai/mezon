@@ -2,8 +2,9 @@ import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../../e2ee';
 import { isBackgroundModeActive } from '../../hooks/useBackgroundMode';
+import { EUserStatus } from '../../types';
 import { electronBridge } from './electron';
-import { MezonNotificationOptions } from './types';
+import type { MezonNotificationOptions } from './types';
 
 export const SHOW_NOTIFICATION = 'APP::SHOW_NOTIFICATION';
 
@@ -48,6 +49,7 @@ interface UserNotificationConnection {
 	previousAppId: number;
 	activeNotifications: Map<string, Notification>;
 	token: string;
+	userStatus?: string;
 }
 
 export class MezonNotificationService {
@@ -59,6 +61,8 @@ export class MezonNotificationService {
 
 	// Current active user for primary operations
 	private currentActiveUserId: string | null = null;
+
+	private userStatuses: Map<string, string> = new Map();
 
 	public static instance: MezonNotificationService;
 
@@ -75,6 +79,23 @@ export class MezonNotificationService {
 
 	public getCurrentActiveUserId = (): string | null => {
 		return this.currentActiveUserId;
+	};
+
+	public setUserStatus = (userId: string, status: string) => {
+		this.userStatuses.set(userId, status);
+		const connection = this.userConnections.get(userId);
+		if (connection) {
+			connection.userStatus = status;
+		}
+	};
+
+	public getUserStatus = (userId: string): string | undefined => {
+		return this.userStatuses.get(userId);
+	};
+
+	private isUserInDNDMode = (userId: string): boolean => {
+		const status = this.getUserStatus(userId);
+		return status === EUserStatus.DO_NOT_DISTURB;
 	};
 
 	public connect = async (token: string, userId: string) => {
@@ -129,6 +150,10 @@ export class MezonNotificationService {
 					this.handlePong(connection);
 					this.startPingMonitoring(connection);
 				} else {
+					if (this.isUserInDNDMode(userId)) {
+						return;
+					}
+
 					const isFocus = !isBackgroundModeActive();
 					const msg = objMsg as NotificationData;
 					const { title, message, image } = msg ?? {};
@@ -157,7 +182,7 @@ export class MezonNotificationService {
 			}
 		};
 
-		ws.onerror = (e) => {
+		ws.onerror = () => {
 			connection.wsActive = false;
 			this.reconnect(connection);
 		};
@@ -226,6 +251,10 @@ export class MezonNotificationService {
 		msg?: NotificationData,
 		connection?: UserNotificationConnection
 	) {
+		if (connection?.userId && this.isUserInDNDMode(connection.userId)) {
+			return;
+		}
+
 		const hideContent = localStorage.getItem('hideNotificationContent') === 'true';
 		const notificationBody = hideContent ? '' : message;
 

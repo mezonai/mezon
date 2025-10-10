@@ -8,9 +8,9 @@ import {
 	selectOpenEditMessageState,
 	useAppSelector
 } from '@mezon/store';
-import { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
+import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';
@@ -62,11 +62,11 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 				messagesActions.setChannelDraftMessage({
 					channelId: channelId as string,
 					channelDraftMessage: {
-						message_id: message_id,
-						draftContent: draftContent,
-						draftMention: draftMention,
+						message_id,
+						draftContent,
+						draftMention,
 						draftAttachment: attachmentsOnMessage,
-						draftTopicId: draftTopicId
+						draftTopicId
 					}
 				})
 			);

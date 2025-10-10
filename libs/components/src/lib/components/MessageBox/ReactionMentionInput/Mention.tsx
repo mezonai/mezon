@@ -1,4 +1,4 @@
-import { debounce } from '@mezon/utils';
+import { debounce, normalizeSearchString } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface MentionData {
@@ -121,20 +121,20 @@ export default function Mention({
 			}
 
 			if (Array.isArray(data)) {
-				const queryLower = query.toLowerCase();
+				const normalizedQuery = normalizeSearchString(query);
 				const matchedItems: MentionData[] = [];
 
 				for (const item of data) {
-					const display = item.display?.toLowerCase() || '';
-					const username = (item as MentionData & { username?: string }).username?.toLowerCase() || '';
-					const displayName = (item as MentionData & { displayName?: string }).displayName?.toLowerCase() || '';
-					const subText = (item as MentionData & { subText?: string }).subText?.toLowerCase() || '';
+					const normalizedDisplay = normalizeSearchString(item.display || '');
+					const normalizedUsername = normalizeSearchString((item as MentionData & { username?: string }).username || '');
+					const normalizedDisplayName = normalizeSearchString((item as MentionData & { displayName?: string }).displayName || '');
+					const normalizedSubText = normalizeSearchString((item as MentionData & { subText?: string }).subText || '');
 
 					if (
-						display.includes(queryLower) ||
-						username.includes(queryLower) ||
-						displayName.includes(queryLower) ||
-						subText.includes(queryLower)
+						normalizedDisplay.includes(normalizedQuery) ||
+						normalizedUsername.includes(normalizedQuery) ||
+						normalizedDisplayName.includes(normalizedQuery) ||
+						normalizedSubText.includes(normalizedQuery)
 					) {
 						matchedItems.push(item);
 					}

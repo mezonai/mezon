@@ -22,7 +22,9 @@ export function StreamingScreen() {
 		<View style={styles.container}>
 			{remoteStream && isStream ? (
 				<View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-					{!isRemoteVideoStream && <FastImage source={Images.RADIO_NCC8} style={{ width: '100%', height: 400 }} resizeMode={'contain'} />}
+					{!isRemoteVideoStream && (
+						<FastImage source={Images.RADIO_NCC8} style={{ width: '100%', height: '100%' }} resizeMode={'contain'} />
+					)}
 					<RTCView streamURL={remoteStream?.toURL?.()} style={{ flex: 1 }} mirror={true} objectFit={'cover'} />
 				</View>
 			) : (

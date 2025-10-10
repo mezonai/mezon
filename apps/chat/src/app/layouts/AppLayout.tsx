@@ -90,11 +90,18 @@ const AppLayout = () => {
 	const dispatch = useAppDispatch();
 	const isLogin = useSelector(selectIsLogin);
 	const sessions = useSelector(selectAllSession);
-	const currentUserId = useSelector(selectAllAccount)?.user?.id;
+	const account = useSelector(selectAllAccount);
+	const currentUserId = account?.user?.id;
+	const userStatus = account?.user?.status;
 
 	useEffect(() => {
-		currentUserId && notificationService.setCurrentActiveUserId(currentUserId);
-	}, [currentUserId]);
+		if (currentUserId) {
+			notificationService.setCurrentActiveUserId(currentUserId);
+			if (userStatus) {
+				notificationService.setUserStatus(currentUserId, userStatus);
+			}
+		}
+	}, [currentUserId, userStatus]);
 
 	const handleConnectNoti = useCallback(async () => {
 		if (sessions) {

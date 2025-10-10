@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 import { transparent } from 'tailwindcss/colors';
 
@@ -58,8 +59,8 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			alignItems: 'center',
 			position: 'relative',
-			width: size.s_60,
-			height: size.s_60,
+			width: size.s_50,
+			height: size.s_50,
 			backgroundColor: colors.badgeHighlight,
 			borderRadius: size.s_30
 		},
@@ -74,5 +75,22 @@ export const style = (colors: Attributes) =>
 		bgVoice: {
 			width: '100%',
 			height: '100%'
+		},
+		menuFooterContainer: {
+			borderRadius: size.s_40,
+			backgroundColor: colors.secondary
+		},
+		menuHeaderContainer: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_20
+		},
+		controlContainer: {
+			gap: size.s_10,
+			flexDirection: 'row',
+			alignItems: 'center',
+			justifyContent: 'space-between',
+			paddingVertical: size.s_12,
+			paddingHorizontal: size.s_16
 		}
 	});

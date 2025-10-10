@@ -68,6 +68,7 @@ import {
 	selectCurrentUserId,
 	selectDataReferences,
 	selectDefaultChannelIdByClanId,
+	selectDirectById,
 	selectDmGroupCurrentId,
 	selectIsInCall,
 	selectLastMessageByChannelId,
@@ -377,7 +378,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					dispatch(attachmentActions.removeAttachments({ messageId: message?.message_id as string, channelId: message.channel_id }));
 				}
 
-				dispatch(messagesActions.addNewMessage(mess));
+				if (message.code === TypeMessage.ChatUpdate || message.code === TypeMessage.ChatRemove) {
+					dispatch(messagesActions.newMessage(mess));
+				} else {
+					dispatch(messagesActions.addNewMessage(mess));
+				}
 				if (mess.mode === ChannelStreamMode.STREAM_MODE_DM || mess.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 					const newDm = await dispatch(directActions.addDirectByMessageWS(mess)).unwrap();
 					!newDm && dispatch(directMetaActions.updateDMSocket(message));
@@ -403,24 +408,32 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							message.references?.at(0)?.message_sender_id !== userId
 						) {
 							dispatch(directMetaActions.setCountMessUnread({ channelId: message.channel_id, isMention: false }));
-							dispatch(directActions.addBadgeDirect({ channelId: message.channel_id as string }));
+							if (!mess.isMe) {
+								dispatch(directActions.addBadgeDirect({ channelId: message.channel_id as string }));
+							}
 						}
 					}
 
-					if (mess.isMe) {
+					if (mess.isMe && isNotCurrentDirect) {
+						const directReceiver = selectDirectById(store.getState(), mess?.channel_id);
 						// Mark as read if isMe send token
-						if (mess.code === TypeMessage.SendToken) {
+						if (
+							directReceiver &&
+							(directReceiver.type === ChannelType.CHANNEL_TYPE_DM || directReceiver.type === ChannelType.CHANNEL_TYPE_GROUP) &&
+							!directReceiver.count_mess_unread
+						) {
 							dispatch(
 								messagesActions.updateLastSeenMessage({
 									clanId: mess?.clan_id || '',
 									channelId: mess?.channel_id,
 									messageId: mess?.id,
 									mode: mess.mode,
-									badge_count: 0
+									badge_count: 0,
+									updateLast: true
 								})
 							);
+							dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: message.channel_id, timestamp }));
 						}
-						dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: message.channel_id, timestamp }));
 					}
 				} else {
 					if (mess.isMe) {
@@ -441,10 +454,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						);
 					} else {
 						if (message.clan_id) {
-							const currentClanId = selectCurrentClanId(store.getState());
-							if (currentClanId !== message.clan_id) {
-								dispatch(clansActions.setHasUnreadMessage({ clanId: message.clan_id, hasUnread: true }));
-							}
+							dispatch(clansActions.setHasUnreadMessage({ clanId: message.clan_id, hasUnread: true }));
 						}
 					}
 					if (message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove) {

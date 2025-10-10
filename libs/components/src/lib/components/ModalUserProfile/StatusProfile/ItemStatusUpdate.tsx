@@ -1,6 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { accountActions, useAppDispatch } from '@mezon/store';
 import { Menu } from '@mezon/ui';
+import { notificationService } from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +33,10 @@ const ItemStatusUpdate = ({ children, statusValue, dropdown, startIcon, onClick,
 			})
 		);
 		dispatch(accountActions.updateUserStatus(status));
+
+		if (userProfile?.user?.id) {
+			notificationService.setUserStatus(userProfile.user.id, status);
+		}
 	};
 
 	const menu = useMemo(() => {
