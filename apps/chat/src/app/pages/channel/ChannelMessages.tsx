@@ -149,50 +149,50 @@ function ChannelMessages({
 	const previousChannelId = useRef<string | null>(null);
 	const preventScrollbottom = useRef<boolean>(false);
 
-	// useSyncEffect(() => {
-	// 	userActiveScroll.current = false;
-	// 	skipCalculateScroll.current = false;
-	// 	anchorIdRef.current = null;
-	// 	anchorTopRef.current = null;
-	// 	preventScrollbottom.current = false;
-	// 	requestIdleCallback &&
-	// 		requestIdleCallback(() => {
-	// 			if (previousChannelId.current) {
-	// 				dispatch(messagesActions.UpdateChannelLastMessage({ channelId: previousChannelId.current }));
-	// 			}
-	// 			previousChannelId.current = channelId;
-	// 		});
-	// 	return () => {
-	// 		if (!channelId) return;
-	// 		const store = getStore();
-	// 		const scrollPosition = selectScrollPositionByChannelId(store.getState(), channelId);
-	// 		const lastMessage = selectLastMessageByChannelId(store.getState(), channelId);
-	// 		if (scrollPosition?.messageId) return;
-	// 		dispatch(
-	// 			channelsActions.setScrollPosition({
-	// 				channelId,
-	// 				messageId: lastMessage?.id
-	// 			})
-	// 		);
-	// 	};
-	// }, [channelId]);
+	useEffect(() => {
+		userActiveScroll.current = false;
+		skipCalculateScroll.current = false;
+		anchorIdRef.current = null;
+		anchorTopRef.current = null;
+		preventScrollbottom.current = false;
+		requestIdleCallback &&
+			requestIdleCallback(() => {
+				if (previousChannelId.current) {
+					dispatch(messagesActions.UpdateChannelLastMessage({ channelId: previousChannelId.current }));
+				}
+				previousChannelId.current = channelId;
+			});
+		return () => {
+			if (!channelId) return;
+			const store = getStore();
+			const scrollPosition = selectScrollPositionByChannelId(store.getState(), channelId);
+			const lastMessage = selectLastMessageByChannelId(store.getState(), channelId);
+			if (scrollPosition?.messageId) return;
+			dispatch(
+				channelsActions.setScrollPosition({
+					channelId,
+					messageId: lastMessage?.id
+				})
+			);
+		};
+	}, [channelId]);
 
-	useSyncEffect(() => {
+	useEffect(() => {
 		if (lastMessage && preventScrollbottom.current) {
 			preventScrollbottom.current = false;
 		}
 	}, [lastMessage?.id]);
 
-	// useSyncEffect(() => {
-	// 	return () => {
-	// 		requestIdleCallback &&
-	// 			requestIdleCallback(() => {
-	// 				if (previousChannelId.current) {
-	// 					dispatch(messagesActions.UpdateChannelLastMessage({ channelId: previousChannelId.current }));
-	// 				}
-	// 			});
-	// 	};
-	// }, []);
+	useEffect(() => {
+		return () => {
+			requestIdleCallback &&
+				requestIdleCallback(() => {
+					if (previousChannelId.current) {
+						dispatch(messagesActions.UpdateChannelLastMessage({ channelId: previousChannelId.current }));
+					}
+				});
+		};
+	}, []);
 
 	useSyncEffect(() => {
 		dispatch(
