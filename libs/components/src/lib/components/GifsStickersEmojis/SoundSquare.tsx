@@ -3,6 +3,7 @@ import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifsStickersEmoj
 import {
 	MediaType,
 	referencesActions,
+	selectAllClans,
 	selectAllStickerSuggestion,
 	selectCurrentClan,
 	selectCurrentClanId,
@@ -12,8 +13,9 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageSendPayload, SubPanelName, blankReferenceObj } from '@mezon/utils';
-import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { IMessageSendPayload } from '@mezon/utils';
+import { SubPanelName, blankReferenceObj } from '@mezon/utils';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ChannelMessageBoxProps = {
@@ -61,11 +63,18 @@ function SoundSquare({ channel, mode, onClose, isTopic = false, onSoundSelect }:
 	const { valueInputToCheckHandleSearch, subPanelActive, setSubPanelActive } = useGifsStickersEmoji();
 
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';
+	const joinedClans = useAppSelector(selectAllClans);
 
 	const allStickersInStore = useAppSelector(selectAllStickerSuggestion);
+
+	const filteredStickersInStore = useMemo(() => {
+		const joinedClanIds = joinedClans.map((clan) => clan.clan_id);
+		return allStickersInStore.filter((sticker) => sticker.clan_id === '0' || joinedClanIds.includes(sticker.clan_id || ''));
+	}, [allStickersInStore, joinedClans]);
+
 	const allSoundsInStore = useMemo(
-		() => allStickersInStore.filter((sticker) => (sticker as any).media_type === MediaType.AUDIO),
-		[allStickersInStore]
+		() => filteredStickersInStore.filter((sticker) => (sticker as any).media_type === MediaType.AUDIO),
+		[filteredStickersInStore]
 	);
 
 	useEffect(() => {

@@ -1,5 +1,6 @@
 import {
 	emojiSuggestionActions,
+	selectAllClans,
 	selectAllEmojiRecent,
 	selectAllEmojiSuggestion,
 	selectEmojiListStatus,
@@ -24,8 +25,8 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 			if (is_for_sale && src) {
 				const idSale = getIdSaleItemFromSource(src);
 				return {
-					id: idSale!,
-					display: shortname!,
+					id: idSale || '',
+					display: shortname || '',
 					src,
 					category,
 					shortname,
@@ -34,8 +35,8 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 				};
 			}
 			return {
-				id: id!,
-				display: shortname!,
+				id: id || '',
+				display: shortname || '',
 				src,
 				category,
 				shortname,
@@ -45,11 +46,20 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 		});
 };
 
-export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = {}) {
+export function useEmojiSuggestion({ isMobile: _isMobile = false }: EmojiSuggestionProps = {}) {
 	const emojiMetadata = useSelector(selectAllEmojiSuggestion);
 	const emojiConverted = useSelector(selectAllEmojiRecent);
+	const joinedClans = useSelector(selectAllClans);
 
-	const emojis = useMemo(() => filterEmojiData([...(emojiMetadata || []), ...(emojiConverted || [])]), [emojiMetadata, emojiConverted]);
+	const filteredEmojiMetadata = useMemo(() => {
+		const joinedClanIds = joinedClans.map((clan) => clan.clan_id);
+		return emojiMetadata.filter((emoji) => emoji.clan_id === '0' || joinedClanIds.includes(emoji.clan_id || ''));
+	}, [emojiMetadata, joinedClans]);
+
+	const emojis = useMemo(
+		() => filterEmojiData([...(filteredEmojiMetadata || []), ...(emojiConverted || [])]),
+		[filteredEmojiMetadata, emojiConverted]
+	);
 
 	const isEmojiListShowed = useSelector(selectEmojiListStatus);
 	const emojiPicked = useSelector(selectEmojiObjSuggestion);
@@ -95,14 +105,14 @@ export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = 
 	);
 
 	const categoryEmoji = useMemo(() => {
-		return emojiMetadata
+		return filteredEmojiMetadata
 			.map((emoji) => ({
 				id: emoji.clan_id,
 				clan_name: emoji.clan_name,
 				clan_logo: emoji.logo
 			}))
 			.filter((emoji, index, self) => emoji.id !== '0' && index === self.findIndex((s) => s.id === emoji.id));
-	}, [emojiMetadata]);
+	}, [filteredEmojiMetadata]);
 
 	const clanNames = useMemo(() => {
 		return categoryEmoji.map((emoji) => emoji.clan_name || '');

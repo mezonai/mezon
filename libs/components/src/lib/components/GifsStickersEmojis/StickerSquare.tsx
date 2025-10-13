@@ -3,6 +3,7 @@ import {
 	MediaType,
 	emojiRecentActions,
 	referencesActions,
+	selectAllClans,
 	selectAllStickerSuggestion,
 	selectCurrentClan,
 	selectDataReferences,
@@ -12,8 +13,8 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { FOR_SALE_CATE, ITEM_TYPE, SubPanelName, blankReferenceObj } from '@mezon/utils';
-import { ClanSticker } from 'mezon-js';
-import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ClanSticker } from 'mezon-js';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import ModalBuyItem from './ModalBuyItem';
@@ -68,9 +69,16 @@ const searchStickers = (stickers: ClanSticker[], searchTerm: string) => {
 function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessageBoxProps) {
 	const { userProfile } = useAuth();
 	const allStickers = useAppSelector(selectAllStickerSuggestion);
+	const joinedClans = useAppSelector(selectAllClans);
+
+	const filteredStickers = useMemo(() => {
+		const joinedClanIds = joinedClans.map((clan) => clan.clan_id);
+		return allStickers.filter((sticker) => sticker.clan_id === '0' || joinedClanIds.includes(sticker.clan_id || ''));
+	}, [allStickers, joinedClans]);
+
 	const clanStickers = useMemo(
-		() => allStickers.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER),
-		[allStickers]
+		() => filteredStickers.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER),
+		[filteredStickers]
 	);
 
 	const { sendMessage } = useChatSending({
