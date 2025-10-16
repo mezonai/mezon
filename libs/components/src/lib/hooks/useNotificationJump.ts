@@ -1,4 +1,14 @@
-import { getFirstMessageOfTopic, messagesActions, selectCurrentChannelId, selectCurrentClanId, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	getFirstMessageOfTopic,
+	getStore,
+	messagesActions,
+	selectCurrentChannelId,
+	selectCurrentClanId,
+	selectMessageByMessageId,
+	topicsActions,
+	useAppDispatch
+} from '@mezon/store';
+import type { IMessageWithUser } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,39 +24,92 @@ interface UseNotificationJumpProps {
 export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isTopic, mode }: UseNotificationJumpProps) => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const currentClanId = useAppSelector(selectCurrentClanId);
-	const currentChannelId = useAppSelector(selectCurrentChannelId);
 
 	const handleJumpToTopic = useCallback(async () => {
-		if (!topicId || !channelId || !clanId || !messageId) return;
+		if (!topicId || !channelId || !clanId) return;
 
+		const currentState = getStore().getState();
+		const currentChannelId = selectCurrentChannelId(currentState);
+		const currentClanId = selectCurrentClanId(currentState);
 		const isClanChanged = currentClanId !== clanId;
 		const isChannelChanged = currentChannelId !== channelId;
-		const channelPath = `/chat/clans/${clanId}/channels/${channelId}`;
-
 		if (isClanChanged || isChannelChanged) {
+			const channelPath = `/chat/clans/${clanId}/channels/${channelId}`;
 			await navigate(channelPath);
-		} else if (navigate) {
-			navigate(channelPath);
 		}
 
+		const topicDetailResult = await dispatch(getFirstMessageOfTopic(topicId));
+
+		if (!topicDetailResult?.payload) {
+			console.error('Failed to get topic detail, cannot jump to topic');
+			return;
+		}
+
+		const topicDetail = topicDetailResult.payload as { message?: { message_id?: string }; message_id?: string };
+
+		const originalMessageId = topicDetail?.message?.message_id || topicDetail?.message_id;
+
+		if (!originalMessageId) {
+			console.warn('Cannot find original message_id from topic, using provided messageId');
+		}
+
+		const messageIdToJump = originalMessageId || messageId;
+
+		if (!messageIdToJump) {
+			console.error('No message ID available to jump');
+			return;
+		}
+		dispatch(
+			messagesActions.jumpToMessage({
+				clanId,
+				messageId: messageIdToJump,
+				channelId,
+				mode,
+				navigate
+			})
+		);
+
+		const waitForMessage = (timeout = 5000): Promise<unknown> =>
+			new Promise((resolve) => {
+				const startTime = Date.now();
+				const checkMessage = () => {
+					const state = getStore().getState();
+					const msg = selectMessageByMessageId(state, channelId, messageIdToJump);
+					if (msg) {
+						return resolve(msg);
+					}
+					if (Date.now() - startTime > timeout) {
+						console.warn('Timeout waiting for message to load');
+						return resolve(null);
+					}
+					requestAnimationFrame(checkMessage);
+				};
+				checkMessage();
+			});
+
+		const fullMessage = await waitForMessage();
+
+		if (fullMessage) {
+			dispatch(topicsActions.setCurrentTopicInitMessage(fullMessage as IMessageWithUser));
+		}
+
+		// 6. Mở topic box
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(topicsActions.setCurrentTopicId(topicId));
-		dispatch(getFirstMessageOfTopic(topicId));
-		
-		dispatch(messagesActions.setIdMessageToJump({ id: messageId, navigate: false }));
-	}, [currentClanId, currentChannelId, clanId, channelId, topicId, messageId, navigate, dispatch]);
+	}, [clanId, channelId, topicId, messageId, mode, navigate, dispatch]);
 
 	const handleJumpToMessage = useCallback(() => {
 		if (!messageId || !channelId || !clanId) return;
 
-		dispatch(messagesActions.jumpToMessage({
-			clanId: clanId || '',
-			messageId: messageId,
-			channelId: channelId,
-			mode: mode,
-			navigate
-		}));
+		dispatch(
+			messagesActions.jumpToMessage({
+				clanId: clanId || '',
+				messageId,
+				channelId,
+				mode,
+				navigate
+			})
+		);
 	}, [dispatch, messageId, channelId, clanId, mode, navigate]);
 
 	const handleClickJump = useCallback(async () => {
@@ -54,7 +117,7 @@ export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isT
 			await handleJumpToTopic();
 			return;
 		}
-		
+
 		handleJumpToMessage();
 	}, [isTopic, handleJumpToTopic, handleJumpToMessage]);
 
