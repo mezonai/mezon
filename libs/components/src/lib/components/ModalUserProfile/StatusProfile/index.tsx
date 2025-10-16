@@ -36,7 +36,7 @@ type StatusProfileProps = {
 	onClose: () => void;
 };
 const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps) => {
-	const { t } = useTranslation('userProfile');
+	const { t } = useTranslation(['userProfile', 'message']);
 	const dispatch = useAppDispatch();
 	const allAccount = useSelector(selectOthersSession);
 	const handleCustomStatus = () => {
@@ -58,11 +58,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 
 	const zkProofs = useSelector(selectZkProofs);
-	const { isEnableWallet, walletDetail, enableWallet, fetchWalletData } = useWallet();
-
-	useEffect(() => {
-		fetchWalletData();
-	}, [fetchWalletData]);
+	const { isEnableWallet, walletDetail, enableWallet } = useWallet();
 
 	const handleSendToken = () => {
 		dispatch(giveCoffeeActions.setShowModalSendToken(true));
@@ -221,25 +217,25 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 				{isEnableWallet ? (
 					<>
 						<ItemStatus
-							children={`Balance: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
+							children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
 							startIcon={<Icons.Check className="text-theme-primary" />}
 							disabled={true}
 						/>
 						<ItemStatus
 							onClick={handleSendToken}
-							children="Transfer Funds"
+							children={t('statusProfile.transferFunds')}
 							startIcon={<Icons.SendMoney className="text-theme-primary" />}
 						/>
 						<ItemStatus
 							onClick={handleOpenHistoryModal}
-							children="History Transaction"
+							children={t('statusProfile.historyTransaction.title')}
 							startIcon={<Icons.History className="text-theme-primary" />}
 						/>
 					</>
 				) : (
 					<ItemStatus
 						onClick={handleEnableWallet}
-						children="Enable Wallet"
+						children={t('message:wallet.enableWallet')}
 						startIcon={
 							<span className="w-5 h-5 flex items-center justify-center text-theme-primary">
 								<WalletIcon />

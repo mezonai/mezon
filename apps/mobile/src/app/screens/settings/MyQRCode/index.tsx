@@ -84,7 +84,7 @@ export const MyQRCode = () => {
 			const qrCodeUri = qrCode?.['profile'];
 			if (!qrCodeUri) return;
 			const filePath = qrCodeUri.startsWith('file://') ? qrCodeUri : `file://${qrCodeUri}`;
-			await saveImageToCameraRoll(filePath, 'image', true);
+			await saveImageToCameraRoll(filePath, 'image', true, false);
 		} catch (e) {
 			console.error('QR Code download error:', e);
 		}

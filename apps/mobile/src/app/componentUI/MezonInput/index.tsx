@@ -33,6 +33,7 @@ interface IMezonInputProps {
 	forcusInput?: boolean;
 	autoFocus?: boolean;
 	keyboardType?: KeyboardType;
+	includeEmoji?: boolean;
 }
 
 export default function MezonInput({
@@ -57,7 +58,8 @@ export default function MezonInput({
 	defaultValue = '',
 	forcusInput = false,
 	autoFocus = false,
-	keyboardType = 'default'
+	keyboardType = 'default',
+	includeEmoji = false
 }: IMezonInputProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -67,7 +69,7 @@ export default function MezonInput({
 	const [isCheckValid, setIsCheckValid] = useState<boolean>(true);
 
 	useEffect(() => {
-		setIsCheckValid(validInput(value));
+		setIsCheckValid(validInput(value, includeEmoji));
 	}, [value]);
 
 	const focusInput = async () => {

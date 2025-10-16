@@ -1,7 +1,9 @@
 import { useTheme } from '@mezon/mobile-ui';
+import { selectCurrentUserId } from '@mezon/store-mobile';
 import { IMessageRatioOption } from '@mezon/utils';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import MezonRadioButton from '../../../../../../../componentUI/MezonRadioButton';
 import { style } from './styles';
 
@@ -14,6 +16,15 @@ interface EmbedRadioProps {
 export const EmbedRadioButton = memo(({ option, checked, onCheck }: EmbedRadioProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const currentUserId = useSelector(selectCurrentUserId);
+
+	useEffect(() => {
+		if (Array.isArray(option?.extraData) && currentUserId) {
+			if (option?.extraData?.includes(currentUserId)) {
+				onCheck?.();
+			}
+		}
+	}, [option?.extraData, currentUserId]);
 
 	return (
 		<View style={styles.option}>

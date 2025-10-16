@@ -1,34 +1,38 @@
 {
-  "actions": {
-    "create": "Tạo"
-  },
-  "fields": {
-    "channelName": {
-      "title": "Tên kênh",
-      "placeholder": "kenh-moi",
-      "errorMessage": "Vui lòng nhập tên kênh hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
-      "duplicateChannelName": "Tên kênh đã có trong clan. Vui lòng nhập tên khác."
-    },
-    "channelPrivate": {
-      "title": "Kênh riêng tư",
-      "descriptionText": "Bằng cách tạo một kênh riêng tư, chỉ những thành viên và vai trò được chọn mới có thể xem kênh này.",
-      "descriptionVoice": "Bằng cách tạo một kênh thoại riêng tư, chỉ những thành viên và vai trò được chọn mới có quyền xem hoặc kết nối với kênh này."
-    },
-    "channelType": {
-      "title": "Loại kênh",
-      "text": {
-        "title": "Văn bản",
-        "description": "Đăng hình ảnh, GIF, huy hiệu, ý kiến và trò chơi chữ"
-      },
-      "voice": {
-        "title": "Thoại",
-        "description": "Hẹn gặp nhau cùng với giọng nói, video và chia sẻ màn hình"
-      }
-    }
-  },
-  "channelVoiceType": {
-    "title": "Loại kênh thoại",
-    "mezon": "MEZON MEET",
-    "gMeet": "GOOGLE MEET"
-  }
+	"actions": {
+		"create": "Tạo"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Tên kênh",
+			"placeholder": "kenh-moi",
+			"errorMessage": "Vui lòng nhập tên kênh hợp lệ (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
+			"duplicateChannelName": "Tên kênh đã có trong clan. Vui lòng nhập tên khác."
+		},
+		"channelPrivate": {
+			"title": "Kênh riêng tư",
+			"descriptionText": "Bằng cách tạo một kênh riêng tư, chỉ những thành viên và vai trò được chọn mới có thể xem kênh này.",
+			"descriptionVoice": "Bằng cách tạo một kênh thoại riêng tư, chỉ những thành viên và vai trò được chọn mới có quyền xem hoặc kết nối với kênh này."
+		},
+		"channelType": {
+			"title": "Loại kênh",
+			"text": {
+				"title": "Văn bản",
+				"description": "Đăng hình ảnh, GIF, huy hiệu, ý kiến và trò chơi chữ"
+			},
+			"voice": {
+				"title": "Thoại",
+				"description": "Hẹn gặp nhau cùng với giọng nói, video và chia sẻ màn hình"
+			},
+			"stream": {
+				"title": "Phát trực tiếp",
+				"description": "Chia sẻ hoạt động sở thích"
+			}
+		}
+	},
+	"channelVoiceType": {
+		"title": "Loại kênh thoại",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	}
 }

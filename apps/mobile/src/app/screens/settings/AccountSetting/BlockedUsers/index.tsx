@@ -52,7 +52,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 						<Text style={styles.avatarText}>{(item?.user?.username?.[0] || '').toUpperCase()}</Text>
 					</View>
 				)}
-				<Text style={styles.username}>{item?.user?.username}</Text>
+				<Text style={styles.username}>{item?.user?.display_name || item?.user?.username}</Text>
 			</View>
 
 			<TouchableOpacity style={styles.unblockButton} onPress={() => handleUnblockFriend(item)}>

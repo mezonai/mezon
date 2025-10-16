@@ -19,7 +19,6 @@ import {
 } from '@mezon/store-mobile';
 import type { INotification, NotificationEntity } from '@mezon/utils';
 import { NotificationCategory, sleep, sortNotificationsByDate, TypeMessage } from '@mezon/utils';
-import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -59,8 +58,9 @@ const getCategoryFromTab = (tabType: string): NotificationCategory | null => {
 	}
 };
 
-const Notifications = () => {
+const Notifications = ({ navigation, route }) => {
 	const { themeValue } = useTheme();
+	const { initialTab, version } = route?.params || {};
 	const styles = useMemo(() => style(themeValue), [themeValue]);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allNotificationForYou = useSelector(selectNotificationForYou);
@@ -71,9 +71,8 @@ const Notifications = () => {
 	const dispatch = useAppDispatch();
 	const isTabletLandscape = useTabletLandscape();
 	const { t } = useTranslation(['notification']);
-	const navigation = useNavigation();
 
-	const [selectedTabs, setSelectedTabs] = useState<string>(InboxType.MENTIONS);
+	const [selectedTabs, setSelectedTabs] = useState<string>(initialTab || InboxType.MENTIONS);
 	const [isLoadMore, setIsLoadMore] = useState(true);
 	const [firstLoading, setFirstLoading] = useState(true);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -336,6 +335,12 @@ const Notifications = () => {
 	);
 
 	const ListFooterComponent = useMemo(() => (isLoadMore ? <ViewLoadMore /> : null), [isLoadMore, ViewLoadMore]);
+
+	useEffect(() => {
+		if (initialTab) {
+			setSelectedTabs(initialTab);
+		}
+	}, [version]);
 
 	useEffect(() => {
 		if (currentClanId && currentClanId !== '0') {

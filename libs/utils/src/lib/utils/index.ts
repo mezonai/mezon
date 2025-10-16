@@ -1374,11 +1374,3 @@ export function subBigInt(a: string, b: string): string {
 	const bigB = BigInt(b);
 	return (bigA - bigB).toString();
 }
-
-export function scaleAmountToDecimals(originalAmount: string | number, decimals = 6): string {
-	let scaledAmount = BigInt(originalAmount);
-	for (let i = 0; i < decimals; i++) {
-		scaledAmount = scaledAmount * BigInt(10);
-	}
-	return scaledAmount.toString();
-}

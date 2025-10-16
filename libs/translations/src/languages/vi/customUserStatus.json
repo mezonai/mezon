@@ -12,7 +12,7 @@
   "placeholder": "Bạn đang làm gì?",
   "userStatus": {
     "online": "Trực tuyến",
-    "idle": "Rảnh",
+    "idle": "Tạm vắng",
     "doNotDisturb": "Không làm phiền",
     "invisible": "Ngoại tuyến (Ẩn)"
   },

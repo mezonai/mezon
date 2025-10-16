@@ -36,7 +36,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 	const dispatch = useAppDispatch();
 
 	const handleCreateChannel = useCallback(async () => {
-		if (!validInput(channelName)) return;
+		if (!validInput(channelName, true)) return;
 		const store = await getStoreAsync();
 
 		const body: ApiCreateChannelDescRequest = {
@@ -162,6 +162,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 					label={t('fields.channelName.title')}
 					errorMessage={t('fields.channelName.errorMessage')}
 					placeHolder={t('fields.channelName.placeholder')}
+					includeEmoji
 				/>
 
 				<MezonOption title={t('fields.channelType.title')} data={channelTypeList} onChange={handleChannelTypeChange} value={channelType} />

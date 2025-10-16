@@ -27,6 +27,8 @@ const SidebarLogoItem = () => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const currentDmIType = useSelector(selectDmGroupCurrentType);
+	const logoCustom = useSelector(selectLogoCustom);
+
 	const setModeResponsive = useCallback(
 		(value: ModeResponsive) => {
 			dispatch(channelsActions.setModeResponsive({ clanId: currentClanId as string, mode: value }));
@@ -44,6 +46,7 @@ const SidebarLogoItem = () => {
 		[coords, userProfile]
 	);
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		if (!logoCustom) return;
 		const mouseX = event.clientX;
 		const mouseY = event.clientY;
 		const windowHeight = window.innerHeight;
@@ -56,7 +59,6 @@ const SidebarLogoItem = () => {
 	};
 	const { quantityPendingRequest } = useFriends();
 	const combinedBadge = quantityPendingRequest || 0;
-	const logoCustom = useSelector(selectLogoCustom);
 	return (
 		<div className="relative h-[40px]">
 			<button

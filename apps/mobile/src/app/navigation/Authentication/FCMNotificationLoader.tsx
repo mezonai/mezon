@@ -12,6 +12,7 @@ import { AppState, NativeModules, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import NotificationPreferences from '../../utils/NotificationPreferences';
 import { checkNotificationPermission, processNotification } from '../../utils/pushNotificationHelpers';
+import { useSessionReady } from '../RefreshSessionWrapper';
 
 const messaging = getMessaging(getApp());
 
@@ -20,7 +21,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { onchannelmessage } = useContext(ChatContext);
 	const appStateRef = useRef(AppState.currentState);
-
+	const isSessionReady = useSessionReady();
 	const checkPermission = async () => {
 		await checkNotificationPermission();
 	};
@@ -215,8 +216,8 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	}, []);
 
 	useEffect(() => {
-		startupFCMRunning(navigation, isTabletLandscape);
-	}, [isTabletLandscape, navigation]);
+		if (isSessionReady) startupFCMRunning(navigation, isTabletLandscape);
+	}, [isTabletLandscape, navigation, isSessionReady]);
 
 	useEffect(() => {
 		checkPermission();

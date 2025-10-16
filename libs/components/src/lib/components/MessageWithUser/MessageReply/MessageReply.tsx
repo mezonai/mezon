@@ -2,7 +2,7 @@ import { getShowName, useUserById } from '@mezon/core';
 import { getStoreAsync, messagesActions, selectClanView, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { MEZON_AVATAR_URL, createImgproxyUrl } from '@mezon/utils';
+import { MEZON_AVATAR_URL, createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
 
 import { useCallback, useRef } from 'react';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -68,14 +68,13 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 			};
 		}
 
+		const messageRefAvatar = message?.references?.[0]?.mesages_sender_avatar ?? '';
+		const userAvatar = getAvatarForPrioritize(messageSender?.clan_avatar, messageSender?.user?.avatar_url) || '';
+
+		const finalAvatar = !isClanView ? messageRefAvatar : userAvatar || messageRefAvatar;
 		return {
-			srcImgProxy: createImgproxyUrl(
-				(!isClanView
-					? (message?.references?.[0]?.mesages_sender_avatar ?? '')
-					: messageSender?.clan_avatar || messageSender?.user?.avatar_url) ?? '',
-				{ width: 100, height: 100, resizeType: 'fit' }
-			),
-			src: !isClanView ? (message?.references?.[0]?.mesages_sender_avatar ?? '') : messageSender?.clan_avatar || messageSender?.user?.avatar_url
+			srcImgProxy: createImgproxyUrl(finalAvatar, { width: 100, height: 100, resizeType: 'fit' }),
+			src: finalAvatar
 		};
 	};
 

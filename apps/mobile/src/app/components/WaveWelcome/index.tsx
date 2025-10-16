@@ -1,10 +1,10 @@
 import { useChatSending } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectCurrentChannel } from '@mezon/store-mobile';
+import { selectCurrentChannel, selectDmGroupCurrent } from '@mezon/store-mobile';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
-import { memo } from 'react';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -19,10 +19,17 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	const styles = style(themeValue);
 	const { t } = useTranslation('dmMessage');
 	const currenChannel = useSelector(selectCurrentChannel);
+	const currentDmGroup = useSelector(selectDmGroupCurrent(message?.channel_id ?? ''));
+
+	const mode = useMemo(() => {
+		if (!currentDmGroup) return ChannelStreamMode.STREAM_MODE_CHANNEL;
+
+		return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+	}, [currentDmGroup]);
 
 	const { sendMessage } = useChatSending({
-		mode: ChannelStreamMode.STREAM_MODE_CHANNEL,
-		channelOrDirect: currenChannel
+		mode,
+		channelOrDirect: currentDmGroup || currenChannel
 	});
 
 	const handleSendWaveSticker = async () => {

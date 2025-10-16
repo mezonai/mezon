@@ -71,6 +71,8 @@ export const updateGiveCoffee = createAsyncThunk(
 				if (response?.ok) {
 					thunkAPI.dispatch(toastActions.addToast({ message: 'Coffee sent', type: 'success' }));
 					return response.ok;
+				} else {
+					return thunkAPI.rejectWithValue('');
 				}
 			} catch (error) {
 				captureSentryError(error, 'giveCoffee/updateGiveCoffee');
@@ -117,10 +119,12 @@ export const sendToken = createAsyncThunk('token/sendToken', async (tokenEvent: 
 			)
 			.then((action) => action?.payload as AddTxResponse);
 
-		if (response.ok) {
+		if (response?.ok) {
 			thunkAPI.dispatch(toastActions.addToast({ message: 'Funds Transferred', type: 'success' }));
 			thunkAPI.dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
 			return { ...response, tx_hash: response.tx_hash };
+		} else {
+			return thunkAPI.rejectWithValue('');
 		}
 	} catch (error) {
 		captureSentryError(error, 'token/sendToken');

@@ -14,7 +14,7 @@ import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -51,11 +51,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const [isVisibleAddStatusUserModal, setIsVisibleAddStatusUserModal] = useState<boolean>(false);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const { isEnableWallet, walletDetail, enableWallet, fetchWalletData } = useWallet();
-
-	useEffect(() => {
-		fetchWalletData();
-	}, []);
+	const { isEnableWallet, walletDetail, enableWallet } = useWallet();
 
 	useFocusEffect(
 		React.useCallback(() => {

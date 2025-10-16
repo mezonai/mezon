@@ -18,7 +18,7 @@ import NetInfoComp from '../components/NetworkInfo';
 import { WebRTCStreamProvider } from '../components/StreamContext/StreamContext';
 import { toastConfig } from '../configs/toastConfig';
 import { DeviceProvider } from '../contexts/device';
-import RefreshSessionWrapper from './RefreshSessionWrapper';
+import RefreshSessionWrapper, { useSessionReady } from './RefreshSessionWrapper';
 import RootListener from './RootListener';
 import RootStack from './RootStack';
 import { APP_SCREEN } from './ScreenTypes';
@@ -38,6 +38,19 @@ const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) =
 		console.error('Failed to save Mezon config to local storage:', error);
 	}
 };
+
+const MainApiCallingBackground = () => {
+	const isSessionReady = useSessionReady();
+
+	if (!isSessionReady) return null;
+	return (
+		<View style={{ position: 'absolute', top: 0, left: 0, width: '100%' }}>
+			<RootListener />
+			<NetInfoComp />
+		</View>
+	);
+};
+
 const NavigationMain = memo(
 	(props) => {
 		const { themeValue, themeBasic } = useTheme();
@@ -177,10 +190,7 @@ const RootNavigation = (props) => {
 									<EmojiSuggestionProvider isMobile={true}>
 										<KeyboardProvider statusBarTranslucent>
 											<NavigationMain {...props} />
-											<View style={{ position: 'absolute', top: 0, left: 0, width: '100%' }}>
-												<RootListener />
-												<NetInfoComp />
-											</View>
+											<MainApiCallingBackground />
 										</KeyboardProvider>
 									</EmojiSuggestionProvider>
 								</PermissionProvider>

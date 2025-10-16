@@ -210,7 +210,7 @@ export const fetchClans = createAsyncThunk('clans/fetchClans', async ({ noCache 
 		}
 
 		if (!response.fromCache && clans.length > 0) {
-			const clanIds = clans.map((clan) => clan.id);
+			const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
 			thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
 		}
 

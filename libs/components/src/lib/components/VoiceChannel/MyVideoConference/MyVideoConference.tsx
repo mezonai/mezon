@@ -296,12 +296,7 @@ export function MyVideoConference({
 										/>
 									)}
 								</span>
-								<button
-									className="relative focus-visible:outline-none"
-									title="Chat"
-									onClick={onToggleChatBox}
-									style={{ marginLeft: 8 }}
-								>
+								<button className="relative focus-visible:outline-none" title="Chat" onClick={onToggleChatBox}>
 									<Icons.Chat
 										defaultSize="w-5 h-5"
 										defaultFill={

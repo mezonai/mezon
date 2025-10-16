@@ -3,16 +3,33 @@ import { authActions, selectHasInternetMobile, selectIsLogin, useAppDispatch } f
 import { useMezon } from '@mezon/transport';
 import type { IWithError } from '@mezon/utils';
 import { sleep } from '@mezon/utils';
-import { useCallback, useEffect, useState } from 'react';
-import { DeviceEventEmitter, View } from 'react-native';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { DeviceEventEmitter } from 'react-native';
 import { useSelector } from 'react-redux';
 
 const MAX_RETRIES_SESSION = 5;
+
+interface SessionContextType {
+	isSessionReady: boolean;
+}
+
+const SessionContext = createContext<SessionContextType>({
+	isSessionReady: false
+});
+
+export const useSessionReady = () => {
+	const context = useContext(SessionContext);
+	if (!context) {
+		throw new Error('useSessionReady must be used within RefreshSessionWrapper');
+	}
+	return context.isSessionReady;
+};
+
 const RefreshSessionWrapper = ({ children }) => {
 	const isLoggedIn = useSelector(selectIsLogin);
 	const dispatch = useAppDispatch();
 	const hasInternet = useSelector(selectHasInternetMobile);
-	const [isInitialized, setIsInitialized] = useState<boolean>(false);
+	const [isSessionReady, setIsSessionReady] = useState<boolean>(false);
 	const { clientRef } = useMezon();
 
 	const getSessionCacheKey = async () => {
@@ -50,7 +67,7 @@ const RefreshSessionWrapper = ({ children }) => {
 				const response = await dispatch(authActions.refreshSession());
 				if ((response as unknown as IWithError).error) {
 					retries -= 1;
-					setIsInitialized(true);
+					setIsSessionReady(true);
 					if (retries === 0) {
 						await sleep(500);
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED);
@@ -59,12 +76,11 @@ const RefreshSessionWrapper = ({ children }) => {
 					await sleep(1000 * (MAX_RETRIES_SESSION - retries));
 					continue;
 				}
-				await sleep(200);
-				setIsInitialized(true);
+				setIsSessionReady(true);
 				break;
 			} catch (error) {
 				retries -= 1;
-				setIsInitialized(true);
+				setIsSessionReady(true);
 				if (retries === 0) {
 					await sleep(500);
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED);
@@ -79,14 +95,11 @@ const RefreshSessionWrapper = ({ children }) => {
 		if (isLoggedIn && hasInternet) {
 			refreshSessionLoader();
 		} else {
-			setIsInitialized(true);
+			setIsSessionReady(true);
 		}
 	}, [isLoggedIn, hasInternet]);
 
-	if (!isInitialized) {
-		return <View />;
-	}
-	return <View style={{ flex: 1 }}>{children}</View>;
+	return <SessionContext.Provider value={{ isSessionReady }}>{children}</SessionContext.Provider>;
 };
 
 export default RefreshSessionWrapper;

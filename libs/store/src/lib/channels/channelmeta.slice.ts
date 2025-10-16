@@ -1,5 +1,6 @@
-import { LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { LoadingStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { selectAllAccount } from '../account/account.slice';
 export const CHANNELMETA_FEATURE_KEY = 'channelmeta';
 
@@ -132,6 +133,14 @@ export const selectIsUnreadChannelById = createSelector(
 	(state, settings, channelId) => {
 		const channel = state?.entities[channelId];
 		return channel?.lastSeenTimestamp < channel?.lastSentTimestamp;
+	}
+);
+
+export const selectLastSeenChannel = createSelector(
+	[getChannelMetaState, selectChannelMetaEntities, (state, channelId) => channelId],
+	(state, settings, channelId) => {
+		const channel = settings?.[channelId];
+		return channel?.lastSeenTimestamp;
 	}
 );
 

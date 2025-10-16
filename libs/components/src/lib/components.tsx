@@ -41,6 +41,7 @@ export { default as CanvasHashtag } from './components/MarkdownFormatText/Canvas
 export { default as ChannelHashtag } from './components/MarkdownFormatText/HashTag';
 export { default as MentionUser } from './components/MarkdownFormatText/MentionUser';
 export { default as ModalUnknowChannel } from './components/MarkdownFormatText/ModalUnknowChannel';
+export { default as ModalWalletNotAvailable } from './components/MarkdownFormatText/ModalWalletNotAvailable';
 export { default as MemberList } from './components/MemberList';
 export { default as BaseProfile } from './components/MemberProfile/BaseProfile';
 export { default as Message } from './components/Message';

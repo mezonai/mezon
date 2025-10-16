@@ -179,7 +179,7 @@
 	},
 	"wallet": {
 		"notAvailable": "Ví không khả dụng",
-		"descAvailable": "Để hoàn tất giao dịch, bạn cần kích hoạt ví của mình.",
+		"descNotAvailable": "Để hoàn tất giao dịch, bạn cần kích hoạt ví của mình.",
 		"enableWallet": "Kích hoạt Ví",
 		"cancel": "Hủy"
 	},

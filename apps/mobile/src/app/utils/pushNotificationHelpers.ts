@@ -27,6 +27,7 @@ import { AuthorizationStatus, getMessaging, getToken, hasPermission, requestPerm
 import { safeJSONParse } from 'mezon-js';
 import { Alert, DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
+import { InboxType } from '../screens/Notifications';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex } from './helpers';
 const messaging = getMessaging(getApp());
 
@@ -525,6 +526,8 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			} else {
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: channelDMId });
 			}
+		} else if (channelDMId === '0' && navigation) {
+			navigation.navigate(APP_SCREEN.NOTIFICATION.HOME, { initialTab: InboxType.MESSAGES, version: notification?.sentTime });
 		}
 		setTimeout(() => {
 			store.dispatch(appActions.setIsFromFCMMobile(false));

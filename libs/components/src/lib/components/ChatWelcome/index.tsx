@@ -49,7 +49,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const editGroupModal = useEditGroupModal({
 		channelId: directChannel?.channel_id,
 		currentGroupName: name || directChannel?.channel_label || 'Group',
-		currentAvatar: directChannel?.topic || ''
+		currentAvatar: directChannel?.channel_avatar || ''
 	});
 	useEffect(() => {
 		if (directId) {

@@ -70,8 +70,3 @@ export const DATE_FORMAT = {
 	SEPARATOR: '/',
 	TIME_SEPARATOR: ' '
 };
-
-export const CURRENCY = {
-	CODE: 'vi-VN',
-	SYMBOL: 'đ'
-};

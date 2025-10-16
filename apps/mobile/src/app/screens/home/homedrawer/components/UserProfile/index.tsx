@@ -439,7 +439,11 @@ const UserProfile = React.memo(
 		if (isShowPendingContent) {
 			return (
 				<View style={[styles.wrapper]}>
-					<PendingContent targetUser={infoFriend} onClose={() => setIsShowPendingContent(false)} />
+					<PendingContent
+						targetUser={infoFriend}
+						userName={message?.user?.username || user?.user?.username || user?.username || userById?.user?.username}
+						onClose={() => setIsShowPendingContent(false)}
+					/>
 				</View>
 			);
 		}

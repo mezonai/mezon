@@ -10,13 +10,12 @@ import {
 	walletLedgerActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { formatBalanceToString } from '@mezon/utils';
+import { CURRENCY, formatBalanceToString } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import TransactionDetail from '../TransactionHistory/TransactionDetail';
 import {
 	API_FILTER_PARAMS,
-	CURRENCY,
 	DATE_FORMAT,
 	EMPTY_STATES,
 	FilterType,

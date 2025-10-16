@@ -20,10 +20,8 @@ import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
-import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import ButtonSwitch from '../../ButtonSwitchCustom';
 import type { Coords } from '../../ChannelLink';
 import { ELimitSize } from '../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
@@ -74,7 +72,8 @@ const SettingRightUser = ({
 
 	const handleUpdateUser = async () => {
 		if (name || urlImage || valueDisplayName || editAboutUser || dob) {
-			await updateUser(name, urlImage, valueDisplayName.trim(), editAboutUser, dob, userProfile?.logo || '');
+			const result = await updateUser(name, urlImage, valueDisplayName.trim(), editAboutUser, dob, userProfile?.logo || '');
+			if (result === true) handleSaveClose();
 			if (currentClanId && userProfile?.user?.id) {
 				await dispatch(
 					usersClanActions.updateUserDisplayName({
@@ -99,7 +98,6 @@ const SettingRightUser = ({
 		}
 	};
 
-	// Editor Avatar Profile//
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [imageObject, setImageObject] = useState<ImageSourceObject | null>(null);
 	const [imageCropped, setImageCropped] = useState<File | null>(null);
@@ -431,25 +429,7 @@ const SettingRightUser = ({
 				</div>
 				<div className="flex-1 flex flex-col gap-2 relative">
 					<p className="font-semibold tracking-wide text-sm">{t('preview')}</p>
-					<PreviewSetting
-						isLoading={isLoading}
-						profiles={editProfile}
-						qrProfile={
-							<div className="p-4 rounded-lg bg-white flex items-center justify-center relative" ref={containerRef}>
-								<QRCode level="H" value={qrCodeProfile} className="w-full h-full" />
-								<div className="absolute p-2 rounded-md">
-									<img src="./assets/images/icon-logo-mezon.svg" className="cursor-default pointer-events-none" />
-								</div>
-
-								<ButtonSwitch
-									iconDefault={<Icons.CopyIcon />}
-									iconSwitch={<Icons.Tick defaultSize="w-4 h-4" fill="currentColor" />}
-									onClick={handleCopyQR}
-									className="absolute p-4 !rounded-full text-white bg-transparent"
-								/>
-							</div>
-						}
-					/>
+					<PreviewSetting isLoading={isLoading} profiles={editProfile} />
 				</div>
 			</div>
 			{(urlImage !== avatar && flags) ||
@@ -475,7 +455,6 @@ const SettingRightUser = ({
 							className=" btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1  "
 							onClick={() => {
 								handleUpdateUser();
-								handleSaveClose();
 							}}
 							data-e2e={generateE2eId(`user_setting.profile.user_profile.button.save_changes`)}
 						>

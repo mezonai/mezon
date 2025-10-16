@@ -1,22 +1,22 @@
 {
-  "threads": "Threads",
-  "emptyThread": {
-    "textNoThread": "There are no threads",
-    "textNotify": "Stay focus on conversation with a threads - a temporary text channel.",
-    "createThreads": "Create Thread"
-  },
-  "otherThreads": "OLDER THREADS",
-  "errorMessage": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
-  "threadName": "Thread Name",
-  "privateThread": "Private Thread",
-  "onlyPeopleInviteThread": "Only people you invite and moderators can see this thread",
-  "newThread": "New Thread",
-  "joinedThreads": "joined threads",
-  "joinedThread": "joined thread",
-  "otherActiveThreads": "other active threads",
-  "otherActiveThread": "other active thread",
-  "olderThreads": "older threads",
-  "olderThread": "older thread",
-  "searchThreads": "search threads",
-  "searchThread": "search thread"
+	"threads": "Threads",
+	"emptyThread": {
+		"textNoThread": "There are no threads",
+		"textNotify": "Stay focus on conversation with a threads - a temporary text channel.",
+		"createThreads": "Create Thread"
+	},
+	"otherThreads": "OLDER THREADS",
+	"errorMessage": "Please enter a valid thread name (max 64 characters, only words, numbers, _ or -).",
+	"threadName": "Thread Name",
+	"privateThread": "Private Thread",
+	"onlyPeopleInviteThread": "Only people you invite and moderators can see this thread",
+	"newThread": "New Thread",
+	"joinedThreads": "joined threads",
+	"joinedThread": "joined thread",
+	"otherActiveThreads": "other active threads",
+	"otherActiveThread": "other active thread",
+	"olderThreads": "older threads",
+	"olderThread": "older thread",
+	"searchThreads": "search threads",
+	"searchThread": "search thread"
 }

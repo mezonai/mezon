@@ -154,7 +154,7 @@ type ServerStackParamList = {
 };
 
 type NotificationStackParamList = {
-	[APP_SCREEN.NOTIFICATION.HOME]: undefined;
+	[APP_SCREEN.NOTIFICATION.HOME]: { initialTab?: string; version?: number };
 	[APP_SCREEN.NOTIFICATION.DETAIL]: undefined;
 };
 

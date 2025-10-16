@@ -88,7 +88,7 @@
 	},
 	"confirm": {
 		"delete": {
-			"content": "Bạn có chắc chắn muốn xóa kênh #{{channelName}} không? Hành động này không thể khôi phục.",
+			"content": "Bạn có chắc chắn muốn xóa #{{channelName}} không? Hành động này không thể khôi phục.",
 			"confirmText": "Xóa",
 			"title": "Xóa kênh",
 			"systemChannel": "Không thể xóa kênh hệ thống",

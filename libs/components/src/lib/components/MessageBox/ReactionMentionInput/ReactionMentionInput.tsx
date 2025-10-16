@@ -1054,8 +1054,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						) => {
 							return (
 								<div
-									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									className={`bg-item-theme-hover flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-item-theme text-white' : ''
 									}`}
 								>
 									<SuggestItem
@@ -1086,8 +1086,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						renderSuggestion={(suggestion, search, _highlightedDisplay, _index, focused) => (
 							<div
 								key={suggestion.id}
-								className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-									focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+								className={`bg-item-theme-hover flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+									focused ? 'bg-item-theme text-white' : ''
 								}`}
 							>
 								<SuggestItem
@@ -1120,8 +1120,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						) => {
 							return (
 								<div
-									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									className={`bg-item-theme-hover flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-item-theme text-white' : ''
 									}`}
 								>
 									<SuggestItem
@@ -1174,8 +1174,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 							return (
 								<div
 									key={suggestion.id}
-									className={`bg-ping-member mention-item flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-[var(--bg-item-hover)] text-white' : ''
+									className={`bg-item-theme-hover flex items-center px-3 py-2 cursor-pointer rounded-lg ${
+										focused ? 'bg-item-theme text-white' : ''
 									}`}
 								>
 									<SuggestItem display={suggestion.display} subText={suggestion.description} symbol="/" valueHightLight={search} />

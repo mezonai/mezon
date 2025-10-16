@@ -8,9 +8,13 @@ const toastsAdapter = createEntityAdapter<Toast>();
 
 const activeTimers = new Map<string, NodeJS.Timeout>();
 
+export enum EErrorType {
+	WALLET = 'wallet'
+}
+
 const initialState = {
 	...toastsAdapter.getInitialState(),
-	toastErrors: [] as { id: string; message: string }[]
+	toastErrors: [] as { id: string; message: string; errType?: EErrorType }[]
 };
 const addToast = createAsyncThunk(
 	'toasts/addToast',
@@ -86,18 +90,18 @@ export const toastsSlice = createSlice({
 			toastsAdapter.removeOne(state, action.payload);
 		},
 		clearToasts: (state) => {
-			activeTimers.forEach(timer => clearTimeout(timer));
+			activeTimers.forEach((timer) => clearTimeout(timer));
 			activeTimers.clear();
 
 			toastsAdapter.removeAll(state);
 		},
-		addToastError: (state, action: PayloadAction<{ message?: string }>) => {
+		addToastError: (state, action: PayloadAction<{ message?: string; errType?: EErrorType }>) => {
 			const message = action.payload.message;
 			if (!message || state.toastErrors.find((error) => error.message === message)) {
 				return;
 			}
 			const id = Date.now().toString();
-			state.toastErrors.push({ id, message });
+			state.toastErrors.push({ id, message, errType: action.payload.errType });
 		},
 		removeToastError: (state, action: PayloadAction<string>) => {
 			state.toastErrors = state.toastErrors.filter((error) => error.id !== action.payload);
@@ -116,7 +120,7 @@ export const toastActions = {
 	clearToasts,
 	addToastError,
 	removeToastError,
-	clearAllToastErrors,
+	clearAllToastErrors
 };
 
 // Create selectors using the adapter's getSelectors method

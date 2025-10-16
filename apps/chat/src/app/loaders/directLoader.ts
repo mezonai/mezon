@@ -1,11 +1,10 @@
-import { channelsActions, directActions, emojiSuggestionActions, threadsActions, topicsActions } from '@mezon/store';
+import { channelsActions, directActions, threadsActions, topicsActions } from '@mezon/store';
 import { ModeResponsive } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
-export const directLoader: CustomLoaderFunction = async ({ dispatch }) => {
+export const directLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
 	await dispatch(waitForSocketConnection());
-	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0', noCache: false }));
 	dispatch(channelsActions.setModeResponsive({ clanId: '0', mode: ModeResponsive.MODE_DM }));
 	dispatch(directActions.follower());
 	dispatch(topicsActions.setFocusTopicBox(false));

@@ -1,12 +1,22 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
-import { PinMessageEntity, messagesActions, selectCurrentClanId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { IMessageWithUser, TOPBARS_MAX_WIDTH, convertTimeString, generateE2eId } from '@mezon/utils';
+import type { PinMessageEntity } from '@mezon/store';
+import {
+	appActions,
+	messagesActions,
+	selectCurrentClanId,
+	selectIsShowCanvas,
+	selectMessageByMessageId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
+import type { IMessageWithUser } from '@mezon/utils';
+import { TOPBARS_MAX_WIDTH, convertTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { UnpinMessageObject } from '.';
+import type { UnpinMessageObject } from '.';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
@@ -28,6 +38,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		if (pinMessage?.create_time_seconds) return new Date(pinMessage.create_time_seconds * 1000).toISOString();
 		return new Date().toISOString();
 	};
+	const isShowCanvas = useSelector(selectIsShowCanvas);
 
 	const validCreateTime = getValidCreateTime();
 	const messageTime = convertTimeString(validCreateTime);
@@ -45,6 +56,10 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 				})
 			);
 		}
+
+		if (isShowCanvas) {
+			dispatch(appActions.setIsShowCanvas(false));
+		}
 		onClose();
 	};
 	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, pinMessage?.message_id as string));
@@ -59,7 +74,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 	const handleUnpinConfirm = () => {
 		handleUnPinMessage({
-			pinMessage: pinMessage,
+			pinMessage,
 			contentString: contentString || '',
 			attachments: message?.attachments ? message?.attachments : []
 		});
@@ -149,28 +164,28 @@ export const ListPinAttachment = ({ attachments }: { attachments: ApiMessageAtta
 		if (attachments.length >= 5) {
 			classGridParent = `grid-cols-6`;
 			if (attachments.length % 3 === 1) {
-				classGridChild = classGridChild + ` col-span-2 first:col-span-6`;
+				classGridChild = `${classGridChild} col-span-2 first:col-span-6`;
 			}
 			if (attachments.length % 3 === 2) {
-				classGridChild = classGridChild + `col-span-2 first:col-span-3 [&:nth-child(2)]:col-span-3`;
+				classGridChild = `${classGridChild}col-span-2 first:col-span-3 [&:nth-child(2)]:col-span-3`;
 			} else {
-				classGridChild = classGridChild + ` col-span-2 `;
+				classGridChild = `${classGridChild} col-span-2 `;
 			}
 			return {
-				classGridParent: classGridParent,
-				classGridChild: classGridChild
+				classGridParent,
+				classGridChild
 			};
 		}
 		if (attachments.length < 5) {
 			classGridParent = `grid-cols-2`;
 			if (attachments.length % 2 === 1) {
-				classGridChild = classGridChild + `col-span-1 first:col-span-2`;
+				classGridChild = `${classGridChild}col-span-1 first:col-span-2`;
 			} else {
-				classGridChild = classGridChild + `col-span-1`;
+				classGridChild = `${classGridChild}col-span-1`;
 			}
 			return {
-				classGridParent: classGridParent,
-				classGridChild: classGridChild
+				classGridParent,
+				classGridChild
 			};
 		}
 	}, [attachments]);

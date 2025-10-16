@@ -48,7 +48,8 @@
 			"samePass": "The new password cannot be the same as the old password",
 			"fillOldPass": "Please fill current password.",
 			"updateFail": "Could not update your account.",
-			"createFail": "Could not create your password."
+			"createFail": "Could not create your password.",
+			"incorrectCurrent": "Incorrect password. Please try again"
 		},
 		"toast": {
 			"success": "Password set successfully",

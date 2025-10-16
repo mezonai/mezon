@@ -3,8 +3,8 @@
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
 import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import type { MessagesEntity } from '@mezon/store-mobile';
 import {
-	MessagesEntity,
 	appActions,
 	channelMetaActions,
 	clansActions,
@@ -58,10 +58,10 @@ import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
 import { EMessageActionType } from '../../enums';
-import { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
+import type { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
-import { IReactionMessageProps } from '../MessageReaction';
+import type { IReactionMessageProps } from '../MessageReaction';
 import { QuickMenuModal } from '../QuickMenuModal';
 import { ReportMessageModal } from '../ReportMessageModal';
 import { RecentEmojiMessageAction } from './RecentEmojiMessageAction';
@@ -350,7 +350,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			const filePath = await downloadImage(url, type?.[1]);
 
 			if (filePath) {
-				await saveImageToCameraRoll('file://' + filePath, type?.[0], true);
+				await saveImageToCameraRoll(`file://${filePath}`, type?.[0], true);
 			}
 		} catch (error) {
 			console.error(`Error downloading or saving media from URL: ${url}`, error);
@@ -397,7 +397,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const handleActionTopicDiscussion = async () => {
 		if (!message) return;
 		dispatch(topicsActions.setCurrentTopicInitMessage(message));
-		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
+		dispatch(topicsActions.setCurrentTopicId(''));
+		dispatch(topicsActions.setFirstMessageOfCurrentTopic(message));
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
@@ -532,7 +533,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			const shareOptions = {
 				url: `file://${imageData.filePath}`,
 				type: filetype || 'image/png',
-				filename: filename
+				filename
 			};
 
 			await Share.open(shareOptions);
@@ -678,7 +679,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		const isUnPinMessage = listPinMessages.some((pinMessage) => pinMessage?.message_id === message?.id);
 		const isHideCreateThread = isDM || ((!isCanManageThread || !isCanManageChannel) && !isClanOwner) || currentChannel?.parent_id !== '0';
 		const isHideThread = currentChannel?.parent_id !== '0';
-		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage);
+		const isTopicFirstMessage = message?.code === TypeMessage.Topic;
+		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage) || isTopicFirstMessage;
 		const isHideTopicDiscussion =
 			(message?.topic_id && message?.topic_id !== '0') ||
 			message?.code === TypeMessage.Topic ||
@@ -710,7 +712,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isHideTopicDiscussion && EMessageActionType.TopicDiscussion,
 			isDM && EMessageActionType.QuickMenu,
 			isHideActionImage && EMessageActionType.CopyImage,
-			isHideActionImage && EMessageActionType.ShareImage
+			isHideActionImage && EMessageActionType.ShareImage,
+			isTopicFirstMessage && EMessageActionType.EditMessage
 		];
 
 		let availableMessageActions: IMessageAction[] = [];

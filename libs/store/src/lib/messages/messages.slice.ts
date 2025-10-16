@@ -732,12 +732,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 				return;
 			}
 
-			const channelMessages = state.messages.channelMessages[channelId];
-			if (!channelMessages?.cache && !updateLast) {
-				return;
-			}
-
-			const queuedMessages = (thunkAPI.getState() as RootState).messages.queuedLastSeenMessages;
+			const queuedMessages = (thunkAPI.getState() as RootState).messages?.queuedLastSeenMessages;
 			if (queuedMessages.length > 0) {
 				thunkAPI.dispatch(processQueuedLastSeenMessages());
 			}
@@ -1099,6 +1094,12 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 
 	const state = thunkAPI.getState() as RootState;
 	const channelId = message.channel_id;
+
+	if (!state.messages.channelMessages?.[channelId]?.cache) {
+		thunkAPI.dispatch(messagesActions.setLastMessage(message));
+		return;
+	}
+
 	const isViewingOlderMessages = getMessagesState(getMessagesRootState(thunkAPI))?.isViewingOlderMessagesByChannelId?.[channelId];
 	const isBottom = !selectShowScrollDownButton(state, channelId);
 
@@ -1984,6 +1985,17 @@ export const selectLastSeenMessageStateByChannelId = createSelector(
 	[getMessagesState, (state, channelId: string) => channelId],
 	(state, channelId) => {
 		return state?.lastMessageByChannel?.[channelId] ?? null;
+	}
+);
+
+export const selectLastMessageViewportByChannelId = createSelector(
+	[selectMessagesByChannel, selectViewportIdsByChannelId],
+	(channelMessages, ids) => {
+		if (!channelMessages) return null;
+		const { entities } = channelMessages;
+		const lastId = ids?.at(-1);
+		if (!lastId) return null;
+		return entities[lastId];
 	}
 );
 

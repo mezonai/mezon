@@ -1,5 +1,5 @@
 import { load, save, STORAGE_KEY_TEMPORARY_INPUT_MESSAGES, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
-import { EmojiDataOptionals } from '@mezon/utils';
+import type { EmojiDataOptionals } from '@mezon/utils';
 import { deflate, inflate } from 'react-native-gzip';
 
 export const sleep = (milliseconds: number) => {
@@ -32,6 +32,7 @@ export const clanAndChannelIdLinkRegex = /clans\/(\d+)\/channels\/(\d+)/;
 export const clanDirectMessageLinkRegex = /chat\/direct\/message\/(\d+)\/(\d+)$/;
 
 export const validTextInputRegex = /^(?![_\-\s])[a-zA-Z0-9\p{L}\p{N}_\-\s]{1,64}$/u;
+export const validTextInputRegexEmoji = /^(?![_\-\s])(?:(?!')[a-zA-Z0-9\p{L}\p{N}\p{Emoji_Presentation}_\-\s]){1,64}$/u;
 export const linkGoogleMeet = 'https://meet.google.com/';
 
 export const resetCachedMessageActionNeedToResolve = (channelId: string) => {
@@ -73,7 +74,7 @@ export function combineMessageReactions(reactions: any[], message_id: string): a
 				emoji,
 				senders: [],
 				action: false,
-				message_id: message_id,
+				message_id,
 				id: '',
 				channel_id: ''
 			};

@@ -38,6 +38,7 @@ const TopicHeader = memo(({ handleBack }: TopicHeaderProps) => {
 			clanId: currentTopic?.clan_id || firstMessage?.clan_id || '',
 			channelId: currentTopic?.channel_id || firstMessage?.channel_id || '',
 			senderId: currentTopic?.sender_id || firstMessage?.message?.sender_id || '',
+			displayName: currentTopic?.display_name || currentTopic?.username || firstMessage?.message?.username || '',
 			createTime: currentTopic?.create_time || firstMessage?.message?.create_time || '',
 			embed: (typeof valueTopic?.content === 'object' ? valueTopic.content : safeJSONParse(valueTopic?.content))?.embed?.[0],
 			attachments: currentTopic?.attachments || firstMessage?.message?.attachments || [],
@@ -79,9 +80,9 @@ const TopicHeader = memo(({ handleBack }: TopicHeaderProps) => {
 			</View>
 			{valueTopic && (
 				<View style={styles.userInfo}>
-					<MezonAvatar avatarUrl={priorityAvatar} username={namePriority || valueTopic?.display_name || valueTopic?.username} />
+					<MezonAvatar avatarUrl={priorityAvatar} username={namePriority || memoizedValue?.displayName || ''} />
 					<View>
-						<Text style={[styles.name, { color: colorSenderName }]}>{namePriority}</Text>
+						<Text style={[styles.name, { color: colorSenderName }]}>{namePriority || memoizedValue?.displayName || ''}</Text>
 						{memoizedValue?.createTime && <Text style={styles.dateText}>{convertTimeString(memoizedValue?.createTime as string)}</Text>}
 					</View>
 				</View>

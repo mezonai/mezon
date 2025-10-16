@@ -1,7 +1,6 @@
 import { useAuth, useSendForwardMessage } from '@mezon/core';
+import type { DirectEntity, MessagesEntity } from '@mezon/store';
 import {
-	DirectEntity,
-	MessagesEntity,
 	channelsActions,
 	getIsFowardAll,
 	getSelectedMessage,
@@ -19,12 +18,11 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import type { ChannelThreads, UsersClanEntity } from '@mezon/utils';
 import {
-	ChannelThreads,
 	FOR_1_HOUR,
 	ModeResponsive,
 	TypeSearch,
-	UsersClanEntity,
 	addAttributesSearchList,
 	getAvatarForPrioritize,
 	normalizeString,
@@ -195,7 +193,7 @@ const ForwardMessageModal = () => {
 					return {
 						id: itemDM?.user_ids?.[0] ?? '',
 						name: itemDM?.usernames?.toString() ?? '',
-						avatarUser: itemDM?.channel_avatar?.[0] ?? '',
+						avatarUser: itemDM?.avatars?.[0] ?? '',
 						idDM: itemDM?.id ?? '',
 						typeChat: ChannelType.CHANNEL_TYPE_DM,
 						displayName: itemDM.channel_label,
@@ -209,7 +207,7 @@ const ForwardMessageModal = () => {
 					return {
 						id: itemGr?.channel_id ?? '',
 						name: itemGr?.channel_label ?? '',
-						avatarUser: itemGr?.topic || 'assets/images/avatar-group.png',
+						avatarUser: itemGr?.channel_avatar || 'assets/images/avatar-group.png',
 						idDM: itemGr?.id ?? '',
 						typeChat: ChannelType.CHANNEL_TYPE_GROUP,
 						displayName: itemGr.channel_label,

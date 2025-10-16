@@ -59,6 +59,8 @@ target 'Mobile' do
   pod 'GoogleUtilities', :modular_headers => true
   pod 'SDWebImage', :modular_headers => true
   pod 'SDWebImageWebPCoder', :modular_headers => true
+  pod 'MobileVLCKit', '~> 3.6.0'
+  pod 'TVVLCKit', '~> 3.6.0'
   pod 'RNFS', :path => '../node_modules/react-native-fs'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'RNCallKeep', :path => '../node_modules/react-native-callkeep'

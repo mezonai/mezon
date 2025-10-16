@@ -13,6 +13,7 @@ import {
 	defaultNotificationActions,
 	selectDefaultNotificationClan,
 	selectDefaultNotificationClanByClanId,
+	selectLogoCustom,
 	useAppDispatch
 } from '@mezon/store';
 import { Menu } from '@mezon/ui';
@@ -161,6 +162,9 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const handleCheckMenu = useCallback((visible: boolean) => {
 		checkMenuOpen.current = visible;
 	}, []);
+
+	const logoCustom = useSelector(selectLogoCustom);
+
 	return (
 		<div
 			ref={panelRef}
@@ -170,9 +174,11 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 			className="outline-none fixed top-full  rounded-sm z-50 w-[200px] py-[10px] px-[10px] shadow-md bg-theme-contexify"
 		>
 			{userProfile ? (
-				<GroupPanels>
-					<ItemPanel children={t('removeLogo')} onClick={handleRemoveLogo}></ItemPanel>
-				</GroupPanels>
+				logoCustom && (
+					<GroupPanels>
+						<ItemPanel children={t('removeLogo')} onClick={handleRemoveLogo}></ItemPanel>
+					</GroupPanels>
+				)
 			) : (
 				<>
 					<GroupPanels>

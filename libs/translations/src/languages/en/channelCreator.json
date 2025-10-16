@@ -1,38 +1,38 @@
 {
-    "actions": {
-        "create": "Create"
-    },
-    "fields": {
-        "channelName": {
-            "title": "Channel Name",
-            "placeholder": "new-channel",
-            "errorMessage": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
-            "duplicateChannelName": "The Channel name already exists in this Clan. Please enter another name."
-        },
-        "channelPrivate": {
-            "title": "Private Channel",
-            "descriptionText": "By making a private channel, only select members and roles will be able to view this channel",
-            "descriptionVoice": "By making a voice channel, only select members and roles will have access to view or connect to this channel"
-        },
-        "channelType": {
-            "title": "Channel Type",
-            "text": {
-                "title": "Text",
-                "description": "Post images, GIFs, stickers, opinions, and puns"
-            },
-            "voice": {
-                "title": "Voice",
-                "description": "Hang out together with voice, video, and screen share"
-            },
-            "stream": {
-                "title": "Stream",
-                "description": "Sharing hobbies activity"
-            }
-        },
-        "channelVoiceType": {
-            "title": "Channel Voice Type",
-            "mezon": "MEZON MEET",
-            "gMeet": "GOOGLE MEET"
-        }
-    }
+	"actions": {
+		"create": "Create"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Channel Name",
+			"placeholder": "new-channel",
+			"errorMessage": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
+			"duplicateChannelName": "The Channel name already exists in this Clan. Please enter another name."
+		},
+		"channelPrivate": {
+			"title": "Private Channel",
+			"descriptionText": "By making a private channel, only select members and roles will be able to view this channel",
+			"descriptionVoice": "By making a voice channel, only select members and roles will have access to view or connect to this channel"
+		},
+		"channelType": {
+			"title": "Channel Type",
+			"text": {
+				"title": "Text",
+				"description": "Post images, GIFs, stickers, opinions and puns"
+			},
+			"voice": {
+				"title": "Voice",
+				"description": "Hang out together with voice, video and screen share"
+			},
+			"stream": {
+				"title": "Stream",
+				"description": "Sharing hobbies activity"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Channel Voice Type",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		}
+	}
 }

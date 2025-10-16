@@ -2,7 +2,7 @@ import { useAuth } from '@mezon/core';
 import { checkMutableRelationship, directActions, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import { ChannelType, safeJSONParse } from 'mezon-js';
-import { ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
@@ -40,12 +40,9 @@ export default function AddFriendPage() {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			if ((!dataEncode?.id && !username) || !userProfile?.user?.id) return;
+			if (!username || !userProfile?.user?.id) return;
 			try {
-				const result: ApiIsFollowerResponse = await dispatch(checkMutableRelationship({ userId: dataEncode?.id || '' })).unwrap();
-				if (!dataEncode) {
-					return;
-				}
+				const result: ApiIsFollowerResponse = await dispatch(checkMutableRelationship({ userId: dataEncode?.id || username || '' })).unwrap();
 
 				if (result.is_follower) {
 					toast.success(t('invite.canChatNow'));
@@ -80,28 +77,33 @@ export default function AddFriendPage() {
 	}, []);
 
 	const handleGotoDm = async () => {
-		if (!dataEncode?.id || !userProfile?.user?.id) return;
+		if (!userProfile?.user?.id || !username) return;
 		const bodyCreateDm: ApiCreateChannelDescRequest = {
 			type: ChannelType.CHANNEL_TYPE_DM,
 			channel_private: 1,
-			user_ids: [dataEncode?.id, userProfile?.user?.id],
+			user_ids: [username],
 			clan_id: '0'
 		};
-		dispatch(
+		const result = await dispatch(
 			directActions.createNewDirectMessage({
 				body: bodyCreateDm,
-				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name],
-				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar]
+				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username],
+				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar || '']
 			})
 		);
+		if ((result.payload as ApiChannelDescription).channel_id) {
+			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channel_id}/3`);
+		} else {
+			navigate('/chat/direct/friends');
+		}
 	};
 
 	const handleAddFriend = () => {
-		if (!dataEncode?.id || !userProfile?.user?.id) return;
+		if (!userProfile?.user?.id || !username) return;
 
 		dispatch(
 			sendRequestAddFriend({
-				ids: [dataEncode?.id]
+				usernames: [username]
 			})
 		);
 		navigate('/chat/direct/friends');

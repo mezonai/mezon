@@ -1,10 +1,13 @@
 import { useAuth, useGetPriorityNameFromUserClan } from '@mezon/core';
 import {
+	appActions,
 	getFirstMessageOfTopic,
 	getStore,
 	messagesActions,
 	notificationActions,
 	selectAllUserClans,
+	selectCurrentChannelId,
+	selectIsShowCanvas,
 	selectIsShowInbox,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
@@ -24,15 +27,18 @@ import { useNavigate } from 'react-router-dom';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 export type TopicProps = {
 	readonly topic: ApiSdTopic;
+	onCloseTooltip?: () => void;
 };
 
-function TopicNotificationItem({ topic }: TopicProps) {
+function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	const { t } = useTranslation('channelTopbar');
 	const navigate = useNavigate();
 	const isShowInbox = useSelector(selectIsShowInbox);
 	const [subjectTopic, setSubjectTopic] = useState('');
 	const dispatch = useAppDispatch();
 	const memberClan = useSelector(selectAllUserClans);
+	const isShowCanvas = useSelector(selectIsShowCanvas);
+
 	const { userId } = useAuth();
 	const userIds = topic.last_sent_message?.repliers;
 	const usernames = useMemo(() => {
@@ -53,8 +59,18 @@ function TopicNotificationItem({ topic }: TopicProps) {
 	}, [usernames, userIds]);
 
 	const handleOpenTopic = async () => {
+		if (isShowCanvas) {
+			dispatch(appActions.setIsShowCanvas(false));
+		}
+		onCloseTooltip?.();
 		dispatch(notificationActions.setIsShowInbox(!isShowInbox));
 		if (topic.message_id && topic.channel_id) {
+			const state = getStore().getState();
+			const currentChannelId = selectCurrentChannelId(state);
+			if (currentChannelId !== topic.channel_id) {
+				await navigate(`/chat/clans/${topic.clan_id}/channels/${topic.channel_id}`);
+			}
+
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: topic.clan_id || '',

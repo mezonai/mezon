@@ -156,7 +156,7 @@ const TopBarChannelText = memo(() => {
 	const editGroupModal = useEditGroupModal({
 		channelId: currentDmGroup?.channel_id,
 		currentGroupName: channelDmGroupLabel || '',
-		currentAvatar: currentDmGroup?.topic || ''
+		currentAvatar: currentDmGroup?.channel_avatar || ''
 	});
 
 	const handleOpenEditModal = useCallback(() => {

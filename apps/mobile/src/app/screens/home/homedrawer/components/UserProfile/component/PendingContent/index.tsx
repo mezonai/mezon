@@ -1,7 +1,6 @@
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { useFriends } from '@mezon/core';
 import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
-import { FriendsEntity } from '@mezon/store-mobile';
+import { FriendsEntity, friendsActions, useAppDispatch } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,17 +13,32 @@ import { SeparatorWithLine } from '../../../../../../../components/Common';
 import { IconCDN } from '../../../../../../../constants/icon_cdn';
 interface IPendingContentProps {
 	targetUser: FriendsEntity;
+	userName: string;
 	onClose?: () => void;
 }
 
 export const PendingContent = memo((props: IPendingContentProps) => {
-	const { targetUser, onClose } = props;
+	const { targetUser, onClose, userName } = props;
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['userProfile']);
-	const { acceptFriend, deleteFriend } = useFriends();
+	const dispatch = useAppDispatch();
 
 	const handleRemoveFriend = () => {
-		deleteFriend(targetUser?.user?.username, targetUser?.user?.id);
+		const body = {
+			usernames: [],
+			ids: [targetUser?.user?.id]
+		};
+		dispatch(friendsActions.sendRequestDeleteFriend(body));
+		onClose();
+	};
+
+	const handleAcceptFriend = () => {
+		const body = {
+			usernames: [targetUser?.user?.username],
+			ids: [targetUser?.user?.id],
+			isAcceptingRequest: true
+		};
+		dispatch(friendsActions.sendRequestAddFriend(body));
 		onClose();
 	};
 
@@ -32,10 +46,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 		{
 			id: 1,
 			text: t('pendingContent.acceptFriend'),
-			action: () => {
-				acceptFriend(targetUser?.user?.username, targetUser?.user?.id);
-				onClose();
-			},
+			action: handleAcceptFriend,
 			isWarning: false,
 			isShow: [EFriendState.ReceivedRequestFriend].includes(targetUser?.state)
 		},
@@ -79,7 +90,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 					width={size.s_34}
 					height={size.s_34}
 					avatarUrl={targetUser?.user?.avatar_url || ''}
-					username={targetUser?.user?.username || targetUser?.user?.display_name}
+					username={userName}
 					isBorderBoxImage={false}
 				/>
 
@@ -96,7 +107,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 							color: themeValue.white
 						}}
 					>
-						{targetUser?.user?.username}
+						{userName}
 					</Text>
 				</View>
 

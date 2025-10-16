@@ -1,15 +1,18 @@
 import {
+	appActions,
 	getFirstMessageOfTopic,
 	getStore,
 	messagesActions,
 	selectCurrentChannelId,
 	selectCurrentClanId,
+	selectIsShowCanvas,
 	selectMessageByMessageId,
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 interface UseNotificationJumpProps {
@@ -19,12 +22,13 @@ interface UseNotificationJumpProps {
 	topicId?: string;
 	isTopic: boolean;
 	mode?: number;
+	onCloseTooltip?: () => void;
 }
 
-export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isTopic, mode }: UseNotificationJumpProps) => {
+export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isTopic, mode, onCloseTooltip }: UseNotificationJumpProps) => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-
+	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const handleJumpToTopic = useCallback(async () => {
 		if (!topicId || !channelId || !clanId) return;
 
@@ -33,6 +37,7 @@ export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isT
 		const currentClanId = selectCurrentClanId(currentState);
 		const isClanChanged = currentClanId !== clanId;
 		const isChannelChanged = currentChannelId !== channelId;
+
 		if (isClanChanged || isChannelChanged) {
 			const channelPath = `/chat/clans/${clanId}/channels/${channelId}`;
 			await navigate(channelPath);
@@ -93,7 +98,6 @@ export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isT
 			dispatch(topicsActions.setCurrentTopicInitMessage(fullMessage as IMessageWithUser));
 		}
 
-		// 6. Mở topic box
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(topicsActions.setCurrentTopicId(topicId));
 	}, [clanId, channelId, topicId, messageId, mode, navigate, dispatch]);
@@ -113,6 +117,10 @@ export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isT
 	}, [dispatch, messageId, channelId, clanId, mode, navigate]);
 
 	const handleClickJump = useCallback(async () => {
+		onCloseTooltip?.();
+		if (isShowCanvas) {
+			dispatch(appActions.setIsShowCanvas(false));
+		}
 		if (isTopic) {
 			await handleJumpToTopic();
 			return;

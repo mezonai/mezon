@@ -1,7 +1,8 @@
-import { channelsActions, directActions } from '@mezon/store';
+import { channelsActions, directActions, fetchUserChannels } from '@mezon/store';
 import { notificationService } from '@mezon/utils';
-import { ShouldRevalidateFunction } from 'react-router-dom';
-import { CustomLoaderFunction } from './appLoader';
+import { ChannelType } from 'mezon-js';
+import type { ShouldRevalidateFunction } from 'react-router-dom';
+import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
 export const directMessageLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
@@ -9,7 +10,14 @@ export const directMessageLoader: CustomLoaderFunction = async ({ params, dispat
 	if (!directId) {
 		throw new Error('DirectMessage ID null');
 	}
-
+	if (directId && type && Number(type) === ChannelType.CHANNEL_TYPE_GROUP) {
+		dispatch(
+			fetchUserChannels({
+				channelId: directId,
+				isGroup: true
+			})
+		);
+	}
 	await dispatch(waitForSocketConnection());
 
 	await dispatch(

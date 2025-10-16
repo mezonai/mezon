@@ -257,10 +257,15 @@ export const registrationPassword = createAsyncThunk(
 				return thunkAPI.rejectWithValue('Failed to register password');
 			}
 			return response;
-		} catch (error) {
+		} catch (error: any) {
 			captureSentryError(error, `auth/registrationPassword`);
+			const errPayload = await error?.json();
 			toast.error(
-				oldPassword ? t('accountSetting:setPasswordAccount.error.updateFail') : t('accountSetting:setPasswordAccount.error.createFail')
+				oldPassword
+					? errPayload?.code === 3
+						? t(`accountSetting:setPasswordAccount.error.incorrectCurrent`)
+						: t('accountSetting:setPasswordAccount.error.updateFail')
+					: t('accountSetting:setPasswordAccount.error.createFail')
 			);
 			if (isMobile) {
 				return thunkAPI.rejectWithValue(error);

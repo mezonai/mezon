@@ -24,6 +24,10 @@ export const NotificationTooltip = memo(({ isGridView, isShowMember }: Notificat
 		}
 	};
 
+	const handleCloseTooltip = () => {
+		setVisible(false);
+	};
+
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape' && visible) {
@@ -44,7 +48,7 @@ export const NotificationTooltip = memo(({ isGridView, isShowMember }: Notificat
 		<Tooltip
 			placement="bottomRight"
 			trigger={['click']}
-			overlay={<NotificationTooltipContent />}
+			overlay={<NotificationTooltipContent onCloseTooltip={handleCloseTooltip} />}
 			onVisibleChange={handleVisibleChange}
 			visible={visible}
 			overlayClassName="notification-tooltip"

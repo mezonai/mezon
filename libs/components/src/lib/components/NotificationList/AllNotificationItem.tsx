@@ -21,9 +21,10 @@ import MessageReply from '../MessageWithUser/MessageReply/MessageReply';
 import getPendingNames from '../MessageWithUser/usePendingNames';
 export type NotifyMentionProps = {
 	readonly notify: INotification;
+	onCloseTooltip?: () => void;
 };
 
-function convertContentToObject(notify: any) {
+function convertContentToObject(notify: INotification) {
 	if (notify && notify.content && typeof notify.content === 'object') {
 		try {
 			const parsedContent = {
@@ -47,7 +48,7 @@ function convertContentToObject(notify: any) {
 	return notify;
 }
 
-function AllNotificationItem({ notify }: NotifyMentionProps) {
+function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
 	const parseNotify = useMemo(() => convertContentToObject(notify), [notify]);
 	const messageId = parseNotify.content.message_id;
@@ -57,7 +58,7 @@ function AllNotificationItem({ notify }: NotifyMentionProps) {
 
 	const topicId = parseNotify?.content?.topic_id;
 
-	const isTopic = Number(topicId) !== 0 || parseNotify?.content?.code === TypeMessage.Topic || parseNotify?.message?.code === TypeMessage.Topic;
+	const isTopic = Number(topicId) !== 0 || parseNotify?.content?.code === TypeMessage.Topic;
 
 	const { handleClickJump } = useNotificationJump({
 		messageId,
@@ -65,7 +66,8 @@ function AllNotificationItem({ notify }: NotifyMentionProps) {
 		clanId,
 		topicId,
 		isTopic,
-		mode
+		mode,
+		onCloseTooltip
 	});
 
 	const { deleteNotify } = useNotification();

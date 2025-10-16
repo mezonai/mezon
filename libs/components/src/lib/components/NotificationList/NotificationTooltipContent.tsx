@@ -35,7 +35,11 @@ function InboxButton() {
 	);
 }
 
-export function NotificationTooltipContent() {
+interface NotificationTooltipContentProps {
+	onCloseTooltip?: () => void;
+}
+
+export function NotificationTooltipContent({ onCloseTooltip }: NotificationTooltipContentProps) {
 	const { t } = useTranslation('notifications');
 	const currentClan = useSelector(selectCurrentClan);
 	const dispatch = useAppDispatch();
@@ -93,7 +97,14 @@ export function NotificationTooltipContent() {
 		if (category) {
 			dispatch(notificationActions.fetchListNotification({ clanId: currentClan.clan_id, category }));
 		}
-	}, [currentTabNotify]);
+	}, [
+		currentTabNotify,
+		currentClan?.clan_id,
+		allNotificationForYou?.data?.length,
+		allNotificationClan?.data?.length,
+		allNotificationMentions?.data?.length,
+		dispatch
+	]);
 
 	const listRefForYou = useRef<HTMLDivElement | null>(null);
 	const listRefMentions = useRef<HTMLDivElement | null>(null);
@@ -173,7 +184,11 @@ export function NotificationTooltipContent() {
 					>
 						{getAllNotificationMentions.length > 0 ? (
 							getAllNotificationMentions.map((notification: INotification, index: number) => (
-								<AllNotification notification={notification} key={`mention-${notification?.id}-${index}`} />
+								<AllNotification
+									notification={notification}
+									key={`mention-${notification?.id}-${index}`}
+									onCloseTooltip={onCloseTooltip}
+								/>
 							))
 						) : (
 							<EmptyNotification isEmptyMentions />
@@ -201,7 +216,7 @@ export function NotificationTooltipContent() {
 					<div>
 						{getAllTopic.length > 0 ? (
 							getAllTopic.map((topic: ApiSdTopic, index: number) => (
-								<TopicNotification topic={topic} key={`topic-${topic?.id}-${index}`} />
+								<TopicNotification topic={topic} key={`topic-${topic?.id}-${index}`} onCloseTooltip={onCloseTooltip} />
 							))
 						) : (
 							<EmptyNotification isEmptyMentions />

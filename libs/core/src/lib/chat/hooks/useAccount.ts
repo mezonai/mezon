@@ -1,4 +1,4 @@
-import { ClansEntity, clansActions, useAppDispatch } from '@mezon/store';
+import { clansActions, useAppDispatch } from '@mezon/store';
 import React, { useMemo } from 'react';
 
 export function useAccount() {
@@ -12,12 +12,12 @@ export function useAccount() {
 					avatar_url: logoUrl,
 					display_name: displayName,
 					about_me: aboutMe,
-					dob: dob,
+					dob,
 					noCache,
-					logo: logo
+					logo
 				})
 			);
-			const payload = action.payload as ClansEntity;
+			const payload = action.payload;
 			return payload;
 		},
 		[dispatch]

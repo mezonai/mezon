@@ -5,6 +5,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { resetCachedMessageActionNeedToResolve } from '../../../utils/helpers';
 import { ActionMessageSelected } from './components/ChatBox/ActionMessageSelected';
 import { ChatBoxBottomBar } from './components/ChatBox/ChatBoxBottomBar';
@@ -31,15 +32,15 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 	const isDM = useMemo(() => {
 		return [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(props?.mode);
 	}, [props?.mode]);
+	const listBlockedUser = useSelector(selectBlockedUsersForMessage);
 
 	const isBlocked = useMemo(() => {
 		if (props?.mode !== ChannelStreamMode.STREAM_MODE_DM) return false;
 		const store = getStore();
 		const directMessage = selectDirectById(store.getState(), props.channelId);
-		const listBlockedUser = selectBlockedUsersForMessage(store.getState());
 		const blockedUser = listBlockedUser.some((user) => user?.user && user?.user?.id === (directMessage?.user_ids?.[0] || ''));
 		return blockedUser;
-	}, [props?.channelId]);
+	}, [props?.channelId, listBlockedUser]);
 
 	useEffect(() => {
 		if (props?.channelId && messageActionNeedToResolve) {

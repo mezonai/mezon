@@ -159,7 +159,7 @@ export function useImage() {
 	};
 
 	const saveImageToCameraRoll = useCallback(
-		async (filePath: string, type: string, isShowSuccessToast = true) => {
+		async (filePath: string, type: string, isShowSuccessToast = true, isUnlink = true) => {
 			try {
 				const hasPermission = await checkAndRequestPermission();
 				if (!hasPermission) {
@@ -180,7 +180,7 @@ export function useImage() {
 				});
 				throw err;
 			} finally {
-				if (Platform.OS === 'android') {
+				if (Platform.OS === 'android' && isUnlink) {
 					await RNFetchBlob.fs.unlink(filePath);
 				}
 				dispatch(appActions.setLoadingMainMobile(false));

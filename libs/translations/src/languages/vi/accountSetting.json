@@ -48,7 +48,8 @@
 			"samePass": "Mật khẩu mới không thể giống mật khẩu cũ",
 			"fillOldPass": "Vui lòng nhập mật khẩu hiện tại.",
 			"updateFail": "Cập nhật tài khoản thất bại.",
-			"createFail": "Đặt mật khẩu thất bại."
+			"createFail": "Đặt mật khẩu thất bại.",
+			"incorrectCurrent": "Mật khẩu hiện tại không đúng. Hãy thử lại"
 		},
 		"toast": {
 			"success": "Đổi mật khẩu thành công",

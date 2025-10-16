@@ -145,10 +145,9 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({ navigatio
 
 					if (!resp) {
 						Toast.show({
-							type: 'success',
+							type: 'error',
 							props: {
-								text2: t('otpVerify.otpNotMatch'),
-								leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.red} />
+								text2: t('otpVerify.otpNotMatch')
 							}
 						});
 						setIsError(true);
@@ -165,10 +164,9 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({ navigatio
 				setIsError(true);
 				console.error('Error verifying OTP:', error);
 				Toast.show({
-					type: 'success',
+					type: 'error',
 					props: {
-						text2: t('otpVerify.verifyOtpError'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.red} />
+						text2: t('otpVerify.verifyOtpError')
 					}
 				});
 			}

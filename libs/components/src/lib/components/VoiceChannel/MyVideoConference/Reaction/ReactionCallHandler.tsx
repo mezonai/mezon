@@ -17,7 +17,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 		const animationVariant = Math.floor(Math.random() * 6) + 1;
 		const animationName = `reactionFloatCurve${animationVariant}`;
 
-		const duration = 2.5 + Math.random() * 2.0;
+		const duration = 2.5 + Math.random() * 3.5;
 
 		return {
 			left: `${baseLeft + horizontalOffset}%`,

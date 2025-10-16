@@ -72,5 +72,5 @@ export const DATE_FORMAT = {
 
 export const CURRENCY = {
     CODE: 'vi-VN',
-    SYMBOL: 'đ'
+    SYMBOL: 'đồng'
 };

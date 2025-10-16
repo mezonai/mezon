@@ -119,6 +119,8 @@ const buyItemForSale = createAsyncThunk(
 				.then((action) => action?.payload as AddTxResponse);
 			if (response.ok) {
 				thunkAPI.dispatch(emojiRecentActions.addPendingUnlock({ emojiId: id ?? '' }));
+			} else {
+				return thunkAPI.rejectWithValue('');
 			}
 		} catch (error) {
 			captureSentryError(error, 'emoji/fetchEmojiRecent');

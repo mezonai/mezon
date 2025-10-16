@@ -3,12 +3,9 @@ import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
 	directMetaActions,
-	fetchUserChannels,
-	getStoreAsync,
 	selectBuzzStateByDirectId,
 	selectDirectById,
 	selectIsUnreadDMById,
-	selectMemberByGroupId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -85,17 +82,6 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 
 	const handleClickDM = useCallback(async () => {
 		joinToChatAndNavigate(id, directMessage?.type as number);
-
-		const state = (await getStoreAsync()).getState();
-		const memberDM = selectMemberByGroupId(state, id);
-		if (!memberDM && directMessage?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			dispatch(
-				fetchUserChannels({
-					channelId: id,
-					isGroup: true
-				})
-			);
-		}
 	}, [directMessage, id, currentDmGroupId]);
 
 	return (

@@ -72,7 +72,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const editGroupModal = useEditGroupModal({
 		channelId: currentUser?.channelId || currentUser?.channel_id,
 		currentGroupName: currentUser?.channel_label || 'Group',
-		currentAvatar: currentUser?.topic || ''
+		currentAvatar: currentUser?.channel_avatar || ''
 	});
 
 	const openLeaveGroupModal = useCallback(() => {

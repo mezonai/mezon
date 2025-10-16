@@ -46,7 +46,7 @@ const InternetStatusPopover: React.FC = () => {
 				animateOut ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
 			}`}
 		>
-			<div className="flex items-center gap-3 px-4 py-3 bg-white rounded-2xl shadow-lg border border-gray-200 min-w-[300px]">
+			<div className="flex items-center gap-3 px-4 py-3 bg-theme-contexify rounded-2xl shadow-lg border-theme-primary min-w-[300px]">
 				<div className="flex-shrink-0">
 					{isOffline ? (
 						<svg
@@ -81,8 +81,8 @@ const InternetStatusPopover: React.FC = () => {
 					)}
 				</div>
 
-				<div className="flex-1 min-w-0">
-					<p className="text-sm font-medium text-gray-900">
+				<div className="flex-1 min-w-0 ">
+					<p className="text-sm font-medium" style={{ color: 'var(--text-theme-primary)' }}>
 						{isOffline ? 'You are currently offline.' : 'Your internet connection was restored.'}
 					</p>
 				</div>

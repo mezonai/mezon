@@ -1,12 +1,12 @@
 import { selectAllUsersByUser } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { formatBalanceToString } from '@mezon/utils';
+import { CURRENCY, formatBalanceToString } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { Transaction } from 'mmn-client-js';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';
-import { CURRENCY, TRANSACTION_DETAIL } from '../constants/constants';
+import { TRANSACTION_DETAIL } from '../constants/constants';
 
 interface TransactionDetailProps {
 	detailLedger: Transaction;

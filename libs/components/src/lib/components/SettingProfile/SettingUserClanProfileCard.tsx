@@ -2,7 +2,7 @@ import { useAuth, useMemberStatus } from '@mezon/core';
 import { selectAccountCustomStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AvatarProfile from '../ModalUserProfile/AvatarProfile';
 import { getColorAverageFromURL } from './AverageColor';
@@ -14,11 +14,10 @@ export type propProfilesform = {
 	profiles: Profilesform;
 	currentDisplayName?: string;
 	isLoading?: boolean;
-	qrProfile?: React.ReactNode;
 };
 const SettingUserClanProfileCard = (props: propProfilesform) => {
 	const { userProfile } = useAuth();
-	const { profiles, currentDisplayName, qrProfile } = props;
+	const { profiles, currentDisplayName } = props;
 	const checkUrl = profiles.urlImage === undefined || profiles.urlImage === '';
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const [color, setColor] = useState<string>('#323232');
@@ -67,7 +66,6 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 						<p className="font-medium tracking-wide text-sm">{userProfile?.user?.username}</p>
 					</div>
 				</div>
-				{qrProfile && qrProfile}
 			</div>
 		</div>
 	);

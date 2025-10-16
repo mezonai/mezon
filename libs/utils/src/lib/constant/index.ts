@@ -177,7 +177,7 @@ export const WAVE_SENDER_NAME = 'Mezon';
 
 export const CURRENCY = {
 	CODE: 'vi-VN',
-	SYMBOL: 'đ'
+	SYMBOL: 'đồng'
 };
 
 export const ITEM_TYPE = {

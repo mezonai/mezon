@@ -14,6 +14,10 @@ export function useMemberStatus(memberId: string) {
 					: EUserStatus.INVISIBLE,
 		user_status: userProfile?.user?.id === memberId ? userProfile?.user?.user_status : memberStatus?.user_status,
 		isMobile: false,
-		online: !!memberStatus?.online
+		online:
+			(userProfile?.user?.id === memberId && (userProfile?.user?.status as EUserStatus) === EUserStatus.INVISIBLE) ||
+			(memberStatus?.status as EUserStatus) === EUserStatus.INVISIBLE
+				? false
+				: !!memberStatus?.online
 	};
 }

@@ -5,11 +5,11 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import { safeJSONParse } from 'mezon-js';
 import type { ExtraInfo, IEphemeralKeyPair, IZkProof } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
-import { toastActions } from '../toasts';
+import { EErrorType, toastActions } from '../toasts';
 
 export const WALLET_FEATURE_KEY = 'wallet';
 
-interface WalletDetail {
+export interface WalletDetail {
 	address: string;
 	balance: string;
 }
@@ -66,17 +66,29 @@ const fetchEphemeralKeyPair = createAsyncThunk('wallet/fetchEphemeralKeyPair', a
 const fetchZkProofs = createAsyncThunk(
 	'wallet/fetchZkProofs',
 	async (req: { userId: string; ephemeralPrivateKey?: string; jwt: string }, thunkAPI) => {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const ephemeralKeyPair = selectEphemeralKeyPair(thunkAPI.getState() as any);
-		const address = selectAddress(thunkAPI.getState() as any);
-		if (!ephemeralKeyPair || !address) {
-			return thunkAPI.rejectWithValue('Invalid ephemeral key pair or address');
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const ephemeralKeyPair = selectEphemeralKeyPair(thunkAPI.getState() as any);
+			const address = selectAddress(thunkAPI.getState() as any);
+			if (!ephemeralKeyPair || !address) {
+				return thunkAPI.rejectWithValue('Invalid ephemeral key pair or address');
+			}
+			if (!mezon.zkClient) {
+				return thunkAPI.rejectWithValue('ZkClient not initialized');
+			}
+
+			const response = await mezon.zkClient.getZkProofs({ ...req, address, ephemeralPublicKey: ephemeralKeyPair?.publicKey });
+			return response;
+		} catch (error) {
+			if (error instanceof Error) {
+				thunkAPI.dispatch(
+					toastActions.addToast({
+						message: error.message,
+						type: 'error'
+					})
+				);
+			}
 		}
-		if (!mezon.zkClient) {
-			return thunkAPI.rejectWithValue('ZkClient not initialized');
-		}
-		const response = await mezon.zkClient.getZkProofs({ ...req, address, ephemeralPublicKey: ephemeralKeyPair?.publicKey });
-		return response;
 	}
 );
 
@@ -105,41 +117,41 @@ const sendTransaction = createAsyncThunk(
 		if (!sender || !zkProofs || !ephemeralKeyPair) {
 			thunkAPI.dispatch(
 				toastActions.addToast({
-					message: 'Wallet not available. Please enable wallet.',
+					message: i18n.t('message:wallet.notAvailable'),
 					type: 'error'
 				})
 			);
-			return thunkAPI.rejectWithValue('Wallet not available');
+			return thunkAPI.rejectWithValue({ message: i18n.t('message:wallet.notAvailable'), errType: EErrorType.WALLET });
 		}
 
 		if (!recipient) {
-			thunkAPI.dispatch(toastActions.addToast({ message: 'Recipient wallet not found', type: 'error' }));
-			return thunkAPI.rejectWithValue('Recipient wallet not found');
+			thunkAPI.dispatch(toastActions.addToast({ message: i18n.t('token:toast.error.mustSelectUser'), type: 'error' }));
+			return thunkAPI.rejectWithValue(i18n.t('token:toast.error.mustSelectUser'));
 		}
 
 		if (!amount || amount <= 0) {
 			thunkAPI.dispatch(
 				toastActions.addToast({
-					message: 'Amount is invalid.',
+					message: i18n.t('token:toast.error.amountMustThanZero'),
 					type: 'error'
 				})
 			);
-			return thunkAPI.rejectWithValue('Amount is invalid');
-		}
-
-		if (compareBigInt(walletDetail?.balance || '', BigInt(amount).toString()) < 0) {
-			thunkAPI.dispatch(
-				toastActions.addToast({
-					message: 'Your amount exceeds wallet balance.',
-					type: 'error'
-				})
-			);
-			return thunkAPI.rejectWithValue('Your amount exceeds wallet balance');
+			return thunkAPI.rejectWithValue(i18n.t('token:toast.error.amountMustThanZero'));
 		}
 
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		if (!mezon.mmnClient) {
 			return thunkAPI.rejectWithValue('MmnClient not initialized');
+		}
+
+		if (compareBigInt(walletDetail?.balance || '', mezon.mmnClient.scaleAmountToDecimals(amount)) < 0) {
+			thunkAPI.dispatch(
+				toastActions.addToast({
+					message: i18n.t('token:toast.error.exceedWallet'),
+					type: 'error'
+				})
+			);
+			return thunkAPI.rejectWithValue(i18n.t('token:toast.error.exceedWallet'));
 		}
 
 		const currentNonce = await mezon.mmnClient.getCurrentNonce(sender, 'pending');
@@ -287,3 +299,8 @@ export const selectEphemeralKeyPair = createSelector(getWalletState, (state) => 
 export const selectAddress = createSelector(getWalletState, (state) => state?.address);
 
 export const selectIsEnabledWallet = createSelector(getWalletState, (state) => state?.isEnabled);
+
+export const selectIsWalletAvailable = createSelector(
+	getWalletState,
+	(state) => !!state?.isEnabled && !!state?.zkProofs && !!state?.ephemeralKeyPair
+);

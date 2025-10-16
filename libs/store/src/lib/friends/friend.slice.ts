@@ -21,7 +21,6 @@ interface FriendState {
 }
 
 export interface FriendsEntity extends ApiFriend {
-	key: string;
 	id: string;
 }
 
@@ -37,11 +36,9 @@ export enum EStateFriend {
 }
 
 export const mapFriendToEntity = (FriendRes: ApiFriend) => {
-	const uniqueId = `${FriendRes?.user?.id}_${FriendRes?.source_id}`;
 	return {
 		...FriendRes,
-		key: uniqueId,
-		id: FriendRes?.user?.id || '',
+		id: FriendRes.state === EStateFriend.BLOCK ? FriendRes.source_id || '' : FriendRes?.user?.id || '',
 		source_id: FriendRes?.source_id || ''
 	};
 };
@@ -71,7 +68,7 @@ export interface FriendsState extends EntityState<FriendsEntity, string> {
 }
 
 export const friendsAdapter = createEntityAdapter({
-	selectId: (friend: FriendsEntity) => friend.key || ''
+	selectId: (friend: FriendsEntity) => friend.id || ''
 });
 
 const selectAllFriendsEntities = friendsAdapter.getSelectors().selectAll;
@@ -163,22 +160,21 @@ export const sendRequestAddFriend = createAsyncThunk(
 			})
 			.then((data) => {
 				if (data) {
-					if (!isAcceptingRequest) {
+					if (!isAcceptingRequest && data?.ids) {
 						thunkAPI.dispatch(
 							friendsActions.upsertFriend({
-								id: usernames?.[0] || '',
-								key: `${usernames?.[0]}_${currentUserId}`,
+								id: data?.ids?.[0] || '',
 								source_id: currentUserId,
 								state: EStateFriend.OTHER_PENDING,
 								user: {
 									username: usernames?.[0],
-									id: usernames?.[0] || ids?.[0]
+									id: data?.ids?.[0]
 								}
 							})
 						);
 						toast.success(i18n.t('friends:toast.sendAddFriendSuccess'));
 					} else {
-						thunkAPI.dispatch(friendsActions.acceptFriend(`${ids?.[0]}_${currentUserId}`));
+						thunkAPI.dispatch(friendsActions.acceptFriend(`${ids?.[0]}`));
 					}
 				}
 			});
@@ -223,16 +219,11 @@ export const upsertFriendRequest = createAsyncThunk(
 	'friends/upsertFriendRequest',
 	async ({ user, myId }: { user: AddFriend; myId: string }, thunkAPI) => {
 		const state = thunkAPI.getState() as RootState;
-		const currentFriendWS = friendsAdapter.getSelectors().selectById(state.friends, `${user.username}_${myId}`);
-		if (currentFriendWS) {
-			thunkAPI.dispatch(friendsActions.removeOne(`${user.username}_${myId}`));
-		}
-		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.user_id}_${myId}`);
+		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.user_id}`);
 
 		const friend: FriendsEntity = {
-			state: currentFriendApi || currentFriendWS ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
+			state: currentFriendApi ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
 			id: user.user_id,
-			key: `${user.user_id}_${myId}`,
 			source_id: myId,
 			user: {
 				id: user.user_id,
@@ -359,7 +350,7 @@ export const friendsActions = {
 	upsertFriendRequest
 };
 
-const { selectAll } = friendsAdapter.getSelectors();
+const { selectAll, selectById } = friendsAdapter.getSelectors();
 
 export const getFriendsState = (FriendState: { [FRIEND_FEATURE_KEY]: FriendsState }): FriendsState => FriendState[FRIEND_FEATURE_KEY];
 export const selectAllFriends = createSelector(getFriendsState, selectAll);
@@ -376,7 +367,5 @@ export const selectBlockedUsers = createSelector([selectAllFriends, selectCurren
 export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (friends) =>
 	friends.filter((friend) => friend?.state === EStateFriend.BLOCK)
 );
-export const selectFriendById = createSelector([selectAllFriends, (state, userId: string) => userId], (friends, userId) =>
-	friends.find((friend) => friend?.user?.id === userId || friend?.source_id === userId)
-);
+export const selectFriendById = createSelector([getFriendsState, (state, userId: string) => userId], (state, userId) => selectById(state, userId));
 export const selectCurrentTabStatus = createSelector(getFriendsState, (state) => state.currentTabStatus);

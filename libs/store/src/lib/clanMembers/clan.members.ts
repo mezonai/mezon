@@ -404,7 +404,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 		if (userProfileId) {
 			const userIndex = users.findIndex((user) => user.id === userProfileId);
 
-			if (userIndex === -1 && userProfile?.user?.user_status !== EUserStatus.INVISIBLE) {
+			if (userIndex === -1 && userProfile?.user?.status !== EUserStatus.INVISIBLE) {
 				users.push({
 					id: userProfileId,
 					user: {
@@ -412,7 +412,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 						online: true
 					}
 				} as UsersClanEntity);
-			} else if (userProfile?.user?.user_status !== EUserStatus.INVISIBLE) {
+			} else if (userProfile?.user?.status !== EUserStatus.INVISIBLE) {
 				users[userIndex] = {
 					...users[userIndex],
 					user: {

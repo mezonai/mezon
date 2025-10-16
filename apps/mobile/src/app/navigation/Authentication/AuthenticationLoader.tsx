@@ -245,7 +245,7 @@ export const AuthenticationLoader = () => {
 			const routes = navigationState?.routes || [];
 			const activeScreenIndex = routes[navigationState?.index]?.state?.index || 0;
 			const activeState = routes[navigationState?.index]?.state || {};
-			const currentRoute = activeState?.routes[activeScreenIndex]?.name || '';
+			const currentRoute = activeState?.routes[activeScreenIndex]?.params?.screen || activeState?.routes[activeScreenIndex]?.name || '';
 
 			return currentRoute;
 		} catch (error) {
@@ -272,7 +272,7 @@ export const AuthenticationLoader = () => {
 				const topRoute = getTopRoute();
 
 				// Determine current view state for suppression decision
-				const isViewingChannel = topRoute === APP_SCREEN.HOME_DEFAULT;
+				const isViewingChannel = topRoute === APP_SCREEN.HOME_DEFAULT || topRoute === APP_SCREEN.MESSAGES.CHAT_STREAMING;
 				const isViewingDirectMessage = topRoute === APP_SCREEN.MESSAGES.MESSAGE_DETAIL || topRoute === APP_SCREEN.MESSAGES.HOME;
 
 				if (
