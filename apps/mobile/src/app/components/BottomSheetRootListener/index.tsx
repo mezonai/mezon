@@ -5,10 +5,12 @@ import { useTheme } from '@mezon/mobile-ui';
 import { sleep } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { NativeEventSubscription, StyleProp, ViewStyle } from 'react-native';
-import { BackHandler, DeviceEventEmitter, Keyboard, Text, View } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Keyboard, Text, View, useWindowDimensions } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import Backdrop from './backdrop';
 import { style } from './styles';
+
+export const DEFAULT_MAX_HEIGHT_PERCENT = 0.8;
 
 const useBottomSheetBackHandler = (bottomSheetRef: React.RefObject<OriginalBottomSheet | null>) => {
 	const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(null);
@@ -84,12 +86,14 @@ const BottomSheetRootListener = () => {
 		hiddenHeaderIndicator,
 		containerStyle,
 		backdropStyle,
+		maxHeightPercent,
 		setAll,
 		clearDataBottomSheet
 	} = useBottomSheetState();
 
 	const ref = useRef<OriginalBottomSheet>(null);
 	const { handleSheetPositionChange } = useBottomSheetBackHandler(ref);
+	const { height: screenHeight } = useWindowDimensions();
 
 	const onCloseBottomSheet = async () => {
 		ref?.current?.close();
@@ -133,6 +137,19 @@ const BottomSheetRootListener = () => {
 	const themeValue = useTheme().themeValue;
 	const styles = useMemo(() => style(themeValue, isTabletLandscape), [isTabletLandscape, themeValue]);
 
+	const sizeConfig = useMemo(() => {
+		if (heightFitContent && snapPoints?.length <= 1) return null;
+		return heightFitContent ? snapPoints?.slice(0, 1) : snapPoints;
+	}, [heightFitContent, snapPoints]);
+
+	const maxHeightSize = useMemo(() => {
+		return typeof maxHeightPercent === 'string' && maxHeightPercent.includes('%')
+			? screenHeight * (parseFloat(maxHeightPercent) / 100)
+			: typeof maxHeightPercent === 'number'
+				? maxHeightPercent
+				: screenHeight * DEFAULT_MAX_HEIGHT_PERCENT;
+	}, [maxHeightPercent, screenHeight]);
+
 	const renderHeader = useCallback(() => {
 		if (title || headerLeft || headerRight) {
 			return (
@@ -149,13 +166,14 @@ const BottomSheetRootListener = () => {
 	return (
 		<OriginalBottomSheet
 			ref={ref}
-			snapPoints={heightFitContent ? null : snapPoints}
+			snapPoints={sizeConfig}
 			index={0}
 			animateOnMount
 			backgroundStyle={styles.backgroundStyle}
 			backdropComponent={(prop) => <Backdrop {...prop} style={backdropStyle} />}
 			enableDynamicSizing={heightFitContent}
 			style={styles.container}
+			maxDynamicContentSize={maxHeightSize}
 			handleComponent={
 				hiddenHeaderIndicator
 					? null

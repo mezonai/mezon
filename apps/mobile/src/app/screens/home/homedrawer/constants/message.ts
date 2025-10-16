@@ -10,11 +10,6 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			type: EMessageActionType.ResendMessage
 		},
 		{
-			id: 1,
-			title: t('message:actions.forward'),
-			type: EMessageActionType.ForwardMessage
-		},
-		{
 			id: 2,
 			title: t('message:actions.forwardAllMessages'),
 			type: EMessageActionType.ForwardAllMessages
@@ -33,6 +28,11 @@ export const getMessageActions = (t: TFunction): IMessageAction[] => {
 			id: 4,
 			title: t('message:actions.reply'),
 			type: EMessageActionType.Reply
+		},
+		{
+			id: 1,
+			title: t('message:actions.forward'),
+			type: EMessageActionType.ForwardMessage
 		},
 		{
 			id: 5,

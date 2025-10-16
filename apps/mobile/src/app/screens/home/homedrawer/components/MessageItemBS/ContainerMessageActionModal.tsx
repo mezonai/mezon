@@ -713,6 +713,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isDM && EMessageActionType.QuickMenu,
 			isHideActionImage && EMessageActionType.CopyImage,
 			isHideActionImage && EMessageActionType.ShareImage,
+			isHideActionImage && EMessageActionType.SaveImage,
 			isTopicFirstMessage && EMessageActionType.EditMessage
 		];
 
@@ -730,10 +731,11 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			(message?.attachments?.length > 0 &&
 				message.attachments?.every((att) => att?.filetype?.includes('image') || att?.filetype?.includes('video'))) ||
 			message?.content?.embed?.some((embed) => embed?.image)
-				? []
-				: [EMessageActionType.SaveImage, EMessageActionType.CopyMediaLink];
+				? [EMessageActionType.SaveImage, EMessageActionType.CopyMediaLink, EMessageActionType.ShareImage, EMessageActionType.CopyImage]
+				: [];
 
 		const frequentActionList = [
+			EMessageActionType.ForwardMessage,
 			EMessageActionType.ResendMessage,
 			EMessageActionType.GiveACoffee,
 			EMessageActionType.EditMessage,
@@ -745,6 +747,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		return {
 			frequent: availableMessageActions.filter((action) => frequentActionList.includes(action.type)),
 			normal: availableMessageActions.filter((action) => ![...frequentActionList, ...warningActionList, ...mediaList].includes(action.type)),
+			media: availableMessageActions.filter((action) => mediaList.includes(action.type)),
 			warning: availableMessageActions.filter((action) => warningActionList.includes(action.type))
 		};
 	}, [
@@ -816,6 +819,16 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				</View>
 				<View style={styles.messageActionGroup}>
 					{messageActionList.normal.map((action) => {
+						return (
+							<Pressable key={action.id} style={styles.actionItem} onPress={() => implementAction(action.type)}>
+								<View style={styles.icon}>{getActionMessageIcon(action.type)}</View>
+								<Text style={styles.actionText}>{action.title}</Text>
+							</Pressable>
+						);
+					})}
+				</View>
+				<View style={styles.messageActionGroup}>
+					{messageActionList.media.map((action) => {
 						return (
 							<Pressable key={action.id} style={styles.actionItem} onPress={() => implementAction(action.type)}>
 								<View style={styles.icon}>{getActionMessageIcon(action.type)}</View>
