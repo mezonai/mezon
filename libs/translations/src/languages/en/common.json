@@ -16,7 +16,6 @@
 	"role": "Role",
 	"noRoles": "No Roles",
 	"member": "Member",
-	"members": "Members",
 	"cannotFetchClans": "Cannot fetch clans, please try again later",
 	"cannotFetchClan": "Cannot fetch clan, please try again later",
 	"categoryFilteringComingSoon": "Category filtering will be implemented soon!",
@@ -55,6 +54,9 @@
 	"todayAt": "Today at",
 	"today": "Today",
 	"yesterdayAt": "Yesterday at",
+	"todayAtTime": "Today at {{time}}",
+	"yesterdayAtTime": "Yesterday at {{time}}",
+	"justNow": "Just now",
 	"sampleMessage": "Look at me I'm a beautiful butterfly",
 	"switchingTheme": "Switching theme...",
 	"settingsSaved": "Settings saved!",
@@ -63,6 +65,7 @@
 	"hideNotificationDesc": "When you clear this checkbox, a message will appear with its contents.",
 	"showNotificationDesc": "When the checkbox is clicked, any notification will be displayed without any content.",
 	"save": "Save",
+	"limitedPhotosAccess": "Tap to Select More Photos",
 	"searchModal": {
 		"placeholder": "Where would you like to go?",
 		"protip": "PROTIP:",
@@ -90,6 +93,18 @@
 		"createMessage": "You've reached the maximum number of clans you can create on your account ({{count}} clans). To create a new one, you'll need to delete or leaving one of your existing clans.",
 		"joinMessage": "You've reached the maximum number of clans you can join on your account ({{count}} clans). To join this new clan, you'll need to delete or leaving one of your existing clans.",
 		"okay": "Okay"
+	},
+	"uploadLimit": {
+		"emoji": "Max emoji limit exceeded",
+		"sticker": "Max sticker limit exceeded",
+		"voiceSticker": "Max voice sticker limit exceeded"
+	},
+	"cardConversationMessage": {
+		"title": "Conversation",
+		"johnDoe": "Hey, are we still on for the meeting tomorrow?",
+		"janeSmith": "Don't forget to check out the new project updates!",
+		"aliceJohnson": "Can you send me the files from last week?",
+		"bobBrown": "Let's grab lunch sometime next week."
 	},
 	"isTyping": " is typing...",
 	"severalPeopleTyping": "Several people are typing...",
@@ -223,5 +238,22 @@
 		"usernamePlaceholder": "Please use your actual name to make it easier for people to identify you.",
 		"update": "Update",
 		"errorDuplicate": "There’s an issue or the name already exists, please choose another one."
+	},
+	"sessionExpired": {
+		"title": "Session Expired or Network Error",
+		"confirm": "Login Again",
+		"content": "Your session has expired. Please log in again to continue."
+	},
+	"call": {
+		"connecting": "Connecting...",
+		"ringing": "Ringing..."
+	},
+	"itemClanPreview": {
+		"preview": "{{type}} Preview",
+		"name": "{{type}} Name",
+		"forSale": "For Sale",
+		"upload": "Upload",
+		"sticker": "Sticker",
+		"emoji": "Emoji"
 	}
 }
