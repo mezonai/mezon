@@ -1,6 +1,7 @@
 import { usePermissionChecker, useRoles, UserRestrictionZone } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import {
+	rolesClanActions,
 	selectAllRolesClan,
 	selectCurrentClan,
 	selectCurrentClanId,
@@ -66,10 +67,25 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 		const activeRole = RolesClan.find((role) => role.id === roleId);
 		const userIDArray = userById?.user?.id?.split(',');
 		await updateRole(currentClan?.clan_id || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', userIDArray || [], [], [], []);
+
 		await dispatch(
 			usersClanActions.addRoleIdUser({
 				id: roleId,
 				userId: userById?.user?.id as string,
+				clanId: currentClanId as string
+			})
+		);
+
+		const updatedRoleUsers = [...(activeRole?.role_user_list?.role_users || []), { id: userById?.user?.id as string }];
+		dispatch(
+			rolesClanActions.update({
+				role: {
+					...activeRole,
+					role_user_list: {
+						...activeRole?.role_user_list,
+						role_users: updatedRoleUsers
+					}
+				},
 				clanId: currentClanId as string
 			})
 		);
@@ -79,11 +95,26 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 		const activeRole = RolesClan.find((role) => role.id === roleId);
 		const userIDArray = userById?.user?.id?.split(',');
 		await updateRole(currentClan?.clan_id || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', [], [], userIDArray || [], []);
+
 		await dispatch(
 			usersClanActions.removeRoleIdUser({
 				clanId: currentClanId as string,
 				id: roleId,
 				userId: userById?.user?.id as string
+			})
+		);
+
+		const updatedRoleUsers = activeRole?.role_user_list?.role_users?.filter((user) => user.id !== userById?.user?.id) || [];
+		dispatch(
+			rolesClanActions.update({
+				role: {
+					...activeRole,
+					role_user_list: {
+						...activeRole?.role_user_list,
+						role_users: updatedRoleUsers
+					}
+				},
+				clanId: currentClanId as string
 			})
 		);
 	};

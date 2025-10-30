@@ -136,6 +136,21 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 							userId: user?.user?.id
 						})
 					);
+
+					const updatedRoleUsers = [...(activeRole?.role_user_list?.role_users || []), { id: user?.user?.id }];
+					dispatch(
+						rolesClanActions.update({
+							role: {
+								...activeRole,
+								role_user_list: {
+									...activeRole?.role_user_list,
+									role_users: updatedRoleUsers
+								}
+							},
+							clanId: currentClan?.clan_id
+						})
+					);
+
 					dispatch(setAddPermissions([]));
 					dispatch(setRemovePermissions([]));
 				}
@@ -176,6 +191,20 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 							id: roleId,
 							clanId: currentClan?.clan_id,
 							userId: user?.user?.id
+						})
+					);
+
+					const updatedRoleUsers = activeRole?.role_user_list?.role_users?.filter((user_role) => user_role.id !== user?.user?.id) || [];
+					dispatch(
+						rolesClanActions.update({
+							role: {
+								...activeRole,
+								role_user_list: {
+									...activeRole?.role_user_list,
+									role_users: updatedRoleUsers
+								}
+							},
+							clanId: currentClan?.clan_id
 						})
 					);
 				}
