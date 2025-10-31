@@ -1,20 +1,69 @@
 import { CustomCookieConsent } from '@mezon/components';
 import mezonPackage from '@mezon/package-js';
-import { Icons, Image } from '@mezon/ui';
-import { Platform, generateE2eId, getPlatform } from '@mezon/utils';
+import { Platform, getPlatform } from '@mezon/utils';
 import isElectron from 'is-electron';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import Footer from './footer';
 import HeaderMezon from './header';
-import Layout, { useIntersectionObserver } from './layouts';
+import { BotsAndAppsSection, CommunitiesSection, FinalCTASection, FreedomToConnectSection, HeroSection, MezonEconomySection } from './sections';
 import { SideBarMezon } from './sidebar';
+
+// Intersection Observer Hook
+interface IntersectionOptions {
+	root?: Element | null;
+	rootMargin?: string;
+	threshold?: number | number[];
+}
+
+export const useIntersectionObserver = (elementRef: RefObject<Element>, options: IntersectionOptions): boolean => {
+	const [isVisible, setIsVisible] = useState<boolean>(false);
+	const [hasAnimated, setHasAnimated] = useState<boolean>(false);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver((entries) => {
+			const [entry] = entries;
+			if (entry.isIntersecting && !hasAnimated) {
+				setIsVisible(true);
+				setHasAnimated(true);
+			}
+		}, options);
+
+		const currentElement = elementRef.current;
+		if (currentElement) {
+			observer.observe(currentElement);
+		}
+
+		return () => {
+			if (currentElement) {
+				observer.unobserve(currentElement);
+			}
+		};
+	}, [elementRef, options, hasAnimated]);
+
+	return isVisible;
+};
 
 function MezonPage() {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
 	const isWindow = platform === Platform.WINDOWS;
 	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
+	const carouselRef = useRef<HTMLDivElement>(null);
+	const [currentSlide, setCurrentSlide] = useState(0);
+	const totalSlides = 6;
+
+	const handlePrevSlide = () => {
+		setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+	};
+
+	const handleNextSlide = () => {
+		setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
+	};
+
+	const scrollToSlide = (index: number) => {
+		setCurrentSlide(index);
+	};
 
 	const homeRef = useRef<HTMLDivElement>(null);
 	const isVisible = useIntersectionObserver(homeRef, { threshold: 0.1 });
@@ -56,13 +105,9 @@ function MezonPage() {
 		});
 	};
 
-	const HighLightText = ({ content }: { content: string }) => {
-		return <span className="text-[#8D5BDF] font-bold  ">{content}</span>;
-	};
-
 	const trackDownloadEvent = (platform: string, downloadType: string) => {
-		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
-			(window as any).gtag('event', 'download_click', {
+		if (typeof window !== 'undefined' && typeof (window as Window & { gtag?: (...args: unknown[]) => void }).gtag !== 'undefined') {
+			(window as Window & { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'download_click', {
 				event_category: 'Downloads',
 				event_label: platform,
 				download_type: downloadType,
@@ -71,6 +116,8 @@ function MezonPage() {
 			});
 		}
 	};
+
+	// Carousel navigation functions
 
 	useEffect(() => {
 		const externalScript = document.createElement('script');
@@ -100,125 +147,40 @@ function MezonPage() {
 				fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial'
 			}}
 		>
-			<div className="bg-white layout relative flex flex-col items-center text-textDarkTheme overflow-visibile">
+			<div className="bg-white layout relative flex flex-col items-center text-textDarkTheme overflow-visible">
 				{!sideBarIsOpen && <HeaderMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />}
 
-				<div className="container w-10/12 max-lg:w-full max-md:px-[16px] max-md:mt-[72px]" id="home" ref={homeRef}>
-					<div
-						className={`bg-white max-md:pb-0 max-md:mt-[36px] md:mt-[100px] md:pb-[50px] flex flex-col gap-[48px] max-md:gap-[32px] md:px-[32px] transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-					>
-						<div className="flex flex-col gap-5 items-center">
-							<div
-								className="text-black text-6xl max-w-[1000px] font-bold leading-relaxed text-center max-md:text-4xl max-sm:text-3xl"
-								data-e2e={generateE2eId('homepage.main_page.heading.title')}
-							>
-								{t('title.part1')} <HighLightText content={t('title.live')} />, <HighLightText content={t('title.work')} />,{' '}
-								{t('title.and')} <HighLightText content={t('title.playPlatform')} /> {t('title.theBest')}{' '}
-								<HighLightText content={t('title.discord')} /> {t('title.alternative')}
-							</div>
-							<div className="text-3xl max-w-[800px] leading-normal text-center flex flex-col max-md:text-2xl max-sm:text-xl">
-								<span className="text-black">
-									<HighLightText content="Mezon" /> {t('description.part1')}
-								</span>
-								<span className="text-black">
-									{t('description.part2')} <HighLightText content={t('description.talk')} />,{' '}
-									<HighLightText content={t('description.play')} /> {t('description.and')}{' '}
-									<HighLightText content={t('description.hangOut')} />.
-								</span>
-							</div>
-							<div className="w-3/4 h-full">
-								<img src="/assets/homepage-bg.png" alt="banner-desktop" width={1600} height={1000} className="w-full h-full" />
-							</div>
-							<div className="flex items-center gap-5 max-sm:flex-col"></div>
-						</div>
-						<div className="max-md:mb-10 flex justify-center items-center gap-[12px]">
-							<a
-								className="cursor-pointer"
-								href="https://apps.apple.com/vn/app/mezon/id6502750046"
-								target="_blank"
-								rel="noreferrer"
-								onClick={() => trackDownloadEvent('iOS', 'App Store')}
-							>
-								<Icons.AppStoreBadge className="max-w-full max-md:h-[32px] max-md:w-[98px]" />
-							</a>
-							<a
-								className="cursor-pointer"
-								href="https://play.google.com/store/apps/details?id=com.mezon.mobile"
-								target="_blank"
-								rel="noreferrer"
-								onClick={() => trackDownloadEvent('Android', 'Google Play')}
-							>
-								<Icons.GooglePlayBadge className="max-w-full max-md:h-[32px] max-md:w-full" />
-							</a>
-							{platform === Platform.MACOS ? (
-								<DropdownButton
-									icon={<Icons.MacAppStoreDesktop className="max-w-full max-md:h-[32px] max-md:w-full" />}
-									downloadLinks={[
-										{
-											url: downloadUrl,
-											icon: <Icons.MacAppleSilicon className="max-w-full max-md:h-[32px] max-md:w-full" />,
-											trackingData: { platform: 'macOS', type: 'Apple Silicon' }
-										},
-										{
-											url: universalUrl,
-											icon: <Icons.MacAppleIntel className="max-w-full max-md:h-[32px] max-md:w-full" />,
-											trackingData: { platform: 'macOS', type: 'Intel' }
-										}
-									]}
-									dropdownRef={dropdownRef}
-									platform={Platform.MACOS}
-									onDownloadClick={trackDownloadEvent}
-									t={t}
-								/>
-							) : platform === 'Linux' ? (
-								<a
-									className="cursor-pointer leading-[0px]"
-									href={downloadUrl}
-									target="_blank"
-									rel="noreferrer"
-									onClick={() => trackDownloadEvent('Linux', 'DEB Package')}
-								>
-									<Image src={`assets/linux.svg`} className="max-w-full max-md:h-[32px] max-md:w-full" />
-								</a>
-							) : (
-								<DropdownButton
-									icon={
-										<a
-											className="cursor-pointer"
-											href={downloadUrl}
-											target="_blank"
-											rel="noreferrer"
-											onClick={() => trackDownloadEvent('Windows', 'EXE Installer')}
-										>
-											<Icons.MicrosoftDropdown className="max-w-full max-md:h-[32px] max-md:w-full" />
-										</a>
-									}
-									downloadLinks={[
-										{
-											url: portableUrl,
-											icon: <Icons.MicrosoftWinPortable className="max-w-full max-md:h-[32px] max-md:w-full" />,
-											trackingData: { platform: 'Windows', type: 'Portable' }
-										}
-									]}
-									dropdownRef={dropdownRef}
-									downloadUrl={downloadUrl}
-									isWindow={isWindow}
-									onDownloadClick={trackDownloadEvent}
-									t={t}
-								/>
-							)}
-						</div>
-					</div>
-				</div>
+				<HeroSection homeRef={homeRef} isVisible={isVisible} />
+
+				<FreedomToConnectSection />
+
+				<BotsAndAppsSection />
+
+				<CommunitiesSection
+					carouselRef={carouselRef}
+					currentSlide={currentSlide}
+					setCurrentSlide={setCurrentSlide}
+					handlePrevSlide={handlePrevSlide}
+					handleNextSlide={handleNextSlide}
+					scrollToSlide={scrollToSlide}
+				/>
+
+				<MezonEconomySection />
+
+				<FinalCTASection
+					trackDownloadEvent={trackDownloadEvent}
+					platform={platform}
+					downloadUrl={downloadUrl}
+					universalUrl={universalUrl}
+					portableUrl={portableUrl}
+					dropdownRef={dropdownRef}
+					isWindow={isWindow}
+					t={t}
+				/>
 
 				{sideBarIsOpen && <SideBarMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />}
-
-				{!sideBarIsOpen && (
-					<div className="hidden md:block absolute top-0 w-[400px] h-[400px] bg-[#8D72C5] rounded-[50%] filter blur-[200px] mix-blend-color-dodge"></div>
-				)}
 			</div>
 
-			<Layout sideBarIsOpen={sideBarIsOpen} />
 			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
 			{!isElectron() && <CustomCookieConsent />}
 		</div>
@@ -226,117 +188,3 @@ function MezonPage() {
 }
 
 export default MezonPage;
-
-interface DownloadLink {
-	url: string;
-	icon: JSX.Element;
-	trackingData?: { platform: string; type: string };
-}
-
-interface DropdownButtonProps {
-	icon: JSX.Element;
-	downloadLinks: DownloadLink[];
-	dropdownRef: React.RefObject<HTMLDivElement>;
-	downloadUrl?: string;
-	platform?: Platform;
-	isWindow?: boolean;
-	onDownloadClick?: (platform: string, downloadType: string) => void;
-	t?: (key: string) => string;
-}
-
-export const DropdownButton: React.FC<DropdownButtonProps> = ({
-	platform,
-	icon,
-	downloadLinks,
-	dropdownRef,
-	downloadUrl,
-	isWindow,
-	onDownloadClick,
-	t = (key: string) => key
-}) => {
-	const [isOpen, setIsOpen] = useState(false);
-
-	const toggleDropdown = () => {
-		if (platform === Platform.MACOS) {
-			setIsOpen((prev) => !prev);
-		}
-	};
-
-	const toggleDropdownWindow = () => {
-		setIsOpen((prev) => !prev);
-	};
-
-	const handleOpenCdnUrl = () => {
-		onDownloadClick?.('Windows', 'CDN Direct');
-		window.open(downloadUrl, '_blank', 'noreferrer');
-	};
-
-	const handleDownloadClick = (trackingData?: { platform: string; type: string }) => {
-		if (onDownloadClick && trackingData) {
-			onDownloadClick(trackingData.platform, trackingData.type);
-		}
-	};
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-				setIsOpen(false);
-			}
-		};
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => document.removeEventListener('mousedown', handleClickOutside);
-	}, [dropdownRef]);
-
-	return (
-		<div className="relative inline-block leading-[0px]" ref={dropdownRef}>
-			<button className="relative" onClick={toggleDropdown}>
-				{isWindow ? (
-					<div className="cursor-pointer" onClick={handleOpenCdnUrl}>
-						<div className="bg-black py-1 max-md:py-[2px] px-[10px] max-md:px-2 w-[180px] max-md:w-[125px] flex items-center gap-[10px] rounded-md border-[1.5px] border-white">
-							<Icons.Microsoft className="w-[34px] h-[34px] max-md:w-[22px] max-md:h-[22px]" />
-							<div>
-								<div className="text-xs max-md:text-[9px]">{t('download.getItFrom')}</div>
-								<div className="max-md:text-[12px] leading-[20px] max-md:leading-[13px]">{t('download.cdnUrl')}</div>
-							</div>
-						</div>
-					</div>
-				) : (
-					icon
-				)}
-				<div className="absolute top-2.5 right-2.5 max-md:top-0 max-md:right-0">
-					<Icons.ChevronDownIcon
-						className={isWindow ? 'text-textDarkTheme' : 'text-transparent'}
-						onClick={toggleDropdownWindow}
-						style={{ width: 26, height: 26 }}
-					/>
-				</div>
-			</button>
-			{isOpen && (
-				<div className="absolute z-50 flex flex-col gap-1 mt-1 left-[2px]">
-					{/* The below component will be used in the future - TungNQS */}
-					<div className="cursor-pointer hidden" onClick={handleOpenCdnUrl}>
-						<div className="bg-black py-1 max-md:py-[2px] px-[10px] max-md:px-2 w-[180px] max-md:w-[125px] flex items-center gap-[10px] rounded-md border-[1.5px] border-white">
-							<Icons.CDNIcon className="w-[29px] h-[29px] max-md:w-[20px] max-md:h-[20px]" />
-							<div>
-								<div className="text-xs max-md:text-[9px]">{t('download.getItFrom')}</div>
-								<div className="max-md:text-[12px] leading-[20px] max-md:leading-[13px]">{t('download.cdnUrl')}</div>
-							</div>
-						</div>
-					</div>
-					{downloadLinks.map((link, index) => (
-						<a
-							key={index}
-							className="cursor-pointer block"
-							href={link.url}
-							target="_blank"
-							rel="noreferrer"
-							onClick={() => handleDownloadClick(link.trackingData)}
-						>
-							{link.icon}
-						</a>
-					))}
-				</div>
-			)}
-		</div>
-	);
-};

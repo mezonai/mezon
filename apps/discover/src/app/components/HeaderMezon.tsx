@@ -35,8 +35,9 @@ const HeaderMezon = memo((props: HeaderProps) => {
 	try {
 		return (
 			<div
-				className={`layout fixed flex flex-col items-center w-full transition-all duration-300 ${isScrolled ? 'bg-white/90 shadow-sm backdrop-blur-md' : 'bg-transparent'
-					} h-[80px] max-md:h-[72px] z-[100]`}
+				className={`layout fixed flex flex-col items-center w-full transition-all duration-300 ${
+					isScrolled ? 'bg-white/90 shadow-sm backdrop-blur-md' : 'bg-transparent'
+				} h-[80px] max-md:h-[72px] z-[100]`}
 			>
 				<div ref={refHeader} className={`header fixed z-[${Z_INDEX.HEADER}] w-10/12 max-lg:w-full max-md:border-b max-md:border-gray-100`}>
 					<div className="flex items-center justify-between md:px-[32px] max-md:px-[16px] max-md:py-[14px] h-[80px] max-md:h-[72px]">
@@ -98,9 +99,10 @@ const HeaderMezon = memo((props: HeaderProps) => {
 											key={key}
 											to={link.url}
 											className={({ isActive }) =>
-												`font-medium py-2 transition-colors ${isActive
-													? 'text-[#5865f2] underline decoration-2 underline-offset-4'
-													: 'text-gray-600 hover:text-[#5865f2]'
+												`font-medium py-2 transition-colors ${
+													isActive
+														? 'text-[#5865f2] underline decoration-2 underline-offset-4'
+														: 'text-gray-600 hover:text-[#5865f2]'
 												}`
 											}
 										>
